@@ -1,0 +1,84 @@
+{
+  "manifest": {
+	"$BASE_DIR": "${configdir}",
+    "$NETWORK_DIR": "$BASE_DIR/network",
+    "$MODELS_DIR": "$BASE_DIR/../models",
+    "$OUTPUT_DIR": "$BASE_DIR/output",
+    "$NWB_DIR": "$BASE_DIR/../../NWB_files"
+  },
+
+  "run": {
+    "duration": 3000.0,
+    "dt": 0.001,
+	"overwrite_output_dir": true,
+    "block_run": false,
+    "block_size": 1000.0,
+	"connect_internal": true,
+	"connect_external": {"LGN": true, "TW": true}
+  },
+
+  "input": [
+    {
+      "type": "external_spikes",
+      "format": "nwb",
+      "file": "$NWB_DIR/lgn_spikes.nwb",
+      "network": "LGN",
+      "trial": "trial_0",
+      "active": true
+    },
+    {
+      "type": "external_spikes",
+      "format": "nwb",
+      "file": "$NWB_DIR/tw_spikes.nwb",
+      "network": "TW",
+      "trial": "trial_0",
+      "active": true
+    }
+  ],
+
+  "output": {
+	"log": "$OUTPUT_DIR/log.txt",
+	"spikes_ascii": "$OUTPUT_DIR/spikes.txt",
+	"output_dir": "$OUTPUT_DIR"
+  },
+
+
+  "target_simulator":"NEST",
+
+  "components": {
+    "models_dir": "$MODELS_DIR/cell_models",
+	"synaptic_models": "$MODELS_DIR/synaptic_models",
+    "weight_functions": "$BASE_DIR/weight_funcs.py"
+  },
+
+  "networks": {
+    "node_files": [
+      {
+        "nodes": "$NETWORK_DIR/v1_nodes.h5",
+        "node_types": "$NETWORK_DIR/v1_node_types.csv"
+      },
+      {
+        "nodes": "$NETWORK_DIR/lgn_nodes.h5",
+        "node_types": "$NETWORK_DIR/lgn_node_types.csv"
+      },
+      {
+        "nodes": "$NETWORK_DIR/tw_nodes.h5",
+        "node_types":  "$NETWORK_DIR/tw_node_types.csv"
+      }
+    ],
+    "edges_files": [
+      {
+        "edges": "$NETWORK_DIR/v1_v1_edges.h5",
+        "edge_types": "$NETWORK_DIR/v1_edge_types.csv"
+      },
+      {
+        "edges": "$NETWORK_DIR/lgn_v1_edges.h5",
+        "edge_types": "$NETWORK_DIR/lgn_v1_edge_types.csv"
+      },
+      {
+        "edges": "$NETWORK_DIR/tw_v1_edges.h5",
+        "edge_types": "$NETWORK_DIR/tw_edge_types.csv"
+      }
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+edge_type_id target_query source_query weight_max weight_function weight_sigma delay params_file synapse_model
+0 ei=='i'&gaba_synapse=='y' ei=='i' -1.8 wmax NA 2.0 InhToInh.json static_synapse
+1 ei=='e'&gaba_synapse=='y' ei=='i' -12.6 wmax NA 2.0 InhToExc.json static_synapse
+2 pop_name=='PV1' ei=='e' 7.7 wmax NA 2.0 ExcToInh.json static_synapse
+3 pop_name=='Rorb' ei=='e' 4.292 gaussianLL 50.0 2.0 ExcToExc.json static_synapse

@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+
+  "properties": {
+    "target_simulator": {"$ref": "#/definitions/target_simulator"},
+    "components": {"$ref": "#/definitions/components"},
+    "networks": {
+      "type": "object",
+      "properties": {
+        "node_files": {"$ref": "#/definitions/nodes_files"},
+        "edge_files": {"$ref": "#/definitions/edges_files"}
+      }
+    },
+    "run": {"$ref": "#/definitions/run"},
+    "groups": {"$ref": "#/definitions/groups"},
+    "output": {"$ref": "#/definitions/output"},
+    "conditions": {"$ref": "#/definitions/conditions"}
+  },
+
+  "definitions": {
+    "target_simulator": {
+      "type": "string"
+    },
+
+    "components": {
+      "type": "object",
+      "properties": {
+        "synaptic_models": {"type": "directory", "exists": true},
+        "mechanisms": {"type": "directory", "exists": true},
+        "morphologies": {"type": "directory", "exists": true},
+        "biophysical_neuron_models": {"type": "directory", "exists": true},
+        "point_neuron_models": {"type": "directory", "exists": true},
+        "templates": {"type": "directory", "exists": true}
+      }
+    },
+
+    "edges_files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properites": {
+          "edges": {"type": "file", "exists": true},
+          "edge_types": {"type": "file", "exists": true}
+        }
+      }
+    },
+
+    "nodes_files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "nodes": {"type": "file", "exists": true},
+          "node_types": {"type": "file", "exists": true}
+        }
+      }
+    },
+
+    "run": {
+      "type": "object",
+      "properties": {
+        "tstop": {"type": "number", "minimum": 0},
+        "dt": {"type": "number", "minimum": 0},
+        "dL": {"type": "number", "minimum": 0},
+        "overwrite_output_dir": {"type": "boolean"},
+        "spike_threshold": {"type": "number"},
+        "save_state": {"type": "boolean"},
+        "start_from_state": {"type": "boolean"},
+        "nsteps_block": {"type": "number", "minimum": 0},
+        "save_cell_vars": {"type": "array"},
+        "calc_ecp": {"type": "boolean"},
+        "connect_internal": {"type": "boolean"},
+        "connect_external": {"type": "object"}
+      }
+    },
+
+    "groups": {
+      "type": "object",
+      "properties": {
+        "save_vars": {"type": "array", "items": {"type": "number"}}
+      }
+    },
+
+    "output": {
+      "type": "object",
+      "properties": {
+        "log": {"type": "file"},
+        "spikes_ascii": {"type": "file"},
+        "spikes_h5": {"type": "file"},
+        "cell_vars_dir": {"type": "file"},
+        "extra_cell_vars": {"type": "file"},
+        "ecp_file": {"type": "file"},
+        "state_dir": {"type": "directory"},
+        "output_dir": {"type": "directory"}
+      }
+    },
+
+    "conditions": {
+      "type": "object",
+      "properties": {
+        "celsius": {"type": "number"},
+        "v_init": {"type": "number"}
+      }
+    },
+
+    "extracellular_electrode": {
+      "type": "object",
+      "properties": {
+        "positions": {"type": "file"}
+      }
+    }
+  }
+}

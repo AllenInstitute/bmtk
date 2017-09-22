@@ -1,0 +1,71 @@
+{
+  "manifest": {
+    "$BASE_DIR": "${configdir}",
+    "$OUTPUT_DIR": "$BASE_DIR/output",
+    "$NWB_DIR": "$BASE_DIR/../../NWB_files",
+    "$NETWORK_DIR": "$BASE_DIR/network",
+    "$COMPONENT_DIR": "$BASE_DIR/../components",
+    "$MODELS_DIR": "$BASE_DIR/models"
+  },
+
+  "run": {
+    "duration": 1.5,
+    "dt": 0.0005,
+	"overwrite_output_dir": true,
+    "connect_internal": true,
+    "connect_external": {"LGN": false}
+  },
+
+  "input": [
+    {
+      "type": "external_spikes",
+      "format": "nwb",
+      "file": "$NWB_DIR/lgn_spikes.nwb",
+      "network": "LGN",
+      "trial": "trial_0",
+      "active": true
+    }
+  ],
+
+  "output": {
+    "rates_file": "$OUTPUT_DIR/spike_rates.txt",
+	"log_file": "$OUTPUT_DIR/logging.txt"
+  },
+
+  "target_simulator":"NEURON",
+
+  "components": {
+    "models_dir": "$MODELS_DIR/pop_models",
+    "synaptic_models": "$MODELS_DIR/synaptic_models"
+  },
+
+  "networks": {
+    "node_files": [
+      {
+        "name": "V1",
+        "nodes": "$NETWORK_DIR/V1/v1_nodes.csv",
+        "node_types": "$NETWORK_DIR/V1/v1_node_types.csv"
+      },
+      {
+        "name": "LGN",
+        "nodes": "$NETWORK_DIR/LGN/lgn_nodes.csv",
+        "node_types": "$NETWORK_DIR/LGN/lgn_node_types.csv"
+      }
+    ],
+
+    "edges_files": [
+      {
+        "target": "V1",
+        "source": "V1",
+        "edges": "$NETWORK_DIR/V1/v1_edges.h5",
+        "edge_types": "$NETWORK_DIR/V1/v1_edge_types.csv"
+      },
+      {
+        "target": "V1",
+        "source": "LGN",
+        "edges": "$NETWORK_DIR/LGN/lgn_edges.h5",
+        "edge_types": "$NETWORK_DIR/LGN/lgn_edge_types.csv"
+      }
+    ]
+  }
+}

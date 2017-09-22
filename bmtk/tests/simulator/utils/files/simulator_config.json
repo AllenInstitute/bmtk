@@ -1,0 +1,50 @@
+{
+  "run": {
+    "tstop": 3000.0,
+	"dt": 0.025,
+	"dL": 20,	
+	"overwrite_output_dir": true,
+	"spike_threshold": -15,
+	"save_state":false,
+	"start_from_state": false,
+	"nsteps_block":5000,
+	"save_cell_vars": ["v", "cai"],
+	"calc_ecp": false,
+	"connect_internal": true,
+	"connect_external": {"lgn": true, "tw": true}
+  },
+
+  "conditions": {
+    "celsius": 34.0,
+    "v_init": -80
+  },
+
+  "groups": {
+	"save_vars": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  },
+
+  "input": [
+    {
+      "type": "external_spikes",
+      "format": "nwb",
+      "file": "lgn_spike_trains.txt",
+      "network": "lgn",
+      "trial": "trial_0"
+    }
+  ],
+
+  "output": {
+	"log":	 			"$OUTPUT_DIR/log.txt",
+	"spikes_ascii": 	"$OUTPUT_DIR/spikes.txt",
+	"spikes_h5": 		"$OUTPUT_DIR/spikes.h5",
+	"cell_vars_dir":	"$OUTPUT_DIR/cellvars",
+	"extra_cell_vars":	"$OUTPUT_DIR/extra_cell_vars.h5",
+    "ecp_file":			"$OUTPUT_DIR/ecp.h5",
+	"state_dir":		"$OUTPUT_DIR/state",
+	"output_dir":	    "$OUTPUT_DIR"
+  },
+
+  "manifest": {
+  	"$OUTPUT_DIR": "./output"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "target_simulator":"NEURON",
+
+  "components": {
+      "morphologies": "$COMPONENT_DIR/morphologies",
+      "synaptic_models": "$COMPONENT_DIR/synapse_dynamics",
+      "mechanisms":"$COMPONENT_DIR/mechanisms",
+      "biophysical_neuron_models": "$COMPONENT_DIR/biophysical_neuron_dynamics",
+      "point_neuron_models": "$COMPONENT_DIR/point_neuron_dynamics",
+      "templates": "$COMPONENT_DIR/hoc_templates"
+
+  },
+
+  "networks": {
+    "node_files": [
+      {
+        "nodes": "$NETWORK_DIR/V1/v1_nodes.h5",
+        "node_types": "$NETWORK_DIR/V1/v1_node_types.csv"
+      },
+      {
+        "nodes": "$NETWORK_DIR/LGN/lgn_nodes.h5",
+        "node_types": "$NETWORK_DIR/LGN/lgn_node_types.csv"
+      }
+    ],
+
+    "edge_files": [
+      {
+        "edges": "$NETWORK_DIR/V1/v1_edges.h5",
+        "edge_types": "$NETWORK_DIR/V1/v1_edge_types.csv"
+      },
+      {
+        "edges": "$NETWORK_DIR/LGN/lgn_v1_edges.h5",
+        "edge_types": "$NETWORK_DIR/LGN/lgn_v1_edge_types.csv"
+      }
+    ]
+  },
+
+  "manifest": {
+    "$BASE_DIR": "${configdir}",
+    "$NETWORK_DIR": "$BASE_DIR/networks",
+    "$COMPONENT_DIR": "$BASE_DIR/components"
+  }
+}

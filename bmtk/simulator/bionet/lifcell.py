@@ -1,0 +1,69 @@
+from bmtk.simulator.bionet.cell import Cell
+from bmtk.simulator.bionet import io,nrn
+
+from neuron import h
+
+
+pc = h.ParallelContext()    # object to access MPI methods
+
+
+class LIFCell(Cell):
+    """Implimentation of a Leaky Integrate-and-file neuron type cell."""
+    def __init__(self, cell_prop):
+        super(LIFCell, self).__init__(cell_prop)
+        self.set_spike_detector()
+        self._src_gids = []
+
+    def set_spike_detector(self):
+        nc = h.NetCon(self.hobj, None)
+        pc.cell(self.gid, nc)
+
+    def set_im_ptr(self):
+        pass
+
+    def set_syn_connection(self, edge_prop, src_node, stim=None):
+        src_gid = src_node.node_id
+        syn_params = edge_prop['dynamics_params']
+        nsyns = edge_prop.nsyns
+        delay = edge_prop['delay']
+
+        syn_weight = edge_prop.weight(src_node, self._node)
+        if not edge_prop.preselected_targets:
+            # TODO: this is not very robust, need some other way
+            syn_weight *= syn_params['sign'] * nsyns
+
+        if stim is not None:
+            nc = h.NetCon(stim.hobj, self.hobj)
+        else:
+            nc = pc.gid_connect(src_gid, self.hobj)
+
+        weight = syn_weight
+        nc.weight[0] = weight
+        nc.delay = delay
+        self._netcons.append(nc)
+        self._src_gids.append(src_gid)
+        return nsyns
+
+    def set_syn_connections(self, nsyn, syn_weight, edge_type, src_gid, stim=None):
+        """Set synaptic connection"""
+        syn_params = edge_type['params']
+        delay = edge_type['delay']
+
+        if stim:
+            nc = h.NetCon(stim.hobj, self.hobj)
+        else:
+            nc = pc.gid_connect(src_gid, self.hobj)
+
+        # scale weight by the number of synapse the artificial cell receives
+        weight = nsyn * syn_weight * syn_params['sign']
+        nc.weight[0] = weight
+        nc.delay = delay
+        self._netcons.append(nc)
+
+    def print_synapses(self):
+        rstr = ''
+        for i in xrange(len(self._src_gids)):
+            rstr += '{}> <-- {} ({}, {})\n'.format(i, self._src_gids[i], self.netcons[i].weight[0],
+                                                   self.netcons[i].delay)
+
+        return rstr

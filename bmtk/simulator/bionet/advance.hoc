@@ -1,0 +1,10 @@
+// custom proc advance()
+
+objref pysim	// defined in the Simulation as h.pysim = self
+
+pysim = new PythonObject()
+
+proc advance() { 
+	fadvance() 
+	pysim.post_fadvance()	// run Simulation.post_fadvance() function after each fadvance call
+}
