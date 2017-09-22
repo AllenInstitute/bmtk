@@ -259,8 +259,9 @@ def test_writable():
         data.add_to_stimulus(f)
     except Exception as e:
         assert str(e) == 'File not valid: <Closed HDF5 file>'
-        
 
+
+@pytest.mark.skip(reason='Ability to add 0-lenght datasetset has been removed in newer version of h5py')
 def test_nullscale():
     y_values = np.array([.1, .5, .51])
     
@@ -335,6 +336,6 @@ if __name__ == "__main__":
 #     test_get_stimulus()             # pragma: no cover
     test_different_scales()
     test_writable()
-    test_nullscale()
+    #test_nullscale()
     test_timeseries()
     test_external_link()

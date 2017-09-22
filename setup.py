@@ -52,7 +52,7 @@ setup(
     version=package_version,
     description='Brain Modeling Toolkit',
     author='Kael Dai',
-    author_email='kaeld@alleninstitute.org',
+    author_email='kaeld at alleninstitute dot org',
     package_data={'': ['*.md', '*.txt', '*.cfg', '**/*.json', '**/*.hoc']},
     tests_require=['pytest'],
     install_requires=[
