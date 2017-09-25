@@ -5,7 +5,7 @@ import tabular_network as tn
 
 
 """
-For the initial draft of the network format developed jointly by AI and BBP in Q2 of 2017.
+For the initial draft of the network format developed jointly by AI and collaborators in Q2 of 2017.
 
 Edges and nodes files are stored in hdf5, while the edge-types and node-types are stored in csv. In the hd5f files
 optional properties are stored in groups assigned to each node/edge. Optionally each property group may include

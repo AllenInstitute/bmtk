@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Builds and simulates a 14 cell V1 example using AI/BBP network format."""
+"""Builds and simulates a 14 cell V1 example using new network format."""
 
 import os, sys
 
