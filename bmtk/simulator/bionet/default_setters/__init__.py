@@ -1,3 +1,0 @@
-import cell_models
-import synapse_models
-import synaptic_weights

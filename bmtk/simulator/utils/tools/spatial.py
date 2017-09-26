@@ -1,4 +1,0 @@
-
-
-def example():
-    print 'OK'
