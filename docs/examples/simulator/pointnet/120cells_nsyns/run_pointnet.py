@@ -13,7 +13,7 @@ import weight_funcs as fn
 
 def main(config_file):
     configure = config.from_json(config_file)
-    graph = PointGraph.from_json(configure, network_format=TabularNetwork_AI, property_schema=AIPropertySchema)
+    graph = PointGraph.from_config(configure, network_format=TabularNetwork_AI, property_schema=AIPropertySchema)
 
     graph.add_weight_function(fn.wmax)
     graph.add_weight_function(fn.gaussianLL)

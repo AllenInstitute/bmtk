@@ -19,7 +19,7 @@ def run():
     conf = config.from_json('config.json')
     io.setup_output_dir(conf)
     nrn.load_neuron_modules(conf)
-    graph = BioGraph.from_json(conf)
+    graph = BioGraph.from_config(conf)
 
     net = BioNetwork.from_json(conf, graph)
 

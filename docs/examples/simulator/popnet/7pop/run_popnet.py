@@ -8,7 +8,7 @@ from bmtk.simulator.popnet.popnetwork import PopNetwork
 
 def main(config_file):
     configure = config.from_json(config_file)
-    graph = PopGraph.from_json(config_file, group_by='node_type_id')
+    graph = PopGraph.from_config(config_file, group_by='node_type_id')
     net = PopNetwork.from_json(configure, graph)
     net.run()
 

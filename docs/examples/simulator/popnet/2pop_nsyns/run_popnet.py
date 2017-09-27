@@ -12,8 +12,8 @@ from bmtk.simulator.popnet.property_schemas import AIPropertySchema
 
 def main(config_file):
     configure = config.from_json(config_file)
-    graph = PopGraph.from_json(config_file, network_format=TabularNetwork_AI, property_schema=AIPropertySchema,
-                               group_by='ei')
+    graph = PopGraph.from_config(config_file, network_format=TabularNetwork_AI, property_schema=AIPropertySchema,
+                                 group_by='ei')
     net = PopNetwork.from_json(configure, graph)
     net.run()
 

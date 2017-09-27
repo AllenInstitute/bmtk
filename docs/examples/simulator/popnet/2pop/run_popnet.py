@@ -9,7 +9,7 @@ from bmtk.analyzer.firing_rates import firing_rates_equal
 
 def main(config_file):
     configure = config.from_json(config_file)
-    graph = PopGraph.from_json(config_file, group_by='node_type_id')
+    graph = PopGraph.from_config(config_file, group_by='node_type_id')
     #v1_pops = graph.get_populations('V1')
     #    print pop
     print graph.get_populations('LGN')

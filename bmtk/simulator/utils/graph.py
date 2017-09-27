@@ -242,14 +242,22 @@ class SimGraph(object):
             return params_dict
 
     @classmethod
-    def from_json(cls, config_file, network_format=TabularNetwork, property_schema=None, **properties):
+    def from_config(cls, conf, network_format=TabularNetwork, property_schema=None, **properties):
+        """Generates a graph structure from a json config file or dictionary.
+
+        :param conf: name of json config file, or a dictionary with config parameters
+        :param network_format: storage representation of networks
+        :param property_schema: column schema used to build graph
+        :param properties: optional properties.
+        :return: A graph object of type cls
+        """
         graph = cls(property_schema) if not properties else cls(property_schema, **properties)
-        if isinstance(config_file, basestring):
-            config = graph._from_json(config_file)
-        elif isinstance(config_file, dict):
-            config = config_file
+        if isinstance(conf, basestring):
+            config = graph._from_json(conf)
+        elif isinstance(conf, dict):
+            config = conf
         else:
-            raise Exception('Could not convert {} (type "{}") to json.'.format(config_file, type(config_file)))
+            raise Exception('Could not convert {} (type "{}") to json.'.format(conf, type(conf)))
 
         if 'components' in config:
             for name, value in config['components'].iteritems():
