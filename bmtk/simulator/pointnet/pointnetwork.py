@@ -226,7 +226,7 @@ class PointNetwork(object):
         #self.__save_spike_times()
 
     @classmethod
-    def from_json(cls, configure, graph):
+    def from_config(cls, configure, graph):
         # load the json file or object
         if isinstance(configure, basestring):
             config = cfg.from_json(configure, validate=True)

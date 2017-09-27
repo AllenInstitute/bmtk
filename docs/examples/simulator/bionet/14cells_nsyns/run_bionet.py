@@ -29,7 +29,7 @@ def run():
     graph = BioGraph.from_config(conf, network_format=TabularNetwork_AI, property_schema=AIPropertySchema)
 
     # Set up the network and simulate
-    net = BioNetwork.from_json('simulator_config.json', graph)
+    net = BioNetwork.from_config('simulator_config.json', graph)
     sim = Simulation(conf, network=net)
     sim.set_recordings()
     sim.run()

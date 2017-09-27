@@ -21,7 +21,7 @@ def run():
     nrn.load_neuron_modules(conf)
     graph = BioGraph.from_config(conf)
 
-    net = BioNetwork.from_json(conf, graph)
+    net = BioNetwork.from_config(conf, graph)
 
     sim = Simulation(conf, network=net)
     sim.set_recordings()

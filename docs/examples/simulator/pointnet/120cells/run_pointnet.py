@@ -14,7 +14,7 @@ def main(config_file):
     graph.add_weight_function(fn.wmax)
     graph.add_weight_function(fn.gaussianLL)
 
-    net = PointNetwork.from_json(configure, graph)
+    net = PointNetwork.from_config(configure, graph)
 
     net.run()
     # print nest.GetConnections()

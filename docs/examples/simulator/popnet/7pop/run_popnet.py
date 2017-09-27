@@ -9,7 +9,7 @@ from bmtk.simulator.popnet.popnetwork import PopNetwork
 def main(config_file):
     configure = config.from_json(config_file)
     graph = PopGraph.from_config(config_file, group_by='node_type_id')
-    net = PopNetwork.from_json(configure, graph)
+    net = PopNetwork.from_config(configure, graph)
     net.run()
 
 

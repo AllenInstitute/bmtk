@@ -18,7 +18,7 @@ def main(config_file):
     graph.add_weight_function(fn.wmax)
     graph.add_weight_function(fn.gaussianLL)
 
-    net = PointNetwork.from_json(configure, graph)
+    net = PointNetwork.from_config(configure, graph)
     net.run(configure['run']['duration'])
 
     assert(spike_files_equal(configure['output']['spikes_ascii'], 'expected/spikes.txt'))

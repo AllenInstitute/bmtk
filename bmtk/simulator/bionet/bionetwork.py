@@ -285,7 +285,7 @@ class BioNetwork(object):
             cell.scale_weights(factor)
 
     @classmethod
-    def from_json(cls, config_file, graph):
+    def from_config(cls, config_file, graph):
         """A method for building a network from a config file.
 
         :param config_file: A json file (or object) with simulation parameters for loading NEURON network.

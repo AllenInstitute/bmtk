@@ -16,7 +16,7 @@ def main(config_file):
     pop0 = graph.get_population('LGN', 0)
     #pop0.firing_rate = 12.2
 
-    net = PopNetwork.from_json(configure, graph)
+    net = PopNetwork.from_config(configure, graph)
     net.run()
 
     assert (firing_rates_equal('expected/spike_rates.txt', configure['output']['rates_file']))
