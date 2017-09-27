@@ -22,6 +22,10 @@ class PropertySchema(BaseSchema):
         # TODO: this needs to be more robust, should check for x/y/z convention
         if 'x_soma' in node_params:
             return np.array([node_params['x_soma'], node_params['y_soma'], node_params['z_soma']])
+
+        elif 'positions' in node_params:
+            return node_params['positions']
+
         else:
             return None
 

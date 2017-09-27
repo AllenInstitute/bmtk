@@ -11,7 +11,7 @@ from bmtk.builder.networks import NetworkBuilder
 def build_l4():
     net = NetworkBuilder("V1/L4")
     net.add_nodes(N=2, pop_name='Scnn1a', node_type_id=395830185,
-                  position=[(28.753, -364.868, -161.705), (48.753, -344.868, -141.705)],
+                  positions=[(28.753, -364.868, -161.705), (48.753, -344.868, -141.705)],
                   tuning_angle=[0.0, 25.0],
                   rotation_angle_yaxis=[3.55501, 3.55501],
                   location='VisL4',
@@ -23,7 +23,7 @@ def build_l4():
                   set_params_function='Biophys1')
 
     net.add_nodes(N=2, pop_name='Rorb', node_type_id=314804042,
-                  position=[(241.092, -349.263, 146.916), (201.092, -399.263, 126.916)],
+                  positions=[(241.092, -349.263, 146.916), (201.092, -399.263, 126.916)],
                   tuning_angle=[50.0, 75.0],
                   rotation_angle_yaxis=[3.50934, 3.50934],
                   location='VisL4',
@@ -35,7 +35,7 @@ def build_l4():
                   set_params_function='Biophys1')
 
     net.add_nodes(N=2, pop_name='Nr5a1', node_type_id=318808427,
-                  position=[(320.498, -351.259, 20.273), (310.498, -371.259, 10.273)],
+                  positions=[(320.498, -351.259, 20.273), (310.498, -371.259, 10.273)],
                   tuning_angle=[100.0, 125.0],
                   rotation_angle_yaxis=[0.72202, 0.72202],
                   location='VisL4',
@@ -47,7 +47,7 @@ def build_l4():
                   set_params_function='Biophys1')
 
     net.add_nodes(N=2, pop_name='PV1', node_type_id=330080937,
-                  position=[(122.373, -352.417, -216.748), (102.373, -342.417, -206.748)],
+                  positions=[(122.373, -352.417, -216.748), (102.373, -342.417, -206.748)],
                   tuning_angle=['NA', 'NA'],
                   rotation_angle_yaxis=[2.92043, 2.92043],
                   location='VisL4',
@@ -59,7 +59,7 @@ def build_l4():
                   set_params_function='Biophys1')
 
     net.add_nodes(N=2, pop_name='PV2', node_type_id=318331342,
-                  position=[(350.321, -372.535, -18.282), (360.321, -371.535, -12.282)],
+                  positions=[(350.321, -372.535, -18.282), (360.321, -371.535, -12.282)],
                   tuning_angle=['NA', 'NA'],
                   rotation_angle_yaxis=[5.043336, 5.043336],
                   location='VisL4',
@@ -71,7 +71,7 @@ def build_l4():
                   set_params_function='Biophys1')
 
     net.add_nodes(N=2, pop_name='LIF_exc', node_type_id=100000101,
-                  position=[(-243.04, -342.352, -665.666), (-233.04, -332.352, -675.666)],
+                  positions=[(-243.04, -342.352, -665.666), (-233.04, -332.352, -675.666)],
                   tuning_angle=['NA', 'NA'],
                   #rotation_angle_yaxis=[5.11801, 5.11801],
                   location='VisL4',
@@ -81,7 +81,7 @@ def build_l4():
                   set_params_function='IntFire1')
 
     net.add_nodes(N=2, pop_name='LIF_inh', node_type_id=100000102,
-                  position=[(211.04, -321.333, -631.593), (218.04, -327.333, -635.593)],
+                  positions=[(211.04, -321.333, -631.593), (218.04, -327.333, -635.593)],
                   tuning_angle=[150.0, 175.0],
                   #rotation_angle_yaxis=[4.566091, 4.566091],
                   location='VisL4',
@@ -219,9 +219,9 @@ def build_l4():
     assert(len(nodes_h5['/nodes/node_type_id']) == 14)
     assert(len(nodes_h5['/nodes/node_group']) == 14)
     assert(len(nodes_h5['/nodes/node_group_index']) == 14)
-    assert(set(nodes_h5['/nodes/0'].keys()) == {'position', 'rotation_angle_yaxis', 'tuning_angle'})
-    assert(len(nodes_h5['/nodes/0/position']) == 10)
-    assert(len(nodes_h5['/nodes/1/position']) == 4)
+    assert(set(nodes_h5['/nodes/0'].keys()) == {'positions', 'rotation_angle_yaxis', 'tuning_angle'})
+    assert(len(nodes_h5['/nodes/0/positions']) == 10)
+    assert(len(nodes_h5['/nodes/1/positions']) == 4)
 
     assert(os.path.exists('output/v1_v1_edge_types.csv'))
     edge_types_csv = pd.read_csv('output/v1_v1_edge_types.csv', sep=' ')
@@ -258,21 +258,21 @@ def build_lgn():
 
     LGN = NetworkBuilder("LGN")
     LGN.add_nodes(N=3000,
-                  position=generate_positions(3000),
+                  positions=generate_positions(3000),
                   location='LGN',
                   level_of_detail='filter',
                   pop_name='tON',
                   ei='e')
 
     LGN.add_nodes(N=3000,
-                  position=generate_positions(3000),
+                  positions=generate_positions(3000),
                   location='LGN',
                   level_of_detail='filter',
                   pop_name='tOFF',
                   ei='e')
 
     LGN.add_nodes(N=3000,
-                  position=generate_positions(3000),
+                  positions=generate_positions(3000),
                   location='LGN',
                   level_of_detail='filter',
                   pop_name='tONOFF',
@@ -376,8 +376,8 @@ def build_lgn():
     assert(len(nodes_h5['/nodes/node_type_id']) == 9000)
     assert(len(nodes_h5['/nodes/node_group']) == 9000)
     assert(len(nodes_h5['/nodes/node_group_index']) == 9000)
-    assert(set(nodes_h5['/nodes/0'].keys()) == {'position'})
-    assert(len(nodes_h5['/nodes/0/position']) == 9000)
+    assert(set(nodes_h5['/nodes/0'].keys()) == {'positions'})
+    assert(len(nodes_h5['/nodes/0/positions']) == 9000)
 
     assert(os.path.exists('output/lgn_v1_edge_types.csv'))
     edge_types_csv = pd.read_csv('output/lgn_v1_edge_types.csv', sep=' ')
