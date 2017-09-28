@@ -200,7 +200,7 @@ def add_synapse_model(func, name=None, overwrite=True):
 
 
 def load_py_modules(cell_models=None, syn_models=None, syn_weights=None):
-    py_modules.clear()
+    # py_modules.clear()
 
     if cell_models is not None:
         assert(isinstance(cell_models, types.ModuleType))
