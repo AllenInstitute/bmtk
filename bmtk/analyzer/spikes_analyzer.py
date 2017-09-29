@@ -28,9 +28,22 @@
 import pandas as pd
 import numpy as np
 
+try:
+    from distutils.version import LooseVersion
+    use_sort_values = LooseVersion(pd.__version__) >= LooseVersion('0.19.0')
+
+except:
+    use_sort_values = False
+
+
 def spikes2dict(spikes_file):
     spikes_df = pd.read_csv(spikes_file, sep=' ', names=['time', 'gid'])
-    spikes_sorted = spikes_df.sort_values(['gid', 'time'])
+
+    if use_sort_values:
+        spikes_sorted = spikes_df.sort_values(['gid', 'time'])
+    else:
+        spikes_sorted = spikes_df.sort(['gid', 'time'])
+
     spike_dict = {}
     for gid, spike_train in spikes_sorted.groupby('gid'):
         spike_dict[gid] = np.array(spike_train['time'])
