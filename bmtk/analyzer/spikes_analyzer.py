@@ -28,7 +28,6 @@
 import pandas as pd
 import numpy as np
 
-
 def spikes2dict(spikes_file):
     spikes_df = pd.read_csv(spikes_file, sep=' ', names=['time', 'gid'])
     spikes_sorted = spikes_df.sort_values(['gid', 'time'])
@@ -54,4 +53,68 @@ def spike_files_equal(spikes_txt_1, spikes_txt_2, err=0.0001):
                 return False
 
     return True
+
+
+def get_mean_firing_rates(spike_gids, node_ids, tstop_msec):
+
+    """
+    Compute mean firing rate over the duration of the simulation
+    
+    :param spike_gids: gids of cells which spiked
+    :param node_ids: np.array of node_ids
+
+    :return mean_firing_rate: np.array mean firing rates
+
+    """
+
+    min_gid = np.min(node_ids)
+    max_gid = np.max(node_ids)
+
+    gid_bins = np.arange(min_gid-0.5,max_gid+1.5,1)
+    hist,bins = np.histogram(spike_gids, bins=gid_bins)
+
+    tstop_sec = tstop_msec*1E-3
+    mean_firing_rates = hist/tstop_sec
+    
+    return mean_firing_rates
+
+
+
+def spikes_equal_in_window(spikes1,spikes2,twindow):
+
+    """
+    Compare spikes within a time window    
+    :param spikes1: dict with "time" and "gid" arrays for raster 1
+    :param spikes2: dict with "time" and "gid" arrays for raster 2
+    :param twindow: [tstart,tend] time window
+    
+    :return boolean: True if equal, False if different
+    """
+
+    ix1_window0=np.where(spikes1["time"]>twindow[0]) 
+    ix1_window1=np.where(spikes1["time"]<twindow[1]) 
+    ix1_window = np.intersect1d(ix1_window0,ix1_window1)
+
+
+    ix2_window0=np.where(spikes2["time"]>twindow[0]) 
+    ix2_window1=np.where(spikes2["time"]<twindow[1]) 
+    ix2_window = np.intersect1d(ix2_window0,ix2_window1)
+
+    print len(spikes1["time"][ix1_window]),len(spikes2["time"][ix2_window])
+    if len(spikes1["time"][ix1_window]) != len(spikes2["time"][ix2_window]):
+        print "There is a DIFFERENT number of spikes in each file within the window"
+        print "No point to compare individual spikes"        
+        return
+    else: 
+        print "number of spikes are the same, checking details..."
+    ix1_sort = np.argsort(spikes1["time"][ix1_window],kind="mergesort")
+    ix2_sort = np.argsort(spikes2["time"][ix2_window],kind="mergesort")
+
+
+    if (np.array_equal(spikes1["gid"][ix1_window[ix1_sort]],spikes2["gid"][ix2_window[ix2_sort]])) and (np.array_equal(spikes1["time"][ix1_window[ix1_sort]],spikes2["time"][ix2_window[ix2_sort]])):
+        print "spikes are IDENTICAL!"    
+        return True
+    else:
+        print "spikes are DIFFERENT :((("
+        return False
 
