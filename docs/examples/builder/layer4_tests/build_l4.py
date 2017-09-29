@@ -182,7 +182,7 @@ cell_models = {
 }
 
 
-net = SynNetwork('V1/L4')
+net = NetworkBuilder('V1/L4')
 for name, model_params in cell_models.items():
     N = model_params['N']
     cell_props = {'position': np.random.rand(N, 3)*[100.0, -300.0, 100.0],

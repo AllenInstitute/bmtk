@@ -260,8 +260,7 @@ class BioNetwork(object):
         for src_network in self._graph.internal_networks():
             for trg_gid, trg_cell in self._cells.items():
                 for trg_prop, src_prop, edge_prop in self._graph.edges_iterator(trg_gid, src_network):
-                    trg_cell.set_syn_connection(edge_prop, src_prop)
-                    syn_counter += 1
+                    syn_counter += trg_cell.set_syn_connection(edge_prop, src_prop)
 
         io.print2log0('    set %d synapses' % syn_counter)
 

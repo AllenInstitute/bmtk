@@ -52,9 +52,9 @@ def quit_execution(): # quit the execution with a message
 def clear_gids():
     pc.gid_clear()
     pc.barrier()
-    
-def load_neuron_modules(conf, **cm):
 
+
+def load_neuron_modules(conf, **cm):
     h.load_file('stdgui.hoc')
 
     bionet_dir = os.path.dirname(__file__)
@@ -63,8 +63,6 @@ def load_neuron_modules(conf, **cm):
 
     neuron.load_mechanisms(str(conf["components"]["mechanisms"]))
     load_templates(conf["components"]["templates"])
-
-
 
 
 def load_templates(template_dir):
