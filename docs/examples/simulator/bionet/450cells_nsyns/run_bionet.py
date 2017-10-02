@@ -23,7 +23,7 @@ def run():
     nrn.load_neuron_modules(conf)
     graph = BioGraph.from_config(conf, network_format=TabularNetwork_AI, property_schema=AIPropertySchema)
 
-    net = BioNetwork.from_config(conf, graph)
+    net = BioNetwork.from_config(conf, graph=graph)
 
     sim = Simulation(conf, network=net)
     sim.set_recordings()
