@@ -105,15 +105,15 @@ class SimConfigValidator(Draft4Validator):
         assert(schema['type'] == 'directory' or schema['type'] == 'file')
         path_exists = os.path.exists(path)
         if path_exists != schema_bool:
-            yield ValidationError("{} {} exists.".format(path, "already" if path_exists else "does not"))
+            raise ValidationError("{} {} exists.".format(path, "already" if path_exists else "does not"))
 
     def _validate_file(self, validator, file_format, file_path, schema):
         file_validator = self._file_formats.get(file_format, None)
         if file_validator is None:
-            yield ValidationError("Could not find file validator {}".format(file_format))
+            raise ValidationError("Could not find file validator {}".format(file_format))
 
         if not file_validator.check(file_path):
-            yield ValidationError("File {} could not be validated against {}.".format(file_path, file_format))
+            raise ValidationError("File {} could not be validated against {}.".format(file_path, file_format))
 
     # A series of validators for indivdiual types of files. All of them should have a check(file) function that returns
     # true only when it is formated correctly.
