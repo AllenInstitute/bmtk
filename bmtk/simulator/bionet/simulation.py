@@ -231,7 +231,7 @@ class Simulation(object):
         end_time = time.time()
 
         sim_time = self.__elapsed_time(end_time - s_time)
-        io.print2log0now('Simulation completed ({} of simulation time)'.format(sim_time))
+        io.print2log0now('Simulation completed in {} '.format(sim_time))
 
         
     def report_load_balance(self):

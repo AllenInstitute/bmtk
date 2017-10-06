@@ -236,7 +236,7 @@ def setup_output_dir(conf):
 
             os.makedirs(conf["output"]["output_dir"])
             os.makedirs(conf["output"]["cell_vars_dir"])
-            os.makedirs(conf["output"]["state_dir"])
+#            os.makedirs(conf["output"]["state_dir"])
 
             create_log(conf)
             config.copy(conf)

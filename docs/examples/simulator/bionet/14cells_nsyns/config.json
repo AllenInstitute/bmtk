@@ -15,9 +15,7 @@
     "spike_threshold": -15,
     "nsteps_block":5000,
     "save_cell_vars": ["v", "cai"],
-    "calc_ecp": false,
-    "connect_internal": true,
-    "connect_external": {"lgn": false, "tw": false}
+    "calc_ecp": false
   },
 
   "conditions": {
@@ -35,16 +33,14 @@
       "format": "nwb",
       "file": "$INPUT_DIR/lgn_spikes.nwb",
       "network": "LGN",
-      "trial": "trial_0",
-      "active": true
+      "trial": "trial_0"
     },
     {
       "type": "external_spikes",
       "format": "nwb",
       "file": "$INPUT_DIR/tw_spikes.nwb",
       "network": "TW",
-      "trial": "trial_0",
-      "active": true
+      "trial": "trial_0"
     }
   ],
 
@@ -54,7 +50,6 @@
     "spikes_hdf5_file": "$OUTPUT_DIR/spikes.h5",
     "cell_vars_dir": "$OUTPUT_DIR/cellvars",
     "ecp_file": "$OUTPUT_DIR/ecp.h5",
-    "state_dir": "$OUTPUT_DIR/state",
     "output_dir": "$OUTPUT_DIR"
   },
 

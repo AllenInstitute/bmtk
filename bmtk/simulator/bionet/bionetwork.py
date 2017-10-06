@@ -57,6 +57,9 @@ class BioNetwork(object):
 
         :param graph: BioGraph object
         """
+
+        io.print2log0('Number of processors: %d ' %nhost)
+        
         self.__spike_threshold = -15.0  # membrane voltage of spike for a biophysical cell
         self.__dL = 20  # max length of a morphology segement
         self.__calc_ecp = False  # for calculating extracellular field potential
@@ -236,6 +239,8 @@ class BioNetwork(object):
         Make sure spike trains have been set before calling, otherwise it will creating spiking cells with no spikes.
         """
         for network in self._graph.external_networks():
+            io.print2log0('    %s cells' %network)
+
             if network not in self._spike_trains_ds:
                 continue
 
@@ -255,18 +260,19 @@ class BioNetwork(object):
 
     def set_recurrent_connections(self):
         self._init_connections()
-        io.print2log0('Setting internal connections...')
         syn_counter = 0
         for src_network in self._graph.internal_networks():
+            io.print2log0('    Setting connections from %s' %src_network)
+
             for trg_gid, trg_cell in self._cells.items():
                 for trg_prop, src_prop, edge_prop in self._graph.edges_iterator(trg_gid, src_network):
                     syn_counter += trg_cell.set_syn_connection(edge_prop, src_prop)
 
-        io.print2log0('    set %d synapses' % syn_counter)
+            io.print2log0('    Connections from %s are set' %src_network)
 
     def set_external_connections(self, source_network):
         self._init_connections()
-        io.print2log0('Setting connections from  %s' % source_network)
+        io.print2log0('    Setting connections from %s' % source_network)
         source_stims = self._stims[source_network]
         syn_counter = 0
         for trg_gid, trg_cell in self._cells.items():
@@ -275,7 +281,7 @@ class BioNetwork(object):
                 stim = source_stims[src_prop.node_id]
                 syn_counter += trg_cell.set_syn_connection(edge_prop, src_prop, stim)
 
-        io.print2log0('    set %d synapses' % syn_counter)
+        io.print2log0('    Connections from %s are set!' % source_network)
 
     """
     def set_external_connections(self):
@@ -300,7 +306,7 @@ class BioNetwork(object):
 
     def _init_connections(self):
         if not self._connections_initialized:
-            io.print2log0('Initializing all connections. Will flush all if exist')
+            io.print2log0('Initializing connections...')
             for gid, cell in self._cells.items():
                 cell.init_connections()
             self._connections_initialized = True
@@ -334,7 +340,6 @@ class BioNetwork(object):
         run_dict = config['run']
 
         # Overwrite default network parameters if they exists in the config file
-        io.print2log0('Loading network parameters.')
         if 'spike_threshold' in run_dict:
             network.spike_threshold = run_dict['spike_threshold']
         if 'dL' in run_dict:
@@ -343,9 +348,8 @@ class BioNetwork(object):
             network.calc_ecp = run_dict['calc_ecp']
 
         # build the cells
-        io.print2log('Building cells')
+        io.print2log('Building cells...')
         network.build_cells()
-        io.print2log0('Cells are instantiated')
 
         # list of cells who parameters will be saved to h5
         if 'node_id_selections' in config and 'save_cell_vars' in config['node_id_selections']:
@@ -353,27 +357,20 @@ class BioNetwork(object):
         # Find and save network stimulation. Do this before loading external/internal connections.
         if 'input' in config:
             for netinput in config['input']:
-                if netinput['type'] == 'external_spikes' and netinput['format'] == 'nwb' and netinput['active']:
+                if netinput['type'] == 'external_spikes' and netinput['format'] == 'nwb':
                     # Load external network spike trains from an NWB file.
-                    io.print2log0('Add stims for {}'.format(netinput['network']))
+                    io.print2log0('Load input for {}'.format(netinput['network']))
                     network.add_spikes_nwb(netinput['network'], netinput['file'], netinput['trial'])
                 # TODO: Allow for external spike trains from csv file or user function
                 # TODO: Add Iclamp code.
 
-            io.print2log0('Setting up stims')
+            io.print2log0('Setting up virtual cells...')
             network.make_stims()
+            io.print2log0('Cells are built!')
 
-        # load internal and external connections
-        # for external networks, set to default true and turn off only if explicitly set in the config
-        external_network_settings = {name: True for name in graph.external_networks()}
-        if 'connect_external' in run_dict:
-            external_network_settings.update(run_dict['connect_external'])
-        for netname, connect in external_network_settings.items():
-            if connect:
-                network.set_external_connections(netname)
-                # network.set_external_connections()
+        for netname in graph.external_networks():
+            network.set_external_connections(netname)
 
-        if run_dict['connect_internal']:
-            network.set_recurrent_connections()
+        network.set_recurrent_connections()
 
         return network
