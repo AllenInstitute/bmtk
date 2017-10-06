@@ -9,8 +9,8 @@
 
   "run": {
     "tstop": 3000.0,
-    "dt": 0.025,
-    "dL": 2000,
+    "dt": 0.1,
+    "dL": 20,
     "overwrite_output_dir": true,
     "spike_threshold": -15,
     "save_state":false,
@@ -76,18 +76,18 @@
     "node_files": [
       {
         "name": "V1",
-        "nodes": "$NETWORK_DIR/V1/v1_nodes.csv",
-        "node_types": "$NETWORK_DIR/V1/v1_node_types.csv"
+        "nodes": "$NETWORK_DIR/v1_nodes.csv",
+        "node_types": "$NETWORK_DIR/v1_node_types.csv"
       },
       {
         "name": "LGN",
-        "nodes": "$NETWORK_DIR/LGN/lgn_nodes.csv",
-        "node_types": "$NETWORK_DIR/LGN/lgn_node_types.csv"
+        "nodes": "$NETWORK_DIR/lgn_nodes.csv",
+        "node_types": "$NETWORK_DIR/lgn_node_types.csv"
       },
       {
         "name": "TW",
-        "nodes": "$NETWORK_DIR/TW/tw_nodes.csv",
-        "node_types":  "$NETWORK_DIR/TW/tw_node_types.csv"
+        "nodes": "$NETWORK_DIR/tw_nodes.csv",
+        "node_types":  "$NETWORK_DIR/tw_node_types.csv"
       }
 
     ],
@@ -96,20 +96,20 @@
       {
         "target": "V1",
         "source": "V1",
-        "edges": "$NETWORK_DIR/V1/v1_edges.h5",
-        "edge_types": "$NETWORK_DIR/V1/v1_edge_types.csv"
+        "edges": "$NETWORK_DIR/v1_v1_edges.h5",
+        "edge_types": "$NETWORK_DIR/v1_v1_edge_types.csv"
       },
       {
         "target": "V1",
         "source": "LGN",
-        "edges": "$NETWORK_DIR/LGN/lgn_edges.h5",
-        "edge_types": "$NETWORK_DIR/LGN/lgn_edge_types.csv"
+        "edges": "$NETWORK_DIR/lgn_v1_edges.h5",
+        "edge_types": "$NETWORK_DIR/lgn_v1_edge_types.csv"
       },
       {
         "target": "V1",
         "source": "TW",
-        "edges": "$NETWORK_DIR/TW/tw_edges.h5",
-        "edge_types": "$NETWORK_DIR/TW/tw_edge_types.csv"
+        "edges": "$NETWORK_DIR/tw_v1_edges.h5",
+        "edge_types": "$NETWORK_DIR/tw_v1_edge_types.csv"
       }
     ]
   }

@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-
-"""Builds and simulates a 14 cell V1 example using new network format."""
+"""Simulates an example network of 14 cell receiving two kinds of exernal input as defined in configuration file"""
 
 import os, sys
 
@@ -12,23 +10,30 @@ from bmtk.simulator.bionet.biograph import BioGraph
 from bmtk.simulator.bionet.bionetwork import BioNetwork
 
 
-import weight_funcs
-import set_model_params
+import set_weights
+import set_cell_params
 import set_syn_params
 
 
 def run():
-    conf = config.from_json('config.json')
-    io.setup_output_dir(conf)
-    nrn.load_neuron_modules(conf)
-    graph = BioGraph.from_config(conf)
 
-    net = BioNetwork.from_config('simulator_config.json', graph)
-    sim = Simulation(conf, network=net)
-    sim.set_recordings()
-    sim.run()
+    config_file = str(sys.argv[-1])             # Get configuration file name from the command line argument
 
-    assert (spike_files_equal(conf['output']['spikes_ascii'], 'expected/spikes.txt'))
+    conf = config.from_json(config_file)        # build configuration
+    io.setup_output_dir(conf)                   # set up output directories
+    nrn.load_neuron_modules(conf)               # load NEURON modules and mechanisms
+    nrn.load_py_modules(cell_models=set_cell_params, # load custom Python modules
+                        syn_models=set_syn_params,
+                        syn_weights=set_weights)
+
+    graph = BioGraph.from_config(conf)          # create network graph containing parameters of the model
+
+    net = BioNetwork.from_config(conf, graph)   # create network of in NEURON
+    sim = Simulation(conf, network=net)         # initialize a simulation
+    sim.set_recordings()                        # set recordings of relevant variables to be saved as an ouput
+    sim.run()                                   # run simulation
+
+    nrn.quit_execution()                        # exit
 
 
 if __name__ == '__main__':

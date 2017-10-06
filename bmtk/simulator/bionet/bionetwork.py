@@ -125,7 +125,7 @@ class BioNetwork(object):
             gid = node.node_id
 
             if node.cell_type == CellTypes.Biophysical:
-                self._cells[gid] = BioCell(node, self.spike_threshold, self.dL)
+                self._cells[gid] = BioCell(node, self.spike_threshold, self.dL, self.calc_ecp)
                 self._local_biophys_gids.append(gid)
 
             elif node.cell_type == CellTypes.Point:

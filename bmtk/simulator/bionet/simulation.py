@@ -123,7 +123,7 @@ class Simulation(object):
         
         for gid in self.gids['biophysical']:
             cell = self.net.cells[gid]
-            self.rel.calc_transfer_resistance(gid, cell.seg_coords)
+            self.rel.calc_transfer_resistance(gid, cell.get_seg_coords())
         
         h.cvode.use_fast_imem(1)   # make i_membrane_ a range variable
         self.fih1 = h.FInitializeHandler(0, self.set_pointers)

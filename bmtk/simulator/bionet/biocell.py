@@ -58,6 +58,7 @@ class BioCell(Cell):
         self._syn_seg_ix = []
         self._syn_sec_x = []
 
+ 
         if calc_ecp:
             self.im_ptr = h.PtrVector(self._nseg)  # pointer vector
             self.im_ptr.ptr_update_callback(self.set_im_ptr)   # used for gathering an array of  i_membrane values from the pointer vector
@@ -88,6 +89,10 @@ class BioCell(Cell):
         self._seg_coords['p0'] = self._pos_soma + np.dot(RotYZ, morph_seg_coords['p0'])
         self._seg_coords['p1'] = self._pos_soma + np.dot(RotYZ, morph_seg_coords['p1'])
 
+    def get_seg_coords(self):
+        
+        return self._seg_coords
+    
     @property
     def morphology(self):
         return self._morph
