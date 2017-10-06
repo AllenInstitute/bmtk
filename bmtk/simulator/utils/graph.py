@@ -262,7 +262,7 @@ class SimGraph(object):
         if params_file in self.__edge_params_cache:
             return self.__edge_params_cache[params_file]
         else:
-            params_dir = self.get_component('synaptic_models')
+            params_dir = self.get_component('synaptic_models_dir')
             params_path = os.path.join(params_dir, params_file)
             params_dict = json.load(open(params_path, 'r'))
             self.__edge_params_cache[params_file] = params_dict
@@ -295,20 +295,20 @@ class SimGraph(object):
             raise Exception('Could not find any network files. Unable to build network.')
 
         network_files = config['networks']
-        if 'node_files' not in network_files:
+        if 'nodes' not in network_files:
             raise Exception("Could not find any node files. Unable to build network.")
 
-        for nodes_config in config['networks']['node_files']:
-            nodes_file = nodes_config['nodes']
-            node_types_file = nodes_config['node_types']
+        for nodes_config in config['networks']['nodes']:
+            nodes_file = nodes_config['nodes_file']
+            node_types_file = nodes_config['node_types_file']
             network_name = None if 'name' not in nodes_config else nodes_config['name']
             nf = network_format.load_nodes(nodes_file, node_types_file)
             graph.add_nodes(nf, network_name)
 
-        if 'edges_files' in config['networks']:
-            for edges_config in config['networks']['edges_files']:
-                edges_file = edges_config['edges']
-                edge_types_file = edges_config['edge_types']
+        if 'edges' in config['networks']:
+            for edges_config in config['networks']['edges']:
+                edges_file = edges_config['edges_file']
+                edge_types_file = edges_config['edge_types_file']
 
                 ef = network_format.load_edges(edges_file, edge_types_file)
                 target_network = edges_config['target'] if 'target' in edges_config else None

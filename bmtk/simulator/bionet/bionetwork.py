@@ -348,9 +348,8 @@ class BioNetwork(object):
         io.print2log0('Cells are instantiated')
 
         # list of cells who parameters will be saved to h5
-        if 'groups' in config and 'save_vars' in config['groups']:
-            network.save_gids(config['groups']['save_vars'])
-
+        if 'node_id_selections' in config and 'save_cell_vars' in config['node_id_selections']:
+            network.save_gids(config['node_id_selections']['save_cell_vars'])
         # Find and save network stimulation. Do this before loading external/internal connections.
         if 'input' in config:
             for netinput in config['input']:

@@ -90,7 +90,7 @@ def load_csv(fullpath):
 
 
 def create_log(conf):
-    logging.basicConfig(filename=conf["output"]["log"], level=logging.DEBUG)
+    logging.basicConfig(filename=conf["output"]["log_file"], level=logging.DEBUG)
     print2log0now('Created a log file')
 
 
@@ -167,7 +167,7 @@ def create_cell_vars_files(conf, gids):
 
     nsteps = int(round(tstop/dt))
 
-    for gid in gids["save_vars"]:
+    for gid in gids["save_cell_vars"]:
         ofname = conf["output"]["cell_vars_dir"]+'/%d.h5' % (gid)
         with h5py.File(ofname, 'w') as h5:
             h5.attrs['dt'] = dt
@@ -186,7 +186,7 @@ def create_cell_vars_files(conf, gids):
 
 def create_spike_file(conf, gids_on_rank):
     """create a single hfd5 files for all gids"""
-    ofname = conf["output"]["spikes_h5"]
+    ofname = conf["output"]["spikes_hdf5_file"]
     tstop = conf["run"]["tstop"]
 
     if int(pc.id()) == 0:  # create h5 file
@@ -199,7 +199,7 @@ def create_spike_file(conf, gids_on_rank):
     pc.barrier()
 
     if int(pc.id()) == 0:  # create ascii file
-        ofname = conf["output"]["spikes_ascii"]
+        ofname = conf["output"]["spikes_ascii_file"]
         f = open(ofname, 'w')  # create ascii file
         f.close()
 
@@ -213,7 +213,9 @@ def get_spike_trains_handle(file_name, trial_name):
 
 
 def setup_output_dir(conf):
-    if conf["run"]["start_from_state"]:  # starting from a previously saved state
+
+    start_from_state =False
+    if start_from_state:  # starting from a previously saved state
         try:
             assert os.path.exists(conf["output"]["output_dir"])
             print2log0('Will run simulation from a previously saved state...')
@@ -221,7 +223,7 @@ def setup_output_dir(conf):
             print('ERROR: directory with the initial state does not exist')
             nrn.quit_execution()
 
-    elif not conf["run"]["start_from_state"]:  # starting from a new (init) state
+    elif not start_from_state:  # starting from a new (init) state
         if int(pc.id()) == 0:
             if os.path.exists(conf["output"]["output_dir"]):
                 if conf["run"]['overwrite_output_dir']:
@@ -262,7 +264,7 @@ def save_spikes2h5(conf, data_block):
     :param data_block:
     """
     spikes = data_block["spikes"]
-    ofname = conf["output"]["spikes_h5"]
+    ofname = conf["output"]["spikes_hdf5_file"]
     ranks = xrange(int(pc.nhost()))
     for rank in ranks:  # iterate over the ranks
         if rank == int(pc.id()):  # wait until finished with a particular rank
@@ -324,7 +326,7 @@ def save_cell_vars(conf, data_block, time_step_interval):
 def save_spikes2ascii(conf, data_block):
     """Save spikes to ascii file as tuples (t,gid)"""
     spikes = data_block["spikes"]
-    ofname = conf["output"]["spikes_ascii"]
+    ofname = conf["output"]["spikes_ascii_file"]
 
     ranks = xrange(int(pc.nhost()))
     for rank in ranks:

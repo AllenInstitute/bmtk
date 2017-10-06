@@ -34,34 +34,34 @@
     "components": {
       "type": "object",
       "properties": {
-        "synaptic_models": {"type": "directory", "exists": true},
-        "mechanisms": {"type": "directory", "exists": true},
-        "morphologies": {"type": "directory", "exists": true},
-        "biophysical_neuron_models": {"type": "directory", "exists": true},
-        "point_neuron_models": {"type": "directory", "exists": true},
-        "templates": {"type": "directory", "exists": true}
+        "synaptic_models_dir": {"type": "directory", "exists": true},
+        "mechanisms_dir": {"type": "directory", "exists": true},
+        "morphologies_dir": {"type": "directory", "exists": true},
+        "biophysical_neuron_models_dir": {"type": "directory", "exists": true},
+        "point_neuron_models_dir": {"type": "directory", "exists": true},
+        "templates_dir": {"type": "directory", "exists": true}
       }
     },
 
-    "edges_files": {
+    "edges": {
       "type": "array",
       "items": {
         "type": "object",
         "properites": {
-          "edges": {"type": "file", "exists": true},
-          "edge_types": {"type": "file", "exists": true}
+          "edges_file": {"type": "file", "exists": true},
+          "edge_types_file": {"type": "file", "exists": true}
         }
       }
     },
 
-    "nodes_files": {
+    "nodes": {
       "type": "array",
       "items": {
         "type": "object",
 
         "properties": {
-          "nodes": {"type": "file", "exists": true},
-          "node_types": {"type": "file", "exists": true}
+          "nodes_file": {"type": "file", "exists": true},
+          "node_types_file": {"type": "file", "exists": true}
         }
       }
     },
@@ -84,17 +84,17 @@
       }
     },
 
-    "groups": {
+    "node_id_selections": {
       "type": "object",
       "properties": {
-        "save_vars": {"type": "array", "items": {"type": "number"}}
+        "save_cell_vars": {"type": "array", "items": {"type": "number"}}
       }
     },
 
     "output": {
       "type": "object",
       "properties": {
-        "log": {"type": "file"},
+        "log_file": {"type": "file"},
         "spikes_ascii": {"type": "file"},
         "spikes_h5": {"type": "file"},
         "cell_vars_dir": {"type": "file"},

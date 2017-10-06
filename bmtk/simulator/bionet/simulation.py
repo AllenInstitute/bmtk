@@ -50,10 +50,12 @@ class Simulation(object):
         self.net = network
         self.conf = conf
 
-        self.gids = {'save_vars': self.net.saved_gids, 'biophysical': self.net.biopyhys_gids}
+        self.gids = {'save_cell_vars': self.net.saved_gids, 
+                     'biophysical': self.net.biopyhys_gids}
         #self.gids = self.net.graph.gids_on_rank   # returns dictionary of gid groups
 
-        #print self.conf
+        self._start_from_state = False
+
         h.dt = self.conf["run"]["dt"]
         h.tstop = self.conf["run"]["tstop"]
 
@@ -68,7 +70,6 @@ class Simulation(object):
         h.pysim = self  # use this objref to be able to call postFadvance from proc advance in advance.hoc
         self._iclamps = []
 
-
     def set_init_conditions(self):
 
         '''
@@ -81,7 +82,7 @@ class Simulation(object):
         self.tstep = int(round(h.t/h.dt))
         self.tstep_start_block = self.tstep
 
-        if self.conf["run"]["start_from_state"]==True:
+        if self._start_from_state==True:
             io.read_state()
             io.print2log0('Read the initial state saved at t_sim: %.2f ms' %(h.t))
 
@@ -100,10 +101,10 @@ class Simulation(object):
         if self.conf["run"]["calc_ecp"]: 
             self.set_ecp_recording()
 
-        if not(self.conf["run"]["start_from_state"]): # if starting from a new initial state
+        if not(self._start_from_state): # if starting from a new initial state
             io.create_output_files(self.conf, self.gids)
     
-        if self.conf["run"]["start_from_state"]: # if starting from a new initial state
+        if self._start_from_state: # if starting from a new initial state
             io.extend_output_files(self.gids)
 
         self.create_data_block()
@@ -165,7 +166,7 @@ class Simulation(object):
 
         if self.conf["run"]["save_cell_vars"]:
 
-            for gid in self.gids["save_vars"]:   # only includes gids on this rank
+            for gid in self.gids["save_cell_vars"]:   # only includes gids on this rank
 
                 self.data_block['cells'][gid] = {}        
                 for var in self.conf["run"]["save_cell_vars"]:
@@ -220,7 +221,7 @@ class Simulation(object):
         io.print2log0('Starting timestep: %d at t_sim: %.3f ms' %(self.tstep,h.t))
         io.print2log0('Block save every %d steps' % (self.conf["run"]['nsteps_block']))
 
-        if self.conf["run"]["start_from_state"]:
+        if self._start_from_state:
             h.continuerun(h.tstop)
         else:
             h.run(h.tstop)        # <- runs simuation: works in parallel
@@ -272,8 +273,8 @@ class Simulation(object):
 
             self.tstep_start_block = self.tstep   # starting point for the next block
 
-            if self.conf["run"]["save_state"]:    
-                io.save_state()
+#            if self.conf["run"]["save_state"]:    
+#                io.save_state()
 
 
 
@@ -297,7 +298,7 @@ class Simulation(object):
                 tr = self.rel.get_transfer_resistance(gid)
                 ecp = np.dot(tr,im)
      
-                if self.conf['run']['save_cell_vars'] and gid in self.gids['save_vars'] :
+                if self.conf['run']['save_cell_vars'] and gid in self.gids['save_cell_vars'] :
                     cell_data_block = self.data_block['cells'][gid] 
                     cell_data_block['ecp'][tstep_block-1,:] = ecp
       
@@ -305,7 +306,7 @@ class Simulation(object):
 
 #    save to block the intracellular variables
         if self.conf['run']['save_cell_vars']:
-            for gid in list(set(self.gids['save_vars'])&set(self.gids['biophysical'])):
+            for gid in list(set(self.gids['save_cell_vars'])&set(self.gids['biophysical'])):
                  
                 cell_data_block = self.data_block['cells'][gid] 
                 cell = self.net.cells[gid] 

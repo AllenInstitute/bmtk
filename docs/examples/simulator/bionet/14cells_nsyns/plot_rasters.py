@@ -23,8 +23,8 @@ import numpy as np
 config_file = "config.json"     # Get config from the command line argument
 conf = config.from_json(config_file)
 
-spikes_file_name = conf["output"]["spikes_h5"]
-print spike_file_name
+spikes_file_name = conf["output"]["spikes_hdf5_file"]
+print spikes_file_name
 #spikes_file_name = conf["output"]["spikes_ascii"]
 
 t1=time.time()

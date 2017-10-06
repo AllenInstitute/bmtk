@@ -61,8 +61,8 @@ def load_neuron_modules(conf, **cm):
     h.load_file(bionet_dir+'/import3d.hoc') # loads hoc files from package directory ./import3d. It is used because read_swc.hoc is modified to suppress some warnings.
     h.load_file(bionet_dir+'/advance.hoc')
 
-    neuron.load_mechanisms(str(conf["components"]["mechanisms"]))
-    load_templates(conf["components"]["templates"])
+    neuron.load_mechanisms(str(conf["components"]["mechanisms_dir"]))
+    load_templates(conf["components"]["templates_dir"])
 
 
 def load_templates(template_dir):

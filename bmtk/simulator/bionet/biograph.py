@@ -118,7 +118,7 @@ class BioGraph(SimGraph):
         if morphology_file in self.__morphology_cache:
             return self.__morphology_cache[morphology_file]
         else:
-            full_path = os.path.join(self.get_component('morphologies'), morphology_file)
+            full_path = os.path.join(self.get_component('morphologies_dir'), morphology_file)
             self.__morphology_cache[morphology_file] = full_path
             return full_path
 
@@ -134,9 +134,9 @@ class BioGraph(SimGraph):
         else:
             # find the full path of the parameters file from the config file
             if cell_type == CellTypes.Biophysical:
-                params_dir = self.get_component('biophysical_neuron_models')
+                params_dir = self.get_component('biophysical_neuron_models_dir')
             elif cell_type == CellTypes.Point:
-                params_dir = self.get_component('point_neuron_models')
+                params_dir = self.get_component('point_neuron_models_dir')
             else:
                 # Not sure what to do in this case, throw Exception?
                 params_dir = self.get_component('custom_neuron_models')
