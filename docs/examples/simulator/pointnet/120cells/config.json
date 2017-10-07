@@ -47,37 +47,37 @@
 
   "components": {
     "models_dir": "$MODELS_DIR/cell_models",
-	"synaptic_models": "$MODELS_DIR/synaptic_models",
+	"synaptic_models_dir": "$MODELS_DIR/synaptic_models",
     "weight_functions": "$BASE_DIR/weight_funcs.py"
   },
 
   "networks": {
-    "node_files": [
+    "nodes": [
       {
-        "nodes": "$NETWORK_DIR/v1_nodes.h5",
-        "node_types": "$NETWORK_DIR/v1_node_types.csv"
+        "nodes_file": "$NETWORK_DIR/v1_nodes.h5",
+        "node_types_file": "$NETWORK_DIR/v1_node_types.csv"
       },
       {
-        "nodes": "$NETWORK_DIR/lgn_nodes.h5",
-        "node_types": "$NETWORK_DIR/lgn_node_types.csv"
+        "nodes_file": "$NETWORK_DIR/lgn_nodes.h5",
+        "node_types_file": "$NETWORK_DIR/lgn_node_types.csv"
       },
       {
-        "nodes": "$NETWORK_DIR/tw_nodes.h5",
-        "node_types":  "$NETWORK_DIR/tw_node_types.csv"
+        "nodes_file": "$NETWORK_DIR/tw_nodes.h5",
+        "node_types_file":  "$NETWORK_DIR/tw_node_types.csv"
       }
     ],
-    "edges_files": [
+    "edges": [
       {
-        "edges": "$NETWORK_DIR/v1_v1_edges.h5",
-        "edge_types": "$NETWORK_DIR/v1_edge_types.csv"
+        "edges_file": "$NETWORK_DIR/v1_v1_edges.h5",
+        "edge_types_file": "$NETWORK_DIR/v1_edge_types.csv"
       },
       {
-        "edges": "$NETWORK_DIR/lgn_v1_edges.h5",
-        "edge_types": "$NETWORK_DIR/lgn_v1_edge_types.csv"
+        "edges_file": "$NETWORK_DIR/lgn_v1_edges.h5",
+        "edge_types_file": "$NETWORK_DIR/lgn_v1_edge_types.csv"
       },
       {
-        "edges": "$NETWORK_DIR/tw_v1_edges.h5",
-        "edge_types": "$NETWORK_DIR/tw_edge_types.csv"
+        "edges_file": "$NETWORK_DIR/tw_v1_edges.h5",
+        "edge_types_file": "$NETWORK_DIR/tw_edge_types.csv"
       }
     ]
   }

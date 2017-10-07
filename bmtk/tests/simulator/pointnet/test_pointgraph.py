@@ -7,10 +7,6 @@ from pointnet_virtual_files import NodesFile, EdgesFile
 from bmtk.simulator.pointnet.pointgraph import PointGraph
 
 
-#def setup_module(module):
-
-
-
 def test_add_nodes():
     nodes = NodesFile(N=100)
 
@@ -46,7 +42,13 @@ def test_add_edges():
 
     net = PointGraph()
     net.add_component('models_dir', '.')
-    net.add_component('synaptic_models', '.')
+    net.add_component('synaptic_models_dir', '.')
+
+    with open('iaf_dynamics.json', 'w') as fp:
+        json.dump({}, fp)
+
+    with open('iz_dynamics.json', 'w') as fp:
+        json.dump({}, fp)
 
     with open('iaf_exc.json', 'w') as fp:
         json.dump({}, fp)
@@ -71,5 +73,3 @@ def test_add_edges():
             count += 1
     assert(count == 10000)
 
-
-#test_add_edges()

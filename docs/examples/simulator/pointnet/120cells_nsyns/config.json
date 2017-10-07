@@ -47,46 +47,46 @@
 
   "components": {
     "models_dir": "$MODELS_DIR/cell_models",
-	"synaptic_models": "$MODELS_DIR/synaptic_models",
+	"synaptic_models_dir": "$MODELS_DIR/synaptic_models",
     "weight_functions": "$BASE_DIR/weight_funcs.py"
   },
 
   "networks": {
-    "node_files": [
+    "nodes": [
       {
         "name": "V1",
-        "nodes": "$NETWORK_DIR/V1/v1_nodes.csv",
-        "node_types": "$NETWORK_DIR/V1/v1_node_types.csv"
+        "nodes_file": "$NETWORK_DIR/V1/v1_nodes.csv",
+        "node_types_file": "$NETWORK_DIR/V1/v1_node_types.csv"
       },
       {
         "name": "LGN",
-        "nodes": "$NETWORK_DIR/LGN/lgn_nodes.csv",
-        "node_types": "$NETWORK_DIR/LGN/lgn_node_types.csv"
+        "nodes_file": "$NETWORK_DIR/LGN/lgn_nodes.csv",
+        "node_types_file": "$NETWORK_DIR/LGN/lgn_node_types.csv"
       },
       {
         "name": "TW",
-        "nodes": "$NETWORK_DIR/TW/tw_nodes.csv",
-        "node_types":  "$NETWORK_DIR/TW/tw_node_types.csv"
+        "nodes_file": "$NETWORK_DIR/TW/tw_nodes.csv",
+        "node_types_file":  "$NETWORK_DIR/TW/tw_node_types.csv"
       }
     ],
-    "edges_files": [
+    "edges": [
       {
         "target": "V1",
         "source": "V1",
-        "edges": "$NETWORK_DIR/V1/v1_edges.h5",
-        "edge_types": "$NETWORK_DIR/V1/v1_edge_types.csv"
+        "edges_file": "$NETWORK_DIR/V1/v1_edges.h5",
+        "edge_types_file": "$NETWORK_DIR/V1/v1_edge_types.csv"
       },
       {
         "target": "V1",
         "source": "LGN",
-        "edges": "$NETWORK_DIR/LGN/lgn_edges.h5",
-        "edge_types": "$NETWORK_DIR/LGN/lgn_edge_types.csv"
+        "edges_file": "$NETWORK_DIR/LGN/lgn_edges.h5",
+        "edge_types_file": "$NETWORK_DIR/LGN/lgn_edge_types.csv"
       },
       {
         "target": "V1",
         "source": "TW",
-        "edges": "$NETWORK_DIR/TW/tw_edges.h5",
-        "edge_types": "$NETWORK_DIR/TW/tw_edge_types.csv"
+        "edges_file": "$NETWORK_DIR/TW/tw_edges.h5",
+        "edge_types_file": "$NETWORK_DIR/TW/tw_edge_types.csv"
       }
     ]
   }

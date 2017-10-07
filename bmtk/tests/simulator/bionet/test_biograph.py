@@ -11,9 +11,9 @@ def test_add_nodes():
     nodes = bvf.NodesFile(N=100)
 
     net = BioGraph()
-    net.add_component('morphologies', '.')
-    net.add_component('biophysical_neuron_models', '.')
-    net.add_component('point_neuron_models', '.')
+    net.add_component('morphologies_dir', '.')
+    net.add_component('biophysical_neuron_models_dir', '.')
+    net.add_component('point_neuron_models_dir', '.')
     net.add_nodes(nodes)
 
     assert(net.networks == [nodes.name])
@@ -34,10 +34,10 @@ def test_add_edges():
     edges = bvf.EdgesFile(nodes, nodes)
 
     net = BioGraph()
-    net.add_component('morphologies', '.')
-    net.add_component('biophysical_neuron_models', '.')
-    net.add_component('point_neuron_models', '.')
-    net.add_component('synaptic_models', '.')
+    net.add_component('morphologies_dir', '.')
+    net.add_component('biophysical_neuron_models_dir', '.')
+    net.add_component('point_neuron_models_dir', '.')
+    net.add_component('synaptic_models_dir', '.')
 
     with open('biophys_exc.json', 'w') as fp:
         json.dump({}, fp)
@@ -62,5 +62,3 @@ def test_add_edges():
             assert(edge['syn_weight'] == trg_node['weight'])
             count += 1
     assert(count == 10000)
-
-

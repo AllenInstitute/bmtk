@@ -15,14 +15,11 @@ import set_cell_params
 import set_syn_params
 
 
-def run():
-
-    config_file = str(sys.argv[-1])             # Get configuration file name from the command line argument
-
+def run(config_file):
     conf = config.from_json(config_file)        # build configuration
     io.setup_output_dir(conf)                   # set up output directories
     nrn.load_neuron_modules(conf)               # load NEURON modules and mechanisms
-    nrn.load_py_modules(cell_models=set_cell_params, # load custom Python modules
+    nrn.load_py_modules(cell_models=set_cell_params,  # load custom Python modules
                         syn_models=set_syn_params,
                         syn_weights=set_weights)
 
@@ -33,8 +30,13 @@ def run():
     sim.set_recordings()                        # set recordings of relevant variables to be saved as an ouput
     sim.run()                                   # run simulation
 
+    assert (os.path.exists(conf['output']['spikes_ascii_file']))
+    assert (spike_files_equal(conf['output']['spikes_ascii_file'], 'expected/spikes.txt'))
     nrn.quit_execution()                        # exit
 
 
 if __name__ == '__main__':
-    run()
+    if __file__ != sys.argv[-1]:
+        run(sys.argv[-1])
+    else:
+        run('config.json')
