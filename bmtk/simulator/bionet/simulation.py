@@ -98,18 +98,21 @@ class Simulation(object):
         '''
         Set recordings of ECP, spikes and somatic traces
         '''
+
+        io.print2log0('Setting up recordings...')
+
         if self.conf["run"]["calc_ecp"]: 
             self.set_ecp_recording()
 
         if not(self._start_from_state): # if starting from a new initial state
             io.create_output_files(self.conf, self.gids)
-    
-        if self._start_from_state: # if starting from a new initial state
+        else:
             io.extend_output_files(self.gids)
 
         self.create_data_block()
         self.set_spike_recording()
 
+        io.print2log0('Recordings are set!')
 
         pc.barrier()
 

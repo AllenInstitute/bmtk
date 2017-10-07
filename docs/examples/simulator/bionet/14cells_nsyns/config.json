@@ -15,7 +15,7 @@
     "spike_threshold": -15,
     "nsteps_block":5000,
     "save_cell_vars": ["v", "cai"],
-    "calc_ecp": false
+    "calc_ecp": true
   },
 
   "conditions": {
@@ -63,6 +63,11 @@
     "point_neuron_models_dir": "$COMPONENT_DIR/intfire",
     "templates_dir": "$COMPONENT_DIR/hoc_templates"
   },
+
+  "recXelectrode": {
+	"positions": 		"$COMPONENT_DIR/recXelectrodes/linear_electrode.csv"
+	},
+
 
   "networks": {
     "nodes": [

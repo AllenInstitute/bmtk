@@ -130,9 +130,11 @@ def extend_output_files(gids):
 
 def create_output_files(conf, gids):
     if conf["run"]["calc_ecp"]:  # creat single file for ecp from all contributing cells
+        print2log0('    Will save time series of the ECP!')
         create_ecp_file(conf)
 
     if conf["run"]["save_cell_vars"]:
+        print2log0('    Will save time series of individual cells')
         create_cell_vars_files(conf, gids)
                 
     create_spike_file(conf, gids)  # a single file including all gids
@@ -140,7 +142,6 @@ def create_output_files(conf, gids):
 
 def create_ecp_file(conf):
     """a single ecp file for the entire network"""
-    print2log0('Will save time series of the ECP!')
 
     dt = conf["run"]["dt"]
     tstop = conf["run"]["tstop"]
@@ -160,7 +161,6 @@ def create_ecp_file(conf):
 
 def create_cell_vars_files(conf, gids):
     """create 1 hfd5 files per gid"""
-    print2log0('Will save time series of individual cells')
 
     dt = conf["run"]["dt"]
     tstop = conf["run"]["tstop"]
@@ -186,6 +186,8 @@ def create_cell_vars_files(conf, gids):
 
 def create_spike_file(conf, gids_on_rank):
     """create a single hfd5 files for all gids"""
+    print2log0('    Will save spikes')
+
     ofname = conf["output"]["spikes_hdf5_file"]
     tstop = conf["run"]["tstop"]
 

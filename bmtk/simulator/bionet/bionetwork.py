@@ -58,7 +58,6 @@ class BioNetwork(object):
         :param graph: BioGraph object
         """
 
-        io.print2log0('Number of processors: %d ' %nhost)
         
         self.__spike_threshold = -15.0  # membrane voltage of spike for a biophysical cell
         self.__dL = 20  # max length of a morphology segement
@@ -200,7 +199,7 @@ class BioNetwork(object):
                     # create a single morphology object for each model_group which share that morphology
                     self.__morphologies_cache[node_type_id] = morph
 
-        io.print2log0("Created morphologies")
+        io.print2log0("    Created morphologies")
         self._morphologies_built = True
 
     def set_seg_props(self):
@@ -208,7 +207,7 @@ class BioNetwork(object):
         for _, morphology in self.__morphologies_cache.items():
             morphology.set_seg_props()
 
-        io.print2log0("Set segment properties")
+        io.print2log0("    Set segment properties")
 
     def calc_seg_coords(self):
         """Needed for the ECP calculations"""
@@ -218,11 +217,11 @@ class BioNetwork(object):
             for node in self._local_node_types[node_type_id]:
                 self._cells[node.node_id].calc_seg_coords(morph_seg_coords)
 
-        io.print2log0("Set segment coordinates")
+        io.print2log0("    Set segment coordinates")
 
-    def add_spikes_nwb(self, network, nwb_file, trial):
+    def add_spikes_nwb(self, ext_net, nwb_file, trial):
         h5_file = h5py.File(nwb_file, 'r')
-        self._spike_trains_ds[network] = h5_file['processing'][trial]['spike_train']
+        self._spike_trains_ds[ext_net] = h5_file['processing'][trial]['spike_train']
 
     def _get_spike_trains(self, src_gid, network):
         if network in self._spike_trains_ds:
@@ -233,13 +232,14 @@ class BioNetwork(object):
 
         return []
 
+
     def make_stims(self):
         """Create the stims/virtual/external nodes.
 
         Make sure spike trains have been set before calling, otherwise it will creating spiking cells with no spikes.
         """
         for network in self._graph.external_networks():
-            io.print2log0('    %s cells' %network)
+            io.print2log0('        %s cells' %network)
 
             if network not in self._spike_trains_ds:
                 continue
@@ -258,6 +258,9 @@ class BioNetwork(object):
                 spike_train = self._get_spike_trains(src_gid, network)
                 self._stims[network][src_gid] = Stim(src_prop, spike_train)
 
+
+
+
     def set_recurrent_connections(self):
         self._init_connections()
         syn_counter = 0
@@ -268,7 +271,6 @@ class BioNetwork(object):
                 for trg_prop, src_prop, edge_prop in self._graph.edges_iterator(trg_gid, src_network):
                     syn_counter += trg_cell.set_syn_connection(edge_prop, src_prop)
 
-            io.print2log0('    Connections from %s are set' %src_network)
 
     def set_external_connections(self, source_network):
         self._init_connections()
@@ -281,7 +283,6 @@ class BioNetwork(object):
                 stim = source_stims[src_prop.node_id]
                 syn_counter += trg_cell.set_syn_connection(edge_prop, src_prop, stim)
 
-        io.print2log0('    Connections from %s are set!' % source_network)
 
     """
     def set_external_connections(self):
@@ -324,6 +325,8 @@ class BioNetwork(object):
         :param graph: A BioGraph object that has already been loaded.
         :return: A BioNetwork object with nodes and connections that can be ran in a NEURON simulator.
         """
+        io.print2log0('Number of processors: %d ' %nhost)
+
         io.print2log0('Setting up network...')
 
         # load the json file or object
@@ -355,22 +358,24 @@ class BioNetwork(object):
         if 'node_id_selections' in config and 'save_cell_vars' in config['node_id_selections']:
             network.save_gids(config['node_id_selections']['save_cell_vars'])
         # Find and save network stimulation. Do this before loading external/internal connections.
+
         if 'input' in config:
             for netinput in config['input']:
                 if netinput['type'] == 'external_spikes' and netinput['format'] == 'nwb':
                     # Load external network spike trains from an NWB file.
-                    io.print2log0('Load input for {}'.format(netinput['network']))
+#                    io.print2log0('Load input for {}'.format(netinput['network']))
                     network.add_spikes_nwb(netinput['network'], netinput['file'], netinput['trial'])
                 # TODO: Allow for external spike trains from csv file or user function
                 # TODO: Add Iclamp code.
 
-            io.print2log0('Setting up virtual cells...')
+            io.print2log0('    Setting up external cells...')
             network.make_stims()
-            io.print2log0('Cells are built!')
+        io.print2log0('Cells are built!')
 
         for netname in graph.external_networks():
             network.set_external_connections(netname)
 
         network.set_recurrent_connections()
+        io.print2log0('Network is built!')
 
         return network
