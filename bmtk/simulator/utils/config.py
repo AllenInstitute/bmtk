@@ -95,11 +95,15 @@ def from_dict(config_dict, validator=None):
 
 
 def copy_config(conf):
-    """Copy configuration file to different directory
+    """Copy configuration file to different directory, with manifest variables resolved.
 
-    :param conf:
+    :param conf: configuration dictionary
     """
-    shutil.copy(conf['config_path'], conf["output"]["output_dir"])
+    output_dir = conf["output"]["output_dir"]
+    config_name = os.path.basename(conf['config_path'])
+    output_path = os.path.join(output_dir, config_name)
+    with open(output_path, 'w') as fp:
+        json.dump(conf, fp, indent=2)
 
 
 def __special_variables(conf):
