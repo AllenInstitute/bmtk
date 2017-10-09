@@ -1,30 +1,50 @@
+# BioNet: a Python interface to NEURON for large-scale network simulations
 
-Below instructions apply for installing BioNet and running simulationson Linux platform, although it was also tested on MacOS platfrom:
+## Getting started
+This brief tutorial explains how to run simulations with BioNet using one of the provided example networks. 
+The instructions apply for Linux platform, although the package was also tested on MacOS.
+BioNet package is a component of the Brain Modeling ToolKit (BMTK) package https://github.com/AllenInstitute/bmtk.
+Thus, to install BioNet you will need to install the Brain Modeling Toolkit.
 
-BioNet package is a component of the larger Brain Modeling ToolKit package https://github.com/AllenInstitute/bmtk
-To install BioNet you will install the Brain Modeling Toolkit by clicking on "Clone or download" button and download the zip file to the desired folder. 
- 
-cd to that folder and unzip the file will create bmtk-develop folder:
+Click "Clone or download" button and downloading the zip file to the desired folder. 
 
-To compile
+cd to the folder with the downloaded file and unzip:
 ```bash
 $ unzip bmtk-develop
 ```
+You should find the folder `bmtk-develop` including Brain Modeling Toolkit
 
-You will also need to add a path to bmtk-develop folder to you PYTHOPATH variable in your bashrc file.
+Add a path to the bmtk-develop folder to the environment variable `PYTHOPATH` in your `.bashrc` file.
 
-BioNet package requires Python 2.7 (www.python.org). If you do not have Python installed we recommend installing Anaconda distribution of Python (https://www.anaconda.com/download/) that comes preloaded with many packages and easy installation of additional packages.
+###Dependancies:
 
-BioNet has the following Python package dependancies which may need to be installed prior to running the code
+####Python
+BioNet package requires Python 2.7 (www.python.org). 
 
-numpy 1.10 
+If you do not have Python already installed, we recommend installing Anaconda distribution of Python (https://www.anaconda.com/download/) that comes preloaded with many packages and easy installation of additional packages.
+
+####Python packages
+BioNet has the following Python package dependancies which may need to be installed prior to running the code:
+
+numpy 1.10
+
 pandas 0.19.2
-h5py 2.6 
+
+h5py 2.6
+
 jsonschema
 
 ***Kael, what should I write about setup.py?
 
-If you just installed Python then you will also need to include a path to Python's to your PATH variable and site packages to PYTHONPATH. For instance, for anaconda you will need to add patht to anaconda2/bin to your PATH and anaconda2/lib/python2.7/site-packages to your PYTHOPATH.
+If you have just installed Python then you will also need to update your environemnt variables:
+include a path to Python to your `PATH` environment variable 
+include path to Python's site packages to PYTHONPATH. 
+
+For instance, for anaconda you will need to add:
+
+`anaconda2/bin` to your PATH
+
+`anaconda2/lib/python2.7/site-packages` to your PYTHOPATH.
 
 At this stage try running python and importing Brain Modeling Toolkit as follows:
 
@@ -33,8 +53,9 @@ $ python
 >>> import bmtk
 >>> exit()
 ```
+####NEURON
 
-Additionally, BioNet requires NEURON 7.4 simulator (http://www.neuron.yale.edu/neuron/download/). Detailed installation instructions may be found in the Appendix in Hines et al. (2007). Since BioNet does not require NEURON's GUI functionality, one may install NEURON without GUI support provided by InterViews. For convenience we provide installation instructions of NEURON on Linux platform without InterViews below:
+Additionally, BioNet requires NEURON 7.4 simulator (http://www.neuron.yale.edu/neuron/download/). Detailed installation instructions may be found in the Appendix in Hines et al. Frontiers of Neuroinformatics, 2009. Since BioNet does not require NEURON's GUI functionality, one may install NEURON without GUI support provided by the InterViews. For convenience we provide installation instructions of NEURON on Linux platform without InterViews below:
 
 create an neuron directory:
 
