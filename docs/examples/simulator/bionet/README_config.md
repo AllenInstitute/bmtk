@@ -15,14 +15,16 @@ Here variable "${configdir}" stands for the directory where configuration file i
 
 The "run" grouping includes run-time parameters with the corresponding brief explanation
 
+
+```
   "run": {
     "tstop": 3000.0,					# run time in (ms)
     "dt": 0.1,							# time step in (ms)	
     "dL": 20,							# length of compartments (i.e., segments) in (um)
     "overwrite_output_dir": true,		# if True: will overwrite the output directory; if False: will issue an error that directory exists
-    "spike_threshold": -15,
+    "spike_threshold": -15,				# block
     "nsteps_block":5000,
     "save_cell_vars": ["v", "cai"],
     "calc_ecp": true
   },
-
+```
