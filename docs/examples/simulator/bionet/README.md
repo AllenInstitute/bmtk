@@ -178,7 +178,7 @@ To run simulations of your network with BioNet, you will need to provide a pre-b
 
 Then, you will need to specify your configuration file the paths to the network files and component files as well as list simulation run parameters.
 
-Just as in the above examples, your run folder should include Python modules set_cell_params.py, set_syn_params.py set_weights.py specifying how models of cells, synapses and connection weights are created as well as a main python script. When running different simulations,  you will rarely need to modify the main Python script. Instead, you will commonly need to modify parameters in the configuration file to instruct BioNet which model to run and how to run it. Thus we included a separate tutorial explaining the structure of the [configuration file](). 
+Just as in the above examples, your run folder should include Python modules set_cell_params.py, set_syn_params.py set_weights.py specifying how models of cells, synapses and connection weights are created as well as a main python script. When running different simulations,  you will rarely need to modify the main Python script. Instead, you will commonly need to modify parameters in the configuration file to instruct BioNet which model to run and how to run it. Thus we included a separate tutorial explaining the structure of the [configuration file](http://stash.corp.alleninstitute.org/projects/MIND/repos/bmtk/browse/docs/examples/simulator/bionet/README_config.md). 
 
 
 
