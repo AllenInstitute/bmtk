@@ -1,0 +1,230 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>bmtk.analyzer.visualization package &#8212; Brain Modeling Toolkit 0.0.5 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="bmtk-analyzer-visualization-package">
+<h1>bmtk.analyzer.visualization package<a class="headerlink" href="#bmtk-analyzer-visualization-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-bmtk.analyzer.visualization.rasters">
+<span id="bmtk-analyzer-visualization-rasters-module"></span><h2>bmtk.analyzer.visualization.rasters module<a class="headerlink" href="#module-bmtk.analyzer.visualization.rasters" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="bmtk.analyzer.visualization.rasters.plot_raster_query">
+<code class="descclassname">bmtk.analyzer.visualization.rasters.</code><code class="descname">plot_raster_query</code><span class="sig-paren">(</span><em>ax, spikes, nodes_df, cmap, twindow=[0, 3], marker='.', lw=0, s=10</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.visualization.rasters.plot_raster_query" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot raster colored according to a query.</p>
+<p>Query’s key defines node selection and the corresponding values defines color
+:param ax: matplotlib axes object, axes to use
+:param spikes: tuple of numpy arrays, includes [times, gids]
+:param nodes_df: pandas DataFrame, nodes table
+:param cmap: dict, key: query string, value:color
+:param twindow: tuple [start_time,end_time]
+:param marker:
+:param lw:
+:param s:</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.analyzer.visualization.spikes">
+<span id="bmtk-analyzer-visualization-spikes-module"></span><h2>bmtk.analyzer.visualization.spikes module<a class="headerlink" href="#module-bmtk.analyzer.visualization.spikes" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="bmtk.analyzer.visualization.spikes.plot_avg_rates">
+<code class="descclassname">bmtk.analyzer.visualization.spikes.</code><code class="descname">plot_avg_rates</code><span class="sig-paren">(</span><em>cell_models_file</em>, <em>rates_file</em>, <em>model_keys=None</em>, <em>save_as=None</em>, <em>show_plot=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.visualization.spikes.plot_avg_rates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.analyzer.visualization.spikes.plot_rates">
+<code class="descclassname">bmtk.analyzer.visualization.spikes.</code><code class="descname">plot_rates</code><span class="sig-paren">(</span><em>cells_file</em>, <em>cell_models_file</em>, <em>spikes_file</em>, <em>group_key=None</em>, <em>exclude=[]</em>, <em>interval=None</em>, <em>show=True</em>, <em>title=None</em>, <em>save_as=None</em>, <em>smoothed=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.visualization.spikes.plot_rates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.analyzer.visualization.spikes.plot_rates_popnet">
+<code class="descclassname">bmtk.analyzer.visualization.spikes.</code><code class="descname">plot_rates_popnet</code><span class="sig-paren">(</span><em>cell_models_file</em>, <em>rates_file</em>, <em>model_keys=None</em>, <em>save_as=None</em>, <em>show_plot=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.visualization.spikes.plot_rates_popnet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initial method for plotting popnet output</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cell_models_file</strong> – </li>
+<li><strong>rates_file</strong> – </li>
+<li><strong>model_keys</strong> – </li>
+<li><strong>save_as</strong> – </li>
+<li><strong>show_plot</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.analyzer.visualization.spikes.plot_ratess">
+<code class="descclassname">bmtk.analyzer.visualization.spikes.</code><code class="descname">plot_ratess</code><span class="sig-paren">(</span><em>cells_file, cell_models_file, spikes_file, group_key='pop_name', exclude=['LIF_inh', 'LIF_exc'], save_as=None, show_plot=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.visualization.spikes.plot_ratess" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.analyzer.visualization.spikes.plot_spikes">
+<code class="descclassname">bmtk.analyzer.visualization.spikes.</code><code class="descname">plot_spikes</code><span class="sig-paren">(</span><em>cells_file</em>, <em>cell_models_file</em>, <em>spikes_file</em>, <em>group_key=None</em>, <em>exclude=[]</em>, <em>save_as=None</em>, <em>show=True</em>, <em>title=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.visualization.spikes.plot_spikes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.analyzer.visualization.spikes.plot_spikes_config">
+<code class="descclassname">bmtk.analyzer.visualization.spikes.</code><code class="descname">plot_spikes_config</code><span class="sig-paren">(</span><em>configure</em>, <em>group_key=None</em>, <em>exclude=[]</em>, <em>save_as=None</em>, <em>show_plot=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.visualization.spikes.plot_spikes_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.analyzer.visualization.spikes.plot_tuning">
+<code class="descclassname">bmtk.analyzer.visualization.spikes.</code><code class="descname">plot_tuning</code><span class="sig-paren">(</span><em>sg_analysis</em>, <em>node</em>, <em>band</em>, <em>Freq=0</em>, <em>show=True</em>, <em>save_as=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.visualization.spikes.plot_tuning" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.analyzer.visualization.widgets">
+<span id="bmtk-analyzer-visualization-widgets-module"></span><h2>bmtk.analyzer.visualization.widgets module<a class="headerlink" href="#module-bmtk.analyzer.visualization.widgets" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.analyzer.visualization.widgets.MovieWidget">
+<em class="property">class </em><code class="descclassname">bmtk.analyzer.visualization.widgets.</code><code class="descname">MovieWidget</code><span class="sig-paren">(</span><em>t_range</em>, <em>data</em>, <em>ax=None</em>, <em>metadata={}</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.visualization.widgets.MovieWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.analyzer.visualization.widgets.MovieWidget.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><em>t0</em>, <em>vmin=-1</em>, <em>vmax=1</em>, <em>cmap=&lt;matplotlib.colors.LinearSegmentedColormap object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.visualization.widgets.MovieWidget.initialize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.analyzer.visualization.widgets.MovieWidget.ti">
+<code class="descname">ti</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.visualization.widgets.MovieWidget.ti" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.analyzer.visualization.widgets.MovieWidget.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.visualization.widgets.MovieWidget.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.analyzer.visualization.widgets.PlotWidget">
+<em class="property">class </em><code class="descclassname">bmtk.analyzer.visualization.widgets.</code><code class="descname">PlotWidget</code><span class="sig-paren">(</span><em>t_range</em>, <em>y_range</em>, <em>rate_ax=None</em>, <em>position_ax=None</em>, <em>metadata={}</em>, <em>location_markersize=5</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.visualization.widgets.PlotWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.analyzer.visualization.widgets.PlotWidget.initialize">
+<code class="descname">initialize</code><span class="sig-paren">(</span><em>t0</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.visualization.widgets.PlotWidget.initialize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.analyzer.visualization.widgets.PlotWidget.set_visible">
+<code class="descname">set_visible</code><span class="sig-paren">(</span><em>visible_or_not</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.visualization.widgets.PlotWidget.set_visible" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.analyzer.visualization.widgets.PlotWidget.update">
+<code class="descname">update</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.visualization.widgets.PlotWidget.update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.analyzer.visualization.widgets.PlotWidget.y">
+<code class="descname">y</code><a class="headerlink" href="#bmtk.analyzer.visualization.widgets.PlotWidget.y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.analyzer.visualization">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.analyzer.visualization" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Brain Modeling Toolkit</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Kael Dai.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/bmtk.analyzer.visualization.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

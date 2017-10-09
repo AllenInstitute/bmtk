@@ -23,6 +23,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="bmtk.builder.io package" href="bmtk.builder.io.html" />
+    <link rel="prev" title="bmtk.builder package" href="bmtk.builder.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -48,7 +50,7 @@
 <dl class="class">
 <dt id="bmtk.builder.formats.hdf5_format.HDF5Format">
 <em class="property">class </em><code class="descclassname">bmtk.builder.formats.hdf5_format.</code><code class="descname">HDF5Format</code><span class="sig-paren">(</span><em>network</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.builder.formats.iformats.IFormat" title="bmtk.builder.formats.iformats.IFormat"><code class="xref py py-class docutils literal"><span class="pre">bmtk.builder.formats.iformats.IFormat</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk_api/bmtk.builder.formats.html#bmtk.builder.formats.iformats.IFormat" title="bmtk.builder.formats.iformats.IFormat"><code class="xref py py-class docutils literal"><span class="pre">bmtk.builder.formats.iformats.IFormat</span></code></a></p>
 <p>Format prior to Blue-brain project collaboration.
 Saves as:
 nodes (csv)
@@ -235,7 +237,7 @@ net.save(cells=”cells.csv”, models=”cell_models.csv”, connections=”con
 <dl class="class">
 <dt id="bmtk.builder.formats.DefaultFormat">
 <em class="property">class </em><code class="descclassname">bmtk.builder.formats.</code><code class="descname">DefaultFormat</code><span class="sig-paren">(</span><em>network</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.builder.formats.DefaultFormat" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.builder.formats.iformats.IFormat" title="bmtk.builder.formats.iformats.IFormat"><code class="xref py py-class docutils literal"><span class="pre">bmtk.builder.formats.iformats.IFormat</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk_api/bmtk.builder.formats.html#bmtk.builder.formats.iformats.IFormat" title="bmtk.builder.formats.iformats.IFormat"><code class="xref py py-class docutils literal"><span class="pre">bmtk.builder.formats.iformats.IFormat</span></code></a></p>
 <dl class="method">
 <dt id="bmtk.builder.formats.DefaultFormat.save">
 <code class="descname">save</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.builder.formats.DefaultFormat.save" title="Permalink to this definition">¶</a></dt>
@@ -256,7 +258,7 @@ net.save(cells=”cells.csv”, models=”cell_models.csv”, connections=”con
 <dl class="class">
 <dt id="bmtk.builder.formats.ISeeFormat">
 <em class="property">class </em><code class="descclassname">bmtk.builder.formats.</code><code class="descname">ISeeFormat</code><span class="sig-paren">(</span><em>network</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.builder.formats.ISeeFormat" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.builder.formats.iformats.IFormat" title="bmtk.builder.formats.iformats.IFormat"><code class="xref py py-class docutils literal"><span class="pre">bmtk.builder.formats.iformats.IFormat</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk_api/bmtk.builder.formats.html#bmtk.builder.formats.iformats.IFormat" title="bmtk.builder.formats.iformats.IFormat"><code class="xref py py-class docutils literal"><span class="pre">bmtk.builder.formats.iformats.IFormat</span></code></a></p>
 <p>Controls the output of networks that will be used in the isee_engine simulator.</p>
 <dl class="docutils">
 <dt>The nodes are saved in a cells and cell_model csv files with predefined format. the edges/connections are</dt>
@@ -350,11 +352,31 @@ true (nsyn table included).</li>
 
 
 <h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="builder.html">The Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html">Simulation Engines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html#bionet">BioNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html#pointnet">PointNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html#popnet">PopNet</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="bmtk.html">bmtk package</a><ul>
+  <li><a href="bmtk.builder.html">bmtk.builder package</a><ul>
+      <li>Previous: <a href="bmtk.builder.html" title="previous chapter">bmtk.builder package</a></li>
+      <li>Next: <a href="bmtk.builder.io.html" title="next chapter">bmtk.builder.io package</a></li>
+  </ul></li>
+  </ul></li>
   </ul></li>
 </ul>
 </div>
@@ -373,7 +395,7 @@ true (nsyn table included).</li>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Kael Dai.
+      &copy;2017, Allen Institute for Brain Science.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>

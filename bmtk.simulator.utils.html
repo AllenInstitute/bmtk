@@ -23,6 +23,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="bmtk.simulator.utils.stimulus package" href="bmtk.simulator.utils.stimulus.html" />
+    <link rel="prev" title="bmtk.simulator.popnet.property_schemas package" href="bmtk.simulator.popnet.property_schemas.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -46,8 +48,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html">bmtk.simulator.utils.stimulus package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#module-bmtk.simulator.utils.stimulus.LocallySparseNoise">bmtk.simulator.utils.stimulus.LocallySparseNoise module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#module-bmtk.simulator.utils.stimulus.NaturalScenes">bmtk.simulator.utils.stimulus.NaturalScenes module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#bmtk-simulator-utils-stimulus-locallysparsenoise-module">bmtk.simulator.utils.stimulus.LocallySparseNoise module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#bmtk-simulator-utils-stimulus-naturalscenes-module">bmtk.simulator.utils.stimulus.NaturalScenes module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#module-bmtk.simulator.utils.stimulus.StaticGratings">bmtk.simulator.utils.stimulus.StaticGratings module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#module-bmtk.simulator.utils.stimulus">Module contents</a></li>
 </ul>
@@ -70,12 +72,12 @@
 <dl class="function">
 <dt id="bmtk.simulator.utils.config.copy_config">
 <code class="descclassname">bmtk.simulator.utils.config.</code><code class="descname">copy_config</code><span class="sig-paren">(</span><em>conf</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.utils.config.copy_config" title="Permalink to this definition">¶</a></dt>
-<dd><p>Copy configuration file to different directory</p>
+<dd><p>Copy configuration file to different directory, with manifest variables resolved.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>conf</strong> – </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>conf</strong> – configuration dictionary</td>
 </tr>
 </tbody>
 </table>
@@ -194,9 +196,27 @@
 </dd></dl>
 
 <dl class="classmethod">
-<dt id="bmtk.simulator.utils.graph.SimGraph.from_json">
-<em class="property">classmethod </em><code class="descname">from_json</code><span class="sig-paren">(</span><em>config_file</em>, <em>network_format=&lt;class 'bmtk.utils.io.tabular_network_v1.TabularNetwork'&gt;</em>, <em>property_schema=None</em>, <em>**properties</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.from_json" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="bmtk.simulator.utils.graph.SimGraph.from_config">
+<em class="property">classmethod </em><code class="descname">from_config</code><span class="sig-paren">(</span><em>conf</em>, <em>network_format=&lt;class 'bmtk.utils.io.tabular_network_v1.TabularNetwork'&gt;</em>, <em>property_schema=None</em>, <em>**properties</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.from_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a graph structure from a json config file or dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>conf</strong> – name of json config file, or a dictionary with config parameters</li>
+<li><strong>network_format</strong> – storage representation of networks</li>
+<li><strong>property_schema</strong> – column schema used to build graph</li>
+<li><strong>properties</strong> – optional properties.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A graph object of type cls</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="bmtk.simulator.utils.graph.SimGraph.get_component">
@@ -351,7 +371,7 @@ spike_gids: list</p>
 <dl class="class">
 <dt id="bmtk.simulator.utils.nwb.Dev">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">Dev</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.utils.nwb.Dev" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.utils.nwb.Data" title="bmtk.simulator.utils.nwb.Data"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.utils.nwb.Data</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk_api/bmtk.simulator.utils.html#bmtk.simulator.utils.nwb.Data" title="bmtk.simulator.utils.nwb.Data"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.utils.nwb.Data</span></code></a></p>
 <dl class="attribute">
 <dt id="bmtk.simulator.utils.nwb.Dev.group">
 <code class="descname">group</code><em class="property"> = 'dev'</em><a class="headerlink" href="#bmtk.simulator.utils.nwb.Dev.group" title="Permalink to this definition">¶</a></dt>
@@ -373,7 +393,7 @@ spike_gids: list</p>
 <dl class="class">
 <dt id="bmtk.simulator.utils.nwb.FiringRate">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">FiringRate</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.utils.nwb.FiringRate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.utils.nwb.Data" title="bmtk.simulator.utils.nwb.Data"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.utils.nwb.Data</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk_api/bmtk.simulator.utils.html#bmtk.simulator.utils.nwb.Data" title="bmtk.simulator.utils.nwb.Data"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.utils.nwb.Data</span></code></a></p>
 <dl class="method">
 <dt id="bmtk.simulator.utils.nwb.FiringRate.get_widget">
 <code class="descname">get_widget</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.utils.nwb.FiringRate.get_widget" title="Permalink to this definition">¶</a></dt>
@@ -389,7 +409,7 @@ spike_gids: list</p>
 <dl class="class">
 <dt id="bmtk.simulator.utils.nwb.GrayScaleMovie">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">GrayScaleMovie</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.utils.nwb.GrayScaleMovie" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.utils.nwb.Data" title="bmtk.simulator.utils.nwb.Data"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.utils.nwb.Data</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk_api/bmtk.simulator.utils.html#bmtk.simulator.utils.nwb.Data" title="bmtk.simulator.utils.nwb.Data"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.utils.nwb.Data</span></code></a></p>
 <dl class="method">
 <dt id="bmtk.simulator.utils.nwb.GrayScaleMovie.get_widget">
 <code class="descname">get_widget</code><span class="sig-paren">(</span><em>ax=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.utils.nwb.GrayScaleMovie.get_widget" title="Permalink to this definition">¶</a></dt>
@@ -422,7 +442,7 @@ spike_gids: list</p>
 <dl class="class">
 <dt id="bmtk.simulator.utils.nwb.SpikeTrain">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">SpikeTrain</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.utils.nwb.SpikeTrain" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.utils.nwb.Data" title="bmtk.simulator.utils.nwb.Data"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.utils.nwb.Data</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk_api/bmtk.simulator.utils.html#bmtk.simulator.utils.nwb.Data" title="bmtk.simulator.utils.nwb.Data"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.utils.nwb.Data</span></code></a></p>
 <dl class="attribute">
 <dt id="bmtk.simulator.utils.nwb.SpikeTrain.group">
 <code class="descname">group</code><em class="property"> = 'spike_train'</em><a class="headerlink" href="#bmtk.simulator.utils.nwb.SpikeTrain.group" title="Permalink to this definition">¶</a></dt>
@@ -433,7 +453,7 @@ spike_gids: list</p>
 <dl class="class">
 <dt id="bmtk.simulator.utils.nwb.TimeSeries">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">TimeSeries</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.utils.nwb.TimeSeries" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.utils.nwb.Data" title="bmtk.simulator.utils.nwb.Data"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.utils.nwb.Data</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk_api/bmtk.simulator.utils.html#bmtk.simulator.utils.nwb.Data" title="bmtk.simulator.utils.nwb.Data"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.utils.nwb.Data</span></code></a></p>
 <dl class="attribute">
 <dt id="bmtk.simulator.utils.nwb.TimeSeries.group">
 <code class="descname">group</code><em class="property"> = 'time_series'</em><a class="headerlink" href="#bmtk.simulator.utils.nwb.TimeSeries.group" title="Permalink to this definition">¶</a></dt>
@@ -516,11 +536,31 @@ validator.validate(file.json)</p>
 
 
 <h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="builder.html">The Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html">Simulation Engines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html#bionet">BioNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html#pointnet">PointNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html#popnet">PopNet</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="bmtk.html">bmtk package</a><ul>
+  <li><a href="bmtk.simulator.html">bmtk.simulator package</a><ul>
+      <li>Previous: <a href="bmtk.simulator.popnet.property_schemas.html" title="previous chapter">bmtk.simulator.popnet.property_schemas package</a></li>
+      <li>Next: <a href="bmtk.simulator.utils.stimulus.html" title="next chapter">bmtk.simulator.utils.stimulus package</a></li>
+  </ul></li>
+  </ul></li>
   </ul></li>
 </ul>
 </div>
@@ -539,7 +579,7 @@ validator.validate(file.json)</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Kael Dai.
+      &copy;2017, Allen Institute for Brain Science.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>

@@ -23,6 +23,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="bmtk.simulator.bionet.default_setters package" href="bmtk.simulator.bionet.default_setters.html" />
+    <link rel="prev" title="bmtk.simulator package" href="bmtk.simulator.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -48,6 +50,7 @@
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.default_setters.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.default_setters.html#module-bmtk.simulator.bionet.default_setters.cell_models">bmtk.simulator.bionet.default_setters.cell_models module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.default_setters.html#module-bmtk.simulator.bionet.default_setters.synapse_models">bmtk.simulator.bionet.default_setters.synapse_models module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.default_setters.html#module-bmtk.simulator.bionet.default_setters.synaptic_weights">bmtk.simulator.bionet.default_setters.synaptic_weights module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.default_setters.html#module-bmtk.simulator.bionet.default_setters">Module contents</a></li>
 </ul>
 </li>
@@ -70,7 +73,7 @@
 <dl class="class">
 <dt id="bmtk.simulator.bionet.biocell.BioCell">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.biocell.</code><code class="descname">BioCell</code><span class="sig-paren">(</span><em>node</em>, <em>spike_threshold</em>, <em>dL</em>, <em>calc_ecp=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.biocell.BioCell" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.cell.Cell" title="bmtk.simulator.bionet.cell.Cell"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.cell.Cell</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk_api/bmtk.simulator.bionet.html#bmtk.simulator.bionet.cell.Cell" title="bmtk.simulator.bionet.cell.Cell"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.cell.Cell</span></code></a></p>
 <p>Implemntation of a morphologically and biophysically detailed type cell.</p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.biocell.BioCell.calc_seg_coords">
@@ -83,6 +86,11 @@
 <code class="descname">get_im</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.biocell.BioCell.get_im" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gather membrane currents from PtrVector into imVec (does not need a loop!)</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.biocell.BioCell.get_seg_coords">
+<code class="descname">get_seg_coords</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.biocell.BioCell.get_seg_coords" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="bmtk.simulator.bionet.biocell.BioCell.init_connections">
@@ -146,7 +154,7 @@
 <dl class="class">
 <dt id="bmtk.simulator.bionet.biograph.BioEdge">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.biograph.</code><code class="descname">BioEdge</code><span class="sig-paren">(</span><em>original_params</em>, <em>dynamics_params</em>, <em>graph</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.biograph.BioEdge" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.utils.html#bmtk.simulator.utils.graph.SimEdge" title="bmtk.simulator.utils.graph.SimEdge"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.utils.graph.SimEdge</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk_api/bmtk.simulator.utils.html#bmtk.simulator.utils.graph.SimEdge" title="bmtk.simulator.utils.graph.SimEdge"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.utils.graph.SimEdge</span></code></a></p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.biograph.BioEdge.load_synapses">
 <code class="descname">load_synapses</code><span class="sig-paren">(</span><em>section_x</em>, <em>section_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.biograph.BioEdge.load_synapses" title="Permalink to this definition">¶</a></dt>
@@ -182,7 +190,7 @@
 <dl class="class">
 <dt id="bmtk.simulator.bionet.biograph.BioGraph">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.biograph.</code><code class="descname">BioGraph</code><span class="sig-paren">(</span><em>property_schema=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.biograph.BioGraph" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.utils.html#bmtk.simulator.utils.graph.SimGraph" title="bmtk.simulator.utils.graph.SimGraph"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.utils.graph.SimGraph</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk_api/bmtk.simulator.utils.html#bmtk.simulator.utils.graph.SimGraph" title="bmtk.simulator.utils.graph.SimGraph"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.utils.graph.SimGraph</span></code></a></p>
 <dl class="staticmethod">
 <dt id="bmtk.simulator.bionet.biograph.BioGraph.get_default_property_schema">
 <em class="property">static </em><code class="descname">get_default_property_schema</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.biograph.BioGraph.get_default_property_schema" title="Permalink to this definition">¶</a></dt>
@@ -193,7 +201,7 @@
 <dl class="class">
 <dt id="bmtk.simulator.bionet.biograph.BioNode">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.biograph.</code><code class="descname">BioNode</code><span class="sig-paren">(</span><em>node_id</em>, <em>graph</em>, <em>network</em>, <em>node_params</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.biograph.BioNode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.utils.html#bmtk.simulator.utils.graph.SimNode" title="bmtk.simulator.utils.graph.SimNode"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.utils.graph.SimNode</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk_api/bmtk.simulator.utils.html#bmtk.simulator.utils.graph.SimNode" title="bmtk.simulator.utils.graph.SimNode"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.utils.graph.SimNode</span></code></a></p>
 <dl class="attribute">
 <dt id="bmtk.simulator.bionet.biograph.BioNode.cell_type">
 <code class="descname">cell_type</code><a class="headerlink" href="#bmtk.simulator.bionet.biograph.BioNode.cell_type" title="Permalink to this definition">¶</a></dt>
@@ -228,7 +236,7 @@
 possible use the factory methods (from_json, …) to automatically build a network from an existing setup.</p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.bionetwork.BioNetwork.add_spikes_nwb">
-<code class="descname">add_spikes_nwb</code><span class="sig-paren">(</span><em>network</em>, <em>nwb_file</em>, <em>trial</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.add_spikes_nwb" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_spikes_nwb</code><span class="sig-paren">(</span><em>ext_net</em>, <em>nwb_file</em>, <em>trial</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.add_spikes_nwb" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -264,8 +272,8 @@ possible use the factory methods (from_json, …) to automatically build a netwo
 <dd></dd></dl>
 
 <dl class="classmethod">
-<dt id="bmtk.simulator.bionet.bionetwork.BioNetwork.from_json">
-<em class="property">classmethod </em><code class="descname">from_json</code><span class="sig-paren">(</span><em>config_file</em>, <em>graph</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.from_json" title="Permalink to this definition">¶</a></dt>
+<dt id="bmtk.simulator.bionet.bionetwork.BioNetwork.from_config">
+<em class="property">classmethod </em><code class="descname">from_config</code><span class="sig-paren">(</span><em>config_file</em>, <em>graph</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.from_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>A method for building a network from a config file.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -638,7 +646,7 @@ well as other behind-the-scenes actions required by bionet.</p>
 <dl class="class">
 <dt id="bmtk.simulator.bionet.lifcell.LIFCell">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.lifcell.</code><code class="descname">LIFCell</code><span class="sig-paren">(</span><em>cell_prop</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.lifcell.LIFCell" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.cell.Cell" title="bmtk.simulator.bionet.cell.Cell"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.cell.Cell</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk_api/bmtk.simulator.bionet.html#bmtk.simulator.bionet.cell.Cell" title="bmtk.simulator.bionet.cell.Cell"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.cell.Cell</span></code></a></p>
 <p>Implimentation of a Leaky Integrate-and-file neuron type cell.</p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.lifcell.LIFCell.print_synapses">
@@ -886,8 +894,6 @@ if continuing from the saved state, then will use h.continuerun()</p>
 </div>
 <div class="section" id="module-bmtk.simulator.bionet.stim">
 <span id="bmtk-simulator-bionet-stim-module"></span><h2>bmtk.simulator.bionet.stim module<a class="headerlink" href="#module-bmtk.simulator.bionet.stim" title="Permalink to this headline">¶</a></h2>
-<p>Created on Aug 22, 2016</p>
-<p>&#64;author: sergeyg</p>
 <dl class="class">
 <dt id="bmtk.simulator.bionet.stim.Stim">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.stim.</code><code class="descname">Stim</code><span class="sig-paren">(</span><em>stim_prop</em>, <em>spike_train_dataset</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.stim.Stim" title="Permalink to this definition">¶</a></dt>
@@ -1009,11 +1015,31 @@ if continuing from the saved state, then will use h.continuerun()</p>
 
 
 <h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="builder.html">The Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html">Simulation Engines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html#bionet">BioNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html#pointnet">PointNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html#popnet">PopNet</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="bmtk.html">bmtk package</a><ul>
+  <li><a href="bmtk.simulator.html">bmtk.simulator package</a><ul>
+      <li>Previous: <a href="bmtk.simulator.html" title="previous chapter">bmtk.simulator package</a></li>
+      <li>Next: <a href="bmtk.simulator.bionet.default_setters.html" title="next chapter">bmtk.simulator.bionet.default_setters package</a></li>
+  </ul></li>
+  </ul></li>
   </ul></li>
 </ul>
 </div>
@@ -1032,7 +1058,7 @@ if continuing from the saved state, then will use h.continuerun()</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Kael Dai.
+      &copy;2017, Allen Institute for Brain Science.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>

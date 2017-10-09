@@ -23,6 +23,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="bmtk.simulator.pointnet.property_schemas package" href="bmtk.simulator.pointnet.property_schemas.html" />
+    <link rel="prev" title="bmtk.simulator.mintnet.hmax package" href="bmtk.simulator.mintnet.hmax.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -95,7 +97,7 @@
 <dl class="class">
 <dt id="bmtk.simulator.pointnet.cell.NestCell">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.pointnet.cell.</code><code class="descname">NestCell</code><span class="sig-paren">(</span><em>node_params</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.pointnet.cell.NestCell" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.pointnet.cell.Cell" title="bmtk.simulator.pointnet.cell.Cell"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.pointnet.cell.Cell</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk_api/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.cell.Cell" title="bmtk.simulator.pointnet.cell.Cell"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.pointnet.cell.Cell</span></code></a></p>
 <p>Used for internal nest cells, can be any type of valid NEST cell model</p>
 <dl class="method">
 <dt id="bmtk.simulator.pointnet.cell.NestCell.set_spike_detector">
@@ -112,7 +114,7 @@
 <dl class="class">
 <dt id="bmtk.simulator.pointnet.cell.VirtualCell">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.pointnet.cell.</code><code class="descname">VirtualCell</code><span class="sig-paren">(</span><em>node_params</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.pointnet.cell.VirtualCell" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.pointnet.cell.Cell" title="bmtk.simulator.pointnet.cell.Cell"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.pointnet.cell.Cell</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk_api/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.cell.Cell" title="bmtk.simulator.pointnet.cell.Cell"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.pointnet.cell.Cell</span></code></a></p>
 <p>Special for external (virtual) cells. For now external cells must be spike_generator type NEST cells.</p>
 <dl class="attribute">
 <dt id="bmtk.simulator.pointnet.cell.VirtualCell.model_type">
@@ -154,7 +156,7 @@
 <dl class="class">
 <dt id="bmtk.simulator.pointnet.pointgraph.PointEdge">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.pointnet.pointgraph.</code><code class="descname">PointEdge</code><span class="sig-paren">(</span><em>edge</em>, <em>dynamics_params</em>, <em>graph</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.pointnet.pointgraph.PointEdge" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.utils.html#bmtk.simulator.utils.graph.SimEdge" title="bmtk.simulator.utils.graph.SimEdge"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.utils.graph.SimEdge</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk_api/bmtk.simulator.utils.html#bmtk.simulator.utils.graph.SimEdge" title="bmtk.simulator.utils.graph.SimEdge"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.utils.graph.SimEdge</span></code></a></p>
 <dl class="attribute">
 <dt id="bmtk.simulator.pointnet.pointgraph.PointEdge.delay">
 <code class="descname">delay</code><a class="headerlink" href="#bmtk.simulator.pointnet.pointgraph.PointEdge.delay" title="Permalink to this definition">¶</a></dt>
@@ -175,7 +177,7 @@
 <dl class="class">
 <dt id="bmtk.simulator.pointnet.pointgraph.PointGraph">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.pointnet.pointgraph.</code><code class="descname">PointGraph</code><span class="sig-paren">(</span><em>property_schema=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.pointnet.pointgraph.PointGraph" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.utils.html#bmtk.simulator.utils.graph.SimGraph" title="bmtk.simulator.utils.graph.SimGraph"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.utils.graph.SimGraph</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk_api/bmtk.simulator.utils.html#bmtk.simulator.utils.graph.SimGraph" title="bmtk.simulator.utils.graph.SimGraph"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.utils.graph.SimGraph</span></code></a></p>
 <dl class="method">
 <dt id="bmtk.simulator.pointnet.pointgraph.PointGraph.add_weight_function">
 <code class="descname">add_weight_function</code><span class="sig-paren">(</span><em>function</em>, <em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.pointnet.pointgraph.PointGraph.add_weight_function" title="Permalink to this definition">¶</a></dt>
@@ -191,7 +193,7 @@
 <dl class="class">
 <dt id="bmtk.simulator.pointnet.pointgraph.PointNode">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.pointnet.pointgraph.</code><code class="descname">PointNode</code><span class="sig-paren">(</span><em>node_id</em>, <em>graph</em>, <em>network</em>, <em>node_params</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.pointnet.pointgraph.PointNode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.utils.html#bmtk.simulator.utils.graph.SimNode" title="bmtk.simulator.utils.graph.SimNode"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.utils.graph.SimNode</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk_api/bmtk.simulator.utils.html#bmtk.simulator.utils.graph.SimNode" title="bmtk.simulator.utils.graph.SimNode"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.utils.graph.SimNode</span></code></a></p>
 <dl class="attribute">
 <dt id="bmtk.simulator.pointnet.pointgraph.PointNode.model_class">
 <code class="descname">model_class</code><a class="headerlink" href="#bmtk.simulator.pointnet.pointgraph.PointNode.model_class" title="Permalink to this definition">¶</a></dt>
@@ -268,8 +270,8 @@ create the simulation input and parameters from a config file, the use the run()
 <dd></dd></dl>
 
 <dl class="classmethod">
-<dt id="bmtk.simulator.pointnet.pointnetwork.PointNetwork.from_json">
-<em class="property">classmethod </em><code class="descname">from_json</code><span class="sig-paren">(</span><em>configure</em>, <em>graph</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.from_json" title="Permalink to this definition">¶</a></dt>
+<dt id="bmtk.simulator.pointnet.pointnetwork.PointNetwork.from_config">
+<em class="property">classmethod </em><code class="descname">from_config</code><span class="sig-paren">(</span><em>configure</em>, <em>graph</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.from_config" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -379,11 +381,31 @@ dict_coordinates: dictionary of coordinates. keyword is the node_id and entries 
 
 
 <h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="builder.html">The Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html">Simulation Engines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html#bionet">BioNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html#pointnet">PointNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html#popnet">PopNet</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="bmtk.html">bmtk package</a><ul>
+  <li><a href="bmtk.simulator.html">bmtk.simulator package</a><ul>
+      <li>Previous: <a href="bmtk.simulator.mintnet.hmax.html" title="previous chapter">bmtk.simulator.mintnet.hmax package</a></li>
+      <li>Next: <a href="bmtk.simulator.pointnet.property_schemas.html" title="next chapter">bmtk.simulator.pointnet.property_schemas package</a></li>
+  </ul></li>
+  </ul></li>
   </ul></li>
 </ul>
 </div>
@@ -402,7 +424,7 @@ dict_coordinates: dictionary of coordinates. keyword is the node_id and entries 
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Kael Dai.
+      &copy;2017, Allen Institute for Brain Science.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>

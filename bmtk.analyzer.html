@@ -23,6 +23,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="bmtk.analyzer.visualization package" href="bmtk.analyzer.visualization.html" />
+    <link rel="prev" title="bmtk package" href="bmtk.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -74,6 +76,28 @@
 <div class="section" id="module-bmtk.analyzer.spikes_analyzer">
 <span id="bmtk-analyzer-spikes-analyzer-module"></span><h2>bmtk.analyzer.spikes_analyzer module<a class="headerlink" href="#module-bmtk.analyzer.spikes_analyzer" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
+<dt id="bmtk.analyzer.spikes_analyzer.get_mean_firing_rates">
+<code class="descclassname">bmtk.analyzer.spikes_analyzer.</code><code class="descname">get_mean_firing_rates</code><span class="sig-paren">(</span><em>spike_gids</em>, <em>node_ids</em>, <em>tstop_msec</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.spikes_analyzer.get_mean_firing_rates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute mean firing rate over the duration of the simulation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>spike_gids</strong> – gids of cells which spiked</li>
+<li><strong>node_ids</strong> – np.array of node_ids</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Return mean_firing_rate:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><p class="first last">np.array mean firing rates</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="bmtk.analyzer.spikes_analyzer.spike_files_equal">
 <code class="descclassname">bmtk.analyzer.spikes_analyzer.</code><code class="descname">spike_files_equal</code><span class="sig-paren">(</span><em>spikes_txt_1</em>, <em>spikes_txt_2</em>, <em>err=0.0001</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.spikes_analyzer.spike_files_equal" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -82,6 +106,110 @@
 <dt id="bmtk.analyzer.spikes_analyzer.spikes2dict">
 <code class="descclassname">bmtk.analyzer.spikes_analyzer.</code><code class="descname">spikes2dict</code><span class="sig-paren">(</span><em>spikes_file</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.spikes_analyzer.spikes2dict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.analyzer.spikes_analyzer.spikes_equal_in_window">
+<code class="descclassname">bmtk.analyzer.spikes_analyzer.</code><code class="descname">spikes_equal_in_window</code><span class="sig-paren">(</span><em>spikes1</em>, <em>spikes2</em>, <em>twindow</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.spikes_analyzer.spikes_equal_in_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compare spikes within a time window    
+:param spikes1: dict with “time” and “gid” arrays for raster 1
+:param spikes2: dict with “time” and “gid” arrays for raster 2
+:param twindow: [tstart,tend] time window</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return boolean:</th><td class="field-body">True if equal, False if different</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.analyzer.spikes_loader">
+<span id="bmtk-analyzer-spikes-loader-module"></span><h2>bmtk.analyzer.spikes_loader module<a class="headerlink" href="#module-bmtk.analyzer.spikes_loader" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="bmtk.analyzer.spikes_loader.load_spikes">
+<code class="descclassname">bmtk.analyzer.spikes_loader.</code><code class="descname">load_spikes</code><span class="sig-paren">(</span><em>file_name</em>, <em>trial_name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.spikes_loader.load_spikes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads spikes from multiple file formats</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>file_name</strong> – name of spike file</li>
+<li><strong>trian_name</strong> – name of a trial within a spike file</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return spikes:</th><td class="field-body"><p class="first last">dict with spikes</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.analyzer.spikes_loader.load_spikes_from_h5">
+<code class="descclassname">bmtk.analyzer.spikes_loader.</code><code class="descname">load_spikes_from_h5</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.spikes_loader.load_spikes_from_h5" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load spikes from the hdf5 file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>file_name</strong> – name of spike file</li>
+<li><strong>trian_name</strong> – name of a trial within a spike file</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return spikes:</th><td class="field-body"><p class="first last">dict with spikes</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.analyzer.spikes_loader.load_spikes_from_nwb">
+<code class="descclassname">bmtk.analyzer.spikes_loader.</code><code class="descname">load_spikes_from_nwb</code><span class="sig-paren">(</span><em>file_name</em>, <em>trial_name</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.spikes_loader.load_spikes_from_nwb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load spikes from the nwb file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>file_name</strong> – name of spike file</li>
+<li><strong>trian_name</strong> – name of a trial within a spike file</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return spikes:</th><td class="field-body"><p class="first last">dict with spikes</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.analyzer.spikes_loader.load_spikes_from_txt">
+<code class="descclassname">bmtk.analyzer.spikes_loader.</code><code class="descname">load_spikes_from_txt</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.spikes_loader.load_spikes_from_txt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load spikes from the txt file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>file_name</strong> – name of spike file</li>
+<li><strong>trian_name</strong> – name of a trial within a spike file</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return spikes:</th><td class="field-body"><p class="first last">dict with spikes</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </div>
 <div class="section" id="module-bmtk.analyzer">
@@ -105,11 +233,29 @@
 
 
 <h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="builder.html">The Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html">Simulation Engines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html#bionet">BioNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html#pointnet">PointNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html#popnet">PopNet</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="bmtk.html">bmtk package</a><ul>
+      <li>Previous: <a href="bmtk.html" title="previous chapter">bmtk package</a></li>
+      <li>Next: <a href="bmtk.analyzer.visualization.html" title="next chapter">bmtk.analyzer.visualization package</a></li>
+  </ul></li>
   </ul></li>
 </ul>
 </div>
@@ -128,7 +274,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Kael Dai.
+      &copy;2017, Allen Institute for Brain Science.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>

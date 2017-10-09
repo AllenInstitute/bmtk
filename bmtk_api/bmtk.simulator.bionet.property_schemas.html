@@ -1,0 +1,320 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>bmtk.simulator.bionet.property_schemas package &#8212; Brain Modeling Toolkit 0.0.5 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="bmtk-simulator-bionet-property-schemas-package">
+<h1>bmtk.simulator.bionet.property_schemas package<a class="headerlink" href="#bmtk-simulator-bionet-property-schemas-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-bmtk.simulator.bionet.property_schemas.base_schema">
+<span id="bmtk-simulator-bionet-property-schemas-base-schema-module"></span><h2>bmtk.simulator.bionet.property_schemas.base_schema module<a class="headerlink" href="#module-bmtk.simulator.bionet.property_schemas.base_schema" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.bionet.property_schemas.base_schema.CellTypes">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.property_schemas.base_schema.</code><code class="descname">CellTypes</code><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.base_schema.CellTypes" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="bmtk.simulator.bionet.property_schemas.base_schema.CellTypes.Biophysical">
+<code class="descname">Biophysical</code><em class="property"> = 0</em><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.base_schema.CellTypes.Biophysical" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.bionet.property_schemas.base_schema.CellTypes.Point">
+<code class="descname">Point</code><em class="property"> = 1</em><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.base_schema.CellTypes.Point" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.bionet.property_schemas.base_schema.CellTypes.Unknown">
+<code class="descname">Unknown</code><em class="property"> = 3</em><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.base_schema.CellTypes.Unknown" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.bionet.property_schemas.base_schema.CellTypes.Virtual">
+<code class="descname">Virtual</code><em class="property"> = 2</em><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.base_schema.CellTypes.Virtual" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="bmtk.simulator.bionet.property_schemas.base_schema.CellTypes.len">
+<em class="property">static </em><code class="descname">len</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.base_schema.CellTypes.len" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.property_schemas.base_schema.</code><code class="descname">PropertySchema</code><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema.get_cell_type">
+<code class="descname">get_cell_type</code><span class="sig-paren">(</span><em>node_params</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema.get_cell_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema.get_edge_weight">
+<code class="descname">get_edge_weight</code><span class="sig-paren">(</span><em>src_node</em>, <em>trg_node</em>, <em>edge</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema.get_edge_weight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema.get_params_column">
+<code class="descname">get_params_column</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema.get_params_column" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema.get_positions">
+<code class="descname">get_positions</code><span class="sig-paren">(</span><em>node_params</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema.get_positions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema.load_cell_hobj">
+<code class="descname">load_cell_hobj</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema.load_cell_hobj" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema.load_synapse_obj">
+<code class="descname">load_synapse_obj</code><span class="sig-paren">(</span><em>edge</em>, <em>section_x</em>, <em>section_id</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema.load_synapse_obj" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema.model_type">
+<code class="descname">model_type</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema.model_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema.nsyns">
+<code class="descname">nsyns</code><span class="sig-paren">(</span><em>edge</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema.nsyns" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema.preselected_targets">
+<code class="descname">preselected_targets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema.preselected_targets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema.target_distance">
+<code class="descname">target_distance</code><span class="sig-paren">(</span><em>edge</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema.target_distance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema.target_sections">
+<code class="descname">target_sections</code><span class="sig-paren">(</span><em>edge</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema.target_sections" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.simulator.bionet.property_schemas.property_schema_ver0">
+<span id="bmtk-simulator-bionet-property-schemas-property-schema-ver0-module"></span><h2>bmtk.simulator.bionet.property_schemas.property_schema_ver0 module<a class="headerlink" href="#module-bmtk.simulator.bionet.property_schemas.property_schema_ver0" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.bionet.property_schemas.property_schema_ver0.PropertySchema">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.property_schemas.property_schema_ver0.</code><code class="descname">PropertySchema</code><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.property_schema_ver0.PropertySchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema" title="bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema</span></code></a></p>
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.property_schema_ver0.PropertySchema.get_cell_type">
+<code class="descname">get_cell_type</code><span class="sig-paren">(</span><em>node_params</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.property_schema_ver0.PropertySchema.get_cell_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.property_schema_ver0.PropertySchema.get_edge_weight">
+<code class="descname">get_edge_weight</code><span class="sig-paren">(</span><em>src_node</em>, <em>trg_node</em>, <em>edge</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.property_schema_ver0.PropertySchema.get_edge_weight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.property_schema_ver0.PropertySchema.get_morphology_column">
+<code class="descname">get_morphology_column</code><span class="sig-paren">(</span><em>node_params</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.property_schema_ver0.PropertySchema.get_morphology_column" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.property_schema_ver0.PropertySchema.get_params_column">
+<code class="descname">get_params_column</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.property_schema_ver0.PropertySchema.get_params_column" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.property_schema_ver0.PropertySchema.get_positions">
+<code class="descname">get_positions</code><span class="sig-paren">(</span><em>node_params</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.property_schema_ver0.PropertySchema.get_positions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.property_schema_ver0.PropertySchema.model_type">
+<code class="descname">model_type</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.property_schema_ver0.PropertySchema.model_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.property_schema_ver0.PropertySchema.nsyns">
+<code class="descname">nsyns</code><span class="sig-paren">(</span><em>edge</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.property_schema_ver0.PropertySchema.nsyns" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.property_schema_ver0.PropertySchema.preselected_targets">
+<code class="descname">preselected_targets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.property_schema_ver0.PropertySchema.preselected_targets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.property_schema_ver0.PropertySchema.target_distance">
+<code class="descname">target_distance</code><span class="sig-paren">(</span><em>edge</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.property_schema_ver0.PropertySchema.target_distance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.property_schema_ver0.PropertySchema.target_sections">
+<code class="descname">target_sections</code><span class="sig-paren">(</span><em>edge</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.property_schema_ver0.PropertySchema.target_sections" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.simulator.bionet.property_schemas.property_schema_ver1">
+<span id="bmtk-simulator-bionet-property-schemas-property-schema-ver1-module"></span><h2>bmtk.simulator.bionet.property_schemas.property_schema_ver1 module<a class="headerlink" href="#module-bmtk.simulator.bionet.property_schemas.property_schema_ver1" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.bionet.property_schemas.property_schema_ver1.PropertySchema">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.property_schemas.property_schema_ver1.</code><code class="descname">PropertySchema</code><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.property_schema_ver1.PropertySchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema" title="bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.property_schemas.base_schema.PropertySchema</span></code></a></p>
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.property_schema_ver1.PropertySchema.get_cell_type">
+<code class="descname">get_cell_type</code><span class="sig-paren">(</span><em>node_params</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.property_schema_ver1.PropertySchema.get_cell_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.property_schema_ver1.PropertySchema.get_edge_weight">
+<code class="descname">get_edge_weight</code><span class="sig-paren">(</span><em>src_node</em>, <em>trg_node</em>, <em>edge</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.property_schema_ver1.PropertySchema.get_edge_weight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.property_schema_ver1.PropertySchema.get_params_column">
+<code class="descname">get_params_column</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.property_schema_ver1.PropertySchema.get_params_column" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.property_schema_ver1.PropertySchema.get_positions">
+<code class="descname">get_positions</code><span class="sig-paren">(</span><em>node_params</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.property_schema_ver1.PropertySchema.get_positions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.property_schema_ver1.PropertySchema.model_type">
+<code class="descname">model_type</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.property_schema_ver1.PropertySchema.model_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.property_schema_ver1.PropertySchema.nsyns">
+<code class="descname">nsyns</code><span class="sig-paren">(</span><em>edge</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.property_schema_ver1.PropertySchema.nsyns" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.property_schema_ver1.PropertySchema.preselected_targets">
+<code class="descname">preselected_targets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.property_schema_ver1.PropertySchema.preselected_targets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.property_schema_ver1.PropertySchema.target_distance">
+<code class="descname">target_distance</code><span class="sig-paren">(</span><em>edge</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.property_schema_ver1.PropertySchema.target_distance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.property_schemas.property_schema_ver1.PropertySchema.target_sections">
+<code class="descname">target_sections</code><span class="sig-paren">(</span><em>edge</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.bionet.property_schemas.property_schema_ver1.PropertySchema.target_sections" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.simulator.bionet.property_schemas">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.simulator.bionet.property_schemas" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Brain Modeling Toolkit</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../builder.html">The Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../simulators.html">Simulation Engines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../simulators.html#bionet">BioNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../simulators.html#pointnet">PointNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../simulators.html#popnet">PopNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bmtk.html">Source Documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Allen Institute for Brain Science.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/bmtk_api/bmtk.simulator.bionet.property_schemas.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

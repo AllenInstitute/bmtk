@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Welcome to Brain Modeling Toolkit’s documentation! &#8212; Brain Modeling Toolkit 0.0.5 documentation</title>
+    <title>Welcome to the Brain Modeling Toolkit &#8212; Brain Modeling Toolkit 0.0.5 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -23,6 +23,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="The Builder" href="builder.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -38,18 +39,43 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="welcome-to-brain-modeling-toolkit-s-documentation">
-<h1>Welcome to Brain Modeling Toolkit’s documentation!<a class="headerlink" href="#welcome-to-brain-modeling-toolkit-s-documentation" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="welcome-to-the-brain-modeling-toolkit">
+<h1>Welcome to the Brain Modeling Toolkit<a class="headerlink" href="#welcome-to-the-brain-modeling-toolkit" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-</div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+<p>The Brain Modeling Toolkit (BMTK) is a software package for creating and simulating large-scale brain models. It
+supports building, simulation and analysis of models of different levels of resolution including</p>
+<blockquote>
+<div><ul class="simple">
+<li>Biophysically detailed networks.</li>
+<li>Point neuron networks.</li>
+<li>Population-level networks.</li>
+<li>Machine-learning networks.</li>
 </ul>
+</div></blockquote>
+</div>
+<div class="section" id="base-installation">
+<h1>Base Installation<a class="headerlink" href="#base-installation" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt>BMTK currently runs on Python 2.7. In additon it requires the following packages to begin building networks:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="http://www.numpy.org/">numpy</a></li>
+<li><a class="reference external" href="http://www.h5py.org/">h5py</a></li>
+<li><a class="reference external" href="http://pandas.pydata.org/">pandas</a></li>
+<li><a class="reference external" href="https://pypi.python.org/pypi/jsonschema">jsonschema</a></li>
+</ul>
+</dd>
+</dl>
+<p>To checkout the latest version of the bmtk and install the base requirements please run the following from a
+command-line</p>
+<blockquote>
+<div><div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">AllenInstitute</span><span class="o">/</span><span class="n">bmtk</span><span class="o">.</span><span class="n">git</span>
+<span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>In additon, running simulations will have additional requirements depending on the simulation-engine (i.e. level of
+resolution) involved. Please refere to the individual simulation engines documentation.</p>
 </div>
 
 
@@ -68,11 +94,20 @@
 
 
 <h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="builder.html">The Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html">Simulation Engines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html#bionet">BioNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html#pointnet">PointNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html#popnet">PopNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmtk.html">Source Documentation</a></li>
+</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="builder.html" title="next chapter">The Builder</a></li>
   </ul></li>
 </ul>
 </div>

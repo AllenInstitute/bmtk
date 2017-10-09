@@ -23,6 +23,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="bmtk.builder package" href="bmtk.builder.html" />
+    <link rel="prev" title="bmtk.analyzer package" href="bmtk.analyzer.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -48,22 +50,16 @@
 <dl class="function">
 <dt id="bmtk.analyzer.visualization.rasters.plot_raster_query">
 <code class="descclassname">bmtk.analyzer.visualization.rasters.</code><code class="descname">plot_raster_query</code><span class="sig-paren">(</span><em>ax, spikes, nodes_df, cmap, twindow=[0, 3], marker='.', lw=0, s=10</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.analyzer.visualization.rasters.plot_raster_query" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot raster colored according to a query. 
-Query’s key defines node selection and the corresponding values defines color</p>
-<blockquote>
-<div><dl class="docutils">
-<dt>ax: matplotlib axes object</dt>
-<dd>axes to use</dd>
-<dt>spikes: tuple of numpy arrays </dt>
-<dd>includes [times, gids]</dd>
-<dt>nodes_df: pandas DataFrame</dt>
-<dd>nodes table</dd>
-<dt>cmap: dict</dt>
-<dd>key: query string, value:color</dd>
-<dt>twindow: tuple</dt>
-<dd>[start_time,end_time]</dd>
-</dl>
-</div></blockquote>
+<dd><p>Plot raster colored according to a query.</p>
+<p>Query’s key defines node selection and the corresponding values defines color
+:param ax: matplotlib axes object, axes to use
+:param spikes: tuple of numpy arrays, includes [times, gids]
+:param nodes_df: pandas DataFrame, nodes table
+:param cmap: dict, key: query string, value:color
+:param twindow: tuple [start_time,end_time]
+:param marker:
+:param lw:
+:param s:</p>
 </dd></dl>
 
 </div>
@@ -195,11 +191,31 @@ Query’s key defines node selection and the corresponding values defines color<
 
 
 <h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="builder.html">The Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html">Simulation Engines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html#bionet">BioNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html#pointnet">PointNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html#popnet">PopNet</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="bmtk.html">bmtk package</a><ul>
+  <li><a href="bmtk.analyzer.html">bmtk.analyzer package</a><ul>
+      <li>Previous: <a href="bmtk.analyzer.html" title="previous chapter">bmtk.analyzer package</a></li>
+      <li>Next: <a href="bmtk.builder.html" title="next chapter">bmtk.builder package</a></li>
+  </ul></li>
+  </ul></li>
   </ul></li>
 </ul>
 </div>
@@ -218,7 +234,7 @@ Query’s key defines node selection and the corresponding values defines color<
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Kael Dai.
+      &copy;2017, Allen Institute for Brain Science.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
