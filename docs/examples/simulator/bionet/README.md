@@ -75,9 +75,9 @@ $ tar xf nrn*gz
 $ cd nrn-7.4
 ```
 
-Other versions of NEURON may be found following the link http://www.neuron.yale.edu/ftp/neuron/versions/ and similarly installed.
+Other versions of NEURON may be found following the link http://www.neuron.yale.edu/ftp/neuron/versions/` and similarly installed.
 
-If you want to run NEURON in parallel, it requires a version a version of MPI to be installed. If you have MPI installed you will configure installation as follows: 
+If you want to run NEURON in parallel, it requires a version a version of [MPI](http://www.mpich.org/) to be installed. If you have MPI installed you will configure installation as follows: 
 
 change to the newly created nrn-7.4 directory and configure installation:
 
@@ -142,18 +142,18 @@ now cd to the specific example such as `14cells`
 
 inside each example folder you will find:
 
-<pre>run_bionet.py</pre> : main python script which calls BioNet to run simulation
+`run_bionet.py` : main python script which calls BioNet to run simulation
 
-config.json : configuration file incuding paths to files describing simulated network as well as run parameters
+`config.json` : configuration file incuding paths to files describing simulated network as well as run parameters
 
-./network : folder including files describing parameters of the nodes and edges making up the network
+`./network` : folder including files describing parameters of the nodes and edges making up the network
 
 set_cell_params.py set_syn_params.py set_weights.py : modules which describe how models of cells, synapses and connection weights are created.
 
-
 To run simulation on a single processor:
-nrniv -python run_bionet.py config.json
-
+```bash
+$ nrniv -python run_bionet.py config.json
+```
 If you have MPI installed you may run simulation in parallel (e.g. on 4 processor) as follows:
 
 ```bash
@@ -165,10 +165,26 @@ The code will first check whether the folders listed in the configuration file `
 Upon succesful validation of configuration BioNet will proceed to load the network, simulate the activity and save the results to files in the output directory.
 
 In the output directory you will find:
-spikes.h5: hdf5 file containing spike information.
-spikes.txt: same as above, but using ascci file for users not familiar with hdf5.
-./cellvars: an folder including hdf5 files with simulation output for individual select cells. 
-config.json: a copy of configuration file for the record keeping
-log.txt: run log file including time-stemped information about simulation run progress. 
+`spikes.h5`: hdf5 file containing spike information.
+`spikes.txt`: same as above, but using ascci file for users not familiar with hdf5.
+`./cellvars`: an folder including hdf5 files with simulation output for individual select cells. 
+`config.json`: a copy of configuration file for the record keeping
+`log.txt`: run log file including time-stemped information about simulation run progress. 
+
+
+### Simulating your network models
+
+To run simulations of your network with BioNet, you will need to provide a pre-built network in the format understood by BioNet. The network main be built using BMTK's builder tool. The good place to start is to follow an example for building a network of [14cells](https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/builder/bionet_14cells)
+
+Then, you will need to specify your configuration file the paths to the network files and component files as well as list simulation run parameters.
+
+Just as in the above examples, your run folder should include Python modules set_cell_params.py, set_syn_params.py set_weights.py specifying how models of cells, synapses and connection weights are created as well as a main python script. When running different simulations,  you will rarely need to modify the main Python script. Instead, you will commonly need to modify parameters in the configuration file to instruct BioNet which model to run and how to run it. Thus we included a separate tutorial explaining the structure of the [configuration file](). 
+
+
+
+
+
+
+
 
 
