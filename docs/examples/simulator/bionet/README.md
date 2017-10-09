@@ -16,14 +16,14 @@ You should find the folder `bmtk-develop` including Brain Modeling Toolkit
 
 Add a path to the bmtk-develop folder to the environment variable `PYTHOPATH` in your `.bashrc` file.
 
-###Dependancies:
+### Dependancies:
 
-####Python
+#### Python
 BioNet package requires Python 2.7 (www.python.org). 
 
-If you do not have Python already installed, we recommend installing Anaconda distribution of Python (https://www.anaconda.com/download/) that comes preloaded with many packages and easy installation of additional packages.
+If you do not have Python already installed, we recommend installing [Anaconda](https://www.anaconda.com/download/) distribution of Python that comes preloaded with many packages and easy installation of additional packages.
 
-####Python packages
+#### Python packages
 BioNet has the following Python package dependancies which may need to be installed prior to running the code:
 
 numpy 1.10
@@ -53,9 +53,10 @@ $ python
 >>> import bmtk
 >>> exit()
 ```
-####NEURON
+#### NEURON
 
-Additionally, BioNet requires NEURON 7.4 simulator (http://www.neuron.yale.edu/neuron/download/). Detailed installation instructions may be found in the Appendix in Hines et al. Frontiers of Neuroinformatics, 2009. Since BioNet does not require NEURON's GUI functionality, one may install NEURON without GUI support provided by the InterViews. For convenience we provide installation instructions of NEURON on Linux platform without InterViews below:
+Additionally, BioNet requires [NEURON 7.4] (http://www.neuron.yale.edu/neuron/download/) simulator or later. Detailed installation instructions may be found in the Appendix in Hines et al. Frontiers of Neuroinformatics, 2009. 
+Since BioNet does not require NEURON's GUI functionality, one may install NEURON without GUI support (i.e., without having to install InterViews). For convenience we provide installation instructions of NEURON on Linux platform without InterViews below:
 
 create an neuron directory:
 
@@ -68,7 +69,7 @@ $ tar xf nrn*gz
 $ cd nrn-7.4
 ```
 
-Other versions of NEURON may be found here http://www.neuron.yale.edu/ftp/neuron/versions/ and similarly installed.
+Other versions of NEURON may be found following the link http://www.neuron.yale.edu/ftp/neuron/versions/ and similarly installed.
 
 If you want to run parallel NEURON in parallel, it requires a version a version of MPI to be installed, then you will configure installation as follows: 
 
@@ -98,25 +99,29 @@ $ nrniv -python
 >>> exit()
 ```
 
-Now you are ready to run examples:
+Now you are ready to run the examples
+
+### Running examples
 
 To run examples go to the folder with installed bmkt-develop package and cd to the examples folder for BioNet 
-cd docs/examples/simulator/bionet/
 
+```bash
+cd .docs/examples/simulator/bionet/
+```
 
 There you will find a 4 folders with examples of pre-built and ready to run networks
-Prior to running you will need to compile NEURON mechanisms in the components folder:
+Prior to running you will need to compile NEURON mechanisms in the `components` folder:
 
 ```bash
 $ cd  ./components/mechanisms/
 $ nrnivmodl modfiles
 ```
 
-which will create /x86 folder
+which will create `/x86_64` folder
 
-now cd to the specific example such as 14cells
+now cd to the specific example such as `14cells`
 
-inside each example folder you will find
+inside each example folder you will find:
 
 run_bionet.py : main python script which calls BioNet to run simulation
 config.json : configuration file incuding paths to files describing simulated network as well as run parameters
