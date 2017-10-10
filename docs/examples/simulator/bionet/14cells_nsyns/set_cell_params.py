@@ -2,6 +2,7 @@ import json
 from bmtk.simulator.bionet.nrn import *
 from neuron import h
 
+
 @cell_model
 def IntFire1(cell_prop):
     """Loads a point integrate and fire neuron"""
@@ -10,6 +11,7 @@ def IntFire1(cell_prop):
     hobj.tau = model_params['tau']*1000.0  # Convert from seconds to ms.
     hobj.refrac = model_params['refrac']*1000.0  # Convert from seconds to ms.
     return hobj
+
 
 @cell_model
 def Biophys1(cell_prop):
@@ -85,6 +87,7 @@ def fix_axon(hobj):
     hobj.axon[1].connect(hobj.axon[0], 1, 0)
 
     h.define_shape()
+
 
 def set_params(hobj, params_dict):
     # params_dict = json.load(open(params_file_name, 'r'))

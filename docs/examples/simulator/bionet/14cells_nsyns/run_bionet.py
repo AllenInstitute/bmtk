@@ -37,6 +37,8 @@ def run(config_file):
     sim.set_recordings()                        # set recordings of relevant variables to be saved as an ouput
     sim.run()                                   # run simulation
 
+    assert (os.path.exists(conf['output']['spikes_ascii_file']))
+    assert (spike_files_equal(conf['output']['spikes_ascii_file'], 'expected/spikes.txt'))
     nrn.quit_execution()                        # exit
 
 
