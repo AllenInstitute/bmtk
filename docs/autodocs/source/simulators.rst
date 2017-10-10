@@ -6,7 +6,6 @@ Simulation Engines
    bionet
    pointnet
    popnet
-   mintnet
 
 
 BioNet

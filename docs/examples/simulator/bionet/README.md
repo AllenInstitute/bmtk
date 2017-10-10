@@ -21,42 +21,37 @@ Add a path to the `bmtk-develop` folder to the environment variable PYTHOPATH in
 
 ### Dependencies:
 
-#### Python
 BioNet package requires [Python 2.7](www.python.org). 
 
 If you do not have Python already installed, we recommend installing [Anaconda](https://www.anaconda.com/download/) distribution of Python that comes preloaded with many packages and allows an easy installation of additional packages.
 
-#### Python packages
 BioNet has the following Python package dependancies:
 
-numpy 1.10
+* numpy 1.10
+* pandas 0.19.2
+* h5py 2.6
+* jsonschema
 
-pandas 0.19.2
+# Installation
 
-h5py 2.6
+To get the latest version of bmtk, use git to clone the development branch from github
+```bash
+ $ git clone https://github.com/AllenInstitute/bmtk.git
+```
 
-jsonschema
+Or [download and unzip from github](https://github.com/AllenInstitute/bmtk/archive/develop.zip)
 
-***Kael, what should I write about setup.py?
+To install with base requirements run
+```bash
+ $ cd bmtk
+ $ python setup.py install
 
-If you have just installed Python then you will also need to update your environemnt variables:
-include a path to Python to your PATH environment variable 
-include path to Python's site packages to PYTHONPATH. 
-
-For instance, for Anaconda you will need to add 
-
-`/path/to/python/anaconda2/bin/` to your PATH
-
-`/path/to/python/anaconda2/lib/python2.7/site-packages` to your PYTHOPATH.
-
-where `/path/to/python` corresponds to the folder where Anaconda Python is installed.
+```
 
 At this stage try running python and importing Brain Modeling Toolkit as follows:
 
-```bash
-$ python
->>> import bmtk
->>> exit()
+```base
+$ python -c "import bmtk"
 ```
 #### NEURON
 

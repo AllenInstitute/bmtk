@@ -10,10 +10,12 @@ Welcome to the Brain Modeling Toolkit
 
 .. toctree::
    :maxdepth: 2
+   :titlesonly:
    :hidden:
 
    builder
    simulators
+   Source Documentation <bmtk>
 
 
 The Brain Modeling Toolkit (BMTK) is a software package for creating and simulating large-scale brain models. It
@@ -43,9 +45,3 @@ In additon, running simulations will have additional requirements depending on t
 resolution) involved. Please refere to the individual simulation engines documentation.
 
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
