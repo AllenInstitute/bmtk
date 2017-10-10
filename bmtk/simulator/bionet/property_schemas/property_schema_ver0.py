@@ -96,7 +96,8 @@ class PropertySchema(BaseSchema):
             raise Exception('Could not find morphology column.')
 
     def model_type(self, node):
-        return node['level_of_detail']
+        return node['set_params_function']
+        #return node['level_of_detail']
 
     """
     def load_cell_hobj(self, node):

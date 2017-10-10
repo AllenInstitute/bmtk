@@ -4,16 +4,11 @@ from neuron import h
 
 @cell_model
 def IntFire1(cell_prop):
-    """Set parameters for the IntFire1 cell models"""
-    params_file = cell_prop['params_file']
-
-    with open(params_file) as params_file:
-        params = json.load(params_file)
-
+    """Loads a point integrate and fire neuron"""
+    model_params = cell_prop.model_params
     hobj = h.IntFire1()
-    hobj.tau = params['tau'] * 1000.0  # Convert from seconds to ms.
-    hobj.refrac = params['refrac'] * 1000.0  # Convert from seconds to ms.
-
+    hobj.tau = model_params['tau']*1000.0  # Convert from seconds to ms.
+    hobj.refrac = model_params['refrac']*1000.0  # Convert from seconds to ms.
     return hobj
 
 @cell_model
@@ -25,28 +20,15 @@ def Biophys1(cell_prop):
     '''
 
     morphology_file_name = str(cell_prop['morphology_file'])
-    params_file_name = str(cell_prop['params_file'])
-
     hobj = h.Biophys1(morphology_file_name)
     fix_axon(hobj)
-    set_params_peri(hobj, params_file_name)
-
+    # set_params_peri(hobj, cell_prop.model_params)
+    set_params(hobj, cell_prop.model_params)
     return hobj
 
 
-def set_params_peri(hobj, params_file_name):
-    """Set biophysical parameters for the cell
-
-	Parameters
-	----------
-	hobj: instance of a Biophysical template
-		NEURON's cell object
-	params_file_name: string
-		name of json file containing biophysical parameters for cell's model which determine spiking behavior
-	"""
-    with open(params_file_name) as biophys_params_file:
-        biophys_params = json.load(biophys_params_file)
-
+def set_params_peri(hobj, biophys_params):
+    """Set biophysical parameters for the cell"""
     passive = biophys_params['passive'][0]
     conditions = biophys_params['conditions'][0]
     genome = biophys_params['genome']
@@ -103,3 +85,65 @@ def fix_axon(hobj):
     hobj.axon[1].connect(hobj.axon[0], 1, 0)
 
     h.define_shape()
+
+def set_params(hobj, params_dict):
+    # params_dict = json.load(open(params_file_name, 'r'))
+    passive = params_dict['passive'][0]
+    genome = params_dict['genome']
+    conditions = params_dict['conditions'][0]
+
+    section_map = {}
+    for sec in hobj.all:
+        section_name = sec.name().split(".")[1][:4]
+        if section_name in section_map:
+            section_map[section_name].append(sec)
+        else:
+            section_map[section_name] = [sec]
+
+    for sec in hobj.all:
+        sec.insert('pas')
+        # sec.insert('extracellular')
+
+    if 'e_pas' in passive:
+        e_pas_val = passive['e_pas']
+        for sec in hobj.all:
+            for seg in sec:
+                seg.pas.e = e_pas_val
+
+    if 'ra' in passive:
+        ra_val = passive['ra']
+        for sec in hobj.all:
+            sec.Ra = ra_val
+
+    if 'cm' in passive:
+        for cm_dict in passive['cm']:
+            cm = cm_dict['cm']
+            for sec in section_map.get(cm_dict['section'], []):
+                sec.cm = cm
+
+    for genome_dict in genome:
+        g_section = genome_dict['section']
+        if genome_dict['section'] == 'glob':
+            print("WARNING: There is a section called glob, probably old json file")
+            continue
+
+        g_value = float(genome_dict['value'])
+        g_name = genome_dict['name']
+        g_mechanism = genome_dict.get("mechanism", "")
+        for sec in section_map.get(g_section, []):
+            if g_mechanism != "":
+                sec.insert(g_mechanism)
+            setattr(sec, g_name, g_value)
+
+    for erev in conditions['erev']:
+        erev_section = erev['section']
+        erev_ena = erev['ena']
+        erev_ek = erev['ek']
+        if erev_section in section_map:
+            for sec in section_map.get(erev_section, []):
+                if h.ismembrane('k_ion', sec=sec) == 1:
+                    setattr(sec, 'ek', erev_ek)
+                if h.ismembrane('na_ion', sec=sec) == 1:
+                    setattr(sec, 'ena', erev_ena)
+        else:
+            print("Warning: can't set erev for {}, section array doesn't exist".format(erev_section))

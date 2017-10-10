@@ -3,49 +3,25 @@ from neuron import h
 
 
 def IntFire1(cell_prop):
-    """Set parameters for the IntFire1 cell models"""
-    params_file = cell_prop['params_file']
-
-    with open(params_file) as params_file:
-        params = json.load(params_file)
-
+    """Loads a point integrate and fire neuron"""
+    model_params = cell_prop.model_params
     hobj = h.IntFire1()
-    hobj.tau = params['tau'] * 1000.0  # Convert from seconds to ms.
-    hobj.refrac = params['refrac'] * 1000.0  # Convert from seconds to ms.
-
+    hobj.tau = model_params['tau']*1000.0  # Convert from seconds to ms.
+    hobj.refrac = model_params['refrac']*1000.0  # Convert from seconds to ms.
     return hobj
+
 
 
 def Biophys1(cell_prop):
-    '''
-    Set parameters for cells from the Allen Cell Types database
-    Prior to setting parameters will replace the axon with the stub
-
-    '''
-
     morphology_file_name = str(cell_prop['morphology_file'])
-    params_file_name = str(cell_prop['params_file'])
-
     hobj = h.Biophys1(morphology_file_name)
     fix_axon(hobj)
-    set_params_peri(hobj, params_file_name)
+    set_params_peri(hobj, cell_prop.model_params)
 
     return hobj
 
 
-def set_params_peri(hobj, params_file_name):
-    """Set biophysical parameters for the cell
-
-	Parameters
-	----------
-	hobj: instance of a Biophysical template
-		NEURON's cell object
-	params_file_name: string
-		name of json file containing biophysical parameters for cell's model which determine spiking behavior
-	"""
-    with open(params_file_name) as biophys_params_file:
-        biophys_params = json.load(biophys_params_file)
-
+def set_params_peri(hobj, biophys_params):
     passive = biophys_params['passive'][0]
     conditions = biophys_params['conditions'][0]
     genome = biophys_params['genome']
