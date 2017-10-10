@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="MintNet" href="mintnet.html" />
+    <link rel="next" title="bmtk package" href="bmtk.html" />
     <link rel="prev" title="PointNet" href="pointnet.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -42,6 +42,50 @@
             
   <div class="section" id="popnet">
 <h1>PopNet<a class="headerlink" href="#popnet" title="Permalink to this headline">¶</a></h1>
+<p>The PopNet simulation engine uses the <a class="reference external" href="http://alleninstitute.github.io/dipde/">DiPDE simulator</a> to simulate firing
+rate dynamics of connected population of cells.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>PopNet runs on Python 2.7 and will require addtional python packages numpy, h5py, pandas and jsonschema. To install
+either get the latest source-code from the github develop branch</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">AllenInstitute</span><span class="o">/</span><span class="n">bmtk</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+<p>or <a class="reference external" href="https://github.com/AllenInstitute/bmtk/archive/develop.zip">download</a> and unzip, and install missing python
+dependencies by running from the bmtk/ base directory</p>
+</div>
+<div class="section" id="installing-dipde">
+<h2>Installing DiPDE<a class="headerlink" href="#installing-dipde" title="Permalink to this headline">¶</a></h2>
+<p>PopNet will require DiPDE to run a simulation. To install DiPDE you can use pip</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">AllenInstitute</span><span class="o">/</span><span class="n">dipde</span><span class="o">.</span><span class="n">git</span> <span class="o">--</span><span class="n">user</span>
+</pre></div>
+</div>
+<p>Alteratively using Anaconda</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">nicholasc</span> <span class="n">dipde</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Examples for running PopNet are located in the source directory docs/examples/simulator/popnet/. Each subdirectory contains
+a different example with the following structure:</p>
+<blockquote>
+<div><ul class="simple">
+<li>network/ - files used to describe the networks being simulated</li>
+<li>models/pop_models/ - configuration files that setup different populations in the network.</li>
+<li>models/synaptic_models/ - configuration files that specify the connection between different populations.</li>
+</ul>
+</div></blockquote>
+<p>To run a simulation</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">run_popnet</span><span class="o">.</span><span class="n">py</span> <span class="n">config</span><span class="o">.</span><span class="n">json</span>
+</pre></div>
+</div>
+<p><strong>Output</strong></p>
+<p>After the simulation is finished, firing rates are saved into output/spike_rates.txt. The file follows the structure of
+space seperated:</p>
+<blockquote>
+<div>population-id  time  firing-rate</div></blockquote>
+</div>
 </div>
 
 
@@ -66,7 +110,6 @@
 <li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">PopNet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mintnet.html">MintNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="simulators.html#bionet">BioNet</a></li>
@@ -81,7 +124,7 @@
   <li><a href="index.html">Documentation overview</a><ul>
   <li><a href="simulators.html">Simulation Engines</a><ul>
       <li>Previous: <a href="pointnet.html" title="previous chapter">PointNet</a></li>
-      <li>Next: <a href="mintnet.html" title="next chapter">MintNet</a></li>
+      <li>Next: <a href="bmtk.html" title="next chapter">bmtk package</a></li>
   </ul></li>
   </ul></li>
 </ul>

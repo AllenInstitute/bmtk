@@ -42,6 +42,44 @@
             
   <div class="section" id="pointnet">
 <h1>PointNet<a class="headerlink" href="#pointnet" title="Permalink to this headline">¶</a></h1>
+<p>Pointnet is a simulation engine that utilizes <a class="reference external" href="http://www.nest-simulator.org/">NEST</a> to run large-scale point
+neuron network models.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>PointNet runs on Python 2.7 and will require addtional python packages numpy, h5py, pandas and jsonschema. To install
+either get the latest source-code from the github develop branch</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">AllenInstitute</span><span class="o">/</span><span class="n">bmtk</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+<p>or <a class="reference external" href="https://github.com/AllenInstitute/bmtk/archive/develop.zip">download</a> and unzip, and install missing python
+dependencies by running from the bmtk/ base directory</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="installing-nest">
+<h2>Installing NEST<a class="headerlink" href="#installing-nest" title="Permalink to this headline">¶</a></h2>
+<p>In addition PointNet requires NEST 2.12.0 python API to run a network simulation. Please see the <a class="reference external" href="http://www.nest-simulator.org/installation/">NEST installation documentation</a>
+for further instructions. PointNet does not require MPI to run a simulation, however if it is enabled in NEST then
+PointNet can utilized MPI to run simulation on a cluster.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>There is an example simulation of a small 120 cell network located in the source directory docs/examples/pointnet/120cells/.</p>
+<p>The network/ directory contains a small example network with nodes and edges files, and was built using the network
+builder. The config.json file contains run-time and network setup parameters, including location of cell and synaptic
+model files.</p>
+<p>To run a simulation in a single processor, open a command prompt and run</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">run_pointnet</span><span class="o">.</span><span class="n">py</span> <span class="n">config</span><span class="o">.</span><span class="n">json</span>
+</pre></div>
+</div>
+<p>Or to run a parallized simulation with MPI setup</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>mpirun -np $NCORES python run_pointnet.py config.json
+</pre></div>
+</div>
+<p><strong>Output</strong></p>
+<p>Spike-trains of the simulation are saved in the output/spikes.txt file, with two columns time, cell-gid.</p>
+</div>
 </div>
 
 
@@ -66,7 +104,6 @@
 <li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="popnet.html">PopNet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mintnet.html">MintNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="simulators.html#bionet">BioNet</a></li>
