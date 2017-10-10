@@ -17,14 +17,14 @@ $ unzip bmtk-develop
 ```
 You should now have the folder `bmtk-develop` containing the Brain Modeling Toolkit package.
 
-Add a path to the bmtk-develop folder to the environment variable PYTHOPATH in your `.bashrc` file.
+Add a path to the `bmtk-develop` folder to the environment variable PYTHOPATH in your `.bashrc` file.
 
 ### Dependencies:
 
 #### Python
 BioNet package requires [Python 2.7](www.python.org). 
 
-If you do not have Python already installed, we recommend installing [Anaconda](https://www.anaconda.com/download/) distribution of Python that comes preloaded with many packages and easy installation of additional packages.
+If you do not have Python already installed, we recommend installing [Anaconda](https://www.anaconda.com/download/) distribution of Python that comes preloaded with many packages and allows an easy installation of additional packages.
 
 #### Python packages
 BioNet has the following Python package dependancies:
@@ -62,24 +62,22 @@ $ python
 
 Additionally, BioNet requires [NEURON](http://www.neuron.yale.edu/neuron/download/) simulator (version 7.4.rel-1370 or or later). Detailed installation instructions may be found in the Appendix in Hines et al. Frontiers of Neuroinformatics, 2009. 
 
-Since BioNet does not require NEURON's GUI functionality, one may install NEURON without GUI support (i.e., without needing to install InterViews). For convenience we provide the installation instructions of NEURON on Linux platform without InterViews below:
+Since BioNet does not require NEURON's GUI functionality, one may install NEURON without GUI support (i.e., without needing to install InterViews). For convenience we provide the installation instructions of NEURON from the source code on Linux platform without InterViews below:
 
-create a `neuron` directory:
-
+download and unzip a nrn-7.4.rel-1370.tar.gz version of neuron:
 ```bash
-$ mkdir neuron
-$ cd neuron
-$ download and unzip a nrn-7.4.rel-1370.tar.gz version of neuron:
 $ wget http://www.neuron.yale.edu/ftp/neuron/versions/v7.4/v7.4.rel-1370/nrn-7.4.rel-1370.tar.gz
 $ tar xf nrn*gz
-$ cd nrn-7.4
 ```
+This should have create a `nrn-7.4` directory. 
 
 Other versions of NEURON may be found following the link http://www.neuron.yale.edu/ftp/neuron/versions/` and similarly installed.
 
-If you want to run NEURON in parallel, it requires a version a version of [MPI](http://www.mpich.org/) to be installed. If you have MPI installed you will configure installation as follows: 
+Now you will configure and compile binaries.
 
-change to the newly created nrn-7.4 directory and configure installation:
+If you want to run NEURON in parallel, it requires a version of [MPI](http://www.mpich.org/) to be installed. If you have MPI installed you will configure installation as follows: 
+
+change to the newly created `nrn-7.4` directory and configure installation:
 
 ```bash
 $ ./configure --prefix=`pwd` --with-paranrn --with-nrnpython --without-x have_cython=no BUILD_RX3D=0
@@ -90,9 +88,9 @@ otherwise remove --with-paranrn from configuration options:
 $ ./configure --prefix=`pwd` --with-nrnpython --without-x have_cython=no BUILD_RX3D=0
 ```
 
-finally build neuron binaries:
+finally compile the code:
 
-```bashq
+```bash
 make -j 6 install
 ```
 
@@ -111,11 +109,11 @@ $ nrniv -python
 >>> exit()
 ```
 
-Now you are ready to run the examples.
+If everything is installed correctly, you are now ready to run the examples.
 
 ### Running examples
 
-To run examples go to the folder with installed `bmkt-develop` package and then cd to the examples folder for BioNet 
+To run examples go to the folder `bmkt-develop` package is installed and cd to the examples folder for BioNet 
 
 ```bash
 cd ./docs/examples/simulator/bionet/
@@ -129,7 +127,7 @@ There you will find 4 folders with examples of pre-built and ready to run networ
 
 as well as a `components` folder including files defining models of individual cells, synapses, electrodes etc., used by the above networks.
 
-Prior to running you will need to compile NEURON mechanisms located in the `components` folder:
+Prior to running simulations you need to compile NEURON mechanisms located in the `components` folder:
 
 ```bash
 $ cd  ./components/mechanisms/
@@ -174,11 +172,13 @@ In the output directory you will find:
 
 ### Simulating your network models
 
-To run simulations of your network with BioNet, you will need to provide a pre-built network in the format understood by BioNet. The network main be built using BMTK's builder tool. The good place to start is to follow an example for building a network of [14cells](https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/builder/bionet_14cells)
+To run simulations of your network with BioNet, you will first need to provide a pre-built network in the format understood by BioNet. We recommend using BMTK's builder tools to build simuations, but you may also use your own scripts or a third party tool. As a start we suggest to modify the existing network examples as a quick way of customizing network models. When you become familiar with model structure, we suggest to study the example for building a network of e.g. [14cells](https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/builder/bionet_14cells)
 
-Then, you will need to specify your configuration file the paths to the network files and component files as well as list simulation run parameters.
+When you have your custom model, you will need to specify in the your configuration file the paths to the network, components as well as simulation run parameters.
 
-Just as in the above examples, your run folder should include Python modules set_cell_params.py, set_syn_params.py set_weights.py specifying how models of cells, synapses and connection weights are created as well as a main python script. When running different simulations,  you will rarely need to modify the main Python script. Instead, you will commonly need to modify parameters in the configuration file to instruct BioNet which model to run and how to run it. Thus we included a separate tutorial explaining the structure of the [configuration file](http://stash.corp.alleninstitute.org/projects/MIND/repos/bmtk/browse/docs/examples/simulator/bionet/README_config.md). 
+Just as in the above examples, your run folder should include Python modules: set_cell_params.py, set_syn_params.py, set_weights.py specifying how models of cells, synapses and connection weights are created as well as a main python script. 
+
+When running different simulations you will rarely need to modify the main Python script. Instead, you will commonly need to modify paths or parameters in the configuration file to instruct BioNet which model to run and how to run it. Thus we included a separate tutorial explaining the structure of the [configuration file](http://stash.corp.alleninstitute.org/projects/MIND/repos/bmtk/browse/docs/examples/simulator/bionet/README_config.md). 
 
 
 
