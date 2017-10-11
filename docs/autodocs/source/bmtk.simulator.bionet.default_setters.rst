@@ -20,6 +20,14 @@ bmtk\.simulator\.bionet\.default\_setters\.synapse\_models module
     :undoc-members:
     :show-inheritance:
 
+bmtk\.simulator\.bionet\.default\_setters\.synaptic\_weights module
+-------------------------------------------------------------------
+
+.. automodule:: bmtk.simulator.bionet.default_setters.synaptic_weights
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------

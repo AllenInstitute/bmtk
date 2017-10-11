@@ -12,6 +12,14 @@ bmtk\.builder\.networks\.dm\_network module
     :undoc-members:
     :show-inheritance:
 
+bmtk\.builder\.networks\.input\_network module
+----------------------------------------------
+
+.. automodule:: bmtk.builder.networks.input_network
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 bmtk\.builder\.networks\.nxnetwork module
 -----------------------------------------
 
