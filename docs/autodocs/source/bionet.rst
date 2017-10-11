@@ -5,13 +5,15 @@ BioNet is a high-level interface to `NEURON <http://neuron.yale.edu/neuron/>`_ t
 
 Installation
 ------------
-BioNet runs on Python 2.7 and will require additioonal python packages:
+BioNet runs on Python 2.7. If you do not have Python already installed, we recommend installing `Anaconda <https://www.anaconda.com/download/>`_ distribution of Python that comes preloaded with many packages and allows an easy installation of additional packages. 
+
+BioNet requires the following additional python packages:
  * numpy 1.10
  * pandas 0.19.2
  * h5py 2.6
  * jsonschema 2.6.0
 
-To install either get the latest source-code from the github develop branch:
+To install BioNet either get the latest source-code from the github develop branch:
 ::
   git clone https://github.com/AllenInstitute/bmtk.git
 
