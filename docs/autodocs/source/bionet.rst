@@ -1,7 +1,8 @@
 BioNet
 ======
 
-BioNet is a high-level interface to `NEURON <http://neuron.yale.edu/neuron/>`_ that facilitates simulations of large-scale neuronal networks on parallel computer architecture.
+BioNet is a high-level interface to `NEURON <http://neuron.yale.edu/neuron/>`_ that facilitates simulations of large-scale neuronal networks on parallel computer architecture. The soure code for BioNet is located in the folder /bmtk/simulator/bionet
+
 
 Installation
 ------------
