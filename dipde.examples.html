@@ -1,0 +1,862 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Examples (dipde.examples) &mdash; dipde 0.1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="dipde 0.1.1 documentation" href="index.html" />
+    <link rel="up" title="Packages" href="dipde.html" />
+    <link rel="next" title="Core functionality (dipde.internals)" href="dipde.internals.html" />
+    <link rel="prev" title="Packages" href="dipde.html" /> 
+  </head>
+  <body role="document">
+<script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
+<style>
+
+	/* the icon font-family definition and helper classes */
+	@font-face {
+	  font-family: 'portal_icon_font';
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
+	  font-weight: normal;
+	  font-style: normal;
+	}
+	 
+	 [class^="icon-"]:before, [class*=" icon-"]:before {
+	  font-family: "portal_icon_font";
+	  font-style: normal;
+	  font-weight: normal;
+	  speak: none;
+	 
+	  display: inline-block;
+	  text-decoration: inherit;
+	  width: 1em;
+	  margin-right: .2em;
+	  text-align: center;
+	  /* opacity: .8; */
+	 
+	  /* For safety - reset parent styles, that can break glyph codes*/
+	  font-variant: normal;
+	  text-transform: none;
+	     
+	  /* fix buttons height, for twitter bootstrap */
+	  line-height: 1em;
+	 
+	  /* Animation center compensation - margins should be symmetric */
+	  /* remove if not needed */
+	  margin-left: .2em;
+	
+	}
+	 
+	.icon-spin5:before { content: '\e806'; } /* '' */
+	.icon-left-open-1:before { content: '\e81e'; } /* '' */
+	.icon-plus-1:before { content: '\e801'; } /* '' */
+	.icon-facebook:before { content: '\e816'; } /* '' */
+	.icon-gplus:before { content: '\e818'; } /* '' */
+	.icon-linkedin-3:before { content: '\e815'; } /* '' */
+	.icon-twitter:before { content: '\e817'; } /* '' */
+	.icon-youtube-play:before { content: '\e805'; } /* '' */
+	.icon-plus-2:before { content: '\e809'; } /* '' */
+	.icon-record-1:before { content: '\e81c'; } /* '' */
+	.icon-cancel:before { content: '\e80b'; } /* '' */
+	.icon-search:before { content: '\e804'; } /* '' */
+	.icon-cancel-2:before { content: '\e80c'; } /* '' */
+	.icon-plus-4:before { content: '\e80d'; } /* '' */
+	.icon-cancel-3:before { content: '\e80e'; } /* '' */
+	.icon-plus:before { content: '\e808'; } /* '' */
+	.icon-down-open:before { content: '\e800'; } /* '' */
+	.icon-right-open:before { content: '\e802'; } /* '' */
+	.icon-up-open:before { content: '\e803'; } /* '' */
+	.icon-stop:before { content: '\e813'; } /* '' */
+	.icon-cancel-1:before { content: '\e820'; } /* '' */
+	.icon-plus-3:before { content: '\e80a'; } /* '' */
+	/* end icon font helpers */
+
+	/* icon font spin animation */
+	.animate-spin {
+	  -moz-animation: spin 2s infinite linear;
+	  -o-animation: spin 2s infinite linear;
+	  -webkit-animation: spin 2s infinite linear;
+	  animation: spin 2s infinite linear;
+	  display: inline-block;
+	}
+	@-moz-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-webkit-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-o-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-ms-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	/*  end spin animation */	
+
+	@font-face {
+	    font-family: 'bebas_neueregular';
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
+	    font-weight: normal;
+	    font-style: normal;
+	}
+
+	/* top chrome styles */
+	#top_chrome {
+
+		width:100%;
+		height:28px;
+		background-color:#163E65;
+	}
+
+	.chrome_link_block {
+
+		color:#fff !important;	
+		display:inline-block;
+		height:100%;
+		max-height:28px;
+	}
+
+	.chrome_link_block:hover {
+
+		background-color:#eee;
+		color:#0779BE !important;	
+		cursor:pointer;
+	}
+
+	#top_chrome a {
+
+		color:inherit !important;	
+		text-decoration:none;
+	}
+
+	#top_chrome a:hover {
+
+		color:inherit !important;	
+	}
+
+	#top_chrome_buttons {
+
+		float:right;
+		margin-right:50px;
+	}
+
+	.chrome_button {
+
+		font-family:arial,sans-serif;
+		font-weight:bold;
+		display:inline-block;
+		font-size:9px;
+		text-align:left;
+		text-decoration:none;
+		margin:9px 20px 10px 20px;
+	}
+
+	.chrome_active {
+
+		background-color:#1b7abd;
+		color:#fff;
+	}
+
+
+	/* header element styles*/
+	#header_content {
+
+		font-family: bebas_neueregular, arial, sans-serif;
+		font-size:22px;
+		color:#0779be;		
+		letter-spacing:0.03em;
+
+		position:relative;
+		width:calc(100% - 112px);
+		min-width:800px;
+		height:76px;
+		border-bottom:2px solid #A5A8AB;
+		margin-left:50px;
+		margin-right:50px;
+        z-index:9999; /* IT-9508 */
+	}
+
+	#portal_logo {
+
+		position:absolute;
+		top:20px;
+		left:0px;
+		width:236px;
+	}
+
+	#portal_tabs {
+
+		position: absolute;
+		bottom: 12px;
+		left: 0px;
+		margin-bottom: -12px;
+		display: block;
+	}
+
+	.horizontal_list
+	{
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		display: inline; 		
+	}
+
+	.horizontal_list li { 
+
+		display: inline; 	
+	}	
+
+	#portal_tab_menu_container {
+
+		display:none;
+	}
+
+	#portal_search_input_group {
+
+		position:absolute;
+		margin: 0;
+		padding: 0;
+		bottom:12px;
+		right:0px;
+		border:1px solid #DAD9D3;
+		color:#DAD9D3;
+	}
+
+	#portal_search_input_group input {
+
+		margin: 0;
+		padding: 0;
+		border:none;
+		width:110px;
+		color:#DAD9D3;
+		font-family:Helvetica,sans-serif;
+		font-size:12px;
+		height:28px;
+		margin-left:10px;
+
+		outline:none;
+	}
+
+	input::-ms-clear {
+		display: none;
+	}
+
+	#portal_search_input_group i {
+
+		font-size:0.8em;
+		cursor:pointer;
+	}
+
+	#pSiteSearchTextInput:focus {
+
+		color:#000;
+	}
+
+	.icon_menu_down {
+
+		font-size: 12px;
+		margin-left: 4px;
+		vertical-align: text-top;
+		padding-top: 4px;
+		display: inline-block;
+	}
+
+	.portal_tab_item {
+
+		background-color: #fff;
+		padding: 12px;
+		padding-left:20px;
+		padding-right:20px;
+		display: inline-block !important;		
+	}
+
+	.portal_tab_item a:hover {
+
+		color:#fbe300;	
+	}
+
+	.portal_tab_item:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}	
+
+
+	.portal_menu_active {
+
+		background-color: #EEEEEE;
+	}	
+
+	.portal_menu_item_active {
+
+		color:#fbe300 !important;	
+	}
+
+	.portal_tab_active {
+
+		color:#a5a8ab !important;
+	}
+
+	#header_content a {		
+
+		color:inherit !important;
+	}
+
+	#header_content a:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}
+
+	#header_content ul {
+
+		list-style: none;
+		position: relative;
+		top: 58px;
+		display: inline-table;
+	}
+
+	#header_content ul ul {
+		
+		display:none;
+		opacity:0;
+	}
+
+	/* the fly out menus */
+	#header_content ul li:hover > ul,
+	#header_content ul li.hover > ul {
+
+		position: absolute;
+		top: 48px;
+		z-index:999;
+
+		display: block;
+		width: 152px;
+		padding:0px;
+		padding-top:20px;
+		padding-bottom:10px;
+		font-size: 12px;
+		font-family: Arial,Sans-Serif;
+		font-weight: bold;
+		text-transform: uppercase;
+
+		background-color: rgba(8,122,191,0.98);
+		color: #fff !important;
+		opacity: 1;
+
+		-webkit-animation: fade 0.25s;
+		animation: fade 0.25s;
+	}
+
+	@-webkit-keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}
+	@keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}	
+
+	#header_content ul li:hover > ul li {
+
+		padding: 10px;
+		padding-top: 0px;
+		padding-left: 20px;
+		display: block;
+		opacity:1;
+	}
+
+	#header_content ul li:hover > ul a {
+
+		display: block;
+		opacity:1;
+		white-space:nowrap;
+	}
+
+	#portal_menu_start_list {
+
+		left: 81px;
+
+		/* IE sauce */
+		left:85px\9;
+
+		/* Safari sauce */
+		(;left:79px;);
+	}
+
+	#portal_menu_atlases_list {
+
+		left: 290px;
+		width: 210px !important;
+        height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 303px\9;
+        height: 225px\9;
+
+		/* Safari sauce */
+		(;left:279px;);
+	}
+
+	#portal_menu_tools_list {
+
+		left: 500px;
+		width: 172px !important;
+		height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 513px\9;
+		height:225px\9;
+
+		/* Safari sauce */
+		(;left:489px;);
+		(;height:227px;);
+	}
+
+	/* mozilla sauce */
+	@-moz-document url-prefix() {
+
+		#header_content {
+
+			height:107px;
+		}
+
+		#portal_menu_start_list {
+
+			left:85px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 302px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 512px;
+			height:236px;
+		}
+	}
+
+
+	/* make it look OK on iPad also */
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:portrait) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}  
+	}
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:landscape) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}	  
+	}
+
+	.portal_menu_list_heading {
+
+		color:#9ccae5;
+		border-bottom:1px solid #9ccae5;
+		padding-bottom:5px !important;
+	}
+
+	.portal_menu_list_heading + li {
+
+		padding-top:10px !important;
+	}
+
+	.portal_menu_list_heading li {
+
+		padding-bottom:0px;
+	}	
+
+	#portal_menu_atlases_list li:last-of-type {
+
+		padding-bottom:15px !important;
+	}
+
+	.icon-spin5 {
+
+		color:#000;
+	}
+</style>
+<div id="pHeader">
+<div id="top_chrome">
+	<div id="top_chrome_buttons">
+		<div class="chrome_link_block"><a href="http://www.alleninstitute.org" target="_blank" class="chrome_button">ALLEN INSTITUTE</a></div>
+		<div class="chrome_link_block chrome_active"><a href="http://www.brain-map.org" class="chrome_button">BRAIN ATLAS</a></div>
+	</div>
+</div>
+
+<div id="header_content">
+
+	<a href="http://alleninstitute.org/">
+		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/AIBS_Logo.png"/>
+	</a>
+</div>
+</div>
+
+<script>
+
+jQuery('#portal_tab_menu').bind('touchstart', function() {
+
+	if(window.console)
+		console.log("touchstart");
+});
+</script>
+<link rel="stylesheet" type="text/css" href="_static/external_assets/stylesheets/common_layout.css" />
+
+
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="examples-dipde-examples">
+<span id="ref-examples"></span><h1>Examples (dipde.examples)<a class="headerlink" href="#examples-dipde-examples" title="Permalink to this headline">¶</a></h1>
+<p>These quick-start examples demonstrate the configuration, simulation, and plotting of simple dipde networks.</p>
+<p>A preamble imports the classes necessary for simulation:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">dipde.internals.internalpopulation</span> <span class="kn">import</span> <span class="n">InternalPopulation</span>
+<span class="kn">from</span> <span class="nn">dipde.internals.externalpopulation</span> <span class="kn">import</span> <span class="n">ExternalPopulation</span>
+<span class="kn">from</span> <span class="nn">dipde.internals.simulation</span> <span class="kn">import</span> <span class="n">Simulation</span>
+<span class="kn">from</span> <span class="nn">dipde.internals.connection</span> <span class="kn">import</span> <span class="n">Connection</span> <span class="k">as</span> <span class="n">Connection</span>
+</pre></div>
+</div>
+<p>Each of the example simulations below use the same general settings:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Settings:</span>
+<span class="n">t0</span> <span class="o">=</span> <span class="mf">0.</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="o">.</span><span class="mo">0001</span>
+<span class="n">dv</span> <span class="o">=</span> <span class="o">.</span><span class="mo">0001</span>
+<span class="n">tf</span> <span class="o">=</span> <span class="o">.</span><span class="mi">1</span>
+<span class="n">update_method</span> <span class="o">=</span> <span class="s">&#39;approx&#39;</span>
+<span class="n">approx_order</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-14</span>
+<span class="n">verbose</span> <span class="o">=</span> <span class="bp">True</span>
+</pre></div>
+</div>
+<p>Here dt defines the time step of the simulation (in seconds), dv defines the granularity of the voltage domain of the Internal populations (in volts), and tf defines the total duration of the simulation (in seconds).
+The update method allows the user to change the time-stepping method for the forward evolution of the time domain of each Internal population.
+The approx_order and tol options fine-tune the time stepping, to provide a tradeoff between simulation time and numerical precision when the time evolution method is &#8216;approx,&#8217; as opposed to &#8216;exact.&#8217;
+Setting verbose to True causes the Simulation to print the current time after the evaluation of each time step.</p>
+<div class="section" id="singlepop">
+<h2>Singlepop<a class="headerlink" href="#singlepop" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference download internal" href="_downloads/singlepop.py"><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">singlepop.py</span></code></a></p>
+<p>The singlepop simulation provides a simple feedforward topology that uses every major class in the core library.
+A single 100 Hz External population population (here specified as a string, although a floating point or integer specification will work also) provides excitatory input.
+This is connected to an Internal population (modeled as a population density pde) via a delta-distributed synaptic weight distribution, with 5 mV strength.
+The in-degree (nsyn) of this Connection is set to 1 for this example; in general, this serves as a multiplier of the input firing rate of the source population.
+The internal population has a linearly binned voltage domain from v_min to v_max.
+No negative bins (i.e. v_min &lt; 0) are required here, because no negative synaptic inputs (&#8216;weights&#8217; in the Connection object) are defined.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Create simulation:</span>
+<span class="n">b1</span> <span class="o">=</span> <span class="n">ExternalPopulation</span><span class="p">(</span><span class="s">&#39;100&#39;</span><span class="p">,</span> <span class="n">record</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">i1</span> <span class="o">=</span> <span class="n">InternalPopulation</span><span class="p">(</span><span class="n">v_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">v_max</span><span class="o">=.</span><span class="mo">02</span><span class="p">,</span> <span class="n">dv</span><span class="o">=</span><span class="n">dv</span><span class="p">,</span> <span class="n">update_method</span><span class="o">=</span><span class="n">update_method</span><span class="p">,</span> <span class="n">approx_order</span><span class="o">=</span><span class="n">approx_order</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">)</span>
+<span class="n">b1_i1</span> <span class="o">=</span> <span class="n">Connection</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span> <span class="n">i1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mo">005</span><span class="p">],</span> <span class="n">probs</span><span class="o">=</span><span class="p">[</span><span class="mf">1.</span><span class="p">],</span> <span class="n">delay</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="n">simulation</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">([</span><span class="n">b1</span><span class="p">,</span> <span class="n">i1</span><span class="p">],</span> <span class="p">[</span><span class="n">b1_i1</span><span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+<span class="n">simulation</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">tf</span><span class="o">=</span><span class="n">tf</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>The mean firing rate of the Internal population resulting from this simulation is</dt>
+<dd>plotted below, along with the code used to generate the plot:</dd>
+</dl>
+<a class="reference internal image-reference" href="_images/singlepop.png"><img alt="_images/singlepop.png" src="_images/singlepop.png" style="width: 45%;" /></a>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Visualize:</span>
+<span class="n">i1</span> <span class="o">=</span> <span class="n">simulation</span><span class="o">.</span><span class="n">population_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">i1</span><span class="o">.</span><span class="n">t_record</span><span class="p">,</span> <span class="n">i1</span><span class="o">.</span><span class="n">firing_rate_record</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="n">tf</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">ymin</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Time (s)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Firing Rate (Hz)&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="singlepop-recurrent">
+<h2>Singlepop (recurrent)<a class="headerlink" href="#singlepop-recurrent" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference download internal" href="_downloads/singlepop_recurrent.py"><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">singlepop_recurrent.py</span></code></a></p>
+<p>The next example is identical to the singlepop example, with the exception of an additional recurrent connection from the internal population to itself.
+This demonstrates that the Connection object is used to connect both Internal and External population sources to an Internal target population.
+Attempting to create a Connection with an External population as a target will result in an AttributeError.
+The additional excitatory input resulting from the extra recurrent connection results in a slightly increased steady-state firing rate.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Create simulation:</span>
+<span class="n">b1</span> <span class="o">=</span> <span class="n">ExternalPopulation</span><span class="p">(</span><span class="s">&#39;100&#39;</span><span class="p">)</span>
+<span class="n">i1</span> <span class="o">=</span> <span class="n">InternalPopulation</span><span class="p">(</span><span class="n">v_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">v_max</span><span class="o">=.</span><span class="mo">02</span><span class="p">,</span> <span class="n">dv</span><span class="o">=</span><span class="n">dv</span><span class="p">,</span> <span class="n">update_method</span><span class="o">=</span><span class="n">update_method</span><span class="p">,</span> <span class="n">approx_order</span><span class="o">=</span><span class="n">approx_order</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">)</span>
+<span class="n">b1_i1</span> <span class="o">=</span> <span class="n">Connection</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span> <span class="n">i1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mo">005</span><span class="p">],</span> <span class="n">probs</span><span class="o">=</span><span class="p">[</span><span class="mf">1.</span><span class="p">],</span> <span class="n">delay</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="n">i1_i1</span> <span class="o">=</span> <span class="n">Connection</span><span class="p">(</span><span class="n">i1</span><span class="p">,</span> <span class="n">i1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mo">005</span><span class="p">],</span> <span class="n">probs</span><span class="o">=</span><span class="p">[</span><span class="mf">1.</span><span class="p">],</span> <span class="n">delay</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="n">simulation</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">([</span><span class="n">b1</span><span class="p">,</span> <span class="n">i1</span><span class="p">],</span> <span class="p">[</span><span class="n">b1_i1</span><span class="p">,</span> <span class="n">i1_i1</span><span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+<span class="n">simulation</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">tf</span><span class="o">=</span><span class="n">tf</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/singlepop_recurrent.png"><img alt="_images/singlepop_recurrent.png" src="_images/singlepop_recurrent.png" style="width: 45%;" /></a>
+</div>
+<div class="section" id="excitatory-inhibitory">
+<h2>Excitatory/Inhibitory<a class="headerlink" href="#excitatory-inhibitory" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference download internal" href="_downloads/excitatory_inhibitory.py"><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">excitatory_inhibitory.py</span></code></a></p>
+<p>Inhibitory connections are formed the same as excitatory connections, except the sign of the connection weight distribution is changed.
+In this example, the background External population is connected to the Internal population with two connections, one excitatory and one inhibitory.
+Because of this negative input, negative voltage values are possible, requiring that v_min&lt;0.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">b1</span> <span class="o">=</span> <span class="n">ExternalPopulation</span><span class="p">(</span><span class="s">&#39;100&#39;</span><span class="p">)</span>
+<span class="n">i1</span> <span class="o">=</span> <span class="n">InternalPopulation</span><span class="p">(</span><span class="n">v_min</span><span class="o">=-.</span><span class="mo">02</span><span class="p">,</span> <span class="n">v_max</span><span class="o">=.</span><span class="mo">02</span><span class="p">,</span> <span class="n">dv</span><span class="o">=</span><span class="n">dv</span><span class="p">,</span> <span class="n">update_method</span><span class="o">=</span><span class="n">update_method</span><span class="p">,</span> <span class="n">approx_order</span><span class="o">=</span><span class="n">approx_order</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">)</span>
+<span class="n">b1_i1</span> <span class="o">=</span> <span class="n">Connection</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span> <span class="n">i1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mo">005</span><span class="p">],</span> <span class="n">probs</span><span class="o">=</span><span class="p">[</span><span class="mf">1.</span><span class="p">],</span> <span class="n">delay</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="n">b1_i1_2</span> <span class="o">=</span> <span class="n">Connection</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span> <span class="n">i1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="o">-.</span><span class="mo">005</span><span class="p">],</span> <span class="n">probs</span><span class="o">=</span><span class="p">[</span><span class="mf">1.</span><span class="p">],</span> <span class="n">delay</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="n">simulation</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">([</span><span class="n">b1</span><span class="p">,</span> <span class="n">i1</span><span class="p">],</span> <span class="p">[</span><span class="n">b1_i1</span><span class="p">,</span> <span class="n">b1_i1_2</span><span class="p">],</span>  <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+<span class="n">simulation</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">tf</span><span class="o">=</span><span class="n">tf</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/excitatory_inhibitory.png"><img alt="_images/excitatory_inhibitory.png" src="_images/excitatory_inhibitory.png" style="width: 45%;" /></a>
+</div>
+<div class="section" id="singlepop-sine">
+<h2>Singlepop (sine)<a class="headerlink" href="#singlepop-sine" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference download internal" href="_downloads/singlepop_sine.py"><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">singlepop_sine.py</span></code></a></p>
+<p>By modifying the argument to the ExternalPopulation constructor, we can define a time-varying external input.
+This input is parsed by Sympy using the lambdify module; any lambdify-able expression with the independent variable &#8216;t&#8217; is acceptable.
+Negative values of the firing rate function will throw an Exception.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Create simulation:</span>
+<span class="n">b1</span> <span class="o">=</span> <span class="n">ExternalPopulation</span><span class="p">(</span><span class="s">&#39;100+50*abs(sin(40*t))&#39;</span><span class="p">)</span>
+<span class="n">i1</span> <span class="o">=</span> <span class="n">InternalPopulation</span><span class="p">(</span><span class="n">v_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">v_max</span><span class="o">=.</span><span class="mo">02</span><span class="p">,</span> <span class="n">dv</span><span class="o">=</span><span class="n">dv</span><span class="p">,</span> <span class="n">update_method</span><span class="o">=</span><span class="n">update_method</span><span class="p">,</span> <span class="n">approx_order</span><span class="o">=</span><span class="n">approx_order</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">)</span>
+<span class="n">b1_i1</span> <span class="o">=</span> <span class="n">Connection</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span> <span class="n">i1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mo">005</span><span class="p">],</span> <span class="n">probs</span><span class="o">=</span><span class="p">[</span><span class="mf">1.</span><span class="p">],</span> <span class="n">delay</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="n">simulation</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">([</span><span class="n">b1</span><span class="p">,</span> <span class="n">i1</span><span class="p">],</span> <span class="p">[</span><span class="n">b1_i1</span><span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/singlepop_sine.png"><img alt="_images/singlepop_sine.png" src="_images/singlepop_sine.png" style="width: 45%;" /></a>
+</div>
+<div class="section" id="singlepop-exponential">
+<h2>Singlepop (exponential)<a class="headerlink" href="#singlepop-exponential" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference download internal" href="_downloads/singlepop_exponential_distribution.py"><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">singlepop_exponential_distribution.py</span></code></a></p>
+<p>Up until now, each connection object was defined with a single synaptic weight.
+However, connection objects are fundamentally defined by synaptic weight distributions (See Iyer et al. 2013 <a class="footnote-reference" href="#id4" id="id1">[1]</a>).
+Here we consider the effect of an exponentially distributed synaptic weight distribution with mean equal to 5 mV.
+The steady state firing rate under this stimulus is significantly higher than the delta-distributed example (singlepop, above).
+In general, any Continuous synaptic weight distribution can be defined using scipy.stats module; however it will be discretized into a finite set of input weights.
+Discrete distributions can be specified directly, and will be used exactly.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="kn">as</span> <span class="nn">sps</span>
+
+<span class="c"># Create simulation:</span>
+<span class="n">b1</span> <span class="o">=</span> <span class="n">ExternalPopulation</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">i1</span> <span class="o">=</span> <span class="n">InternalPopulation</span><span class="p">(</span><span class="n">v_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">v_max</span><span class="o">=.</span><span class="mo">02</span><span class="p">,</span> <span class="n">dv</span><span class="o">=</span><span class="n">dv</span><span class="p">,</span> <span class="n">update_method</span><span class="o">=</span><span class="n">update_method</span><span class="p">,</span> <span class="n">approx_order</span><span class="o">=</span><span class="n">approx_order</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">)</span>
+<span class="n">b1_i1</span> <span class="o">=</span> <span class="n">Connection</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span> <span class="n">i1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="n">sps</span><span class="o">.</span><span class="n">expon</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">201</span><span class="p">,</span> <span class="n">scale</span><span class="o">=.</span><span class="mo">005</span><span class="p">)</span>
+<span class="n">simulation</span> <span class="o">=</span> <span class="n">Simulation</span><span class="p">([</span><span class="n">b1</span><span class="p">,</span> <span class="n">i1</span><span class="p">],</span> <span class="p">[</span><span class="n">b1_i1</span><span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+<span class="n">simulation</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">tf</span><span class="o">=</span><span class="n">tf</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="_images/singlepop_exponential_distribution.png"><img alt="_images/singlepop_exponential_distribution.png" src="_images/singlepop_exponential_distribution.png" style="width: 45%;" /></a>
+<p>In general, the special case of exponentially distributed synaptic weights admits an analytical steady-state firing rate solution (see Richardson and Swarbrick, 2010 <a class="footnote-reference" href="#id5" id="id2">[2]</a>, and Iyer et al. 2014 <a class="footnote-reference" href="#id6" id="id3">[3]</a>).
+The figure above includes the mean firing rate computed for the internal population, as well as a &#8216;*&#8217; indicating a semi-analytic prediction (~8.669 Hz) of the steady-state firing rate for the model.
+This steady state prediction is computed with the code below, plotted above with an &#8216;*&#8217;.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">scipy.integrate</span> <span class="kn">as</span> <span class="nn">spint</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="n">R_e</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">a_e</span> <span class="o">=</span> <span class="o">.</span><span class="mo">005</span>
+<span class="n">tau</span> <span class="o">=</span> <span class="o">.</span><span class="mo">02</span>
+<span class="n">v_th</span> <span class="o">=</span> <span class="o">.</span><span class="mo">02</span>
+<span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="n">c</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">a_e</span><span class="o">*</span><span class="n">c</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="n">tau</span><span class="o">*</span><span class="n">R_e</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">v_th</span><span class="o">*</span><span class="n">c</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">a_e</span><span class="o">*</span><span class="n">c</span><span class="p">)</span><span class="o">-</span><span class="mf">1.</span><span class="p">)</span>
+<span class="n">y</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">spint</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">1.</span><span class="o">/</span><span class="n">a_e</span><span class="p">)</span>
+<span class="n">steady_state_prediction</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="p">(</span><span class="n">tau</span><span class="o">*</span><span class="n">y</span><span class="p">)</span>    <span class="c"># &gt;&gt;&gt; 8.6687760498</span>
+</pre></div>
+</div>
+<table class="docutils footnote" frame="void" id="id4" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>Iyer, R., Menon, V., Buice, M., Koch, C., &amp; Mihalas, S. (2013). The Influence of Synaptic Weight Distribution on Neuronal Population Dynamics. <em>PLoS Computational Biology</em>, 9(10), e1003248. doi:10.1371/journal.pcbi.1003248</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id5" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td>Richardson, Magnus J. E. &amp; Swarbrick, Rupert (2010). Firing-Rate Response of a Neuron Receiving Excitatory and Inhibitory Synaptic Shot Noise. Phys. Rev. Lett., 105, 178102.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id6" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[3]</a></td><td>Iyer, R., Cain, N., &amp; Mihalas, S. (2014). Dynamics of excitatory-inhibitory neuronal networks with exponential synaptic weight distributions. Cosyne Abstracts 2014, Salt Lake City USA.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="index.html">Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user.html">User Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="user.html#quick-start-install-using-pip">Quick Start Install Using Pip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="user.html#required-dependencies">Required Dependencies</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="dipde.html">Packages</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="">Examples (dipde.examples)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#singlepop">Singlepop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#singlepop-recurrent">Singlepop (recurrent)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#excitatory-inhibitory">Excitatory/Inhibitory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#singlepop-sine">Singlepop (sine)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#singlepop-exponential">Singlepop (exponential)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dipde.internals.html">Core functionality (dipde.internals)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dipde.internals.html#module-dipde.internals.externalpopulation">External Population</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dipde.internals.html#module-dipde.internals.internalpopulation">Internal Population</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dipde.internals.html#module-dipde.internals.connection">Connection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dipde.internals.html#module-dipde.internals.connectiondistribution">Connection Distribution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dipde.internals.html#module-dipde.internals.connectiondistributioncollection">Connection Distribution Collection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dipde.internals.html#module-dipde.internals.simulation">Simulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dipde.internals.html#module-dipde.internals.utilities">Utilities</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dipde.column.html">Cortical Column Model</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+    </div>
+<script type="text/javascript" src="_static/external_assets/javascript/portalFooter.js"></script>
+
+  </body>
+</html>

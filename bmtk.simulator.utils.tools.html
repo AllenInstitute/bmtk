@@ -22,22 +22,20 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="bmtk.utils package" href="bmtk.utils.html" />
-    <link rel="prev" title="bmtk.simulator.utils.stimulus package" href="bmtk.simulator.utils.stimulus.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
   </head>
   <body>
-<script type="text/javascript" src="/external_assets/javascript/portal.js"></script>
+<script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
 <style>
 
 	/* the icon font-family definition and helper classes */
 	@font-face {
 	  font-family: 'portal_icon_font';
-	  src: url('/external_assets/stylesheets/portal_icon_font.eot?39505677');
-	  src: url('/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
-	       url('/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
-	       url('/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
-	       url('/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
 	  font-weight: normal;
 	  font-style: normal;
 	}
@@ -179,11 +177,11 @@
 
 	@font-face {
 	    font-family: 'bebas_neueregular';
-	    src: url('/external_assets/stylesheets/bebasneue-webfont.eot');
-	    src: url('/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
-	         url('/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
-	         url('/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
-	         url('/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
 	    font-weight: normal;
 	    font-style: normal;
 	}
@@ -605,8 +603,8 @@
 
 <div id="header_content">
 
-	<a href="http://AllenInstitute.github.io/AllenSDK">
-		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/logo_AIBS.gif"/>
+	<a href="http://AllenInstitute.github.io">
+		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/AIBS_Logo.png"/>
 	</a>
 </div>
 </div>
@@ -619,7 +617,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 		console.log("touchstart");
 });
 </script>
-<link rel="stylesheet" type="text/css" href="/external_assets/stylesheets/common_layout.css" />
+<link rel="stylesheet" type="text/css" href="_static/external_assets/stylesheets/common_layout.css" />
 
 
   
@@ -638,49 +636,83 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span id="bmtk-simulator-utils-tools-process-spikes-module"></span><h2>bmtk.simulator.utils.tools.process_spikes module<a class="headerlink" href="#module-bmtk.simulator.utils.tools.process_spikes" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="bmtk.simulator.utils.tools.process_spikes.read_spk_h5">
-<code class="descclassname">bmtk.simulator.utils.tools.process_spikes.</code><code class="descname">read_spk_h5</code><span class="sig-paren">(</span><em>f_name</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.utils.tools.process_spikes.read_spk_h5" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>f_name: string</dt>
-<dd>Full path to a file containing cell IDs and spike times.</dd>
-</dl>
-<p>A dataframe containing two columns: spike times and cell IDs.</p>
-<p>Usage:
-x = read_spk_h5(‘output/spk.h5’)</p>
+<code class="descclassname">bmtk.simulator.utils.tools.process_spikes.</code><code class="descname">read_spk_h5</code><span class="sig-paren">(</span><em>f_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/utils/tools/process_spikes.html#read_spk_h5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.tools.process_spikes.read_spk_h5" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>f_name: string</strong></p>
+<blockquote>
+<div><p>Full path to a file containing cell IDs and spike times.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A dataframe containing two columns: spike times and cell IDs.</p>
+<p>Usage:</p>
+<p class="last">x = read_spk_h5(‘output/spk.h5’)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="bmtk.simulator.utils.tools.process_spikes.read_spk_txt">
-<code class="descclassname">bmtk.simulator.utils.tools.process_spikes.</code><code class="descname">read_spk_txt</code><span class="sig-paren">(</span><em>f_name</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.utils.tools.process_spikes.read_spk_txt" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>f_name: string</dt>
-<dd>Full path to a file containing cell IDs and spike times.</dd>
-</dl>
-<p>A dataframe containing two columns: spike times and cell IDs.</p>
-<p>Usage:
-x = read_spk_txt(‘output/spk.dat’)</p>
+<code class="descclassname">bmtk.simulator.utils.tools.process_spikes.</code><code class="descname">read_spk_txt</code><span class="sig-paren">(</span><em>f_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/utils/tools/process_spikes.html#read_spk_txt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.tools.process_spikes.read_spk_txt" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>f_name: string</strong></p>
+<blockquote>
+<div><p>Full path to a file containing cell IDs and spike times.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A dataframe containing two columns: spike times and cell IDs.</p>
+<p>Usage:</p>
+<p class="last">x = read_spk_txt(‘output/spk.dat’)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="bmtk.simulator.utils.tools.process_spikes.spikes_to_mean_f_rate">
-<code class="descclassname">bmtk.simulator.utils.tools.process_spikes.</code><code class="descname">spikes_to_mean_f_rate</code><span class="sig-paren">(</span><em>cells_f</em>, <em>spk_f</em>, <em>t_window</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.utils.tools.process_spikes.spikes_to_mean_f_rate" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>cells_f: string</dt>
-<dd>Full path to a file containing information about all cells (in particular, all cell IDs,
-and not just those that fired spikes in a simulation).</dd>
-<dt>spk_f: string</dt>
-<dd>Full path to a file containing cell IDs and spike times.</dd>
-<dt>t_window: a tuple of two floats</dt>
-<dd>Start and stop time for the window within which the firing rate is computed.</dd>
-</dl>
-<p><a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs
-spk_f_type: string with accepted values ‘txt’ or ‘h5’</p>
+<code class="descclassname">bmtk.simulator.utils.tools.process_spikes.</code><code class="descname">spikes_to_mean_f_rate</code><span class="sig-paren">(</span><em>cells_f</em>, <em>spk_f</em>, <em>t_window</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/utils/tools/process_spikes.html#spikes_to_mean_f_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.tools.process_spikes.spikes_to_mean_f_rate" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>cells_f: string</strong></p>
 <blockquote>
-<div>Type of the file from which spike times should be extracted.</div></blockquote>
-<p>It is assumed here that TIME IS in ms and the RATES ARE RETURNED in Hz.</p>
-<p>A dataframe containing a column of cell IDs and a column of corresponding
-average firing rates.</p>
-<p>Usage:
-x = spikes_to_mean_f_rate(‘../network_model/cells.csv’, ‘output/spk.dat’, (500.0, 3000.0))</p>
+<div><p>Full path to a file containing information about all cells (in particular, all cell IDs,
+and not just those that fired spikes in a simulation).</p>
+</div></blockquote>
+<p><strong>spk_f: string</strong></p>
+<blockquote>
+<div><p>Full path to a file containing cell IDs and spike times.</p>
+</div></blockquote>
+<p><strong>t_window: a tuple of two floats</strong></p>
+<blockquote>
+<div><p>Start and stop time for the window within which the firing rate is computed.</p>
+</div></blockquote>
+<p><strong>**kwargs</strong></p>
+<p><strong>spk_f_type: string with accepted values ‘txt’ or ‘h5’</strong></p>
+<blockquote>
+<div><p>Type of the file from which spike times should be extracted.</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A dataframe containing a column of cell IDs and a column of corresponding</p>
+<p>average firing rates.</p>
+<p>Usage:</p>
+<p class="last">x = spikes_to_mean_f_rate(‘../network_model/cells.csv’, ‘output/spk.dat’, (500.0, 3000.0))</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -688,7 +720,7 @@ x = spikes_to_mean_f_rate(‘../network_model/cells.csv’, ‘output/spk.dat’
 <span id="bmtk-simulator-utils-tools-spatial-module"></span><h2>bmtk.simulator.utils.tools.spatial module<a class="headerlink" href="#module-bmtk.simulator.utils.tools.spatial" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="bmtk.simulator.utils.tools.spatial.example">
-<code class="descclassname">bmtk.simulator.utils.tools.spatial.</code><code class="descname">example</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.utils.tools.spatial.example" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bmtk.simulator.utils.tools.spatial.</code><code class="descname">example</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/utils/tools/spatial.html#example"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.tools.spatial.example" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -712,9 +744,6 @@ x = spikes_to_mean_f_rate(‘../network_model/cells.csv’, ‘output/spk.dat’
 <li class="toctree-l2"><a class="reference internal" href="popnet.html">PopNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="simulators.html#bionet">BioNet</a></li>
-<li class="toctree-l1"><a class="reference internal" href="simulators.html#pointnet">PointNet</a></li>
-<li class="toctree-l1"><a class="reference internal" href="simulators.html#popnet">PopNet</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>

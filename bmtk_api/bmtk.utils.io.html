@@ -25,17 +25,17 @@
     <link rel="search" title="Search" href="../search.html" /> 
   </head>
   <body>
-<script type="text/javascript" src="/external_assets/javascript/portal.js"></script>
+<script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
 <style>
 
 	/* the icon font-family definition and helper classes */
 	@font-face {
 	  font-family: 'portal_icon_font';
-	  src: url('/external_assets/stylesheets/portal_icon_font.eot?39505677');
-	  src: url('/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
-	       url('/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
-	       url('/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
-	       url('/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
 	  font-weight: normal;
 	  font-style: normal;
 	}
@@ -177,11 +177,11 @@
 
 	@font-face {
 	    font-family: 'bebas_neueregular';
-	    src: url('/external_assets/stylesheets/bebasneue-webfont.eot');
-	    src: url('/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
-	         url('/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
-	         url('/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
-	         url('/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
 	    font-weight: normal;
 	    font-style: normal;
 	}
@@ -603,8 +603,8 @@
 
 <div id="header_content">
 
-	<a href="http://AllenInstitute.github.io/AllenSDK">
-		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/logo_AIBS.gif"/>
+	<a href="http://AllenInstitute.github.io">
+		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/AIBS_Logo.png"/>
 	</a>
 </div>
 </div>
@@ -617,7 +617,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 		console.log("touchstart");
 });
 </script>
-<link rel="stylesheet" type="text/css" href="/external_assets/stylesheets/common_layout.css" />
+<link rel="stylesheet" type="text/css" href="_static/external_assets/stylesheets/common_layout.css" />
 
 
   
@@ -636,9 +636,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span id="bmtk-utils-io-tabular-network-module"></span><h2>bmtk.utils.io.tabular_network module<a class="headerlink" href="#module-bmtk.utils.io.tabular_network" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network.ColumnProperty">
-<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network.</code><code class="descname">ColumnProperty</code><span class="sig-paren">(</span><em>name</em>, <em>dtype</em>, <em>dimension</em>, <em>attrs={}</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network.ColumnProperty" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network.</code><code class="descname">ColumnProperty</code><span class="sig-paren">(</span><em>name</em>, <em>dtype</em>, <em>dimension</em>, <em>attrs={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#ColumnProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.ColumnProperty" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Representation of a column name and metadata from a hdf5 dataset, csv column, etc.</p>
+<p class="rubric">Attributes</p>
+<p class="rubric">Methods</p>
 <dl class="attribute">
 <dt id="bmtk.utils.io.tabular_network.ColumnProperty.attributes">
 <code class="descname">attributes</code><a class="headerlink" href="#bmtk.utils.io.tabular_network.ColumnProperty.attributes" title="Permalink to this definition">¶</a></dt>
@@ -656,12 +658,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <dl class="classmethod">
 <dt id="bmtk.utils.io.tabular_network.ColumnProperty.from_csv">
-<em class="property">classmethod </em><code class="descname">from_csv</code><span class="sig-paren">(</span><em>pd_obj</em>, <em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network.ColumnProperty.from_csv" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">from_csv</code><span class="sig-paren">(</span><em>pd_obj</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#ColumnProperty.from_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.ColumnProperty.from_csv" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="classmethod">
 <dt id="bmtk.utils.io.tabular_network.ColumnProperty.from_h5">
-<em class="property">classmethod </em><code class="descname">from_h5</code><span class="sig-paren">(</span><em>hf_obj</em>, <em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network.ColumnProperty.from_h5" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">from_h5</code><span class="sig-paren">(</span><em>hf_obj</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#ColumnProperty.from_h5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.ColumnProperty.from_h5" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -673,11 +675,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network.EdgeRow">
-<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network.</code><code class="descname">EdgeRow</code><span class="sig-paren">(</span><em>trg_gid</em>, <em>src_gid</em>, <em>edge_props={}</em>, <em>edge_type_props={}</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network.EdgeRow" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network.</code><code class="descname">EdgeRow</code><span class="sig-paren">(</span><em>trg_gid</em>, <em>src_gid</em>, <em>edge_props={}</em>, <em>edge_type_props={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#EdgeRow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.EdgeRow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Representation of a edge.</p>
 <p>Edges must include a source and target node gid. Other properties, from the edges or edge-types files, can be
 directly accessed like a dictionary.</p>
+<p class="rubric">Attributes</p>
 <dl class="attribute">
 <dt id="bmtk.utils.io.tabular_network.EdgeRow.columns">
 <code class="descname">columns</code><a class="headerlink" href="#bmtk.utils.io.tabular_network.EdgeRow.columns" title="Permalink to this definition">¶</a></dt>
@@ -712,7 +715,7 @@ directly accessed like a dictionary.</p>
 
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network.EdgesFile">
-<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network.</code><code class="descname">EdgesFile</code><a class="headerlink" href="#bmtk.utils.io.tabular_network.EdgesFile" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network.</code><code class="descname">EdgesFile</code><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#EdgesFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.EdgesFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Class for reading and iterating over edge files.</p>
 <p>Use the load() method to instantiate from the file. Edges can be accessed for any given edge with a target-gid
@@ -726,14 +729,16 @@ for edge_prop in edges.edges_itr(101):</p>
 source_node = nodes[edge_prop.source_gid]
 print edge_prop[‘prop_name’]</div></blockquote>
 </div></blockquote>
+<p class="rubric">Attributes</p>
+<p class="rubric">Methods</p>
 <dl class="method">
 <dt id="bmtk.utils.io.tabular_network.EdgesFile.edges_itr">
-<code class="descname">edges_itr</code><span class="sig-paren">(</span><em>target_gid</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network.EdgesFile.edges_itr" title="Permalink to this definition">¶</a></dt>
+<code class="descname">edges_itr</code><span class="sig-paren">(</span><em>target_gid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#EdgesFile.edges_itr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.EdgesFile.edges_itr" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="bmtk.utils.io.tabular_network.EdgesFile.load">
-<code class="descname">load</code><span class="sig-paren">(</span><em>edges_file</em>, <em>edge_types_file</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network.EdgesFile.load" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load</code><span class="sig-paren">(</span><em>edges_file</em>, <em>edge_types_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#EdgesFile.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.EdgesFile.load" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -752,12 +757,14 @@ print edge_prop[‘prop_name’]</div></blockquote>
 
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network.NodeRow">
-<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network.</code><code class="descname">NodeRow</code><span class="sig-paren">(</span><em>gid</em>, <em>node_props</em>, <em>types_props</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network.NodeRow" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network.</code><code class="descname">NodeRow</code><span class="sig-paren">(</span><em>gid</em>, <em>node_props</em>, <em>types_props</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#NodeRow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.NodeRow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Node file row.</p>
 <p>Each row represents node/cell/population in a network and can include edge-type metadata and dynamics_params when
 applicable. The only mandatory for a NodeRow is a unique gid (i.e cell_id, node_id). Properties can be accessed
 like a dictionary.</p>
+<p class="rubric">Attributes</p>
+<p class="rubric">Methods</p>
 <dl class="attribute">
 <dt id="bmtk.utils.io.tabular_network.NodeRow.columns">
 <code class="descname">columns</code><a class="headerlink" href="#bmtk.utils.io.tabular_network.NodeRow.columns" title="Permalink to this definition">¶</a></dt>
@@ -770,7 +777,7 @@ like a dictionary.</p>
 
 <dl class="method">
 <dt id="bmtk.utils.io.tabular_network.NodeRow.get">
-<code class="descname">get</code><span class="sig-paren">(</span><em>prop_key</em>, <em>default=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network.NodeRow.get" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get</code><span class="sig-paren">(</span><em>prop_key</em>, <em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#NodeRow.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.NodeRow.get" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -798,7 +805,7 @@ like a dictionary.</p>
 
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network.NodesFile">
-<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network.</code><code class="descname">NodesFile</code><a class="headerlink" href="#bmtk.utils.io.tabular_network.NodesFile" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network.</code><code class="descname">NodesFile</code><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#NodesFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.NodesFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Class for reading and iterating properties of each node in a nodes/node-types file.</p>
 <dl class="docutils">
@@ -814,9 +821,11 @@ for node in nodes:</p>
 <dd>node = nodes[101]
 print node[‘prop’]</dd>
 </dl>
+<p class="rubric">Attributes</p>
+<p class="rubric">Methods</p>
 <dl class="method">
 <dt id="bmtk.utils.io.tabular_network.NodesFile.get_node">
-<code class="descname">get_node</code><span class="sig-paren">(</span><em>gid</em>, <em>cache=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network.NodesFile.get_node" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_node</code><span class="sig-paren">(</span><em>gid</em>, <em>cache=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#NodesFile.get_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.NodesFile.get_node" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -826,7 +835,7 @@ print node[‘prop’]</dd>
 
 <dl class="method">
 <dt id="bmtk.utils.io.tabular_network.NodesFile.load">
-<code class="descname">load</code><span class="sig-paren">(</span><em>nodes_file</em>, <em>node_types_file</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network.NodesFile.load" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load</code><span class="sig-paren">(</span><em>nodes_file</em>, <em>node_types_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#NodesFile.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.NodesFile.load" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -837,7 +846,7 @@ print node[‘prop’]</dd>
 
 <dl class="method">
 <dt id="bmtk.utils.io.tabular_network.NodesFile.next">
-<code class="descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network.NodesFile.next" title="Permalink to this definition">¶</a></dt>
+<code class="descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#NodesFile.next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.NodesFile.next" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -854,25 +863,28 @@ print node[‘prop’]</dd>
 
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network.TabularNetwork">
-<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network.</code><code class="descname">TabularNetwork</code><a class="headerlink" href="#bmtk.utils.io.tabular_network.TabularNetwork" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network.</code><code class="descname">TabularNetwork</code><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#TabularNetwork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.TabularNetwork" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Factory for loading nodes and edges files.</p>
+<p class="rubric">Methods</p>
 <dl class="staticmethod">
 <dt id="bmtk.utils.io.tabular_network.TabularNetwork.load_edges">
-<em class="property">static </em><code class="descname">load_edges</code><span class="sig-paren">(</span><em>edges_file</em>, <em>edge_types_files</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network.TabularNetwork.load_edges" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">load_edges</code><span class="sig-paren">(</span><em>edges_file</em>, <em>edge_types_files</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#TabularNetwork.load_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.TabularNetwork.load_edges" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="staticmethod">
 <dt id="bmtk.utils.io.tabular_network.TabularNetwork.load_nodes">
-<em class="property">static </em><code class="descname">load_nodes</code><span class="sig-paren">(</span><em>nodes_file</em>, <em>node_types_file</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network.TabularNetwork.load_nodes" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">load_nodes</code><span class="sig-paren">(</span><em>nodes_file</em>, <em>node_types_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#TabularNetwork.load_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.TabularNetwork.load_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network.TypesTable">
-<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network.</code><code class="descname">TypesTable</code><span class="sig-paren">(</span><em>types_file</em>, <em>index_column</em>, <em>seperator=' '</em>, <em>comment='#'</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network.TypesTable" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network.</code><code class="descname">TypesTable</code><span class="sig-paren">(</span><em>types_file</em>, <em>index_column</em>, <em>seperator=' '</em>, <em>comment='#'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#TypesTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.TypesTable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">dict</span></code></p>
+<p class="rubric">Attributes</p>
+<p class="rubric">Methods</p>
 <dl class="attribute">
 <dt id="bmtk.utils.io.tabular_network.TypesTable.columns">
 <code class="descname">columns</code><a class="headerlink" href="#bmtk.utils.io.tabular_network.TypesTable.columns" title="Permalink to this definition">¶</a></dt>
@@ -882,7 +894,7 @@ print node[‘prop’]</dd>
 
 <dl class="function">
 <dt id="bmtk.utils.io.tabular_network.build_row_repr">
-<code class="descclassname">bmtk.utils.io.tabular_network.</code><code class="descname">build_row_repr</code><span class="sig-paren">(</span><em>row</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network.build_row_repr" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bmtk.utils.io.tabular_network.</code><code class="descname">build_row_repr</code><span class="sig-paren">(</span><em>row</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#build_row_repr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.build_row_repr" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -890,8 +902,9 @@ print node[‘prop’]</dd>
 <span id="bmtk-utils-io-tabular-network-v0-module"></span><h2>bmtk.utils.io.tabular_network_v0 module<a class="headerlink" href="#module-bmtk.utils.io.tabular_network_v0" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network_v0.EdgeRow">
-<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v0.</code><code class="descname">EdgeRow</code><span class="sig-paren">(</span><em>trg_gid</em>, <em>src_gid</em>, <em>nsyns</em>, <em>edge_type_props</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.EdgeRow" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v0.</code><code class="descname">EdgeRow</code><span class="sig-paren">(</span><em>trg_gid</em>, <em>src_gid</em>, <em>nsyns</em>, <em>edge_type_props</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v0.html#EdgeRow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.EdgeRow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.EdgeRow" title="bmtk.utils.io.tabular_network.EdgeRow"><code class="xref py py-class docutils literal"><span class="pre">bmtk.utils.io.tabular_network.EdgeRow</span></code></a></p>
+<p class="rubric">Attributes</p>
 <dl class="attribute">
 <dt id="bmtk.utils.io.tabular_network_v0.EdgeRow.dynamics_params">
 <code class="descname">dynamics_params</code><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.EdgeRow.dynamics_params" title="Permalink to this definition">¶</a></dt>
@@ -906,16 +919,18 @@ print node[‘prop’]</dd>
 
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network_v0.EdgesFile">
-<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v0.</code><code class="descname">EdgesFile</code><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.EdgesFile" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v0.</code><code class="descname">EdgesFile</code><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v0.html#EdgesFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.EdgesFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.EdgesFile" title="bmtk.utils.io.tabular_network.EdgesFile"><code class="xref py py-class docutils literal"><span class="pre">bmtk.utils.io.tabular_network.EdgesFile</span></code></a></p>
+<p class="rubric">Attributes</p>
+<p class="rubric">Methods</p>
 <dl class="method">
 <dt id="bmtk.utils.io.tabular_network_v0.EdgesFile.edges_itr">
-<code class="descname">edges_itr</code><span class="sig-paren">(</span><em>target_gid</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.EdgesFile.edges_itr" title="Permalink to this definition">¶</a></dt>
+<code class="descname">edges_itr</code><span class="sig-paren">(</span><em>target_gid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v0.html#EdgesFile.edges_itr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.EdgesFile.edges_itr" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="bmtk.utils.io.tabular_network_v0.EdgesFile.load">
-<code class="descname">load</code><span class="sig-paren">(</span><em>edges_file</em>, <em>edge_types_file</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.EdgesFile.load" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load</code><span class="sig-paren">(</span><em>edges_file</em>, <em>edge_types_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v0.html#EdgesFile.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.EdgesFile.load" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -932,8 +947,10 @@ print node[‘prop’]</dd>
 
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network_v0.NodeRow">
-<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v0.</code><code class="descname">NodeRow</code><span class="sig-paren">(</span><em>gid</em>, <em>node_props</em>, <em>types_props</em>, <em>columns</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.NodeRow" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v0.</code><code class="descname">NodeRow</code><span class="sig-paren">(</span><em>gid</em>, <em>node_props</em>, <em>types_props</em>, <em>columns</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v0.html#NodeRow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.NodeRow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.NodeRow" title="bmtk.utils.io.tabular_network.NodeRow"><code class="xref py py-class docutils literal"><span class="pre">bmtk.utils.io.tabular_network.NodeRow</span></code></a></p>
+<p class="rubric">Attributes</p>
+<p class="rubric">Methods</p>
 <dl class="attribute">
 <dt id="bmtk.utils.io.tabular_network_v0.NodeRow.dynamics_params">
 <code class="descname">dynamics_params</code><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.NodeRow.dynamics_params" title="Permalink to this definition">¶</a></dt>
@@ -948,11 +965,13 @@ print node[‘prop’]</dd>
 
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network_v0.NodesFile">
-<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v0.</code><code class="descname">NodesFile</code><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.NodesFile" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v0.</code><code class="descname">NodesFile</code><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v0.html#NodesFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.NodesFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.NodesFile" title="bmtk.utils.io.tabular_network.NodesFile"><code class="xref py py-class docutils literal"><span class="pre">bmtk.utils.io.tabular_network.NodesFile</span></code></a></p>
+<p class="rubric">Attributes</p>
+<p class="rubric">Methods</p>
 <dl class="method">
 <dt id="bmtk.utils.io.tabular_network_v0.NodesFile.get_node">
-<code class="descname">get_node</code><span class="sig-paren">(</span><em>gid</em>, <em>cache=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.NodesFile.get_node" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_node</code><span class="sig-paren">(</span><em>gid</em>, <em>cache=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v0.html#NodesFile.get_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.NodesFile.get_node" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -962,28 +981,29 @@ print node[‘prop’]</dd>
 
 <dl class="method">
 <dt id="bmtk.utils.io.tabular_network_v0.NodesFile.load">
-<code class="descname">load</code><span class="sig-paren">(</span><em>nodes_file</em>, <em>node_types_file</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.NodesFile.load" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load</code><span class="sig-paren">(</span><em>nodes_file</em>, <em>node_types_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v0.html#NodesFile.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.NodesFile.load" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="bmtk.utils.io.tabular_network_v0.NodesFile.next">
-<code class="descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.NodesFile.next" title="Permalink to this definition">¶</a></dt>
+<code class="descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v0.html#NodesFile.next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.NodesFile.next" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network_v0.TabularNetwork">
-<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v0.</code><code class="descname">TabularNetwork</code><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.TabularNetwork" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v0.</code><code class="descname">TabularNetwork</code><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v0.html#TabularNetwork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.TabularNetwork" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.TabularNetwork" title="bmtk.utils.io.tabular_network.TabularNetwork"><code class="xref py py-class docutils literal"><span class="pre">bmtk.utils.io.tabular_network.TabularNetwork</span></code></a></p>
+<p class="rubric">Methods</p>
 <dl class="staticmethod">
 <dt id="bmtk.utils.io.tabular_network_v0.TabularNetwork.load_edges">
-<em class="property">static </em><code class="descname">load_edges</code><span class="sig-paren">(</span><em>edges_file</em>, <em>edge_types_file</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.TabularNetwork.load_edges" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">load_edges</code><span class="sig-paren">(</span><em>edges_file</em>, <em>edge_types_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v0.html#TabularNetwork.load_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.TabularNetwork.load_edges" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="staticmethod">
 <dt id="bmtk.utils.io.tabular_network_v0.TabularNetwork.load_nodes">
-<em class="property">static </em><code class="descname">load_nodes</code><span class="sig-paren">(</span><em>nodes_file</em>, <em>node_types_file</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.TabularNetwork.load_nodes" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">load_nodes</code><span class="sig-paren">(</span><em>nodes_file</em>, <em>node_types_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v0.html#TabularNetwork.load_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.TabularNetwork.load_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -993,8 +1013,9 @@ print node[‘prop’]</dd>
 <span id="bmtk-utils-io-tabular-network-v1-module"></span><h2>bmtk.utils.io.tabular_network_v1 module<a class="headerlink" href="#module-bmtk.utils.io.tabular_network_v1" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network_v1.EdgeRow">
-<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v1.</code><code class="descname">EdgeRow</code><span class="sig-paren">(</span><em>trg_gid</em>, <em>src_gid</em>, <em>syn_group</em>, <em>edge_props={}</em>, <em>edge_type_props={}</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.EdgeRow" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v1.</code><code class="descname">EdgeRow</code><span class="sig-paren">(</span><em>trg_gid</em>, <em>src_gid</em>, <em>syn_group</em>, <em>edge_props={}</em>, <em>edge_type_props={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v1.html#EdgeRow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.EdgeRow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.EdgeRow" title="bmtk.utils.io.tabular_network.EdgeRow"><code class="xref py py-class docutils literal"><span class="pre">bmtk.utils.io.tabular_network.EdgeRow</span></code></a></p>
+<p class="rubric">Attributes</p>
 <dl class="attribute">
 <dt id="bmtk.utils.io.tabular_network_v1.EdgeRow.dynamics_params">
 <code class="descname">dynamics_params</code><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.EdgeRow.dynamics_params" title="Permalink to this definition">¶</a></dt>
@@ -1009,16 +1030,18 @@ print node[‘prop’]</dd>
 
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network_v1.EdgesFile">
-<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v1.</code><code class="descname">EdgesFile</code><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.EdgesFile" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v1.</code><code class="descname">EdgesFile</code><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v1.html#EdgesFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.EdgesFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.EdgesFile" title="bmtk.utils.io.tabular_network.EdgesFile"><code class="xref py py-class docutils literal"><span class="pre">bmtk.utils.io.tabular_network.EdgesFile</span></code></a></p>
+<p class="rubric">Attributes</p>
+<p class="rubric">Methods</p>
 <dl class="method">
 <dt id="bmtk.utils.io.tabular_network_v1.EdgesFile.edges_itr">
-<code class="descname">edges_itr</code><span class="sig-paren">(</span><em>target_gid</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.EdgesFile.edges_itr" title="Permalink to this definition">¶</a></dt>
+<code class="descname">edges_itr</code><span class="sig-paren">(</span><em>target_gid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v1.html#EdgesFile.edges_itr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.EdgesFile.edges_itr" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="bmtk.utils.io.tabular_network_v1.EdgesFile.load">
-<code class="descname">load</code><span class="sig-paren">(</span><em>edges_file</em>, <em>edge_types_file</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.EdgesFile.load" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load</code><span class="sig-paren">(</span><em>edges_file</em>, <em>edge_types_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v1.html#EdgesFile.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.EdgesFile.load" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1035,8 +1058,9 @@ print node[‘prop’]</dd>
 
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network_v1.Group">
-<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v1.</code><code class="descname">Group</code><span class="sig-paren">(</span><em>group_id</em>, <em>h5_group</em>, <em>types_table</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.Group" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v1.</code><code class="descname">Group</code><span class="sig-paren">(</span><em>group_id</em>, <em>h5_group</em>, <em>types_table</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v1.html#Group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.Group" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p class="rubric">Attributes</p>
 <dl class="attribute">
 <dt id="bmtk.utils.io.tabular_network_v1.Group.columns">
 <code class="descname">columns</code><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.Group.columns" title="Permalink to this definition">¶</a></dt>
@@ -1046,8 +1070,10 @@ print node[‘prop’]</dd>
 
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network_v1.NodeRow">
-<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v1.</code><code class="descname">NodeRow</code><span class="sig-paren">(</span><em>gid</em>, <em>group</em>, <em>group_props</em>, <em>types_props</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.NodeRow" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v1.</code><code class="descname">NodeRow</code><span class="sig-paren">(</span><em>gid</em>, <em>group</em>, <em>group_props</em>, <em>types_props</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v1.html#NodeRow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.NodeRow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.NodeRow" title="bmtk.utils.io.tabular_network.NodeRow"><code class="xref py py-class docutils literal"><span class="pre">bmtk.utils.io.tabular_network.NodeRow</span></code></a></p>
+<p class="rubric">Attributes</p>
+<p class="rubric">Methods</p>
 <dl class="attribute">
 <dt id="bmtk.utils.io.tabular_network_v1.NodeRow.dynamics_params">
 <code class="descname">dynamics_params</code><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.NodeRow.dynamics_params" title="Permalink to this definition">¶</a></dt>
@@ -1062,11 +1088,13 @@ print node[‘prop’]</dd>
 
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network_v1.NodesFile">
-<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v1.</code><code class="descname">NodesFile</code><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.NodesFile" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v1.</code><code class="descname">NodesFile</code><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v1.html#NodesFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.NodesFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.NodesFile" title="bmtk.utils.io.tabular_network.NodesFile"><code class="xref py py-class docutils literal"><span class="pre">bmtk.utils.io.tabular_network.NodesFile</span></code></a></p>
+<p class="rubric">Attributes</p>
+<p class="rubric">Methods</p>
 <dl class="method">
 <dt id="bmtk.utils.io.tabular_network_v1.NodesFile.get_node">
-<code class="descname">get_node</code><span class="sig-paren">(</span><em>gid</em>, <em>cache=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.NodesFile.get_node" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_node</code><span class="sig-paren">(</span><em>gid</em>, <em>cache=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v1.html#NodesFile.get_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.NodesFile.get_node" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1076,28 +1104,29 @@ print node[‘prop’]</dd>
 
 <dl class="method">
 <dt id="bmtk.utils.io.tabular_network_v1.NodesFile.load">
-<code class="descname">load</code><span class="sig-paren">(</span><em>nodes_file</em>, <em>node_types_file</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.NodesFile.load" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load</code><span class="sig-paren">(</span><em>nodes_file</em>, <em>node_types_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v1.html#NodesFile.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.NodesFile.load" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="bmtk.utils.io.tabular_network_v1.NodesFile.next">
-<code class="descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.NodesFile.next" title="Permalink to this definition">¶</a></dt>
+<code class="descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v1.html#NodesFile.next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.NodesFile.next" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network_v1.TabularNetwork">
-<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v1.</code><code class="descname">TabularNetwork</code><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.TabularNetwork" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v1.</code><code class="descname">TabularNetwork</code><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v1.html#TabularNetwork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.TabularNetwork" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.TabularNetwork" title="bmtk.utils.io.tabular_network.TabularNetwork"><code class="xref py py-class docutils literal"><span class="pre">bmtk.utils.io.tabular_network.TabularNetwork</span></code></a></p>
+<p class="rubric">Methods</p>
 <dl class="staticmethod">
 <dt id="bmtk.utils.io.tabular_network_v1.TabularNetwork.load_edges">
-<em class="property">static </em><code class="descname">load_edges</code><span class="sig-paren">(</span><em>edges_file</em>, <em>edge_types_file</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.TabularNetwork.load_edges" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">load_edges</code><span class="sig-paren">(</span><em>edges_file</em>, <em>edge_types_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v1.html#TabularNetwork.load_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.TabularNetwork.load_edges" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="staticmethod">
 <dt id="bmtk.utils.io.tabular_network_v1.TabularNetwork.load_nodes">
-<em class="property">static </em><code class="descname">load_nodes</code><span class="sig-paren">(</span><em>nodes_file</em>, <em>node_types_file</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.TabularNetwork.load_nodes" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">load_nodes</code><span class="sig-paren">(</span><em>nodes_file</em>, <em>node_types_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v1.html#TabularNetwork.load_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.TabularNetwork.load_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1121,16 +1150,6 @@ print node[‘prop’]</dd>
 <li class="toctree-l2"><a class="reference internal" href="../bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../popnet.html">PopNet</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../simulators.html#bionet">BioNet</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../simulators.html#pointnet">PointNet</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../simulators.html#popnet">PopNet</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../bmtk.html">Source Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../bmtk.analyzer.html">bmtk.analyzer package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../bmtk.simulator.html">bmtk.simulator package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>
 </ul>

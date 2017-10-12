@@ -1,0 +1,871 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>bmtk.simulator.bionet.utils &#8212; Brain Modeling Toolkit 0.0.5 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.0.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head>
+  <body>
+<script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
+<style>
+
+	/* the icon font-family definition and helper classes */
+	@font-face {
+	  font-family: 'portal_icon_font';
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
+	  font-weight: normal;
+	  font-style: normal;
+	}
+	 
+	 [class^="icon-"]:before, [class*=" icon-"]:before {
+	  font-family: "portal_icon_font";
+	  font-style: normal;
+	  font-weight: normal;
+	  speak: none;
+	 
+	  display: inline-block;
+	  text-decoration: inherit;
+	  width: 1em;
+	  margin-right: .2em;
+	  text-align: center;
+	  /* opacity: .8; */
+	 
+	  /* For safety - reset parent styles, that can break glyph codes*/
+	  font-variant: normal;
+	  text-transform: none;
+	     
+	  /* fix buttons height, for twitter bootstrap */
+	  line-height: 1em;
+	 
+	  /* Animation center compensation - margins should be symmetric */
+	  /* remove if not needed */
+	  margin-left: .2em;
+	
+	}
+	 
+	.icon-spin5:before { content: '\e806'; } /* '' */
+	.icon-left-open-1:before { content: '\e81e'; } /* '' */
+	.icon-plus-1:before { content: '\e801'; } /* '' */
+	.icon-facebook:before { content: '\e816'; } /* '' */
+	.icon-gplus:before { content: '\e818'; } /* '' */
+	.icon-linkedin-3:before { content: '\e815'; } /* '' */
+	.icon-twitter:before { content: '\e817'; } /* '' */
+	.icon-youtube-play:before { content: '\e805'; } /* '' */
+	.icon-plus-2:before { content: '\e809'; } /* '' */
+	.icon-record-1:before { content: '\e81c'; } /* '' */
+	.icon-cancel:before { content: '\e80b'; } /* '' */
+	.icon-search:before { content: '\e804'; } /* '' */
+	.icon-cancel-2:before { content: '\e80c'; } /* '' */
+	.icon-plus-4:before { content: '\e80d'; } /* '' */
+	.icon-cancel-3:before { content: '\e80e'; } /* '' */
+	.icon-plus:before { content: '\e808'; } /* '' */
+	.icon-down-open:before { content: '\e800'; } /* '' */
+	.icon-right-open:before { content: '\e802'; } /* '' */
+	.icon-up-open:before { content: '\e803'; } /* '' */
+	.icon-stop:before { content: '\e813'; } /* '' */
+	.icon-cancel-1:before { content: '\e820'; } /* '' */
+	.icon-plus-3:before { content: '\e80a'; } /* '' */
+	/* end icon font helpers */
+
+	/* icon font spin animation */
+	.animate-spin {
+	  -moz-animation: spin 2s infinite linear;
+	  -o-animation: spin 2s infinite linear;
+	  -webkit-animation: spin 2s infinite linear;
+	  animation: spin 2s infinite linear;
+	  display: inline-block;
+	}
+	@-moz-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-webkit-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-o-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-ms-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	/*  end spin animation */	
+
+	@font-face {
+	    font-family: 'bebas_neueregular';
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
+	    font-weight: normal;
+	    font-style: normal;
+	}
+
+	/* top chrome styles */
+	#top_chrome {
+
+		width:100%;
+		height:28px;
+		background-color:#163E65;
+	}
+
+	.chrome_link_block {
+
+		color:#fff !important;	
+		display:inline-block;
+		height:100%;
+		max-height:28px;
+	}
+
+	.chrome_link_block:hover {
+
+		background-color:#eee;
+		color:#0779BE !important;	
+		cursor:pointer;
+	}
+
+	#top_chrome a {
+
+		color:inherit !important;	
+		text-decoration:none;
+	}
+
+	#top_chrome a:hover {
+
+		color:inherit !important;	
+	}
+
+	#top_chrome_buttons {
+
+		float:right;
+		margin-right:50px;
+	}
+
+	.chrome_button {
+
+		font-family:arial,sans-serif;
+		font-weight:bold;
+		display:inline-block;
+		font-size:9px;
+		text-align:left;
+		text-decoration:none;
+		margin:9px 20px 10px 20px;
+	}
+
+	.chrome_active {
+
+		background-color:#1b7abd;
+		color:#fff;
+	}
+
+
+	/* header element styles*/
+	#header_content {
+
+		font-family: bebas_neueregular, arial, sans-serif;
+		font-size:22px;
+		color:#0779be;		
+		letter-spacing:0.03em;
+
+		position:relative;
+		width:calc(100% - 112px);
+		min-width:800px;
+		height:76px;
+		border-bottom:2px solid #A5A8AB;
+		margin-left:50px;
+		margin-right:50px;
+        z-index:9999; /* IT-9508 */
+	}
+
+	#portal_logo {
+
+		position:absolute;
+		top:20px;
+		left:0px;
+		width:236px;
+	}
+
+	#portal_tabs {
+
+		position: absolute;
+		bottom: 12px;
+		left: 0px;
+		margin-bottom: -12px;
+		display: block;
+	}
+
+	.horizontal_list
+	{
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		display: inline; 		
+	}
+
+	.horizontal_list li { 
+
+		display: inline; 	
+	}	
+
+	#portal_tab_menu_container {
+
+		display:none;
+	}
+
+	#portal_search_input_group {
+
+		position:absolute;
+		margin: 0;
+		padding: 0;
+		bottom:12px;
+		right:0px;
+		border:1px solid #DAD9D3;
+		color:#DAD9D3;
+	}
+
+	#portal_search_input_group input {
+
+		margin: 0;
+		padding: 0;
+		border:none;
+		width:110px;
+		color:#DAD9D3;
+		font-family:Helvetica,sans-serif;
+		font-size:12px;
+		height:28px;
+		margin-left:10px;
+
+		outline:none;
+	}
+
+	input::-ms-clear {
+		display: none;
+	}
+
+	#portal_search_input_group i {
+
+		font-size:0.8em;
+		cursor:pointer;
+	}
+
+	#pSiteSearchTextInput:focus {
+
+		color:#000;
+	}
+
+	.icon_menu_down {
+
+		font-size: 12px;
+		margin-left: 4px;
+		vertical-align: text-top;
+		padding-top: 4px;
+		display: inline-block;
+	}
+
+	.portal_tab_item {
+
+		background-color: #fff;
+		padding: 12px;
+		padding-left:20px;
+		padding-right:20px;
+		display: inline-block !important;		
+	}
+
+	.portal_tab_item a:hover {
+
+		color:#fbe300;	
+	}
+
+	.portal_tab_item:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}	
+
+
+	.portal_menu_active {
+
+		background-color: #EEEEEE;
+	}	
+
+	.portal_menu_item_active {
+
+		color:#fbe300 !important;	
+	}
+
+	.portal_tab_active {
+
+		color:#a5a8ab !important;
+	}
+
+	#header_content a {		
+
+		color:inherit !important;
+	}
+
+	#header_content a:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}
+
+	#header_content ul {
+
+		list-style: none;
+		position: relative;
+		top: 58px;
+		display: inline-table;
+	}
+
+	#header_content ul ul {
+		
+		display:none;
+		opacity:0;
+	}
+
+	/* the fly out menus */
+	#header_content ul li:hover > ul,
+	#header_content ul li.hover > ul {
+
+		position: absolute;
+		top: 48px;
+		z-index:999;
+
+		display: block;
+		width: 152px;
+		padding:0px;
+		padding-top:20px;
+		padding-bottom:10px;
+		font-size: 12px;
+		font-family: Arial,Sans-Serif;
+		font-weight: bold;
+		text-transform: uppercase;
+
+		background-color: rgba(8,122,191,0.98);
+		color: #fff !important;
+		opacity: 1;
+
+		-webkit-animation: fade 0.25s;
+		animation: fade 0.25s;
+	}
+
+	@-webkit-keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}
+	@keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}	
+
+	#header_content ul li:hover > ul li {
+
+		padding: 10px;
+		padding-top: 0px;
+		padding-left: 20px;
+		display: block;
+		opacity:1;
+	}
+
+	#header_content ul li:hover > ul a {
+
+		display: block;
+		opacity:1;
+		white-space:nowrap;
+	}
+
+	#portal_menu_start_list {
+
+		left: 81px;
+
+		/* IE sauce */
+		left:85px\9;
+
+		/* Safari sauce */
+		(;left:79px;);
+	}
+
+	#portal_menu_atlases_list {
+
+		left: 290px;
+		width: 210px !important;
+        height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 303px\9;
+        height: 225px\9;
+
+		/* Safari sauce */
+		(;left:279px;);
+	}
+
+	#portal_menu_tools_list {
+
+		left: 500px;
+		width: 172px !important;
+		height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 513px\9;
+		height:225px\9;
+
+		/* Safari sauce */
+		(;left:489px;);
+		(;height:227px;);
+	}
+
+	/* mozilla sauce */
+	@-moz-document url-prefix() {
+
+		#header_content {
+
+			height:107px;
+		}
+
+		#portal_menu_start_list {
+
+			left:85px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 302px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 512px;
+			height:236px;
+		}
+	}
+
+
+	/* make it look OK on iPad also */
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:portrait) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}  
+	}
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:landscape) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}	  
+	}
+
+	.portal_menu_list_heading {
+
+		color:#9ccae5;
+		border-bottom:1px solid #9ccae5;
+		padding-bottom:5px !important;
+	}
+
+	.portal_menu_list_heading + li {
+
+		padding-top:10px !important;
+	}
+
+	.portal_menu_list_heading li {
+
+		padding-bottom:0px;
+	}	
+
+	#portal_menu_atlases_list li:last-of-type {
+
+		padding-bottom:15px !important;
+	}
+
+	.icon-spin5 {
+
+		color:#000;
+	}
+</style>
+<div id="pHeader">
+<div id="top_chrome">
+	<div id="top_chrome_buttons">
+		<div class="chrome_link_block"><a href="http://www.alleninstitute.org" target="_blank" class="chrome_button">ALLEN INSTITUTE</a></div>
+	</div>
+</div>
+
+<div id="header_content">
+
+	<a href="http://AllenInstitute.github.io">
+		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/AIBS_Logo.png"/>
+	</a>
+</div>
+</div>
+
+<script>
+
+jQuery('#portal_tab_menu').bind('touchstart', function() {
+
+	if(window.console)
+		console.log("touchstart");
+});
+</script>
+<link rel="stylesheet" type="text/css" href="_static/external_assets/stylesheets/common_layout.css" />
+
+
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for bmtk.simulator.bionet.utils</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Allen Institute Software License - This software license is the 2-clause BSD license plus clause a third</span>
+<span class="c1"># clause that prohibits redistribution for commercial purposes without further permission.</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright 2017. Allen Institute. All rights reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># Redistribution and use in source and binary forms, with or without modification, are permitted provided that the</span>
+<span class="c1"># following conditions are met:</span>
+<span class="c1">#</span>
+<span class="c1"># 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following</span>
+<span class="c1"># disclaimer.</span>
+<span class="c1">#</span>
+<span class="c1"># 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following</span>
+<span class="c1"># disclaimer in the documentation and/or other materials provided with the distribution.</span>
+<span class="c1">#</span>
+<span class="c1"># 3. Redistributions for commercial purposes are not permitted without the Allen Institute&#39;s written permission. For</span>
+<span class="c1"># purposes of this license, commercial purposes is the incorporation of the Allen Institute&#39;s software into anything for</span>
+<span class="c1"># which you will charge fees or other compensation. Contact terms@alleninstitute.org for commercial licensing</span>
+<span class="c1"># opportunities.</span>
+<span class="c1">#</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
+<span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="c1"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
+<span class="c1"># SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</span>
+<span class="c1"># SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,</span>
+<span class="c1"># WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</span>
+<span class="c1"># OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="kn">from</span> <span class="nn">neuron</span> <span class="k">import</span> <span class="n">h</span>
+
+
+<div class="viewcode-block" id="rotation_matrix"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.utils.rotation_matrix">[docs]</a><span class="k">def</span> <span class="nf">rotation_matrix</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">theta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the rotation matrix associated with counterclockwise rotation about the given axis by theta radians.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    <span class="n">axis</span> <span class="o">=</span> <span class="n">axis</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">axis</span><span class="p">))</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="o">/</span><span class="mf">2.0</span><span class="p">)</span>
+    <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="n">axis</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="o">/</span><span class="mf">2.0</span><span class="p">)</span>
+    <span class="n">aa</span><span class="p">,</span> <span class="n">bb</span><span class="p">,</span> <span class="n">cc</span><span class="p">,</span> <span class="n">dd</span> <span class="o">=</span> <span class="n">a</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">*</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="o">*</span><span class="n">d</span>
+    <span class="n">bc</span><span class="p">,</span> <span class="n">ad</span><span class="p">,</span> <span class="n">ac</span><span class="p">,</span> <span class="n">ab</span><span class="p">,</span> <span class="n">bd</span><span class="p">,</span> <span class="n">cd</span> <span class="o">=</span> <span class="n">b</span><span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="n">a</span><span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="n">a</span><span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="n">a</span><span class="o">*</span><span class="n">b</span><span class="p">,</span> <span class="n">b</span><span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="n">c</span><span class="o">*</span><span class="n">d</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">aa</span><span class="o">+</span><span class="n">bb</span><span class="o">-</span><span class="n">cc</span><span class="o">-</span><span class="n">dd</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">bc</span><span class="o">+</span><span class="n">ad</span><span class="p">),</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">bd</span><span class="o">-</span><span class="n">ac</span><span class="p">)],</span>
+                     <span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">bc</span><span class="o">-</span><span class="n">ad</span><span class="p">),</span> <span class="n">aa</span><span class="o">+</span><span class="n">cc</span><span class="o">-</span><span class="n">bb</span><span class="o">-</span><span class="n">dd</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">cd</span><span class="o">+</span><span class="n">ab</span><span class="p">)],</span>
+                     <span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">bd</span><span class="o">+</span><span class="n">ac</span><span class="p">),</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">cd</span><span class="o">-</span><span class="n">ab</span><span class="p">),</span> <span class="n">aa</span><span class="o">+</span><span class="n">dd</span><span class="o">-</span><span class="n">bb</span><span class="o">-</span><span class="n">cc</span><span class="p">]])</span></div>
+
+
+<span class="c1">##################################################</span>
+<span class="c1"># TODO: Move these functions to default_setters</span>
+<span class="c1">##################################################</span>
+<div class="viewcode-block" id="set_morphology"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.utils.set_morphology">[docs]</a><span class="k">def</span> <span class="nf">set_morphology</span><span class="p">(</span><span class="n">hobj</span><span class="p">,</span> <span class="n">morph_file</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set morphology for the cell from a swc</span>
+
+<span class="sd">    :param hobj: NEURON&#39;s cell object</span>
+<span class="sd">    :param morph_file: name of swc file containing 3d coordinates of morphology</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">swc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">Import3d_SWC_read</span><span class="p">()</span>
+    <span class="n">swc</span><span class="o">.</span><span class="n">quiet</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">swc</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">morph_file</span><span class="p">))</span>
+    <span class="n">imprt</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">Import3d_GUI</span><span class="p">(</span><span class="n">swc</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">imprt</span><span class="o">.</span><span class="n">quiet</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">imprt</span><span class="o">.</span><span class="n">instantiate</span><span class="p">(</span><span class="n">hobj</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="set_segs"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.utils.set_segs">[docs]</a><span class="k">def</span> <span class="nf">set_segs</span><span class="p">(</span><span class="n">hobj</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Define number of segments in a cell</span>
+
+<span class="sd">    :param hobj: NEURON&#39;s cell object</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
+        <span class="n">sec</span><span class="o">.</span><span class="n">nseg</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">L</span> <span class="o">/</span> <span class="mi">40</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="fix_axon"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.utils.fix_axon">[docs]</a><span class="k">def</span> <span class="nf">fix_axon</span><span class="p">(</span><span class="n">hobj</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Replace reconstructed axon with a stub</span>
+
+<span class="sd">    :param hobj: NEURON&#39;s cell object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">:</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">delete_section</span><span class="p">(</span><span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
+
+    <span class="n">h</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;create axon[2]&#39;</span><span class="p">,</span> <span class="n">hobj</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">:</span>
+        <span class="n">sec</span><span class="o">.</span><span class="n">L</span> <span class="o">=</span> <span class="mi">30</span>
+        <span class="n">sec</span><span class="o">.</span><span class="n">diam</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">hobj</span><span class="o">.</span><span class="n">axonal</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
+        <span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>    <span class="c1"># need to remove this comment</span>
+
+    <span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">hobj</span><span class="o">.</span><span class="n">soma</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">define_shape</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="fix_axon_all_active"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.utils.fix_axon_all_active">[docs]</a><span class="k">def</span> <span class="nf">fix_axon_all_active</span><span class="p">(</span><span class="n">hobj</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;need temporary because axon is treated differently&quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="set_params_perisomatic"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.utils.set_params_perisomatic">[docs]</a><span class="k">def</span> <span class="nf">set_params_perisomatic</span><span class="p">(</span><span class="n">hobj</span><span class="p">,</span> <span class="n">params_file_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Set biophysical parameters for the cell</span>
+
+<span class="sd">    :param hobj: NEURON&#39;s cell object</span>
+<span class="sd">    :param params_file_name: name of json file containing biophysical parameters for cell&#39;s model which determine</span>
+<span class="sd">    spiking behavior</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">params_file_name</span><span class="p">)</span> <span class="k">as</span> <span class="n">biophys_params_file</span><span class="p">:</span>
+        <span class="n">biophys_params</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">biophys_params_file</span><span class="p">)</span>
+
+    <span class="n">passive</span> <span class="o">=</span> <span class="n">biophys_params</span><span class="p">[</span><span class="s1">&#39;passive&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">conditions</span> <span class="o">=</span> <span class="n">biophys_params</span><span class="p">[</span><span class="s1">&#39;conditions&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">genome</span> <span class="o">=</span> <span class="n">biophys_params</span><span class="p">[</span><span class="s1">&#39;genome&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Set passive properties</span>
+    <span class="n">cm_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;section&#39;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;cm&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">passive</span><span class="p">[</span><span class="s1">&#39;cm&#39;</span><span class="p">]])</span>
+    <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
+        <span class="n">sec</span><span class="o">.</span><span class="n">Ra</span> <span class="o">=</span> <span class="n">passive</span><span class="p">[</span><span class="s1">&#39;ra&#39;</span><span class="p">]</span>
+        <span class="n">sec</span><span class="o">.</span><span class="n">cm</span> <span class="o">=</span> <span class="n">cm_dict</span><span class="p">[</span><span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]]</span>
+        <span class="n">sec</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;pas&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">sec</span><span class="p">:</span>
+            <span class="n">seg</span><span class="o">.</span><span class="n">pas</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">passive</span><span class="p">[</span><span class="s2">&quot;e_pas&quot;</span><span class="p">]</span>
+
+    <span class="c1"># Insert channels and set parameters</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">genome</span><span class="p">:</span>
+        <span class="n">sections</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;section&quot;</span><span class="p">]]</span>
+
+        <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">sections</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;mechanism&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="n">sec</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s2">&quot;mechanism&quot;</span><span class="p">])</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">sec</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
+
+    <span class="c1"># Set reversal potentials</span>
+    <span class="k">for</span> <span class="n">erev</span> <span class="ow">in</span> <span class="n">conditions</span><span class="p">[</span><span class="s1">&#39;erev&#39;</span><span class="p">]:</span>
+        <span class="n">sections</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="n">erev</span><span class="p">[</span><span class="s2">&quot;section&quot;</span><span class="p">]]</span>
+        <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">sections</span><span class="p">:</span>
+            <span class="n">sec</span><span class="o">.</span><span class="n">ena</span> <span class="o">=</span> <span class="n">erev</span><span class="p">[</span><span class="s2">&quot;ena&quot;</span><span class="p">]</span>
+            <span class="n">sec</span><span class="o">.</span><span class="n">ek</span> <span class="o">=</span> <span class="n">erev</span><span class="p">[</span><span class="s2">&quot;ek&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="set_params_all_active"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.utils.set_params_all_active">[docs]</a><span class="k">def</span> <span class="nf">set_params_all_active</span><span class="p">(</span><span class="n">hobj</span><span class="p">,</span> <span class="n">params_file_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Configure a neuron after the cell morphology has been loaded&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">params_file_name</span><span class="p">)</span> <span class="k">as</span> <span class="n">biophys_params_file</span><span class="p">:</span>
+        <span class="n">biophys_params</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">biophys_params_file</span><span class="p">)</span>
+
+    <span class="n">passive</span> <span class="o">=</span> <span class="n">biophys_params</span><span class="p">[</span><span class="s1">&#39;passive&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">genome</span> <span class="o">=</span> <span class="n">biophys_params</span><span class="p">[</span><span class="s1">&#39;genome&#39;</span><span class="p">]</span>
+    <span class="n">conditions</span> <span class="o">=</span> <span class="n">biophys_params</span><span class="p">[</span><span class="s1">&#39;conditions&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Set fixed passive properties</span>
+    <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
+        <span class="n">sec</span><span class="o">.</span><span class="n">Ra</span> <span class="o">=</span> <span class="n">passive</span><span class="p">[</span><span class="s1">&#39;ra&#39;</span><span class="p">]</span>
+        <span class="n">sec</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;pas&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Insert channels and set parameters</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">genome</span><span class="p">:</span>
+        <span class="n">section_array</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;section&quot;</span><span class="p">]</span>
+        <span class="n">mechanism</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;mechanism&quot;</span><span class="p">]</span>
+        <span class="n">param_name</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="n">param_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">section_array</span> <span class="o">==</span> <span class="s2">&quot;glob&quot;</span><span class="p">:</span>
+            <span class="n">h</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; = </span><span class="si">%g</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">hobj</span><span class="p">,</span> <span class="n">section_array</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">mechanism</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                    <span class="nb">print</span> <span class="s1">&#39;Adding mechanism </span><span class="si">%s</span><span class="s1"> to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">mechanism</span><span class="p">,</span> <span class="n">section_array</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">hobj</span><span class="p">,</span> <span class="n">section_array</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">h</span><span class="o">.</span><span class="n">ismembrane</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">mechanism</span><span class="p">),</span> <span class="n">sec</span><span class="o">=</span><span class="n">section</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="n">section</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">mechanism</span><span class="p">)</span>
+
+                <span class="nb">print</span> <span class="s1">&#39;Setting </span><span class="si">%s</span><span class="s1"> to </span><span class="si">%.6g</span><span class="s1"> in </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">param_name</span><span class="p">,</span> <span class="n">param_value</span><span class="p">,</span> <span class="n">section_array</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">hobj</span><span class="p">,</span> <span class="n">section_array</span><span class="p">):</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param_value</span><span class="p">)</span>
+
+    <span class="c1"># Set reversal potentials</span>
+    <span class="k">for</span> <span class="n">erev</span> <span class="ow">in</span> <span class="n">conditions</span><span class="p">[</span><span class="s1">&#39;erev&#39;</span><span class="p">]:</span>
+        <span class="n">erev_section_array</span> <span class="o">=</span> <span class="n">erev</span><span class="p">[</span><span class="s2">&quot;section&quot;</span><span class="p">]</span>
+        <span class="n">ek</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">erev</span><span class="p">[</span><span class="s2">&quot;ek&quot;</span><span class="p">])</span>
+        <span class="n">ena</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">erev</span><span class="p">[</span><span class="s2">&quot;ena&quot;</span><span class="p">])</span>
+
+        <span class="nb">print</span> <span class="s1">&#39;Setting ek to </span><span class="si">%.6g</span><span class="s1"> and ena to </span><span class="si">%.6g</span><span class="s1"> in </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ek</span><span class="p">,</span> <span class="n">ena</span><span class="p">,</span> <span class="n">erev_section_array</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">hobj</span><span class="p">,</span> <span class="n">erev_section_array</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">hobj</span><span class="p">,</span> <span class="n">erev_section_array</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">h</span><span class="o">.</span><span class="n">ismembrane</span><span class="p">(</span><span class="s2">&quot;k_ion&quot;</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">section</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="s1">&#39;ek&#39;</span><span class="p">,</span> <span class="n">ek</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">h</span><span class="o">.</span><span class="n">ismembrane</span><span class="p">(</span><span class="s2">&quot;na_ion&quot;</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">section</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="s1">&#39;ena&#39;</span><span class="p">,</span> <span class="n">ena</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="s2">&quot;Warning: can&#39;t set erev for </span><span class="si">%s</span><span class="s2">, section array doesn&#39;t exist&quot;</span> <span class="o">%</span> <span class="n">erev_section_array</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../../../../index.html">Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../builder.html">The Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../simulators.html">Simulation Engines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../pointnet.html">PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../popnet.html">PopNet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Allen Institute for Brain Science.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+<script type="text/javascript" src="/external_assets/javascript/portalFooter.js"></script>
+
+  </body>
+</html>

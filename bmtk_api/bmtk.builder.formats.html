@@ -25,17 +25,17 @@
     <link rel="search" title="Search" href="../search.html" /> 
   </head>
   <body>
-<script type="text/javascript" src="/external_assets/javascript/portal.js"></script>
+<script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
 <style>
 
 	/* the icon font-family definition and helper classes */
 	@font-face {
 	  font-family: 'portal_icon_font';
-	  src: url('/external_assets/stylesheets/portal_icon_font.eot?39505677');
-	  src: url('/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
-	       url('/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
-	       url('/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
-	       url('/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
 	  font-weight: normal;
 	  font-style: normal;
 	}
@@ -177,11 +177,11 @@
 
 	@font-face {
 	    font-family: 'bebas_neueregular';
-	    src: url('/external_assets/stylesheets/bebasneue-webfont.eot');
-	    src: url('/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
-	         url('/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
-	         url('/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
-	         url('/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
 	    font-weight: normal;
 	    font-style: normal;
 	}
@@ -603,8 +603,8 @@
 
 <div id="header_content">
 
-	<a href="http://AllenInstitute.github.io/AllenSDK">
-		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/logo_AIBS.gif"/>
+	<a href="http://AllenInstitute.github.io">
+		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/AIBS_Logo.png"/>
 	</a>
 </div>
 </div>
@@ -617,7 +617,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 		console.log("touchstart");
 });
 </script>
-<link rel="stylesheet" type="text/css" href="/external_assets/stylesheets/common_layout.css" />
+<link rel="stylesheet" type="text/css" href="_static/external_assets/stylesheets/common_layout.css" />
 
 
   
@@ -636,7 +636,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span id="bmtk-builder-formats-hdf5-format-module"></span><h2>bmtk.builder.formats.hdf5_format module<a class="headerlink" href="#module-bmtk.builder.formats.hdf5_format" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="bmtk.builder.formats.hdf5_format.HDF5Format">
-<em class="property">class </em><code class="descclassname">bmtk.builder.formats.hdf5_format.</code><code class="descname">HDF5Format</code><span class="sig-paren">(</span><em>network</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.builder.formats.hdf5_format.</code><code class="descname">HDF5Format</code><span class="sig-paren">(</span><em>network</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats/hdf5_format.html#HDF5Format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.builder.formats.iformats.IFormat" title="bmtk.builder.formats.iformats.IFormat"><code class="xref py py-class docutils literal"><span class="pre">bmtk.builder.formats.iformats.IFormat</span></code></a></p>
 <p>Format prior to Blue-brain project collaboration.
 Saves as:
@@ -644,6 +644,8 @@ nodes (csv)
 node_types (csv)
 edge_types (csv)
 edges (h5)</p>
+<p class="rubric">Attributes</p>
+<p class="rubric">Methods</p>
 <dl class="attribute">
 <dt id="bmtk.builder.formats.hdf5_format.HDF5Format.BASE_DIR">
 <code class="descname">BASE_DIR</code><em class="property"> = 'network'</em><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.BASE_DIR" title="Permalink to this definition">¶</a></dt>
@@ -686,17 +688,17 @@ edges (h5)</p>
 
 <dl class="method">
 <dt id="bmtk.builder.formats.hdf5_format.HDF5Format.load">
-<code class="descname">load</code><span class="sig-paren">(</span><em>nodes_file=None</em>, <em>node_types_file=None</em>, <em>edges_file=None</em>, <em>edge_types_file=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.load" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load</code><span class="sig-paren">(</span><em>nodes_file=None</em>, <em>node_types_file=None</em>, <em>edges_file=None</em>, <em>edge_types_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats/hdf5_format.html#HDF5Format.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.load" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="bmtk.builder.formats.hdf5_format.HDF5Format.load_dir">
-<code class="descname">load_dir</code><span class="sig-paren">(</span><em>directory</em>, <em>metadata</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.load_dir" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load_dir</code><span class="sig-paren">(</span><em>directory</em>, <em>metadata</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats/hdf5_format.html#HDF5Format.load_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.load_dir" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="bmtk.builder.formats.hdf5_format.HDF5Format.save">
-<code class="descname">save</code><span class="sig-paren">(</span><em>directory</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.save" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save</code><span class="sig-paren">(</span><em>directory</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats/hdf5_format.html#HDF5Format.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>saves nodes.csv, node_types.csv, edges.h5, edge_types.csv and .metadata.json. Will overwrite existing files.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -714,7 +716,7 @@ edges (h5)</p>
 
 <dl class="method">
 <dt id="bmtk.builder.formats.hdf5_format.HDF5Format.save_edge_types">
-<code class="descname">save_edge_types</code><span class="sig-paren">(</span><em>file_name</em>, <em>columns=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.save_edge_types" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save_edge_types</code><span class="sig-paren">(</span><em>file_name</em>, <em>columns=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats/hdf5_format.html#HDF5Format.save_edge_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.save_edge_types" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write edge-types to csv.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -733,7 +735,7 @@ edges (h5)</p>
 
 <dl class="method">
 <dt id="bmtk.builder.formats.hdf5_format.HDF5Format.save_edges">
-<code class="descname">save_edges</code><span class="sig-paren">(</span><em>file_name</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.save_edges" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save_edges</code><span class="sig-paren">(</span><em>file_name</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats/hdf5_format.html#HDF5Format.save_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.save_edges" title="Permalink to this definition">¶</a></dt>
 <dd><p>Saves edges to edges.h5</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -751,7 +753,7 @@ edges (h5)</p>
 
 <dl class="method">
 <dt id="bmtk.builder.formats.hdf5_format.HDF5Format.save_node_types">
-<code class="descname">save_node_types</code><span class="sig-paren">(</span><em>file_name</em>, <em>columns=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.save_node_types" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save_node_types</code><span class="sig-paren">(</span><em>file_name</em>, <em>columns=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats/hdf5_format.html#HDF5Format.save_node_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.save_node_types" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write node_types to csv.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -770,7 +772,7 @@ edges (h5)</p>
 
 <dl class="method">
 <dt id="bmtk.builder.formats.hdf5_format.HDF5Format.save_nodes">
-<code class="descname">save_nodes</code><span class="sig-paren">(</span><em>file_name</em>, <em>columns=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.save_nodes" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save_nodes</code><span class="sig-paren">(</span><em>file_name</em>, <em>columns=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats/hdf5_format.html#HDF5Format.save_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.save_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write nodes to csv.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -794,8 +796,9 @@ edges (h5)</p>
 <span id="bmtk-builder-formats-iformats-module"></span><h2>bmtk.builder.formats.iformats module<a class="headerlink" href="#module-bmtk.builder.formats.iformats" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="bmtk.builder.formats.iformats.IFormat">
-<em class="property">class </em><code class="descclassname">bmtk.builder.formats.iformats.</code><code class="descname">IFormat</code><span class="sig-paren">(</span><em>network</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.builder.formats.iformats.IFormat" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.builder.formats.iformats.</code><code class="descname">IFormat</code><span class="sig-paren">(</span><em>network</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats/iformats.html#IFormat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.iformats.IFormat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p class="rubric">Attributes</p>
 <dl class="attribute">
 <dt id="bmtk.builder.formats.iformats.IFormat.format">
 <code class="descname">format</code><a class="headerlink" href="#bmtk.builder.formats.iformats.IFormat.format" title="Permalink to this definition">¶</a></dt>
@@ -823,42 +826,46 @@ net.save(cells=”cells.csv”, models=”cell_models.csv”, connections=”con
 </dl>
 <dl class="class">
 <dt id="bmtk.builder.formats.DefaultFormat">
-<em class="property">class </em><code class="descclassname">bmtk.builder.formats.</code><code class="descname">DefaultFormat</code><span class="sig-paren">(</span><em>network</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.builder.formats.DefaultFormat" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.builder.formats.</code><code class="descname">DefaultFormat</code><span class="sig-paren">(</span><em>network</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats.html#DefaultFormat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.DefaultFormat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.builder.formats.iformats.IFormat" title="bmtk.builder.formats.iformats.IFormat"><code class="xref py py-class docutils literal"><span class="pre">bmtk.builder.formats.iformats.IFormat</span></code></a></p>
+<p class="rubric">Attributes</p>
+<p class="rubric">Methods</p>
 <dl class="method">
 <dt id="bmtk.builder.formats.DefaultFormat.save">
-<code class="descname">save</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.builder.formats.DefaultFormat.save" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats.html#DefaultFormat.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.DefaultFormat.save" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="bmtk.builder.formats.DefaultFormat.save_edges">
-<code class="descname">save_edges</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.builder.formats.DefaultFormat.save_edges" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save_edges</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats.html#DefaultFormat.save_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.DefaultFormat.save_edges" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="bmtk.builder.formats.DefaultFormat.save_nodes">
-<code class="descname">save_nodes</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.builder.formats.DefaultFormat.save_nodes" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save_nodes</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats.html#DefaultFormat.save_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.DefaultFormat.save_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="bmtk.builder.formats.ISeeFormat">
-<em class="property">class </em><code class="descclassname">bmtk.builder.formats.</code><code class="descname">ISeeFormat</code><span class="sig-paren">(</span><em>network</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.builder.formats.ISeeFormat" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.builder.formats.</code><code class="descname">ISeeFormat</code><span class="sig-paren">(</span><em>network</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats.html#ISeeFormat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.ISeeFormat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.builder.formats.iformats.IFormat" title="bmtk.builder.formats.iformats.IFormat"><code class="xref py py-class docutils literal"><span class="pre">bmtk.builder.formats.iformats.IFormat</span></code></a></p>
 <p>Controls the output of networks that will be used in the isee_engine simulator.</p>
 <dl class="docutils">
 <dt>The nodes are saved in a cells and cell_model csv files with predefined format. the edges/connections are</dt>
 <dd>saved in a connections h5 format.</dd>
 </dl>
+<p class="rubric">Attributes</p>
+<p class="rubric">Methods</p>
 <dl class="method">
 <dt id="bmtk.builder.formats.ISeeFormat.load">
-<code class="descname">load</code><span class="sig-paren">(</span><em>nodes</em>, <em>edge_types=None</em>, <em>node_types=None</em>, <em>edges=None</em>, <em>positions=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.builder.formats.ISeeFormat.load" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load</code><span class="sig-paren">(</span><em>nodes</em>, <em>edge_types=None</em>, <em>node_types=None</em>, <em>edges=None</em>, <em>positions=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats.html#ISeeFormat.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.ISeeFormat.load" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="bmtk.builder.formats.ISeeFormat.save">
-<code class="descname">save</code><span class="sig-paren">(</span><em>cells_fname</em>, <em>cell_models_fname</em>, <em>connections_fname</em>, <em>include_nsyns=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.builder.formats.ISeeFormat.save" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save</code><span class="sig-paren">(</span><em>cells_fname</em>, <em>cell_models_fname</em>, <em>connections_fname</em>, <em>include_nsyns=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats.html#ISeeFormat.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.ISeeFormat.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Saves node (cells) and connection information to files.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -878,7 +885,7 @@ net.save(cells=”cells.csv”, models=”cell_models.csv”, connections=”con
 
 <dl class="method">
 <dt id="bmtk.builder.formats.ISeeFormat.save_cells">
-<code class="descname">save_cells</code><span class="sig-paren">(</span><em>filename</em>, <em>columns</em>, <em>position_labels=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.builder.formats.ISeeFormat.save_cells" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save_cells</code><span class="sig-paren">(</span><em>filename</em>, <em>columns</em>, <em>position_labels=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats.html#ISeeFormat.save_cells"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.ISeeFormat.save_cells" title="Permalink to this definition">¶</a></dt>
 <dd><p>Saves nodes/cell information and their model type metadata.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -896,7 +903,7 @@ net.save(cells=”cells.csv”, models=”cell_models.csv”, connections=”con
 
 <dl class="method">
 <dt id="bmtk.builder.formats.ISeeFormat.save_edges">
-<code class="descname">save_edges</code><span class="sig-paren">(</span><em>filename</em>, <em>include_nsyns=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.builder.formats.ISeeFormat.save_edges" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save_edges</code><span class="sig-paren">(</span><em>filename</em>, <em>include_nsyns=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats.html#ISeeFormat.save_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.ISeeFormat.save_edges" title="Permalink to this definition">¶</a></dt>
 <dd><p>Saves connection information into h5 format</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -915,7 +922,7 @@ true (nsyn table included).</li>
 
 <dl class="method">
 <dt id="bmtk.builder.formats.ISeeFormat.save_types">
-<code class="descname">save_types</code><span class="sig-paren">(</span><em>filename</em>, <em>columns</em>, <em>key=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.builder.formats.ISeeFormat.save_types" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save_types</code><span class="sig-paren">(</span><em>filename</em>, <em>columns</em>, <em>key=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats.html#ISeeFormat.save_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.ISeeFormat.save_types" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -936,16 +943,6 @@ true (nsyn table included).</li>
 <li class="toctree-l2"><a class="reference internal" href="../bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../popnet.html">PopNet</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../simulators.html#bionet">BioNet</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../simulators.html#pointnet">PointNet</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../simulators.html#popnet">PopNet</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../bmtk.html">Source Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../bmtk.analyzer.html">bmtk.analyzer package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../bmtk.simulator.html">bmtk.simulator package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>
 </ul>

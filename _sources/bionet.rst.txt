@@ -1,17 +1,20 @@
 BioNet
 ======
 
-BioNet is a high-level interface to `NEURON <http://neuron.yale.edu/neuron/>`_ that facilitates simulations of large-scale neuronal networks on parallel computer architecture.
+BioNet is a high-level interface to `NEURON <http://neuron.yale.edu/neuron/>`_ that facilitates simulations of large-scale neuronal networks on parallel computer architecture. The soure code for BioNet is located in the folder /bmtk/simulator/bionet
+
 
 Installation
 ------------
-BioNet runs on Python 2.7 and will require additioonal python packages:
+BioNet runs on Python 2.7. If you do not have Python already installed, we recommend installing `Anaconda <https://www.anaconda.com/download/>`_ distribution of Python that comes preloaded with many packages and allows an easy installation of additional packages. 
+
+BioNet requires the following additional python packages:
  * numpy 1.10
  * pandas 0.19.2
  * h5py 2.6
  * jsonschema 2.6.0
 
-To install either get the latest source-code from the github develop branch:
+To install BioNet either get the latest source-code from the github develop branch:
 ::
   git clone https://github.com/AllenInstitute/bmtk.git
 
@@ -62,28 +65,30 @@ the command:
 ::
   python run_bionet.py config.json
 
-Or to run in parallel with MPI setup on $NCORES:
+Or to run in parallel with MPI setup:
 ::
   mpirun -np $NCORES nrniv -mpi -python run_bionet config.json
 
+where $NCORES  is the number of CPU cores you would like to run your simulation on.
 
+When simulation completed you will see a message “Simulation completed” -> When simulation is completed you will see a message “Simulation completed”.
 
 **Simulation output**
 
 BioNet allows saving simulation output in blocks while simulation is still running, giving users an ability to check and analyze intermediate output. During the run you will see some output reporting on the progress of a simulation. When simulation completed you will see a message "Simulation completed".
 
 The output directory includes:
- * spikes.h5 : HDF5 file contains spikes of the simulated cells.
- * cellvars/N.h5 : HDF5 file containing time series recordings of somatic variables  (e.g., somatic voltage, [Ca++]) for cell with node_id=N. 
- * config.json : a copy of configuration for the record keeping
- * log.txt : run log file including time-stemped information about the progress of a simulation. 
+ * spikes.h5 : HDF5 file containg the spikes of the simulated cells.
+ * cellvars/N.h5 : HDF5 file containing time series recordings of somatic variables  (e.g., somatic voltage, [Ca++]) for cell with node_id=N (there might be multiple such files, up to the number of cells in the model, or none at all, depending on the settings in the simulation config).
+ * config.json : a copy of configuration for record keeping
+ * log.txt : run log file including time-stamped information about the progress of a simulation.
 
 
 
 Simulating your network models
 ------------------------------
 
-To run simulations of your network with BioNet, you will first need to provide a pre-built network in the format understood by BioNet. We recommend using BMTK's builder tools, but you may also use your own scripts or a third party tool to build a network. As a start we suggest to modify the existing network examples as a quick way of customizing network models and then build your own model following `builders examples tutorial <https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/builder/bionet_14cells>`_.
+To run simulations of your network with BioNet, you will first need to provide a pre-built network in the format understood by BioNet. We recommend using `BMTK's network builder api <builder>`_, but you may also use your own scripts or a third party tool to build a network. As a start we suggest to modify the existing network examples as a quick way of customizing network models and then build your own model following `builders examples tutorial <https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/builder/bionet_14cells>`_.
 
 When you have your custom model built, you will need to specify in the your configuration file the paths to the network, components as well as simulation run parameters.
 
