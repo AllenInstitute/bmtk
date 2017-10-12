@@ -13,7 +13,8 @@ Installation:
 The Builder currently runs onf Python 2.7. To install the requirements using using python setup tools run from a
 command terminal
 ::
-  python setup.py install
+
+    python setup.py install
 
 
 Examples

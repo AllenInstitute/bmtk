@@ -8,12 +8,4 @@ Simulation Engines
    popnet
 
 
-BioNet
-------
-
-PointNet
---------
-
-PopNet
-------
 
