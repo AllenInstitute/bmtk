@@ -364,7 +364,7 @@ class BioNetwork(object):
                 if netinput['type'] == 'external_spikes' and netinput['format'] == 'nwb':
                     # Load external network spike trains from an NWB file.
 #                    io.print2log0('Load input for {}'.format(netinput['network']))
-                    network.add_spikes_nwb(netinput['network'], netinput['file'], netinput['trial'])
+                    network.add_spikes_nwb(netinput['source_nodes'], netinput['file'], netinput['trial'])
                 # TODO: Allow for external spike trains from csv file or user function
                 # TODO: Add Iclamp code.
 

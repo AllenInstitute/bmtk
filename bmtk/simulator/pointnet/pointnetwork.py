@@ -317,7 +317,7 @@ class PointNetwork(object):
         if 'input' in config:
             for netinput in config['input']:
                 if netinput['type'] == 'external_spikes' and netinput['format'] == 'nwb' and netinput['active']:
-                    network.add_spikes_nwb(netinput['network'], netinput['file'], netinput['trial'])
+                    network.add_spikes_nwb(netinput['source_nodes'], netinput['file'], netinput['trial'])
 
             io.log('Adding stimulations')
             network.make_stims()

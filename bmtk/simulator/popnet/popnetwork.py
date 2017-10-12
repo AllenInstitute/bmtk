@@ -300,12 +300,12 @@ class PopNetwork (object):
             for netinput in config['input']:
                 if netinput['type'] == 'external_spikes' and netinput['format'] == 'nwb' and netinput['active']:
                     # Load external network spike trains from an NWB file.
-                    print('Setting firing rates for {} from {}.'.format(netinput['network'], netinput['file']))
-                    network.add_rates_nwb(netinput['network'], netinput['file'], netinput['trial'])
+                    print('Setting firing rates for {} from {}.'.format(netinput['source_nodes'], netinput['file']))
+                    network.add_rates_nwb(netinput['source_nodes'], netinput['file'], netinput['trial'])
 
                 if netinput['type'] == 'pop_rate':
-                    print('Setting {}/{} to fire at {} Hz.'.format(netinput['network'], netinput['pop_id'], netinput['rate']))
-                    network.add_rate_hz(netinput['network'], netinput['pop_id'], netinput['rate'])
+                    print('Setting {}/{} to fire at {} Hz.'.format(netinput['source_nodes'], netinput['pop_id'], netinput['rate']))
+                    network.add_rate_hz(netinput['source_nodes'], netinput['pop_id'], netinput['rate'])
 
                 # TODO: take input as function with Population argument
 
