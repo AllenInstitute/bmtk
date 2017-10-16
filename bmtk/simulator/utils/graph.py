@@ -229,7 +229,7 @@ class SimGraph(object):
         self._edges_table[(trg_network, src_network)] = edges
 
     def edges_table(self, target_network, source_network):
-        return self._edges_table[(target_network, source_network)]
+        return self._edges_table.get((target_network, source_network), None)
 
     def edges_iterator(self, target_gid, source_network):
         target_node = self._internal_nodes_table[target_gid]
@@ -237,6 +237,9 @@ class SimGraph(object):
         source_network_table = self._networks[source_network]
 
         edges = self.edges_table(target_network, source_network)
+        if edges is None:
+            return
+
         for e in edges.edges_itr(target_gid):
             dynamics_params = self._get_edge_params(e)
             edge_wrapper = self._create_edge(e, dynamics_params)
