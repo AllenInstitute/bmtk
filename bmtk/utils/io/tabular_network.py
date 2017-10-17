@@ -291,7 +291,10 @@ class ColumnProperty(object):
         if isinstance(hf_obj, h5py.Dataset):
             ds_name = name if name is not None else hf_obj.name.split('/')[-1]
             ds_dtype = hf_obj.dtype
-            dim = 1 if len(hf_obj.shape) < 2 else hf_obj[1]
+
+            # If the dataset shape is in the form "(N, M)" then the dimension is M. If the shape is just "(N)" then the
+            # dimension is just 1
+            dim = 1 if len(hf_obj.shape) < 2 else hf_obj.shape[1]
             return cls(ds_name, ds_dtype, dim, attrs=hf_obj.attrs)
 
         elif isinstance(hf_obj, h5py.Group):

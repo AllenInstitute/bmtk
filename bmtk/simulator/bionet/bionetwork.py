@@ -258,23 +258,18 @@ class BioNetwork(object):
                 spike_train = self._get_spike_trains(src_gid, network)
                 self._stims[network][src_gid] = Stim(src_prop, spike_train)
 
-
-
-
     def set_recurrent_connections(self):
         self._init_connections()
         syn_counter = 0
         for src_network in self._graph.internal_networks():
-            io.print2log0('    Setting connections from %s' %src_network)
-
+            io.print2log0('    Setting connections from {}'.format(src_network))
             for trg_gid, trg_cell in self._cells.items():
                 for trg_prop, src_prop, edge_prop in self._graph.edges_iterator(trg_gid, src_network):
                     syn_counter += trg_cell.set_syn_connection(edge_prop, src_prop)
 
-
     def set_external_connections(self, source_network):
         self._init_connections()
-        io.print2log0('    Setting connections from %s' % source_network)
+        io.print2log0('    Setting connections from {}'.format(source_network))
         source_stims = self._stims[source_network]
         syn_counter = 0
         for trg_gid, trg_cell in self._cells.items():
@@ -282,28 +277,6 @@ class BioNetwork(object):
                 # TODO: reimplement weight function if needed
                 stim = source_stims[src_prop.node_id]
                 syn_counter += trg_cell.set_syn_connection(edge_prop, src_prop, stim)
-
-
-    """
-    def set_external_connections(self):
-        self._init_connections()
-        for network in self._graph.external_networks():
-            # TODO: don't do this?!?!
-            if network not in self._stims:
-                continue
-
-            io.print2log0('Setting connections from  %s' % network)
-            src_network = self._stims[network]
-            syn_counter = 0
-            for trg_gid, trg_cell in self._cells.items():
-                for trg_prop, src_prop, edge_prop in self._graph.edges_iterator(trg_gid, network):
-                    # TODO: reimplement weight function if needed
-                    stim = src_network[src_prop.node_id]
-                    trg_cell.set_syn_connection(edge_prop, src_prop, stim)
-                    syn_counter += 1
-
-            io.print2log0('    set %d synapses' % syn_counter)
-    """
 
     def _init_connections(self):
         if not self._connections_initialized:
@@ -363,7 +336,7 @@ class BioNetwork(object):
             for netinput in config['input']:
                 if netinput['type'] == 'external_spikes' and netinput['format'] == 'nwb':
                     # Load external network spike trains from an NWB file.
-#                    io.print2log0('Load input for {}'.format(netinput['network']))
+                    # io.print2log0('Load input for {}'.format(netinput['network']))
                     network.add_spikes_nwb(netinput['source_nodes'], netinput['file'], netinput['trial'])
                 # TODO: Allow for external spike trains from csv file or user function
                 # TODO: Add Iclamp code.

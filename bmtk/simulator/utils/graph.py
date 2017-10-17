@@ -310,6 +310,9 @@ class SimGraph(object):
 
         if 'edges' in config['networks']:
             for edges_config in config['networks']['edges']:
+                if not edges_config.get('active', True):
+                    continue
+
                 edges_file = edges_config['edges_file']
                 edge_types_file = edges_config['edge_types_file']
 
