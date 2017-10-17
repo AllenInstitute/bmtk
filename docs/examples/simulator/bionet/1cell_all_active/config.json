@@ -1,0 +1,71 @@
+{
+  "manifest": {
+    "$BASE_DIR": "${configdir}",
+    "$OUTPUT_DIR": "$BASE_DIR/output",
+    "$INPUT_DIR": "$BASE_DIR/../../NWB_files",
+    "$NETWORK_DIR": "$BASE_DIR/network",
+    "$COMPONENT_DIR": "$BASE_DIR/../components"
+  },
+
+  "run": {
+    "tstop": 3000.0,
+    "dt": 0.025,
+    "dL": 20.0,
+    "overwrite_output_dir": true,
+    "spike_threshold": -15,
+    "nsteps_block":5000,
+    "save_cell_vars": ["v", "cai"],
+    "calc_ecp": true
+  },
+
+  "conditions": {
+    "celsius": 34.0,
+    "v_init": -90
+  },
+
+  "node_id_selections": {
+    "save_cell_vars": [0]
+  },
+
+  	"iclamp":{
+        "amp" : 11.8,
+		"del" : 1000.0,
+		"dur" : 1000.0
+	},
+
+  "output": {
+    "log_file": "$OUTPUT_DIR/log.txt",
+    "spikes_ascii_file": "$OUTPUT_DIR/spikes.txt",
+    "spikes_hdf5_file": "$OUTPUT_DIR/spikes.h5",
+    "cell_vars_dir": "$OUTPUT_DIR/cellvars",
+    "ecp_file": "$OUTPUT_DIR/ecp.h5",
+    "output_dir": "$OUTPUT_DIR"
+  },
+
+  "target_simulator":"NEURON",
+
+  "components": {
+    "morphologies_dir": "$COMPONENT_DIR/biophysical/morphology",
+    "synaptic_models_dir": "$COMPONENT_DIR/synaptic_models",
+    "mechanisms_dir":"$COMPONENT_DIR/mechanisms",
+    "biophysical_neuron_models_dir": "$COMPONENT_DIR/biophysical/electrophysiology",
+    "point_neuron_models_dir": "$COMPONENT_DIR/intfire",
+    "templates_dir": "$COMPONENT_DIR/hoc_templates"
+  },
+
+  "recXelectrode": {
+	"positions": 		"$COMPONENT_DIR/recXelectrodes/linear_electrode.csv"
+  },
+
+
+  "networks": {
+    "nodes": [
+      {
+        "name": "V1",
+        "nodes_file": "$NETWORK_DIR/1_cells.csv",
+        "node_types_file": "$NETWORK_DIR/cell_models_perisomatic.csv"
+      }
+
+    ]
+  }
+}
