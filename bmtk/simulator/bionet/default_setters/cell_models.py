@@ -79,7 +79,7 @@ def Biophys1_dict(cell):
     return hobj
 
 
-def Biophys1AllActive(cell_prop):
+def Biophys1_adjusted(cell_prop):
     morphology_file_name = str(cell_prop['morphology_file'])
     hobj = h.Biophys1(morphology_file_name)
     fix_axon_allactive(hobj)
@@ -230,7 +230,6 @@ def fix_axon_allactive(hobj):
     # find the start and end diameter of the original axon, this is different from the perisomatic cell model
     # where diameter == 1.
     axon_diams = [hobj.axon[0].diam, hobj.axon[0].diam]
-    print hobj.axon[0].diam
     for sec in hobj.all:
         section_name = sec.name().split(".")[1][:4]
         if section_name == 'axon':
@@ -243,6 +242,7 @@ def fix_axon_allactive(hobj):
     for index, sec in enumerate(hobj.axon):
         sec.L = 30
         sec.diam = axon_diams[index]  # 1
+
         hobj.axonal.append(sec=sec)
         hobj.all.append(sec=sec)  # need to remove this comment
 
@@ -254,9 +254,7 @@ def fix_axon_allactive(hobj):
 
 add_cell_model(Biophys1, 'biophysical', overwrite=False)
 add_cell_model(Biophys1, overwrite=False)
-
-
+add_cell_model(Biophys1_adjusted, 'biophysical_adjusted', overwrite=False)
+add_cell_model(Biophys1_adjusted, overwrite=False)
 add_cell_model(IntFire1, 'point_IntFire1', overwrite=False)
 add_cell_model(IntFire1, 'intfire', overwrite=False)
-add_cell_model(Biophys1AllActive, 'biophysical_allactive', overwrite=False)
-add_cell_model(Biophys1AllActive, overwrite=False)

@@ -40,6 +40,8 @@ class PropertySchema(BaseSchema):
             return CellTypes.Point
         elif model_type == 'virtual':
             return CellTypes.Virtual
+        elif model_type == 'biophysical_adjusted':
+            return CellTypes.Biophysical
         else:
             return CellTypes.Unknown
 

@@ -13,6 +13,7 @@ from bmtk.simulator.bionet.bionetwork import BioNetwork
 from bmtk.utils.io import TabularNetwork_AI
 from bmtk.simulator.bionet.property_schemas import AIPropertySchema
 
+
 def run(config_file):
     conf = config.from_json(config_file)        # build configuration
     io.setup_output_dir(conf)                   # set up output directories
