@@ -1,12 +1,7 @@
-# -*- coding: utf-8 -*-
-
-"""Builds and simulates a 14 cell V1 example using AI/BBP network format."""
-
+# plot spikes
 import os, sys
 
 import bmtk.simulator.bionet.config as config
-from bmtk.simulator.bionet.biograph import BioGraph
-from bmtk.simulator.bionet.property_schemas import AIPropertySchema
 import bmtk.analyzer.spikes_loader as spklod
 import bmtk.analyzer.spikes_analyzer as spkan
 
@@ -23,7 +18,7 @@ import numpy as np
 config_file = "config.json"     # Get config from the command line argument
 conf = config.from_json(config_file)
 
-spikes_file_name = conf["output"]["spikes_h5"]
+spikes_file_name = conf["output"]["spikes_hdf5_file"]
 #spikes_file_name = conf["output"]["spikes_ascii"]
 
 t1=time.time()

@@ -32,23 +32,21 @@ If compiling NEURON from the source you will need to provide configuration optio
  * If you want to run NEURON in parallel, it requires a version of `MPI <http://www.mpich.org/>`_ to be installed. If you have MPI installed you will configure installation using '--with-paranrn' option. 
  * Furthermore, since BioNet does not require NEURON's GUI functionality, one may install NEURON without GUI support using '--without-x' option. 
 
-Examples
---------
+Running a test example
+----------------------
+
 There are a few examples of how to run BioNet using existing networks located in the directory
 docs/examples/simulators/bionet. There is an example of a small 14 cell network (/14cells) and a slightly larger
 network with 450 cells (/450cells). 
 
-The network utilize models of individual cells, synapse and recording electrodes defined in docs/examples/simulators/bionet/components/mechanisms directory.
+The networks utilize models of individual cells, synapse and recording electrodes defined in docs/examples/simulators/bionet/components/mechanisms directory.
+
 
 Inside each example folder you will find:
 
-**Model description**
-
-`config.json` : configuration file incuding paths to files describing simulated network, output files as well as run parameters
-
 `./network` : folder including files describing parameters of the nodes (cells) and edges (connections) making up the network
 
-**Python scripts**
+`config.json` : configuration file incuding paths to files describing simulated network, output files as well as run parameters
 
 `run_bionet.py` : main python script which calls BioNet to run simulation
 
@@ -65,36 +63,12 @@ the command:
 ::
   python run_bionet.py config.json
 
-Or to run in parallel with MPI setup:
-::
-  mpirun -np $NCORES nrniv -mpi -python run_bionet config.json
+When simulation is completed you will see a message “Simulation completed” and you should have an output directory ./output
 
-where $NCORES  is the number of CPU cores you would like to run your simulation on.
-
-When simulation completed you will see a message “Simulation completed” -> When simulation is completed you will see a message “Simulation completed”.
-
-**Simulation output**
-
-BioNet allows saving simulation output in blocks while simulation is still running, giving users an ability to check and analyze intermediate output. During the run you will see some output reporting on the progress of a simulation. When simulation completed you will see a message "Simulation completed".
-
-The output directory includes:
- * spikes.h5 : HDF5 file containg the spikes of the simulated cells.
- * cellvars/N.h5 : HDF5 file containing time series recordings of somatic variables  (e.g., somatic voltage, [Ca++]) for cell with node_id=N (there might be multiple such files, up to the number of cells in the model, or none at all, depending on the settings in the simulation config).
- * config.json : a copy of configuration for record keeping
- * log.txt : run log file including time-stamped information about the progress of a simulation.
+Please see the `BioNet examples tutorial <./bionet_tutorial.html>`_ for a more detailed explanation of how to simulate example networks.
 
 
 
-Simulating your network models
-------------------------------
-
-To run simulations of your network with BioNet, you will first need to provide a pre-built network in the format understood by BioNet. We recommend using `BMTK's network builder api <builder>`_, but you may also use your own scripts or a third party tool to build a network. As a start we suggest to modify the existing network examples as a quick way of customizing network models and then build your own model following `builders examples tutorial <https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/builder/bionet_14cells>`_.
-
-When you have your custom model built, you will need to specify in the your configuration file the paths to the network, components as well as simulation run parameters.
-
-Just as in the above examples, your run folder should include Python modules: set_cell_params.py, set_syn_params.py, set_weights.py specifying how models of cells, synapses and connection weights are created as well as a main python script. 
-
-When running different simulations you will rarely need to modify the main Python script running BioNet. Instead, you will commonly need to modify paths to network files or run parameters in the configuration file  to instruct BioNet which model to run and how to run it. Please refer to the `configuration file tutorial <./bionet_config.html>`_ for details.
 
 
 

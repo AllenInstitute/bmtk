@@ -1,12 +1,6 @@
-# -*- coding: utf-8 -*-
-
-"""Builds and simulates a 14 cell V1 example using AI/BBP network format."""
-
 import os, sys
 
 import bmtk.simulator.bionet.config as config
-#from bmtk.simulator.bionet.biograph import BioGraph
-#from bmtk.simulator.bionet.property_schemas import AIPropertySchema
 import bmtk.analyzer.spikes_loader as spklod
 import bmtk.analyzer.spikes_analyzer as spkan
 
