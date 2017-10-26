@@ -107,14 +107,12 @@ def set_params(hobj, params_dict):
         # sec.insert('extracellular')
 
     if 'e_pas' in passive:
-        print('setting e_pas')
         e_pas_val = passive['e_pas']
         for sec in hobj.all:
             for seg in sec:
                 seg.pas.e = e_pas_val
 
     if 'ra' in passive:
-        print('Setting ra = {}'.format(passive['ra']))
         ra_val = passive['ra']
         for sec in hobj.all:
             sec.Ra = ra_val
@@ -137,9 +135,8 @@ def set_params(hobj, params_dict):
         g_mechanism = genome_dict.get("mechanism", "")
         for sec in section_map.get(g_section, []):
             if g_mechanism != "":
-                print('Adding mechanism {} to {}'.format(g_mechanism, g_section))
                 sec.insert(g_mechanism)
-            setattr(sec, g_name, 3.9) #g_value)
+            setattr(sec, g_name, g_value)
 
         print('setting {} to {} in {}'.format(g_name, g_value, g_section))
 
@@ -147,7 +144,6 @@ def set_params(hobj, params_dict):
         erev_section = erev['section']
         erev_ena = erev['ena']
         erev_ek = erev['ek']
-        print('Setting ek to {} and ena to {} in {}'.format(erev_ek, erev_ena, erev_section))
 
         if erev_section in section_map:
             for sec in section_map.get(erev_section, []):
@@ -246,8 +242,8 @@ def fix_axon_allactive(hobj):
         hobj.axonal.append(sec=sec)
         hobj.all.append(sec=sec)  # need to remove this comment
 
-    hobj.axon[0].connect(hobj.soma[0], 0.5, 0)
-    hobj.axon[1].connect(hobj.axon[0], 1, 0)
+    hobj.axon[0].connect(hobj.soma[0], 1.0, 0)
+    hobj.axon[1].connect(hobj.axon[0], 1.0, 0)
 
     h.define_shape()
 
