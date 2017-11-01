@@ -17,7 +17,7 @@ whether created in whole or in part by you, under the designated license; or
 
 3.	Provided directly to you by some other person who certified (1) or (2) and you have not modified them.
 
-•	You are granting your Contributions to the Allen Institute under the terms of the 2-Clause BSD license 
+•	You are granting your Contributions to the Allen Institute under the terms of the [2-Clause BSD license](https://opensource.org/licenses/BSD-2-Clause)
 (the “designated license”).
 
 •	You understand and agree that the Allen Institute projects and your Contributions are public and that 
