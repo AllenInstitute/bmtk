@@ -888,23 +888,18 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="n">spike_train</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_spike_trains</span><span class="p">(</span><span class="n">src_gid</span><span class="p">,</span> <span class="n">network</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_stims</span><span class="p">[</span><span class="n">network</span><span class="p">][</span><span class="n">src_gid</span><span class="p">]</span> <span class="o">=</span> <span class="n">Stim</span><span class="p">(</span><span class="n">src_prop</span><span class="p">,</span> <span class="n">spike_train</span><span class="p">)</span></div>
 
-
-
-
 <div class="viewcode-block" id="BioNetwork.set_recurrent_connections"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.bionetwork.BioNetwork.set_recurrent_connections">[docs]</a>    <span class="k">def</span> <span class="nf">set_recurrent_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_connections</span><span class="p">()</span>
         <span class="n">syn_counter</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">src_network</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">internal_networks</span><span class="p">():</span>
-            <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;    Setting connections from </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span><span class="n">src_network</span><span class="p">)</span>
-
+            <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;    Setting connections from </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">src_network</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">trg_gid</span><span class="p">,</span> <span class="n">trg_cell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cells</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">for</span> <span class="n">trg_prop</span><span class="p">,</span> <span class="n">src_prop</span><span class="p">,</span> <span class="n">edge_prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">edges_iterator</span><span class="p">(</span><span class="n">trg_gid</span><span class="p">,</span> <span class="n">src_network</span><span class="p">):</span>
                     <span class="n">syn_counter</span> <span class="o">+=</span> <span class="n">trg_cell</span><span class="o">.</span><span class="n">set_syn_connection</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_prop</span><span class="p">)</span></div>
 
-
 <div class="viewcode-block" id="BioNetwork.set_external_connections"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.bionetwork.BioNetwork.set_external_connections">[docs]</a>    <span class="k">def</span> <span class="nf">set_external_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_network</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_connections</span><span class="p">()</span>
-        <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;    Setting connections from </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">source_network</span><span class="p">)</span>
+        <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;    Setting connections from </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source_network</span><span class="p">))</span>
         <span class="n">source_stims</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stims</span><span class="p">[</span><span class="n">source_network</span><span class="p">]</span>
         <span class="n">syn_counter</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">trg_gid</span><span class="p">,</span> <span class="n">trg_cell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cells</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -912,28 +907,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="c1"># TODO: reimplement weight function if needed</span>
                 <span class="n">stim</span> <span class="o">=</span> <span class="n">source_stims</span><span class="p">[</span><span class="n">src_prop</span><span class="o">.</span><span class="n">node_id</span><span class="p">]</span>
                 <span class="n">syn_counter</span> <span class="o">+=</span> <span class="n">trg_cell</span><span class="o">.</span><span class="n">set_syn_connection</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_prop</span><span class="p">,</span> <span class="n">stim</span><span class="p">)</span></div>
-
-
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    def set_external_connections(self):</span>
-<span class="sd">        self._init_connections()</span>
-<span class="sd">        for network in self._graph.external_networks():</span>
-<span class="sd">            # TODO: don&#39;t do this?!?!</span>
-<span class="sd">            if network not in self._stims:</span>
-<span class="sd">                continue</span>
-
-<span class="sd">            io.print2log0(&#39;Setting connections from  %s&#39; % network)</span>
-<span class="sd">            src_network = self._stims[network]</span>
-<span class="sd">            syn_counter = 0</span>
-<span class="sd">            for trg_gid, trg_cell in self._cells.items():</span>
-<span class="sd">                for trg_prop, src_prop, edge_prop in self._graph.edges_iterator(trg_gid, network):</span>
-<span class="sd">                    # TODO: reimplement weight function if needed</span>
-<span class="sd">                    stim = src_network[src_prop.node_id]</span>
-<span class="sd">                    trg_cell.set_syn_connection(edge_prop, src_prop, stim)</span>
-<span class="sd">                    syn_counter += 1</span>
-
-<span class="sd">            io.print2log0(&#39;    set %d synapses&#39; % syn_counter)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_init_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections_initialized</span><span class="p">:</span>
@@ -993,8 +966,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">for</span> <span class="n">netinput</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;input&#39;</span><span class="p">]:</span>
                 <span class="k">if</span> <span class="n">netinput</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;external_spikes&#39;</span> <span class="ow">and</span> <span class="n">netinput</span><span class="p">[</span><span class="s1">&#39;format&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;nwb&#39;</span><span class="p">:</span>
                     <span class="c1"># Load external network spike trains from an NWB file.</span>
-<span class="c1">#                    io.print2log0(&#39;Load input for {}&#39;.format(netinput[&#39;network&#39;]))</span>
-                    <span class="n">network</span><span class="o">.</span><span class="n">add_spikes_nwb</span><span class="p">(</span><span class="n">netinput</span><span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">],</span> <span class="n">netinput</span><span class="p">[</span><span class="s1">&#39;file&#39;</span><span class="p">],</span> <span class="n">netinput</span><span class="p">[</span><span class="s1">&#39;trial&#39;</span><span class="p">])</span>
+                    <span class="c1"># io.print2log0(&#39;Load input for {}&#39;.format(netinput[&#39;network&#39;]))</span>
+                    <span class="n">network</span><span class="o">.</span><span class="n">add_spikes_nwb</span><span class="p">(</span><span class="n">netinput</span><span class="p">[</span><span class="s1">&#39;source_nodes&#39;</span><span class="p">],</span> <span class="n">netinput</span><span class="p">[</span><span class="s1">&#39;file&#39;</span><span class="p">],</span> <span class="n">netinput</span><span class="p">[</span><span class="s1">&#39;trial&#39;</span><span class="p">])</span>
                 <span class="c1"># TODO: Allow for external spike trains from csv file or user function</span>
                 <span class="c1"># TODO: Add Iclamp code.</span>
 

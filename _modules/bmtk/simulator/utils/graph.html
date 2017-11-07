@@ -859,7 +859,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_edges_table</span><span class="p">[(</span><span class="n">trg_network</span><span class="p">,</span> <span class="n">src_network</span><span class="p">)]</span> <span class="o">=</span> <span class="n">edges</span></div>
 
 <div class="viewcode-block" id="SimGraph.edges_table"><a class="viewcode-back" href="../../../../bmtk.simulator.utils.html#bmtk.simulator.utils.graph.SimGraph.edges_table">[docs]</a>    <span class="k">def</span> <span class="nf">edges_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_network</span><span class="p">,</span> <span class="n">source_network</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_table</span><span class="p">[(</span><span class="n">target_network</span><span class="p">,</span> <span class="n">source_network</span><span class="p">)]</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_table</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">target_network</span><span class="p">,</span> <span class="n">source_network</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SimGraph.edges_iterator"><a class="viewcode-back" href="../../../../bmtk.simulator.utils.html#bmtk.simulator.utils.graph.SimGraph.edges_iterator">[docs]</a>    <span class="k">def</span> <span class="nf">edges_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_gid</span><span class="p">,</span> <span class="n">source_network</span><span class="p">):</span>
         <span class="n">target_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_internal_nodes_table</span><span class="p">[</span><span class="n">target_gid</span><span class="p">]</span>
@@ -867,6 +867,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">source_network_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_networks</span><span class="p">[</span><span class="n">source_network</span><span class="p">]</span>
 
         <span class="n">edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges_table</span><span class="p">(</span><span class="n">target_network</span><span class="p">,</span> <span class="n">source_network</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">edges</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
         <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">edges</span><span class="o">.</span><span class="n">edges_itr</span><span class="p">(</span><span class="n">target_gid</span><span class="p">):</span>
             <span class="n">dynamics_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_edge_params</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
             <span class="n">edge_wrapper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_edge</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">)</span>
@@ -937,6 +940,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="k">if</span> <span class="s1">&#39;edges&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;networks&#39;</span><span class="p">]:</span>
             <span class="k">for</span> <span class="n">edges_config</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;networks&#39;</span><span class="p">][</span><span class="s1">&#39;edges&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">edges_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;active&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+                    <span class="k">continue</span>
+
                 <span class="n">edges_file</span> <span class="o">=</span> <span class="n">edges_config</span><span class="p">[</span><span class="s1">&#39;edges_file&#39;</span><span class="p">]</span>
                 <span class="n">edge_types_file</span> <span class="o">=</span> <span class="n">edges_config</span><span class="p">[</span><span class="s1">&#39;edge_types_file&#39;</span><span class="p">]</span>
 

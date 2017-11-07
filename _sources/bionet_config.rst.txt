@@ -1,5 +1,5 @@
-The structure of the configuration file
-===================================
+Configuration file
+==================
 
 Configuration file defines the files describing the network, its input as well as run-time parameters. For convenience it is grouped into the following categories:
 
@@ -57,11 +57,10 @@ Conditions
 Node_id selections
 ++++++++++++++++++
 
-	Defines selections of cells. For example, this way we identify the cells for which variables will be saved
+	Defines selections of cells. For example, this way can specify the cells (node_ids) for which variables will be saved
     
     ::
 
-		The "node_id_selections" 
 		  "node_id_selections": {
 			"save_cell_vars": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 		  },
@@ -80,7 +79,7 @@ Input
 			  "type": "external_spikes",
 			  "format": "nwb",
 			  "file": "$INPUT_DIR/lgn_spikes.nwb",
-			  "network": "LGN",
+			  "source_nodes": "LGN",
 			  "trial": "trial_0"
 			},
 			...

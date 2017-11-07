@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>The structure of the configuration file &#8212; Brain Modeling Toolkit 0.0.5 documentation</title>
+    <title>Configuration file &#8212; Brain Modeling Toolkit 0.0.5 documentation</title>
     <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -627,8 +627,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="the-structure-of-the-configuration-file">
-<h1>The structure of the configuration file<a class="headerlink" href="#the-structure-of-the-configuration-file" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="configuration-file">
+<h1>Configuration file<a class="headerlink" href="#configuration-file" title="Permalink to this headline">¶</a></h1>
 <p>Configuration file defines the files describing the network, its input as well as run-time parameters. For convenience it is grouped into the following categories:</p>
 <div class="section" id="manifest">
 <h2>Manifest<a class="headerlink" href="#manifest" title="Permalink to this headline">¶</a></h2>
@@ -682,11 +682,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <h2>Node_id selections<a class="headerlink" href="#node-id-selections" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><blockquote>
-<div>Defines selections of cells. For example, this way we identify the cells for which variables will be saved</div></blockquote>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">The</span> <span class="s2">&quot;node_id_selections&quot;</span>
-  <span class="s2">&quot;node_id_selections&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;save_cell_vars&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">100</span><span class="p">]</span>
-  <span class="p">},</span>
+<div>Defines selections of cells. For example, this way can specify the cells (node_ids) for which variables will be saved</div></blockquote>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="s2">&quot;node_id_selections&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;save_cell_vars&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">100</span><span class="p">]</span>
+<span class="p">},</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -701,7 +700,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;external_spikes&quot;</span><span class="p">,</span>
         <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;nwb&quot;</span><span class="p">,</span>
         <span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="s2">&quot;$INPUT_DIR/lgn_spikes.nwb&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;network&quot;</span><span class="p">:</span> <span class="s2">&quot;LGN&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;source_nodes&quot;</span><span class="p">:</span> <span class="s2">&quot;LGN&quot;</span><span class="p">,</span>
         <span class="s2">&quot;trial&quot;</span><span class="p">:</span> <span class="s2">&quot;trial_0&quot;</span>
       <span class="p">},</span>
       <span class="o">...</span>
