@@ -90,8 +90,16 @@ class ConnectionMap(object):
         return self._source_nodes
 
     @property
+    def source_network_name(self):
+        return self._source_nodes.network_name
+
+    @property
     def target_nodes(self):
         return self._target_nodes
+
+    @property
+    def target_network_name(self):
+        return self._target_nodes.network_name
 
     @property
     def connector(self):

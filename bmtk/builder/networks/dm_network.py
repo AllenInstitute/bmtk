@@ -46,6 +46,7 @@ class DenseNetwork(Network):
         self._nodes = []
 
         self.__edges_tables = []
+        self.__target_networks = {}
 
 
     def _initialize(self):
@@ -57,6 +58,8 @@ class DenseNetwork(Network):
         self.__lookup = []
         #self.__edges = None
         #self.__edges = np.zeros((0,0), dtype=np.uint8)
+
+
 
 
     def _add_nodes(self, nodes):
@@ -172,6 +175,9 @@ class DenseNetwork(Network):
             if con[2] is not None:
                 syn_table[con[0], con[1]] = con[2]
 
+        target_net = connection_map.target_nodes
+        self.__target_networks[target_net.network_name] = target_net.network
+
         nsyns = np.sum(syn_table.nsyn_table)
         self._nedges += int(nsyns)
         edge_table = {'syn_table': syn_table,
@@ -225,41 +231,20 @@ class DenseNetwork(Network):
         #print self.__edges_tables[0]['params']['distance']
         #exit()
 
+    #def _save_edge_types(self, edge_types_file_name, src_network, trg_network):
+    #    print edge_types_file_name, src_network, trg_network
+    #    exit()
 
-    def save_edges(self, edges_file_name, edge_types_file_name, src_network=None, trg_network=None):
-        # def save_edges(self, edges_file_name, edge_types_file_name):
-        #print self.__edges_tables
-
-        #groups = []
-
-        # TODO: needs to handle cases for inter-network connections
-        #print self._edge_type_properties
-
-        src_network = self.__edges_tables[0].get('source_network', None) or self.name
-        trg_network = self.__edges_tables[0].get('target_network', None) or self.name
-        # print src_network
-        # print trg_network
-
-        # Create edge-type file
-
-
-        cols = ['edge_type_id', 'target_query', 'source_query']
-        cols += [col for col in self._edge_types_columns if col not in cols]
-        with open(edge_types_file_name, 'w') as csvfile:
-            csvw = csv.writer(csvfile, delimiter=' ')
-            csvw.writerow(cols)
-            for edge_type in self._edge_type_properties.values():
-                csvw.writerow([edge_type.get(cname, 'NULL') for cname in cols])
-
+    def _save_edges(self, edges_file_name, src_network, trg_network):
         groups = {}
         group_dtypes = {}  # TODO: this should be stored in PropertyTable
-
         grp_id_itr = 0
         groups_lookup = {}
 
-        #grp_id = 0
         total_syns = 0
-        for ets in self.__edges_tables:
+        matching_edge_tables = [et for et in self.__edges_tables
+                                if et['source_network'] == src_network and et['target_network'] == trg_network]
+        for ets in matching_edge_tables:
             params_hash =  str(ets['params'].keys())
             group_id = groups_lookup.get(params_hash, None)
             if group_id is None:
@@ -273,14 +258,9 @@ class DenseNetwork(Network):
             for param_name in ets['params'].keys():
                 groups[group_id][param_name] = []
 
-            # grp_id += 1
             total_syns += int(ets['nsyns'])
 
         group_index_itrs = [0 for _ in range(grp_id_itr)]
-        #print group_index_itrs
-        #total_syns = int(total_syns)
-        # TODO: merge group that have the same properties.
-
         trg_gids = np.zeros(total_syns)  # set dtype to uint64
         src_gids = np.zeros(total_syns)
         edge_groups = np.zeros(total_syns)  # dtype uint16 or uint8
@@ -288,44 +268,19 @@ class DenseNetwork(Network):
         edge_type_ids = np.zeros(total_syns)  # uint32
 
         # TODO: Another potential issue if node-ids don't start with 0
-        index_ptrs = np.zeros(len(self._nodes)+1)  # TODO: issue when target nodes come from another network
+        index_ptrs = np.zeros(len(self.__target_networks[trg_network].nodes()) + 1)
+        #index_ptrs = np.zeros(len(self._nodes)+1)  # TODO: issue when target nodes come from another network
         index_ptr_itr = 0
 
-        """
-        distance_table = ets['params']['distance']
-        print len(distance_table._prop_array)
-        print len(distance_table._index)
-        print distance_table._index
-        # self._prop_array = np.zeros(nvalues)
-        # self._prop_table = np.zeros((nvalues, 1))  # TODO: set dtype
-        # self._index = np.zeros((nvalues, 2), dtype=np.uint8)
-        exit()
-        """
-
-        #print groups
-        #exit()
-        """
-        for trg_node in self._nodes:
-            ets = self.__edges_tables[0]
-            distance_table = ets['params']['distance']
-            #print distance_table
-            syn_table = ets['syn_table']
-            if syn_table.has_target(trg_node.node_id):
-                for src_id, nsyns in syn_table.trg_itr(trg_node.node_id):
-
-                    for v in distance_table.itr_vals(src_id, trg_node.node_id):
-                        print '{} --> {} ({})'.format(src_id, trg_node.node_id, v)
-
-        print self.__edges_tables[0]['params']['distance']
-        exit()
-        """
-
         gid_indx = 0
-        for trg_node in self._nodes:  # TODO: need to order from 0 to N
+        #print self.__target_networks[trg_network]
+        #exit()
+        for trg_node in self.__target_networks[trg_network].nodes():
+        #for trg_node in self._nodes:  # TODO: need to order from 0 to N
             index_ptrs[index_ptr_itr] = gid_indx
             index_ptr_itr += 1
 
-            for ets in self.__edges_tables:
+            for ets in matching_edge_tables:
                 edge_group_id = ets['group_id']
                 group_table = groups[edge_group_id]
 
@@ -345,26 +300,19 @@ class DenseNetwork(Network):
                                 gid_indx += 1
 
                             for param_name, param_table in ets['params'].items():
-                                #if param_name == 'distance':
-                                #    print len(groups[0]['distance'])
                                 param_vals = group_table[param_name]
-
-                                #if param_name == 'distance':
-                                #    print param_name
-                                #    print len(param_vals)
-                                #exit()
-
                                 for val in param_table.itr_vals(src_id, trg_node.node_id):
-                                    #print val
                                     param_vals.append(val)
 
                     else:
-                        # TODO: if no properties just print nsyns table.
-                        # raise NotImplementedError()
+                        # If no properties just print nsyns table.
                         if 'nsyns' not in group_table:
                             group_table['nsyns'] = []
                         group_dtypes[edge_group_id]['nsyns'] = 'uint16'
+                        #print 'target_id', trg_node.node_id
                         for src_id, nsyns in syn_table.trg_itr(trg_node.node_id):
+                            #print '>>> src_id', src_id
+
                             trg_gids[gid_indx] = trg_node.node_id
                             src_gids[gid_indx] = src_id
                             edge_type_ids[gid_indx] = ets['edge_type_id']
@@ -376,33 +324,13 @@ class DenseNetwork(Network):
 
                             group_table['nsyns'].append(nsyns)
 
-        #print len(groups[0]['distance'])
-        #exit()
-
         trg_gids = trg_gids[:gid_indx]
         src_gids = src_gids[:gid_indx]
         edge_groups = edge_groups[:gid_indx]
         edge_group_index = edge_group_index[:gid_indx]
         edge_type_ids = edge_type_ids[:gid_indx]
-        #src_gids.reshape((gid_indx,))
-        #edge_groups.reshape((gid_indx,))
-        #edge_group_index.reshape((gid_indx,))
-        #edge_type_ids.reshape((gid_indx,))
-        """
-        trg_gids = np.zeros(total_syns)  # set dtype to uint64
-        src_gids = np.zeros(total_syns)
-        edge_groups = np.zeros(total_syns)  # dtype uint16 or uint8
-        edge_group_index = np.zeros(total_syns)  # uint32
-        edge_type_ids = np.zeros(total_syns)  # uint32
-        """
-
-        #print len(groups[0]['nsyns'])
 
         index_ptrs[index_ptr_itr] = gid_indx
-
-        #print trg_gids
-        #exit()
-
 
         with h5py.File(edges_file_name, 'w') as hf:
             hf.create_dataset('edges/target_gid', data=trg_gids, dtype='uint64')
@@ -419,31 +347,15 @@ class DenseNetwork(Network):
             for group_id, params_dict in groups.items():
                 for params_key, params_vals in params_dict.items():
                     group_path = 'edges/{}/{}'.format(group_id, params_key)
-                    #print group_path, len(params_vals)
-                    #print group_dtypes
                     dtype = group_dtypes[group_id][params_key]
                     if dtype is not None:
                         hf.create_dataset(group_path, data=list(params_vals), dtype=dtype)
                     else:
                         hf.create_dataset(group_path, data=list(params_vals))
 
-
-    """
-    def _add_edges(self, edge, connections):
-        edgetable = self.EdgeTable(edge)
-        self.__edges_types[edge.id] = edgetable
-
-        for con in connections:
-            if con[2] is not None:
-                self._nedges += 1
-                edgetable[con[0], con[1]] = con[2]
-    """
-
     def _clear(self):
         self._nedges = 0
         self._nnodes = 0
-
-
 
     def _edges_iter(self, target_gids, source_gids):
         raise NotImplementedError()
@@ -454,11 +366,9 @@ class DenseNetwork(Network):
             return 0
         return self._nnodes
 
-
     @property
     def nedges(self):
         return self._nedges
-
 
     class EdgeTable(object):
         def __init__(self, connection_map):
@@ -502,6 +412,10 @@ class DenseNetwork(Network):
             return self.__idx2src
 
         def trg_itr(self, trg_id):
+            #print self._nsyn_table
+            #print self.__idx2src
+            #exit()
+
             trg_i = self.__trg2idx[trg_id]
             for src_j, src_id in enumerate(self.__idx2src):
                 nsyns = self._nsyn_table[src_j, trg_i]
