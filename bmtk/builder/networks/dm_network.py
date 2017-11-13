@@ -32,9 +32,10 @@ import csv
 
 from bmtk.utils.io import TabularNetwork
 from bmtk.builder.node import Node
+from bmtk.builder.edge import Edge
+
 
 class DenseNetwork(Network):
-
     def __init__(self, name, **network_props):
         super(DenseNetwork, self).__init__(name, **network_props or {})
 
@@ -48,19 +49,9 @@ class DenseNetwork(Network):
         self.__edges_tables = []
         self.__target_networks = {}
 
-
     def _initialize(self):
         self.__id_map = []
-        # self.__nodes = []
-
-        #self.__networks = {}
-        #self.__node_count = 0
         self.__lookup = []
-        #self.__edges = None
-        #self.__edges = np.zeros((0,0), dtype=np.uint8)
-
-
-
 
     def _add_nodes(self, nodes):
         self._nodes.extend(nodes)
@@ -110,7 +101,6 @@ class DenseNetwork(Network):
         node_group_index_tables = np.zeros(self._nnodes)
 
         for i, node in enumerate(self.nodes()):
-            #print node.node_id, node.node_type_id
             node_gid_table[i] = node.node_id
             node_type_id_table[i] = node.node_type_id
             group_id = groups_lookup[node.params_hash]
@@ -138,24 +128,13 @@ class DenseNetwork(Network):
                         hf.create_dataset(ds_path, data=str_list)
 
     def _nodes_iter(self, node_ids=None):
-        #print self._nodes
-        #exit()
-
         if node_ids is not None:
             raise NotImplementedError()
         else:
             return self._nodes
 
-
     def _process_nodepool(self, nodepool):
-        #if nodepool.network not in self.__networks:
-        #    offset = self.__node_count
-        #    self.__node_count += len(nodepool.network.nodes())
-        #    self.__networks[nodepool.network] = offset
-        #    self.__edges = np.zeros((self.__node_count, self.__node_count), dtype=np.uint8)
-        #    self.__lookup += [n[1]['id'] for n in nodepool.network.nodes()]
         return nodepool
-
 
     def import_nodes(self, nodes_file_name, node_types_file_name):
         nodes_network = TabularNetwork.load_nodes(nodes_file=nodes_file_name, node_types_file=node_types_file_name)
@@ -167,8 +146,7 @@ class DenseNetwork(Network):
             self._node_id_gen.remove_id(n.gid)
             self._nodes.append(Node(n.gid, n.node_props, n.node_type_props))
 
-
-    def _add_edges(self, connection_map):
+    def _add_edges(self, connection_map, i):
         syn_table = self.EdgeTable(connection_map)
         connections = connection_map.connection_itr()
         for con in connections:
@@ -191,7 +169,6 @@ class DenseNetwork(Network):
                       'source_query': connection_map.source_nodes.filter_str,
                       'target_query': connection_map.target_nodes.filter_str}
 
-        #params = {}
         for param in connection_map.params:
             rule = param.rule
             param_names = param.names
@@ -273,10 +250,7 @@ class DenseNetwork(Network):
         index_ptr_itr = 0
 
         gid_indx = 0
-        #print self.__target_networks[trg_network]
-        #exit()
         for trg_node in self.__target_networks[trg_network].nodes():
-        #for trg_node in self._nodes:  # TODO: need to order from 0 to N
             index_ptrs[index_ptr_itr] = gid_indx
             index_ptr_itr += 1
 
@@ -309,10 +283,7 @@ class DenseNetwork(Network):
                         if 'nsyns' not in group_table:
                             group_table['nsyns'] = []
                         group_dtypes[edge_group_id]['nsyns'] = 'uint16'
-                        #print 'target_id', trg_node.node_id
                         for src_id, nsyns in syn_table.trg_itr(trg_node.node_id):
-                            #print '>>> src_id', src_id
-
                             trg_gids[gid_indx] = trg_node.node_id
                             src_gids[gid_indx] = src_id
                             edge_type_ids[gid_indx] = ets['edge_type_id']
@@ -357,8 +328,31 @@ class DenseNetwork(Network):
         self._nedges = 0
         self._nnodes = 0
 
-    def _edges_iter(self, target_gids, source_gids):
-        raise NotImplementedError()
+    def _edges_iter(self, targets=None, trg_network=None, src_network=None):
+        trg_network = trg_network or self.name
+        src_network = src_network or self.name
+        trg_gids = targets or [t.node_id for t in self.nodes()]
+        #sources = sources or self.nodes()
+
+        matching_edge_tables = [et for et in self.__edges_tables if et['target_network'] == trg_network]
+        if src_network is not None:
+            matching_edge_tables = [et for et in matching_edge_tables if et['source_network'] == src_network]
+
+        # print matching_edge_tables
+        for trg_gid in trg_gids:
+            #print trg_gid
+            for ets in matching_edge_tables:
+                syn_table = ets['syn_table']
+                if syn_table.has_target(trg_gid):
+                    if ets['params']:
+                        for param_name, param_table in ets['params'].items():
+                            print param_name, param_table
+
+                    else:
+                        for src_id, nsyns in syn_table.trg_itr(trg_gid):
+                            # print src_id, '-->', trg_gid, '(', nsyns, ')'
+                            # yield src_id, trg_gid, {'nsyns': nsyns}
+                            yield Edge(src_id, trg_gid, {'nsysn': nsyns})
 
     @property
     def nnodes(self):
@@ -372,9 +366,6 @@ class DenseNetwork(Network):
 
     class EdgeTable(object):
         def __init__(self, connection_map):
-            #self._source_nodes = connection_map.source_nodes
-            #self._target_nodes = connection_map.target_nodes
-
             # TODO: save column and row lengths
             # Create maps between source_node gids and their row in the matrix.
             self.__idx2src = [n.node_id for n in connection_map.source_nodes]
@@ -412,30 +403,25 @@ class DenseNetwork(Network):
             return self.__idx2src
 
         def trg_itr(self, trg_id):
-            #print self._nsyn_table
-            #print self.__idx2src
-            #exit()
-
             trg_i = self.__trg2idx[trg_id]
             for src_j, src_id in enumerate(self.__idx2src):
                 nsyns = self._nsyn_table[src_j, trg_i]
                 if nsyns:
                     yield src_id, nsyns
 
-
     class PropertyTable(object):
         # TODO: add support for strings
         def __init__(self, nvalues):
-            #print nvalues
+            # print nvalues
             self._prop_array = np.zeros(nvalues)
-            #self._prop_table = np.zeros((nvalues, 1))  # TODO: set dtype
+            # self._prop_table = np.zeros((nvalues, 1))  # TODO: set dtype
             self._index = np.zeros((nvalues, 2), dtype=np.uint32)
             self._itr_index = 0
 
         def __setitem__(self, key, value):
             self._index[self._itr_index, 0] = key[0]  # src_node_id
             self._index[self._itr_index, 1] = key[1]  # trg_node_id
-            #print value
+            # print value
             # print self._prop_array
             self._prop_array[self._itr_index] = value
             self._itr_index += 1
@@ -444,4 +430,3 @@ class DenseNetwork(Network):
             indicies = np.where((self._index[:, 0] == src_id) & (self._index[:, 1] == trg_id))
             for val in self._prop_array[indicies]:
                 yield val
-                #yield self._prop_array[i]

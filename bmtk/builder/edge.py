@@ -25,16 +25,19 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+
+
 class Edge(object):
-    def __init__(self, edge_id, sources, targets, edge_params):
-        self.__edge_id = edge_id
-        self.__sources = sources
-        self.__targets = targets
+    def __init__(self, source_gid, target_gid, edge_params):
+        # self.__edge_id = edge_id
+        self.__sources = source_gid
+        self.__targets = target_gid
         self.__edge_params = edge_params
 
     @property
     def id(self):
-        return self.__edge_id
+        return -1
+        # return self.__edge_id
 
     @property
     def sources(self):
@@ -49,8 +52,5 @@ class Edge(object):
         return self.__edge_params
 
     def __repr__(self):
-        rstring = 'EdgeType(edge_type:{}, sources:"{}", targets:"{}", params={})'.format(self.__edge_id,
-                                                                                         self.__sources.filter_str,
-                                                                                         self.__targets.filter_str,
-                                                                                         self.__edge_params)
+        rstring = '{} --> {} ({})'.format(self.sources, self.targets, self.__edge_params)
         return rstring

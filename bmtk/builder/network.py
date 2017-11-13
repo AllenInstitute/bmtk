@@ -88,6 +88,9 @@ class Network (object):
     def nedges(self):
         raise NotImplementedError
 
+    def get_connections(self):
+        return self._connection_maps
+
     def _add_node_type(self, props):
         node_type_id = props.get('node_type_id', None)
         if node_type_id is None:
@@ -157,7 +160,7 @@ class Network (object):
         # self._edge_types_columns.update(edge_type_properties.keys())
         connection = ConnectionMap(source, target, connection_rule, connection_params, iterator, edge_type_properties)
         self._connection_maps.append(connection)
-        #self._connection_maps.add(source.network_name, target.network_name, connection)
+        # self._connection_maps.add(source.network_name, target.network_name, connection)
         return connection
 
     def nodes(self, **properties):
@@ -170,9 +173,7 @@ class Network (object):
         if not self.edges_built:
             self.build()
 
-        #target_network = target_network or self.name
-        #source_network = source_network or self.name
-        return self._edges_iter(targets=targets, sources=sources)
+        return list(self._edges_iter(targets=targets))
 
     def clear(self):
         self._nodes_built = False
@@ -201,9 +202,9 @@ class Network (object):
             # only rebuild nodes if necessary.
             self._build_nodes()
 
-        for conn_map in self._connection_maps:
+        for i, conn_map in enumerate(self._connection_maps):
             # print conn_map
-            self._add_edges(conn_map)
+            self._add_edges(conn_map, i)
 
         self._edges_built = True
 
@@ -297,13 +298,16 @@ class Network (object):
     def _add_nodes(self, node_tuples):
         raise NotImplementedError
 
-    def _add_edges(self, edge_tuples):
+    def _add_edges(self, edge_tuples, i):
         raise NotImplementedError
 
     def _clear(self):
         raise NotImplementedError
 
     def _nodes_iter(self, nids=None):
+        raise NotImplementedError
+
+    def _edges_iter(targets=None, sources=None):
         raise NotImplementedError
 
 

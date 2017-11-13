@@ -122,6 +122,9 @@ class ConnectionMap(object):
         # TODO: properly implement edge_type
         return self._edge_type_properties['node_type_id']
 
+    def max_connections(self):
+        return len(self._source_nodes) * len(self._target_nodes)
+
     def add_properties(self, names, rule, rule_params=None, dtypes=None):
         """A a synaptic property
 
