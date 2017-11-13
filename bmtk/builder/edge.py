@@ -28,29 +28,44 @@
 
 
 class Edge(object):
-    def __init__(self, source_gid, target_gid, edge_params):
-        # self.__edge_id = edge_id
-        self.__sources = source_gid
-        self.__targets = target_gid
-        self.__edge_params = edge_params
+    def __init__(self, src_gid, trg_gid, edge_type_props, syn_props):
+        self.__src_gid = src_gid
+        self.__trg_gid = trg_gid
+        self.__edge_type_props = edge_type_props
+        self.__syn_props = syn_props
 
     @property
-    def id(self):
-        return -1
-        # return self.__edge_id
+    def source_gid(self):
+        return self.__src_gid
 
     @property
-    def sources(self):
-        return self.__sources
+    def target_gid(self):
+        return self.__trg_gid
 
     @property
-    def targets(self):
-        return self.__targets
+    def edge_type_properties(self):
+        return self.__edge_type_props
 
     @property
-    def parameters(self):
-        return self.__edge_params
+    def edge_type_id(self):
+        return self.edge_type_properties['edge_type_id']
+
+    @property
+    def synaptic_properties(self):
+        return self.__syn_props
+
+    def __contains__(self, item):
+        return item in self.edge_type_properties or item in self.synaptic_properties
+
+    def __getitem__(self, item):
+        if item in self.edge_type_properties:
+            return self.edge_type_properties[item]
+        elif item in self.synaptic_properties:
+            return self.synaptic_properties[item]
+        else:
+            return None
 
     def __repr__(self):
-        rstring = '{} --> {} ({})'.format(self.sources, self.targets, self.__edge_params)
-        return rstring
+        rstr = "{} --> {} ('edge_type_id': {}, ".format(self.source_gid, self.target_gid, self.edge_type_id)
+        rstr += "{}: {}" ', '.join("'{}': {}".format(k, v) for k, v in self.synaptic_properties.items())
+        return rstr + ")"

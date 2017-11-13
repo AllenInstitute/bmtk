@@ -127,9 +127,9 @@ class DenseNetwork(Network):
                         str_list = [str(d) for d in dataset]
                         hf.create_dataset(ds_path, data=str_list)
 
-    def _nodes_iter(self, node_ids=None):
+    def nodes_iter(self, node_ids=None):
         if node_ids is not None:
-            raise NotImplementedError()
+            return [n for n in self._nodes if n.node_id in node_ids]
         else:
             return self._nodes
 
@@ -174,8 +174,6 @@ class DenseNetwork(Network):
             param_names = param.names
             edge_table['params_dtypes'].update(param.dtypes)
             if isinstance(param_names, list) or isinstance(param_names, tuple):
-                #print 'HERE'
-                #print nsyns
                 tmp_tables = [self.PropertyTable(nsyns) for _ in range(len(param_names))]
                 for source in connection_map.source_nodes:
                     src_node_id = source.node_id
@@ -190,8 +188,6 @@ class DenseNetwork(Network):
                     # TODO: I think a copy constructor might get called, move this out.
                     edge_table['params'][name] = tmp_tables[i]
 
-                #print len(tmp_tables[0]._prop_array)
-                #print 'done'
             else:
                 pt = self.PropertyTable(np.sum(nsyns))
                 for source in connection_map.source_nodes:
@@ -204,21 +200,14 @@ class DenseNetwork(Network):
                 edge_table['params'][param_names] = pt
 
         self.__edges_tables.append(edge_table)
-        #print edge_table['params_dtypes']
-        #print self.__edges_tables[0]['params']['distance']
-        #exit()
-
-    #def _save_edge_types(self, edge_types_file_name, src_network, trg_network):
-    #    print edge_types_file_name, src_network, trg_network
-    #    exit()
 
     def _save_edges(self, edges_file_name, src_network, trg_network):
         groups = {}
         group_dtypes = {}  # TODO: this should be stored in PropertyTable
         grp_id_itr = 0
         groups_lookup = {}
-
         total_syns = 0
+
         matching_edge_tables = [et for et in self.__edges_tables
                                 if et['source_network'] == src_network and et['target_network'] == trg_network]
         for ets in matching_edge_tables:
@@ -306,7 +295,6 @@ class DenseNetwork(Network):
         with h5py.File(edges_file_name, 'w') as hf:
             hf.create_dataset('edges/target_gid', data=trg_gids, dtype='uint64')
             hf['edges/target_gid'].attrs['network'] = trg_network
-            #'source_network'
             hf.create_dataset('edges/source_gid', data=src_gids, dtype='uint64')
             hf['edges/source_gid'].attrs['network'] = src_network
 
@@ -328,31 +316,30 @@ class DenseNetwork(Network):
         self._nedges = 0
         self._nnodes = 0
 
-    def _edges_iter(self, targets=None, trg_network=None, src_network=None):
-        trg_network = trg_network or self.name
-        src_network = src_network or self.name
-        trg_gids = targets or [t.node_id for t in self.nodes()]
-        #sources = sources or self.nodes()
+    def edges_iter(self, trg_gids, src_network=None, trg_network=None):
+        matching_edge_tables = self.__edges_tables
+        if trg_network is not None:
+            matching_edge_tables = [et for et in self.__edges_tables if et['target_network'] == trg_network]
 
-        matching_edge_tables = [et for et in self.__edges_tables if et['target_network'] == trg_network]
         if src_network is not None:
             matching_edge_tables = [et for et in matching_edge_tables if et['source_network'] == src_network]
 
-        # print matching_edge_tables
         for trg_gid in trg_gids:
-            #print trg_gid
             for ets in matching_edge_tables:
                 syn_table = ets['syn_table']
                 if syn_table.has_target(trg_gid):
-                    if ets['params']:
-                        for param_name, param_table in ets['params'].items():
-                            print param_name, param_table
-
-                    else:
-                        for src_id, nsyns in syn_table.trg_itr(trg_gid):
-                            # print src_id, '-->', trg_gid, '(', nsyns, ')'
-                            # yield src_id, trg_gid, {'nsyns': nsyns}
-                            yield Edge(src_id, trg_gid, {'nsysn': nsyns})
+                    for src_id, nsyns in syn_table.trg_itr(trg_gid):
+                        if ets['params']:
+                            synapses = [{} for _ in range(nsyns)]
+                            for param_name, param_table in ets['params'].items():
+                                for i, val in enumerate(param_table[src_id, trg_gid]):
+                                    synapses[i][param_name] = val
+                            for syn_prop in synapses:
+                                yield Edge(src_gid=src_id, trg_gid=trg_gid, edge_type_props=ets['edge_types'],
+                                           syn_props=syn_prop)
+                        else:
+                            yield Edge(src_gid=src_id, trg_gid=trg_gid, edge_type_props=ets['edge_types'],
+                                       syn_props={'nsyns': nsyns})
 
     @property
     def nnodes(self):
@@ -418,15 +405,19 @@ class DenseNetwork(Network):
             self._index = np.zeros((nvalues, 2), dtype=np.uint32)
             self._itr_index = 0
 
-        def __setitem__(self, key, value):
-            self._index[self._itr_index, 0] = key[0]  # src_node_id
-            self._index[self._itr_index, 1] = key[1]  # trg_node_id
-            # print value
-            # print self._prop_array
-            self._prop_array[self._itr_index] = value
-            self._itr_index += 1
-
         def itr_vals(self, src_id, trg_id):
             indicies = np.where((self._index[:, 0] == src_id) & (self._index[:, 1] == trg_id))
             for val in self._prop_array[indicies]:
                 yield val
+
+        def __setitem__(self, key, value):
+            self._index[self._itr_index, 0] = key[0]  # src_node_id
+            self._index[self._itr_index, 1] = key[1]  # trg_node_id
+            self._prop_array[self._itr_index] = value
+            self._itr_index += 1
+
+        def __getitem__(self, item):
+            indicies = np.where((self._index[:, 0] == item[0]) & (self._index[:, 1] == item[1]))
+            return self._prop_array[indicies]
+
+

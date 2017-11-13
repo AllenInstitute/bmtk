@@ -52,7 +52,7 @@ class NodePool(object):
         return sum(1 for _ in self)
 
     def __iter__(self):
-        return (n for n in self.__network._nodes_iter() if self.__query_object_properties(n, self.__properties))
+        return (n for n in self.__network.nodes_iter() if self.__query_object_properties(n, self.__properties))
 
     @property
     def network(self):
