@@ -224,13 +224,12 @@ class Network (object):
 
         # trg_gids can't be none for edges_itr. if target-nodes is not explicity states get all target_gids that
         # synapse onto or from current network.
-        trg_gids = []
         if target_nodes is None:
             trg_gid_set = set(n.node_id for cm in self._connection_maps for n in cm.target_nodes)
-            trg_gids = sorted(trg_gid_set)
+            target_nodes = sorted(trg_gid_set)
 
         # convert target/source nodes into a list of their gids
-        trg_gids, trg_net = nodes2gids(trg_gids, target_network)
+        trg_gids, trg_net = nodes2gids(target_nodes, target_network)
         src_gids, src_net = nodes2gids(source_nodes, source_network)
 
         # use the iterator to get edges and return as a list
@@ -320,8 +319,6 @@ class Network (object):
 
     def import_nodes(self, nodes_file_name, node_types_file_name):
         raise NotImplementedError
-
-
 
     def save_edges(self, edges_file_name=None, edge_types_file_name=None, output_dir='.', src_network=None,
                    trg_network=None, force_build=True, force_overwrite=False):
