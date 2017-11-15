@@ -189,7 +189,7 @@ net.add_edges(source={'ei': 'e'}, target={'pop_name': 'Nr5a1'},
 net.add_edges(source={'ei': 'e'}, target={'pop_name': 'LIF_exc'},
               connection_rule=5,
               weight_max=0.0019,
-              weight_function='gaussianLLL',
+              weight_function='gaussianLL',
               weight_sigma=50.0,
               delay=2.0,
               params_file='instanteneousExc.json',
@@ -200,6 +200,7 @@ cm.add_properties(names=['segment', 'distance'], rule=lambda s, t: [1, 0.5], dty
 
 net.build()
 
-print net.edges(source_nodes=0, weight_function='gaussianLLL')
-#net.save_nodes(nodes_file_name='output/v1_nodes.h5', node_types_file_name='output/v1_node_types.csv')
-#net.save_edges(edges_file_name='output/v1_v1_edges.h5', edge_types_file_name='output/v1_v1_edge_types.csv')
+# print net.edges(source_nodes=0, weight_function='gaussianLLL')
+net.save_nodes(nodes_file_name='output/v1_nodes.h5', node_types_file_name='output/v1_node_types.csv')
+# print net.edges()
+net.save_edges(edges_file_name='output/v1_v1_edges.h5', edge_types_file_name='output/v1_v1_edge_types.csv')

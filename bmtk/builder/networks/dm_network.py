@@ -25,11 +25,12 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-from ..network import Network
+import os
 import numpy as np
 import h5py
 import csv
 
+from ..network import Network
 from bmtk.utils.io import TabularNetwork
 from bmtk.builder.node import Node
 from bmtk.builder.edge import Edge
@@ -47,7 +48,7 @@ class DenseNetwork(Network):
         self._nodes = []
 
         self.__edges_tables = []
-        self.__target_networks = {}
+        self._target_networks = {}
 
     def _initialize(self):
         self.__id_map = []
@@ -68,6 +69,9 @@ class DenseNetwork(Network):
         assert(len(self.__id_map) == len(self.__nodes))
         """
 
+    def edges_table(self):
+        return self.__edges_tables
+
     # def _save_nodes(self, nodes_file_name, node_types_file_name):
     def save_nodes(self, nodes_file_name, node_types_file_name):
         if not self._nodes_built:
@@ -75,6 +79,11 @@ class DenseNetwork(Network):
 
         # save the node_types file
         # TODO: how do we add attributes to the h5
+
+        ntpath = os.path.dirname(node_types_file_name)
+        if not os.path.exists(ntpath):
+            os.mkdir(ntpath)
+
         node_types_cols = ['node_type_id'] + [col for col in self._node_types_columns if col != 'node_type_id']
         with open(node_types_file_name, 'w') as csvfile:
             csvw = csv.writer(csvfile, delimiter=' ')
@@ -154,7 +163,7 @@ class DenseNetwork(Network):
                 syn_table[con[0], con[1]] = con[2]
 
         target_net = connection_map.target_nodes
-        self.__target_networks[target_net.network_name] = target_net.network
+        self._target_networks[target_net.network_name] = target_net.network
 
         nsyns = np.sum(syn_table.nsyn_table)
         self._nedges += int(nsyns)
@@ -168,6 +177,7 @@ class DenseNetwork(Network):
                       'params_dtypes': {},
                       'source_query': connection_map.source_nodes.filter_str,
                       'target_query': connection_map.target_nodes.filter_str}
+
 
         for param in connection_map.params:
             rule = param.rule
@@ -210,6 +220,7 @@ class DenseNetwork(Network):
 
         matching_edge_tables = [et for et in self.__edges_tables
                                 if et['source_network'] == src_network and et['target_network'] == trg_network]
+
         for ets in matching_edge_tables:
             params_hash =  str(ets['params'].keys())
             group_id = groups_lookup.get(params_hash, None)
@@ -234,12 +245,12 @@ class DenseNetwork(Network):
         edge_type_ids = np.zeros(total_syns)  # uint32
 
         # TODO: Another potential issue if node-ids don't start with 0
-        index_ptrs = np.zeros(len(self.__target_networks[trg_network].nodes()) + 1)
+        index_ptrs = np.zeros(len(self._target_networks[trg_network].nodes()) + 1)
         #index_ptrs = np.zeros(len(self._nodes)+1)  # TODO: issue when target nodes come from another network
         index_ptr_itr = 0
 
         gid_indx = 0
-        for trg_node in self.__target_networks[trg_network].nodes():
+        for trg_node in self._target_networks[trg_network].nodes():
             index_ptrs[index_ptr_itr] = gid_indx
             index_ptr_itr += 1
 
@@ -399,7 +410,6 @@ class DenseNetwork(Network):
     class PropertyTable(object):
         # TODO: add support for strings
         def __init__(self, nvalues):
-            # print nvalues
             self._prop_array = np.zeros(nvalues)
             # self._prop_table = np.zeros((nvalues, 1))  # TODO: set dtype
             self._index = np.zeros((nvalues, 2), dtype=np.uint32)

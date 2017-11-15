@@ -397,6 +397,7 @@ class Network (object):
         raise NotImplementedError
     """
 
+"""
 class ConnectionTable(object):
     def __init__(self):
         self.__targets = {}
@@ -429,7 +430,7 @@ class ConnectionTable(object):
             cm_indicies &= set(self.__targets.get(target_network, []))
 
         return self.__connections[cm_indicies]
-
+"""
 
 
 
