@@ -72,25 +72,12 @@ class DenseNetwork(Network):
     def edges_table(self):
         return self.__edges_tables
 
-    # def _save_nodes(self, nodes_file_name, node_types_file_name):
-    def save_nodes(self, nodes_file_name, node_types_file_name):
+    def _save_nodes(self, nodes_file_name):
         if not self._nodes_built:
             self._build_nodes()
 
         # save the node_types file
         # TODO: how do we add attributes to the h5
-
-        ntpath = os.path.dirname(node_types_file_name)
-        if not os.path.exists(ntpath):
-            os.mkdir(ntpath)
-
-        node_types_cols = ['node_type_id'] + [col for col in self._node_types_columns if col != 'node_type_id']
-        with open(node_types_file_name, 'w') as csvfile:
-            csvw = csv.writer(csvfile, delimiter=' ')
-            csvw.writerow(node_types_cols)
-            for node_type in self._node_types_properties.values():
-                csvw.writerow([node_type.get(cname, 'NULL') for cname in node_types_cols])
-
         group_indx = 0
         groups_lookup = {}
         group_indicies = {}

@@ -314,8 +314,43 @@ class Network (object):
         # always build the edges.
         self.__build_edges()
 
-    def save_nodes(self, nodes_file_name, node_types_file_name):
+    def __get_path(self, filename, path_dir, ftype):
+        if filename is None:
+            fname = '{}_{}'.format(self.name, ftype)
+            return os.path.join(path_dir, fname)
+        elif os.path.isabs(filename):
+            return filename
+        else:
+            return os.path.join(path_dir, filename)
+
+    def save_nodes(self, nodes_file_name=None, node_types_file_name=None, output_dir='.', force_overwrite=True):
+        nodes_file = self.__get_path(nodes_file_name, output_dir, 'nodes.h5')
+        if not force_overwrite and os.path.exists(nodes_file):
+            raise Exception('File {} exists. Please use different name or use force_overwrite'.format(nodes_file))
+        nf_dir = os.path.dirname(nodes_file)
+        if not os.path.exists(nf_dir):
+            os.makedirs(nf_dir)
+
+        node_types_file = self.__get_path(node_types_file_name, output_dir, 'node_types.csv')
+        if not force_overwrite and os.path.exists(node_types_file):
+            raise Exception('File {} exists. Please use different name or use force_overwrite'.format(node_types_file))
+        ntf_dir = os.path.dirname(node_types_file)
+        if not os.path.exists(ntf_dir):
+            os.makedirs(ntf_dir)
+
+        self._save_nodes(nodes_file)
+        self._save_node_types(node_types_file)
+
+    def _save_nodes(self, nodes_file_name):
         raise NotImplementedError
+
+    def _save_node_types(self, node_types_file_name):
+        node_types_cols = ['node_type_id'] + [col for col in self._node_types_columns if col != 'node_type_id']
+        with open(node_types_file_name, 'w') as csvfile:
+            csvw = csv.writer(csvfile, delimiter=' ')
+            csvw.writerow(node_types_cols)
+            for node_type in self._node_types_properties.values():
+                csvw.writerow([node_type.get(cname, 'NULL') for cname in node_types_cols])
 
     def import_nodes(self, nodes_file_name, node_types_file_name):
         raise NotImplementedError
