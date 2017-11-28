@@ -110,19 +110,22 @@ The output directory includes:
  * log.txt : run log file including time-stamped information about the progress of a simulation.
 
 
-Upon completion you may run the script plot_rasters.py to plot spike rasters of external as well as simulated cells:
+Upon completion you may run the script plot_rasters.py to plot spike rasters of external (Figure 2) as well as simulated (Figure 3) cells:
 ::
   python plot_rasters.py
 
-**External input cells**
 
 .. image:: _static/images/ext_inputs_raster.png
-   :scale: 20 %
+   :scale: 100 %
 
-**Simulated cells**
+**Figure 2.** Spike rasters of the external input cells: LGN (green) and TW (firebrick).
+
+|
 
 .. image:: _static/images/v1_raster.png
-   :scale: 20 %
+   :scale: 100 %
+
+**Figure 3.** Spike raster of the simulated (V1) cells.
 
 
 
