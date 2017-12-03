@@ -1,0 +1,72 @@
+{
+  "run": {
+    "dL": 20, 
+    "calc_ecp": true, 
+    "nsteps_block": 5000, 
+    "spike_threshold": -15, 
+    "overwrite_output_dir": true, 
+    "save_cell_vars": [
+      "v", 
+      "cai"
+    ], 
+    "tstop": 2000.0, 
+    "dt": 0.1
+  }, 
+  "config_path": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_1/config.json", 
+  "manifest": {
+    "$configdir": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_1", 
+    "$workingdir": "/home/kael/workspace/Allen/bmtk/docs/tutorial", 
+    "$INPUT_DIR": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_1/../../NWB_files", 
+    "$OUTPUT_DIR": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_1/output", 
+    "$NETWORK_DIR": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_1/network", 
+    "$configfname": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_1/config.json", 
+    "$BASE_DIR": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_1", 
+    "$COMPONENT_DIR": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_1/components"
+  }, 
+  "node_id_selections": {
+    "save_cell_vars": [
+      0
+    ]
+  }, 
+  "output": {
+    "spikes_hdf5_file": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_1/output/spikes.h5", 
+    "ecp_file": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_1/output/ecp.h5", 
+    "spikes_ascii_file": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_1/output/spikes.txt", 
+    "cell_vars_dir": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_1/output/cellvars", 
+    "output_dir": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_1/output", 
+    "log_file": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_1/output/log.txt"
+  }, 
+  "components": {
+    "morphologies_dir": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_1/components/biophysical/morphology", 
+    "point_neuron_models_dir": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_1/components/intfire", 
+    "templates_dir": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_1/components/hoc_templates", 
+    "biophysical_neuron_models_dir": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_1/components/biophysical/electrophysiology", 
+    "mechanisms_dir": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_1/components/mechanisms", 
+    "synaptic_models_dir": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_1/components/synaptic_models"
+  }, 
+  "input": [
+    {
+      "amp": 0.1, 
+      "dur": 1000.0, 
+      "del": 500.0, 
+      "type": "iclamp"
+    }
+  ], 
+  "target_simulator": "NEURON", 
+  "conditions": {
+    "celsius": 34.0, 
+    "v_init": -80
+  }, 
+  "networks": {
+    "nodes": [
+      {
+        "node_types_file": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_1/network/mcortex_node_types.csv", 
+        "nodes_file": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_1/network/mcortex_nodes.h5", 
+        "name": "mcortex"
+      }
+    ]
+  }, 
+  "recXelectrode": {
+    "positions": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_1/components/recXelectrodes/linear_electrode.csv"
+  }
+}

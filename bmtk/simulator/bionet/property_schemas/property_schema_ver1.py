@@ -49,7 +49,7 @@ class PropertySchema(BaseSchema):
         if 'positions' in node_params:
             return node_params['positions']
         else:
-            return None
+            return [0.0, 0.0, 0.0]
 
     def get_edge_weight(self, src_node, trg_node, edge):
         # TODO: check to see if weight function is None or non-existant

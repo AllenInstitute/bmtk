@@ -128,27 +128,27 @@ def extend_output_files(gids):
     pass
 
 
-def create_output_files(conf, gids):
-    if conf["run"]["calc_ecp"]:  # creat single file for ecp from all contributing cells
+def create_output_files(simulator, gids):
+    if simulator.calculate_ecp:  # creat single file for ecp from all contributing cells
         print2log0('    Will save time series of the ECP!')
-        create_ecp_file(conf)
+        create_ecp_file(simulator)
 
-    if conf["run"]["save_cell_vars"]:
+    if simulator.cell_variables: # conf["run"]["save_cell_vars"]:
         print2log0('    Will save time series of individual cells')
-        create_cell_vars_files(conf, gids)
+        create_cell_vars_files(simulator, gids)
                 
-    create_spike_file(conf, gids)  # a single file including all gids
+    create_spike_file(simulator, gids)  # a single file including all gids
     
 
-def create_ecp_file(conf):
+def create_ecp_file(simulator):
     """a single ecp file for the entire network"""
 
-    dt = conf["run"]["dt"]
-    tstop = conf["run"]["tstop"]
+    dt = simulator.dt
+    tstop = simulator.tstop
     nsteps = int(round(tstop/dt))
-    nsites = conf['run']['nsites']
+    nsites = simulator.nsites
 
-    ofname = conf["output"]["ecp_file"]
+    ofname = simulator.ecp_file  # conf["output"]["ecp_file"]
     if int(pc.id()) == 0:  # create single file for ecp from all contributing cells
         with h5py.File(ofname, 'w') as f5:
             f5.create_dataset('ecp', (nsteps, nsites), maxshape=(None, nsites), chunks=True)
@@ -159,37 +159,37 @@ def create_ecp_file(conf):
     pc.barrier()
 
 
-def create_cell_vars_files(conf, gids):
+def create_cell_vars_files(simulator, gids):
     """create 1 hfd5 files per gid"""
 
-    dt = conf["run"]["dt"]
-    tstop = conf["run"]["tstop"]
+    dt = simulator.dt # conf["run"]["dt"]
+    tstop = simulator.tstop # conf["run"]["tstop"]
 
     nsteps = int(round(tstop/dt))
 
     for gid in gids["save_cell_vars"]:
-        ofname = conf["output"]["cell_vars_dir"]+'/%d.h5' % (gid)
+        ofname = os.path.join(simulator.cell_var_output, '{}.h5'.format(gid))
         with h5py.File(ofname, 'w') as h5:
             h5.attrs['dt'] = dt
             h5.attrs['tstart'] = 0.0
             h5.attrs['tstop'] = tstop
 
-            for var in conf["run"]["save_cell_vars"]:
+            for var in simulator.cell_variables:
                 h5.create_dataset(var, (nsteps,), maxshape=(None,), chunks=True)
 
             h5.create_dataset('spikes', (0,), maxshape=(None,), chunks=True)
 
-            if conf["run"]["calc_ecp"]:  # then also create a dataset for the ecp
-                nsites = conf['run']['nsites']
+            if simulator.calc_ecp:  # then also create a dataset for the ecp
+                nsites = simulator.nsites
                 h5.create_dataset('ecp', (nsteps, nsites), maxshape=(None, nsites), chunks=True)
 
 
-def create_spike_file(conf, gids_on_rank):
+def create_spike_file(simulator, gids_on_rank):
     """create a single hfd5 files for all gids"""
     print2log0('    Will save spikes')
 
-    ofname = conf["output"]["spikes_hdf5_file"]
-    tstop = conf["run"]["tstop"]
+    ofname = simulator.spikes_hdf5_file
+    tstop = simulator.tstop
 
     if int(pc.id()) == 0:  # create h5 file
         with h5py.File(ofname, 'w') as h5:
@@ -201,7 +201,7 @@ def create_spike_file(conf, gids_on_rank):
     pc.barrier()
 
     if int(pc.id()) == 0:  # create ascii file
-        ofname = conf["output"]["spikes_ascii_file"]
+        ofname = simulator.spikes_ascii_file
         f = open(ofname, 'w')  # create ascii file
         f.close()
 
@@ -251,13 +251,15 @@ def setup_output_dir(conf):
 
 def save_block_to_disk(conf, data_block, time_step_interval):
     """save data in blocks to hdf5"""
-    save_ecp(conf, data_block, time_step_interval)
-    save_cell_vars(conf, data_block, time_step_interval)
-    save_spikes2h5(conf, data_block)
-    save_spikes2ascii(conf, data_block)
+    if conf["run"]['calc_ecp']:
+        save_ecp(conf["output"]["ecp_file"], data_block, time_step_interval)
+
+    save_cell_vars(conf["output"]["cell_vars_dir"], conf["run"]["save_cell_vars"], data_block, time_step_interval)
+    save_spikes2h5(conf["output"]["spikes_hdf5_file"], data_block)
+    save_spikes2ascii(conf["output"]["spikes_ascii_file"], data_block)
 
 
-def save_spikes2h5(conf, data_block):
+def save_spikes2h5(spikes_hdf5_file, data_block):
     """Save spikes to h5 file: into time,gid datasets
 
     Spike times are not necessarily in order. For comparison between runs, need to sort spikes
@@ -266,7 +268,7 @@ def save_spikes2h5(conf, data_block):
     :param data_block:
     """
     spikes = data_block["spikes"]
-    ofname = conf["output"]["spikes_hdf5_file"]
+    ofname = spikes_hdf5_file  # conf["output"]["spikes_hdf5_file"]
     ranks = xrange(int(pc.nhost()))
     for rank in ranks:  # iterate over the ranks
         if rank == int(pc.id()):  # wait until finished with a particular rank
@@ -283,33 +285,32 @@ def save_spikes2h5(conf, data_block):
         pc.barrier()    # move on to next rank
 
 
-def save_ecp(conf, data_block, time_step_interval):
+def save_ecp(ecp_file, data_block, time_step_interval):
     """Save ECP from each rank to disk into a single file"""
     itstart, itend = time_step_interval
-    ofname = conf["output"]["ecp_file"]
-    if conf["run"]['calc_ecp']:
+    ofname = ecp_file  # conf["output"]["ecp_file"]
+    # :
+    ranks = xrange(int(pc.nhost()))
+    for rank in ranks:              # iterate over the ranks
+        if rank == int(pc.id()):      # wait until finished with a particular rank
+            with h5py.File(ofname, 'a') as f5:
+                f5["ecp"][itstart:itend, :] += data_block['ecp'][0:itend-itstart, :]
+                f5.attrs["tsave"] = data_block["tsave"]  # update tsave
+                data_block['ecp'][:] = 0.0
 
-        ranks = xrange(int(pc.nhost()))
-        for rank in ranks:              # iterate over the ranks
-            if rank == int(pc.id()):      # wait until finished with a particular rank
-                with h5py.File(ofname, 'a') as f5:
-                    f5["ecp"][itstart:itend, :] += data_block['ecp'][0:itend-itstart, :]
-                    f5.attrs["tsave"] = data_block["tsave"]  # update tsave
-                    data_block['ecp'][:] = 0.0
-
-            pc.barrier()    # move on to next rank
+        pc.barrier()    # move on to next rank
 
 
-def save_cell_vars(conf, data_block, time_step_interval):
+def save_cell_vars(cell_vars_dir, save_cell_vars, data_block, time_step_interval):
     """save to disk with one file per gid"""
     itstart, itend = time_step_interval
     for gid, cell_data_block in data_block['cells'].items():
-        ofname = conf["output"]["cell_vars_dir"]+'/%d.h5' % (gid)
+        ofname = cell_vars_dir + '/%d.h5' % gid  # conf["output"]["cell_vars_dir"]+'/%d.h5' % (gid)
 
         with h5py.File(ofname, 'a') as h5:
 
             h5.attrs["tsave"] = data_block["tsave"]  # update tsave
-            for var in conf["run"]["save_cell_vars"]:
+            for var in save_cell_vars: # conf["run"]["save_cell_vars"]:
                 h5[var][itstart:itend] = cell_data_block[var][0:itend-itstart]
                 cell_data_block[var][:] = 0.0
 
@@ -325,10 +326,10 @@ def save_cell_vars(conf, data_block, time_step_interval):
                 cell_data_block['ecp'][:] = 0.0
 
 
-def save_spikes2ascii(conf, data_block):
+def save_spikes2ascii(spikes_ascii_file, data_block):
     """Save spikes to ascii file as tuples (t,gid)"""
     spikes = data_block["spikes"]
-    ofname = conf["output"]["spikes_ascii_file"]
+    ofname = spikes_ascii_file # conf["output"]["spikes_ascii_file"]
 
     ranks = xrange(int(pc.nhost()))
     for rank in ranks:

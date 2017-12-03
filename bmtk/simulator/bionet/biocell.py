@@ -58,7 +58,6 @@ class BioCell(Cell):
         self._syn_seg_ix = []
         self._syn_sec_x = []
 
- 
         if calc_ecp:
             self.im_ptr = h.PtrVector(self._nseg)  # pointer vector
             self.im_ptr.ptr_update_callback(self.set_im_ptr)   # used for gathering an array of  i_membrane values from the pointer vector
@@ -78,8 +77,8 @@ class BioCell(Cell):
 
     def calc_seg_coords(self, morph_seg_coords):
         """Calculate segment coordinates for individual cells"""
-        phi_y = self._props['rotation_angle_yaxis']
-        phi_z = self._props['rotation_angle_zaxis']
+        phi_y = self._props.rotation_angle_yaxis  # self._props['rotation_angle_yaxis']
+        phi_z = self._props.rotation_angle_zaxis  # self._props['rotation_angle_zaxis']
 
         RotY = utils.rotation_matrix([0, 1, 0], phi_y)  # rotate segments around yaxis normal to pia
         RotZ = utils.rotation_matrix([0, 0, 1], -phi_z) # rotate segments around zaxis to get a proper orientation
@@ -90,7 +89,6 @@ class BioCell(Cell):
         self._seg_coords['p1'] = self._pos_soma + np.dot(RotYZ, morph_seg_coords['p1'])
 
     def get_seg_coords(self):
-        
         return self._seg_coords
     
     @property

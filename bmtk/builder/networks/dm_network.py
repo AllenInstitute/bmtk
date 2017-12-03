@@ -110,11 +110,16 @@ class DenseNetwork(Network):
 
         with h5py.File(nodes_file_name, 'w') as hf:
             hf.create_dataset('nodes/node_gid', data=node_gid_table, dtype='uint64')
+            hf['nodes/node_gid'].attrs['network'] = self.name
             hf.create_dataset('nodes/node_type_id', data=node_type_id_table, dtype='uint64')
             hf.create_dataset('nodes/node_group', data=node_group_table, dtype='uint32')
             hf.create_dataset('nodes/node_group_index', data=node_group_index_tables, dtype='uint64')
 
+
             for grp_id, props in group_props.items():
+                #if len(props.items()) == 0:
+                hf.create_group('nodes/{}'.format(grp_id))
+
                 for key, dataset in props.items():
                     ds_path = 'nodes/{}/{}'.format(grp_id, key)
                     try:

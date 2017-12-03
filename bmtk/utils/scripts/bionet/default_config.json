@@ -1,0 +1,58 @@
+{
+  "manifest": {
+    "OUTPUT_DIR": "output"
+  },
+
+  "run": {
+    "tstop": 0.0,
+    "dt": 0.1,
+    "dL": 20,
+    "overwrite_output_dir": true,
+    "spike_threshold": -15,
+    "nsteps_block": 5000,
+    "save_cell_vars": [],
+    "calc_ecp": false
+  },
+
+  "conditions": {
+    "celsius": 34.0,
+    "v_init": -80
+  },
+
+  "node_id_selections": {
+    "save_cell_vars": []
+  },
+
+  "input": [],
+
+  "output": {
+    "log_file": "${OUTPUT_DIR}/log.txt",
+    "spikes_ascii_file": "${OUTPUT_DIR}/spikes.txt",
+    "spikes_hdf5_file": "${OUTPUT_DIR}/spikes.h5",
+    "cell_vars_dir": "${OUTPUT_DIR}/cellvars",
+    "ecp_file": "${OUTPUT_DIR}/ecp.h5",
+    "output_dir": "${OUTPUT_DIR}"
+  },
+
+  "target_simulator":"BioNet",
+
+  "components": {
+    "morphologies_dir": "$COMPONENT_DIR/biophysical/morphology",
+    "synaptic_models_dir": "$COMPONENT_DIR/synaptic_models",
+    "mechanisms_dir":"$COMPONENT_DIR/mechanisms",
+    "biophysical_neuron_models_dir": "$COMPONENT_DIR/biophysical/electrophysiology",
+    "point_neuron_models_dir": "$COMPONENT_DIR/intfire",
+    "templates_dir": "$COMPONENT_DIR/hoc_templates"
+  },
+
+  "recXelectrode": {
+	"positions": "$COMPONENT_DIR/recXelectrodes/linear_electrode.csv"
+  },
+
+
+  "networks": {
+    "nodes": [],
+
+    "edges": []
+  }
+}
