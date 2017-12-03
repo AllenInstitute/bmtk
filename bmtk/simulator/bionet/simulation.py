@@ -122,7 +122,7 @@ class Simulation(object):
 
     @property
     def ecp_file(self):
-        return self._ecp_output
+        return self._ecp_file
 
     def set_save_variables(self, variable_list, output_dir):
         self._cell_variables = variable_list

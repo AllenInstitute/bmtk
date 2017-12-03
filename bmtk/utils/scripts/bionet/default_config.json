@@ -1,6 +1,6 @@
 {
   "manifest": {
-    "OUTPUT_DIR": "output"
+    "$OUTPUT_DIR": "output"
   },
 
   "run": {
@@ -37,18 +37,13 @@
   "target_simulator":"BioNet",
 
   "components": {
-    "morphologies_dir": "$COMPONENT_DIR/biophysical/morphology",
-    "synaptic_models_dir": "$COMPONENT_DIR/synaptic_models",
-    "mechanisms_dir":"$COMPONENT_DIR/mechanisms",
-    "biophysical_neuron_models_dir": "$COMPONENT_DIR/biophysical/electrophysiology",
-    "point_neuron_models_dir": "$COMPONENT_DIR/intfire",
-    "templates_dir": "$COMPONENT_DIR/hoc_templates"
+    "morphologies_dir": "${COMPONENTS_DIR}/biophysical/morphology",
+    "synaptic_models_dir": "${COMPONENTS_DIR}/synaptic_models",
+    "mechanisms_dir":"${COMPONENTS_DIR}/mechanisms",
+    "biophysical_neuron_models_dir": "${COMPONENTS_DIR}/biophysical/electrophysiology",
+    "point_neuron_models_dir": "${COMPONENTS_DIR}/intfire",
+    "templates_dir": "${COMPONENTS_DIR}/hoc_templates"
   },
-
-  "recXelectrode": {
-	"positions": "$COMPONENT_DIR/recXelectrodes/linear_electrode.csv"
-  },
-
 
   "networks": {
     "nodes": [],
