@@ -1,6 +1,7 @@
 import os
 import shutil
 import json
+import h5py
 import re
 from subprocess import call
 from optparse import OptionParser
@@ -31,6 +32,9 @@ def build_env_bionet(base_dir='.', with_config=True, network_dir=None, with_cell
         shutil.rmtree(component_paths['mechanisms_dir'])
         shutil.copytree(os.path.join(scripts_path, 'mechanisms'), component_paths['mechanisms_dir'])
 
+        shutil.rmtree(component_paths['synaptic_models_dir'])
+        shutil.copytree(os.path.join(scripts_path, 'synaptic_models'), component_paths['synaptic_models_dir'])
+
         if compile_mechanisms:
             cwd = os.getcwd()
             os.chdir(component_paths['mechanisms_dir'])
@@ -54,6 +58,7 @@ def build_env_bionet(base_dir='.', with_config=True, network_dir=None, with_cell
             config_json['manifest']['$NETWORK_DIR'] = os.path.abspath(network_dir)
 
             net_nodes = {}
+            net_edges = {}
             for f in os.listdir(network_dir):
                 if not os.path.isfile(os.path.join(network_dir, f)) or f.startswith('.'):
                     continue
@@ -70,11 +75,33 @@ def build_env_bionet(base_dir='.', with_config=True, network_dir=None, with_cell
                     nodes_dict['node_types_file'] = os.path.join('${NETWORK_DIR}', f)
                     net_nodes[net_name] = nodes_dict
 
+                elif '_edges' in f:
+                    net_name = f[:f.find('_edges')]
+                    edges_dict = net_edges.get(net_name, {'name': net_name})
+                    edges_dict['edges_file'] = os.path.join('${NETWORK_DIR}', f)
+                    try:
+                        edges_h5 = h5py.File(os.path.join(network_dir, f), 'r')
+                        edges_dict['target'] = edges_h5['edges']['target_gid'].attrs['network']
+                        edges_dict['source'] = edges_h5['edges']['source_gid'].attrs['network']
+                    except Exception as e:
+                        pass
+
+                    net_edges[net_name] = edges_dict
+
+                elif '_edge_types' in f:
+                    net_name = f[:f.find('_edge_types')]
+                    edges_dict = net_edges.get(net_name, {'name': net_name})
+                    edges_dict['edge_types_file'] = os.path.join('${NETWORK_DIR}', f)
+                    net_edges[net_name] = edges_dict
+
                 else:
                     print('Unknown file {}. Will have to enter by hand'.format(f))
 
             for _, sect in net_nodes.items():
                 config_json['networks']['nodes'].append(sect)
+
+            for _, sect in net_edges.items():
+                config_json['networks']['edges'].append(sect)
 
         if len(cell_vars) > 0:
             config_json['run']['save_cell_vars'] = cell_vars
