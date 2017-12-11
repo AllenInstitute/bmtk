@@ -15,9 +15,9 @@ cortex.save_nodes(output_dir='network')
 
 thalamus = NetworkBuilder('mthalamus')
 thalamus.add_nodes(N=10,
-              pop_name='tON',
-              potential='exc',
-              level_of_detail='filter')
+                   pop_name='tON',
+                   potential='exc',
+                   level_of_detail='filter')
 
 thalamus.add_edges(source={'pop_name': 'tON'}, target=cortex.nodes(),
               connection_rule=5,

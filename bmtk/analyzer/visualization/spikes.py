@@ -27,6 +27,7 @@
 #
 import os
 import csv
+import h5py
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -115,7 +116,9 @@ def plot_spikes(cells_file, cell_models_file, spikes_file, group_key=None, exclu
     cm_df = pd.read_csv(cell_models_file, sep=' ')
     cm_df.set_index('node_type_id', inplace=True)
 
-    c_df = pd.read_csv(cells_file, sep=' ')
+    cells_h5 = h5py.File(cells_file)
+    c_df = pd.DataFrame({'node_id': cells_h5['/nodes/node_gid'], 'node_type_id': cells_h5['/nodes/node_type_id']})
+    # c_df = pd.read_csv(cells_file, sep=' ')
     c_df.set_index('node_id', inplace=True)
     nodes_df = pd.merge(left=c_df,
                         right=cm_df,
