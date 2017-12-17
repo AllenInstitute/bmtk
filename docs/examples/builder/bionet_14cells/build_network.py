@@ -10,7 +10,7 @@ from bmtk.builder.networks import NetworkBuilder
 
 def build_l4():
     net = NetworkBuilder("V1/L4")
-    net.add_nodes(N=2, pop_name='Scnn1a', node_type_id=395830185,
+    net.add_nodes(N=2, pop_name='Scnn1a',
                   positions=[(28.753, -364.868, -161.705), (48.753, -344.868, -141.705)],
                   tuning_angle=[0.0, 25.0],
                   rotation_angle_yaxis=[3.55501, 3.55501],
@@ -22,7 +22,7 @@ def build_l4():
                   rotation_angle_zaxis=-3.646878266,
                   set_params_function='Biophys1')
 
-    net.add_nodes(N=2, pop_name='Rorb', node_type_id=314804042,
+    net.add_nodes(N=2, pop_name='Rorb',
                   positions=[(241.092, -349.263, 146.916), (201.092, -399.263, 126.916)],
                   tuning_angle=[50.0, 75.0],
                   rotation_angle_yaxis=[3.50934, 3.50934],
@@ -34,7 +34,7 @@ def build_l4():
                   rotation_angle_zaxis=-4.159763785,
                   set_params_function='Biophys1')
 
-    net.add_nodes(N=2, pop_name='Nr5a1', node_type_id=318808427,
+    net.add_nodes(N=2, pop_name='Nr5a1',
                   positions=[(320.498, -351.259, 20.273), (310.498, -371.259, 10.273)],
                   tuning_angle=[100.0, 125.0],
                   rotation_angle_yaxis=[0.72202, 0.72202],
@@ -46,7 +46,7 @@ def build_l4():
                   rotation_angle_zaxis=-2.639275277,
                   set_params_function='Biophys1')
 
-    net.add_nodes(N=2, pop_name='PV1', node_type_id=330080937,
+    net.add_nodes(N=2, pop_name='PV1',
                   positions=[(122.373, -352.417, -216.748), (102.373, -342.417, -206.748)],
                   tuning_angle=['NA', 'NA'],
                   rotation_angle_yaxis=[2.92043, 2.92043],
@@ -58,7 +58,7 @@ def build_l4():
                   rotation_angle_zaxis=-2.539551891,
                   set_params_function='Biophys1')
 
-    net.add_nodes(N=2, pop_name='PV2', node_type_id=318331342,
+    net.add_nodes(N=2, pop_name='PV2',
                   positions=[(350.321, -372.535, -18.282), (360.321, -371.535, -12.282)],
                   tuning_angle=['NA', 'NA'],
                   rotation_angle_yaxis=[5.043336, 5.043336],
@@ -70,7 +70,7 @@ def build_l4():
                   rotation_angle_zaxis=-3.684439949,
                   set_params_function='Biophys1')
 
-    net.add_nodes(N=2, pop_name='LIF_exc', node_type_id=100000101,
+    net.add_nodes(N=2, pop_name='LIF_exc',
                   positions=[(-243.04, -342.352, -665.666), (-233.04, -332.352, -675.666)],
                   tuning_angle=['NA', 'NA'],
                   #rotation_angle_yaxis=[5.11801, 5.11801],
@@ -80,7 +80,7 @@ def build_l4():
                   params_file='IntFire1_exc_1.json',
                   set_params_function='IntFire1')
 
-    net.add_nodes(N=2, pop_name='LIF_inh', node_type_id=100000102,
+    net.add_nodes(N=2, pop_name='LIF_inh',
                   positions=[(211.04, -321.333, -631.593), (218.04, -327.333, -635.593)],
                   tuning_angle=[150.0, 175.0],
                   #rotation_angle_yaxis=[4.566091, 4.566091],

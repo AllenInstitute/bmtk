@@ -25,3 +25,10 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+from bmtk.simulator.bionet.pyfunction_cache import add_weight_function
+
+def wmax(tar_prop, src_prop, con_prop):
+    w0 = con_prop["weight_max"]
+    return w0
+
+add_weight_function(wmax, 'wmax', overwrite=False)
