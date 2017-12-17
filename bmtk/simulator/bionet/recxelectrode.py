@@ -34,15 +34,15 @@ class RecXElectrode(object):
     """Extracellular electrode
 
     """
-    def __init__(self,conf):
+    def __init__(self, positions):
         """Create an array"""
-        self.conf = conf
-        electrode_file = self.conf["recXelectrode"]["positions"]       
+        # self.conf = conf
+        electrode_file = positions # self.conf["recXelectrode"]["positions"]
 
         el_df = pd.read_csv(electrode_file,sep=' ')
-        self.pos = el_df.as_matrix(columns=['x_pos','y_pos','z_pos']).T      # convert coordinates to ndarray, The first index is xyz and the second is the channel number
+        self.pos = el_df.as_matrix(columns=['x_pos', 'y_pos', 'z_pos']).T      # convert coordinates to ndarray, The first index is xyz and the second is the channel number
         self.nsites = self.pos.shape[1]
-        self.conf['run']['nsites'] = self.nsites  # add to the config
+        # self.conf['run']['nsites'] = self.nsites  # add to the config
         self.transfer_resistances = {}   # V_e = transfer_resistance*Im
 
     def drift(self):

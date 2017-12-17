@@ -80,6 +80,7 @@ class ConnectionMap(object):
         self._edge_type_properties = edge_type_properties
 
         self._params = []
+        self._param_keys = []
 
     @property
     def params(self):
@@ -90,8 +91,16 @@ class ConnectionMap(object):
         return self._source_nodes
 
     @property
+    def source_network_name(self):
+        return self._source_nodes.network_name
+
+    @property
     def target_nodes(self):
         return self._target_nodes
+
+    @property
+    def target_network_name(self):
+        return self._target_nodes.network_name
 
     @property
     def connector(self):
@@ -112,7 +121,22 @@ class ConnectionMap(object):
     @property
     def edge_type_id(self):
         # TODO: properly implement edge_type
-        return self._edge_type_properties['node_type_id']
+        return self._edge_type_properties['edge_type_id']
+
+    @property
+    def property_names(self):
+        if len(self._param_keys) == 0:
+            return ['nsyns']
+        else:
+            return self._param_keys
+
+    def properties_keys(self):
+        ordered_keys = sorted(self.property_names)
+        return str(ordered_keys)
+
+
+    def max_connections(self):
+        return len(self._source_nodes) * len(self._target_nodes)
 
     def add_properties(self, names, rule, rule_params=None, dtypes=None):
         """A a synaptic property
@@ -123,6 +147,7 @@ class ConnectionMap(object):
         :param dtypes: expected property type
         """
         self._params.append(self.ParamsRules(names, rule, rule_params, dtypes))
+        self._param_keys += names
 
     def connection_itr(self):
         """Returns a generator that will iterate through the source/target pairs (as specified by the iterator function,

@@ -25,8 +25,10 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+import os
 import numpy as np
 import types
+import csv
 
 from node_pool import NodePool
 from connection_map import ConnectionMap
@@ -52,13 +54,20 @@ class Network (object):
 
         self._node_types_properties = {}
         self._node_types_columns = set(['node_type_id'])
-        self._edge_type_properties = {}
-        self._edge_types_columns = set(['edge_type_id'])
+        # self._edge_type_properties = {}
+        # self._edge_types_columns = set(['edge_type_id'])
         self._connection_maps = []
+        #self._connection_maps = ConnectionTable()
 
         self._node_id_gen = IDGenerator()
         self._node_type_id_gen = IDGenerator(100)
         self._edge_type_id_gen = IDGenerator(100)
+
+        #self._connection_table = []
+        #self._source_networks = []
+        #self._target_networks = []
+        self._network_conns = set()
+        self._connected_networks = {}
 
     @property
     def name(self):
@@ -79,6 +88,9 @@ class Network (object):
     @property
     def nedges(self):
         raise NotImplementedError
+
+    def get_connections(self):
+        return self._connection_maps
 
     def _add_node_type(self, props):
         node_type_id = props.get('node_type_id', None)
@@ -131,22 +143,27 @@ class Network (object):
         if not isinstance(target, NodePool):
             target = NodePool(self, **target or {})
 
+        self._network_conns.add((source.network_name, target.network_name))
+        self._connected_networks[source.network_name] = source.network
+        self._connected_networks[target.network_name] = target.network
+
         # TODO: make sure that they don't add a dictionary or some other wried property type.
         edge_type_id = edge_type_properties.get('edge_type_id', None)
         if edge_type_id is None:
             edge_type_id = self._edge_type_id_gen.next()
             edge_type_properties['edge_type_id'] = edge_type_id
-        elif edge_type_id in self._edge_type_properties:
+        elif edge_type_id in self._edge_type_id_gen:
             raise Exception('edge_type_id {} already exists.'.format(edge_type_id))
         else:
             self._edge_type_id_gen.remove_id(edge_type_id)
 
-        self._edge_type_properties[edge_type_id] = edge_type_properties
-        self._edge_type_properties[edge_type_id]['source_query'] = source.filter_str
-        self._edge_type_properties[edge_type_id]['target_query'] = target.filter_str
-        self._edge_types_columns.update(edge_type_properties.keys())
+        edge_type_properties['source_query'] = source.filter_str
+        edge_type_properties['target_query'] = target.filter_str
+
+        # self._edge_types_columns.update(edge_type_properties.keys())
         connection = ConnectionMap(source, target, connection_rule, connection_params, iterator, edge_type_properties)
         self._connection_maps.append(connection)
+        # self._connection_maps.add(source.network_name, target.network_name, connection)
         return connection
 
     def nodes(self, **properties):
@@ -155,13 +172,96 @@ class Network (object):
 
         return NodePool(self, **properties)
 
-    def edges(self, targets=None, sources=None):
+    def nodes_iter(self, nids=None):
+        raise NotImplementedError
+
+    def edges(self, target_nodes=None, source_nodes=None, target_network=None, source_network=None, **properties):
+        """Returns a list of dictionary-like Edge objects, given filter parameters.
+
+        To get all edges from a network
+           edges = net.edges()
+
+        To specify the target and/or source node-set
+          edges = net.edges(target_nodes=net.nodes(type='biophysical'), source_nodes=net.nodes(ei='i'))
+
+        To only get edges with a given edge_property
+          edges = net.edges(weight=100, syn_type='AMPA_Exc2Exc')
+
+        :param target_nodes: gid, list of gid, dict or node-pool. Set of target nodes for a given edge.
+        :param source_nodes: gid, list of gid, dict or node-pool. Set of source nodes for a given edge.
+        :param target_network: name of network containing target nodes.
+        :param source_network: name of network containing source nodes.
+        :param properties: edge-properties used to filter out only certain edges.
+        :return: list of bmtk.builder.edge.Edge properties.
+        """
+        def nodes2gids(nodes, network):
+            """helper function for converting target and source nodes into list of gids"""
+            if nodes is None or isinstance(nodes, list):
+                return nodes, network
+            if isinstance(nodes, int):
+                return [nodes], network
+            if isinstance(nodes, dict):
+                network = network or self._network_name
+                nodes = self._connected_networks[network].nodes(**nodes)
+            if isinstance(nodes, NodePool):
+                if network is not None and nodes.network_name != network:
+                    print('Warning. nodes and network don not match')
+                return [n.node_id for n in nodes], nodes.network_name
+            else:
+                raise Exception('Couldnt convert nodes')
+
+        def filter_edges(e):
+            """Returns true only if all the properities match for a given edge"""
+            for k, v in properties.items():
+                if k not in e:
+                    return False
+                if e[k] != v:
+                    return False
+            return True
+
         if not self.edges_built:
             self.build()
 
-        #target_network = target_network or self.name
-        #source_network = source_network or self.name
-        return self._edges_iter(targets=targets, sources=sources)
+        # trg_gids can't be none for edges_itr. if target-nodes is not explicity states get all target_gids that
+        # synapse onto or from current network.
+        if target_nodes is None:
+            trg_gid_set = set(n.node_id for cm in self._connection_maps for n in cm.target_nodes)
+            target_nodes = sorted(trg_gid_set)
+
+        # convert target/source nodes into a list of their gids
+        trg_gids, trg_net = nodes2gids(target_nodes, target_network)
+        src_gids, src_net = nodes2gids(source_nodes, source_network)
+
+        # use the iterator to get edges and return as a list
+        if properties is None:
+            edges = list(self.edges_iter(trg_gids=trg_gids, trg_network=trg_net, src_network=src_net))
+        else:
+            # filter out certain edges using the properties parameters
+            edges = [e for e in self.edges_iter(trg_gids=trg_gids, trg_network=trg_net, src_network=src_net)
+                     if filter_edges(e)]
+
+        if src_gids is not None:
+            # if src_gids are set filter out edges some more
+            edges = [e for e in edges if e.source_gid in src_gids]
+
+        return edges
+
+    def edges_iter(self, trg_gids, src_network=None, trg_network=None):
+        """Given a list of target gids, returns a generator for iteratoring over all possible edges.
+
+        It is preferable to use edges() method instead, it allows more flexibibility in the input and can better
+        indicate if their is a problem.
+
+        The order of the edges returned will be in the same order as the trg_gids list, but does not guarentee any
+        secondary ordering by source-nodes and/or edge-type. If their isn't a edge with a matching target-id then
+        it will skip that gid in the list, the size of the generator can 0 to arbitrarly large.
+
+        :param trg_gids: list of gids to match with an edge's target.
+        :param src_network: str, only returns edges coming from the specified source network.
+        :param trg_network: str, only returns edges coming from the specified target network.
+        :return: iteration of bmtk.build.edge.Edge objects representing given edge.
+        """
+        raise NotImplementedError
 
     def clear(self):
         self._nodes_built = False
@@ -190,8 +290,9 @@ class Network (object):
             # only rebuild nodes if necessary.
             self._build_nodes()
 
-        for conn_map in self._connection_maps:
-            self._add_edges(conn_map)
+        for i, conn_map in enumerate(self._connection_maps):
+            # print conn_map
+            self._add_edges(conn_map, i)
 
         self._edges_built = True
 
@@ -213,14 +314,106 @@ class Network (object):
         # always build the edges.
         self.__build_edges()
 
-    def save_nodes(self, nodes_file_name, node_types_file_name):
-        raise NotImplementedError()
+    def __get_path(self, filename, path_dir, ftype):
+        if filename is None:
+            fname = '{}_{}'.format(self.name, ftype)
+            return os.path.join(path_dir, fname)
+        elif os.path.isabs(filename):
+            return filename
+        else:
+            return os.path.join(path_dir, filename)
+
+    def save_nodes(self, nodes_file_name=None, node_types_file_name=None, output_dir='.', force_overwrite=True):
+        nodes_file = self.__get_path(nodes_file_name, output_dir, 'nodes.h5')
+        if not force_overwrite and os.path.exists(nodes_file):
+            raise Exception('File {} exists. Please use different name or use force_overwrite'.format(nodes_file))
+        nf_dir = os.path.dirname(nodes_file)
+        if not os.path.exists(nf_dir):
+            os.makedirs(nf_dir)
+
+        node_types_file = self.__get_path(node_types_file_name, output_dir, 'node_types.csv')
+        if not force_overwrite and os.path.exists(node_types_file):
+            raise Exception('File {} exists. Please use different name or use force_overwrite'.format(node_types_file))
+        ntf_dir = os.path.dirname(node_types_file)
+        if not os.path.exists(ntf_dir):
+            os.makedirs(ntf_dir)
+
+        self._save_nodes(nodes_file)
+        self._save_node_types(node_types_file)
+
+    def _save_nodes(self, nodes_file_name):
+        raise NotImplementedError
+
+    def _save_node_types(self, node_types_file_name):
+        node_types_cols = ['node_type_id'] + [col for col in self._node_types_columns if col != 'node_type_id']
+        with open(node_types_file_name, 'w') as csvfile:
+            csvw = csv.writer(csvfile, delimiter=' ')
+            csvw.writerow(node_types_cols)
+            for node_type in self._node_types_properties.values():
+                csvw.writerow([node_type.get(cname, 'NULL') for cname in node_types_cols])
 
     def import_nodes(self, nodes_file_name, node_types_file_name):
-        raise NotImplementedError()
+        raise NotImplementedError
 
-    def save_edges(self, edges_file_name, edge_types_file_name, src_network=None, trg_network=None):
-        raise NotImplementedError()
+    def save_edges(self, edges_file_name=None, edge_types_file_name=None, output_dir='.', src_network=None,
+                   trg_network=None, force_build=True, force_overwrite=False):
+        # Make sure edges exists and are built
+        if len(self._connection_maps) == 0:
+            print("Warning: no edges have been made for this network, skipping saving.")
+            return
+
+        if self._edges_built is False:
+            if force_build:
+                print("Message: building edges")
+                self.__build_edges()
+            else:
+                print("Warning: Edges are not built. Either call build() or use force_build parameter. Skip saving.")
+                return
+
+        network_params = [(s, t, s+'_'+t+'_edges.h5', s+'_'+t+'_edge_types.csv') for s, t in list(self._network_conns)]
+        if src_network is not None:
+            network_params = [p for p in network_params if p[0] == src_network]
+
+        if trg_network is not None:
+            network_params = [p for p in network_params if p[1] == trg_network]
+
+        if len(network_params) == 0:
+            print("Warning: couldn't find connections. Skip saving.")
+            return
+
+        if (edges_file_name or edge_types_file_name) is not None:
+            network_params = [(network_params[0][0], network_params[0][1], edges_file_name, edge_types_file_name)]
+
+        if not os.path.exists(output_dir):
+            os.mkdir(output_dir)
+
+        for p in network_params:
+            if p[3] is not None:
+                self._save_edge_types(os.path.join(output_dir, p[3]), p[0], p[1])
+
+            if p[2] is not None:
+                self._save_edges(os.path.join(output_dir, p[2]), p[0], p[1])
+
+    def _save_edge_types(self, edge_types_file_name, src_network, trg_network):
+
+        # Get edge-type properties for connections with matching source/target networks
+        matching_et = [c.edge_type_properties for c in self._connection_maps
+                       if c.source_network_name == src_network and c.target_network_name == trg_network]
+
+        # Get edge-type properties that are only relevant for this source-target network pair
+        cols = ['edge_type_id', 'target_query', 'source_query']  #  manditory and should come first
+        merged_keys = [k for et in matching_et for k in et.keys() if k not in cols]
+        cols += list(set(merged_keys))
+
+        # Write to csv
+        with open(edge_types_file_name, 'w') as csvfile:
+            csvw = csv.writer(csvfile, delimiter=' ')
+            csvw.writerow(cols)
+            for edge_type in matching_et:
+                csvw.writerow([edge_type.get(cname, 'NULL') for cname in cols])
+
+    def _save_edges(self, edges_file_name, src_network, trg_network):
+        raise NotImplementedError
 
     def _initialize(self):
         raise NotImplementedError
@@ -228,11 +421,53 @@ class Network (object):
     def _add_nodes(self, node_tuples):
         raise NotImplementedError
 
-    def _add_edges(self, edge_tuples):
+    def _add_edges(self, edge_tuples, i):
         raise NotImplementedError
 
     def _clear(self):
         raise NotImplementedError
 
-    def _nodes_iter(self, nids=None):
+    """
+    def _edges_iter(targets=None, sources=None):
         raise NotImplementedError
+    """
+
+"""
+class ConnectionTable(object):
+    def __init__(self):
+        self.__targets = {}
+        self.__sources = {}
+        self.__connections = []
+
+    def add(self, source_network, target_network, connection_map):
+        # TODO: If the source/target are network objects we can get the network_name
+        assert(isinstance(source_network, basestring))
+        assert(isinstance(target_network, basestring))
+        assert(isinstance(connection_map, ConnectionMap))
+
+        if source_network not in self.__sources:
+            self.__sources[source_network] = []
+        if target_network not in self.__targets:
+            self.__targets[target_network] = []
+
+        cm_index = len(self.__connections)
+        self.__connections.append(connection_map)
+        self.__sources[source_network].append(cm_index)
+        self.__targets[target_network].append(cm_index)
+
+    def get(self, source_network=None, target_network=None):
+        # TODO: Add warning if source/target network is not found
+        cm_indicies = set(range(len(self.__connections)))
+        if source_network is not None:
+            cm_indicies &= set(self.__sources.get(source_network, []))
+
+        if target_network is not None:
+            cm_indicies &= set(self.__targets.get(target_network, []))
+
+        return self.__connections[cm_indicies]
+"""
+
+
+
+
+

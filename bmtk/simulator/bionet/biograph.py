@@ -85,6 +85,20 @@ class BioNode(SimNode):
     def morphology_file(self):
         return self._morphology_file
 
+    @property
+    def rotation_angle_yaxis(self):
+        if 'rotation_angle_yaxis' in self:
+            return self['rotation_angle_yaxis']
+        else:
+            return 0.0
+
+    @property
+    def rotation_angle_zaxis(self):
+        if 'rotation_angle_zaxis' in self:
+            return self['rotation_angle_zaxis']
+        else:
+            return 0.0
+
     @morphology_file.setter
     def morphology_file(self, value):
         self._morphology_file = value
