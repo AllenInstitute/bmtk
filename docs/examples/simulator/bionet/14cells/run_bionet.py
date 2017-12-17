@@ -26,8 +26,8 @@ def run(config_file):
     graph = BioGraph.from_config(conf)          # create network graph containing parameters of the model
 
     net = BioNetwork.from_config(conf, graph)   # create network of in NEURON
-    sim = Simulation(conf, network=net)         # initialize a simulation
-    sim.set_recordings()                        # set recordings of relevant variables to be saved as an ouput
+    sim = Simulation.from_config(conf, net)         # initialize a simulation
+    # sim.set_recordings()                        # set recordings of relevant variables to be saved as an ouput
     sim.run()                                   # run simulation
 
     assert (os.path.exists(conf['output']['spikes_ascii_file']))

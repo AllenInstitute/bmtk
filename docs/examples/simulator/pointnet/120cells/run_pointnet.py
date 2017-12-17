@@ -9,7 +9,7 @@ from bmtk.analyzer.spikes_analyzer import spike_files_equal
 import weight_funcs as fn
 
 def main(config_file):
-    configure = config.from_json('config.json')
+    configure = config.from_json(config_file)
     graph = PointGraph.from_config(configure)
     graph.add_weight_function(fn.wmax)
     graph.add_weight_function(fn.gaussianLL)
