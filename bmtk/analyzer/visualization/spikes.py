@@ -42,7 +42,11 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 def _create_node_table(node_file, node_type_file, group_key=None, exclude=[]):
     """Creates a merged nodes.csv and node_types.csv dataframe with excluded items removed. Returns a dataframe."""
     node_types_df = pd.read_csv(node_type_file, sep=' ', index_col='node_type_id')
-    nodes_df = pd.read_csv(node_file, sep=' ', index_col='node_id')
+    nodes_h5 = h5py.File(node_file)
+    nodes_df = pd.DataFrame({'node_id': nodes_h5['/nodes/node_gid'], 'node_type_id': nodes_h5['/nodes/node_type_id']})
+    nodes_df.set_index('node_id', inplace=True)
+
+    # nodes_df = pd.read_csv(node_file, sep=' ', index_col='node_id')
     full_df = pd.merge(left=nodes_df, right=node_types_df, how='left', left_on='node_type_id', right_index=True)
 
     if group_key is not None and len(exclude) > 0:
@@ -75,6 +79,7 @@ def _count_spikes(spikes_file, max_gid, interval=None):
     else:
         raise Exception("Unable to determine interval.")
 
+    max_gid = int(max_gid)  # strange bug where max_gid was being returned as a float.
     spikes = [[] for _ in xrange(max_gid+1)]
     spike_sums = np.zeros(max_gid+1)
     with open(spikes_file, 'r') as fspikes:

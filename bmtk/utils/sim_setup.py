@@ -35,6 +35,9 @@ def build_env_bionet(base_dir='.', with_config=True, network_dir=None, with_cell
         shutil.rmtree(component_paths['synaptic_models_dir'])
         shutil.copytree(os.path.join(scripts_path, 'synaptic_models'), component_paths['synaptic_models_dir'])
 
+        shutil.rmtree(component_paths['point_models_dir'])
+        shutil.copytree(os.path.join(scripts_path, 'intfire'), component_paths['point_models_dir'])
+
         if compile_mechanisms:
             cwd = os.getcwd()
             os.chdir(component_paths['mechanisms_dir'])
