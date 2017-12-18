@@ -27,3 +27,5 @@
 #
 from dm_network import DenseNetwork
 NetworkBuilder = dm_network.DenseNetwork
+
+from mpi_network import MPINetwork, MPINetwork as MPIBuilder

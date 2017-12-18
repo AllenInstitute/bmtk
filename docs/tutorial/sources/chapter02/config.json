@@ -1,0 +1,77 @@
+{
+  "run": {
+    "dL": 20, 
+    "calc_ecp": false, 
+    "nsteps_block": 5000, 
+    "spike_threshold": -15, 
+    "overwrite_output_dir": true, 
+    "save_cell_vars": [
+      "cai", 
+      "v"
+    ], 
+    "tstop": 3000.0, 
+    "dt": 0.1
+  }, 
+  "manifest": {
+    "$OUTPUT_DIR": "output", 
+    "$BASE_DIR": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_2", 
+    "$COMPONENTS_DIR": "${BASE_DIR}/components", 
+    "$NETWORK_DIR": "/home/kael/workspace/Allen/bmtk/docs/tutorial/tutorial_2/network"
+  }, 
+  "node_id_selections": {
+    "save_cell_vars": []
+  }, 
+  "target_simulator": "BioNet", 
+  "components": {
+    "morphologies_dir": "${COMPONENTS_DIR}/biophysical/morphology", 
+    "point_neuron_models_dir": "${COMPONENTS_DIR}/intfire", 
+    "templates_dir": "${COMPONENTS_DIR}/hoc_templates", 
+    "biophysical_neuron_models_dir": "${COMPONENTS_DIR}/biophysical/electrophysiology", 
+    "mechanisms_dir": "${COMPONENTS_DIR}/mechanisms", 
+    "synaptic_models_dir": "${COMPONENTS_DIR}/synaptic_models"
+  }, 
+  "input": [
+    {
+      "type": "external_spikes",
+      "format": "csv",
+      "file": "${BASE_DIR}/thalamus_spikes.csv",
+      "source_nodes": "mthalamus",
+      "trial": "trial_0"
+    }
+  ],
+  "output": {
+    "spikes_hdf5_file": "${OUTPUT_DIR}/spikes.h5", 
+    "ecp_file": "${OUTPUT_DIR}/ecp.h5", 
+    "spikes_ascii_file": "${OUTPUT_DIR}/spikes.txt", 
+    "cell_vars_dir": "${OUTPUT_DIR}/cellvars", 
+    "output_dir": "${OUTPUT_DIR}", 
+    "log_file": "${OUTPUT_DIR}/log.txt"
+  }, 
+  "conditions": {
+    "celsius": 34.0, 
+    "v_init": -80
+  }, 
+  "networks": {
+    "nodes": [
+      {
+        "node_types_file": "${NETWORK_DIR}/mcortex_node_types.csv", 
+        "nodes_file": "${NETWORK_DIR}/mcortex_nodes.h5", 
+        "name": "mcortex"
+      }, 
+      {
+        "node_types_file": "${NETWORK_DIR}/mthalamus_node_types.csv", 
+        "nodes_file": "${NETWORK_DIR}/mthalamus_nodes.h5", 
+        "name": "mthalamus"
+      }
+    ], 
+    "edges": [
+      {
+        "source": "mthalamus", 
+        "edges_file": "${NETWORK_DIR}/mthalamus_mcortex_edges.h5", 
+        "target": "mcortex", 
+        "name": "mthalamus_mcortex", 
+        "edge_types_file": "${NETWORK_DIR}/mthalamus_mcortex_edge_types.csv"
+      }
+    ]
+  }
+}

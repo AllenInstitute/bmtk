@@ -1,4 +1,5 @@
 import os
+import shutil
 import pytest
 import numpy as np
 import pandas as pd
@@ -138,7 +139,7 @@ def test_save_nsyn_table():
             assert ('tags' in grp and len(grp['tags']) == 100)
 
         else:
-            assert(False)
+            assert False
 
     assert(os.path.exists('tmp_edges.h5') and os.path.exists('tmp_edge_types.csv'))
     edge_types_df = pd.read_csv('tmp_edge_types.csv', sep=' ')
@@ -181,7 +182,6 @@ def test_save_weights():
                        p1='e2i', p2='e2i')  # 200*100 = 60000 edges
     cm.add_properties(names=['segment', 'distance'], rule=lambda s, t: [1, 0.5], dtypes=[np.int, np.float])
 
-
     net.add_edges(source=net.nodes(cell_type='Scnna1'), target=net.nodes(cell_type='PV1'),
                   connection_rule=lambda s, t: 2, p1='s2p')  # 100*100 = 20000'
 
@@ -207,4 +207,95 @@ def test_save_weights():
     except:
         pass
 
-#test_save_weights()
+
+def test_save_multinetwork():
+    net1 = NetworkBuilder('NET1')
+    net1.add_nodes(N=100, position=[(0.0, 1.0, -1.0)] * 100, cell_type='Scnna1', ei='e')
+    net1.add_edges(source={'ei': 'e'}, target={'ei': 'e'}, connection_rule=5, ctype_1='n1_rec')
+    net1.build()
+
+    net2 = NetworkBuilder('NET2')
+    net2.add_nodes(N=10, position=[(0.0, 1.0, -1.0)] * 10, cell_type='PV1', ei='i')
+    net2.add_edges(connection_rule=10, ctype_1='n2_rec')
+    net2.add_edges(source=net1.nodes(), target={'ei': 'i'}, connection_rule=1, ctype_2='n1_n2')
+    net2.add_edges(target=net1.nodes(cell_type='Scnna1'), source={'cell_type': 'PV1'}, connection_rule=2,
+                   ctype_2='n2_n1')
+    net2.build()
+
+    net1.save_edges(output_dir='tmp_output')
+    net2.save_edges(output_dir='tmp_output')
+
+    n1_n1_fname = 'tmp_output/{}_{}'.format('NET1', 'NET1')
+    edges_h5 = h5py.File(n1_n1_fname + '_edges.h5', 'r')
+    assert(len(edges_h5['/edges/target_gid']) == 100*100)
+    assert(len(edges_h5['/edges/0/nsyns']) == 100*100)
+    assert(edges_h5['/edges/0/nsyns'][0] == 5)
+    edge_types_csv = pd.read_csv(n1_n1_fname + '_edge_types.csv', sep=' ')
+    assert(len(edge_types_csv) == 1)
+    assert('ctype_2' not in edge_types_csv.columns.values)
+    assert(edge_types_csv['ctype_1'].iloc[0] == 'n1_rec')
+
+    n1_n2_fname = 'tmp_output/{}_{}'.format('NET1', 'NET2')
+    edges_h5 = h5py.File(n1_n2_fname + '_edges.h5', 'r')
+    assert(len(edges_h5['/edges/target_gid']) == 100*10)
+    assert(len(edges_h5['/edges/0/nsyns']) == 100*10)
+    assert(edges_h5['/edges/0/nsyns'][0] == 1)
+    edge_types_csv = pd.read_csv(n1_n2_fname + '_edge_types.csv', sep=' ')
+    assert(len(edge_types_csv) == 1)
+    assert('ctype_1' not in edge_types_csv.columns.values)
+    assert(edge_types_csv['ctype_2'].iloc[0] == 'n1_n2')
+
+    n2_n1_fname = 'tmp_output/{}_{}'.format('NET2', 'NET1')
+    edges_h5 = h5py.File(n2_n1_fname + '_edges.h5', 'r')
+    assert(len(edges_h5['/edges/target_gid']) == 100*10)
+    assert(len(edges_h5['/edges/0/nsyns']) == 100*10)
+    assert(edges_h5['/edges/0/nsyns'][0] == 2)
+    edge_types_csv = pd.read_csv(n2_n1_fname + '_edge_types.csv', sep=' ')
+    assert(len(edge_types_csv) == 1)
+    assert('ctype_1' not in edge_types_csv.columns.values)
+    assert(edge_types_csv['ctype_2'].iloc[0] == 'n2_n1')
+
+    n2_n2_fname = 'tmp_output/{}_{}'.format('NET2', 'NET2')
+    edges_h5 = h5py.File(n2_n2_fname + '_edges.h5', 'r')
+    assert(len(edges_h5['/edges/target_gid']) == 10*10)
+    assert(len(edges_h5['/edges/0/nsyns']) == 10*10)
+    assert(edges_h5['/edges/0/nsyns'][0] == 10)
+    edge_types_csv = pd.read_csv(n2_n2_fname + '_edge_types.csv', sep=' ')
+    assert(len(edge_types_csv) == 1)
+    assert('ctype_2' not in edge_types_csv.columns.values)
+    assert(edge_types_csv['ctype_1'].iloc[0] == 'n2_rec')
+
+    try:
+        shutil.rmtree('tmp_output')
+    except:
+        pass
+
+
+def test_save_multinetwork_1():
+    net1 = NetworkBuilder('NET1')
+    net1.add_nodes(N=100, position=[(0.0, 1.0, -1.0)] * 100, cell_type='Scnna1', ei='e')
+    net1.add_edges(source={'ei': 'e'}, target={'ei': 'e'}, connection_rule=5, ctype_1='n1_rec')
+    net1.build()
+
+    net2 = NetworkBuilder('NET2')
+    net2.add_nodes(N=10, position=[(0.0, 1.0, -1.0)] * 10, cell_type='PV1', ei='i')
+    net2.add_edges(connection_rule=10, ctype_1='n2_rec')
+    net2.add_edges(source=net1.nodes(), target={'ei': 'i'}, connection_rule=1, ctype_2='n1_n2')
+    net2.add_edges(target=net1.nodes(cell_type='Scnna1'), source={'cell_type': 'PV1'}, connection_rule=2,
+                   ctype_2='n2_n1')
+    net2.build()
+    net2.save_edges(edges_file_name='NET2_NET1_edges.h5', edge_types_file_name='NET2_NET1_edge_types.csv',
+                    output_dir='tmp_output', src_network='NET2')
+
+    n1_n2_fname = 'tmp_output/{}_{}'.format('NET2', 'NET1')
+    edges_h5 = h5py.File(n1_n2_fname + '_edges.h5', 'r')
+    assert(len(edges_h5['/edges/target_gid']) == 100*10)
+    assert(len(edges_h5['/edges/0/nsyns']) == 100*10)
+    assert(edges_h5['/edges/0/nsyns'][0] == 2)
+    edge_types_csv = pd.read_csv(n1_n2_fname + '_edge_types.csv', sep=' ')
+    assert(len(edge_types_csv) == 1)
+    assert('ctype_1' not in edge_types_csv.columns.values)
+    assert(edge_types_csv['ctype_2'].iloc[0] == 'n2_n1')
+
+
+# test_save_multinetwork_1()

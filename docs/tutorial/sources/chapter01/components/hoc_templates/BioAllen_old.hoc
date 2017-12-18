@@ -1,0 +1,21 @@
+begintemplate BioAllenOld
+
+public init
+public soma, dend, apic, axon
+public all, somatic, basal, apical, axonal
+objref all, somatic, basal, apical, axonal
+
+objref this
+
+proc init() {localobj nl, import
+	all = new SectionList()
+	somatic = new SectionList()
+	basal = new SectionList()
+    apical = new SectionList()
+	axonal = new SectionList()
+	forall delete_section()
+}
+
+create soma[1], dend[1], apic[1], axon[1]
+
+endtemplate BioAllenOld

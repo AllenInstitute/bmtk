@@ -26,6 +26,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import h5py
+import pandas as pd
 
 from bmtk.simulator.bionet.lifcell import LIFCell
 from bmtk.simulator.bionet.biocell import BioCell
@@ -79,6 +80,8 @@ class BioNetwork(object):
         self.__morphologies_cache = {}  # Table of saved morphology files
         self._stims = {}  # dictionary of external/stim/virtual nodes by [network_name][gid]
         self._spike_trains_ds = {}  # save nwb spike-train datasets for when stims need to be built
+        self._spike_trains_df = {}
+        self._stim_networks = set()
 
     @property
     def spike_threshold(self):
@@ -222,6 +225,12 @@ class BioNetwork(object):
     def add_spikes_nwb(self, ext_net, nwb_file, trial):
         h5_file = h5py.File(nwb_file, 'r')
         self._spike_trains_ds[ext_net] = h5_file['processing'][trial]['spike_train']
+        self._stim_networks.add(ext_net)
+
+    def add_spikes_csv(self, ext_net, csv_file, sep=' '):
+        spikes_df = pd.read_csv(csv_file, index_col=['gid'], sep=sep)
+        self._spike_trains_df[ext_net] = spikes_df
+        self._stim_networks.add(ext_net)
 
     def _get_spike_trains(self, src_gid, network):
         if network in self._spike_trains_ds:
@@ -230,8 +239,11 @@ class BioNetwork(object):
             if src_gid_str in h5ds.keys():
                 return h5ds[src_gid_str]['data']
 
-        return []
+        elif network in self._spike_trains_df:
+            spikes_list = [float(t) for t in self._spike_trains_df[network].loc[src_gid]['spike-times'].split(',')]
+            return spikes_list
 
+        return []
 
     def make_stims(self):
         """Create the stims/virtual/external nodes.
@@ -241,7 +253,7 @@ class BioNetwork(object):
         for network in self._graph.external_networks():
             io.print2log0('        %s cells' %network)
 
-            if network not in self._spike_trains_ds:
+            if network not in self._stim_networks:
                 continue
 
             self._stims[network] = {}
@@ -270,6 +282,7 @@ class BioNetwork(object):
     def set_external_connections(self, source_network):
         self._init_connections()
         io.print2log0('    Setting connections from {}'.format(source_network))
+        # TODO: skip if source_network is not in stims
         source_stims = self._stims[source_network]
         syn_counter = 0
         for trg_gid, trg_cell in self._cells.items():
@@ -338,6 +351,10 @@ class BioNetwork(object):
                     # Load external network spike trains from an NWB file.
                     # io.print2log0('Load input for {}'.format(netinput['network']))
                     network.add_spikes_nwb(netinput['source_nodes'], netinput['file'], netinput['trial'])
+
+                elif netinput['type'] == 'external_spikes' and netinput['format'] == 'csv':
+                    network.add_spikes_csv(netinput['source_nodes'], netinput['file'])
+
                 # TODO: Allow for external spike trains from csv file or user function
                 # TODO: Add Iclamp code.
 
