@@ -17,7 +17,7 @@ def test_connection_map_fnc(net):
     cm = ConnectionMap(sources=net.nodes(ei='i'), targets=net.nodes(ei='e'),
                        connector=lambda s, t, a, b: s['node_id']*t['node_id'],
                        connector_params={'a': 1, 'b': 0}, iterator='one_to_one',
-                       edge_type_properties={'prop1': 'prop1', 'node_type_id': 101})
+                       edge_type_properties={'prop1': 'prop1', 'edge_type_id': 101})
     assert(len(cm.source_nodes) == 100)
     assert(len(cm.target_nodes) == 50)
     assert(cm.params == [])
@@ -60,7 +60,7 @@ def test_connection_map_dict(net):
 def test_cm_params1(net):
     cm = ConnectionMap(sources=net.nodes(ei='i'), targets=net.nodes(ei='e'),
                        connector=lambda s, t: 3,
-                       edge_type_properties={'prop1': 'prop1', 'node_type_id': 101})
+                       edge_type_properties={'prop1': 'prop1', 'edge_type_id': 101})
     cm.add_properties(names='syn_weight', rule=lambda a: a+0.15, rule_params={'a': 0.20}, dtypes=float)
 
     assert(len(cm.params) == 1)
@@ -76,7 +76,7 @@ def test_cm_params1(net):
 def test_cm_params2(net):
     cm = ConnectionMap(sources=net.nodes(ei='i'), targets=net.nodes(ei='e'),
                        connector=lambda s, t: 3,
-                       edge_type_properties={'prop1': 'prop1', 'node_type_id': 101})
+                       edge_type_properties={'prop1': 'prop1', 'edge_type_id': 101})
     cm.add_properties(names=['w', 'c'], rule=0.15, dtypes=[float, str])
 
     assert(len(cm.params) == 1)
@@ -93,7 +93,7 @@ def test_cm_params2(net):
 def test_cm_params3(net):
     cm = ConnectionMap(sources=net.nodes(ei='i'), targets=net.nodes(ei='e'),
                        connector=lambda s, t: 3,
-                       edge_type_properties={'prop1': 'prop1', 'node_type_id': 101})
+                       edge_type_properties={'prop1': 'prop1', 'edge_type_id': 101})
     cm.add_properties(names=['w', 'c'], rule=0.15, dtypes=[float, str])
     cm.add_properties(names='a', rule=(1, 2, 3), dtypes=dict)
 
@@ -111,3 +111,6 @@ def test_cm_params3(net):
     assert(edge_props_2.names == 'a')
     assert(edge_props_2.get_prop_dtype('a'))
     assert(edge_props_2.rule() == (1, 2, 3))
+
+
+test_connection_map_fnc(net())
