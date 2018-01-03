@@ -8,6 +8,7 @@ from bmtk.analyzer.spikes_analyzer import spike_files_equal
 
 import weight_funcs as fn
 
+
 def main(config_file):
     configure = config.from_json(config_file)
     graph = PointGraph.from_config(configure)
@@ -22,7 +23,4 @@ def main(config_file):
 
 
 if __name__ == '__main__':
-    if __file__ != sys.argv[-1]:
-        main(sys.argv[-1])
-    else:
-        main('config.json')
+    main('config.json')
