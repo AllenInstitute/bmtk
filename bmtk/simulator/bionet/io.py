@@ -129,9 +129,11 @@ def extend_output_files(gids):
 
 
 def create_output_files(simulator, gids):
+    '''
     if simulator.calculate_ecp:  # creat single file for ecp from all contributing cells
         print2log0('    Will save time series of the ECP!')
         create_ecp_file(simulator)
+    '''
 
     if simulator.cell_variables: # conf["run"]["save_cell_vars"]:
         print2log0('    Will save time series of individual cells')
@@ -140,6 +142,7 @@ def create_output_files(simulator, gids):
     create_spike_file(simulator, gids)  # a single file including all gids
     
 
+'''
 def create_ecp_file(simulator):
     """a single ecp file for the entire network"""
 
@@ -157,7 +160,7 @@ def create_ecp_file(simulator):
             f5.attrs['tstop'] = tstop
 
     pc.barrier()
-
+'''
 
 def create_cell_vars_files(simulator, gids):
     """create 1 hfd5 files per gid"""
@@ -179,9 +182,11 @@ def create_cell_vars_files(simulator, gids):
 
             h5.create_dataset('spikes', (0,), maxshape=(None,), chunks=True)
 
+            '''
             if simulator.calc_ecp:  # then also create a dataset for the ecp
                 nsites = simulator.nsites
                 h5.create_dataset('ecp', (nsteps, nsites), maxshape=(None, nsites), chunks=True)
+            '''
 
 
 def create_spike_file(simulator, gids_on_rank):
@@ -251,8 +256,10 @@ def setup_output_dir(conf):
 
 def save_block_to_disk(conf, data_block, time_step_interval):
     """save data in blocks to hdf5"""
+    """
     if conf["run"]['calc_ecp']:
         save_ecp(conf["output"]["ecp_file"], data_block, time_step_interval)
+    """
 
     save_cell_vars(conf["output"]["cell_vars_dir"], conf["run"]["save_cell_vars"], data_block, time_step_interval)
     save_spikes2h5(conf["output"]["spikes_hdf5_file"], data_block)
@@ -284,7 +291,7 @@ def save_spikes2h5(spikes_hdf5_file, data_block):
 
         pc.barrier()    # move on to next rank
 
-
+'''
 def save_ecp(ecp_file, data_block, time_step_interval):
     """Save ECP from each rank to disk into a single file"""
     itstart, itend = time_step_interval
@@ -299,7 +306,7 @@ def save_ecp(ecp_file, data_block, time_step_interval):
                 data_block['ecp'][:] = 0.0
 
         pc.barrier()    # move on to next rank
-
+'''
 
 def save_cell_vars(cell_vars_dir, save_cell_vars, data_block, time_step_interval):
     """save to disk with one file per gid"""
@@ -321,10 +328,11 @@ def save_cell_vars(cell_vars_dir, save_cell_vars, data_block, time_step_interval
             h5["spikes"].resize((nspikes,))         # resize the dataset
             h5["spikes"][nspikes_saved:nspikes] = np.array(spikes[gid])  # save hocVector as a numpy arrray
 
+            '''
             if "ecp" in cell_data_block.keys():
                 h5["ecp"][itstart:itend, :] = cell_data_block['ecp'][0:itend-itstart, :]
                 cell_data_block['ecp'][:] = 0.0
-
+            '''
 
 def save_spikes2ascii(spikes_ascii_file, data_block):
     """Save spikes to ascii file as tuples (t,gid)"""

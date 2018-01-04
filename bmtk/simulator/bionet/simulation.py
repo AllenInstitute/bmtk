@@ -31,6 +31,7 @@ import numpy as np
 from bmtk.simulator.bionet import io
 from bmtk.simulator.bionet.recxelectrode import RecXElectrode
 from bmtk.simulator.bionet.iclamp import IClamp
+from bmtk.simulator.bionet.modules.ecp import EcpMod
 
 
 pc = h.ParallelContext()    # object to access MPI methods
@@ -50,6 +51,7 @@ class Simulation(object):
         self._v_init = v_init
         self._celsius = celsius
         self.rel = None
+        self.h = h
 
         self._nsteps_block = nsteps_block
         self._rel_nsites = 0
@@ -83,6 +85,10 @@ class Simulation(object):
 
         self._calc_ecp = False
         self._ecp_file = 'output/ecp.h5'
+
+        self._sim_mods = []
+
+
 
     @property
     def dt(self):
@@ -126,7 +132,7 @@ class Simulation(object):
 
     def set_save_variables(self, variable_list, output_dir):
         self._cell_variables = variable_list
-        self._cell_variables_output = output_dir
+        self._cell_vars_dir = output_dir
 
     @property
     def cell_variables(self):
@@ -134,7 +140,7 @@ class Simulation(object):
 
     @property
     def cell_var_output(self):
-        return self._cell_variables_output
+        return self._cell_vars_dir
 
     @property
     def calc_ecp(self):
@@ -193,6 +199,7 @@ class Simulation(object):
 
         pc.barrier()
 
+    '''
     def calculate_ecp(self, positions_file, ecp_output):
         """Set recording of the ExtraCellular Potential
 
@@ -209,6 +216,7 @@ class Simulation(object):
 
         h.cvode.use_fast_imem(1)  # make i_membrane_ a range variable
         self.fih1 = h.FInitializeHandler(0, self.set_pointers)
+    '''
 
     def attach_current_clamp(self, amplitude, delay, duration, gids=None):
         # TODO: verify current clamp works with MPI
@@ -231,9 +239,15 @@ class Simulation(object):
             Ic.attach_current(cell)
             self._iclamps.append(Ic)
 
+    '''
     def set_pointers(self):
         for gid, cell in self.net.cells.items():
             cell.set_im_ptr()
+    '''
+
+    def add_mod(self, module):
+        self._sim_mods.append(module)
+
 
     def create_data_block(self):
         """Create block in memory to store ouputs from each time step"""
@@ -242,9 +256,11 @@ class Simulation(object):
         self.data_block = {}
         self.data_block["tsave"] = round(h.t, 3)
         
+        '''
         if self._calc_ecp:
             nsites = self.rel.nsites
             self.data_block['ecp'] = np.empty((nt_block, nsites))
+        '''
 
         self.data_block['cells'] = {}
 
@@ -255,8 +271,10 @@ class Simulation(object):
                 for var in self.cell_variables:
                     self.data_block['cells'][gid][var] = np.zeros(nt_block)
 
+                '''
                 if self._calc_ecp and gid in self.gids['biophysical']:  # then also create a dataset for the ecp
                     self.data_block['cells'][gid]['ecp'] = np.empty((nt_block, nsites))   # for extracellular potential
+                '''
 
     def set_spike_recording(self):
         """Set dictionary of hocVectors for spike recordings"""
@@ -286,6 +304,12 @@ class Simulation(object):
         if beginning from a blank state, then will use h.run(),
         if continuing from the saved state, then will use h.continuerun() 
         """
+        for mod in self._sim_mods:
+            mod.initialize(self)
+
+
+
+
         self.start_time = h.startsw()
         s_time = time.time()
         pc.timeout(0)
@@ -326,7 +350,12 @@ class Simulation(object):
         """
         self.tstep += 1
         tstep_block = self.tstep - self.tstep_start_block  # time step within a block
+
+        for mod in self._sim_mods:
+            mod.step(self, self.tstep)
+
         self.save_data_to_block(tstep_block)
+
 
         if (self.tstep % self.nsteps_block == 0) or self.tstep == self.nsteps:
 
@@ -336,6 +365,9 @@ class Simulation(object):
             time_step_interval = (self.tstep_start_block, self.tstep_end_block)
             io.save_block_to_disk(self.conf, self.data_block, time_step_interval)  # block save data
             self.set_spike_recording()
+
+            for mod in self._sim_mods:
+                mod.block(self, time_step_interval)
 
             self.tstep_start_block = self.tstep   # starting point for the next block
 
@@ -347,6 +379,7 @@ class Simulation(object):
         self.data_block["tsave"] = round(h.t, 3)
 
         # compute and save the ECP
+        """
         if self._calc_ecp:
             for gid in self.gids['biophysical']:  # compute ecp only from the biophysical cells
                 cell = self.net.cells[gid]    
@@ -359,6 +392,7 @@ class Simulation(object):
                     cell_data_block['ecp'][tstep_block-1, :] = ecp
       
                 self.data_block['ecp'][tstep_block-1, :] += ecp
+        """
 
         # save to block the intracellular variables
         if self.cell_variables:
@@ -390,8 +424,12 @@ class Simulation(object):
             sim.spikes_ascii_file = config['output']['spikes_ascii_file']
 
             if config['run']['calc_ecp']:
-                sim.calculate_ecp(config['recXelectrode']['positions'],
-                                  config['output']['ecp_file'])
+                ecp_mod = EcpMod(ecp_file=config['output']['ecp_file'],
+                                 positions_file=config['recXelectrode']['positions'])
+
+                sim.add_mod(ecp_mod)
+                #sim.calculate_ecp(config['recXelectrode']['positions'],
+                #                  config['output']['ecp_file'])
             sim.set_recordings()
 
         if 'input' in config:
