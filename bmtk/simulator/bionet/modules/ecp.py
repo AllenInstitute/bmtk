@@ -26,7 +26,7 @@ class EcpMod(SimulatorMod):
         self._nsteps = 0
 
         self._tstep = 0  # accumlative time step
-        self._rel_time = 0 #
+        self._rel_time = 0  #
         self._block_step = 0  # time step within the given block of time
         self._tstep_start_block = 0
         self._data_block = None
@@ -76,6 +76,7 @@ class EcpMod(SimulatorMod):
                 with h5py.File(self._ecp_output, 'a') as f5:
                     f5["ecp"][itstart:itend, :] += self._data_block[0:itend - itstart, :]
                     f5.attrs["tsave"] = self._rel_time  # update tsave
+                    f5.flush()
 
                     # TODO: it shouldn't be required to clear data_block every time
                     self._data_block[:] = 0.0
@@ -90,12 +91,7 @@ class EcpMod(SimulatorMod):
             h5_file = self._cell_var_files[gid]
             h5_file['ecp'][itstart:itend, :] = data[0:(itend-itstart), :]
             h5_file.flush()
-            data[:] = 0
-
-            #h5_fname = os.path.join(self._cell_vars_dir, '{}.h5'.format)
-            #self._saved_gids[gid][self._block_step, :] = ecp
-
-
+            data[:] = 0.0
 
     def initialize(self, sim):
         self._block_size = sim.nsteps_block
@@ -106,7 +102,7 @@ class EcpMod(SimulatorMod):
         self._create_ecp_file(sim)
 
         # ecp data
-        self._data_block = np.empty((self._block_size, self._rel_nsites))
+        self._data_block = np.zeros((self._block_size, self._rel_nsites))
 
         # create list of all cells whose ecp values will be saved separetly
         self._saved_gids = {gid: np.empty((self._block_size, self._rel_nsites))
@@ -115,8 +111,6 @@ class EcpMod(SimulatorMod):
             self._create_cell_file(gid)
 
         pc.barrier()
-
-
 
     def step(self, sim, tstep, rel_time=0):
         for gid in self._biophys_gids:  # compute ecp only from the biophysical cells
@@ -131,14 +125,6 @@ class EcpMod(SimulatorMod):
 
             # add to total ecp contribution
             self._data_block[self._block_step, :] += ecp
-
-            """
-            if self.cell_variables and gid in self.gids['save_cell_vars']:
-                cell_data_block = self.data_block['cells'][gid]
-                cell_data_block['ecp'][tstep_block-1, :] = ecp
-
-            self.data_block['ecp'][tstep_block-1, :] += ecp
-            """
 
         self._block_step += 1
 
