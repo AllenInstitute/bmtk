@@ -139,7 +139,7 @@ def create_output_files(simulator, gids):
         print2log0('    Will save time series of individual cells')
         create_cell_vars_files(simulator, gids)
                 
-    create_spike_file(simulator, gids)  # a single file including all gids
+    # create_spike_file(simulator, gids)  # a single file including all gids
     
 
 '''
@@ -180,7 +180,7 @@ def create_cell_vars_files(simulator, gids):
             for var in simulator.cell_variables:
                 h5.create_dataset(var, (nsteps,), maxshape=(None,), chunks=True)
 
-            h5.create_dataset('spikes', (0,), maxshape=(None,), chunks=True)
+            # h5.create_dataset('spikes', (0,), maxshape=(None,), chunks=True)
 
             '''
             if simulator.calc_ecp:  # then also create a dataset for the ecp
@@ -188,7 +188,7 @@ def create_cell_vars_files(simulator, gids):
                 h5.create_dataset('ecp', (nsteps, nsites), maxshape=(None, nsites), chunks=True)
             '''
 
-
+'''
 def create_spike_file(simulator, gids_on_rank):
     """create a single hfd5 files for all gids"""
     print2log0('    Will save spikes')
@@ -211,6 +211,7 @@ def create_spike_file(simulator, gids_on_rank):
         f.close()
 
     pc.barrier()
+'''
 
 
 def get_spike_trains_handle(file_name, trial_name):
@@ -262,10 +263,11 @@ def save_block_to_disk(conf, data_block, time_step_interval):
     """
 
     save_cell_vars(conf["output"]["cell_vars_dir"], conf["run"]["save_cell_vars"], data_block, time_step_interval)
-    save_spikes2h5(conf["output"]["spikes_hdf5_file"], data_block)
-    save_spikes2ascii(conf["output"]["spikes_ascii_file"], data_block)
+    # save_spikes2h5(conf["output"]["spikes_hdf5_file"], data_block)
+    # save_spikes2ascii(conf["output"]["spikes_ascii_file"], data_block)
 
 
+'''
 def save_spikes2h5(spikes_hdf5_file, data_block):
     """Save spikes to h5 file: into time,gid datasets
 
@@ -290,6 +292,8 @@ def save_spikes2h5(spikes_hdf5_file, data_block):
                     h5["gid"][nspikes_saved:nspikes] = np.array([gid]*nspikes_to_add)
 
         pc.barrier()    # move on to next rank
+'''
+
 
 '''
 def save_ecp(ecp_file, data_block, time_step_interval):
@@ -321,19 +325,21 @@ def save_cell_vars(cell_vars_dir, save_cell_vars, data_block, time_step_interval
                 h5[var][itstart:itend] = cell_data_block[var][0:itend-itstart]
                 cell_data_block[var][:] = 0.0
 
+            '''
             spikes = data_block["spikes"]
             nspikes_saved = h5["spikes"].shape[0]   # find number of spikes
             nspikes_add = len(spikes[gid])     # find number of spikes to add
             nspikes = nspikes_saved+nspikes_add     # total number of spikes
             h5["spikes"].resize((nspikes,))         # resize the dataset
             h5["spikes"][nspikes_saved:nspikes] = np.array(spikes[gid])  # save hocVector as a numpy arrray
+            '''
 
             '''
             if "ecp" in cell_data_block.keys():
                 h5["ecp"][itstart:itend, :] = cell_data_block['ecp'][0:itend-itstart, :]
                 cell_data_block['ecp'][:] = 0.0
             '''
-
+'''
 def save_spikes2ascii(spikes_ascii_file, data_block):
     """Save spikes to ascii file as tuples (t,gid)"""
     spikes = data_block["spikes"]
@@ -349,7 +355,7 @@ def save_spikes2ascii(spikes_ascii_file, data_block):
                     f.write('%.3f %d\n' % (t, gid))
             f.close()
         pc.barrier()
-
+'''
 
 def save_state(conf):
     state = h.SaveState()
