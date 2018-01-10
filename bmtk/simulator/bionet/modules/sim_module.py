@@ -19,7 +19,7 @@ class SimulatorMod(object):
         """
         pass
 
-    def step(self, sim, tstep, rel_time):
+    def step(self, sim, tstep, rel_time=0.0):
         """Called on every single time step (dt).
 
         The step method is used for anything that should be recorded or changed continously. dt is determined during
