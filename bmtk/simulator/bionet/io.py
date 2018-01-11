@@ -262,7 +262,7 @@ def save_block_to_disk(conf, data_block, time_step_interval):
         save_ecp(conf["output"]["ecp_file"], data_block, time_step_interval)
     """
 
-    save_cell_vars(conf["output"]["cell_vars_dir"], conf["run"]["save_cell_vars"], data_block, time_step_interval)
+    # save_cell_vars(conf["output"]["cell_vars_dir"], conf["run"]["save_cell_vars"], data_block, time_step_interval)
     # save_spikes2h5(conf["output"]["spikes_hdf5_file"], data_block)
     # save_spikes2ascii(conf["output"]["spikes_ascii_file"], data_block)
 
@@ -312,8 +312,9 @@ def save_ecp(ecp_file, data_block, time_step_interval):
         pc.barrier()    # move on to next rank
 '''
 
+"""
 def save_cell_vars(cell_vars_dir, save_cell_vars, data_block, time_step_interval):
-    """save to disk with one file per gid"""
+    '''save to disk with one file per gid'''
     itstart, itend = time_step_interval
     for gid, cell_data_block in data_block['cells'].items():
         ofname = cell_vars_dir + '/%d.h5' % gid  # conf["output"]["cell_vars_dir"]+'/%d.h5' % (gid)
@@ -339,6 +340,8 @@ def save_cell_vars(cell_vars_dir, save_cell_vars, data_block, time_step_interval
                 h5["ecp"][itstart:itend, :] = cell_data_block['ecp'][0:itend-itstart, :]
                 cell_data_block['ecp'][:] = 0.0
             '''
+"""
+
 '''
 def save_spikes2ascii(spikes_ascii_file, data_block):
     """Save spikes to ascii file as tuples (t,gid)"""

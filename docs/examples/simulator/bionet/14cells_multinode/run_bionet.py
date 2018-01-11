@@ -28,6 +28,34 @@ pc = h.ParallelContext()
 MPI_RANK = int(pc.id())
 
 
+def check_cellvars(gid, conf):
+    expected_file = 'expected/cellvars/{}.h5'.format(gid)
+    results_file = os.path.join(conf['output']['cell_vars_dir'], '{}.h5'.format(gid))
+    assert (os.path.exists(results_file))
+
+    results_h5 = h5py.File(results_file, 'r')
+    expected_h5 = h5py.File(expected_file, 'r')
+    for variable in conf['run']['save_cell_vars']:
+        assert (variable in results_h5)
+        results_data = results_h5[variable].value
+        expected_data = expected_h5[variable].value
+        # consider using np.allclose() since the percision can vary depending on neuron version
+        assert (np.array_equal(results_data, expected_data))
+
+def check_ecp():
+    SAMPLE_SIZE = 100
+    expected_h5 = h5py.File('expected/ecp.h5', 'r')
+    nrows, ncols = expected_h5['ecp'].shape
+    expected_mat = np.matrix(expected_h5['ecp'])
+    results_h5 = h5py.File('output/ecp.h5', 'r')
+    assert ('ecp' in results_h5.keys())
+    results_mat = np.matrix(results_h5['ecp'][:])
+
+    assert (results_h5['ecp'].shape == (nrows, ncols))
+    for i, j in zip(randint(0, nrows, size=SAMPLE_SIZE), randint(0, ncols, size=SAMPLE_SIZE)):
+        assert (results_mat[i, j] == expected_mat[i, j])
+
+
 def run(config_file):
     conf = config.from_json(config_file)        # build configuration
     io.setup_output_dir(conf)                   # set up output directories
@@ -46,9 +74,25 @@ def run(config_file):
     sim.run()                                   # run simulation
 
     if MPI_RANK == 0:
+        # Check spikes
         assert (os.path.exists(conf['output']['spikes_ascii_file']))
         assert (spike_files_equal(conf['output']['spikes_ascii_file'], 'expected/spikes.txt'))
 
+        # Check extracellular recordings
+        check_ecp()
+
+        # Check saved variables
+        for saved_gids in conf['node_id_selections']['save_cell_vars']:
+            check_cellvars(saved_gids, conf)
+
+    """
+    "cell_vars_dir": "$OUTPUT_DIR/cellvars",
+
+    "save_cell_vars": ["v", "cai"],
+
+    "node_id_selections": {
+        "save_cell_vars":
+    """
 
     '''
     # Test the results of the ecp

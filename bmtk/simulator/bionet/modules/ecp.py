@@ -135,5 +135,7 @@ class EcpMod(SimulatorMod):
         self._block_step = 0
         self._tstep_start_block = self._tstep
 
-    # def finalize(self, sim):
-    #     pass
+    def finalize(self, sim):
+        if self._block_step > 0:
+            # just in case the simulation doesn't end on a block step
+            self.block(sim, (sim.n_stepsself._block_step-1, sim.n_steps))
