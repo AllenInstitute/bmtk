@@ -29,9 +29,12 @@ import time
 from neuron import h
 import numpy as np
 from bmtk.simulator.bionet import io
-from bmtk.simulator.bionet.recxelectrode import RecXElectrode
+#from bmtk.simulator.bionet.recxelectrode import RecXElectrode
 from bmtk.simulator.bionet.iclamp import IClamp
-from bmtk.simulator.bionet.modules.ecp import EcpMod
+from bmtk.simulator.bionet import modules as mods
+#from bmtk.simulator.bionet.modules.ecp import EcpMod
+#from bmtk.simulator.bionet.modules.record_spikes import SpikesMod
+#from bmtk.simulator.bionet.modules.record_cellvars import CellVarsMod
 
 
 pc = h.ParallelContext()    # object to access MPI methods
@@ -50,11 +53,11 @@ class Simulation(object):
         self.tstop = tstop
         self._v_init = v_init
         self._celsius = celsius
-        self.rel = None
+        # self.rel = None
         self.h = h
 
         self._nsteps_block = nsteps_block
-        self._rel_nsites = 0
+        # self._rel_nsites = 0
         self.data_block = {}
 
         # self._has_cell_vars = False
@@ -64,7 +67,7 @@ class Simulation(object):
 
         h.runStopAt = h.tstop
         h.steps_per_ms = 1/h.dt
-        
+
         self.set_init_conditions()  # call to save state
         h.cvode.cache_efficient(1)
                
@@ -73,8 +76,10 @@ class Simulation(object):
 
         self._output_dir = 'output'
         self._log_file = 'output/log.txt'
-        self._spikes_ascii_file = 'output/spikes.txt'
-        self._spikes_hdf5_file = 'output/spikes.h5'
+        # self._spikes_ascii_file = 'output/spikes.txt'
+        # self._spikes_hdf5_file = 'output/spikes.h5'
+
+        self._spikes = {}
 
         self._cell_variables = []
         self._cell_vars_dir = 'output/cellvars'
@@ -82,6 +87,7 @@ class Simulation(object):
         # self._ecp_file = 'output/ecp.h5'
 
         self._sim_mods = []
+
 
     @property
     def dt(self):
@@ -115,13 +121,21 @@ class Simulation(object):
     def celsius(self, c):
         self._celsius = c
 
+    '''
     @property
     def nsites(self):
         return self._rel_nsites
+    '''
 
+    @property
+    def n_steps(self):
+        return int(round(self.tstop/self.dt))
+
+    '''
     def set_save_variables(self, variable_list, output_dir):
         self._cell_variables = variable_list
         self._cell_vars_dir = output_dir
+    '''
 
     @property
     def cell_variables(self):
@@ -131,6 +145,7 @@ class Simulation(object):
     def cell_var_output(self):
         return self._cell_vars_dir
 
+    '''
     @property
     def spikes_hdf5_file(self):
         return self._spikes_hdf5_file
@@ -138,7 +153,14 @@ class Simulation(object):
     @spikes_hdf5_file.setter
     def spikes_hdf5_file(self, file_name):
         self._spikes_hdf5_file = file_name
+    '''
 
+    @property
+    def spikes_table(self):
+        return self._spikes
+
+
+    '''
     @property
     def spikes_ascii_file(self):
         return self._spikes_ascii_file
@@ -146,6 +168,7 @@ class Simulation(object):
     @spikes_ascii_file.setter
     def spikes_ascii_file(self, file_name):
         self._spikes_ascii_file = file_name
+    '''
 
     @property
     def nsteps_block(self):
@@ -166,6 +189,13 @@ class Simulation(object):
 
         h.celsius = self.celsius  # self.conf['conditions']['celsius']
                 
+    def set_spikes_recording(self):
+        for gid in self.net.cells:
+            tvec = self.h.Vector()
+            gidvec = self.h.Vector()
+            pc.spike_record(gid, tvec, gidvec)
+            self._spikes[gid] = tvec
+
     def set_recordings(self):
         """Set recordings of ECP, spikes and somatic traces"""
         io.print2log0('Setting up recordings...')
@@ -175,8 +205,8 @@ class Simulation(object):
         else:
             io.extend_output_files(self.gids)
 
-        self.create_data_block()
-        self.set_spike_recording()
+        # self.create_data_block()
+        # self.set_spike_recording()
         io.print2log0('Recordings are set!')
         pc.barrier()
 
@@ -201,6 +231,7 @@ class Simulation(object):
     def add_mod(self, module):
         self._sim_mods.append(module)
 
+    '''
     def create_data_block(self):
         """Create block in memory to store ouputs from each time step"""
         nt_block = self.nsteps_block
@@ -215,7 +246,9 @@ class Simulation(object):
                 self.data_block['cells'][gid] = {}        
                 for var in self.cell_variables:
                     self.data_block['cells'][gid][var] = np.zeros(nt_block)
+    '''
 
+    '''
     def set_spike_recording(self):
         """Set dictionary of hocVectors for spike recordings"""
         spikes = {}
@@ -226,6 +259,7 @@ class Simulation(object):
             spikes[gid] = tVec
             
         self.data_block["spikes"] = spikes
+    '''
 
     def __elapsed_time(self, time_s):
         if time_s < 120:
@@ -264,6 +298,11 @@ class Simulation(object):
                     
         pc.barrier()  #
 
+        for mod in self._sim_mods:
+            mod.finalize(self)
+        pc.barrier()
+
+
         end_time = time.time()
 
         sim_time = self.__elapsed_time(end_time - s_time)
@@ -298,20 +337,18 @@ class Simulation(object):
            
             time_step_interval = (self.tstep_start_block, self.tstep_end_block)
             io.save_block_to_disk(self.conf, self.data_block, time_step_interval)  # block save data
-            self.set_spike_recording()
+            # self.set_spike_recording()
 
             for mod in self._sim_mods:
                 mod.block(self, time_step_interval)
 
             self.tstep_start_block = self.tstep   # starting point for the next block
 
-        for mod in self._sim_mods:
-            mod.finalize(self)
-
     def save_data_to_block(self, tstep_block):
         """Compute data and save to a memory block"""
         self.data_block["tsave"] = round(h.t, 3)
 
+        '''
         # save to block the intracellular variables
         if self.cell_variables:
             for gid in list(set(self.gids['save_cell_vars']) & set(self.gids['biophysical'])):
@@ -322,6 +359,7 @@ class Simulation(object):
                 for var in self.cell_variables:
                     # subtract 1 because indexes start at 0 while the time step starts at 1
                     cell_data_block[var][tstep_block-1] = getattr(cell.hobj.soma[0](0.5), var)
+        '''
 
     @classmethod
     def from_config(cls, config, network, set_recordings=True):
@@ -333,18 +371,31 @@ class Simulation(object):
                   nsteps_block=config['run']['nsteps_block'])
 
         if config['run']['save_cell_vars']:
-            sim.set_save_variables(config['run']['save_cell_vars'],
-                                   config['output']['cell_vars_dir'])
+            cell_vars = config['run']['save_cell_vars']
+            cell_vars_output = config['output']['cell_vars_dir']
+            cellvars_mod = mods.CellVarsMod(outputdir=cell_vars_output, variables=cell_vars)
+            sim.add_mod(cellvars_mod)
+
+            # sim.set_save_variables(config['run']['save_cell_vars'],
+            #                        config['output']['cell_vars_dir'])
             # sim.cell_variables = config['run']['save_cell_vars']
 
         if set_recordings:
-            sim.spikes_hdf5_file = config['output']['spikes_hdf5_file']
-            sim.spikes_ascii_file = config['output']['spikes_ascii_file']
+            # sim.spikes_hdf5_file = config['output']['spikes_hdf5_file']
+            # sim.spikes_ascii_file = config['output']['spikes_ascii_file']
+
+            config_output = config['output']
+            output_dir = config_output['output_dir']
+
+            spikes_csv_file = config_output.get('spikes_ascii_file', None)
+            spikes_h5_file = config_output.get('spikes_hdf5_file', None)
+            if spikes_csv_file is not None or spikes_h5_file is not None:
+                spikes_mod = mods.SpikesMod(tmpdir=output_dir,csv_filename=spikes_csv_file, h5_filename=spikes_h5_file)
+                sim.add_mod(spikes_mod)
 
             if config['run']['calc_ecp']:
-                ecp_mod = EcpMod(ecp_file=config['output']['ecp_file'],
-                                 positions_file=config['recXelectrode']['positions'])
-
+                ecp_mod = mods.EcpMod(ecp_file=config['output']['ecp_file'],
+                                      positions_file=config['recXelectrode']['positions'])
                 sim.add_mod(ecp_mod)
                 # sim.calculate_ecp(config['recXelectrode']['positions'],
                 #                   config['output']['ecp_file'])
