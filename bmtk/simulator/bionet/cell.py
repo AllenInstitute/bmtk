@@ -85,5 +85,8 @@ class Cell(object):
             weight = nc.weight[0]
             nc.weight[0] = weight*factor
 
+    def get_connection_info(self):
+        return []
+
     def set_syn_connections(self, edge_prop, src_node, stim=None):
         raise NotImplementedError
