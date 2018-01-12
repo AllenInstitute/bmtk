@@ -141,6 +141,10 @@ class EcpMod(SimulatorMod):
             h5_file.flush()
             data[:] = 0.0
 
+    def _delete_tmp_files(self):
+        if os.path.exists(self._tmp_ecp_file):
+            os.remove(self._tmp_ecp_file)
+
     def initialize(self, sim):
         self._block_size = sim.nsteps_block
         self._biophys_gids = sim.gids['biophysical']  # gids for biophysical cells on this rank
@@ -190,6 +194,8 @@ class EcpMod(SimulatorMod):
             self.block(sim, (sim.n_steps - self._block_step, sim.n_steps))
 
         self._save_ecp(sim)
+        self._delete_tmp_files()
+        pc.barrier()
 
 
 class RecXElectrode(object):

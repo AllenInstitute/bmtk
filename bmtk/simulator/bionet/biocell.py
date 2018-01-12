@@ -38,7 +38,7 @@ class BioCell(Cell):
     """Implemntation of a morphologically and biophysically detailed type cell.
 
     """
-    def __init__(self, node, spike_threshold, dL, calc_ecp=False):
+    def __init__(self, node, spike_threshold, dL, calc_ecp=False, save_connection=True):
         super(BioCell, self).__init__(node)
 
         # Set up netcon object that can be used to detect and communicate cell spikes.
@@ -53,7 +53,9 @@ class BioCell(Cell):
         self._secs = []
         self.set_sec_array()
 
+        self._save_conn = save_connection
         self._synapses = []
+        self._syn_src_net = []
         self._syn_src_gid = []
         self._syn_seg_ix = []
         self._syn_sec_x = []
@@ -113,6 +115,13 @@ class BioCell(Cell):
 
     def set_syn_connection(self, edge_prop, src_node, stim=None):
         syn_weight = edge_prop.weight(src_node, self._node)
+
+        # print src_node.network
+        # exit()
+        # print edge_prop.edge_type_id
+        # exit()
+
+
         if edge_prop.preselected_targets:
             return self._set_connection_preselected(edge_prop, src_node, syn_weight, stim)
         else:
@@ -136,9 +145,12 @@ class BioCell(Cell):
         nc.delay = delay
         self._netcons.append(nc)
         self._synapses.append(syn)
-        self._syn_seg_ix.append(sec_id)
-        self._syn_src_gid.append(src_node.node_id)
-        self._syn_sec_x.append(sec_x)
+        if self._save_conn:
+            self._save_connection(src_gid=src_node.node_id, src_net=src_node.network, sec_x=sec_x, seg_ix=sec_id)
+
+        # self._syn_seg_ix.append(sec_id)
+        # self._syn_src_gid.append(src_node.node_id)
+        # self._syn_sec_x.append(sec_x)
         return 1
 
     def _set_connections(self, edge_prop, src_node, syn_weight, stim=None):
@@ -155,8 +167,13 @@ class BioCell(Cell):
         synapses = edge_prop.load_synapses(xs, secs)
         delay = edge_prop['delay']
         self._synapses.extend(synapses)
-        self._syn_seg_ix.extend(segs_ix)  # use only when need to output synaptic locations
-        self._syn_src_gid.extend([src_gid] * nsyns)
+        if self._save_conn:
+            for i in range(nsyns):
+                self._save_connection(src_gid, src_node.network, sec_x=xs[i], seg_ix=segs_ix[i])
+                # self._save_connection(src_gid, src_node.network, xs[i], segs_ix[i])
+
+        # self._syn_seg_ix.extend(segs_ix)  # use only when need to output synaptic locations
+        # self._syn_src_gid.extend([src_gid] * nsyns)
 
         for syn in synapses:
             # connect synapses
@@ -170,6 +187,18 @@ class BioCell(Cell):
             self.netcons.append(nc)
         return nsyns
 
+    def _save_connection(self, src_gid, src_net, sec_x, seg_ix):
+        self._syn_src_gid.append(src_gid)
+        self._syn_src_net.append(src_net)
+        self._syn_sec_x.append(sec_x)
+        self._syn_seg_ix.append(seg_ix)
+
+    def get_connection_info(self):
+        # TODO: There should be a more effecient and robust way to return synapse information.
+        return [[self.gid, self._syn_src_gid[i], self._syn_src_net[i], self._syn_seg_ix[i], self._syn_sec_x[i],
+                 self.netcons[i].weight[0], self.netcons[i].delay] for i in range(len(self._synapses))]
+
+    '''
     def set_syn_connections(self, nsyn, syn_weight, edge_type, src_gid, stim=None):
         """Set synaptic connections"""
         tar_seg_ix, tar_seg_prob = self._morph.get_target_segments(edge_type)
@@ -199,6 +228,7 @@ class BioCell(Cell):
             nc.weight[0] = weight
             nc.delay = delay      
             self.netcons.append(nc)
+    '''
 
     def init_connections(self):
         Cell.init_connections(self)

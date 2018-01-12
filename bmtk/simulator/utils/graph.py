@@ -46,6 +46,10 @@ class SimEdge(object):
         self._dynamics_params = dynamics_params
         self._updated_params = {'dynamics_params': self._dynamics_params}
 
+    @property
+    def edge_type_id(self):
+        return self._orig_params['edge_type_id']
+
     def __getitem__(self, item):
         if item in self._updated_params:
             return self._updated_params[item]
