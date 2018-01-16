@@ -758,84 +758,37 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="create_output_files"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.io.create_output_files">[docs]</a><span class="k">def</span> <span class="nf">create_output_files</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">gids</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">][</span><span class="s2">&quot;calc_ecp&quot;</span><span class="p">]:</span>  <span class="c1"># creat single file for ecp from all contributing cells</span>
-        <span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;    Will save time series of the ECP!&#39;</span><span class="p">)</span>
-        <span class="n">create_ecp_file</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+<div class="viewcode-block" id="create_output_files"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.io.create_output_files">[docs]</a><span class="k">def</span> <span class="nf">create_output_files</span><span class="p">(</span><span class="n">simulator</span><span class="p">,</span> <span class="n">gids</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    if simulator.calculate_ecp:  # creat single file for ecp from all contributing cells</span>
+<span class="sd">        print2log0(&#39;    Will save time series of the ECP!&#39;)</span>
+<span class="sd">        create_ecp_file(simulator)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="k">if</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">][</span><span class="s2">&quot;save_cell_vars&quot;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">simulator</span><span class="o">.</span><span class="n">cell_variables</span><span class="p">:</span> <span class="c1"># conf[&quot;run&quot;][&quot;save_cell_vars&quot;]:</span>
         <span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;    Will save time series of individual cells&#39;</span><span class="p">)</span>
-        <span class="n">create_cell_vars_files</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">gids</span><span class="p">)</span>
+        <span class="n">create_cell_vars_files</span><span class="p">(</span><span class="n">simulator</span><span class="p">,</span> <span class="n">gids</span><span class="p">)</span></div>
                 
-    <span class="n">create_spike_file</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">gids</span><span class="p">)</span>  <span class="c1"># a single file including all gids</span></div>
+    <span class="c1"># create_spike_file(simulator, gids)  # a single file including all gids</span>
     
 
-<div class="viewcode-block" id="create_ecp_file"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.io.create_ecp_file">[docs]</a><span class="k">def</span> <span class="nf">create_ecp_file</span><span class="p">(</span><span class="n">conf</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;a single ecp file for the entire network&quot;&quot;&quot;</span>
-
-    <span class="n">dt</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">][</span><span class="s2">&quot;dt&quot;</span><span class="p">]</span>
-    <span class="n">tstop</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">][</span><span class="s2">&quot;tstop&quot;</span><span class="p">]</span>
-    <span class="n">nsteps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">tstop</span><span class="o">/</span><span class="n">dt</span><span class="p">))</span>
-    <span class="n">nsites</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">][</span><span class="s1">&#39;nsites&#39;</span><span class="p">]</span>
-
-    <span class="n">ofname</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;ecp_file&quot;</span><span class="p">]</span>
-    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">pc</span><span class="o">.</span><span class="n">id</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># create single file for ecp from all contributing cells</span>
-        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">ofname</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f5</span><span class="p">:</span>
-            <span class="n">f5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;ecp&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">nsteps</span><span class="p">,</span> <span class="n">nsites</span><span class="p">),</span> <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">nsites</span><span class="p">),</span> <span class="n">chunks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">f5</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;dt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dt</span>
-            <span class="n">f5</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;tstart&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-            <span class="n">f5</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;tstop&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tstop</span>
-
-    <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="create_cell_vars_files"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.io.create_cell_vars_files">[docs]</a><span class="k">def</span> <span class="nf">create_cell_vars_files</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">gids</span><span class="p">):</span>
+<div class="viewcode-block" id="create_cell_vars_files"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.io.create_cell_vars_files">[docs]</a><span class="k">def</span> <span class="nf">create_cell_vars_files</span><span class="p">(</span><span class="n">simulator</span><span class="p">,</span> <span class="n">gids</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;create 1 hfd5 files per gid&quot;&quot;&quot;</span>
 
-    <span class="n">dt</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">][</span><span class="s2">&quot;dt&quot;</span><span class="p">]</span>
-    <span class="n">tstop</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">][</span><span class="s2">&quot;tstop&quot;</span><span class="p">]</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">dt</span> <span class="c1"># conf[&quot;run&quot;][&quot;dt&quot;]</span>
+    <span class="n">tstop</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">tstop</span> <span class="c1"># conf[&quot;run&quot;][&quot;tstop&quot;]</span>
 
     <span class="n">nsteps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">tstop</span><span class="o">/</span><span class="n">dt</span><span class="p">))</span>
 
     <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="n">gids</span><span class="p">[</span><span class="s2">&quot;save_cell_vars&quot;</span><span class="p">]:</span>
-        <span class="n">ofname</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;cell_vars_dir&quot;</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;/</span><span class="si">%d</span><span class="s1">.h5&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">gid</span><span class="p">)</span>
+        <span class="n">ofname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">simulator</span><span class="o">.</span><span class="n">cell_var_output</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.h5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gid</span><span class="p">))</span>
         <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">ofname</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5</span><span class="p">:</span>
             <span class="n">h5</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;dt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dt</span>
             <span class="n">h5</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;tstart&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
             <span class="n">h5</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;tstop&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tstop</span>
 
-            <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">][</span><span class="s2">&quot;save_cell_vars&quot;</span><span class="p">]:</span>
-                <span class="n">h5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="p">(</span><span class="n">nsteps</span><span class="p">,),</span> <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">chunks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-            <span class="n">h5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;spikes&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,),</span> <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">chunks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">][</span><span class="s2">&quot;calc_ecp&quot;</span><span class="p">]:</span>  <span class="c1"># then also create a dataset for the ecp</span>
-                <span class="n">nsites</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">][</span><span class="s1">&#39;nsites&#39;</span><span class="p">]</span>
-                <span class="n">h5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;ecp&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">nsteps</span><span class="p">,</span> <span class="n">nsites</span><span class="p">),</span> <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">nsites</span><span class="p">),</span> <span class="n">chunks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="create_spike_file"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.io.create_spike_file">[docs]</a><span class="k">def</span> <span class="nf">create_spike_file</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">gids_on_rank</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;create a single hfd5 files for all gids&quot;&quot;&quot;</span>
-    <span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;    Will save spikes&#39;</span><span class="p">)</span>
-
-    <span class="n">ofname</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;spikes_hdf5_file&quot;</span><span class="p">]</span>
-    <span class="n">tstop</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">][</span><span class="s2">&quot;tstop&quot;</span><span class="p">]</span>
-
-    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">pc</span><span class="o">.</span><span class="n">id</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># create h5 file</span>
-        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">ofname</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5</span><span class="p">:</span>
-            <span class="n">h5</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;tstart&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-            <span class="n">h5</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;tstop&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tstop</span>
-            <span class="n">h5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,),</span> <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">chunks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">h5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;gid&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,),</span> <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">chunks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
-
-    <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
-
-    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">pc</span><span class="o">.</span><span class="n">id</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># create ascii file</span>
-        <span class="n">ofname</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;spikes_ascii_file&quot;</span><span class="p">]</span>
-        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">ofname</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>  <span class="c1"># create ascii file</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
-    <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span></div>
+            <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">simulator</span><span class="o">.</span><span class="n">cell_variables</span><span class="p">:</span>
+                <span class="n">h5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="p">(</span><span class="n">nsteps</span><span class="p">,),</span> <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">chunks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="get_spike_trains_handle"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.io.get_spike_trains_handle">[docs]</a><span class="k">def</span> <span class="nf">get_spike_trains_handle</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">trial_name</span><span class="p">):</span>
@@ -845,7 +798,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="setup_output_dir"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.io.setup_output_dir">[docs]</a><span class="k">def</span> <span class="nf">setup_output_dir</span><span class="p">(</span><span class="n">conf</span><span class="p">):</span>
-
     <span class="n">start_from_state</span> <span class="o">=</span><span class="kc">False</span>
     <span class="k">if</span> <span class="n">start_from_state</span><span class="p">:</span>  <span class="c1"># starting from a previously saved state</span>
         <span class="k">try</span><span class="p">:</span>
@@ -868,7 +820,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;output_dir&quot;</span><span class="p">])</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;cell_vars_dir&quot;</span><span class="p">])</span>
-<span class="c1">#            os.makedirs(conf[&quot;output&quot;][&quot;state_dir&quot;])</span>
 
             <span class="n">create_log</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
             <span class="n">config</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
@@ -877,99 +828,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
     <span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;Output directory: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;output_dir&quot;</span><span class="p">])</span>
     <span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;Config file: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;config_path&quot;</span><span class="p">])</span></div>
-
-
-<div class="viewcode-block" id="save_block_to_disk"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.io.save_block_to_disk">[docs]</a><span class="k">def</span> <span class="nf">save_block_to_disk</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">data_block</span><span class="p">,</span> <span class="n">time_step_interval</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;save data in blocks to hdf5&quot;&quot;&quot;</span>
-    <span class="n">save_ecp</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">data_block</span><span class="p">,</span> <span class="n">time_step_interval</span><span class="p">)</span>
-    <span class="n">save_cell_vars</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">data_block</span><span class="p">,</span> <span class="n">time_step_interval</span><span class="p">)</span>
-    <span class="n">save_spikes2h5</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">data_block</span><span class="p">)</span>
-    <span class="n">save_spikes2ascii</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">data_block</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="save_spikes2h5"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.io.save_spikes2h5">[docs]</a><span class="k">def</span> <span class="nf">save_spikes2h5</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">data_block</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Save spikes to h5 file: into time,gid datasets</span>
-
-<span class="sd">    Spike times are not necessarily in order. For comparison between runs, need to sort spikes</span>
-
-<span class="sd">    :param conf:</span>
-<span class="sd">    :param data_block:</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">spikes</span> <span class="o">=</span> <span class="n">data_block</span><span class="p">[</span><span class="s2">&quot;spikes&quot;</span><span class="p">]</span>
-    <span class="n">ofname</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;spikes_hdf5_file&quot;</span><span class="p">]</span>
-    <span class="n">ranks</span> <span class="o">=</span> <span class="n">xrange</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pc</span><span class="o">.</span><span class="n">nhost</span><span class="p">()))</span>
-    <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="n">ranks</span><span class="p">:</span>  <span class="c1"># iterate over the ranks</span>
-        <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">pc</span><span class="o">.</span><span class="n">id</span><span class="p">()):</span>  <span class="c1"># wait until finished with a particular rank</span>
-            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">ofname</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="n">spikes</span><span class="p">:</span>                          <span class="c1"># save spikes of all gids on this rank</span>
-                    <span class="n">nspikes_saved</span> <span class="o">=</span> <span class="n">h5</span><span class="p">[</span><span class="s2">&quot;gid&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>      <span class="c1"># find number of spikes already in the file</span>
-                    <span class="n">nspikes_to_add</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">spikes</span><span class="p">[</span><span class="n">gid</span><span class="p">])</span>          <span class="c1"># find number of spikes to add</span>
-                    <span class="n">nspikes</span> <span class="o">=</span> <span class="n">nspikes_saved</span><span class="o">+</span><span class="n">nspikes_to_add</span>     <span class="c1"># total number of spikes</span>
-                    <span class="n">h5</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">nspikes</span><span class="p">,))</span>         <span class="c1"># resize the dataset</span>
-                    <span class="n">h5</span><span class="p">[</span><span class="s2">&quot;gid&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">nspikes</span><span class="p">,))</span>         <span class="c1"># resize the dataset</span>
-                    <span class="n">h5</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">][</span><span class="n">nspikes_saved</span><span class="p">:</span><span class="n">nspikes</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">spikes</span><span class="p">[</span><span class="n">gid</span><span class="p">])</span>
-                    <span class="n">h5</span><span class="p">[</span><span class="s2">&quot;gid&quot;</span><span class="p">][</span><span class="n">nspikes_saved</span><span class="p">:</span><span class="n">nspikes</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">gid</span><span class="p">]</span><span class="o">*</span><span class="n">nspikes_to_add</span><span class="p">)</span>
-
-        <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>    <span class="c1"># move on to next rank</span></div>
-
-
-<div class="viewcode-block" id="save_ecp"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.io.save_ecp">[docs]</a><span class="k">def</span> <span class="nf">save_ecp</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">data_block</span><span class="p">,</span> <span class="n">time_step_interval</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Save ECP from each rank to disk into a single file&quot;&quot;&quot;</span>
-    <span class="n">itstart</span><span class="p">,</span> <span class="n">itend</span> <span class="o">=</span> <span class="n">time_step_interval</span>
-    <span class="n">ofname</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;ecp_file&quot;</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">][</span><span class="s1">&#39;calc_ecp&#39;</span><span class="p">]:</span>
-
-        <span class="n">ranks</span> <span class="o">=</span> <span class="n">xrange</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pc</span><span class="o">.</span><span class="n">nhost</span><span class="p">()))</span>
-        <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="n">ranks</span><span class="p">:</span>              <span class="c1"># iterate over the ranks</span>
-            <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">pc</span><span class="o">.</span><span class="n">id</span><span class="p">()):</span>      <span class="c1"># wait until finished with a particular rank</span>
-                <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">ofname</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f5</span><span class="p">:</span>
-                    <span class="n">f5</span><span class="p">[</span><span class="s2">&quot;ecp&quot;</span><span class="p">][</span><span class="n">itstart</span><span class="p">:</span><span class="n">itend</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+=</span> <span class="n">data_block</span><span class="p">[</span><span class="s1">&#39;ecp&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="n">itend</span><span class="o">-</span><span class="n">itstart</span><span class="p">,</span> <span class="p">:]</span>
-                    <span class="n">f5</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;tsave&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_block</span><span class="p">[</span><span class="s2">&quot;tsave&quot;</span><span class="p">]</span>  <span class="c1"># update tsave</span>
-                    <span class="n">data_block</span><span class="p">[</span><span class="s1">&#39;ecp&#39;</span><span class="p">][:]</span> <span class="o">=</span> <span class="mf">0.0</span>
-
-            <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>    <span class="c1"># move on to next rank</span></div>
-
-
-<div class="viewcode-block" id="save_cell_vars"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.io.save_cell_vars">[docs]</a><span class="k">def</span> <span class="nf">save_cell_vars</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">data_block</span><span class="p">,</span> <span class="n">time_step_interval</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;save to disk with one file per gid&quot;&quot;&quot;</span>
-    <span class="n">itstart</span><span class="p">,</span> <span class="n">itend</span> <span class="o">=</span> <span class="n">time_step_interval</span>
-    <span class="k">for</span> <span class="n">gid</span><span class="p">,</span> <span class="n">cell_data_block</span> <span class="ow">in</span> <span class="n">data_block</span><span class="p">[</span><span class="s1">&#39;cells&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">ofname</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;cell_vars_dir&quot;</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;/</span><span class="si">%d</span><span class="s1">.h5&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">gid</span><span class="p">)</span>
-
-        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">ofname</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5</span><span class="p">:</span>
-
-            <span class="n">h5</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;tsave&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_block</span><span class="p">[</span><span class="s2">&quot;tsave&quot;</span><span class="p">]</span>  <span class="c1"># update tsave</span>
-            <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">][</span><span class="s2">&quot;save_cell_vars&quot;</span><span class="p">]:</span>
-                <span class="n">h5</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="n">itstart</span><span class="p">:</span><span class="n">itend</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell_data_block</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="n">itend</span><span class="o">-</span><span class="n">itstart</span><span class="p">]</span>
-                <span class="n">cell_data_block</span><span class="p">[</span><span class="n">var</span><span class="p">][:]</span> <span class="o">=</span> <span class="mf">0.0</span>
-
-            <span class="n">spikes</span> <span class="o">=</span> <span class="n">data_block</span><span class="p">[</span><span class="s2">&quot;spikes&quot;</span><span class="p">]</span>
-            <span class="n">nspikes_saved</span> <span class="o">=</span> <span class="n">h5</span><span class="p">[</span><span class="s2">&quot;spikes&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>   <span class="c1"># find number of spikes</span>
-            <span class="n">nspikes_add</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">spikes</span><span class="p">[</span><span class="n">gid</span><span class="p">])</span>     <span class="c1"># find number of spikes to add</span>
-            <span class="n">nspikes</span> <span class="o">=</span> <span class="n">nspikes_saved</span><span class="o">+</span><span class="n">nspikes_add</span>     <span class="c1"># total number of spikes</span>
-            <span class="n">h5</span><span class="p">[</span><span class="s2">&quot;spikes&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">nspikes</span><span class="p">,))</span>         <span class="c1"># resize the dataset</span>
-            <span class="n">h5</span><span class="p">[</span><span class="s2">&quot;spikes&quot;</span><span class="p">][</span><span class="n">nspikes_saved</span><span class="p">:</span><span class="n">nspikes</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">spikes</span><span class="p">[</span><span class="n">gid</span><span class="p">])</span>  <span class="c1"># save hocVector as a numpy arrray</span>
-
-            <span class="k">if</span> <span class="s2">&quot;ecp&quot;</span> <span class="ow">in</span> <span class="n">cell_data_block</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="n">h5</span><span class="p">[</span><span class="s2">&quot;ecp&quot;</span><span class="p">][</span><span class="n">itstart</span><span class="p">:</span><span class="n">itend</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">cell_data_block</span><span class="p">[</span><span class="s1">&#39;ecp&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="n">itend</span><span class="o">-</span><span class="n">itstart</span><span class="p">,</span> <span class="p">:]</span>
-                <span class="n">cell_data_block</span><span class="p">[</span><span class="s1">&#39;ecp&#39;</span><span class="p">][:]</span> <span class="o">=</span> <span class="mf">0.0</span></div>
-
-
-<div class="viewcode-block" id="save_spikes2ascii"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.io.save_spikes2ascii">[docs]</a><span class="k">def</span> <span class="nf">save_spikes2ascii</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">data_block</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Save spikes to ascii file as tuples (t,gid)&quot;&quot;&quot;</span>
-    <span class="n">spikes</span> <span class="o">=</span> <span class="n">data_block</span><span class="p">[</span><span class="s2">&quot;spikes&quot;</span><span class="p">]</span>
-    <span class="n">ofname</span> <span class="o">=</span> <span class="n">conf</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">][</span><span class="s2">&quot;spikes_ascii_file&quot;</span><span class="p">]</span>
-
-    <span class="n">ranks</span> <span class="o">=</span> <span class="n">xrange</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">pc</span><span class="o">.</span><span class="n">nhost</span><span class="p">()))</span>
-    <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="n">ranks</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">pc</span><span class="o">.</span><span class="n">id</span><span class="p">()):</span>
-            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">ofname</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="n">spikes</span><span class="p">:</span>
-                <span class="n">tVec</span> <span class="o">=</span> <span class="n">spikes</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span>
-                <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tVec</span><span class="p">:</span>
-                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%.3f</span><span class="s1"> </span><span class="si">%d</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">gid</span><span class="p">))</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="save_state"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.io.save_state">[docs]</a><span class="k">def</span> <span class="nf">save_state</span><span class="p">(</span><span class="n">conf</span><span class="p">):</span>

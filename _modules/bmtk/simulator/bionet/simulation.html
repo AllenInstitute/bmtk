@@ -655,175 +655,116 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</span>
 <span class="c1"># OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c1">#</span>
-<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">neuron</span> <span class="k">import</span> <span class="n">h</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.bionet</span> <span class="k">import</span> <span class="n">io</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.recxelectrode</span> <span class="k">import</span> <span class="n">RecXElectrode</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.iclamp</span> <span class="k">import</span> <span class="n">IClamp</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet</span> <span class="k">import</span> <span class="n">modules</span> <span class="k">as</span> <span class="n">mods</span>
 
 
 <span class="n">pc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">ParallelContext</span><span class="p">()</span>    <span class="c1"># object to access MPI methods</span>
 
 
-
 <div class="viewcode-block" id="Simulation"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.simulation.Simulation">[docs]</a><span class="k">class</span> <span class="nc">Simulation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Includes methods to run and control the simulation</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="sd">&quot;&quot;&quot;Includes methods to run and control the simulation&quot;&quot;&quot;</span>
 
-
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">conf</span><span class="p">,</span><span class="n">network</span><span class="p">):</span>
-
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">tstop</span><span class="p">,</span> <span class="n">v_init</span><span class="p">,</span> <span class="n">celsius</span><span class="p">,</span> <span class="n">nsteps_block</span><span class="p">,</span> <span class="n">start_from_state</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">net</span> <span class="o">=</span> <span class="n">network</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">conf</span> <span class="o">=</span> <span class="n">conf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gids</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;save_cell_vars&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">saved_gids</span><span class="p">,</span> <span class="s1">&#39;biophysical&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">biopyhys_gids</span><span class="p">}</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">gids</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;save_cell_vars&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">saved_gids</span><span class="p">,</span> 
-                     <span class="s1">&#39;biophysical&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">biopyhys_gids</span><span class="p">}</span>
-        <span class="c1">#self.gids = self.net.graph.gids_on_rank   # returns dictionary of gid groups</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_from_state</span> <span class="o">=</span> <span class="n">start_from_state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tstop</span> <span class="o">=</span> <span class="n">tstop</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_start_from_state</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_v_init</span> <span class="o">=</span> <span class="n">v_init</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_celsius</span> <span class="o">=</span> <span class="n">celsius</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_h</span> <span class="o">=</span> <span class="n">h</span>
 
-        <span class="n">h</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">][</span><span class="s2">&quot;dt&quot;</span><span class="p">]</span>
-        <span class="n">h</span><span class="o">.</span><span class="n">tstop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">][</span><span class="s2">&quot;tstop&quot;</span><span class="p">]</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">tstep</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">t</span> <span class="o">/</span> <span class="n">h</span><span class="o">.</span><span class="n">dt</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tstep_start_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tstep</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nsteps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">tstop</span><span class="o">/</span><span class="n">h</span><span class="o">.</span><span class="n">dt</span><span class="p">))</span>
+
+        <span class="c1"># make sure the block size isn&#39;t small than the total number of steps</span>
+        <span class="c1"># TODO: should we send a warning that block-step size is being reset?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nsteps_block</span> <span class="o">=</span> <span class="n">nsteps_block</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nsteps</span> <span class="o">&gt;</span> <span class="n">nsteps_block</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">nsteps</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__tstep_end_block</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__tstep_start_block</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="n">h</span><span class="o">.</span><span class="n">runStopAt</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">tstop</span>
         <span class="n">h</span><span class="o">.</span><span class="n">steps_per_ms</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">h</span><span class="o">.</span><span class="n">dt</span>
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_init_conditions</span><span class="p">()</span>  <span class="c1"># call to save state</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_init_conditions</span><span class="p">()</span>  <span class="c1"># call to save state</span>
         <span class="n">h</span><span class="o">.</span><span class="n">cvode</span><span class="o">.</span><span class="n">cache_efficient</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
                
         <span class="n">h</span><span class="o">.</span><span class="n">pysim</span> <span class="o">=</span> <span class="bp">self</span>  <span class="c1"># use this objref to be able to call postFadvance from proc advance in advance.hoc</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_iclamps</span> <span class="o">=</span> <span class="p">[]</span>
 
-<div class="viewcode-block" id="Simulation.set_init_conditions"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.simulation.Simulation.set_init_conditions">[docs]</a>    <span class="k">def</span> <span class="nf">set_init_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_output_dir</span> <span class="o">=</span> <span class="s1">&#39;output&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_file</span> <span class="o">=</span> <span class="s1">&#39;output/log.txt&#39;</span>
 
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Set up the initial conditions: either read from the h.SaveState or from config[&quot;condidtions&quot;]</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spikes</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># for keeping track of different spike times, key of cell gids</span>
 
-        <span class="n">pc</span><span class="o">.</span><span class="n">set_maxstep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-        <span class="n">h</span><span class="o">.</span><span class="n">stdinit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cell_variables</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># location of saved cell variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cell_vars_dir</span> <span class="o">=</span> <span class="s1">&#39;output/cellvars&#39;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">tstep</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">t</span><span class="o">/</span><span class="n">h</span><span class="o">.</span><span class="n">dt</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tstep_start_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tstep</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sim_mods</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of modules.SimulatorMod&#39;s</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_from_state</span><span class="o">==</span><span class="kc">True</span><span class="p">:</span>
-            <span class="n">io</span><span class="o">.</span><span class="n">read_state</span><span class="p">()</span>
-            <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;Read the initial state saved at t_sim: </span><span class="si">%.2f</span><span class="s1"> ms&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">t</span><span class="p">))</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">h</span><span class="o">.</span><span class="n">dt</span>
 
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">h</span><span class="o">.</span><span class="n">v_init</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;conditions&quot;</span><span class="p">][</span><span class="s2">&quot;v_init&quot;</span><span class="p">]</span>
+    <span class="nd">@dt</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ms</span><span class="p">):</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">ms</span>
 
-        <span class="n">h</span><span class="o">.</span><span class="n">celsius</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;conditions&quot;</span><span class="p">][</span><span class="s2">&quot;celsius&quot;</span><span class="p">]</span></div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tstop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">h</span><span class="o">.</span><span class="n">tstop</span>
 
+    <span class="nd">@tstop</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">tstop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ms</span><span class="p">):</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">tstop</span> <span class="o">=</span> <span class="n">ms</span>
 
-                
-<div class="viewcode-block" id="Simulation.set_recordings"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.simulation.Simulation.set_recordings">[docs]</a>    <span class="k">def</span> <span class="nf">set_recordings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">v_init</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_init</span>
 
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Set recordings of ECP, spikes and somatic traces</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+    <span class="nd">@v_init</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">v_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">voltage</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_v_init</span> <span class="o">=</span> <span class="n">voltage</span>
 
-        <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;Setting up recordings...&#39;</span><span class="p">)</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">celsius</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_celsius</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">][</span><span class="s2">&quot;calc_ecp&quot;</span><span class="p">]:</span> 
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_ecp_recording</span><span class="p">()</span>
+    <span class="nd">@celsius</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">celsius</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_celsius</span> <span class="o">=</span> <span class="n">c</span>
 
-        <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_from_state</span><span class="p">):</span> <span class="c1"># if starting from a new initial state</span>
-            <span class="n">io</span><span class="o">.</span><span class="n">create_output_files</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gids</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">io</span><span class="o">.</span><span class="n">extend_output_files</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gids</span><span class="p">)</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tstop</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">))</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">create_data_block</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_spike_recording</span><span class="p">()</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">cell_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cell_variables</span>
 
-        <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;Recordings are set!&#39;</span><span class="p">)</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">cell_var_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cell_vars_dir</span>
 
-        <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span></div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">spikes_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spikes</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">nsteps_block</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nsteps_block</span>
 
-<div class="viewcode-block" id="Simulation.set_ecp_recording"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.simulation.Simulation.set_ecp_recording">[docs]</a>    <span class="k">def</span> <span class="nf">set_ecp_recording</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Set recording of the ExtraCellular Potential</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">rel</span> <span class="o">=</span> <span class="n">RecXElectrode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">)</span>
-        
-        <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gids</span><span class="p">[</span><span class="s1">&#39;biophysical&#39;</span><span class="p">]:</span>
-            <span class="n">cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">cells</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">rel</span><span class="o">.</span><span class="n">calc_transfer_resistance</span><span class="p">(</span><span class="n">gid</span><span class="p">,</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_seg_coords</span><span class="p">())</span>
-        
-        <span class="n">h</span><span class="o">.</span><span class="n">cvode</span><span class="o">.</span><span class="n">use_fast_imem</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>   <span class="c1"># make i_membrane_ a range variable</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fih1</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">FInitializeHandler</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_pointers</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Simulation.attach_current_clamp"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.simulation.Simulation.attach_current_clamp">[docs]</a>    <span class="k">def</span> <span class="nf">attach_current_clamp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
-        <span class="c1">#self.Ic = IClamp(self.conf)</span>
-        <span class="c1">#self.Ic.attach_current(self.net.cells[0])</span>
-        <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gids</span><span class="p">[</span><span class="s1">&#39;biophysical&#39;</span><span class="p">]:</span>
-            <span class="n">cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">cells</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span>
-            <span class="n">Ic</span> <span class="o">=</span> <span class="n">IClamp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">)</span>
-            <span class="n">Ic</span><span class="o">.</span><span class="n">attach_current</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_iclamps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Ic</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="Simulation.set_pointers"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.simulation.Simulation.set_pointers">[docs]</a>    <span class="k">def</span> <span class="nf">set_pointers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>    <span class="c1"># set pointers to i_membrane in each cell </span>
-            
-        <span class="k">for</span> <span class="n">gid</span><span class="p">,</span> <span class="n">cell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">cells</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">cell</span><span class="o">.</span><span class="n">set_im_ptr</span><span class="p">()</span></div>
-
-
-        
-
-<div class="viewcode-block" id="Simulation.create_data_block"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.simulation.Simulation.create_data_block">[docs]</a>    <span class="k">def</span> <span class="nf">create_data_block</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Create block in memory to store ouputs from each time step</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">nt_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">][</span><span class="s1">&#39;nsteps_block&#39;</span><span class="p">]</span>
-            
-        <span class="bp">self</span><span class="o">.</span><span class="n">data_block</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data_block</span><span class="p">[</span><span class="s2">&quot;tsave&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">t</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
-        
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">][</span><span class="s1">&#39;calc_ecp&#39;</span><span class="p">]:</span>
-            <span class="n">nsites</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rel</span><span class="o">.</span><span class="n">nsites</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data_block</span><span class="p">[</span><span class="s1">&#39;ecp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">nt_block</span><span class="p">,</span><span class="n">nsites</span><span class="p">))</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">data_block</span><span class="p">[</span><span class="s1">&#39;cells&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">][</span><span class="s2">&quot;save_cell_vars&quot;</span><span class="p">]:</span>
-
-            <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gids</span><span class="p">[</span><span class="s2">&quot;save_cell_vars&quot;</span><span class="p">]:</span>   <span class="c1"># only includes gids on this rank</span>
-
-                <span class="bp">self</span><span class="o">.</span><span class="n">data_block</span><span class="p">[</span><span class="s1">&#39;cells&#39;</span><span class="p">][</span><span class="n">gid</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>        
-                <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">][</span><span class="s2">&quot;save_cell_vars&quot;</span><span class="p">]:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">data_block</span><span class="p">[</span><span class="s1">&#39;cells&#39;</span><span class="p">][</span><span class="n">gid</span><span class="p">][</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nt_block</span><span class="p">)</span>
-
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">][</span><span class="s2">&quot;calc_ecp&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gids</span><span class="p">[</span><span class="s1">&#39;biophysical&#39;</span><span class="p">]:</span> <span class="c1"># then also create a dataset for the ecp</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">data_block</span><span class="p">[</span><span class="s1">&#39;cells&#39;</span><span class="p">][</span><span class="n">gid</span><span class="p">][</span><span class="s1">&#39;ecp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">nt_block</span><span class="p">,</span><span class="n">nsites</span><span class="p">))</span>   <span class="c1"># for extracellular potential</span></div>
-
-
-<div class="viewcode-block" id="Simulation.set_spike_recording"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.simulation.Simulation.set_spike_recording">[docs]</a>    <span class="k">def</span> <span class="nf">set_spike_recording</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Set dictionary of hocVectors for spike recordings</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-
-        <span class="n">spikes</span> <span class="o">=</span> <span class="p">{}</span>
-
-        <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">cells</span><span class="p">:</span>
-            <span class="n">tVec</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">Vector</span><span class="p">()</span>
-            <span class="n">gidVec</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">Vector</span><span class="p">()</span>
-            <span class="n">pc</span><span class="o">.</span><span class="n">spike_record</span><span class="p">(</span><span class="n">gid</span><span class="p">,</span><span class="n">tVec</span><span class="p">,</span><span class="n">gidVec</span><span class="p">)</span>
-            <span class="n">spikes</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span> <span class="o">=</span> <span class="n">tVec</span>
-            
-        <span class="bp">self</span><span class="o">.</span><span class="n">data_block</span><span class="p">[</span><span class="s2">&quot;spikes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">spikes</span></div>
-
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">h</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h</span>
 
     <span class="k">def</span> <span class="nf">__elapsed_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_s</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">time_s</span> <span class="o">&lt;</span> <span class="mi">120</span><span class="p">:</span>
@@ -836,117 +777,176 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">hours</span><span class="p">,</span> <span class="n">mins</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">mins</span><span class="p">,</span> <span class="mi">60</span><span class="p">)</span>
             <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> hours, </span><span class="si">{}</span><span class="s1"> minutes and </span><span class="si">{:.4}</span><span class="s1"> seconds&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hours</span><span class="p">,</span> <span class="n">mins</span><span class="p">,</span> <span class="n">secs</span><span class="p">)</span>
 
-        
+    <span class="k">def</span> <span class="nf">_set_init_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set up the initial conditions: either read from the h.SaveState or from config[&quot;condidtions&quot;]&quot;&quot;&quot;</span>
+        <span class="n">pc</span><span class="o">.</span><span class="n">set_maxstep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">stdinit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tstep</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">t</span><span class="o">/</span><span class="n">h</span><span class="o">.</span><span class="n">dt</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tstep_start_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tstep</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_from_state</span><span class="p">:</span>
+            <span class="c1"># io.read_state()</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;Read the initial state saved at t_sim: </span><span class="si">{}</span><span class="s1"> ms&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">t</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">h</span><span class="o">.</span><span class="n">v_init</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_init</span>
+
+        <span class="n">h</span><span class="o">.</span><span class="n">celsius</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">celsius</span>
+                
+<div class="viewcode-block" id="Simulation.set_spikes_recording"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.simulation.Simulation.set_spikes_recording">[docs]</a>    <span class="k">def</span> <span class="nf">set_spikes_recording</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">cells</span><span class="p">:</span>
+            <span class="n">tvec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="o">.</span><span class="n">Vector</span><span class="p">()</span>
+            <span class="n">gidvec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="o">.</span><span class="n">Vector</span><span class="p">()</span>
+            <span class="n">pc</span><span class="o">.</span><span class="n">spike_record</span><span class="p">(</span><span class="n">gid</span><span class="p">,</span> <span class="n">tvec</span><span class="p">,</span> <span class="n">gidvec</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spikes</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span> <span class="o">=</span> <span class="n">tvec</span></div>
+
+<div class="viewcode-block" id="Simulation.set_recordings"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.simulation.Simulation.set_recordings">[docs]</a>    <span class="k">def</span> <span class="nf">set_recordings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set recordings of ECP, spikes and somatic traces&quot;&quot;&quot;</span>
+        <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;Setting up recordings...&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_from_state</span><span class="p">:</span>
+            <span class="c1"># if starting from a new initial state</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">create_output_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gids</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">extend_output_files</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gids</span><span class="p">)</span>
+
+        <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;Recordings are set!&#39;</span><span class="p">)</span>
+        <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Simulation.attach_current_clamp"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.simulation.Simulation.attach_current_clamp">[docs]</a>    <span class="k">def</span> <span class="nf">attach_current_clamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">gids</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># TODO: verify current clamp works with MPI</span>
+        <span class="k">if</span> <span class="n">gids</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">gids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gids</span><span class="p">[</span><span class="s1">&#39;biophysical&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gids</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">gids</span> <span class="o">=</span> <span class="p">[</span><span class="n">gids</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gids</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+            <span class="n">gids</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">gids</span><span class="p">)]</span>
+
+        <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="n">gids</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">gid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gids</span><span class="p">[</span><span class="s1">&#39;biophysical&#39;</span><span class="p">]:</span>
+                <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s2">&quot;Warning: attempting to attach current clamp to non-biophysical gid </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gid</span><span class="p">))</span>
+
+            <span class="n">cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">cells</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span>
+            <span class="n">Ic</span> <span class="o">=</span> <span class="n">IClamp</span><span class="p">(</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span>
+            <span class="n">Ic</span><span class="o">.</span><span class="n">attach_current</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_iclamps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Ic</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Simulation.add_mod"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.simulation.Simulation.add_mod">[docs]</a>    <span class="k">def</span> <span class="nf">add_mod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sim_mods</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">module</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="Simulation.run"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.simulation.Simulation.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Run the simulation: </span>
+        <span class="sd">&quot;&quot;&quot;Run the simulation:</span>
 <span class="sd">        if beginning from a blank state, then will use h.run(),</span>
 <span class="sd">        if continuing from the saved state, then will use h.continuerun() </span>
-<span class="sd">        </span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_mods</span><span class="p">:</span>
+            <span class="n">mod</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">startsw</span><span class="p">()</span>
         <span class="n">s_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-        <span class="n">pc</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1">#</span>
+        <span class="n">pc</span><span class="o">.</span><span class="n">timeout</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
          
-        <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span> <span class="c1"># wait for all hosts to get to this point</span>
-        <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;Running simulation until tstop: </span><span class="si">%.3f</span><span class="s1"> ms with the time step </span><span class="si">%.3f</span><span class="s1"> ms&#39;</span> <span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">][</span><span class="s1">&#39;tstop&#39;</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">][</span><span class="s1">&#39;dt&#39;</span><span class="p">]))</span>
-
-        <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;Starting timestep: </span><span class="si">%d</span><span class="s1"> at t_sim: </span><span class="si">%.3f</span><span class="s1"> ms&#39;</span> <span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tstep</span><span class="p">,</span><span class="n">h</span><span class="o">.</span><span class="n">t</span><span class="p">))</span>
-        <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;Block save every </span><span class="si">%d</span><span class="s1"> steps&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">][</span><span class="s1">&#39;nsteps_block&#39;</span><span class="p">]))</span>
+        <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>  <span class="c1"># wait for all hosts to get to this point</span>
+        <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;Running simulation for </span><span class="si">{:.3f}</span><span class="s1"> ms with the time step </span><span class="si">{:.3f}</span><span class="s1"> ms&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tstop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">))</span>
+        <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;Starting timestep: </span><span class="si">{}</span><span class="s1"> at t_sim: </span><span class="si">{:.3f}</span><span class="s1"> ms&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tstep</span><span class="p">,</span> <span class="n">h</span><span class="o">.</span><span class="n">t</span><span class="p">))</span>
+        <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;Block save every </span><span class="si">{}</span><span class="s1"> steps&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nsteps_block</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_from_state</span><span class="p">:</span>
             <span class="n">h</span><span class="o">.</span><span class="n">continuerun</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">tstop</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">h</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">tstop</span><span class="p">)</span>        <span class="c1"># &lt;- runs simuation: works in parallel</span>
                     
-        <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span> <span class="c1">#</span>
+        <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_mods</span><span class="p">:</span>
+            <span class="n">mod</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
 
         <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
         <span class="n">sim_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__elapsed_time</span><span class="p">(</span><span class="n">end_time</span> <span class="o">-</span> <span class="n">s_time</span><span class="p">)</span>
         <span class="n">io</span><span class="o">.</span><span class="n">print2log0now</span><span class="p">(</span><span class="s1">&#39;Simulation completed in </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sim_time</span><span class="p">))</span></div>
 
-        
 <div class="viewcode-block" id="Simulation.report_load_balance"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.simulation.Simulation.report_load_balance">[docs]</a>    <span class="k">def</span> <span class="nf">report_load_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
         <span class="n">comptime</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">step_time</span><span class="p">()</span>
-        
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;comptime: &#39;</span><span class="p">,</span> <span class="n">comptime</span><span class="p">,</span><span class="n">pc</span><span class="o">.</span><span class="n">allreduce</span><span class="p">(</span><span class="n">comptime</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;comptime: &#39;</span><span class="p">,</span> <span class="n">comptime</span><span class="p">,</span> <span class="n">pc</span><span class="o">.</span><span class="n">allreduce</span><span class="p">(</span><span class="n">comptime</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
         <span class="n">avgcomp</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">allreduce</span><span class="p">(</span><span class="n">comptime</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">pc</span><span class="o">.</span><span class="n">nhost</span><span class="p">()</span>
         <span class="n">maxcomp</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">allreduce</span><span class="p">(</span><span class="n">comptime</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-        <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;Maximum compute time is </span><span class="si">%g</span><span class="s1"> seconds.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">maxcomp</span><span class="p">))</span>
-        <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;Approximate exchange time is </span><span class="si">%g</span><span class="s1"> seconds.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">comptime</span> <span class="o">-</span> <span class="n">maxcomp</span><span class="p">))</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">maxcomp</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">):</span>
-            <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;Load balance is </span><span class="si">%g</span><span class="s1">.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">avgcomp</span><span class="o">/</span><span class="n">maxcomp</span><span class="p">))</span></div>
+        <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;Maximum compute time is </span><span class="si">{}</span><span class="s1"> seconds.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">maxcomp</span><span class="p">))</span>
+        <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;Approximate exchange time is </span><span class="si">{}</span><span class="s1"> seconds.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comptime</span> <span class="o">-</span> <span class="n">maxcomp</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">maxcomp</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;Load balance is </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">avgcomp</span><span class="o">/</span><span class="n">maxcomp</span><span class="p">))</span></div>
 
-
-        
 <div class="viewcode-block" id="Simulation.post_fadvance"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.simulation.Simulation.post_fadvance">[docs]</a>    <span class="k">def</span> <span class="nf">post_fadvance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
-        <span class="sd">&#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs after every execution of fadvance (see advance.hoc)</span>
 <span class="sd">        Called after every time step to perform computation and save data to memory block or to disk.</span>
 <span class="sd">        The initial condition tstep=0 is not being saved </span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tstep</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">tstep_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tstep</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">tstep_start_block</span>  <span class="c1"># time step within a block</span>
 
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_mods</span><span class="p">:</span>
+            <span class="n">mod</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tstep</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">tstep</span><span class="o">+=</span><span class="mi">1</span>
-
-        <span class="n">tstep_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tstep</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">tstep_start_block</span> <span class="c1"># time step within a block   </span>
-            
-        <span class="bp">self</span><span class="o">.</span><span class="n">save_data_to_block</span><span class="p">(</span><span class="n">tstep_block</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tstep</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">][</span><span class="s2">&quot;nsteps_block&quot;</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">tstep</span><span class="o">==</span><span class="bp">self</span><span class="o">.</span><span class="n">nsteps</span><span class="p">:</span> 
-
-            <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;    step:</span><span class="si">%d</span><span class="s1"> t_sim:</span><span class="si">%.3f</span><span class="s1"> ms&#39;</span> <span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tstep</span><span class="p">,</span><span class="n">h</span><span class="o">.</span><span class="n">t</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tstep_end_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tstep</span>
+        <span class="c1"># self.save_data_to_block(tstep_block)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tstep</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">nsteps_block</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">tstep</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">nsteps</span><span class="p">:</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;    step:</span><span class="si">%d</span><span class="s1"> t_sim:</span><span class="si">%.3f</span><span class="s1"> ms&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tstep</span><span class="p">,</span> <span class="n">h</span><span class="o">.</span><span class="n">t</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__tstep_end_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tstep</span>
            
-            <span class="n">time_step_interval</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tstep_start_block</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">tstep_end_block</span><span class="p">)</span>
-            <span class="n">io</span><span class="o">.</span><span class="n">save_block_to_disk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">data_block</span><span class="p">,</span><span class="n">time_step_interval</span><span class="p">)</span>  <span class="c1"># block save data</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_spike_recording</span><span class="p">()</span>
+            <span class="n">time_step_interval</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__tstep_start_block</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tstep_end_block</span><span class="p">)</span>
+            <span class="c1"># io.save_block_to_disk(self.conf, self.data_block, time_step_interval)  # block save data</span>
+            <span class="c1"># self.set_spike_recording()</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">tstep_start_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tstep</span>   <span class="c1"># starting point for the next block</span></div>
+            <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_mods</span><span class="p">:</span>
+                <span class="n">mod</span><span class="o">.</span><span class="n">block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_step_interval</span><span class="p">)</span>
 
-<span class="c1">#            if self.conf[&quot;run&quot;][&quot;save_state&quot;]:    </span>
-<span class="c1">#                io.save_state()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__tstep_start_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tstep</span>   <span class="c1"># starting point for the next block</span></div>
 
+<div class="viewcode-block" id="Simulation.from_config"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.simulation.Simulation.from_config">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">set_recordings</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">sim</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">network</span><span class="o">=</span><span class="n">network</span><span class="p">,</span>
+                  <span class="n">dt</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">][</span><span class="s1">&#39;dt&#39;</span><span class="p">],</span>
+                  <span class="n">tstop</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">][</span><span class="s1">&#39;tstop&#39;</span><span class="p">],</span>
+                  <span class="n">v_init</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;conditions&#39;</span><span class="p">][</span><span class="s1">&#39;v_init&#39;</span><span class="p">],</span>
+                  <span class="n">celsius</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;conditions&#39;</span><span class="p">][</span><span class="s1">&#39;celsius&#39;</span><span class="p">],</span>
+                  <span class="n">nsteps_block</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">][</span><span class="s1">&#39;nsteps_block&#39;</span><span class="p">])</span>
 
+        <span class="k">if</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">][</span><span class="s1">&#39;save_cell_vars&#39;</span><span class="p">]:</span>
+            <span class="c1"># Initialize save biophysical cell variables</span>
+            <span class="n">cell_vars</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">][</span><span class="s1">&#39;save_cell_vars&#39;</span><span class="p">]</span>
+            <span class="n">cell_vars_output</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;cell_vars_dir&#39;</span><span class="p">]</span>
+            <span class="n">cellvars_mod</span> <span class="o">=</span> <span class="n">mods</span><span class="o">.</span><span class="n">CellVarsMod</span><span class="p">(</span><span class="n">outputdir</span><span class="o">=</span><span class="n">cell_vars_output</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="n">cell_vars</span><span class="p">)</span>
+            <span class="n">sim</span><span class="o">.</span><span class="n">add_mod</span><span class="p">(</span><span class="n">cellvars_mod</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">set_recordings</span><span class="p">:</span>
+            <span class="n">config_output</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">]</span>
+            <span class="n">output_dir</span> <span class="o">=</span> <span class="n">config_output</span><span class="p">[</span><span class="s1">&#39;output_dir&#39;</span><span class="p">]</span>
 
+            <span class="c1"># Recording spikes</span>
+            <span class="n">spikes_csv_file</span> <span class="o">=</span> <span class="n">config_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_ascii_file&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">spikes_h5_file</span> <span class="o">=</span> <span class="n">config_output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_hdf5_file&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">spikes_csv_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">spikes_h5_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">spikes_mod</span> <span class="o">=</span> <span class="n">mods</span><span class="o">.</span><span class="n">SpikesMod</span><span class="p">(</span><span class="n">tmpdir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">,</span><span class="n">csv_filename</span><span class="o">=</span><span class="n">spikes_csv_file</span><span class="p">,</span> <span class="n">h5_filename</span><span class="o">=</span><span class="n">spikes_h5_file</span><span class="p">)</span>
+                <span class="n">sim</span><span class="o">.</span><span class="n">add_mod</span><span class="p">(</span><span class="n">spikes_mod</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Simulation.save_data_to_block"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.simulation.Simulation.save_data_to_block">[docs]</a>    <span class="k">def</span> <span class="nf">save_data_to_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">tstep_block</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Compute data and save to a memory block</span>
-<span class="sd">            </span>
-<span class="sd">        &#39;&#39;&#39;</span>
+            <span class="c1"># recording extracell field potential</span>
+            <span class="k">if</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">][</span><span class="s1">&#39;calc_ecp&#39;</span><span class="p">]:</span>
+                <span class="n">ecp_mod</span> <span class="o">=</span> <span class="n">mods</span><span class="o">.</span><span class="n">EcpMod</span><span class="p">(</span><span class="n">ecp_file</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;ecp_file&#39;</span><span class="p">],</span>
+                                      <span class="n">positions_file</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;recXelectrode&#39;</span><span class="p">][</span><span class="s1">&#39;positions&#39;</span><span class="p">],</span>
+                                      <span class="n">tmp_outputdir</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;output_dir&#39;</span><span class="p">])</span>
+                <span class="n">sim</span><span class="o">.</span><span class="n">add_mod</span><span class="p">(</span><span class="n">ecp_mod</span><span class="p">)</span>
+            <span class="n">sim</span><span class="o">.</span><span class="n">set_recordings</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">data_block</span><span class="p">[</span><span class="s2">&quot;tsave&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">t</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;input&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">input_dict</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;input&#39;</span><span class="p">]:</span>
+                <span class="n">in_type</span> <span class="o">=</span> <span class="n">input_dict</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">in_type</span> <span class="o">==</span> <span class="s1">&#39;iclamp&#39;</span><span class="p">:</span>
+                    <span class="n">amplitude</span> <span class="o">=</span> <span class="n">input_dict</span><span class="p">[</span><span class="s1">&#39;amp&#39;</span><span class="p">]</span>
+                    <span class="n">delay</span> <span class="o">=</span> <span class="n">input_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;del&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+                    <span class="n">duration</span> <span class="o">=</span> <span class="n">input_dict</span><span class="p">[</span><span class="s1">&#39;dur&#39;</span><span class="p">]</span>
+                    <span class="n">gids</span> <span class="o">=</span> <span class="n">input_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;gids&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="n">sim</span><span class="o">.</span><span class="n">attach_current_clamp</span><span class="p">(</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">gids</span><span class="p">)</span>
 
-<span class="c1">#    compute and save the ECP         </span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="s2">&quot;run&quot;</span><span class="p">][</span><span class="s2">&quot;calc_ecp&quot;</span><span class="p">]:</span>
- 
-            <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gids</span><span class="p">[</span><span class="s1">&#39;biophysical&#39;</span><span class="p">]:</span> <span class="c1"># compute ecp only from the biophysical cells</span>
-                 
-                <span class="n">cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">cells</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span>    
-                <span class="n">im</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_im</span><span class="p">()</span>
-                <span class="n">tr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rel</span><span class="o">.</span><span class="n">get_transfer_resistance</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span>
-                <span class="n">ecp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">tr</span><span class="p">,</span><span class="n">im</span><span class="p">)</span>
-     
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">][</span><span class="s1">&#39;save_cell_vars&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gids</span><span class="p">[</span><span class="s1">&#39;save_cell_vars&#39;</span><span class="p">]</span> <span class="p">:</span>
-                    <span class="n">cell_data_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_block</span><span class="p">[</span><span class="s1">&#39;cells&#39;</span><span class="p">][</span><span class="n">gid</span><span class="p">]</span> 
-                    <span class="n">cell_data_block</span><span class="p">[</span><span class="s1">&#39;ecp&#39;</span><span class="p">][</span><span class="n">tstep_block</span><span class="o">-</span><span class="mi">1</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">ecp</span>
-      
-                <span class="bp">self</span><span class="o">.</span><span class="n">data_block</span><span class="p">[</span><span class="s1">&#39;ecp&#39;</span><span class="p">][</span><span class="n">tstep_block</span><span class="o">-</span><span class="mi">1</span><span class="p">,:]</span> <span class="o">+=</span> <span class="n">ecp</span>
-
-<span class="c1">#    save to block the intracellular variables</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">][</span><span class="s1">&#39;save_cell_vars&#39;</span><span class="p">]:</span>
-            <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gids</span><span class="p">[</span><span class="s1">&#39;save_cell_vars&#39;</span><span class="p">])</span><span class="o">&amp;</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gids</span><span class="p">[</span><span class="s1">&#39;biophysical&#39;</span><span class="p">])):</span>
-                 
-                <span class="n">cell_data_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_block</span><span class="p">[</span><span class="s1">&#39;cells&#39;</span><span class="p">][</span><span class="n">gid</span><span class="p">]</span> 
-                <span class="n">cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">cells</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span> 
-
-                <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">conf</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">][</span><span class="s1">&#39;save_cell_vars&#39;</span><span class="p">]:</span>
-                    <span class="n">cell_data_block</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="n">tstep_block</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">soma</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="mf">0.5</span><span class="p">),</span><span class="n">var</span><span class="p">)</span>   <span class="c1"># subtract 1 because indexes start at 0 while the time step starts at 1</span></div></div>
-
+        <span class="k">return</span> <span class="n">sim</span></div></div>
 </pre></div>
 
           </div>

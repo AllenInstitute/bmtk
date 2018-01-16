@@ -690,19 +690,31 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">clear</span></code>()</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">edges</span></code>([targets,&nbsp;sources])</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">edges</span></code>([target_nodes,&nbsp;source_nodes,&nbsp;…])</td>
+<td>Returns a list of dictionary-like Edge objects, given filter parameters.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.builder.networks.dm_network.DenseNetwork.edges_iter" title="bmtk.builder.networks.dm_network.DenseNetwork.edges_iter"><code class="xref py py-obj docutils literal"><span class="pre">edges_iter</span></code></a>(trg_gids[,&nbsp;src_network,&nbsp;trg_network])</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.builder.networks.dm_network.DenseNetwork.import_nodes" title="bmtk.builder.networks.dm_network.DenseNetwork.import_nodes"><code class="xref py py-obj docutils literal"><span class="pre">import_nodes</span></code></a>(nodes_file_name,&nbsp;…)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.builder.networks.dm_network.DenseNetwork.edges_table" title="bmtk.builder.networks.dm_network.DenseNetwork.edges_table"><code class="xref py py-obj docutils literal"><span class="pre">edges_table</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">nodes</span></code>(**properties)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_connections</span></code>()</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.builder.networks.dm_network.DenseNetwork.save_edges" title="bmtk.builder.networks.dm_network.DenseNetwork.save_edges"><code class="xref py py-obj docutils literal"><span class="pre">save_edges</span></code></a>(edges_file_name,&nbsp;edge_types_file_name)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.builder.networks.dm_network.DenseNetwork.import_nodes" title="bmtk.builder.networks.dm_network.DenseNetwork.import_nodes"><code class="xref py py-obj docutils literal"><span class="pre">import_nodes</span></code></a>(nodes_file_name,&nbsp;…)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.builder.networks.dm_network.DenseNetwork.save_nodes" title="bmtk.builder.networks.dm_network.DenseNetwork.save_nodes"><code class="xref py py-obj docutils literal"><span class="pre">save_nodes</span></code></a>(nodes_file_name,&nbsp;node_types_file_name)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">nodes</span></code>(**properties)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.builder.networks.dm_network.DenseNetwork.nodes_iter" title="bmtk.builder.networks.dm_network.DenseNetwork.nodes_iter"><code class="xref py py-obj docutils literal"><span class="pre">nodes_iter</span></code></a>([node_ids])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">save_edges</span></code>([edges_file_name,&nbsp;…])</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">save_nodes</span></code>([nodes_file_name,&nbsp;…])</td>
 <td></td>
 </tr>
 </tbody>
@@ -795,6 +807,16 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </dd></dl>
 
 <dl class="method">
+<dt id="bmtk.builder.networks.dm_network.DenseNetwork.edges_iter">
+<code class="descname">edges_iter</code><span class="sig-paren">(</span><em>trg_gids</em>, <em>src_network=None</em>, <em>trg_network=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/builder/networks/dm_network.html#DenseNetwork.edges_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.dm_network.DenseNetwork.edges_iter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.networks.dm_network.DenseNetwork.edges_table">
+<code class="descname">edges_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/builder/networks/dm_network.html#DenseNetwork.edges_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.dm_network.DenseNetwork.edges_table" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="bmtk.builder.networks.dm_network.DenseNetwork.import_nodes">
 <code class="descname">import_nodes</code><span class="sig-paren">(</span><em>nodes_file_name</em>, <em>node_types_file_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/builder/networks/dm_network.html#DenseNetwork.import_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.dm_network.DenseNetwork.import_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -810,13 +832,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="bmtk.builder.networks.dm_network.DenseNetwork.save_edges">
-<code class="descname">save_edges</code><span class="sig-paren">(</span><em>edges_file_name</em>, <em>edge_types_file_name</em>, <em>src_network=None</em>, <em>trg_network=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/builder/networks/dm_network.html#DenseNetwork.save_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.dm_network.DenseNetwork.save_edges" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="bmtk.builder.networks.dm_network.DenseNetwork.save_nodes">
-<code class="descname">save_nodes</code><span class="sig-paren">(</span><em>nodes_file_name</em>, <em>node_types_file_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/builder/networks/dm_network.html#DenseNetwork.save_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.dm_network.DenseNetwork.save_nodes" title="Permalink to this definition">¶</a></dt>
+<dt id="bmtk.builder.networks.dm_network.DenseNetwork.nodes_iter">
+<code class="descname">nodes_iter</code><span class="sig-paren">(</span><em>node_ids=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/builder/networks/dm_network.html#DenseNetwork.nodes_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.dm_network.DenseNetwork.nodes_iter" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -824,6 +841,105 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div>
 <div class="section" id="module-bmtk.builder.networks.input_network">
 <span id="bmtk-builder-networks-input-network-module"></span><h2>bmtk.builder.networks.input_network module<a class="headerlink" href="#module-bmtk.builder.networks.input_network" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-bmtk.builder.networks.mpi_network">
+<span id="bmtk-builder-networks-mpi-network-module"></span><h2>bmtk.builder.networks.mpi_network module<a class="headerlink" href="#module-bmtk.builder.networks.mpi_network" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.builder.networks.mpi_network.MPINetwork">
+<em class="property">class </em><code class="descclassname">bmtk.builder.networks.mpi_network.</code><code class="descname">MPINetwork</code><span class="sig-paren">(</span><em>name</em>, <em>**network_props</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/builder/networks/mpi_network.html#MPINetwork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.mpi_network.MPINetwork" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.builder.networks.dm_network.DenseNetwork" title="bmtk.builder.networks.dm_network.DenseNetwork"><code class="xref py py-class docutils literal"><span class="pre">bmtk.builder.networks.dm_network.DenseNetwork</span></code></a></p>
+<p class="rubric">Attributes</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">edges_built</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">name</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">nedges</span></code></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">nnodes</span></code></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">nodes_built</span></code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">EdgeTable</span></code>(connection_map)</td>
+<td><p class="rubric">Attributes</p>
+</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">PropertyTable</span></code>(nvalues)</td>
+<td><p class="rubric">Methods</p>
+</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">add_edges</span></code>([source,&nbsp;target,&nbsp;connection_rule,&nbsp;…])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">add_nodes</span></code>([N])</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">build</span></code>([force])</td>
+<td>Builds nodes (assigns gids) and edges.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">clear</span></code>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">edges</span></code>([target_nodes,&nbsp;source_nodes,&nbsp;…])</td>
+<td>Returns a list of dictionary-like Edge objects, given filter parameters.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.builder.networks.mpi_network.MPINetwork.edges_iter" title="bmtk.builder.networks.mpi_network.MPINetwork.edges_iter"><code class="xref py py-obj docutils literal"><span class="pre">edges_iter</span></code></a>(trg_gids[,&nbsp;src_network,&nbsp;trg_network])</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">edges_table</span></code>()</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">get_connections</span></code>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">import_nodes</span></code>(nodes_file_name,&nbsp;…)</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">nodes</span></code>(**properties)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">nodes_iter</span></code>([node_ids])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">save_edges</span></code>([edges_file_name,&nbsp;…])</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.builder.networks.mpi_network.MPINetwork.save_nodes" title="bmtk.builder.networks.mpi_network.MPINetwork.save_nodes"><code class="xref py py-obj docutils literal"><span class="pre">save_nodes</span></code></a>(nodes_file_name,&nbsp;node_types_file_name)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="bmtk.builder.networks.mpi_network.MPINetwork.edges_iter">
+<code class="descname">edges_iter</code><span class="sig-paren">(</span><em>trg_gids</em>, <em>src_network=None</em>, <em>trg_network=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/builder/networks/mpi_network.html#MPINetwork.edges_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.mpi_network.MPINetwork.edges_iter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.networks.mpi_network.MPINetwork.save_nodes">
+<code class="descname">save_nodes</code><span class="sig-paren">(</span><em>nodes_file_name</em>, <em>node_types_file_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/builder/networks/mpi_network.html#MPINetwork.save_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.mpi_network.MPINetwork.save_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="bmtk-builder-networks-nxnetwork-module">
 <h2>bmtk.builder.networks.nxnetwork module<a class="headerlink" href="#bmtk-builder-networks-nxnetwork-module" title="Permalink to this headline">¶</a></h2>
@@ -877,7 +993,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">clear</span></code>()</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">edges</span></code>([targets,&nbsp;sources])</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">edges</span></code>([target_nodes,&nbsp;source_nodes,&nbsp;…])</td>
+<td>Returns a list of dictionary-like Edge objects, given filter parameters.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">edges_iter</span></code>(trg_gids[,&nbsp;src_network,&nbsp;trg_network])</td>
+<td>Given a list of target gids, returns a generator for iteratoring over all possible edges.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">get_connections</span></code>()</td>
 <td></td>
 </tr>
 <tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">import_nodes</span></code>(nodes_file_name,&nbsp;…)</td>
@@ -886,10 +1008,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">nodes</span></code>(**properties)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">save_edges</span></code>(edges_file_name,&nbsp;edge_types_file_name)</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">nodes_iter</span></code>([nids])</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">save_nodes</span></code>(nodes_file_name,&nbsp;node_types_file_name)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">save_edges</span></code>([edges_file_name,&nbsp;…])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">save_nodes</span></code>([nodes_file_name,&nbsp;…])</td>
 <td></td>
 </tr>
 </tbody>

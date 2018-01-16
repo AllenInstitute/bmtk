@@ -655,16 +655,18 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</span>
 <span class="c1"># OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c1">#</span>
-<span class="kn">from</span> <span class="nn">..network</span> <span class="k">import</span> <span class="n">Network</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">h5py</span>
 <span class="kn">import</span> <span class="nn">csv</span>
 
+<span class="kn">from</span> <span class="nn">..network</span> <span class="k">import</span> <span class="n">Network</span>
 <span class="kn">from</span> <span class="nn">bmtk.utils.io</span> <span class="k">import</span> <span class="n">TabularNetwork</span>
 <span class="kn">from</span> <span class="nn">bmtk.builder.node</span> <span class="k">import</span> <span class="n">Node</span>
+<span class="kn">from</span> <span class="nn">bmtk.builder.edge</span> <span class="k">import</span> <span class="n">Edge</span>
+
 
 <div class="viewcode-block" id="DenseNetwork"><a class="viewcode-back" href="../../../../bmtk.builder.networks.html#bmtk.builder.networks.dm_network.DenseNetwork">[docs]</a><span class="k">class</span> <span class="nc">DenseNetwork</span><span class="p">(</span><span class="n">Network</span><span class="p">):</span>
-
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">network_props</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">DenseNetwork</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">network_props</span> <span class="ow">or</span> <span class="p">{})</span>
 
@@ -676,18 +678,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__edges_tables</span> <span class="o">=</span> <span class="p">[]</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">_target_networks</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">def</span> <span class="nf">_initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__id_map</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="c1"># self.__nodes = []</span>
-
-        <span class="c1">#self.__networks = {}</span>
-        <span class="c1">#self.__node_count = 0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__lookup</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="c1">#self.__edges = None</span>
-        <span class="c1">#self.__edges = np.zeros((0,0), dtype=np.uint8)</span>
-
 
     <span class="k">def</span> <span class="nf">_add_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
@@ -704,20 +699,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">        assert(len(self.__id_map) == len(self.__nodes))</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-    <span class="c1"># def _save_nodes(self, nodes_file_name, node_types_file_name):</span>
-<div class="viewcode-block" id="DenseNetwork.save_nodes"><a class="viewcode-back" href="../../../../bmtk.builder.networks.html#bmtk.builder.networks.dm_network.DenseNetwork.save_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">save_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes_file_name</span><span class="p">,</span> <span class="n">node_types_file_name</span><span class="p">):</span>
+<div class="viewcode-block" id="DenseNetwork.edges_table"><a class="viewcode-back" href="../../../../bmtk.builder.networks.html#bmtk.builder.networks.dm_network.DenseNetwork.edges_table">[docs]</a>    <span class="k">def</span> <span class="nf">edges_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__edges_tables</span></div>
+
+    <span class="k">def</span> <span class="nf">_save_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes_file_name</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes_built</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_build_nodes</span><span class="p">()</span>
 
         <span class="c1"># save the node_types file</span>
         <span class="c1"># TODO: how do we add attributes to the h5</span>
-        <span class="n">node_types_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_types_columns</span> <span class="k">if</span> <span class="n">col</span> <span class="o">!=</span> <span class="s1">&#39;node_type_id&#39;</span><span class="p">]</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">node_types_file_name</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
-            <span class="n">csvw</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
-            <span class="n">csvw</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">node_types_cols</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">node_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_types_properties</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                <span class="n">csvw</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="n">node_type</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cname</span><span class="p">,</span> <span class="s1">&#39;NULL&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">cname</span> <span class="ow">in</span> <span class="n">node_types_cols</span><span class="p">])</span>
-
         <span class="n">group_indx</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">groups_lookup</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">group_indicies</span> <span class="o">=</span> <span class="p">{}</span>
@@ -737,7 +727,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">node_group_index_tables</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nnodes</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">()):</span>
-            <span class="c1">#print node.node_id, node.node_type_id</span>
             <span class="n">node_gid_table</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">node_id</span>
             <span class="n">node_type_id_table</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">node_type_id</span>
             <span class="n">group_id</span> <span class="o">=</span> <span class="n">groups_lookup</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">params_hash</span><span class="p">]</span>
@@ -751,38 +740,32 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">nodes_file_name</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">hf</span><span class="p">:</span>
             <span class="n">hf</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;nodes/node_gid&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">node_gid_table</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;uint64&#39;</span><span class="p">)</span>
+            <span class="n">hf</span><span class="p">[</span><span class="s1">&#39;nodes/node_gid&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
             <span class="n">hf</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;nodes/node_type_id&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">node_type_id_table</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;uint64&#39;</span><span class="p">)</span>
             <span class="n">hf</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;nodes/node_group&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">node_group_table</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;uint32&#39;</span><span class="p">)</span>
             <span class="n">hf</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;nodes/node_group_index&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">node_group_index_tables</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;uint64&#39;</span><span class="p">)</span>
 
+
             <span class="k">for</span> <span class="n">grp_id</span><span class="p">,</span> <span class="n">props</span> <span class="ow">in</span> <span class="n">group_props</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="c1">#if len(props.items()) == 0:</span>
+                <span class="n">hf</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s1">&#39;nodes/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">grp_id</span><span class="p">))</span>
+
                 <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="n">props</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="n">ds_path</span> <span class="o">=</span> <span class="s1">&#39;nodes/</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">grp_id</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="n">hf</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">ds_path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">dataset</span><span class="p">)</span>
                     <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
                         <span class="n">str_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">]</span>
-                        <span class="n">hf</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">ds_path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">str_list</span><span class="p">)</span></div>
+                        <span class="n">hf</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">ds_path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">str_list</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_nodes_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="c1">#print self._nodes</span>
-        <span class="c1">#exit()</span>
-
+<div class="viewcode-block" id="DenseNetwork.nodes_iter"><a class="viewcode-back" href="../../../../bmtk.builder.networks.html#bmtk.builder.networks.dm_network.DenseNetwork.nodes_iter">[docs]</a>    <span class="k">def</span> <span class="nf">nodes_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">node_ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span> <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">node_id</span> <span class="ow">in</span> <span class="n">node_ids</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span>
-
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span></div>
 
     <span class="k">def</span> <span class="nf">_process_nodepool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodepool</span><span class="p">):</span>
-        <span class="c1">#if nodepool.network not in self.__networks:</span>
-        <span class="c1">#    offset = self.__node_count</span>
-        <span class="c1">#    self.__node_count += len(nodepool.network.nodes())</span>
-        <span class="c1">#    self.__networks[nodepool.network] = offset</span>
-        <span class="c1">#    self.__edges = np.zeros((self.__node_count, self.__node_count), dtype=np.uint8)</span>
-        <span class="c1">#    self.__lookup += [n[1][&#39;id&#39;] for n in nodepool.network.nodes()]</span>
         <span class="k">return</span> <span class="n">nodepool</span>
-
 
 <div class="viewcode-block" id="DenseNetwork.import_nodes"><a class="viewcode-back" href="../../../../bmtk.builder.networks.html#bmtk.builder.networks.dm_network.DenseNetwork.import_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">import_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes_file_name</span><span class="p">,</span> <span class="n">node_types_file_name</span><span class="p">):</span>
         <span class="n">nodes_network</span> <span class="o">=</span> <span class="n">TabularNetwork</span><span class="o">.</span><span class="n">load_nodes</span><span class="p">(</span><span class="n">nodes_file</span><span class="o">=</span><span class="n">nodes_file_name</span><span class="p">,</span> <span class="n">node_types_file</span><span class="o">=</span><span class="n">node_types_file_name</span><span class="p">)</span>
@@ -794,13 +777,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_gen</span><span class="o">.</span><span class="n">remove_id</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">gid</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Node</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">gid</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">node_props</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">node_type_props</span><span class="p">))</span></div>
 
-
-    <span class="k">def</span> <span class="nf">_add_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection_map</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_add_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection_map</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
         <span class="n">syn_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">EdgeTable</span><span class="p">(</span><span class="n">connection_map</span><span class="p">)</span>
         <span class="n">connections</span> <span class="o">=</span> <span class="n">connection_map</span><span class="o">.</span><span class="n">connection_itr</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">con</span> <span class="ow">in</span> <span class="n">connections</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">con</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">syn_table</span><span class="p">[</span><span class="n">con</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">con</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">con</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="n">target_net</span> <span class="o">=</span> <span class="n">connection_map</span><span class="o">.</span><span class="n">target_nodes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_target_networks</span><span class="p">[</span><span class="n">target_net</span><span class="o">.</span><span class="n">network_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">target_net</span><span class="o">.</span><span class="n">network</span>
 
         <span class="n">nsyns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">syn_table</span><span class="o">.</span><span class="n">nsyn_table</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nedges</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nsyns</span><span class="p">)</span>
@@ -815,14 +800,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                       <span class="s1">&#39;source_query&#39;</span><span class="p">:</span> <span class="n">connection_map</span><span class="o">.</span><span class="n">source_nodes</span><span class="o">.</span><span class="n">filter_str</span><span class="p">,</span>
                       <span class="s1">&#39;target_query&#39;</span><span class="p">:</span> <span class="n">connection_map</span><span class="o">.</span><span class="n">target_nodes</span><span class="o">.</span><span class="n">filter_str</span><span class="p">}</span>
 
-        <span class="c1">#params = {}</span>
+
         <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">connection_map</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
             <span class="n">rule</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">rule</span>
             <span class="n">param_names</span> <span class="o">=</span> <span class="n">param</span><span class="o">.</span><span class="n">names</span>
             <span class="n">edge_table</span><span class="p">[</span><span class="s1">&#39;params_dtypes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">dtypes</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param_names</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param_names</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-                <span class="c1">#print &#39;HERE&#39;</span>
-                <span class="c1">#print nsyns</span>
                 <span class="n">tmp_tables</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">PropertyTable</span><span class="p">(</span><span class="n">nsyns</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">param_names</span><span class="p">))]</span>
                 <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">connection_map</span><span class="o">.</span><span class="n">source_nodes</span><span class="p">:</span>
                     <span class="n">src_node_id</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">node_id</span>
@@ -837,8 +820,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                     <span class="c1"># TODO: I think a copy constructor might get called, move this out.</span>
                     <span class="n">edge_table</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">][</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_tables</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
 
-                <span class="c1">#print len(tmp_tables[0]._prop_array)</span>
-                <span class="c1">#print &#39;done&#39;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">pt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PropertyTable</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">nsyns</span><span class="p">))</span>
                 <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">connection_map</span><span class="o">.</span><span class="n">source_nodes</span><span class="p">:</span>
@@ -851,45 +832,18 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="n">edge_table</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">][</span><span class="n">param_names</span><span class="p">]</span> <span class="o">=</span> <span class="n">pt</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__edges_tables</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge_table</span><span class="p">)</span>
-        <span class="c1">#print edge_table[&#39;params_dtypes&#39;]</span>
-        <span class="c1">#print self.__edges_tables[0][&#39;params&#39;][&#39;distance&#39;]</span>
-        <span class="c1">#exit()</span>
 
-
-<div class="viewcode-block" id="DenseNetwork.save_edges"><a class="viewcode-back" href="../../../../bmtk.builder.networks.html#bmtk.builder.networks.dm_network.DenseNetwork.save_edges">[docs]</a>    <span class="k">def</span> <span class="nf">save_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edges_file_name</span><span class="p">,</span> <span class="n">edge_types_file_name</span><span class="p">,</span> <span class="n">src_network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trg_network</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># def save_edges(self, edges_file_name, edge_types_file_name):</span>
-        <span class="c1">#print self.__edges_tables</span>
-
-        <span class="c1">#groups = []</span>
-
-        <span class="c1"># TODO: needs to handle cases for inter-network connections</span>
-        <span class="c1">#print self._edge_type_properties</span>
-
-        <span class="n">src_network</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__edges_tables</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;source_network&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
-        <span class="n">trg_network</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__edges_tables</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;target_network&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
-        <span class="c1"># print src_network</span>
-        <span class="c1"># print trg_network</span>
-
-        <span class="c1"># Create edge-type file</span>
-
-
-        <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">,</span> <span class="s1">&#39;target_query&#39;</span><span class="p">,</span> <span class="s1">&#39;source_query&#39;</span><span class="p">]</span>
-        <span class="n">cols</span> <span class="o">+=</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_types_columns</span> <span class="k">if</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">]</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">edge_types_file_name</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
-            <span class="n">csvw</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
-            <span class="n">csvw</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">edge_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_properties</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                <span class="n">csvw</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="n">edge_type</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cname</span><span class="p">,</span> <span class="s1">&#39;NULL&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">cname</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">])</span>
-
+    <span class="k">def</span> <span class="nf">_save_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edges_file_name</span><span class="p">,</span> <span class="n">src_network</span><span class="p">,</span> <span class="n">trg_network</span><span class="p">):</span>
         <span class="n">groups</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">group_dtypes</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># TODO: this should be stored in PropertyTable</span>
-
         <span class="n">grp_id_itr</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">groups_lookup</span> <span class="o">=</span> <span class="p">{}</span>
-
-        <span class="c1">#grp_id = 0</span>
         <span class="n">total_syns</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">ets</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__edges_tables</span><span class="p">:</span>
+
+        <span class="n">matching_edge_tables</span> <span class="o">=</span> <span class="p">[</span><span class="n">et</span> <span class="k">for</span> <span class="n">et</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__edges_tables</span>
+                                <span class="k">if</span> <span class="n">et</span><span class="p">[</span><span class="s1">&#39;source_network&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">src_network</span> <span class="ow">and</span> <span class="n">et</span><span class="p">[</span><span class="s1">&#39;target_network&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">trg_network</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">ets</span> <span class="ow">in</span> <span class="n">matching_edge_tables</span><span class="p">:</span>
             <span class="n">params_hash</span> <span class="o">=</span>  <span class="nb">str</span><span class="p">(</span><span class="n">ets</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
             <span class="n">group_id</span> <span class="o">=</span> <span class="n">groups_lookup</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">params_hash</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">group_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -903,14 +857,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">for</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="n">ets</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="n">groups</span><span class="p">[</span><span class="n">group_id</span><span class="p">][</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
-            <span class="c1"># grp_id += 1</span>
             <span class="n">total_syns</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ets</span><span class="p">[</span><span class="s1">&#39;nsyns&#39;</span><span class="p">])</span>
 
         <span class="n">group_index_itrs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">grp_id_itr</span><span class="p">)]</span>
-        <span class="c1">#print group_index_itrs</span>
-        <span class="c1">#total_syns = int(total_syns)</span>
-        <span class="c1"># TODO: merge group that have the same properties.</span>
-
         <span class="n">trg_gids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">total_syns</span><span class="p">)</span>  <span class="c1"># set dtype to uint64</span>
         <span class="n">src_gids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">total_syns</span><span class="p">)</span>
         <span class="n">edge_groups</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">total_syns</span><span class="p">)</span>  <span class="c1"># dtype uint16 or uint8</span>
@@ -918,44 +867,16 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">edge_type_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">total_syns</span><span class="p">)</span>  <span class="c1"># uint32</span>
 
         <span class="c1"># TODO: Another potential issue if node-ids don&#39;t start with 0</span>
-        <span class="n">index_ptrs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># TODO: issue when target nodes come from another network</span>
+        <span class="n">index_ptrs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_target_networks</span><span class="p">[</span><span class="n">trg_network</span><span class="p">]</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1">#index_ptrs = np.zeros(len(self._nodes)+1)  # TODO: issue when target nodes come from another network</span>
         <span class="n">index_ptr_itr</span> <span class="o">=</span> <span class="mi">0</span>
 
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        distance_table = ets[&#39;params&#39;][&#39;distance&#39;]</span>
-<span class="sd">        print len(distance_table._prop_array)</span>
-<span class="sd">        print len(distance_table._index)</span>
-<span class="sd">        print distance_table._index</span>
-<span class="sd">        # self._prop_array = np.zeros(nvalues)</span>
-<span class="sd">        # self._prop_table = np.zeros((nvalues, 1))  # TODO: set dtype</span>
-<span class="sd">        # self._index = np.zeros((nvalues, 2), dtype=np.uint8)</span>
-<span class="sd">        exit()</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="c1">#print groups</span>
-        <span class="c1">#exit()</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        for trg_node in self._nodes:</span>
-<span class="sd">            ets = self.__edges_tables[0]</span>
-<span class="sd">            distance_table = ets[&#39;params&#39;][&#39;distance&#39;]</span>
-<span class="sd">            #print distance_table</span>
-<span class="sd">            syn_table = ets[&#39;syn_table&#39;]</span>
-<span class="sd">            if syn_table.has_target(trg_node.node_id):</span>
-<span class="sd">                for src_id, nsyns in syn_table.trg_itr(trg_node.node_id):</span>
-
-<span class="sd">                    for v in distance_table.itr_vals(src_id, trg_node.node_id):</span>
-<span class="sd">                        print &#39;{} --&gt; {} ({})&#39;.format(src_id, trg_node.node_id, v)</span>
-
-<span class="sd">        print self.__edges_tables[0][&#39;params&#39;][&#39;distance&#39;]</span>
-<span class="sd">        exit()</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="n">gid_indx</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">trg_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="p">:</span>  <span class="c1"># TODO: need to order from 0 to N</span>
+        <span class="k">for</span> <span class="n">trg_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target_networks</span><span class="p">[</span><span class="n">trg_network</span><span class="p">]</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
             <span class="n">index_ptrs</span><span class="p">[</span><span class="n">index_ptr_itr</span><span class="p">]</span> <span class="o">=</span> <span class="n">gid_indx</span>
             <span class="n">index_ptr_itr</span> <span class="o">+=</span> <span class="mi">1</span>
 
-            <span class="k">for</span> <span class="n">ets</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__edges_tables</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ets</span> <span class="ow">in</span> <span class="n">matching_edge_tables</span><span class="p">:</span>
                 <span class="n">edge_group_id</span> <span class="o">=</span> <span class="n">ets</span><span class="p">[</span><span class="s1">&#39;group_id&#39;</span><span class="p">]</span>
                 <span class="n">group_table</span> <span class="o">=</span> <span class="n">groups</span><span class="p">[</span><span class="n">edge_group_id</span><span class="p">]</span>
 
@@ -975,22 +896,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                                 <span class="n">gid_indx</span> <span class="o">+=</span> <span class="mi">1</span>
 
                             <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param_table</span> <span class="ow">in</span> <span class="n">ets</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                                <span class="c1">#if param_name == &#39;distance&#39;:</span>
-                                <span class="c1">#    print len(groups[0][&#39;distance&#39;])</span>
                                 <span class="n">param_vals</span> <span class="o">=</span> <span class="n">group_table</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span>
-
-                                <span class="c1">#if param_name == &#39;distance&#39;:</span>
-                                <span class="c1">#    print param_name</span>
-                                <span class="c1">#    print len(param_vals)</span>
-                                <span class="c1">#exit()</span>
-
                                 <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">param_table</span><span class="o">.</span><span class="n">itr_vals</span><span class="p">(</span><span class="n">src_id</span><span class="p">,</span> <span class="n">trg_node</span><span class="o">.</span><span class="n">node_id</span><span class="p">):</span>
-                                    <span class="c1">#print val</span>
                                     <span class="n">param_vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
 
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="c1"># TODO: if no properties just print nsyns table.</span>
-                        <span class="c1"># raise NotImplementedError()</span>
+                        <span class="c1"># If no properties just print nsyns table.</span>
                         <span class="k">if</span> <span class="s1">&#39;nsyns&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">group_table</span><span class="p">:</span>
                             <span class="n">group_table</span><span class="p">[</span><span class="s1">&#39;nsyns&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
                         <span class="n">group_dtypes</span><span class="p">[</span><span class="n">edge_group_id</span><span class="p">][</span><span class="s1">&#39;nsyns&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;uint16&#39;</span>
@@ -1006,38 +917,17 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
                             <span class="n">group_table</span><span class="p">[</span><span class="s1">&#39;nsyns&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nsyns</span><span class="p">)</span>
 
-        <span class="c1">#print len(groups[0][&#39;distance&#39;])</span>
-        <span class="c1">#exit()</span>
-
         <span class="n">trg_gids</span> <span class="o">=</span> <span class="n">trg_gids</span><span class="p">[:</span><span class="n">gid_indx</span><span class="p">]</span>
         <span class="n">src_gids</span> <span class="o">=</span> <span class="n">src_gids</span><span class="p">[:</span><span class="n">gid_indx</span><span class="p">]</span>
         <span class="n">edge_groups</span> <span class="o">=</span> <span class="n">edge_groups</span><span class="p">[:</span><span class="n">gid_indx</span><span class="p">]</span>
         <span class="n">edge_group_index</span> <span class="o">=</span> <span class="n">edge_group_index</span><span class="p">[:</span><span class="n">gid_indx</span><span class="p">]</span>
         <span class="n">edge_type_ids</span> <span class="o">=</span> <span class="n">edge_type_ids</span><span class="p">[:</span><span class="n">gid_indx</span><span class="p">]</span>
-        <span class="c1">#src_gids.reshape((gid_indx,))</span>
-        <span class="c1">#edge_groups.reshape((gid_indx,))</span>
-        <span class="c1">#edge_group_index.reshape((gid_indx,))</span>
-        <span class="c1">#edge_type_ids.reshape((gid_indx,))</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        trg_gids = np.zeros(total_syns)  # set dtype to uint64</span>
-<span class="sd">        src_gids = np.zeros(total_syns)</span>
-<span class="sd">        edge_groups = np.zeros(total_syns)  # dtype uint16 or uint8</span>
-<span class="sd">        edge_group_index = np.zeros(total_syns)  # uint32</span>
-<span class="sd">        edge_type_ids = np.zeros(total_syns)  # uint32</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="c1">#print len(groups[0][&#39;nsyns&#39;])</span>
 
         <span class="n">index_ptrs</span><span class="p">[</span><span class="n">index_ptr_itr</span><span class="p">]</span> <span class="o">=</span> <span class="n">gid_indx</span>
-
-        <span class="c1">#print trg_gids</span>
-        <span class="c1">#exit()</span>
-
 
         <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">edges_file_name</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">hf</span><span class="p">:</span>
             <span class="n">hf</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;edges/target_gid&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">trg_gids</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;uint64&#39;</span><span class="p">)</span>
             <span class="n">hf</span><span class="p">[</span><span class="s1">&#39;edges/target_gid&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">trg_network</span>
-            <span class="c1">#&#39;source_network&#39;</span>
             <span class="n">hf</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;edges/source_gid&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">src_gids</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;uint64&#39;</span><span class="p">)</span>
             <span class="n">hf</span><span class="p">[</span><span class="s1">&#39;edges/source_gid&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">src_network</span>
 
@@ -1049,34 +939,40 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">for</span> <span class="n">group_id</span><span class="p">,</span> <span class="n">params_dict</span> <span class="ow">in</span> <span class="n">groups</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">for</span> <span class="n">params_key</span><span class="p">,</span> <span class="n">params_vals</span> <span class="ow">in</span> <span class="n">params_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="n">group_path</span> <span class="o">=</span> <span class="s1">&#39;edges/</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">group_id</span><span class="p">,</span> <span class="n">params_key</span><span class="p">)</span>
-                    <span class="c1">#print group_path, len(params_vals)</span>
-                    <span class="c1">#print group_dtypes</span>
                     <span class="n">dtype</span> <span class="o">=</span> <span class="n">group_dtypes</span><span class="p">[</span><span class="n">group_id</span><span class="p">][</span><span class="n">params_key</span><span class="p">]</span>
                     <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">hf</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">group_path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">params_vals</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">hf</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">group_path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">params_vals</span><span class="p">))</span></div>
-
-
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    def _add_edges(self, edge, connections):</span>
-<span class="sd">        edgetable = self.EdgeTable(edge)</span>
-<span class="sd">        self.__edges_types[edge.id] = edgetable</span>
-
-<span class="sd">        for con in connections:</span>
-<span class="sd">            if con[2] is not None:</span>
-<span class="sd">                self._nedges += 1</span>
-<span class="sd">                edgetable[con[0], con[1]] = con[2]</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+                        <span class="n">hf</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">group_path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">params_vals</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nedges</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nnodes</span> <span class="o">=</span> <span class="mi">0</span>
 
+<div class="viewcode-block" id="DenseNetwork.edges_iter"><a class="viewcode-back" href="../../../../bmtk.builder.networks.html#bmtk.builder.networks.dm_network.DenseNetwork.edges_iter">[docs]</a>    <span class="k">def</span> <span class="nf">edges_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trg_gids</span><span class="p">,</span> <span class="n">src_network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trg_network</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">matching_edge_tables</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__edges_tables</span>
+        <span class="k">if</span> <span class="n">trg_network</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">matching_edge_tables</span> <span class="o">=</span> <span class="p">[</span><span class="n">et</span> <span class="k">for</span> <span class="n">et</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__edges_tables</span> <span class="k">if</span> <span class="n">et</span><span class="p">[</span><span class="s1">&#39;target_network&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">trg_network</span><span class="p">]</span>
 
+        <span class="k">if</span> <span class="n">src_network</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">matching_edge_tables</span> <span class="o">=</span> <span class="p">[</span><span class="n">et</span> <span class="k">for</span> <span class="n">et</span> <span class="ow">in</span> <span class="n">matching_edge_tables</span> <span class="k">if</span> <span class="n">et</span><span class="p">[</span><span class="s1">&#39;source_network&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">src_network</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">_edges_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_gids</span><span class="p">,</span> <span class="n">source_gids</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">trg_gid</span> <span class="ow">in</span> <span class="n">trg_gids</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ets</span> <span class="ow">in</span> <span class="n">matching_edge_tables</span><span class="p">:</span>
+                <span class="n">syn_table</span> <span class="o">=</span> <span class="n">ets</span><span class="p">[</span><span class="s1">&#39;syn_table&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">syn_table</span><span class="o">.</span><span class="n">has_target</span><span class="p">(</span><span class="n">trg_gid</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">src_id</span><span class="p">,</span> <span class="n">nsyns</span> <span class="ow">in</span> <span class="n">syn_table</span><span class="o">.</span><span class="n">trg_itr</span><span class="p">(</span><span class="n">trg_gid</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">ets</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]:</span>
+                            <span class="n">synapses</span> <span class="o">=</span> <span class="p">[{}</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nsyns</span><span class="p">)]</span>
+                            <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param_table</span> <span class="ow">in</span> <span class="n">ets</span><span class="p">[</span><span class="s1">&#39;params&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">param_table</span><span class="p">[</span><span class="n">src_id</span><span class="p">,</span> <span class="n">trg_gid</span><span class="p">]):</span>
+                                    <span class="n">synapses</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+                            <span class="k">for</span> <span class="n">syn_prop</span> <span class="ow">in</span> <span class="n">synapses</span><span class="p">:</span>
+                                <span class="k">yield</span> <span class="n">Edge</span><span class="p">(</span><span class="n">src_gid</span><span class="o">=</span><span class="n">src_id</span><span class="p">,</span> <span class="n">trg_gid</span><span class="o">=</span><span class="n">trg_gid</span><span class="p">,</span> <span class="n">edge_type_props</span><span class="o">=</span><span class="n">ets</span><span class="p">[</span><span class="s1">&#39;edge_types&#39;</span><span class="p">],</span>
+                                           <span class="n">syn_props</span><span class="o">=</span><span class="n">syn_prop</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">yield</span> <span class="n">Edge</span><span class="p">(</span><span class="n">src_gid</span><span class="o">=</span><span class="n">src_id</span><span class="p">,</span> <span class="n">trg_gid</span><span class="o">=</span><span class="n">trg_gid</span><span class="p">,</span> <span class="n">edge_type_props</span><span class="o">=</span><span class="n">ets</span><span class="p">[</span><span class="s1">&#39;edge_types&#39;</span><span class="p">],</span>
+                                       <span class="n">syn_props</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;nsyns&#39;</span><span class="p">:</span> <span class="n">nsyns</span><span class="p">})</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nnodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1084,17 +980,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">return</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nnodes</span>
 
-
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nedges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nedges</span>
 
-
 <div class="viewcode-block" id="DenseNetwork.EdgeTable"><a class="viewcode-back" href="../../../../bmtk.builder.networks.html#bmtk.builder.networks.dm_network.DenseNetwork.EdgeTable">[docs]</a>    <span class="k">class</span> <span class="nc">EdgeTable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection_map</span><span class="p">):</span>
-            <span class="c1">#self._source_nodes = connection_map.source_nodes</span>
-            <span class="c1">#self._target_nodes = connection_map.target_nodes</span>
-
             <span class="c1"># TODO: save column and row lengths</span>
             <span class="c1"># Create maps between source_node gids and their row in the matrix.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__idx2src</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">node_id</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">connection_map</span><span class="o">.</span><span class="n">source_nodes</span><span class="p">]</span>
@@ -1138,29 +1029,30 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="k">if</span> <span class="n">nsyns</span><span class="p">:</span>
                     <span class="k">yield</span> <span class="n">src_id</span><span class="p">,</span> <span class="n">nsyns</span></div></div>
 
-
 <div class="viewcode-block" id="DenseNetwork.PropertyTable"><a class="viewcode-back" href="../../../../bmtk.builder.networks.html#bmtk.builder.networks.dm_network.DenseNetwork.PropertyTable">[docs]</a>    <span class="k">class</span> <span class="nc">PropertyTable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
         <span class="c1"># TODO: add support for strings</span>
         <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nvalues</span><span class="p">):</span>
-            <span class="c1">#print nvalues</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_prop_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nvalues</span><span class="p">)</span>
-            <span class="c1">#self._prop_table = np.zeros((nvalues, 1))  # TODO: set dtype</span>
+            <span class="c1"># self._prop_table = np.zeros((nvalues, 1))  # TODO: set dtype</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nvalues</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_itr_index</span> <span class="o">=</span> <span class="mi">0</span>
-
-        <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_itr_index</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># src_node_id</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_itr_index</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># trg_node_id</span>
-            <span class="c1">#print value</span>
-            <span class="c1"># print self._prop_array</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_prop_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_itr_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_itr_index</span> <span class="o">+=</span> <span class="mi">1</span>
 
 <div class="viewcode-block" id="DenseNetwork.PropertyTable.itr_vals"><a class="viewcode-back" href="../../../../bmtk.builder.networks.html#bmtk.builder.networks.dm_network.DenseNetwork.PropertyTable.itr_vals">[docs]</a>        <span class="k">def</span> <span class="nf">itr_vals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_id</span><span class="p">,</span> <span class="n">trg_id</span><span class="p">):</span>
             <span class="n">indicies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">src_id</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">trg_id</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prop_array</span><span class="p">[</span><span class="n">indicies</span><span class="p">]:</span>
-                <span class="k">yield</span> <span class="n">val</span></div></div></div>
-                <span class="c1">#yield self._prop_array[i]</span>
+                <span class="k">yield</span> <span class="n">val</span></div>
+
+        <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_itr_index</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># src_node_id</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_itr_index</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># trg_node_id</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_prop_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_itr_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_itr_index</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+            <span class="n">indicies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prop_array</span><span class="p">[</span><span class="n">indicies</span><span class="p">]</span></div></div>
+
+
 </pre></div>
 
           </div>

@@ -656,6 +656,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c1">#</span>
 <span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.lifcell</span> <span class="k">import</span> <span class="n">LIFCell</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.biocell</span> <span class="k">import</span> <span class="n">BioCell</span>
@@ -709,6 +711,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">__morphologies_cache</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Table of saved morphology files</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stims</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># dictionary of external/stim/virtual nodes by [network_name][gid]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_trains_ds</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># save nwb spike-train datasets for when stims need to be built</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_trains_df</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stim_networks</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_connections</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">spike_threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -735,6 +741,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">__calc_ecp</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">save_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_connections</span>
+
+    <span class="nd">@save_connections</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">save_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c1"># TODO: throw a warning if a user is trying to set save_connection = True after the network has been built</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_connections</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">gids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_node_gids</span>
 
@@ -757,7 +772,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">gid</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">node_id</span>
 
             <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">cell_type</span> <span class="o">==</span> <span class="n">CellTypes</span><span class="o">.</span><span class="n">Biophysical</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_cells</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span> <span class="o">=</span> <span class="n">BioCell</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spike_threshold</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dL</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_ecp</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cells</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span> <span class="o">=</span> <span class="n">BioCell</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spike_threshold</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dL</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_ecp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_connections</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_local_biophys_gids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span>
 
             <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">cell_type</span> <span class="o">==</span> <span class="n">CellTypes</span><span class="o">.</span><span class="n">Point</span><span class="p">:</span>
@@ -851,7 +866,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="BioNetwork.add_spikes_nwb"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.bionetwork.BioNetwork.add_spikes_nwb">[docs]</a>    <span class="k">def</span> <span class="nf">add_spikes_nwb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ext_net</span><span class="p">,</span> <span class="n">nwb_file</span><span class="p">,</span> <span class="n">trial</span><span class="p">):</span>
         <span class="n">h5_file</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">nwb_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_trains_ds</span><span class="p">[</span><span class="n">ext_net</span><span class="p">]</span> <span class="o">=</span> <span class="n">h5_file</span><span class="p">[</span><span class="s1">&#39;processing&#39;</span><span class="p">][</span><span class="n">trial</span><span class="p">][</span><span class="s1">&#39;spike_train&#39;</span><span class="p">]</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_trains_ds</span><span class="p">[</span><span class="n">ext_net</span><span class="p">]</span> <span class="o">=</span> <span class="n">h5_file</span><span class="p">[</span><span class="s1">&#39;processing&#39;</span><span class="p">][</span><span class="n">trial</span><span class="p">][</span><span class="s1">&#39;spike_train&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stim_networks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ext_net</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BioNetwork.add_spikes_csv"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.bionetwork.BioNetwork.add_spikes_csv">[docs]</a>    <span class="k">def</span> <span class="nf">add_spikes_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ext_net</span><span class="p">,</span> <span class="n">csv_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">):</span>
+        <span class="n">spikes_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csv_file</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;gid&#39;</span><span class="p">],</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_trains_df</span><span class="p">[</span><span class="n">ext_net</span><span class="p">]</span> <span class="o">=</span> <span class="n">spikes_df</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stim_networks</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ext_net</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_get_spike_trains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_gid</span><span class="p">,</span> <span class="n">network</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">network</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spike_trains_ds</span><span class="p">:</span>
@@ -860,8 +881,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">if</span> <span class="n">src_gid_str</span> <span class="ow">in</span> <span class="n">h5ds</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="k">return</span> <span class="n">h5ds</span><span class="p">[</span><span class="n">src_gid_str</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
 
-        <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">elif</span> <span class="n">network</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spike_trains_df</span><span class="p">:</span>
+            <span class="n">spikes_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spike_trains_df</span><span class="p">[</span><span class="n">network</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">src_gid</span><span class="p">][</span><span class="s1">&#39;spike-times&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)]</span>
+            <span class="k">return</span> <span class="n">spikes_list</span>
 
+        <span class="k">return</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="BioNetwork.make_stims"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.bionetwork.BioNetwork.make_stims">[docs]</a>    <span class="k">def</span> <span class="nf">make_stims</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create the stims/virtual/external nodes.</span>
@@ -871,7 +895,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">external_networks</span><span class="p">():</span>
             <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;        </span><span class="si">%s</span><span class="s1"> cells&#39;</span> <span class="o">%</span><span class="n">network</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="n">network</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spike_trains_ds</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">network</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stim_networks</span><span class="p">:</span>
                 <span class="k">continue</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_stims</span><span class="p">[</span><span class="n">network</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
@@ -900,6 +924,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="viewcode-block" id="BioNetwork.set_external_connections"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.bionetwork.BioNetwork.set_external_connections">[docs]</a>    <span class="k">def</span> <span class="nf">set_external_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_network</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_connections</span><span class="p">()</span>
         <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;    Setting connections from </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source_network</span><span class="p">))</span>
+        <span class="c1"># TODO: skip if source_network is not in stims</span>
         <span class="n">source_stims</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stims</span><span class="p">[</span><span class="n">source_network</span><span class="p">]</span>
         <span class="n">syn_counter</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">trg_gid</span><span class="p">,</span> <span class="n">trg_cell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cells</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -920,6 +945,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">for</span> <span class="n">gid</span><span class="p">,</span> <span class="n">cell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">cell</span><span class="o">.</span><span class="n">scale_weights</span><span class="p">(</span><span class="n">factor</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="BioNetwork.write_connections"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.bionetwork.BioNetwork.write_connections">[docs]</a>    <span class="k">def</span> <span class="nf">write_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csv_file</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">csv_file</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvhandle</span><span class="p">:</span>
+            <span class="n">csvwriter</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">csvhandle</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+            <span class="n">csvwriter</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="s1">&#39;trg_gid&#39;</span><span class="p">,</span> <span class="s1">&#39;src_gid&#39;</span><span class="p">,</span> <span class="s1">&#39;src_network&#39;</span><span class="p">,</span> <span class="s1">&#39;segment&#39;</span><span class="p">,</span> <span class="s1">&#39;section&#39;</span><span class="p">,</span> <span class="s1">&#39;weight&#39;</span><span class="p">,</span> <span class="s1">&#39;delay&#39;</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">cell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cells</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">conn</span> <span class="ow">in</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_connection_info</span><span class="p">():</span>
+                    <span class="n">csvwriter</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="BioNetwork.from_config"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.bionetwork.BioNetwork.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config_file</span><span class="p">,</span> <span class="n">graph</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;A method for building a network from a config file.</span>
@@ -928,8 +961,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">        :param graph: A BioGraph object that has already been loaded.</span>
 <span class="sd">        :return: A BioNetwork object with nodes and connections that can be ran in a NEURON simulator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;Number of processors: </span><span class="si">%d</span><span class="s1"> &#39;</span> <span class="o">%</span><span class="n">nhost</span><span class="p">)</span>
-
+        <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;Number of processors: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nhost</span><span class="p">))</span>
         <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;Setting up network...&#39;</span><span class="p">)</span>
 
         <span class="c1"># load the json file or object</span>
@@ -954,6 +986,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">network</span><span class="o">.</span><span class="n">calc_ecp</span> <span class="o">=</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;calc_ecp&#39;</span><span class="p">]</span>
 
         <span class="c1"># build the cells</span>
+        <span class="n">network</span><span class="o">.</span><span class="n">save_connections</span> <span class="o">=</span> <span class="s1">&#39;syn_connections_file&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">]</span>
         <span class="n">io</span><span class="o">.</span><span class="n">print2log</span><span class="p">(</span><span class="s1">&#39;Building cells...&#39;</span><span class="p">)</span>
         <span class="n">network</span><span class="o">.</span><span class="n">build_cells</span><span class="p">()</span>
 
@@ -968,6 +1001,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                     <span class="c1"># Load external network spike trains from an NWB file.</span>
                     <span class="c1"># io.print2log0(&#39;Load input for {}&#39;.format(netinput[&#39;network&#39;]))</span>
                     <span class="n">network</span><span class="o">.</span><span class="n">add_spikes_nwb</span><span class="p">(</span><span class="n">netinput</span><span class="p">[</span><span class="s1">&#39;source_nodes&#39;</span><span class="p">],</span> <span class="n">netinput</span><span class="p">[</span><span class="s1">&#39;file&#39;</span><span class="p">],</span> <span class="n">netinput</span><span class="p">[</span><span class="s1">&#39;trial&#39;</span><span class="p">])</span>
+
+                <span class="k">elif</span> <span class="n">netinput</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;external_spikes&#39;</span> <span class="ow">and</span> <span class="n">netinput</span><span class="p">[</span><span class="s1">&#39;format&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;csv&#39;</span><span class="p">:</span>
+                    <span class="n">network</span><span class="o">.</span><span class="n">add_spikes_csv</span><span class="p">(</span><span class="n">netinput</span><span class="p">[</span><span class="s1">&#39;source_nodes&#39;</span><span class="p">],</span> <span class="n">netinput</span><span class="p">[</span><span class="s1">&#39;file&#39;</span><span class="p">])</span>
+
                 <span class="c1"># TODO: Allow for external spike trains from csv file or user function</span>
                 <span class="c1"># TODO: Add Iclamp code.</span>
 
@@ -980,6 +1017,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="n">network</span><span class="o">.</span><span class="n">set_recurrent_connections</span><span class="p">()</span>
         <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;Network is built!&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">network</span><span class="o">.</span><span class="n">save_connections</span><span class="p">:</span>
+            <span class="n">csv_file</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;syn_connections_file&#39;</span><span class="p">]</span>
+            <span class="n">network</span><span class="o">.</span><span class="n">write_connections</span><span class="p">(</span><span class="n">csv_file</span><span class="p">)</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">print2log0</span><span class="p">(</span><span class="s1">&#39;    Connections saved to </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">csv_file</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">network</span></div></div>
 </pre></div>

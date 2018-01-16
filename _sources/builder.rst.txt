@@ -27,3 +27,9 @@ of the examples go into the subdirectory and run
 
 The network(s) will be saved to the output/ folder
 
+
+Tutorial
+--------
+
+Please see our tutorials for how to build and run networks using the bmtk:
+https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb

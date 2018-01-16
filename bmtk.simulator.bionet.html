@@ -643,6 +643,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.default_setters.html#module-bmtk.simulator.bionet.default_setters">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="bmtk.simulator.bionet.modules.html">bmtk.simulator.bionet.modules package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.modules.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.modules.html#module-bmtk.simulator.bionet.modules.ecp">bmtk.simulator.bionet.modules.ecp module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.modules.html#module-bmtk.simulator.bionet.modules.record_cellvars">bmtk.simulator.bionet.modules.record_cellvars module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.modules.html#module-bmtk.simulator.bionet.modules.record_spikes">bmtk.simulator.bionet.modules.record_spikes module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.modules.html#module-bmtk.simulator.bionet.modules.sim_module">bmtk.simulator.bionet.modules.sim_module module</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.modules.html#module-bmtk.simulator.bionet.modules">Module contents</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.simulator.bionet.property_schemas.html">bmtk.simulator.bionet.property_schemas package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.property_schemas.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.property_schemas.html#module-bmtk.simulator.bionet.property_schemas.base_schema">bmtk.simulator.bionet.property_schemas.base_schema module</a><ul class="simple">
@@ -667,7 +684,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span id="bmtk-simulator-bionet-biocell-module"></span><h2>bmtk.simulator.bionet.biocell module<a class="headerlink" href="#module-bmtk.simulator.bionet.biocell" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="bmtk.simulator.bionet.biocell.BioCell">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.biocell.</code><code class="descname">BioCell</code><span class="sig-paren">(</span><em>node</em>, <em>spike_threshold</em>, <em>dL</em>, <em>calc_ecp=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/biocell.html#BioCell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.biocell.BioCell" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.biocell.</code><code class="descname">BioCell</code><span class="sig-paren">(</span><em>node</em>, <em>spike_threshold</em>, <em>dL</em>, <em>calc_ecp=False</em>, <em>save_connection=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/biocell.html#BioCell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.biocell.BioCell" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.cell.Cell" title="bmtk.simulator.bionet.cell.Cell"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.cell.Cell</span></code></a></p>
 <p>Implemntation of a morphologically and biophysically detailed type cell.</p>
 <p class="rubric">Attributes</p>
@@ -704,44 +721,47 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.biocell.BioCell.calc_seg_coords" title="bmtk.simulator.bionet.biocell.BioCell.calc_seg_coords"><code class="xref py py-obj docutils literal"><span class="pre">calc_seg_coords</span></code></a>(morph_seg_coords)</td>
 <td>Calculate segment coordinates for individual cells</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.biocell.BioCell.get_im" title="bmtk.simulator.bionet.biocell.BioCell.get_im"><code class="xref py py-obj docutils literal"><span class="pre">get_im</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.biocell.BioCell.get_connection_info" title="bmtk.simulator.bionet.biocell.BioCell.get_connection_info"><code class="xref py py-obj docutils literal"><span class="pre">get_connection_info</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.biocell.BioCell.get_im" title="bmtk.simulator.bionet.biocell.BioCell.get_im"><code class="xref py py-obj docutils literal"><span class="pre">get_im</span></code></a>()</td>
 <td>Gather membrane currents from PtrVector into imVec (does not need a loop!)</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.biocell.BioCell.get_seg_coords" title="bmtk.simulator.bionet.biocell.BioCell.get_seg_coords"><code class="xref py py-obj docutils literal"><span class="pre">get_seg_coords</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.biocell.BioCell.get_seg_coords" title="bmtk.simulator.bionet.biocell.BioCell.get_seg_coords"><code class="xref py py-obj docutils literal"><span class="pre">get_seg_coords</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.biocell.BioCell.init_connections" title="bmtk.simulator.bionet.biocell.BioCell.init_connections"><code class="xref py py-obj docutils literal"><span class="pre">init_connections</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.biocell.BioCell.init_connections" title="bmtk.simulator.bionet.biocell.BioCell.init_connections"><code class="xref py py-obj docutils literal"><span class="pre">init_connections</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.biocell.BioCell.print_synapses" title="bmtk.simulator.bionet.biocell.BioCell.print_synapses"><code class="xref py py-obj docutils literal"><span class="pre">print_synapses</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.biocell.BioCell.print_synapses" title="bmtk.simulator.bionet.biocell.BioCell.print_synapses"><code class="xref py py-obj docutils literal"><span class="pre">print_synapses</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">scale_weights</span></code>(factor)</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">scale_weights</span></code>(factor)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.biocell.BioCell.set_im_ptr" title="bmtk.simulator.bionet.biocell.BioCell.set_im_ptr"><code class="xref py py-obj docutils literal"><span class="pre">set_im_ptr</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.biocell.BioCell.set_im_ptr" title="bmtk.simulator.bionet.biocell.BioCell.set_im_ptr"><code class="xref py py-obj docutils literal"><span class="pre">set_im_ptr</span></code></a>()</td>
 <td>Set PtrVector to point to the <a href="#id1"><span class="problematic" id="id2">i_membrane_</span></a></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.biocell.BioCell.set_morphology" title="bmtk.simulator.bionet.biocell.BioCell.set_morphology"><code class="xref py py-obj docutils literal"><span class="pre">set_morphology</span></code></a>(morphology_obj)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.biocell.BioCell.set_morphology" title="bmtk.simulator.bionet.biocell.BioCell.set_morphology"><code class="xref py py-obj docutils literal"><span class="pre">set_morphology</span></code></a>(morphology_obj)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.biocell.BioCell.set_nseg" title="bmtk.simulator.bionet.biocell.BioCell.set_nseg"><code class="xref py py-obj docutils literal"><span class="pre">set_nseg</span></code></a>(dL)</td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.biocell.BioCell.set_nseg" title="bmtk.simulator.bionet.biocell.BioCell.set_nseg"><code class="xref py py-obj docutils literal"><span class="pre">set_nseg</span></code></a>(dL)</td>
 <td>Define number of segments in a cell</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.biocell.BioCell.set_sec_array" title="bmtk.simulator.bionet.biocell.BioCell.set_sec_array"><code class="xref py py-obj docutils literal"><span class="pre">set_sec_array</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.biocell.BioCell.set_sec_array" title="bmtk.simulator.bionet.biocell.BioCell.set_sec_array"><code class="xref py py-obj docutils literal"><span class="pre">set_sec_array</span></code></a>()</td>
 <td>Arrange sections in an array to be access by index</td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_soma_position</span></code>()</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_soma_position</span></code>()</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.biocell.BioCell.set_spike_detector" title="bmtk.simulator.bionet.biocell.BioCell.set_spike_detector"><code class="xref py py-obj docutils literal"><span class="pre">set_spike_detector</span></code></a>(spike_threshold)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.biocell.BioCell.set_spike_detector" title="bmtk.simulator.bionet.biocell.BioCell.set_spike_detector"><code class="xref py py-obj docutils literal"><span class="pre">set_spike_detector</span></code></a>(spike_threshold)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.biocell.BioCell.set_syn_connection" title="bmtk.simulator.bionet.biocell.BioCell.set_syn_connection"><code class="xref py py-obj docutils literal"><span class="pre">set_syn_connection</span></code></a>(edge_prop,&nbsp;src_node[,&nbsp;stim])</td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.biocell.BioCell.set_syn_connection" title="bmtk.simulator.bionet.biocell.BioCell.set_syn_connection"><code class="xref py py-obj docutils literal"><span class="pre">set_syn_connection</span></code></a>(edge_prop,&nbsp;src_node[,&nbsp;stim])</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.biocell.BioCell.set_syn_connections" title="bmtk.simulator.bionet.biocell.BioCell.set_syn_connections"><code class="xref py py-obj docutils literal"><span class="pre">set_syn_connections</span></code></a>(nsyn,&nbsp;syn_weight,&nbsp;…[,&nbsp;…])</td>
-<td>Set synaptic connections</td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_syn_connections</span></code>(edge_prop,&nbsp;src_node[,&nbsp;stim])</td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -750,6 +770,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <code class="descname">calc_seg_coords</code><span class="sig-paren">(</span><em>morph_seg_coords</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/biocell.html#BioCell.calc_seg_coords"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.biocell.BioCell.calc_seg_coords" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate segment coordinates for individual cells</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.biocell.BioCell.get_connection_info">
+<code class="descname">get_connection_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/biocell.html#BioCell.get_connection_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.biocell.BioCell.get_connection_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="bmtk.simulator.bionet.biocell.BioCell.get_im">
@@ -810,12 +835,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <code class="descname">set_syn_connection</code><span class="sig-paren">(</span><em>edge_prop</em>, <em>src_node</em>, <em>stim=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/biocell.html#BioCell.set_syn_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.biocell.BioCell.set_syn_connection" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="bmtk.simulator.bionet.biocell.BioCell.set_syn_connections">
-<code class="descname">set_syn_connections</code><span class="sig-paren">(</span><em>nsyn</em>, <em>syn_weight</em>, <em>edge_type</em>, <em>src_gid</em>, <em>stim=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/biocell.html#BioCell.set_syn_connections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.biocell.BioCell.set_syn_connections" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set synaptic connections</p>
-</dd></dl>
-
 </dd></dl>
 
 </div>
@@ -832,16 +851,19 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.biograph.BioEdge.nsyns" title="bmtk.simulator.bionet.biograph.BioEdge.nsyns"><code class="xref py py-obj docutils literal"><span class="pre">nsyns</span></code></a></td>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">edge_type_id</span></code></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.biograph.BioEdge.preselected_targets" title="bmtk.simulator.bionet.biograph.BioEdge.preselected_targets"><code class="xref py py-obj docutils literal"><span class="pre">preselected_targets</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.biograph.BioEdge.nsyns" title="bmtk.simulator.bionet.biograph.BioEdge.nsyns"><code class="xref py py-obj docutils literal"><span class="pre">nsyns</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.biograph.BioEdge.target_distance" title="bmtk.simulator.bionet.biograph.BioEdge.target_distance"><code class="xref py py-obj docutils literal"><span class="pre">target_distance</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.biograph.BioEdge.preselected_targets" title="bmtk.simulator.bionet.biograph.BioEdge.preselected_targets"><code class="xref py py-obj docutils literal"><span class="pre">preselected_targets</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.biograph.BioEdge.target_sections" title="bmtk.simulator.bionet.biograph.BioEdge.target_sections"><code class="xref py py-obj docutils literal"><span class="pre">target_sections</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.biograph.BioEdge.target_distance" title="bmtk.simulator.bionet.biograph.BioEdge.target_distance"><code class="xref py py-obj docutils literal"><span class="pre">target_distance</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.biograph.BioEdge.target_sections" title="bmtk.simulator.bionet.biograph.BioEdge.target_sections"><code class="xref py py-obj docutils literal"><span class="pre">target_sections</span></code></a></td>
 <td></td>
 </tr>
 </tbody>
@@ -999,6 +1021,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.biograph.BioNode.positions" title="bmtk.simulator.bionet.biograph.BioNode.positions"><code class="xref py py-obj docutils literal"><span class="pre">positions</span></code></a></td>
 <td></td>
 </tr>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.biograph.BioNode.rotation_angle_yaxis" title="bmtk.simulator.bionet.biograph.BioNode.rotation_angle_yaxis"><code class="xref py py-obj docutils literal"><span class="pre">rotation_angle_yaxis</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.biograph.BioNode.rotation_angle_zaxis" title="bmtk.simulator.bionet.biograph.BioNode.rotation_angle_zaxis"><code class="xref py py-obj docutils literal"><span class="pre">rotation_angle_zaxis</span></code></a></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 <p class="rubric">Methods</p>
@@ -1031,6 +1059,16 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dl class="attribute">
 <dt id="bmtk.simulator.bionet.biograph.BioNode.positions">
 <code class="descname">positions</code><a class="headerlink" href="#bmtk.simulator.bionet.biograph.BioNode.positions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.bionet.biograph.BioNode.rotation_angle_yaxis">
+<code class="descname">rotation_angle_yaxis</code><a class="headerlink" href="#bmtk.simulator.bionet.biograph.BioNode.rotation_angle_yaxis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.bionet.biograph.BioNode.rotation_angle_zaxis">
+<code class="descname">rotation_angle_zaxis</code><a class="headerlink" href="#bmtk.simulator.bionet.biograph.BioNode.rotation_angle_zaxis" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1067,10 +1105,13 @@ possible use the factory methods (from_json, …) to automatically build a netwo
 <tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.gids" title="bmtk.simulator.bionet.bionetwork.BioNetwork.gids"><code class="xref py py-obj docutils literal"><span class="pre">gids</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.saved_gids" title="bmtk.simulator.bionet.bionetwork.BioNetwork.saved_gids"><code class="xref py py-obj docutils literal"><span class="pre">saved_gids</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.save_connections" title="bmtk.simulator.bionet.bionetwork.BioNetwork.save_connections"><code class="xref py py-obj docutils literal"><span class="pre">save_connections</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.spike_threshold" title="bmtk.simulator.bionet.bionetwork.BioNetwork.spike_threshold"><code class="xref py py-obj docutils literal"><span class="pre">spike_threshold</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.saved_gids" title="bmtk.simulator.bionet.bionetwork.BioNetwork.saved_gids"><code class="xref py py-obj docutils literal"><span class="pre">saved_gids</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.spike_threshold" title="bmtk.simulator.bionet.bionetwork.BioNetwork.spike_threshold"><code class="xref py py-obj docutils literal"><span class="pre">spike_threshold</span></code></a></td>
 <td></td>
 </tr>
 </tbody>
@@ -1082,41 +1123,52 @@ possible use the factory methods (from_json, …) to automatically build a netwo
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.add_spikes_nwb" title="bmtk.simulator.bionet.bionetwork.BioNetwork.add_spikes_nwb"><code class="xref py py-obj docutils literal"><span class="pre">add_spikes_nwb</span></code></a>(ext_net,&nbsp;nwb_file,&nbsp;trial)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.add_spikes_csv" title="bmtk.simulator.bionet.bionetwork.BioNetwork.add_spikes_csv"><code class="xref py py-obj docutils literal"><span class="pre">add_spikes_csv</span></code></a>(ext_net,&nbsp;csv_file[,&nbsp;sep])</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.build_cells" title="bmtk.simulator.bionet.bionetwork.BioNetwork.build_cells"><code class="xref py py-obj docutils literal"><span class="pre">build_cells</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.add_spikes_nwb" title="bmtk.simulator.bionet.bionetwork.BioNetwork.add_spikes_nwb"><code class="xref py py-obj docutils literal"><span class="pre">add_spikes_nwb</span></code></a>(ext_net,&nbsp;nwb_file,&nbsp;trial)</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.build_cells" title="bmtk.simulator.bionet.bionetwork.BioNetwork.build_cells"><code class="xref py py-obj docutils literal"><span class="pre">build_cells</span></code></a>()</td>
 <td>Instantiate cells based on parameters provided in the InternalCell table and Internal CellModel table</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.calc_seg_coords" title="bmtk.simulator.bionet.bionetwork.BioNetwork.calc_seg_coords"><code class="xref py py-obj docutils literal"><span class="pre">calc_seg_coords</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.calc_seg_coords" title="bmtk.simulator.bionet.bionetwork.BioNetwork.calc_seg_coords"><code class="xref py py-obj docutils literal"><span class="pre">calc_seg_coords</span></code></a>()</td>
 <td>Needed for the ECP calculations</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.from_config" title="bmtk.simulator.bionet.bionetwork.BioNetwork.from_config"><code class="xref py py-obj docutils literal"><span class="pre">from_config</span></code></a>(config_file,&nbsp;graph)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.from_config" title="bmtk.simulator.bionet.bionetwork.BioNetwork.from_config"><code class="xref py py-obj docutils literal"><span class="pre">from_config</span></code></a>(config_file,&nbsp;graph)</td>
 <td>A method for building a network from a config file.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.make_morphologies" title="bmtk.simulator.bionet.bionetwork.BioNetwork.make_morphologies"><code class="xref py py-obj docutils literal"><span class="pre">make_morphologies</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.make_morphologies" title="bmtk.simulator.bionet.bionetwork.BioNetwork.make_morphologies"><code class="xref py py-obj docutils literal"><span class="pre">make_morphologies</span></code></a>()</td>
 <td>Creating a Morphology object for each biophysical model</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.make_stims" title="bmtk.simulator.bionet.bionetwork.BioNetwork.make_stims"><code class="xref py py-obj docutils literal"><span class="pre">make_stims</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.make_stims" title="bmtk.simulator.bionet.bionetwork.BioNetwork.make_stims"><code class="xref py py-obj docutils literal"><span class="pre">make_stims</span></code></a>()</td>
 <td>Create the stims/virtual/external nodes.</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.save_gids" title="bmtk.simulator.bionet.bionetwork.BioNetwork.save_gids"><code class="xref py py-obj docutils literal"><span class="pre">save_gids</span></code></a>(gid_list)</td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.save_gids" title="bmtk.simulator.bionet.bionetwork.BioNetwork.save_gids"><code class="xref py py-obj docutils literal"><span class="pre">save_gids</span></code></a>(gid_list)</td>
 <td>List of cell GIDs whose variables (besides spikes) will be saved to h5.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.scale_weights" title="bmtk.simulator.bionet.bionetwork.BioNetwork.scale_weights"><code class="xref py py-obj docutils literal"><span class="pre">scale_weights</span></code></a>(factor)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.scale_weights" title="bmtk.simulator.bionet.bionetwork.BioNetwork.scale_weights"><code class="xref py py-obj docutils literal"><span class="pre">scale_weights</span></code></a>(factor)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.set_external_connections" title="bmtk.simulator.bionet.bionetwork.BioNetwork.set_external_connections"><code class="xref py py-obj docutils literal"><span class="pre">set_external_connections</span></code></a>(source_network)</td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.set_external_connections" title="bmtk.simulator.bionet.bionetwork.BioNetwork.set_external_connections"><code class="xref py py-obj docutils literal"><span class="pre">set_external_connections</span></code></a>(source_network)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.set_recurrent_connections" title="bmtk.simulator.bionet.bionetwork.BioNetwork.set_recurrent_connections"><code class="xref py py-obj docutils literal"><span class="pre">set_recurrent_connections</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.set_recurrent_connections" title="bmtk.simulator.bionet.bionetwork.BioNetwork.set_recurrent_connections"><code class="xref py py-obj docutils literal"><span class="pre">set_recurrent_connections</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.set_seg_props" title="bmtk.simulator.bionet.bionetwork.BioNetwork.set_seg_props"><code class="xref py py-obj docutils literal"><span class="pre">set_seg_props</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.set_seg_props" title="bmtk.simulator.bionet.bionetwork.BioNetwork.set_seg_props"><code class="xref py py-obj docutils literal"><span class="pre">set_seg_props</span></code></a>()</td>
 <td>Set morphological properties for biophysically (morphologically) detailed cells</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.write_connections" title="bmtk.simulator.bionet.bionetwork.BioNetwork.write_connections"><code class="xref py py-obj docutils literal"><span class="pre">write_connections</span></code></a>(csv_file)</td>
+<td></td>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="bmtk.simulator.bionet.bionetwork.BioNetwork.add_spikes_csv">
+<code class="descname">add_spikes_csv</code><span class="sig-paren">(</span><em>ext_net</em>, <em>csv_file</em>, <em>sep=' '</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/bionetwork.html#BioNetwork.add_spikes_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.add_spikes_csv" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="bmtk.simulator.bionet.bionetwork.BioNetwork.add_spikes_nwb">
 <code class="descname">add_spikes_nwb</code><span class="sig-paren">(</span><em>ext_net</em>, <em>nwb_file</em>, <em>trial</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/bionetwork.html#BioNetwork.add_spikes_nwb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.add_spikes_nwb" title="Permalink to this definition">¶</a></dt>
@@ -1193,6 +1245,11 @@ possible use the factory methods (from_json, …) to automatically build a netwo
 <p>Make sure spike trains have been set before calling, otherwise it will creating spiking cells with no spikes.</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="bmtk.simulator.bionet.bionetwork.BioNetwork.save_connections">
+<code class="descname">save_connections</code><a class="headerlink" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.save_connections" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="bmtk.simulator.bionet.bionetwork.BioNetwork.save_gids">
 <code class="descname">save_gids</code><span class="sig-paren">(</span><em>gid_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/bionetwork.html#BioNetwork.save_gids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.save_gids" title="Permalink to this definition">¶</a></dt>
@@ -1238,6 +1295,11 @@ possible use the factory methods (from_json, …) to automatically build a netwo
 <code class="descname">spike_threshold</code><a class="headerlink" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.spike_threshold" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="method">
+<dt id="bmtk.simulator.bionet.bionetwork.BioNetwork.write_connections">
+<code class="descname">write_connections</code><span class="sig-paren">(</span><em>csv_file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/bionetwork.html#BioNetwork.write_connections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.write_connections" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </div>
@@ -1279,20 +1341,28 @@ positions, synapses, and other parameters depending on the desired cell class.</
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.cell.Cell.init_connections" title="bmtk.simulator.bionet.cell.Cell.init_connections"><code class="xref py py-obj docutils literal"><span class="pre">init_connections</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.cell.Cell.get_connection_info" title="bmtk.simulator.bionet.cell.Cell.get_connection_info"><code class="xref py py-obj docutils literal"><span class="pre">get_connection_info</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.cell.Cell.scale_weights" title="bmtk.simulator.bionet.cell.Cell.scale_weights"><code class="xref py py-obj docutils literal"><span class="pre">scale_weights</span></code></a>(factor)</td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.cell.Cell.init_connections" title="bmtk.simulator.bionet.cell.Cell.init_connections"><code class="xref py py-obj docutils literal"><span class="pre">init_connections</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.cell.Cell.set_soma_position" title="bmtk.simulator.bionet.cell.Cell.set_soma_position"><code class="xref py py-obj docutils literal"><span class="pre">set_soma_position</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.cell.Cell.scale_weights" title="bmtk.simulator.bionet.cell.Cell.scale_weights"><code class="xref py py-obj docutils literal"><span class="pre">scale_weights</span></code></a>(factor)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.cell.Cell.set_syn_connections" title="bmtk.simulator.bionet.cell.Cell.set_syn_connections"><code class="xref py py-obj docutils literal"><span class="pre">set_syn_connections</span></code></a>(edge_prop,&nbsp;src_node[,&nbsp;stim])</td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.cell.Cell.set_soma_position" title="bmtk.simulator.bionet.cell.Cell.set_soma_position"><code class="xref py py-obj docutils literal"><span class="pre">set_soma_position</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.cell.Cell.set_syn_connections" title="bmtk.simulator.bionet.cell.Cell.set_syn_connections"><code class="xref py py-obj docutils literal"><span class="pre">set_syn_connections</span></code></a>(edge_prop,&nbsp;src_node[,&nbsp;stim])</td>
 <td></td>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="bmtk.simulator.bionet.cell.Cell.get_connection_info">
+<code class="descname">get_connection_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/cell.html#Cell.get_connection_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.cell.Cell.get_connection_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="attribute">
 <dt id="bmtk.simulator.bionet.cell.Cell.gid">
 <code class="descname">gid</code><a class="headerlink" href="#bmtk.simulator.bionet.cell.Cell.gid" title="Permalink to this definition">¶</a></dt>
@@ -1391,7 +1461,7 @@ well as other behind-the-scenes actions required by bionet.</p>
 <span id="bmtk-simulator-bionet-iclamp-module"></span><h2>bmtk.simulator.bionet.iclamp module<a class="headerlink" href="#module-bmtk.simulator.bionet.iclamp" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="bmtk.simulator.bionet.iclamp.IClamp">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.iclamp.</code><code class="descname">IClamp</code><span class="sig-paren">(</span><em>conf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/iclamp.html#IClamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.iclamp.IClamp" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.iclamp.</code><code class="descname">IClamp</code><span class="sig-paren">(</span><em>amplitude</em>, <em>delay</em>, <em>duration</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/iclamp.html#IClamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.iclamp.IClamp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
@@ -1417,14 +1487,8 @@ well as other behind-the-scenes actions required by bionet.</p>
 <span id="bmtk-simulator-bionet-io-module"></span><h2>bmtk.simulator.bionet.io module<a class="headerlink" href="#module-bmtk.simulator.bionet.io" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="bmtk.simulator.bionet.io.create_cell_vars_files">
-<code class="descclassname">bmtk.simulator.bionet.io.</code><code class="descname">create_cell_vars_files</code><span class="sig-paren">(</span><em>conf</em>, <em>gids</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/io.html#create_cell_vars_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.io.create_cell_vars_files" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bmtk.simulator.bionet.io.</code><code class="descname">create_cell_vars_files</code><span class="sig-paren">(</span><em>simulator</em>, <em>gids</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/io.html#create_cell_vars_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.io.create_cell_vars_files" title="Permalink to this definition">¶</a></dt>
 <dd><p>create 1 hfd5 files per gid</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="bmtk.simulator.bionet.io.create_ecp_file">
-<code class="descclassname">bmtk.simulator.bionet.io.</code><code class="descname">create_ecp_file</code><span class="sig-paren">(</span><em>conf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/io.html#create_ecp_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.io.create_ecp_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>a single ecp file for the entire network</p>
 </dd></dl>
 
 <dl class="function">
@@ -1434,13 +1498,12 @@ well as other behind-the-scenes actions required by bionet.</p>
 
 <dl class="function">
 <dt id="bmtk.simulator.bionet.io.create_output_files">
-<code class="descclassname">bmtk.simulator.bionet.io.</code><code class="descname">create_output_files</code><span class="sig-paren">(</span><em>conf</em>, <em>gids</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/io.html#create_output_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.io.create_output_files" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="bmtk.simulator.bionet.io.create_spike_file">
-<code class="descclassname">bmtk.simulator.bionet.io.</code><code class="descname">create_spike_file</code><span class="sig-paren">(</span><em>conf</em>, <em>gids_on_rank</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/io.html#create_spike_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.io.create_spike_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>create a single hfd5 files for all gids</p>
+<code class="descclassname">bmtk.simulator.bionet.io.</code><code class="descname">create_output_files</code><span class="sig-paren">(</span><em>simulator</em>, <em>gids</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/io.html#create_output_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.io.create_output_files" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>if simulator.calculate_ecp:  # creat single file for ecp from all contributing cells</dt>
+<dd>print2log0(‘    Will save time series of the ECP!’)
+create_ecp_file(simulator)</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -1525,49 +1588,6 @@ well as other behind-the-scenes actions required by bionet.</p>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="bmtk.simulator.bionet.io.save_block_to_disk">
-<code class="descclassname">bmtk.simulator.bionet.io.</code><code class="descname">save_block_to_disk</code><span class="sig-paren">(</span><em>conf</em>, <em>data_block</em>, <em>time_step_interval</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/io.html#save_block_to_disk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.io.save_block_to_disk" title="Permalink to this definition">¶</a></dt>
-<dd><p>save data in blocks to hdf5</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="bmtk.simulator.bionet.io.save_cell_vars">
-<code class="descclassname">bmtk.simulator.bionet.io.</code><code class="descname">save_cell_vars</code><span class="sig-paren">(</span><em>conf</em>, <em>data_block</em>, <em>time_step_interval</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/io.html#save_cell_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.io.save_cell_vars" title="Permalink to this definition">¶</a></dt>
-<dd><p>save to disk with one file per gid</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="bmtk.simulator.bionet.io.save_ecp">
-<code class="descclassname">bmtk.simulator.bionet.io.</code><code class="descname">save_ecp</code><span class="sig-paren">(</span><em>conf</em>, <em>data_block</em>, <em>time_step_interval</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/io.html#save_ecp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.io.save_ecp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save ECP from each rank to disk into a single file</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="bmtk.simulator.bionet.io.save_spikes2ascii">
-<code class="descclassname">bmtk.simulator.bionet.io.</code><code class="descname">save_spikes2ascii</code><span class="sig-paren">(</span><em>conf</em>, <em>data_block</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/io.html#save_spikes2ascii"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.io.save_spikes2ascii" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save spikes to ascii file as tuples (t,gid)</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="bmtk.simulator.bionet.io.save_spikes2h5">
-<code class="descclassname">bmtk.simulator.bionet.io.</code><code class="descname">save_spikes2h5</code><span class="sig-paren">(</span><em>conf</em>, <em>data_block</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/io.html#save_spikes2h5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.io.save_spikes2h5" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save spikes to h5 file: into time,gid datasets</p>
-<p>Spike times are not necessarily in order. For comparison between runs, need to sort spikes</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>conf</strong> – </li>
-<li><strong>data_block</strong> – </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
 <dt id="bmtk.simulator.bionet.io.save_state">
 <code class="descclassname">bmtk.simulator.bionet.io.</code><code class="descname">save_state</code><span class="sig-paren">(</span><em>conf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/io.html#save_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.io.save_state" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -1613,32 +1633,40 @@ well as other behind-the-scenes actions required by bionet.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">init_connections</span></code>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.lifcell.LIFCell.get_connection_info" title="bmtk.simulator.bionet.lifcell.LIFCell.get_connection_info"><code class="xref py py-obj docutils literal"><span class="pre">get_connection_info</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.lifcell.LIFCell.print_synapses" title="bmtk.simulator.bionet.lifcell.LIFCell.print_synapses"><code class="xref py py-obj docutils literal"><span class="pre">print_synapses</span></code></a>()</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">init_connections</span></code>()</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">scale_weights</span></code>(factor)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.lifcell.LIFCell.print_synapses" title="bmtk.simulator.bionet.lifcell.LIFCell.print_synapses"><code class="xref py py-obj docutils literal"><span class="pre">print_synapses</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.lifcell.LIFCell.set_im_ptr" title="bmtk.simulator.bionet.lifcell.LIFCell.set_im_ptr"><code class="xref py py-obj docutils literal"><span class="pre">set_im_ptr</span></code></a>()</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">scale_weights</span></code>(factor)</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal"><span class="pre">set_soma_position</span></code>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.lifcell.LIFCell.set_im_ptr" title="bmtk.simulator.bionet.lifcell.LIFCell.set_im_ptr"><code class="xref py py-obj docutils literal"><span class="pre">set_im_ptr</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.lifcell.LIFCell.set_spike_detector" title="bmtk.simulator.bionet.lifcell.LIFCell.set_spike_detector"><code class="xref py py-obj docutils literal"><span class="pre">set_spike_detector</span></code></a>()</td>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal"><span class="pre">set_soma_position</span></code>()</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.lifcell.LIFCell.set_syn_connection" title="bmtk.simulator.bionet.lifcell.LIFCell.set_syn_connection"><code class="xref py py-obj docutils literal"><span class="pre">set_syn_connection</span></code></a>(edge_prop,&nbsp;src_node[,&nbsp;stim])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.lifcell.LIFCell.set_spike_detector" title="bmtk.simulator.bionet.lifcell.LIFCell.set_spike_detector"><code class="xref py py-obj docutils literal"><span class="pre">set_spike_detector</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.lifcell.LIFCell.set_syn_connections" title="bmtk.simulator.bionet.lifcell.LIFCell.set_syn_connections"><code class="xref py py-obj docutils literal"><span class="pre">set_syn_connections</span></code></a>(nsyn,&nbsp;syn_weight,&nbsp;…[,&nbsp;…])</td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.lifcell.LIFCell.set_syn_connection" title="bmtk.simulator.bionet.lifcell.LIFCell.set_syn_connection"><code class="xref py py-obj docutils literal"><span class="pre">set_syn_connection</span></code></a>(edge_prop,&nbsp;src_node[,&nbsp;stim])</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.lifcell.LIFCell.set_syn_connections" title="bmtk.simulator.bionet.lifcell.LIFCell.set_syn_connections"><code class="xref py py-obj docutils literal"><span class="pre">set_syn_connections</span></code></a>(nsyn,&nbsp;syn_weight,&nbsp;…[,&nbsp;…])</td>
 <td>Set synaptic connection</td>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="bmtk.simulator.bionet.lifcell.LIFCell.get_connection_info">
+<code class="descname">get_connection_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/lifcell.html#LIFCell.get_connection_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.lifcell.LIFCell.get_connection_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="bmtk.simulator.bionet.lifcell.LIFCell.print_synapses">
 <code class="descname">print_synapses</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/lifcell.html#LIFCell.print_synapses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.lifcell.LIFCell.print_synapses" title="Permalink to this definition">¶</a></dt>
@@ -1804,57 +1832,52 @@ def weight_function(): …</dd>
 </dd></dl>
 
 </div>
-<div class="section" id="module-bmtk.simulator.bionet.recxelectrode">
-<span id="bmtk-simulator-bionet-recxelectrode-module"></span><h2>bmtk.simulator.bionet.recxelectrode module<a class="headerlink" href="#module-bmtk.simulator.bionet.recxelectrode" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="bmtk.simulator.bionet.recxelectrode.RecXElectrode">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.recxelectrode.</code><code class="descname">RecXElectrode</code><span class="sig-paren">(</span><em>conf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/recxelectrode.html#RecXElectrode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.recxelectrode.RecXElectrode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Extracellular electrode</p>
-<p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.recxelectrode.RecXElectrode.calc_transfer_resistance" title="bmtk.simulator.bionet.recxelectrode.RecXElectrode.calc_transfer_resistance"><code class="xref py py-obj docutils literal"><span class="pre">calc_transfer_resistance</span></code></a>(gid,&nbsp;seg_coords)</td>
-<td>Precompute mapping from segment to electrode locations</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.recxelectrode.RecXElectrode.drift" title="bmtk.simulator.bionet.recxelectrode.RecXElectrode.drift"><code class="xref py py-obj docutils literal"><span class="pre">drift</span></code></a>()</td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.recxelectrode.RecXElectrode.get_transfer_resistance" title="bmtk.simulator.bionet.recxelectrode.RecXElectrode.get_transfer_resistance"><code class="xref py py-obj docutils literal"><span class="pre">get_transfer_resistance</span></code></a>(gid)</td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="bmtk.simulator.bionet.recxelectrode.RecXElectrode.calc_transfer_resistance">
-<code class="descname">calc_transfer_resistance</code><span class="sig-paren">(</span><em>gid</em>, <em>seg_coords</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/recxelectrode.html#RecXElectrode.calc_transfer_resistance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.recxelectrode.RecXElectrode.calc_transfer_resistance" title="Permalink to this definition">¶</a></dt>
-<dd><p>Precompute mapping from segment to electrode locations</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.simulator.bionet.recxelectrode.RecXElectrode.drift">
-<code class="descname">drift</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/recxelectrode.html#RecXElectrode.drift"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.recxelectrode.RecXElectrode.drift" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="bmtk.simulator.bionet.recxelectrode.RecXElectrode.get_transfer_resistance">
-<code class="descname">get_transfer_resistance</code><span class="sig-paren">(</span><em>gid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/recxelectrode.html#RecXElectrode.get_transfer_resistance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.recxelectrode.RecXElectrode.get_transfer_resistance" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</div>
 <div class="section" id="module-bmtk.simulator.bionet.simulation">
 <span id="bmtk-simulator-bionet-simulation-module"></span><h2>bmtk.simulator.bionet.simulation module<a class="headerlink" href="#module-bmtk.simulator.bionet.simulation" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="bmtk.simulator.bionet.simulation.Simulation">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.simulation.</code><code class="descname">Simulation</code><span class="sig-paren">(</span><em>conf</em>, <em>network</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/simulation.html#Simulation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.simulation.Simulation" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.simulation.</code><code class="descname">Simulation</code><span class="sig-paren">(</span><em>network</em>, <em>dt</em>, <em>tstop</em>, <em>v_init</em>, <em>celsius</em>, <em>nsteps_block</em>, <em>start_from_state=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/simulation.html#Simulation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.simulation.Simulation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Includes methods to run and control the simulation</p>
+<p class="rubric">Attributes</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.cell_var_output" title="bmtk.simulator.bionet.simulation.Simulation.cell_var_output"><code class="xref py py-obj docutils literal"><span class="pre">cell_var_output</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.cell_variables" title="bmtk.simulator.bionet.simulation.Simulation.cell_variables"><code class="xref py py-obj docutils literal"><span class="pre">cell_variables</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.celsius" title="bmtk.simulator.bionet.simulation.Simulation.celsius"><code class="xref py py-obj docutils literal"><span class="pre">celsius</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.dt" title="bmtk.simulator.bionet.simulation.Simulation.dt"><code class="xref py py-obj docutils literal"><span class="pre">dt</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.h" title="bmtk.simulator.bionet.simulation.Simulation.h"><code class="xref py py-obj docutils literal"><span class="pre">h</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.n_steps" title="bmtk.simulator.bionet.simulation.Simulation.n_steps"><code class="xref py py-obj docutils literal"><span class="pre">n_steps</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.nsteps_block" title="bmtk.simulator.bionet.simulation.Simulation.nsteps_block"><code class="xref py py-obj docutils literal"><span class="pre">nsteps_block</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.spikes_table" title="bmtk.simulator.bionet.simulation.Simulation.spikes_table"><code class="xref py py-obj docutils literal"><span class="pre">spikes_table</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.tstop" title="bmtk.simulator.bionet.simulation.Simulation.tstop"><code class="xref py py-obj docutils literal"><span class="pre">tstop</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.v_init" title="bmtk.simulator.bionet.simulation.Simulation.v_init"><code class="xref py py-obj docutils literal"><span class="pre">v_init</span></code></a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Methods</p>
 <table border="1" class="longtable docutils">
 <colgroup>
@@ -1862,51 +1885,81 @@ def weight_function(): …</dd>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.attach_current_clamp" title="bmtk.simulator.bionet.simulation.Simulation.attach_current_clamp"><code class="xref py py-obj docutils literal"><span class="pre">attach_current_clamp</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.add_mod" title="bmtk.simulator.bionet.simulation.Simulation.add_mod"><code class="xref py py-obj docutils literal"><span class="pre">add_mod</span></code></a>(module)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.create_data_block" title="bmtk.simulator.bionet.simulation.Simulation.create_data_block"><code class="xref py py-obj docutils literal"><span class="pre">create_data_block</span></code></a>()</td>
-<td>Create block in memory to store ouputs from each time step</td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.attach_current_clamp" title="bmtk.simulator.bionet.simulation.Simulation.attach_current_clamp"><code class="xref py py-obj docutils literal"><span class="pre">attach_current_clamp</span></code></a>(amplitude,&nbsp;delay,&nbsp;duration)</td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.post_fadvance" title="bmtk.simulator.bionet.simulation.Simulation.post_fadvance"><code class="xref py py-obj docutils literal"><span class="pre">post_fadvance</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.from_config" title="bmtk.simulator.bionet.simulation.Simulation.from_config"><code class="xref py py-obj docutils literal"><span class="pre">from_config</span></code></a>(config,&nbsp;network[,&nbsp;set_recordings])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.post_fadvance" title="bmtk.simulator.bionet.simulation.Simulation.post_fadvance"><code class="xref py py-obj docutils literal"><span class="pre">post_fadvance</span></code></a>()</td>
 <td>Runs after every execution of fadvance (see advance.hoc) Called after every time step to perform computation and save data to memory block or to disk.</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.report_load_balance" title="bmtk.simulator.bionet.simulation.Simulation.report_load_balance"><code class="xref py py-obj docutils literal"><span class="pre">report_load_balance</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.report_load_balance" title="bmtk.simulator.bionet.simulation.Simulation.report_load_balance"><code class="xref py py-obj docutils literal"><span class="pre">report_load_balance</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.run" title="bmtk.simulator.bionet.simulation.Simulation.run"><code class="xref py py-obj docutils literal"><span class="pre">run</span></code></a>()</td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.run" title="bmtk.simulator.bionet.simulation.Simulation.run"><code class="xref py py-obj docutils literal"><span class="pre">run</span></code></a>()</td>
 <td>Run the simulation:</td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.save_data_to_block" title="bmtk.simulator.bionet.simulation.Simulation.save_data_to_block"><code class="xref py py-obj docutils literal"><span class="pre">save_data_to_block</span></code></a>(tstep_block)</td>
-<td>Compute data and save to a memory block</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.set_ecp_recording" title="bmtk.simulator.bionet.simulation.Simulation.set_ecp_recording"><code class="xref py py-obj docutils literal"><span class="pre">set_ecp_recording</span></code></a>()</td>
-<td>Set recording of the ExtraCellular Potential</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.set_init_conditions" title="bmtk.simulator.bionet.simulation.Simulation.set_init_conditions"><code class="xref py py-obj docutils literal"><span class="pre">set_init_conditions</span></code></a>()</td>
-<td>Set up the initial conditions: either read from the h.SaveState or from config[“condidtions”]</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.set_pointers" title="bmtk.simulator.bionet.simulation.Simulation.set_pointers"><code class="xref py py-obj docutils literal"><span class="pre">set_pointers</span></code></a>()</td>
-<td></td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.set_recordings" title="bmtk.simulator.bionet.simulation.Simulation.set_recordings"><code class="xref py py-obj docutils literal"><span class="pre">set_recordings</span></code></a>()</td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.set_recordings" title="bmtk.simulator.bionet.simulation.Simulation.set_recordings"><code class="xref py py-obj docutils literal"><span class="pre">set_recordings</span></code></a>()</td>
 <td>Set recordings of ECP, spikes and somatic traces</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.set_spike_recording" title="bmtk.simulator.bionet.simulation.Simulation.set_spike_recording"><code class="xref py py-obj docutils literal"><span class="pre">set_spike_recording</span></code></a>()</td>
-<td>Set dictionary of hocVectors for spike recordings</td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.simulator.bionet.simulation.Simulation.set_spikes_recording" title="bmtk.simulator.bionet.simulation.Simulation.set_spikes_recording"><code class="xref py py-obj docutils literal"><span class="pre">set_spikes_recording</span></code></a>()</td>
+<td></td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
-<dt id="bmtk.simulator.bionet.simulation.Simulation.attach_current_clamp">
-<code class="descname">attach_current_clamp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/simulation.html#Simulation.attach_current_clamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.simulation.Simulation.attach_current_clamp" title="Permalink to this definition">¶</a></dt>
+<dt id="bmtk.simulator.bionet.simulation.Simulation.add_mod">
+<code class="descname">add_mod</code><span class="sig-paren">(</span><em>module</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/simulation.html#Simulation.add_mod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.simulation.Simulation.add_mod" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="bmtk.simulator.bionet.simulation.Simulation.create_data_block">
-<code class="descname">create_data_block</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/simulation.html#Simulation.create_data_block"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.simulation.Simulation.create_data_block" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create block in memory to store ouputs from each time step</p>
-</dd></dl>
+<dt id="bmtk.simulator.bionet.simulation.Simulation.attach_current_clamp">
+<code class="descname">attach_current_clamp</code><span class="sig-paren">(</span><em>amplitude</em>, <em>delay</em>, <em>duration</em>, <em>gids=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/simulation.html#Simulation.attach_current_clamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.simulation.Simulation.attach_current_clamp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.bionet.simulation.Simulation.cell_var_output">
+<code class="descname">cell_var_output</code><a class="headerlink" href="#bmtk.simulator.bionet.simulation.Simulation.cell_var_output" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.bionet.simulation.Simulation.cell_variables">
+<code class="descname">cell_variables</code><a class="headerlink" href="#bmtk.simulator.bionet.simulation.Simulation.cell_variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.bionet.simulation.Simulation.celsius">
+<code class="descname">celsius</code><a class="headerlink" href="#bmtk.simulator.bionet.simulation.Simulation.celsius" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.bionet.simulation.Simulation.dt">
+<code class="descname">dt</code><a class="headerlink" href="#bmtk.simulator.bionet.simulation.Simulation.dt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.bionet.simulation.Simulation.from_config">
+<em class="property">classmethod </em><code class="descname">from_config</code><span class="sig-paren">(</span><em>config</em>, <em>network</em>, <em>set_recordings=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/simulation.html#Simulation.from_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.simulation.Simulation.from_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.bionet.simulation.Simulation.h">
+<code class="descname">h</code><a class="headerlink" href="#bmtk.simulator.bionet.simulation.Simulation.h" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.bionet.simulation.Simulation.n_steps">
+<code class="descname">n_steps</code><a class="headerlink" href="#bmtk.simulator.bionet.simulation.Simulation.n_steps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.bionet.simulation.Simulation.nsteps_block">
+<code class="descname">nsteps_block</code><a class="headerlink" href="#bmtk.simulator.bionet.simulation.Simulation.nsteps_block" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="bmtk.simulator.bionet.simulation.Simulation.post_fadvance">
@@ -1924,33 +1977,10 @@ The initial condition tstep=0 is not being saved</p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.simulation.Simulation.run">
 <code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/simulation.html#Simulation.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.simulation.Simulation.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run the simulation: 
+<dd><p>Run the simulation:
 if beginning from a blank state, then will use h.run(),
 if continuing from the saved state, then will use h.continuerun()</p>
 </dd></dl>
-
-<dl class="method">
-<dt id="bmtk.simulator.bionet.simulation.Simulation.save_data_to_block">
-<code class="descname">save_data_to_block</code><span class="sig-paren">(</span><em>tstep_block</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/simulation.html#Simulation.save_data_to_block"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.simulation.Simulation.save_data_to_block" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute data and save to a memory block</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.simulator.bionet.simulation.Simulation.set_ecp_recording">
-<code class="descname">set_ecp_recording</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/simulation.html#Simulation.set_ecp_recording"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.simulation.Simulation.set_ecp_recording" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set recording of the ExtraCellular Potential</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.simulator.bionet.simulation.Simulation.set_init_conditions">
-<code class="descname">set_init_conditions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/simulation.html#Simulation.set_init_conditions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.simulation.Simulation.set_init_conditions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set up the initial conditions: either read from the h.SaveState or from config[“condidtions”]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.simulator.bionet.simulation.Simulation.set_pointers">
-<code class="descname">set_pointers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/simulation.html#Simulation.set_pointers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.simulation.Simulation.set_pointers" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="method">
 <dt id="bmtk.simulator.bionet.simulation.Simulation.set_recordings">
@@ -1959,10 +1989,24 @@ if continuing from the saved state, then will use h.continuerun()</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="bmtk.simulator.bionet.simulation.Simulation.set_spike_recording">
-<code class="descname">set_spike_recording</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/simulation.html#Simulation.set_spike_recording"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.simulation.Simulation.set_spike_recording" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set dictionary of hocVectors for spike recordings</p>
-</dd></dl>
+<dt id="bmtk.simulator.bionet.simulation.Simulation.set_spikes_recording">
+<code class="descname">set_spikes_recording</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/simulator/bionet/simulation.html#Simulation.set_spikes_recording"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.simulation.Simulation.set_spikes_recording" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.bionet.simulation.Simulation.spikes_table">
+<code class="descname">spikes_table</code><a class="headerlink" href="#bmtk.simulator.bionet.simulation.Simulation.spikes_table" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.bionet.simulation.Simulation.tstop">
+<code class="descname">tstop</code><a class="headerlink" href="#bmtk.simulator.bionet.simulation.Simulation.tstop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.bionet.simulation.Simulation.v_init">
+<code class="descname">v_init</code><a class="headerlink" href="#bmtk.simulator.bionet.simulation.Simulation.v_init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 

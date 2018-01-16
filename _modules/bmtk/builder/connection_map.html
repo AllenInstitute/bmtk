@@ -710,6 +710,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_properties</span> <span class="o">=</span> <span class="n">edge_type_properties</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_params</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_param_keys</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -720,8 +721,16 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_source_nodes</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">source_network_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_source_nodes</span><span class="o">.</span><span class="n">network_name</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">target_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target_nodes</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">target_network_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target_nodes</span><span class="o">.</span><span class="n">network_name</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">connector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -742,7 +751,22 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">edge_type_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># TODO: properly implement edge_type</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_properties</span><span class="p">[</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_properties</span><span class="p">[</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">property_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_param_keys</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;nsyns&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_param_keys</span>
+
+<div class="viewcode-block" id="ConnectionMap.properties_keys"><a class="viewcode-back" href="../../../bmtk.builder.html#bmtk.builder.connection_map.ConnectionMap.properties_keys">[docs]</a>    <span class="k">def</span> <span class="nf">properties_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ordered_keys</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">property_names</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ordered_keys</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ConnectionMap.max_connections"><a class="viewcode-back" href="../../../bmtk.builder.html#bmtk.builder.connection_map.ConnectionMap.max_connections">[docs]</a>    <span class="k">def</span> <span class="nf">max_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_source_nodes</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_target_nodes</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ConnectionMap.add_properties"><a class="viewcode-back" href="../../../bmtk.builder.html#bmtk.builder.connection_map.ConnectionMap.add_properties">[docs]</a>    <span class="k">def</span> <span class="nf">add_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">rule</span><span class="p">,</span> <span class="n">rule_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtypes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;A a synaptic property</span>
@@ -752,7 +776,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">        :param rule_params: when rule is a function, rule_params will be passed into function when called.</span>
 <span class="sd">        :param dtypes: expected property type</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ParamsRules</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">rule</span><span class="p">,</span> <span class="n">rule_params</span><span class="p">,</span> <span class="n">dtypes</span><span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ParamsRules</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">rule</span><span class="p">,</span> <span class="n">rule_params</span><span class="p">,</span> <span class="n">dtypes</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_param_keys</span> <span class="o">+=</span> <span class="n">names</span></div>
 
 <div class="viewcode-block" id="ConnectionMap.connection_itr"><a class="viewcode-back" href="../../../bmtk.builder.html#bmtk.builder.connection_map.ConnectionMap.connection_itr">[docs]</a>    <span class="k">def</span> <span class="nf">connection_itr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns a generator that will iterate through the source/target pairs (as specified by the iterator function,</span>

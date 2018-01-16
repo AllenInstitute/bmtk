@@ -655,8 +655,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</span>
 <span class="c1"># OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">types</span>
+<span class="kn">import</span> <span class="nn">csv</span>
 
 <span class="kn">from</span> <span class="nn">node_pool</span> <span class="k">import</span> <span class="n">NodePool</span>
 <span class="kn">from</span> <span class="nn">connection_map</span> <span class="k">import</span> <span class="n">ConnectionMap</span>
@@ -682,13 +684,20 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_node_types_properties</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_node_types_columns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_properties</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_types_columns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">])</span>
+        <span class="c1"># self._edge_type_properties = {}</span>
+        <span class="c1"># self._edge_types_columns = set([&#39;edge_type_id&#39;])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_connection_maps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1">#self._connection_maps = ConnectionTable()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_gen</span> <span class="o">=</span> <span class="n">IDGenerator</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_node_type_id_gen</span> <span class="o">=</span> <span class="n">IDGenerator</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_id_gen</span> <span class="o">=</span> <span class="n">IDGenerator</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+
+        <span class="c1">#self._connection_table = []</span>
+        <span class="c1">#self._source_networks = []</span>
+        <span class="c1">#self._target_networks = []</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_network_conns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connected_networks</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -709,6 +718,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nedges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+<div class="viewcode-block" id="Network.get_connections"><a class="viewcode-back" href="../../../bmtk.builder.html#bmtk.builder.network.Network.get_connections">[docs]</a>    <span class="k">def</span> <span class="nf">get_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_maps</span></div>
 
     <span class="k">def</span> <span class="nf">_add_node_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">props</span><span class="p">):</span>
         <span class="n">node_type_id</span> <span class="o">=</span> <span class="n">props</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -761,22 +773,27 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">NodePool</span><span class="p">):</span>
             <span class="n">target</span> <span class="o">=</span> <span class="n">NodePool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">target</span> <span class="ow">or</span> <span class="p">{})</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_network_conns</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">source</span><span class="o">.</span><span class="n">network_name</span><span class="p">,</span> <span class="n">target</span><span class="o">.</span><span class="n">network_name</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connected_networks</span><span class="p">[</span><span class="n">source</span><span class="o">.</span><span class="n">network_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">network</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connected_networks</span><span class="p">[</span><span class="n">target</span><span class="o">.</span><span class="n">network_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">network</span>
+
         <span class="c1"># TODO: make sure that they don&#39;t add a dictionary or some other wried property type.</span>
         <span class="n">edge_type_id</span> <span class="o">=</span> <span class="n">edge_type_properties</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">edge_type_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">edge_type_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_id_gen</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
             <span class="n">edge_type_properties</span><span class="p">[</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_type_id</span>
-        <span class="k">elif</span> <span class="n">edge_type_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_properties</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">edge_type_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_id_gen</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;edge_type_id </span><span class="si">{}</span><span class="s1"> already exists.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge_type_id</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_id_gen</span><span class="o">.</span><span class="n">remove_id</span><span class="p">(</span><span class="n">edge_type_id</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_properties</span><span class="p">[</span><span class="n">edge_type_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_type_properties</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_properties</span><span class="p">[</span><span class="n">edge_type_id</span><span class="p">][</span><span class="s1">&#39;source_query&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">filter_str</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_properties</span><span class="p">[</span><span class="n">edge_type_id</span><span class="p">][</span><span class="s1">&#39;target_query&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">filter_str</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_types_columns</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">edge_type_properties</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">edge_type_properties</span><span class="p">[</span><span class="s1">&#39;source_query&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">filter_str</span>
+        <span class="n">edge_type_properties</span><span class="p">[</span><span class="s1">&#39;target_query&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">filter_str</span>
+
+        <span class="c1"># self._edge_types_columns.update(edge_type_properties.keys())</span>
         <span class="n">connection</span> <span class="o">=</span> <span class="n">ConnectionMap</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">connection_rule</span><span class="p">,</span> <span class="n">connection_params</span><span class="p">,</span> <span class="n">iterator</span><span class="p">,</span> <span class="n">edge_type_properties</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_connection_maps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span>
+        <span class="c1"># self._connection_maps.add(source.network_name, target.network_name, connection)</span>
         <span class="k">return</span> <span class="n">connection</span></div>
 
 <div class="viewcode-block" id="Network.nodes"><a class="viewcode-back" href="../../../bmtk.builder.html#bmtk.builder.network.Network.nodes">[docs]</a>    <span class="k">def</span> <span class="nf">nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">properties</span><span class="p">):</span>
@@ -785,13 +802,96 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="k">return</span> <span class="n">NodePool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">properties</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Network.edges"><a class="viewcode-back" href="../../../bmtk.builder.html#bmtk.builder.network.Network.edges">[docs]</a>    <span class="k">def</span> <span class="nf">edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">targets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Network.nodes_iter"><a class="viewcode-back" href="../../../bmtk.builder.html#bmtk.builder.network.Network.nodes_iter">[docs]</a>    <span class="k">def</span> <span class="nf">nodes_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nids</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Network.edges"><a class="viewcode-back" href="../../../bmtk.builder.html#bmtk.builder.network.Network.edges">[docs]</a>    <span class="k">def</span> <span class="nf">edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target_network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source_network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">properties</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a list of dictionary-like Edge objects, given filter parameters.</span>
+
+<span class="sd">        To get all edges from a network</span>
+<span class="sd">           edges = net.edges()</span>
+
+<span class="sd">        To specify the target and/or source node-set</span>
+<span class="sd">          edges = net.edges(target_nodes=net.nodes(type=&#39;biophysical&#39;), source_nodes=net.nodes(ei=&#39;i&#39;))</span>
+
+<span class="sd">        To only get edges with a given edge_property</span>
+<span class="sd">          edges = net.edges(weight=100, syn_type=&#39;AMPA_Exc2Exc&#39;)</span>
+
+<span class="sd">        :param target_nodes: gid, list of gid, dict or node-pool. Set of target nodes for a given edge.</span>
+<span class="sd">        :param source_nodes: gid, list of gid, dict or node-pool. Set of source nodes for a given edge.</span>
+<span class="sd">        :param target_network: name of network containing target nodes.</span>
+<span class="sd">        :param source_network: name of network containing source nodes.</span>
+<span class="sd">        :param properties: edge-properties used to filter out only certain edges.</span>
+<span class="sd">        :return: list of bmtk.builder.edge.Edge properties.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">nodes2gids</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">network</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;helper function for converting target and source nodes into list of gids&quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">nodes</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">network</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">nodes</span><span class="p">],</span> <span class="n">network</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">network</span> <span class="o">=</span> <span class="n">network</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network_name</span>
+                <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connected_networks</span><span class="p">[</span><span class="n">network</span><span class="p">]</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="o">**</span><span class="n">nodes</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">NodePool</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">network</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">nodes</span><span class="o">.</span><span class="n">network_name</span> <span class="o">!=</span> <span class="n">network</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Warning. nodes and network don not match&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">node_id</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">],</span> <span class="n">nodes</span><span class="o">.</span><span class="n">network_name</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Couldnt convert nodes&#39;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">filter_edges</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Returns true only if all the properities match for a given edge&quot;&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">properties</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="n">e</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">!=</span> <span class="n">v</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges_built</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
 
-        <span class="c1">#target_network = target_network or self.name</span>
-        <span class="c1">#source_network = source_network or self.name</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_iter</span><span class="p">(</span><span class="n">targets</span><span class="o">=</span><span class="n">targets</span><span class="p">,</span> <span class="n">sources</span><span class="o">=</span><span class="n">sources</span><span class="p">)</span></div>
+        <span class="c1"># trg_gids can&#39;t be none for edges_itr. if target-nodes is not explicity states get all target_gids that</span>
+        <span class="c1"># synapse onto or from current network.</span>
+        <span class="k">if</span> <span class="n">target_nodes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">trg_gid_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">node_id</span> <span class="k">for</span> <span class="n">cm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_maps</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">cm</span><span class="o">.</span><span class="n">target_nodes</span><span class="p">)</span>
+            <span class="n">target_nodes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">trg_gid_set</span><span class="p">)</span>
+
+        <span class="c1"># convert target/source nodes into a list of their gids</span>
+        <span class="n">trg_gids</span><span class="p">,</span> <span class="n">trg_net</span> <span class="o">=</span> <span class="n">nodes2gids</span><span class="p">(</span><span class="n">target_nodes</span><span class="p">,</span> <span class="n">target_network</span><span class="p">)</span>
+        <span class="n">src_gids</span><span class="p">,</span> <span class="n">src_net</span> <span class="o">=</span> <span class="n">nodes2gids</span><span class="p">(</span><span class="n">source_nodes</span><span class="p">,</span> <span class="n">source_network</span><span class="p">)</span>
+
+        <span class="c1"># use the iterator to get edges and return as a list</span>
+        <span class="k">if</span> <span class="n">properties</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edges_iter</span><span class="p">(</span><span class="n">trg_gids</span><span class="o">=</span><span class="n">trg_gids</span><span class="p">,</span> <span class="n">trg_network</span><span class="o">=</span><span class="n">trg_net</span><span class="p">,</span> <span class="n">src_network</span><span class="o">=</span><span class="n">src_net</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># filter out certain edges using the properties parameters</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges_iter</span><span class="p">(</span><span class="n">trg_gids</span><span class="o">=</span><span class="n">trg_gids</span><span class="p">,</span> <span class="n">trg_network</span><span class="o">=</span><span class="n">trg_net</span><span class="p">,</span> <span class="n">src_network</span><span class="o">=</span><span class="n">src_net</span><span class="p">)</span>
+                     <span class="k">if</span> <span class="n">filter_edges</span><span class="p">(</span><span class="n">e</span><span class="p">)]</span>
+
+        <span class="k">if</span> <span class="n">src_gids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># if src_gids are set filter out edges some more</span>
+            <span class="n">edges</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">edges</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">source_gid</span> <span class="ow">in</span> <span class="n">src_gids</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">edges</span></div>
+
+<div class="viewcode-block" id="Network.edges_iter"><a class="viewcode-back" href="../../../bmtk.builder.html#bmtk.builder.network.Network.edges_iter">[docs]</a>    <span class="k">def</span> <span class="nf">edges_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trg_gids</span><span class="p">,</span> <span class="n">src_network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trg_network</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Given a list of target gids, returns a generator for iteratoring over all possible edges.</span>
+
+<span class="sd">        It is preferable to use edges() method instead, it allows more flexibibility in the input and can better</span>
+<span class="sd">        indicate if their is a problem.</span>
+
+<span class="sd">        The order of the edges returned will be in the same order as the trg_gids list, but does not guarentee any</span>
+<span class="sd">        secondary ordering by source-nodes and/or edge-type. If their isn&#39;t a edge with a matching target-id then</span>
+<span class="sd">        it will skip that gid in the list, the size of the generator can 0 to arbitrarly large.</span>
+
+<span class="sd">        :param trg_gids: list of gids to match with an edge&#39;s target.</span>
+<span class="sd">        :param src_network: str, only returns edges coming from the specified source network.</span>
+<span class="sd">        :param trg_network: str, only returns edges coming from the specified target network.</span>
+<span class="sd">        :return: iteration of bmtk.build.edge.Edge objects representing given edge.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="Network.clear"><a class="viewcode-back" href="../../../bmtk.builder.html#bmtk.builder.network.Network.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nodes_built</span> <span class="o">=</span> <span class="kc">False</span>
@@ -820,8 +920,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="c1"># only rebuild nodes if necessary.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_build_nodes</span><span class="p">()</span>
 
-        <span class="k">for</span> <span class="n">conn_map</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_maps</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_add_edges</span><span class="p">(</span><span class="n">conn_map</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">conn_map</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connection_maps</span><span class="p">):</span>
+            <span class="c1"># print conn_map</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_edges</span><span class="p">(</span><span class="n">conn_map</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_edges_built</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -843,14 +944,106 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="c1"># always build the edges.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__build_edges</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Network.save_nodes"><a class="viewcode-back" href="../../../bmtk.builder.html#bmtk.builder.network.Network.save_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">save_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes_file_name</span><span class="p">,</span> <span class="n">node_types_file_name</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+    <span class="k">def</span> <span class="nf">__get_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">path_dir</span><span class="p">,</span> <span class="n">ftype</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">ftype</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_dir</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">filename</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Network.save_nodes"><a class="viewcode-back" href="../../../bmtk.builder.html#bmtk.builder.network.Network.save_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">save_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes_file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_types_file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">force_overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">nodes_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path</span><span class="p">(</span><span class="n">nodes_file_name</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;nodes.h5&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">force_overwrite</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">nodes_file</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;File </span><span class="si">{}</span><span class="s1"> exists. Please use different name or use force_overwrite&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nodes_file</span><span class="p">))</span>
+        <span class="n">nf_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">nodes_file</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">nf_dir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">nf_dir</span><span class="p">)</span>
+
+        <span class="n">node_types_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path</span><span class="p">(</span><span class="n">node_types_file_name</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;node_types.csv&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">force_overwrite</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">node_types_file</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;File </span><span class="si">{}</span><span class="s1"> exists. Please use different name or use force_overwrite&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node_types_file</span><span class="p">))</span>
+        <span class="n">ntf_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">node_types_file</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">ntf_dir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">ntf_dir</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_nodes</span><span class="p">(</span><span class="n">nodes_file</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_node_types</span><span class="p">(</span><span class="n">node_types_file</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_save_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes_file_name</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">_save_node_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_types_file_name</span><span class="p">):</span>
+        <span class="n">node_types_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_types_columns</span> <span class="k">if</span> <span class="n">col</span> <span class="o">!=</span> <span class="s1">&#39;node_type_id&#39;</span><span class="p">]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">node_types_file_name</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+            <span class="n">csvw</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+            <span class="n">csvw</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">node_types_cols</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">node_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_types_properties</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">csvw</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="n">node_type</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cname</span><span class="p">,</span> <span class="s1">&#39;NULL&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">cname</span> <span class="ow">in</span> <span class="n">node_types_cols</span><span class="p">])</span>
 
 <div class="viewcode-block" id="Network.import_nodes"><a class="viewcode-back" href="../../../bmtk.builder.html#bmtk.builder.network.Network.import_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">import_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes_file_name</span><span class="p">,</span> <span class="n">node_types_file_name</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Network.save_edges"><a class="viewcode-back" href="../../../bmtk.builder.html#bmtk.builder.network.Network.save_edges">[docs]</a>    <span class="k">def</span> <span class="nf">save_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edges_file_name</span><span class="p">,</span> <span class="n">edge_types_file_name</span><span class="p">,</span> <span class="n">src_network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trg_network</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+<div class="viewcode-block" id="Network.save_edges"><a class="viewcode-back" href="../../../bmtk.builder.html#bmtk.builder.network.Network.save_edges">[docs]</a>    <span class="k">def</span> <span class="nf">save_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edges_file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_types_file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">src_network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">trg_network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_build</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">force_overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="c1"># Make sure edges exists and are built</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connection_maps</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: no edges have been made for this network, skipping saving.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_built</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">force_build</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Message: building edges&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__build_edges</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: Edges are not built. Either call build() or use force_build parameter. Skip saving.&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+
+        <span class="n">network_params</span> <span class="o">=</span> <span class="p">[(</span><span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">t</span><span class="o">+</span><span class="s1">&#39;_edges.h5&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">t</span><span class="o">+</span><span class="s1">&#39;_edge_types.csv&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_network_conns</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">src_network</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">network_params</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">network_params</span> <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">src_network</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">trg_network</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">network_params</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">network_params</span> <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">trg_network</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">network_params</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: couldn&#39;t find connections. Skip saving.&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">edges_file_name</span> <span class="ow">or</span> <span class="n">edge_types_file_name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">network_params</span> <span class="o">=</span> <span class="p">[(</span><span class="n">network_params</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">network_params</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">edges_file_name</span><span class="p">,</span> <span class="n">edge_types_file_name</span><span class="p">)]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_dir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">network_params</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_save_edge_types</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_save_edges</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
+
+    <span class="k">def</span> <span class="nf">_save_edge_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_types_file_name</span><span class="p">,</span> <span class="n">src_network</span><span class="p">,</span> <span class="n">trg_network</span><span class="p">):</span>
+
+        <span class="c1"># Get edge-type properties for connections with matching source/target networks</span>
+        <span class="n">matching_et</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">edge_type_properties</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_maps</span>
+                       <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">source_network_name</span> <span class="o">==</span> <span class="n">src_network</span> <span class="ow">and</span> <span class="n">c</span><span class="o">.</span><span class="n">target_network_name</span> <span class="o">==</span> <span class="n">trg_network</span><span class="p">]</span>
+
+        <span class="c1"># Get edge-type properties that are only relevant for this source-target network pair</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">,</span> <span class="s1">&#39;target_query&#39;</span><span class="p">,</span> <span class="s1">&#39;source_query&#39;</span><span class="p">]</span>  <span class="c1">#  manditory and should come first</span>
+        <span class="n">merged_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">et</span> <span class="ow">in</span> <span class="n">matching_et</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">et</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">]</span>
+        <span class="n">cols</span> <span class="o">+=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">merged_keys</span><span class="p">))</span>
+
+        <span class="c1"># Write to csv</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">edge_types_file_name</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+            <span class="n">csvw</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+            <span class="n">csvw</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">edge_type</span> <span class="ow">in</span> <span class="n">matching_et</span><span class="p">:</span>
+                <span class="n">csvw</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="n">edge_type</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cname</span><span class="p">,</span> <span class="s1">&#39;NULL&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">cname</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_save_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edges_file_name</span><span class="p">,</span> <span class="n">src_network</span><span class="p">,</span> <span class="n">trg_network</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span> <span class="nf">_initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
@@ -858,14 +1051,56 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="k">def</span> <span class="nf">_add_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_tuples</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-    <span class="k">def</span> <span class="nf">_add_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_tuples</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_add_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_tuples</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span> <span class="nf">_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-    <span class="k">def</span> <span class="nf">_nodes_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nids</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    def _edges_iter(targets=None, sources=None):</span>
+<span class="sd">        raise NotImplementedError</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">class ConnectionTable(object):</span>
+<span class="sd">    def __init__(self):</span>
+<span class="sd">        self.__targets = {}</span>
+<span class="sd">        self.__sources = {}</span>
+<span class="sd">        self.__connections = []</span>
+
+<span class="sd">    def add(self, source_network, target_network, connection_map):</span>
+<span class="sd">        # TODO: If the source/target are network objects we can get the network_name</span>
+<span class="sd">        assert(isinstance(source_network, basestring))</span>
+<span class="sd">        assert(isinstance(target_network, basestring))</span>
+<span class="sd">        assert(isinstance(connection_map, ConnectionMap))</span>
+
+<span class="sd">        if source_network not in self.__sources:</span>
+<span class="sd">            self.__sources[source_network] = []</span>
+<span class="sd">        if target_network not in self.__targets:</span>
+<span class="sd">            self.__targets[target_network] = []</span>
+
+<span class="sd">        cm_index = len(self.__connections)</span>
+<span class="sd">        self.__connections.append(connection_map)</span>
+<span class="sd">        self.__sources[source_network].append(cm_index)</span>
+<span class="sd">        self.__targets[target_network].append(cm_index)</span>
+
+<span class="sd">    def get(self, source_network=None, target_network=None):</span>
+<span class="sd">        # TODO: Add warning if source/target network is not found</span>
+<span class="sd">        cm_indicies = set(range(len(self.__connections)))</span>
+<span class="sd">        if source_network is not None:</span>
+<span class="sd">            cm_indicies &amp;= set(self.__sources.get(source_network, []))</span>
+
+<span class="sd">        if target_network is not None:</span>
+<span class="sd">            cm_indicies &amp;= set(self.__targets.get(target_network, []))</span>
+
+<span class="sd">        return self.__connections[cm_indicies]</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+
+
+
 </pre></div>
 
           </div>

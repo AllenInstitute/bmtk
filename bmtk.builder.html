@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="bmtk.builder.formats package" href="bmtk.builder.formats.html" /> 
+    <link rel="next" title="bmtk.builder.aux package" href="bmtk.builder.aux.html" /> 
   </head>
   <body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
@@ -634,6 +634,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="bmtk.builder.aux.html">bmtk.builder.aux package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.aux.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.aux.html#module-bmtk.builder.aux.edge_connectors">bmtk.builder.aux.edge_connectors module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.aux.html#module-bmtk.builder.aux.node_params">bmtk.builder.aux.node_params module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.aux.html#module-bmtk.builder.aux">Module contents</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.builder.formats.html">bmtk.builder.formats package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.formats.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.formats.html#module-bmtk.builder.formats.hdf5_format">bmtk.builder.formats.hdf5_format module</a><ul class="simple">
@@ -657,6 +664,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.networks.html#module-bmtk.builder.networks.input_network">bmtk.builder.networks.input_network module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.networks.html#module-bmtk.builder.networks.mpi_network">bmtk.builder.networks.mpi_network module</a><ul class="simple">
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.networks.html#bmtk-builder-networks-nxnetwork-module">bmtk.builder.networks.nxnetwork module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.networks.html#module-bmtk.builder.networks.sparse_network">bmtk.builder.networks.sparse_network module</a><ul class="simple">
 </ul>
@@ -712,10 +722,19 @@ as ParamsRules.</p>
 <tr class="row-even"><td><a class="reference internal" href="#bmtk.builder.connection_map.ConnectionMap.params" title="bmtk.builder.connection_map.ConnectionMap.params"><code class="xref py py-obj docutils literal"><span class="pre">params</span></code></a></td>
 <td></td>
 </tr>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.builder.connection_map.ConnectionMap.property_names" title="bmtk.builder.connection_map.ConnectionMap.property_names"><code class="xref py py-obj docutils literal"><span class="pre">property_names</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.builder.connection_map.ConnectionMap.source_network_name" title="bmtk.builder.connection_map.ConnectionMap.source_network_name"><code class="xref py py-obj docutils literal"><span class="pre">source_network_name</span></code></a></td>
+<td></td>
+</tr>
 <tr class="row-odd"><td><a class="reference internal" href="#bmtk.builder.connection_map.ConnectionMap.source_nodes" title="bmtk.builder.connection_map.ConnectionMap.source_nodes"><code class="xref py py-obj docutils literal"><span class="pre">source_nodes</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.builder.connection_map.ConnectionMap.target_nodes" title="bmtk.builder.connection_map.ConnectionMap.target_nodes"><code class="xref py py-obj docutils literal"><span class="pre">target_nodes</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.builder.connection_map.ConnectionMap.target_network_name" title="bmtk.builder.connection_map.ConnectionMap.target_network_name"><code class="xref py py-obj docutils literal"><span class="pre">target_network_name</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.builder.connection_map.ConnectionMap.target_nodes" title="bmtk.builder.connection_map.ConnectionMap.target_nodes"><code class="xref py py-obj docutils literal"><span class="pre">target_nodes</span></code></a></td>
 <td></td>
 </tr>
 </tbody>
@@ -735,6 +754,12 @@ as ParamsRules.</p>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#bmtk.builder.connection_map.ConnectionMap.connection_itr" title="bmtk.builder.connection_map.ConnectionMap.connection_itr"><code class="xref py py-obj docutils literal"><span class="pre">connection_itr</span></code></a>()</td>
 <td>Returns a generator that will iterate through the source/target pairs (as specified by the iterator function, and create a connection rule based on the connector.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.builder.connection_map.ConnectionMap.max_connections" title="bmtk.builder.connection_map.ConnectionMap.max_connections"><code class="xref py py-obj docutils literal"><span class="pre">max_connections</span></code></a>()</td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.builder.connection_map.ConnectionMap.properties_keys" title="bmtk.builder.connection_map.ConnectionMap.properties_keys"><code class="xref py py-obj docutils literal"><span class="pre">properties_keys</span></code></a>()</td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -847,14 +872,39 @@ and create a connection rule based on the connector.</p>
 <code class="descname">iterator</code><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.iterator" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="method">
+<dt id="bmtk.builder.connection_map.ConnectionMap.max_connections">
+<code class="descname">max_connections</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/builder/connection_map.html#ConnectionMap.max_connections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.max_connections" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="attribute">
 <dt id="bmtk.builder.connection_map.ConnectionMap.params">
 <code class="descname">params</code><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.params" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="method">
+<dt id="bmtk.builder.connection_map.ConnectionMap.properties_keys">
+<code class="descname">properties_keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/builder/connection_map.html#ConnectionMap.properties_keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.properties_keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.connection_map.ConnectionMap.property_names">
+<code class="descname">property_names</code><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.property_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.connection_map.ConnectionMap.source_network_name">
+<code class="descname">source_network_name</code><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.source_network_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="attribute">
 <dt id="bmtk.builder.connection_map.ConnectionMap.source_nodes">
 <code class="descname">source_nodes</code><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.source_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.connection_map.ConnectionMap.target_network_name">
+<code class="descname">target_network_name</code><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.target_network_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -882,7 +932,7 @@ and create a connection rule based on the connector.</p>
 <span id="bmtk-builder-edge-module"></span><h2>bmtk.builder.edge module<a class="headerlink" href="#module-bmtk.builder.edge" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="bmtk.builder.edge.Edge">
-<em class="property">class </em><code class="descclassname">bmtk.builder.edge.</code><code class="descname">Edge</code><span class="sig-paren">(</span><em>edge_id</em>, <em>sources</em>, <em>targets</em>, <em>edge_params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/builder/edge.html#Edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.edge.Edge" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.builder.edge.</code><code class="descname">Edge</code><span class="sig-paren">(</span><em>src_gid</em>, <em>trg_gid</em>, <em>edge_type_props</em>, <em>syn_props</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/builder/edge.html#Edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.edge.Edge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p class="rubric">Attributes</p>
 <table border="1" class="longtable docutils">
@@ -891,38 +941,46 @@ and create a connection rule based on the connector.</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.builder.edge.Edge.id" title="bmtk.builder.edge.Edge.id"><code class="xref py py-obj docutils literal"><span class="pre">id</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.builder.edge.Edge.edge_type_id" title="bmtk.builder.edge.Edge.edge_type_id"><code class="xref py py-obj docutils literal"><span class="pre">edge_type_id</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.builder.edge.Edge.parameters" title="bmtk.builder.edge.Edge.parameters"><code class="xref py py-obj docutils literal"><span class="pre">parameters</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.builder.edge.Edge.edge_type_properties" title="bmtk.builder.edge.Edge.edge_type_properties"><code class="xref py py-obj docutils literal"><span class="pre">edge_type_properties</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.builder.edge.Edge.sources" title="bmtk.builder.edge.Edge.sources"><code class="xref py py-obj docutils literal"><span class="pre">sources</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.builder.edge.Edge.source_gid" title="bmtk.builder.edge.Edge.source_gid"><code class="xref py py-obj docutils literal"><span class="pre">source_gid</span></code></a></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.builder.edge.Edge.targets" title="bmtk.builder.edge.Edge.targets"><code class="xref py py-obj docutils literal"><span class="pre">targets</span></code></a></td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.builder.edge.Edge.synaptic_properties" title="bmtk.builder.edge.Edge.synaptic_properties"><code class="xref py py-obj docutils literal"><span class="pre">synaptic_properties</span></code></a></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.builder.edge.Edge.target_gid" title="bmtk.builder.edge.Edge.target_gid"><code class="xref py py-obj docutils literal"><span class="pre">target_gid</span></code></a></td>
 <td></td>
 </tr>
 </tbody>
 </table>
 <dl class="attribute">
-<dt id="bmtk.builder.edge.Edge.id">
-<code class="descname">id</code><a class="headerlink" href="#bmtk.builder.edge.Edge.id" title="Permalink to this definition">¶</a></dt>
+<dt id="bmtk.builder.edge.Edge.edge_type_id">
+<code class="descname">edge_type_id</code><a class="headerlink" href="#bmtk.builder.edge.Edge.edge_type_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="bmtk.builder.edge.Edge.parameters">
-<code class="descname">parameters</code><a class="headerlink" href="#bmtk.builder.edge.Edge.parameters" title="Permalink to this definition">¶</a></dt>
+<dt id="bmtk.builder.edge.Edge.edge_type_properties">
+<code class="descname">edge_type_properties</code><a class="headerlink" href="#bmtk.builder.edge.Edge.edge_type_properties" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="bmtk.builder.edge.Edge.sources">
-<code class="descname">sources</code><a class="headerlink" href="#bmtk.builder.edge.Edge.sources" title="Permalink to this definition">¶</a></dt>
+<dt id="bmtk.builder.edge.Edge.source_gid">
+<code class="descname">source_gid</code><a class="headerlink" href="#bmtk.builder.edge.Edge.source_gid" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="bmtk.builder.edge.Edge.targets">
-<code class="descname">targets</code><a class="headerlink" href="#bmtk.builder.edge.Edge.targets" title="Permalink to this definition">¶</a></dt>
+<dt id="bmtk.builder.edge.Edge.synaptic_properties">
+<code class="descname">synaptic_properties</code><a class="headerlink" href="#bmtk.builder.edge.Edge.synaptic_properties" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.edge.Edge.target_gid">
+<code class="descname">target_gid</code><a class="headerlink" href="#bmtk.builder.edge.Edge.target_gid" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1140,7 +1198,13 @@ when using imported networks and we want to elimnate previously created id.</p>
 <tr class="row-even"><td><a class="reference internal" href="#bmtk.builder.network.Network.clear" title="bmtk.builder.network.Network.clear"><code class="xref py py-obj docutils literal"><span class="pre">clear</span></code></a>()</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.builder.network.Network.edges" title="bmtk.builder.network.Network.edges"><code class="xref py py-obj docutils literal"><span class="pre">edges</span></code></a>([targets,&nbsp;sources])</td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.builder.network.Network.edges" title="bmtk.builder.network.Network.edges"><code class="xref py py-obj docutils literal"><span class="pre">edges</span></code></a>([target_nodes,&nbsp;source_nodes,&nbsp;…])</td>
+<td>Returns a list of dictionary-like Edge objects, given filter parameters.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.builder.network.Network.edges_iter" title="bmtk.builder.network.Network.edges_iter"><code class="xref py py-obj docutils literal"><span class="pre">edges_iter</span></code></a>(trg_gids[,&nbsp;src_network,&nbsp;trg_network])</td>
+<td>Given a list of target gids, returns a generator for iteratoring over all possible edges.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.builder.network.Network.get_connections" title="bmtk.builder.network.Network.get_connections"><code class="xref py py-obj docutils literal"><span class="pre">get_connections</span></code></a>()</td>
 <td></td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#bmtk.builder.network.Network.import_nodes" title="bmtk.builder.network.Network.import_nodes"><code class="xref py py-obj docutils literal"><span class="pre">import_nodes</span></code></a>(nodes_file_name,&nbsp;…)</td>
@@ -1149,10 +1213,13 @@ when using imported networks and we want to elimnate previously created id.</p>
 <tr class="row-odd"><td><a class="reference internal" href="#bmtk.builder.network.Network.nodes" title="bmtk.builder.network.Network.nodes"><code class="xref py py-obj docutils literal"><span class="pre">nodes</span></code></a>(**properties)</td>
 <td></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#bmtk.builder.network.Network.save_edges" title="bmtk.builder.network.Network.save_edges"><code class="xref py py-obj docutils literal"><span class="pre">save_edges</span></code></a>(edges_file_name,&nbsp;edge_types_file_name)</td>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.builder.network.Network.nodes_iter" title="bmtk.builder.network.Network.nodes_iter"><code class="xref py py-obj docutils literal"><span class="pre">nodes_iter</span></code></a>([nids])</td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#bmtk.builder.network.Network.save_nodes" title="bmtk.builder.network.Network.save_nodes"><code class="xref py py-obj docutils literal"><span class="pre">save_nodes</span></code></a>(nodes_file_name,&nbsp;node_types_file_name)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#bmtk.builder.network.Network.save_edges" title="bmtk.builder.network.Network.save_edges"><code class="xref py py-obj docutils literal"><span class="pre">save_edges</span></code></a>([edges_file_name,&nbsp;…])</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#bmtk.builder.network.Network.save_nodes" title="bmtk.builder.network.Network.save_nodes"><code class="xref py py-obj docutils literal"><span class="pre">save_nodes</span></code></a>([nodes_file_name,&nbsp;…])</td>
 <td></td>
 </tr>
 </tbody>
@@ -1188,12 +1255,71 @@ when using imported networks and we want to elimnate previously created id.</p>
 
 <dl class="method">
 <dt id="bmtk.builder.network.Network.edges">
-<code class="descname">edges</code><span class="sig-paren">(</span><em>targets=None</em>, <em>sources=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/builder/network.html#Network.edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.edges" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descname">edges</code><span class="sig-paren">(</span><em>target_nodes=None</em>, <em>source_nodes=None</em>, <em>target_network=None</em>, <em>source_network=None</em>, <em>**properties</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/builder/network.html#Network.edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of dictionary-like Edge objects, given filter parameters.</p>
+<dl class="docutils">
+<dt>To get all edges from a network</dt>
+<dd>edges = net.edges()</dd>
+<dt>To specify the target and/or source node-set</dt>
+<dd>edges = net.edges(target_nodes=net.nodes(type=’biophysical’), source_nodes=net.nodes(ei=’i’))</dd>
+<dt>To only get edges with a given edge_property</dt>
+<dd>edges = net.edges(weight=100, syn_type=’AMPA_Exc2Exc’)</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>target_nodes</strong> – gid, list of gid, dict or node-pool. Set of target nodes for a given edge.</li>
+<li><strong>source_nodes</strong> – gid, list of gid, dict or node-pool. Set of source nodes for a given edge.</li>
+<li><strong>target_network</strong> – name of network containing target nodes.</li>
+<li><strong>source_network</strong> – name of network containing source nodes.</li>
+<li><strong>properties</strong> – edge-properties used to filter out only certain edges.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">list of bmtk.builder.edge.Edge properties.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="bmtk.builder.network.Network.edges_built">
 <code class="descname">edges_built</code><a class="headerlink" href="#bmtk.builder.network.Network.edges_built" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.network.Network.edges_iter">
+<code class="descname">edges_iter</code><span class="sig-paren">(</span><em>trg_gids</em>, <em>src_network=None</em>, <em>trg_network=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/builder/network.html#Network.edges_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.edges_iter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a list of target gids, returns a generator for iteratoring over all possible edges.</p>
+<p>It is preferable to use edges() method instead, it allows more flexibibility in the input and can better
+indicate if their is a problem.</p>
+<p>The order of the edges returned will be in the same order as the trg_gids list, but does not guarentee any
+secondary ordering by source-nodes and/or edge-type. If their isn’t a edge with a matching target-id then
+it will skip that gid in the list, the size of the generator can 0 to arbitrarly large.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>trg_gids</strong> – list of gids to match with an edge’s target.</li>
+<li><strong>src_network</strong> – str, only returns edges coming from the specified source network.</li>
+<li><strong>trg_network</strong> – str, only returns edges coming from the specified target network.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">iteration of bmtk.build.edge.Edge objects representing given edge.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.network.Network.get_connections">
+<code class="descname">get_connections</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/builder/network.html#Network.get_connections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.get_connections" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1227,13 +1353,18 @@ when using imported networks and we want to elimnate previously created id.</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="bmtk.builder.network.Network.nodes_iter">
+<code class="descname">nodes_iter</code><span class="sig-paren">(</span><em>nids=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/builder/network.html#Network.nodes_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.nodes_iter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="bmtk.builder.network.Network.save_edges">
-<code class="descname">save_edges</code><span class="sig-paren">(</span><em>edges_file_name</em>, <em>edge_types_file_name</em>, <em>src_network=None</em>, <em>trg_network=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/builder/network.html#Network.save_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.save_edges" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save_edges</code><span class="sig-paren">(</span><em>edges_file_name=None</em>, <em>edge_types_file_name=None</em>, <em>output_dir='.'</em>, <em>src_network=None</em>, <em>trg_network=None</em>, <em>force_build=True</em>, <em>force_overwrite=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/builder/network.html#Network.save_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.save_edges" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="bmtk.builder.network.Network.save_nodes">
-<code class="descname">save_nodes</code><span class="sig-paren">(</span><em>nodes_file_name</em>, <em>node_types_file_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/builder/network.html#Network.save_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.save_nodes" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save_nodes</code><span class="sig-paren">(</span><em>nodes_file_name=None</em>, <em>node_types_file_name=None</em>, <em>output_dir='.'</em>, <em>force_overwrite=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/builder/network.html#Network.save_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.save_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

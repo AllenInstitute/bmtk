@@ -715,6 +715,20 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="k">def</span> <span class="nf">morphology_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morphology_file</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rotation_angle_yaxis</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;rotation_angle_yaxis&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;rotation_angle_yaxis&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rotation_angle_zaxis</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;rotation_angle_zaxis&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;rotation_angle_zaxis&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+
     <span class="nd">@morphology_file</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">morphology_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_morphology_file</span> <span class="o">=</span> <span class="n">value</span>

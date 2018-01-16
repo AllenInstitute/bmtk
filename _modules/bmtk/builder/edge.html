@@ -655,35 +655,50 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</span>
 <span class="c1"># OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c1">#</span>
+
+
 <div class="viewcode-block" id="Edge"><a class="viewcode-back" href="../../../bmtk.builder.html#bmtk.builder.edge.Edge">[docs]</a><span class="k">class</span> <span class="nc">Edge</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_id</span><span class="p">,</span> <span class="n">sources</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">edge_params</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__edge_id</span> <span class="o">=</span> <span class="n">edge_id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__sources</span> <span class="o">=</span> <span class="n">sources</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__targets</span> <span class="o">=</span> <span class="n">targets</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__edge_params</span> <span class="o">=</span> <span class="n">edge_params</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_gid</span><span class="p">,</span> <span class="n">trg_gid</span><span class="p">,</span> <span class="n">edge_type_props</span><span class="p">,</span> <span class="n">syn_props</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__src_gid</span> <span class="o">=</span> <span class="n">src_gid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__trg_gid</span> <span class="o">=</span> <span class="n">trg_gid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__edge_type_props</span> <span class="o">=</span> <span class="n">edge_type_props</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__syn_props</span> <span class="o">=</span> <span class="n">syn_props</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__edge_id</span>
+    <span class="k">def</span> <span class="nf">source_gid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__src_gid</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">sources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sources</span>
+    <span class="k">def</span> <span class="nf">target_gid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__trg_gid</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">targets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__targets</span>
+    <span class="k">def</span> <span class="nf">edge_type_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__edge_type_props</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__edge_params</span>
+    <span class="k">def</span> <span class="nf">edge_type_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_type_properties</span><span class="p">[</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">synaptic_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__syn_props</span>
+
+    <span class="k">def</span> <span class="nf">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_type_properties</span> <span class="ow">or</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">synaptic_properties</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_type_properties</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_type_properties</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">synaptic_properties</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">synaptic_properties</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">rstring</span> <span class="o">=</span> <span class="s1">&#39;EdgeType(edge_type:</span><span class="si">{}</span><span class="s1">, sources:&quot;</span><span class="si">{}</span><span class="s1">&quot;, targets:&quot;</span><span class="si">{}</span><span class="s1">&quot;, params=</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__edge_id</span><span class="p">,</span>
-                                                                                         <span class="bp">self</span><span class="o">.</span><span class="n">__sources</span><span class="o">.</span><span class="n">filter_str</span><span class="p">,</span>
-                                                                                         <span class="bp">self</span><span class="o">.</span><span class="n">__targets</span><span class="o">.</span><span class="n">filter_str</span><span class="p">,</span>
-                                                                                         <span class="bp">self</span><span class="o">.</span><span class="n">__edge_params</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">rstring</span></div>
+        <span class="n">rstr</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> --&gt; </span><span class="si">{}</span><span class="s2"> (&#39;edge_type_id&#39;: </span><span class="si">{}</span><span class="s2">, &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_gid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_gid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_type_id</span><span class="p">)</span>
+        <span class="n">rstr</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="si">{}</span><span class="s2">&#39;: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">synaptic_properties</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">rstr</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span></div>
 </pre></div>
 
           </div>

@@ -676,6 +676,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_dynamics_params</span> <span class="o">=</span> <span class="n">dynamics_params</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_updated_params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dynamics_params</span><span class="p">}</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">edge_type_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orig_params</span><span class="p">[</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">]</span>
+
     <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_updated_params</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_updated_params</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>

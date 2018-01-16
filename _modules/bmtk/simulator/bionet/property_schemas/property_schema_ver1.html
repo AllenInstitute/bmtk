@@ -657,7 +657,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1">#</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="k">import</span> <span class="n">nrn</span>
 <span class="kn">from</span> <span class="nn">base_schema</span> <span class="k">import</span> <span class="n">CellTypes</span><span class="p">,</span> <span class="n">PropertySchema</span> <span class="k">as</span> <span class="n">BaseSchema</span>
-
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <div class="viewcode-block" id="PropertySchema"><a class="viewcode-back" href="../../../../../bmtk.simulator.bionet.property_schemas.html#bmtk.simulator.bionet.property_schemas.property_schema_ver1.PropertySchema">[docs]</a><span class="k">class</span> <span class="nc">PropertySchema</span><span class="p">(</span><span class="n">BaseSchema</span><span class="p">):</span>
 
@@ -679,7 +679,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">if</span> <span class="s1">&#39;positions&#39;</span> <span class="ow">in</span> <span class="n">node_params</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">node_params</span><span class="p">[</span><span class="s1">&#39;positions&#39;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span></div>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="PropertySchema.get_edge_weight"><a class="viewcode-back" href="../../../../../bmtk.simulator.bionet.property_schemas.html#bmtk.simulator.bionet.property_schemas.property_schema_ver1.PropertySchema.get_edge_weight">[docs]</a>    <span class="k">def</span> <span class="nf">get_edge_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">trg_node</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
         <span class="c1"># TODO: check to see if weight function is None or non-existant</span>
