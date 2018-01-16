@@ -58,6 +58,9 @@ A network can be viewed as a graph. Description of a graph needs to specify the 
 | TW->V1 connections     | tw_v1_edges.h5  | tw_v1_edge_types.csv |
 +------------------------+-----------------+----------------------+
 
+
+Please refer to the `network file format documentation <./network_file_formats.html>`_ for details.
+
 The spikes times of external cells are precomuted and provided in the directory docs/examples/simulator/NWB_files.
 
 Each network utilizes models of individual cells, synapses and recording electrodes defined in the docs/examples/simulators/bionet/components/mechanisms directory.
@@ -116,14 +119,14 @@ Upon completion you may run the script plot_rasters.py to plot spike rasters of 
 
 
 .. image:: _static/images/ext_inputs_raster.png
-   :scale: 100 %
+   :scale: 70 %
 
 **Figure 2.** Spike rasters of the external input cells: LGN (green) and TW (firebrick).
 
 |
 
 .. image:: _static/images/v1_raster.png
-   :scale: 100 %
+   :scale: 70 %
 
 **Figure 3.** Spike raster of the simulated (V1) cells.
 
