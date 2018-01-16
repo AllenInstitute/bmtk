@@ -26,6 +26,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import h5py
+import csv
 import pandas as pd
 
 from bmtk.simulator.bionet.lifcell import LIFCell
@@ -83,6 +84,8 @@ class BioNetwork(object):
         self._spike_trains_df = {}
         self._stim_networks = set()
 
+        self._save_connections = False
+
     @property
     def spike_threshold(self):
         return self.__spike_threshold
@@ -108,6 +111,15 @@ class BioNetwork(object):
         self.__calc_ecp = value
 
     @property
+    def save_connections(self):
+        return self._save_connections
+
+    @save_connections.setter
+    def save_connections(self, value):
+        # TODO: throw a warning if a user is trying to set save_connection = True after the network has been built
+        self._save_connections = value
+
+    @property
     def gids(self):
         return self._local_node_gids
 
@@ -130,7 +142,7 @@ class BioNetwork(object):
             gid = node.node_id
 
             if node.cell_type == CellTypes.Biophysical:
-                self._cells[gid] = BioCell(node, self.spike_threshold, self.dL, self.calc_ecp)
+                self._cells[gid] = BioCell(node, self.spike_threshold, self.dL, self.calc_ecp, self._save_connections)
                 self._local_biophys_gids.append(gid)
 
             elif node.cell_type == CellTypes.Point:
@@ -303,6 +315,14 @@ class BioNetwork(object):
         for gid, cell in self.cells.items():
             cell.scale_weights(factor)
 
+    def write_connections(self, csv_file):
+        with open(csv_file, 'w') as csvhandle:
+            csvwriter = csv.writer(csvhandle, delimiter=' ')
+            csvwriter.writerow(['trg_gid', 'src_gid', 'src_network', 'segment', 'section', 'weight', 'delay'])
+            for _, cell in self._cells.items():
+                for conn in cell.get_connection_info():
+                    csvwriter.writerow(conn)
+
     @classmethod
     def from_config(cls, config_file, graph):
         """A method for building a network from a config file.
@@ -311,8 +331,7 @@ class BioNetwork(object):
         :param graph: A BioGraph object that has already been loaded.
         :return: A BioNetwork object with nodes and connections that can be ran in a NEURON simulator.
         """
-        io.print2log0('Number of processors: %d ' %nhost)
-
+        io.print2log0('Number of processors: {}'.format(nhost))
         io.print2log0('Setting up network...')
 
         # load the json file or object
@@ -337,6 +356,7 @@ class BioNetwork(object):
             network.calc_ecp = run_dict['calc_ecp']
 
         # build the cells
+        network.save_connections = 'syn_connections_file' in config['output']
         io.print2log('Building cells...')
         network.build_cells()
 
@@ -367,5 +387,10 @@ class BioNetwork(object):
 
         network.set_recurrent_connections()
         io.print2log0('Network is built!')
+
+        if network.save_connections:
+            csv_file = config['output']['syn_connections_file']
+            network.write_connections(csv_file)
+            io.print2log0('    Connections saved to {}.'.format(csv_file))
 
         return network
