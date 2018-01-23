@@ -36,6 +36,16 @@ import bmtk.simulator.pointnet.io as io
 
 import nest
 
+try:
+    # NOTE; nest.SyncProcesses/NumProcesses doesn't always work depending on the version of nest, so using mpi4py
+    from mpi4py import MPI
+    comm = MPI.COMM_WORLD
+    rank = comm.Get_rank()
+    n_nodes = comm.Get_size()
+except Exception as e:
+    rank = 0
+    n_nodes = 1
+
 
 class PointNetwork(object):
     """Creates a network of NEST cells and connections from a graph, simulates and saves the output.
@@ -47,7 +57,7 @@ class PointNetwork(object):
         * Save parameters like membrane voltage using a multimeter on individual nodes.
         * Add ability to insert current and voltage clamps directly into internal nodes.
     """
-    def __init__(self, graph, dt=0.001, overwrite=True):
+    def __init__(self, graph, dt=0.001, overwrite=True, print_time=False):
         self._duration = 0.0  # simulation time
         self._dt = dt  # time step
         self._output_dir = './output/'  # directory where log and temporary output will be stored
@@ -71,7 +81,7 @@ class PointNetwork(object):
         # Reset the NEST kernel for a new simualtion
         # TODO: move this into it's own function and make sure it is called before network is built
         nest.ResetKernel()
-        nest.SetKernelStatus({"resolution": self._dt, "overwrite_files": self._overwrite, "print_time": True})
+        nest.SetKernelStatus({"resolution": self._dt, "overwrite_files": self._overwrite, "print_time": print_time})
 
     @property
     def dt(self):
@@ -195,31 +205,6 @@ class PointNetwork(object):
                 if spikes is not None:
                     node.set_spike_train(spikes[:])
 
-    '''
-    def __save_spike_times(self):
-        # the spike detector will create many .gdf files based on nest-id and processor. Need to merge them.
-        print("Saving spikes to file...")
-        spikes_out = self._spikes_file
-        if os.path.exists(spikes_out) and not self._overwrite:
-            return
-
-        print spikes_out
-        #print spikes_file
-
-        exit()
-
-        gdf_files_globs = '{}/*.gdf'.format(os.path.dirname(spikes_out))
-        gdf_files = glob.glob(gdf_files_globs)
-        with open(spikes_out, 'w') as spikes_file:
-            csv_writer = csv.writer(spikes_file, delimiter=' ')
-            for gdffile in gdf_files:
-                spikes_df = pd.read_csv(gdffile, names=['gid', 'time', 'nan'], sep='\t')
-                for _, row in spikes_df.iterrows():
-                    csv_writer.writerow([row['time'], self._nest_id_map[int(row['gid'])]])
-                os.remove(gdffile)
-        print("done.")
-    '''
-
     def _get_block_trial(self, duration):
         """
         Compute necessary number of block trials, the length of block simulation and the simulation length of the last
@@ -249,8 +234,10 @@ class PointNetwork(object):
         if n < 0:
             nest.Simulate(duration)
 
+        if n_nodes > 1:
+            comm.Barrier()
+
         io.collect_gdf_files(self.output_dir, self._spikes_file, self._nest_id_map, self._overwrite)
-        #self.__save_spike_times()
 
     @classmethod
     def from_config(cls, configure, graph):
@@ -269,6 +256,7 @@ class PointNetwork(object):
         # Get network parameters
         # step time (dt) is set in the kernel and should be passed
         overwrite = run_dict['overwrite_output_dir'] if 'overwrite_output_dir' in run_dict else True
+        print_time = run_dict['print_time'] if 'print_time' in run_dict else False
         dt = run_dict['dt']  # TODO: make sure dt exists
         network = cls(graph, dt=dt, overwrite=overwrite)
 
@@ -286,20 +274,20 @@ class PointNetwork(object):
             network.duration = run_dict['duration']
 
         # Create the output-directory, or delete existing files if it already exists
-        io.log('setting up output directory')
+        io.log('Setting up output directory')
         if not os.path.exists(config['output']['output_dir']):
             os.mkdir(config['output']['output_dir'])
         elif overwrite:
-            for gfile in glob.glob(os.path.join(config['output']['output_dir'], '*')):
+            for gfile in glob.glob(os.path.join(config['output']['output_dir'], '*.gdf')):
                 os.remove(gfile)
 
         # build the cells
-        io.log('building cells')
+        io.log('Building cells')
         network.build_cells()
 
         # Build internal connections
         if run_dict['connect_internal']:
-            io.log('creating recurrent connections')
+            io.log('Creating recurrent connections')
             network.set_recurrent_connections()
 
         # Build external connections. Set connection to default True and turn off only if explicitly stated.
@@ -322,4 +310,5 @@ class PointNetwork(object):
             io.log('Adding stimulations')
             network.make_stims()
 
+        io.log('Network created.')
         return network

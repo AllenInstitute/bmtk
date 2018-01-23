@@ -30,19 +30,40 @@ Functions for logging, writing and reading from file.
 
 """
 import os
+import sys
+import shutil
 import glob
 import csv
 import pandas as pd
+import logging
+
+# For older versions of NEST we must call nest before calling mpi4py, otherwise nest.NumProcesses() gets set to 1.
+import nest
 
 try:
     from mpi4py import MPI
     comm = MPI.COMM_WORLD
-    rank = comm.Get_Rank()
+    rank = comm.Get_rank()
+    n_nodes = comm.Get_size()
 except:
     rank = 0
+    n_nodes = 1
+
+log_format = logging.Formatter('%(asctime)s [%(threadName)-12.12s] %(message)s')
+pointnet_logger = logging.getLogger()
+pointnet_logger.setLevel(logging.DEBUG)
+
+console_handler = logging.StreamHandler(sys.stdout)
+console_handler.setFormatter(log_format)
+pointnet_logger.addHandler(console_handler)
 
 
 def collect_gdf_files(gdf_dir, output_file, nest_id_map, overwrite=False):
+
+    if n_nodes > 0:
+        # Wait until all nodes are finished
+        comm.Barrier()
+
     if rank != 0:
         return
 
@@ -63,8 +84,36 @@ def collect_gdf_files(gdf_dir, output_file, nest_id_map, overwrite=False):
     log("done.")
 
 
+def setup_output_dir(config):
+    if rank == 0:
+        try:
+            output_dir = config['output']['output_dir']
+            if os.path.exists(output_dir):
+                shutil.rmtree(output_dir)
+            os.makedirs(output_dir)
+
+            if 'log_file' in config['output']:
+                file_logger = logging.FileHandler(config['output']['log_file'])
+                file_logger.setFormatter(log_format)
+                pointnet_logger.addHandler(file_logger)
+                log('Created a log file')
+
+        except Exception as exc:
+            print(exc)
+
+    try:
+        comm.Barrier()
+    except:
+        pass
+
+
+def quiet_nest():
+    nest.set_verbosity('M_QUIET')
+
+
 def log(message, all_ranks=False):
     if all_ranks is False and rank != 0:
         return
 
-    print(message)
+    # print message
+    pointnet_logger.info(message)

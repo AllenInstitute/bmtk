@@ -101,7 +101,6 @@ class PointGraph(SimGraph):
             self._params_cache[params_file] = params_dict
             return params_dict
 
-
     def _add_node(self, node_params, network):
         node = PointNode(node_params.gid, self, network, node_params)
         if node.model_class == CellTypes.Point:
@@ -114,7 +113,6 @@ class PointGraph(SimGraph):
 
         else:
             raise Exception('Unknown model type {}'.format(node_params['model_type']))
-
 
     # TODO: reimplement with py_modules like in bionet
     def add_weight_function(self, function, name=None):
