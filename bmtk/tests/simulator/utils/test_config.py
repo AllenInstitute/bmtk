@@ -131,3 +131,18 @@ def test_resolve_var_dict():
     assert(conf['d1']['k4'] == 4)
 
 
+def test_time_vars():
+    config_file = {
+        'd1': {
+            'k1': 'k1_${date}',
+            'k2': 'k2/$time',
+            'k3': ['${datetime}'],
+            'k4': 4
+        }
+    }
+
+    conf = cfg.from_dict(config_file)
+
+
+
+#test_time_vars()

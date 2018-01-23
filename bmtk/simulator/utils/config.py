@@ -30,6 +30,7 @@ import json
 import shutil
 import re
 import copy
+import datetime
 
 
 def from_json(config_file, validator=None):
@@ -115,6 +116,12 @@ def __special_variables(conf):
     if 'config_path' in conf:
         pre_manifest['$configdir'] = os.path.dirname(conf['config_path'])  # path of configuration file
         pre_manifest['$configfname'] = conf['config_path']
+
+    dt_now = datetime.datetime.now()
+    pre_manifest['$time'] = dt_now.strftime('%H-%M-%S')
+    pre_manifest['$date'] = dt_now.strftime('%Y-%m-%d')
+    pre_manifest['$datetime'] = dt_now.strftime('%Y-%m-%d_%H-%M-%S')
+
     return pre_manifest
 
 
