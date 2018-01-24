@@ -37,6 +37,7 @@ Functions will be loaded by bionetwork and called when a new cell object is crea
 loaded with Cell-Types json files or their NeuroML equivelent, but may be overridden by the users.
 """
 
+
 def IntFire1(node):
     """Loads a point integrate and fire neuron"""
     model_params = node.model_params

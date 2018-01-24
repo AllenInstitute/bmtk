@@ -41,6 +41,7 @@ class LIFCell(Cell):
         self.set_spike_detector()
         self._src_gids = []
         self._src_nets = []
+        self._edge_type_id = []
 
     def set_spike_detector(self):
         nc = h.NetCon(self.hobj, None)
@@ -71,6 +72,7 @@ class LIFCell(Cell):
         self._netcons.append(nc)
         self._src_gids.append(src_gid)
         self._src_nets.append(src_node.network)
+        self._edge_type_id.append(edge_prop.edge_type_id)
         return nsyns
 
     def set_syn_connections(self, nsyn, syn_weight, edge_type, src_gid, stim=None):
@@ -91,8 +93,9 @@ class LIFCell(Cell):
 
     def get_connection_info(self):
         # TODO: There should be a more effecient and robust way to return synapse information.
-        return [[self.gid, self._src_gids[i], self._src_nets[i], 'NaN', 'NaN',
-                 self.netcons[i].weight[0], self.netcons[i].delay] for i in range(len(self._src_gids))]
+        return [[self.gid, self._src_gids[i], self.network_name, self._src_nets[i], 'NaN', 'NaN',
+                 self.netcons[i].weight[0], self.netcons[i].delay, self._edge_type_id[i], 1]
+                for i in range(len(self._src_gids))]
 
     def print_synapses(self):
         rstr = ''

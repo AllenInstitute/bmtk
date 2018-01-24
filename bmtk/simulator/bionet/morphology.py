@@ -67,7 +67,7 @@ class Morphology(object):
         r3dsoma /= n3dsoma
         return r3dsoma
 
-    def calc_seg_coords(self):   
+    def calc_seg_coords(self):
         """Calculate segment coordinates from 3d point coordinates"""
         ix = 0  # segment index
 
@@ -113,7 +113,6 @@ class Morphology(object):
             d1[ix:ix+nseg] = np.interp(l1, l3d, diam3d[:])
             ix += nseg
 
-
         self.seg_coords = {}
 
         self.seg_coords['p0'] = p0
@@ -147,15 +146,30 @@ class Morphology(object):
                 seg_type.append(sec_type_swc)           # record section type in a list
                 seg_dist.append(h.distance(seg.x))  # distance to the center of the segment
 
+        '''
+        for sec in self.hobj.all:
+            sec_name = sec.name()
+            segs = [s for s in sec]
+            seg_len = sec.L / sec.nseg
+            print sec_name, sec.L, len(segs),':',
+            for s in segs:
+                seg_dist = h.distance(s.x)
+                print '[{} - {} - {}]'.format(seg_dist-seg_len/2, seg_dist, seg_dist+seg_len/2),
+                # print h.distance(s.x),
+                #print s.x,
 
+            print '({})'.format(sec.L/sec.nseg)
+            #print '              ',
+            #for s in segs:
+            #    print '[{} - {}]'.format()
+            #print sec.name(), '-', len([s for s in sec])
+        '''
         self.seg_prop = {}
-
         self.seg_prop['type'] = np.array(seg_type)
         self.seg_prop['area'] = np.array(seg_area)
         self.seg_prop['x'] = np.array(seg_x)
         self.seg_prop['dist'] = np.array(seg_dist)
         self.seg_prop['length'] = np.array(seg_length)
-
         self.seg_prop['dist0'] = self.seg_prop['dist'] - self.seg_prop['length']/2
         self.seg_prop['dist1'] = self.seg_prop['dist'] + self.seg_prop['length']/2
 
