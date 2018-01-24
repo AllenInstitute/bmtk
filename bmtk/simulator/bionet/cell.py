@@ -64,6 +64,10 @@ class Cell(object):
         return self._gid
 
     @property
+    def network_name(self):
+        return self._node.network
+
+    @property
     def netcons(self):
         return self._netcons
 

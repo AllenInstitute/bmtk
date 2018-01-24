@@ -25,6 +25,7 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+import os
 import h5py
 import csv
 import pandas as pd
@@ -85,6 +86,7 @@ class BioNetwork(object):
         self._stim_networks = set()
 
         self._save_connections = False
+        self._total_synapses = 0
 
     @property
     def spike_threshold(self):
@@ -290,6 +292,7 @@ class BioNetwork(object):
             for trg_gid, trg_cell in self._cells.items():
                 for trg_prop, src_prop, edge_prop in self._graph.edges_iterator(trg_gid, src_network):
                     syn_counter += trg_cell.set_syn_connection(edge_prop, src_prop)
+        self._total_synapses += syn_counter
 
     def set_external_connections(self, source_network):
         self._init_connections()
@@ -302,6 +305,7 @@ class BioNetwork(object):
                 # TODO: reimplement weight function if needed
                 stim = source_stims[src_prop.node_id]
                 syn_counter += trg_cell.set_syn_connection(edge_prop, src_prop, stim)
+        self._total_synapses += syn_counter
 
     def _init_connections(self):
         if not self._connections_initialized:
@@ -315,13 +319,30 @@ class BioNetwork(object):
         for gid, cell in self.cells.items():
             cell.scale_weights(factor)
 
-    def write_connections(self, csv_file):
-        with open(csv_file, 'w') as csvhandle:
+    def write_connections(self, output_dir, file_type='h5'):
+        # TODO: this doesn't work on multi-node simulations
+        assert(nhost == 1)
+
+        # first write to a temp csv file
+        tmp_csv_fname = os.path.join(output_dir, '.tmp_edges.csv')
+        with open(tmp_csv_fname, 'w') as csvhandle:
             csvwriter = csv.writer(csvhandle, delimiter=' ')
-            csvwriter.writerow(['trg_gid', 'src_gid', 'src_network', 'segment', 'section', 'weight', 'delay'])
+            csvwriter.writerow(['trg_gid', 'src_gid', 'trg_network', 'src_network', 'segment', 'section', 'weight',
+                                'delay', 'edge_type_id', 'connection_group'])
             for _, cell in self._cells.items():
                 for conn in cell.get_connection_info():
                     csvwriter.writerow(conn)
+
+        if file_type == 'csv':
+            raise NotImplementedError()
+
+        elif file_type == 'h5':
+            # convert from csv to h5 format
+            from bmtk.simulator.bionet.utils import edge_converter_csv
+            edge_converter_csv(output_dir=output_dir, csv_file=tmp_csv_fname)
+
+        # remove temp file
+        os.remove(tmp_csv_fname)
 
     @classmethod
     def from_config(cls, config_file, graph):
@@ -356,7 +377,7 @@ class BioNetwork(object):
             network.calc_ecp = run_dict['calc_ecp']
 
         # build the cells
-        network.save_connections = 'syn_connections_file' in config['output']
+        network.save_connections = config['output'].get('save_synapses', False)
         io.print2log('Building cells...')
         network.build_cells()
 
@@ -389,8 +410,8 @@ class BioNetwork(object):
         io.print2log0('Network is built!')
 
         if network.save_connections:
-            csv_file = config['output']['syn_connections_file']
-            network.write_connections(csv_file)
-            io.print2log0('    Connections saved to {}.'.format(csv_file))
+            io.print2log0('Saving synaptic connections:')
+            network.write_connections(config['output']['output_dir'])
+            io.print2log0('    Synaptic connections saved to {}.'.format(config['output']['output_dir']))
 
         return network

@@ -32,10 +32,9 @@ def run(config_file):
                                  network_format=TabularNetwork_AI,
                                  property_schema=AIPropertySchema)
 
-    net = BioNetwork.from_config(conf, graph)   # create netwosim = Simulation.from_config(conf, network=net)  rk of in NEURON
-    sim = Simulation.from_config(conf, network=net)         # initialize a simulation
-    # sim.set_recordings()                        # set recordings of relevant variables to be saved as an ouput
-    sim.run()                                   # run simulation
+    net = BioNetwork.from_config(conf, graph)
+    sim = Simulation.from_config(conf, network=net)
+    sim.run()
 
     assert (os.path.exists(conf['output']['spikes_ascii_file']))
     assert (spike_files_equal(conf['output']['spikes_ascii_file'], 'expected/spikes.txt'))
