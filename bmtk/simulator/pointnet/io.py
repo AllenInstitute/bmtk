@@ -103,7 +103,8 @@ def setup_output_dir(config):
 
     try:
         comm.Barrier()
-    except:
+    except Exception as exc:
+        print(exc)
         pass
 
 
