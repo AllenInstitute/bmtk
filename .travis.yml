@@ -21,12 +21,17 @@ virtualenv:
     system_site_packages: true
 
 install:
-  - python setup.py install
+    
+  # Install BMTK
+  - python setup.py install 
+  
+  # Install OMV: framework for running automated tests on OSB using Travis-CI, see https://github.com/OpenSourceBrain/osb-model-validation
+  - pip install git+https://github.com/OpenSourceBrain/osb-model-validation
 
 script:  
   - pwd
   
-  ######  Test running examples
+  ######  Test running builder examples
   
   - cd docs/examples/builder/bionet_14cells
   - python build_network.py
@@ -35,10 +40,33 @@ script:
   - python build_network.py
   
   - cd ../layer4_tests/
-  #- python build_l4.py     #    No output and hangs
-  #- python build_lgn.py     #    Throws an error...
+  #- python build_l4.py          #    No output and hangs
+  #- python build_lgn.py         #    Throws an error...
   
   - cd ../popnet_2pops
-  #- python build_network.py  #  Throws an error...
+  #- python build_network.py     #  Throws an error...
+  
+  - cd ../mpibuilder
+  - python build_network.py 
+  
+  - cd ../pointnet_14cells
+  #- python build_network.py     #  Throws an error...
+  
+  
+  ######  Install NEURON using OMV
+  
+  - omv install NEURON
+  - cd ../../simulator/bionet/components/mechanisms/
+  - /home/travis/neuron/nrn/x86_64/bin/nrnivmodl modfiles
+  
+  
+  ######  Test running simulator examples
+  
+  - cd ../../14cells
+  - python run_bionet.py config.json 
+  
+  
+  
+  
   
   
