@@ -10,6 +10,8 @@ addons:
     - python-pandas
     - python-jsonschema
     - python-mpi4py
+    - python-matplotlib
+    - python-tk
     
 language: python
 
@@ -29,7 +31,7 @@ install:
   - pip install git+https://github.com/OpenSourceBrain/osb-model-validation
 
 script:  
-  - pwd
+  
   
   ######  Test running builder examples
   
@@ -53,7 +55,7 @@ script:
   #- python build_network.py     #  Throws an error...
   
   
-  ######  Install NEURON using OMV
+  ######  Install NEURON using OMV & compile mod files
   
   - omv install NEURON
   - cd ../../simulator/bionet/components/mechanisms/
@@ -63,6 +65,12 @@ script:
   ######  Test running simulator examples
   
   - cd ../../14cells
+  - python run_bionet.py config.json 
+  
+  - cd ../../14cells_multinode
+  - python run_bionet.py config.json 
+  
+  - cd ../../14cells_ecp
   - python run_bionet.py config.json 
   
   
