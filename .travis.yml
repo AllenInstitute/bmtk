@@ -65,27 +65,27 @@ script:
   ######  Test running simulator examples
   
   - cd ../../14cells
-  #- sed -i -e 's/"tstop": 3000.0/"tstop": 600/g'  config.json  # Run shorter simulation
+  - sed -i -e 's/: 3000.0,/: 600,/g'  config.json  # Run shorter simulation
   - python run_bionet.py config.json 
   
   - cd ../14cells_multinode
-  #- sed -i -e 's/"tstop": 3000.0/"tstop": 600/g'  config.json  # Run shorter simulation
-  #- python run_bionet.py config.json 
+  - sed -i -e 's/: 3000.0,/: 600,/g'  config.json  # Run shorter simulation
+  - python run_bionet.py config.json 
   
   - cd ../14cells_ecp
-  #- sed -i -e 's/"tstop": 3000.0/"tstop": 600/g'  config.json  # Run shorter simulation
-  #- python run_bionet.py config.json 
+  - sed -i -e 's/: 3000.0,/: 600,/g'  config.json  # Run shorter simulation
+  - python run_bionet.py config.json 
   
   - cd ../14cells_nsyns
-  #- sed -i -e 's/"tstop": 3000.0/"tstop": 600/g'  config.json  # Run shorter simulation
-  #- python run_bionet.py config.json 
+  - sed -i -e 's/: 3000.0,/: 600,/g'  config.json  # Run shorter simulation
+  - python run_bionet.py config.json 
   
   - cd ../1cell_all_active
-  #- sed -i -e 's/"tstop": 3000.0/"tstop": 600/g'  config.json  # Run shorter simulation
+  - sed -i -e 's/: 3000.0,/: 600,/g'  config.json  # Run shorter simulation
   #- python run_bionet.py config.json   #  Throws an error...
   
-  - cd ../../450cells
-  #- sed -i -e 's/"tstop": 3000.0/"tstop": 600/g'  config.json  # Run shorter simulation
+  - cd ../450cells
+  - sed -i -e 's/: 3000.0,/: 600,/g'  config.json  # Run shorter simulation
   #- python run_bionet.py config.json   # Works locally, but will probably take too long on Travis
   
   
