@@ -1,7 +1,6 @@
 import math
-from bmtk.simulator.bionet.nrn import *
 
-@synaptic_weight
+
 def gaussianLL(tar_prop, src_prop, con_prop):
     src_tuning = src_prop['tuning_angle']
     tar_tuning = tar_prop['tuning_angle']
@@ -14,7 +13,7 @@ def gaussianLL(tar_prop, src_prop, con_prop):
 
     return weight
 
-@synaptic_weight
+
 def wmax(tar_prop, src_prop, con_prop):
     w0 = con_prop["weight_max"]
     return w0
