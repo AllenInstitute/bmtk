@@ -24,4 +24,12 @@ install:
 
 script:  
   - pwd
+  
+  ######  Test running examples
+  
+  - cd docs/examples/builder/bionet_14cells
+  - python build_network.py
+  
+  - cd ../bionet_multinetwork
+  - python build_network.py
 
