@@ -9,6 +9,7 @@ addons:
     - python-h5py
     - python-pandas
     - python-jsonschema
+    - python-mpi4py
     
 language: python
 
@@ -32,4 +33,12 @@ script:
   
   - cd ../bionet_multinetwork
   - python build_network.py
-
+  
+  - cd ../layer4_tests/
+  #- python build_l4.py     #    No output and hangs
+  #- python build_lgn.py     #    Throws an error...
+  
+  - cd ../popnet_2pops
+  #- python build_network.py  #  Throws an error...
+  
+  
