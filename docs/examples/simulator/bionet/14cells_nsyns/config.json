@@ -32,14 +32,14 @@
       "type": "external_spikes",
       "format": "nwb",
       "file": "$INPUT_DIR/lgn_spikes.nwb",
-      "source_nodes": "LGN",
+      "source_nodes": "lgn",
       "trial": "trial_0"
     },
     {
       "type": "external_spikes",
       "format": "nwb",
       "file": "$INPUT_DIR/tw_spikes.nwb",
-      "source_nodes": "TW",
+      "source_nodes": "tw",
       "trial": "trial_0"
     }
   ],
@@ -73,18 +73,18 @@
   "networks": {
     "nodes": [
       {
-        "name": "V1",
-        "nodes_file": "$NETWORK_DIR/v1_nodes.csv",
+        "name": "v1",
+        "nodes_file": "$NETWORK_DIR/v1_nodes.h5",
         "node_types_file": "$NETWORK_DIR/v1_node_types.csv"
       },
       {
-        "name": "LGN",
-        "nodes_file": "$NETWORK_DIR/lgn_nodes.csv",
+        "name": "lgn",
+        "nodes_file": "$NETWORK_DIR/lgn_nodes.h5",
         "node_types_file": "$NETWORK_DIR/lgn_node_types.csv"
       },
       {
-        "name": "TW",
-        "nodes_file": "$NETWORK_DIR/tw_nodes.csv",
+        "name": "tw",
+        "nodes_file": "$NETWORK_DIR/tw_nodes.h5",
         "node_types_file":  "$NETWORK_DIR/tw_node_types.csv"
       }
 
@@ -92,20 +92,20 @@
 
     "edges": [
       {
-        "target": "V1",
-        "source": "V1",
+        "target": "v1",
+        "source": "v1",
         "edges_file": "$NETWORK_DIR/v1_v1_edges.h5",
         "edge_types_file": "$NETWORK_DIR/v1_v1_edge_types.csv"
       },
       {
-        "target": "V1",
-        "source": "LGN",
+        "target": "v1",
+        "source": "lgn",
         "edges_file": "$NETWORK_DIR/lgn_v1_edges.h5",
         "edge_types_file": "$NETWORK_DIR/lgn_v1_edge_types.csv"
       },
       {
-        "target": "V1",
-        "source": "TW",
+        "target": "v1",
+        "source": "tw",
         "edges_file": "$NETWORK_DIR/tw_v1_edges.h5",
         "edge_types_file": "$NETWORK_DIR/tw_v1_edge_types.csv"
       }
