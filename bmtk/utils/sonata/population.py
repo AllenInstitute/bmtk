@@ -578,7 +578,7 @@ class EdgePopulation(Population):
 
     def _get_index(self, index_struct, lookup_id):
         # TODO: Use a EdgeSet instead
-        if lookup_id <= len(index_struct.lookup_table):
+        if lookup_id >= len(index_struct.lookup_table):
             # TODO: Store length in index
             raise StopIteration
 

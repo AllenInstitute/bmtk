@@ -22,6 +22,7 @@
 #
 import os
 import json
+import h5py
 
 import config as cfg
 from bmtk.utils.io import TabularNetwork
@@ -171,6 +172,7 @@ class SimGraph(object):
         # TODO: need to implement
         return True
 
+    '''
     def add_nodes(self, file, populations=None):
         """Add nodes from a network to the graph.
 
@@ -204,6 +206,7 @@ class SimGraph(object):
         # go through each node in the network and add them to the graph
         for node in nodes:
             self._add_node(node, network)
+    '''
 
     def _add_node(self, node, network):
         raise NotImplementedError()
@@ -299,6 +302,16 @@ class SimGraph(object):
             self.__edge_params_cache[params_file] = params_dict
             return params_dict
 
+    _spike_trains_ds = {}
+    _stim_networks = set()
+
+    def add_spikes_nwb(self, ext_net, nwb_file, trial):
+        # TODO: Implement as module
+        h5_file = h5py.File(nwb_file, 'r')
+        self._spike_trains_ds[ext_net] = h5_file['processing'][trial]['spike_train']
+        self._stim_networks.add(ext_net)
+
+
     @classmethod
     def from_config(cls, conf, network_format=TabularNetwork, property_schema=None, **properties):
         """Generates a graph structure from a json config file or dictionary.
@@ -317,6 +330,16 @@ class SimGraph(object):
             config = conf
         else:
             graph.io.log_exception('Could not convert {} (type "{}") to json.'.format(conf, type(conf)))
+
+        run_dict = config['run']
+        if 'spike_threshold' in run_dict:
+            # TODO: FIX, spike-thresholds should be set by simulation code, allow for diff. values based on node-group
+            graph.spike_threshold = run_dict['spike_threshold']
+        if 'dL' in run_dict:
+            graph.dL = run_dict['dL']
+        # TODO: calc_ecp should no longer be done prehand
+        #if 'calc_ecp' in run_dict:
+        #    graph.calc_ecp = run_dict['calc_ecp']
 
         if not config.with_networks:
             graph.io.log_exception('Could not find any network files. Unable to build network.')
@@ -337,6 +360,26 @@ class SimGraph(object):
             source_network = edge_dict['source'] if 'source' in edge_dict else None
             edge_net = sonata.File(data_files=edge_dict['edges_file'], data_type_files=edge_dict['edge_types_file'])
             graph.add_edges(edge_net, source_pop=target_network, target_pop=source_network)
+
+        graph.build_nodes()
+        graph.build_recurrent_edges()
+
+        if 'inputs' in config:
+            for _, netinput in config['inputs'].items():
+                if netinput['input_type'] == 'spikes' and netinput['module'] == 'nwb':
+                    # Load external network spike trains from an NWB file.
+                    # io.print2log0('Load input for {}'.format(netinput['network']))
+                    graph.add_spikes_nwb(netinput['node_set'], netinput['input_file'], netinput['trial'])
+
+                elif netinput['type'] == 'external_spikes' and netinput['format'] == 'csv':
+                    graph.add_spikes_csv(netinput['source_nodes'], netinput['file'])
+
+                # TODO: Allow for external spike trains from csv file or user function
+                # TODO: Add Iclamp code.
+
+            # graph.io.log_info('    Setting up external cells...')
+            graph.io.log_info('Setting up virtual nodes')
+            graph.make_stims()
 
         return graph
 

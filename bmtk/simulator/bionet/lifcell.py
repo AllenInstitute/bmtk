@@ -30,9 +30,10 @@ pc = h.ParallelContext()    # object to access MPI methods
 
 
 class LIFCell(Cell):
+    # TODO: Rename to PointProcessCell
     """Implimentation of a Leaky Integrate-and-file neuron type cell."""
-    def __init__(self, node, bionetwork, prop_map):
-        super(LIFCell, self).__init__(node, prop_map)
+    def __init__(self, node, bionetwork):
+        super(LIFCell, self).__init__(node)
         self.set_spike_detector()
         self._src_gids = []
         self._src_nets = []

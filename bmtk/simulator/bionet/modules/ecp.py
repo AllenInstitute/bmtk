@@ -93,14 +93,18 @@ class EcpMod(SimulatorMod):
     def _calculate_ecp(self, sim):
         self._rel = RecXElectrode(self._positions_file)
         for gid in self._biophys_gids:
-            cell = sim.net.cells[gid]
+            cell = sim.net.get_local_cell(gid)
+            #cell = sim.net.cells[gid]
             self._rel.calc_transfer_resistance(gid, cell.get_seg_coords())
 
         self._rel_nsites = self._rel.nsites
         sim.h.cvode.use_fast_imem(1)  # make i_membrane_ a range variable
 
         def set_pointers():
-            for gid, cell in sim.net.cells.items():
+            #print sim.net.local_cells
+            #exit()
+            for gid, cell in sim.net.local_cells.items():
+                # for gid, cell in sim.net.cells.items():
                 cell.set_im_ptr()
         self._fih1 = sim.h.FInitializeHandler(0, set_pointers)
 
@@ -161,7 +165,8 @@ class EcpMod(SimulatorMod):
 
     def step(self, sim, tstep, rel_time=0):
         for gid in self._biophys_gids:  # compute ecp only from the biophysical cells
-            cell = sim.net.cells[gid]
+            cell = sim.net.get_local_cell(gid)
+            #cell = sim.net.cells[gid]
             im = cell.get_im()
             tr = self._rel.get_transfer_resistance(gid)
             ecp = np.dot(tr, im)

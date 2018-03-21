@@ -33,8 +33,8 @@ class BioCell(Cell):
     """Implemntation of a morphologically and biophysically detailed type cell.
 
     """
-    def __init__(self, node, bionetwork, prop_map):
-        super(BioCell, self).__init__(node, prop_map)
+    def __init__(self, node, bionetwork):
+        super(BioCell, self).__init__(node)
 
         # Set up netcon object that can be used to detect and communicate cell spikes.
         self.set_spike_detector(bionetwork.spike_threshold)
@@ -89,9 +89,8 @@ class BioCell(Cell):
         #phi_y = self._props['rotation_angle_yaxis']
         #phi_y = self._props.rotation_angle_yaxis  # self._props['rotation_angle_yaxis']
 
-        phi_y = self._prop_map.rotation_angle_yaxis(self._props)  # self._props['rotation_angle_zaxis']
-        phi_z = self._prop_map.rotation_angle_zaxis(self._props)  # self._props['rotation_angle_zaxis']
-
+        phi_y = self._node.rotation_angle_yaxis  # self._props['rotation_angle_zaxis']
+        phi_z = self._node.rotation_angle_zaxis  # self._props['rotation_angle_zaxis']
 
         RotY = utils.rotation_matrix([0, 1, 0], phi_y)  # rotate segments around yaxis normal to pia
         RotZ = utils.rotation_matrix([0, 0, 1], -phi_z) # rotate segments around zaxis to get a proper orientation
@@ -106,6 +105,7 @@ class BioCell(Cell):
 
     @property
     def morphology_file(self):
+        # TODO: Get from self._node.morphology_file
         return self._node['morphology_file']
 
     @property
