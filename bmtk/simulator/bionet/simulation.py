@@ -35,7 +35,8 @@ class Simulation(object):
 
     def __init__(self, network, dt, tstop, v_init, celsius, nsteps_block, start_from_state=False):
         self.net = network
-        self.gids = {'save_cell_vars': self.net.saved_gids, 'biophysical': self.net.biopyhys_gids}
+        self.gids = {
+            'save_cell_vars': self.net.saved_gids, 'biophysical': self.net.biopyhys_gids}
 
         self._start_from_state = start_from_state
         self.dt = dt
@@ -158,26 +159,34 @@ class Simulation(object):
         h.celsius = self.celsius
                 
     def set_spikes_recording(self):
-        for gid in self.net.cells:
+        for gid, _ in self.net.local_cells.items():
+            #for gid in self.net.cells:
             tvec = self.h.Vector()
             gidvec = self.h.Vector()
             pc.spike_record(gid, tvec, gidvec)
             self._spikes[gid] = tvec
 
+
     def set_recordings(self):
+        # TODO: Remove, this should be taken care of in the modules
         """Set recordings of ECP, spikes and somatic traces"""
         io.log_info('Setting up recordings.')
-        if not self._start_from_state:
-            # if starting from a new initial state
-            io.create_output_files(self, self.gids)
-        else:
-            io.extend_output_files(self.gids)
+        # print self.gids
+        #io.create_output_files(self, self.gids)
+        #exit()
+
+        #if not self._start_from_state:
+        #    # if starting from a new initial state
+        #    io.create_output_files(self, self.gids)
+        #else:
+        #    io.extend_output_files(self.gids)
 
         io.log_info('Recordings are set!')
         pc.barrier()
 
     def attach_current_clamp(self, amplitude, delay, duration, gids=None):
         # TODO: verify current clamp works with MPI
+        # TODO: Create appropiate module
         if gids is None:
             gids = self.gids['biophysical']
         if isinstance(gids, int):
@@ -330,8 +339,13 @@ class Simulation(object):
                 # TODO: Let the module setup ecp for all cells
                 # TODO: Check the selected cells
                 # TODO: Allow ECP for point cells?
-                for gid in network._cell_model_gids['biophysical']:
-                    network._cells[gid].setup_ecp()
+                for cell in network.get_cells('biophysical'):
+                    cell.setup_ecp()
+
+                #exit()
+
+                #for gid in network._cell_model_gids['biophysical']:
+                #    network._cells[gid].setup_ecp()
 
                 # exit()
 

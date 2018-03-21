@@ -34,6 +34,10 @@ import bmtk.simulator.bionet.config as cfg
 from bmtk.simulator.bionet.property_schemas import DefaultPropertySchema, CellTypes
 from . import io
 from property_map import PropertyMap, EdgePropertyMap
+from bmtk.simulator.bionet.biocell import BioCell
+from bmtk.simulator.bionet.lifcell import LIFCell
+from bmtk.simulator.bionet.stim import Stim
+from bmtk.simulator.bionet.morphology import Morphology
 
 pc = h.ParallelContext()  # object to access MPI methods
 MPI_size = int(pc.nhost())
@@ -154,10 +158,10 @@ class BioNode(SimNode):
     def load_hobj(self):
         return self._graph.property_schema.load_cell_hobj(self)
 '''
-
+'''
 class BioNode(object):
     pass
-
+'''
 
 
 
@@ -226,7 +230,7 @@ class PropertyMapS(object):
         else:
             prop_map.rotation_angle_xaxis = lambda self, _: 0.0
 
-        print 'rotation_angle_yaxis' in node_group.all_columns
+        # print 'rotation_angle_yaxis' in node_group.all_columns
         if 'rotation_angle_yaxis' in node_group.all_columns:
             cls.rotation_angle_yaxis = lambda self, node: node['rotation_angle_yaxis']
         else:
@@ -396,6 +400,8 @@ class BioGraph(SimGraph):
 
         node_types_table = node_population.types_table
 
+        # TODO: Convert model_type to a enum
+
         morph_dir = self.get_component('morphologies_dir')
         if morph_dir is not None and 'morphology_file' in node_types_table.columns:
             for nt_id in node_type_ids:
@@ -433,6 +439,7 @@ class BioGraph(SimGraph):
                     # TODO: Check dynamics_params before
                     self.io.log_exception('Could not find node dynamics_params file {}.'.format(params_path))
 
+
     def add_nodes(self, sonata_file, populations=None):
         """Add nodes from a network to the graph.
 
@@ -445,6 +452,8 @@ class BioGraph(SimGraph):
         for pop_name in selected_populations:
             if pop_name not in nodes:
                 continue
+
+            pop_metadata = NodePopulationMetaData(self)
             node_pop = nodes[pop_name]
 
             self.__preprocess_node_types(node_pop)
@@ -463,6 +472,7 @@ class BioGraph(SimGraph):
                     self.io.log_warning('Node population {} contains both virtual and non-virtual nodes which can ' +
                                         'cause memory and build-time inefficency. Consider separating virtual nodes ' +
                                         'into their own population'.format(pop_name))
+                    pop_metadata.mixed_types = True
 
             if model_types:
                 self._internal_populations.append(node_pop)
@@ -471,18 +481,219 @@ class BioGraph(SimGraph):
 
             self._node_property_maps[pop_name] = {}
             for grp in node_pop.groups:
+                # TODO: Use list since group_id's are ordered
                 prop_map = PropertyMap.build_map(grp, self)
                 self._node_property_maps[pop_name][grp.group_id] = prop_map
+
+
+    #_local_gid_map = {}
+    #_local_nid_map = {}
+    #_global_gid_map = {}
+
+
+
+    _model_type_map = {
+        'biophysical': BioCell,
+        'point_process': LIFCell,
+        'point_soma': lambda *x: None,
+        'virtual': lambda *x: None
+    }
+
+    #_local_nodes = {}
+    _node_cache = {}
+    _local_cells_nid = {}
+    _local_cells_gid = {}
+    _local_cells_type = {mtype: {} for mtype in _model_type_map.keys()}  # TODO: Find a way to add new types
+
+    @property
+    def local_cells(self):
+        return self._local_cells_gid
+
+    def get_cells(self, model_type):
+        return self._local_cells_type[model_type].values()
+
+    @property
+    def biopyhys_gids(self):
+        return list(self._local_cells_type['biophysical'].keys())
+
+    def get_local_cell(self, gid):
+        return self._local_cells_gid[gid]
+
+    def _build_cell(self, bionode):
+        # TODO: use property to find model_type
+        return self._model_type_map[bionode['model_type']](bionode, self)
+
+
+    class BioNode(object):
+        def __init__(self, node, property_map, graph):
+            self._node = node
+            self._prop_map = property_map
+            self._graph = graph
+
+        @property
+        def model_type(self):
+            return self._node['model_type']
+
+        @property
+        def node_id(self):
+            return self._node.node_id
+
+        @property
+        def gid(self):
+            return self._prop_map.gid(self._node)
+
+        @property
+        def positions(self):
+            return self._prop_map.positions(self._node)
+
+        def load_cell(self):
+            return self._prop_map.load_cell(self._node)
+
+        @property
+        def rotation_angle_yaxis(self):
+            # TODO: Combine rotation alnges into a single property
+            return self._prop_map.rotation_angle_yaxis(self._node)
+
+        @property
+        def rotation_angle_zaxis(self):
+            return self._prop_map.rotation_angle_zaxis(self._node)
+
+        def __getitem__(self, property_name):
+            return self._node[property_name]
+
 
     def build_nodes(self):
         # TODO: Raise a warning if more than one internal population and no gids (node_id collision)
         # TODO: Verify there actually is at least one internal population
+        io.log_info('building cells.')
 
         for node_pop in self._internal_populations:
-            for node in node_pop[MPI_rank::MPI_size+2]:
-                print node.node_id
+            pop_name = node_pop.name
+            prop_map = self._node_property_maps[pop_name]
+            node_cache = {}  # TODO: See if we can preallocate
+            local_cells = {}
+            for node in node_pop[MPI_rank::MPI_size]:
+                # Convert sonata node into a bionet node
+                # TODO: It might be faster to build and cache all nodes, especially connection_function is used.
+                bnode = self.BioNode(node, prop_map[node.group_id], self)
+                node_cache[node.node_id] = bnode
 
-            print node_pop, len(node_pop)
+                # build a Cell which contains NEURON objects
+                cell = self._build_cell(bnode)
+                if cell is not None:
+                    self._local_cells_gid[cell.gid] = cell
+                    self._local_cells_type[bnode.model_type][cell.gid] = cell
+                    local_cells[bnode.node_id] = cell
+
+            self._node_cache[pop_name] = node_cache
+            self._local_cells_nid[pop_name] = local_cells
+
+        '''
+        def internal_nodes_itr(self, population_name, start=0, step=1):
+            prop_maps = self._node_property_maps[population_name]
+            node_pop = self._internal_populations_map[population_name]
+            # print prop_maps
+            for node in node_pop[start::step]:
+                # print prop_maps[node.group_id]
+                yield node, prop_maps[node.group_id]
+        '''
+
+        self.make_morphologies()
+        self.set_seg_props()  # set segment properties by creating Morphologies
+        # self.set_tar_segs()  # set target segments needed for computing the synaptic innervations
+        self.calc_seg_coords()  # use for computing the ECP
+        self._cells_built = True
+
+    __morphologies_cache = {}
+    _morphology_lookup = {}
+
+
+    def set_seg_props(self):
+        """Set morphological properties for biophysically (morphologically) detailed cells"""
+        for _, morphology in self.__morphologies_cache.items():
+            morphology.set_seg_props()
+
+        io.log_info("Set segment properties")
+
+    def calc_seg_coords(self):
+        """Needed for the ECP calculations"""
+        # TODO: Is there any reason this function can't be moved to make_morphologies()
+        for morphology_file, morphology in self.__morphologies_cache.items():
+            morph_seg_coords = morphology.calc_seg_coords()   # needed for ECP calculations
+
+            for gid in self._morphology_lookup[morphology_file]:
+                self.get_local_cell(gid).calc_seg_coords(morph_seg_coords)
+
+        io.log_info("Set segment coordinates")
+
+
+    def make_morphologies(self):
+        """Creating a Morphology object for each biophysical model"""
+        #
+        #for gid in self._cell_model_gids['biophysical']:
+        #    cell = self._cells[gid]
+        # TODO: Let Morphology take care of the cache
+        # TODO: Let other types have morphologies
+        # TODO: Get all available morphologies from TypesTable or group
+        for cell in self.get_cells('biophysical'):
+            morphology_file = cell.morphology_file
+            if morphology_file in self.__morphologies_cache:
+                # create a single morphology object for each model_group which share that morphology
+                morph = self.__morphologies_cache[morphology_file]
+
+                # associate morphology with a cell
+                cell.set_morphology(morph)
+                self._morphology_lookup[morphology_file].append(cell.gid)
+
+            else:
+                hobj = cell.hobj  # get hoc object (hobj) from the first cell with a new morphologys
+                morph = Morphology(hobj)
+
+                # associate morphology with a cell
+                cell.set_morphology(morph)
+
+                # create a single morphology object for each model_group which share that morphology
+                self.__morphologies_cache[morphology_file] = morph
+                self._morphology_lookup[morphology_file] = [cell.gid]
+
+
+    def get_node(self, population, node_id):
+        pop_cache = self._node_cache[population]
+        if node_id in pop_cache:
+            return pop_cache[node_id]
+        else:
+            # Load node into cache.
+            raise NotImplementedError
+
+    _connections_initialized = False
+
+    def _init_connections(self):
+        if not self._connections_initialized:
+            io.log_info('Initializing connections.')
+            for gid, cell in self._local_cells_gid.items():
+                cell.init_connections()
+            self._connections_initialized = True
+
+
+    def build_recurrent_edges(self):
+        self._init_connections()
+        io.log_info('building recurrent connections')
+        syn_count = 0
+        # TODO: Check the order, I believe this can be built faster
+        for trg_pop_name, nid_table in self._local_cells_nid.items():
+            for edge_pop in self._recurrent_edges[trg_pop_name]:
+                src_pop_name = edge_pop.source_population
+                prop_maps = self._edge_property_maps[edge_pop.name]
+                for trg_nid, trg_cell in nid_table.items():
+                    for edge in edge_pop.get_target(trg_nid):
+                        # Create edge object
+                        # TODO: Checking edge property for every group is not ideal. Force all groups to be uniform
+                        bioedge = BioEdge(edge, self, prop_maps[edge.group_id])
+                        src_node = self.get_node(src_pop_name, edge.source_node_id)
+                        syn_count += trg_cell.set_syn_connection(bioedge, src_node)
+
+        io.log_info('  Created {} synapses'.format(syn_count))
+
 
     def __preprocess_edge_types(self, edge_pop):
         edge_types_table = edge_pop.types_table
@@ -515,6 +726,7 @@ class BioGraph(SimGraph):
             edge_pop = edges[pop_name]
 
             # TODO: Preprocess edge_types_table
+            # TODO: Need to move this out, do it for each file
             self.__preprocess_edge_types(edge_pop)
 
             # Check the source nodes exists
@@ -543,6 +755,7 @@ class BioGraph(SimGraph):
                     self._external_edges[(src_pop, trg_pop)] = []
                 self._external_edges[(src_pop, trg_pop)].append(edge_pop)
 
+            # TODO: Just make all groups have the same connection properties
             self._edge_property_maps[pop_name] = {}
             for grp in edge_pop.groups:
                 prop_map = EdgePropertyMap.build_map(grp, self)
@@ -589,3 +802,126 @@ class BioGraph(SimGraph):
                     syn_counter += trg_node.set_syn_connection(edge, stim, stim)
                     print
     '''
+
+    def _get_spike_trains(self, src_gid, network):
+        if network in self._spike_trains_ds:
+            h5ds = self._spike_trains_ds[network]
+            src_gid_str = str(src_gid)
+            if src_gid_str in h5ds.keys():
+                return h5ds[src_gid_str]['data']
+
+        elif network in self._spike_trains_df:
+            spikes_list = [float(t) for t in self._spike_trains_df[network].loc[src_gid]['spike-times'].split(',')]
+            return spikes_list
+
+        return []
+
+
+    _stims = {}
+
+
+    saved_gids = range(0,10)
+
+
+    def make_stims(self):
+        """Create the stims/virtual/external nodes.
+
+        Make sure spike trains have been set before calling, otherwise it will creating spiking cells with no spikes.
+        """
+        #print self._stim_networks
+        #print self._local_cells_nid
+        #exit()
+
+        syn_counter = 0
+        for pop_name in self.virtual_pop_names():
+            if pop_name not in self._stim_networks:
+                continue
+
+            # TODO: Do we need to save stims as an object property?
+            self._stims[pop_name] = {}
+            for node in self.external_nodes_itr(pop_name):
+                spike_train = self._get_spike_trains(node.node_id, pop_name)
+                self._stims[pop_name][node.node_id] = Stim(node, spike_train)
+
+            self._init_connections()
+            io.log_info('    Setting connections from {}'.format(pop_name))
+            # TODO: skip if source_network is not in stims
+            source_stims = self._stims[pop_name]
+            # TODO: Iterate and do node_id lookup at the same time, cache results (temp)
+            for trg_pop_name in self._local_cells_nid.keys():
+                for edge_pop in self.external_edge_populations(src_pop=pop_name, trg_pop=trg_pop_name):
+                    prop_maps = self._edge_property_maps[edge_pop.name]
+                    for trg_nid, trg_cell in self._local_cells_nid[trg_pop_name].items():
+                        for edge in edge_pop.get_target(trg_nid):
+                            virt_edge = BioEdge(edge, self, prop_maps[edge.group_id])
+                            stim = source_stims[edge.source_node_id]
+                            syn_counter += trg_cell.set_syn_connection(virt_edge, stim, stim)
+
+                    '''
+                    for trg_node_ in self._local_cells_nid[trg_pop]:
+                        print trg_node, trg_pop
+                        exit()
+                        trg_cell self.get_node()
+                        #prop_map = prop_maps[trg_node.group_id]
+                        for edge in edge_pop.get_target(trg_node.node_id):
+                            bioedge = BioEdge(edge, self._graph, prop_map)
+                            stim = source_stims[edge.source_node_id]
+                            syn_counter += trg_node.set_syn_connection(bioedge, stim, stim)
+                    '''
+
+'''
+    def build_recurrent_edges(self):
+        self._init_connections()
+        io.log_info('building recurrent connections')
+        syn_count = 0
+        # TODO: Check the order, I believe this can be built faster
+        for trg_pop_name, nid_table in self._local_cells_nid.items():
+            for edge_pop in self._recurrent_edges[trg_pop_name]:
+                src_pop_name = edge_pop.source_population
+                prop_maps = self._edge_property_maps[edge_pop.name]
+                for trg_nid, trg_cell in nid_table.items():
+                    for edge in edge_pop.get_target(trg_nid):
+                        # Create edge object
+                        # TODO: Checking edge property for every group is not ideal. Force all groups to be uniform
+                        bioedge = BioEdge(edge, self, prop_maps[edge.group_id])
+                        src_node = self.get_node(src_pop_name, edge.source_node_id)
+                        syn_count += trg_cell.set_syn_connection(bioedge, src_node)
+
+        io.log_info('  Created {} synapses'.format(syn_count))
+
+
+    def build_nodes(self):
+        # TODO: Raise a warning if more than one internal population and no gids (node_id collision)
+        # TODO: Verify there actually is at least one internal population
+        io.log_info('building cells.')
+
+        for node_pop in self._internal_populations:
+            pop_name = node_pop.name
+            prop_map = self._node_property_maps[pop_name]
+            node_cache = {}  # TODO: See if we can preallocate
+            local_cells = {}
+            for node in node_pop[MPI_rank::MPI_size]:
+                # Convert sonata node into a bionet node
+                # TODO: It might be faster to build and cache all nodes, especially connection_function is used.
+                bnode = self.BioNode(node, prop_map[node.group_id], self)
+                node_cache[node.node_id] = bnode
+
+                # build a Cell which contains NEURON objects
+                cell = self._build_cell(bnode)
+                if cell is not None:
+                    self._local_cells_gid[cell.gid] = cell
+                    self._local_cells_type[bnode.model_type][cell.gid] = cell
+                    local_cells[bnode.node_id] = cell
+
+            self._node_cache[pop_name] = node_cache
+            self._local_cells_nid[pop_name] = local_cells
+
+
+'''
+
+
+
+class NodePopulationMetaData(object):
+    def __init__(self, graph):
+        self.mixed_types = False
+        self.property_maps = {}

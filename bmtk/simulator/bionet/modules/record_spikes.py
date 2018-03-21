@@ -141,6 +141,7 @@ class SpikesMod(SimulatorMod):
         else:
             send_msg = np.array([self._n_spikes_rank], dtype=np.uint)
             recv_buff = np.empty(N_HOSTS, dtype=np.uint)
+            # TODO: This is unecessary, just keep a universal list
             comm.Allgather([send_msg, MPI.UNSIGNED_INT], [recv_buff, MPI.UNSIGNED_INT])
             return np.sum(recv_buff)
 

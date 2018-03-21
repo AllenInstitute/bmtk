@@ -25,6 +25,7 @@ import numpy as np
 import h5py
 
 from bmtk.simulator.bionet.modules.sim_module import SimulatorMod
+from bmtk.simulator.bionet import io
 
 
 class CellVarsMod(SimulatorMod):
@@ -51,6 +52,9 @@ class CellVarsMod(SimulatorMod):
         # preallocate block data for saving variables
         self._data_block = {gid: {v: np.zeros(sim.nsteps_block) for v in self._cell_vars} for gid in self._gid_list}
 
+        # Create directory if it doesn't exists
+        io.create_dir(self._outputdir, overwrite=False)
+
         # Create files for saving variables
         for gid in self._gid_list:
             with h5py.File(self._get_filename(gid), 'w') as h5:
@@ -64,7 +68,8 @@ class CellVarsMod(SimulatorMod):
     def step(self, sim, tstep, rel_time=0.0):
         # save all necessary cells/variables at the current time-step into memory
         for gid in self._gid_list:
-            cell = sim.net.cells[gid]
+            cell = sim.net.get_local_cell(gid)
+            # cell = sim.net.cells[gid]
             for variable, data_block in self._data_block[gid].items():
                 data_block[self._block_step] = getattr(cell.hobj.soma[0](0.5), variable)
 

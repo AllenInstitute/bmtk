@@ -57,8 +57,6 @@ class BioNetwork(object):
 
         :param graph: BioGraph object
         """
-
-        
         self.__spike_threshold = -15.0  # membrane voltage of spike for a biophysical cell
         self.__dL = 20  # max length of a morphology segement
         self.__calc_ecp = False  # for calculating extracellular field potential
@@ -88,8 +86,8 @@ class BioNetwork(object):
         self._model_type_map = {
             'biophysical': BioCell,
             'point_process': LIFCell,
-            'point_soma': lambda *x : None,
-            'virtual': lambda *x : None
+            'point_soma': lambda *x: None,
+            'virtual': lambda *x: None
         }
 
         self._cell_model_gids = {model_type: [] for model_type in self._model_type_map.keys()}
@@ -407,6 +405,13 @@ class BioNetwork(object):
     def set_recurrent_connections(self):
         self._init_connections()
         syn_counter = 0
+        #print self._population_map
+        for pop_name in self._population_map.keys():
+            for cell in self._population_map[pop_name]:
+                print cell
+
+        #exit()
+
         for src_network in self._graph.internal_networks():
             io.log_info('    Setting connections from {}'.format(src_network))
             for trg_gid, trg_cell in self._cells.items():
@@ -512,7 +517,7 @@ class BioNetwork(object):
             network.save_gids(config['node_id_selections']['save_cell_vars'])
         # Find and save network stimulation. Do this before loading external/internal connections.
 
-        if 'inputs' in config:
+        if 'inputsX' in config:
             for _, netinput in config['inputs'].items():
                 if netinput['input_type'] == 'spikes' and netinput['module'] == 'nwb':
                     # Load external network spike trains from an NWB file.
@@ -528,10 +533,13 @@ class BioNetwork(object):
             io.log_info('    Setting up external cells...')
             network.make_stims()
 
-        io.log_info('Cells are built!')
+        io.log_info('cells built.')
 
+        '''
         for netname in graph.external_networks():
+            'EXT NET'
             network.set_external_connections(netname)
+        '''
 
         network.set_recurrent_connections()
         io.log_info('Network is built!')

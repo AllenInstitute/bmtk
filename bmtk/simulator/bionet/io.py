@@ -145,7 +145,15 @@ def create_output_files(simulator, gids):
         create_cell_vars_files(simulator, gids)
                 
     # create_spike_file(simulator, gids)  # a single file including all gids
-    
+
+
+def create_dir(dir_name, overwrite=False):
+    if MPI_Rank == 0:
+        if not os.path.exists(dir_name) or overwrite:
+            os.makedirs(dir_name)
+
+    pc.barrier()
+
 
 def create_cell_vars_files(simulator, gids):
     """create 1 hfd5 files per gid"""
