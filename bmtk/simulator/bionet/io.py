@@ -24,19 +24,29 @@ import pandas as pd
 import time
 import datetime
 import os
+import sys
 import shutil
 import json
 import numpy as np
 import logging
+
 import h5py
 
 from neuron import h
 
-import bmtk.simulator.bionet.config as config
+#import bmtk.simulator.bionet.config as config
 from bmtk.simulator.bionet import nrn
 
+log_format = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
+#log_format = logging.Formatter('%(asctime)s [%(threadName)-12.12s] %(message)s')
+bionet_logger = logging.getLogger()
+bionet_logger.setLevel(logging.DEBUG)
 
-pc = h.ParallelContext()    # object to access MPI methods
+console_handler = logging.StreamHandler(sys.stdout)
+console_handler.setFormatter(log_format)
+bionet_logger.addHandler(console_handler)
+
+pc = h.ParallelContext()
 MPI_Rank = int(pc.id())
 
 
@@ -162,6 +172,57 @@ def get_spike_trains_handle(file_name, trial_name):
     return spike_trains_handle
 
 
+def setup_output_dir(config_dir, log_file, overwrite=True):
+    if MPI_Rank == 0:
+        # Create output directory
+        if os.path.exists(config_dir):
+            if overwrite:
+                shutil.rmtree(config_dir)
+            else:
+                print('ERROR: Directory already exists (remove or set to overwrite).')
+                nrn.quit_execution()
+        os.makedirs(config_dir)
+
+        # Create log file
+        if log_file is not None:
+            file_logger = logging.FileHandler(log_file)
+            file_logger.setFormatter(log_format)
+            bionet_logger.addHandler(file_logger)
+            log_info('Created log file')
+
+    pc.barrier()
+
+'''
+def save_config(config, output_dir):
+    config.copy()
+'''
+
+
+def log_info(message, all_ranks=False):
+    if all_ranks is False and MPI_Rank != 0:
+        return
+
+    # print message
+    bionet_logger.info(message)
+
+
+def log_warning(message, all_ranks=False):
+    if all_ranks is False and MPI_Rank != 0:
+        return
+
+    # print message
+    bionet_logger.warning(message)
+
+
+def log_exception(message):
+    if MPI_Rank == 0:
+        bionet_logger.error(message)
+
+    pc.barrier()
+    nrn.quit_execution()
+
+
+'''
 def setup_output_dir(conf):
     start_from_state =False
     if start_from_state:  # starting from a previously saved state
@@ -193,7 +254,7 @@ def setup_output_dir(conf):
 
     print2log0('Output directory: %s' % conf["output"]["output_dir"])
     print2log0('Config file: %s' % conf["config_path"])
-
+'''
 
 def save_state(conf):
     state = h.SaveState()

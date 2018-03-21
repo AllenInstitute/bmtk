@@ -33,17 +33,25 @@ loaded with Cell-Types json files or their NeuroML equivelent, but may be overri
 """
 
 
-def IntFire1(node):
+def IntFire1(cell, template_name, dynamics_params):
     """Loads a point integrate and fire neuron"""
-    model_params = node.model_params
+    #model_params = cell.model_params
     hobj = h.IntFire1()
-    hobj.tau = model_params['tau']*1000.0  # Convert from seconds to ms.
-    hobj.refrac = model_params['refrac']*1000.0  # Convert from seconds to ms.
+    hobj.tau = dynamics_params['tau']*1000.0  # Convert from seconds to ms.
+    hobj.refrac = dynamics_params['refrac']*1000.0  # Convert from seconds to ms.
     return hobj
 
 
-def Biophys1(cell):
+def Biophys1(cell, template_name, dynamic_params):
     """Loads a biophysical NEURON hoc object using Cell-Types database objects."""
+    morphology_file = cell['morphology_file']
+    hobj = h.Biophys1(str(morphology_file))
+    fix_axon(hobj)
+    set_params_peri(hobj, dynamic_params)
+    return hobj
+    '''
+    print cell['dynamics_params']
+
     if isinstance(cell.model_params, dict):
         # load directly from the dictionary.
         return Biophys1_dict(cell)
@@ -57,7 +65,7 @@ def Biophys1(cell):
             return Biophys1_dict(json.load(open(cell.model_params, 'r')))
     else:
         raise Exception('Biophys1: Was unable to determin model params type for {}'.format(cell.model_params))
-
+    '''
 
 def Biophys1_nml(json_file):
     # TODO: look at pgleeson examples to see how to convert .nml files
@@ -244,10 +252,13 @@ def fix_axon_allactive(hobj):
     h.define_shape()
 
 
-add_cell_model(Biophys1, 'biophysical', overwrite=False)
-add_cell_model(Biophys1, overwrite=False)
-add_cell_model(Biophys1_adjusted, 'biophysical_adjusted', overwrite=False)
-add_cell_model(Biophys1_adjusted, overwrite=False)
-add_cell_model(IntFire1, 'point_IntFire1', overwrite=False)
-add_cell_model(IntFire1, 'intfire', overwrite=False)
-add_cell_model(IntFire1, overwrite=False)
+#add_cell_model(Biophys1, directive='ctdb', model_type='biophysical', overwrite=False)
+add_cell_model(Biophys1, directive='ctdb:Biophys1', model_type='biophysical', overwrite=False)
+add_cell_model(Biophys1, directive='ctdb:Biophys1.hoc', model_type='biophysical', overwrite=False)
+add_cell_model(IntFire1, directive='nrn:IntFire1', model_type='point_process', overwrite=False)
+#add_cell_model(Biophys1, overwrite=False)
+#add_cell_model(Biophys1_adjusted, 'biophysical_adjusted', overwrite=False)
+#add_cell_model(Biophys1_adjusted, overwrite=False)
+#add_cell_model(IntFire1, 'point_IntFire1', overwrite=False)
+#add_cell_model(IntFire1, 'intfire', overwrite=False)
+#add_cell_model(IntFire1, overwrite=False)

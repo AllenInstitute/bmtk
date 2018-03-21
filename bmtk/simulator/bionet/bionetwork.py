@@ -33,6 +33,8 @@ from bmtk.simulator.bionet import nrn, io
 from bmtk.simulator.bionet.property_schemas import CellTypes
 import bmtk.simulator.bionet.config as cfg
 
+from bmtk.simulator.bionet.biograph import BioEdge
+
 # TODO: leave this import, it will initialize some of the default functions for building neurons/synapses/weights.
 import bmtk.simulator.bionet.default_setters
 
@@ -82,6 +84,18 @@ class BioNetwork(object):
 
         self._save_connections = False
         self._total_synapses = 0
+
+        self._model_type_map = {
+            'biophysical': BioCell,
+            'point_process': LIFCell,
+            'point_soma': lambda *x : None,
+            'virtual': lambda *x : None
+        }
+
+        self._cell_model_gids = {model_type: [] for model_type in self._model_type_map.keys()}
+        self._population_map = {}
+
+        self._morphology_lookup = {}
 
     @property
     def spike_threshold(self):
@@ -134,9 +148,46 @@ class BioNetwork(object):
 
     def build_cells(self):
         """Instantiate cells based on parameters provided in the InternalCell table and Internal CellModel table"""
-        self._select_local_nodes()
+        #for node_pop in self.node_populations():
+        #    for
+        # TODO: Raise a warning if more than one internal population and no gids (node_id collision)
+        # TODO: Verify there actually is at least one internal population
+        for pop_name in self._graph._internal_pop_names:
+            self._population_map[pop_name] = []  # TODO: Preallocate array
+            for node, prop_map in self._graph.internal_nodes_itr(pop_name, rank, nhost):
+                cell = self._model_type_map[node['model_type']](node, self, prop_map)
+                self._cells[prop_map.gid(node)] = cell
+                self._cell_model_gids[node['model_type']].append(prop_map.gid(node))
+                # TODO: Need to make sure cell isn't virtual
+                self._population_map[pop_name].append(cell)
+
+        '''
+        for node, prop_map in self._graph.internal_nodes_itr(rank, nhost):
+            self._cells[prop_map.gid(node)] = self._model_type_map[node['model_type']](node, self, prop_map)
+            self._cell_model_gids[node['model_type']].append(prop_map.gid(node))
+
+            #print node.node_id, prop_map
+        '''
+
+        '''
+        for node_pop in self._graph._internal_populations:
+            for node in node_pop[rank::nhost]:
+                print node.node_id
+                print node['model_type']
+                print self._model_type_map[node['model_type']](node, self)
+                # exit()
+
+        exit()
+        '''
+
+
+        # self._select_local_nodes()
+        #for node in self._local_node_ids:
+
+        '''
         for node in self._local_nodes:
             gid = node.node_id
+            print
 
             if node.cell_type == CellTypes.Biophysical:
                 self._cells[gid] = BioCell(node, self.spike_threshold, self.dL, self.calc_ecp, self._save_connections)
@@ -155,6 +206,7 @@ class BioNetwork(object):
                 nrn.quit_execution()
 
             # TODO: Add ability to easily extend the Cell-Types without hardcoding into this loop!!
+        '''
         pc.barrier()  # wait for all hosts to get to this point
 
         self.make_morphologies()
@@ -190,6 +242,29 @@ class BioNetwork(object):
 
     def make_morphologies(self):
         """Creating a Morphology object for each biophysical model"""
+        for gid in self._cell_model_gids['biophysical']:
+            cell = self._cells[gid]
+            morphology_file = cell.morphology_file
+            if morphology_file in self.__morphologies_cache:
+                # create a single morphology object for each model_group which share that morphology
+                morph = self.__morphologies_cache[morphology_file]
+
+                # associate morphology with a cell
+                cell.set_morphology(morph)
+                self._morphology_lookup[morphology_file].append(gid)
+
+            else:
+                hobj = cell.hobj  # get hoc object (hobj) from the first cell with a new morphologys
+                morph = Morphology(hobj)
+
+                # associate morphology with a cell
+                cell.set_morphology(morph)
+
+                # create a single morphology object for each model_group which share that morphology
+                self.__morphologies_cache[morphology_file] = morph
+                self._morphology_lookup[morphology_file] = [gid]
+        '''
+        exit()
         for node in self._local_nodes:
             if node.cell_type == CellTypes.Biophysical:
                 node_type_id = node.node_type_id
@@ -211,7 +286,8 @@ class BioNetwork(object):
                     # create a single morphology object for each model_group which share that morphology
                     self.__morphologies_cache[node_type_id] = morph
 
-        io.print2log0("    Created morphologies")
+        '''
+        io.log_info("Created morphologies")
         self._morphologies_built = True
 
     def set_seg_props(self):
@@ -219,17 +295,18 @@ class BioNetwork(object):
         for _, morphology in self.__morphologies_cache.items():
             morphology.set_seg_props()
 
-        io.print2log0("    Set segment properties")
+        io.log_info("Set segment properties")
 
     def calc_seg_coords(self):
         """Needed for the ECP calculations"""
-        for node_type_id, morphology in self.__morphologies_cache.items():
+        # TODO: Is there any reason this function can't be moved to make_morphologies()
+        for morphology_file, morphology in self.__morphologies_cache.items():
             morph_seg_coords = morphology.calc_seg_coords()   # needed for ECP calculations
 
-            for node in self._local_node_types[node_type_id]:
-                self._cells[node.node_id].calc_seg_coords(morph_seg_coords)
+            for gid in self._morphology_lookup[morphology_file]:
+                self._cells[gid].calc_seg_coords(morph_seg_coords)
 
-        io.print2log0("    Set segment coordinates")
+        io.log_info("Set segment coordinates")
 
     def add_spikes_nwb(self, ext_net, nwb_file, trial):
         h5_file = h5py.File(nwb_file, 'r')
@@ -259,8 +336,55 @@ class BioNetwork(object):
 
         Make sure spike trains have been set before calling, otherwise it will creating spiking cells with no spikes.
         """
+        #print self._stim_networks
+        for pop_name in self._graph.virtual_pop_names():
+            if pop_name not in self._stim_networks:
+                continue
+
+            self._stims[pop_name] = {}
+            for node in self._graph.external_nodes_itr(pop_name, rank, nhost):
+                # TODO: Put back
+                spike_train = self._get_spike_trains(node.node_id, pop_name)
+                self._stims[pop_name][node.node_id] = Stim(node, spike_train)
+
+            self._init_connections()
+            io.log_info('    Setting connections from {}'.format(pop_name))
+            # TODO: skip if source_network is not in stims
+            source_stims = self._stims[pop_name]
+            syn_counter = 0
+            #print self._population_map.keys()
+            # TODO: Iterate and do node_id lookup at the same time, cache results (temp)
+            for trg_pop in self._population_map.keys():
+                for edge_pop in self._graph.external_edge_populations(src_pop=pop_name, trg_pop=trg_pop):
+                    prop_maps = self._graph._edge_property_maps[edge_pop.name]
+                    for trg_node in self._population_map[trg_pop]:
+                        prop_map = prop_maps[trg_node.group_id]
+                        for edge in edge_pop.get_target(trg_node.node_id):
+                            bioedge = BioEdge(edge, self._graph, prop_map)
+                            stim = source_stims[edge.source_node_id]
+                            syn_counter += trg_node.set_syn_connection(bioedge, stim, stim)
+
+        '''
+            for trg_gid, trg_cell in self._cells.items():
+                for trg_prop, src_prop, edge_prop in self._graph.edges_iterator(trg_gid, source_network):
+                    # TODO: reimplement weight function if needed
+                    stim = source_stims[src_prop.node_id]
+                    syn_counter += trg_cell.set_syn_connection(edge_prop, src_prop, stim)
+            self._total_synapses += syn_counter
+        '''
+
+        '''
+            for external_pop in self._graph._external_edges[pop_name]:
+                print external_pop.target_population, "f"
+                #for node in self._graph.external_nodes_itr(pop_name)
+
+                # TODO: Keep track if virtual nodes are mixed, and if so check the source node
+            #print pop_name
+            # print virt_pop
+
+        exit()
         for network in self._graph.external_networks():
-            io.print2log0('        %s cells' %network)
+            io.log_info('        %s cells' % network)
 
             if network not in self._stim_networks:
                 continue
@@ -278,12 +402,13 @@ class BioNetwork(object):
                 src_prop = self._graph.get_node(src_gid, network)
                 spike_train = self._get_spike_trains(src_gid, network)
                 self._stims[network][src_gid] = Stim(src_prop, spike_train)
+        '''
 
     def set_recurrent_connections(self):
         self._init_connections()
         syn_counter = 0
         for src_network in self._graph.internal_networks():
-            io.print2log0('    Setting connections from {}'.format(src_network))
+            io.log_info('    Setting connections from {}'.format(src_network))
             for trg_gid, trg_cell in self._cells.items():
                 for trg_prop, src_prop, edge_prop in self._graph.edges_iterator(trg_gid, src_network):
                     syn_counter += trg_cell.set_syn_connection(edge_prop, src_prop)
@@ -291,7 +416,7 @@ class BioNetwork(object):
 
     def set_external_connections(self, source_network):
         self._init_connections()
-        io.print2log0('    Setting connections from {}'.format(source_network))
+        io.log_info('    Setting connections from {}'.format(source_network))
         # TODO: skip if source_network is not in stims
         source_stims = self._stims[source_network]
         syn_counter = 0
@@ -304,13 +429,13 @@ class BioNetwork(object):
 
     def _init_connections(self):
         if not self._connections_initialized:
-            io.print2log0('Initializing connections...')
+            io.log_info('Initializing connections.')
             for gid, cell in self._cells.items():
                 cell.init_connections()
             self._connections_initialized = True
 
     def scale_weights(self, factor):
-        io.print2log0('Scaling all connection weights')
+        io.log_info('Scaling all connection weights')
         for gid, cell in self.cells.items():
             cell.scale_weights(factor)
 
@@ -347,8 +472,13 @@ class BioNetwork(object):
         :param graph: A BioGraph object that has already been loaded.
         :return: A BioNetwork object with nodes and connections that can be ran in a NEURON simulator.
         """
-        io.print2log0('Number of processors: {}'.format(nhost))
-        io.print2log0('Setting up network...')
+        io.log_info('Number of processors: {}'.format(nhost))
+        io.log_info('Setting up network.')
+
+        # 1. Load biophysical and point cells
+        # 2. Load
+
+
 
         # load the json file or object
         if isinstance(config_file, basestring):
@@ -373,7 +503,8 @@ class BioNetwork(object):
 
         # build the cells
         network.save_connections = config['output'].get('save_synapses', False)
-        io.print2log('Building cells...')
+        graph.io.log_info('Building cells.')
+        #io.print2log('Building cells...')
         network.build_cells()
 
         # list of cells who parameters will be saved to h5
@@ -381,12 +512,12 @@ class BioNetwork(object):
             network.save_gids(config['node_id_selections']['save_cell_vars'])
         # Find and save network stimulation. Do this before loading external/internal connections.
 
-        if 'input' in config:
-            for netinput in config['input']:
-                if netinput['type'] == 'external_spikes' and netinput['format'] == 'nwb':
+        if 'inputs' in config:
+            for _, netinput in config['inputs'].items():
+                if netinput['input_type'] == 'spikes' and netinput['module'] == 'nwb':
                     # Load external network spike trains from an NWB file.
                     # io.print2log0('Load input for {}'.format(netinput['network']))
-                    network.add_spikes_nwb(netinput['source_nodes'], netinput['file'], netinput['trial'])
+                    network.add_spikes_nwb(netinput['node_set'], netinput['input_file'], netinput['trial'])
 
                 elif netinput['type'] == 'external_spikes' and netinput['format'] == 'csv':
                     network.add_spikes_csv(netinput['source_nodes'], netinput['file'])
@@ -394,15 +525,16 @@ class BioNetwork(object):
                 # TODO: Allow for external spike trains from csv file or user function
                 # TODO: Add Iclamp code.
 
-            io.print2log0('    Setting up external cells...')
+            io.log_info('    Setting up external cells...')
             network.make_stims()
-        io.print2log0('Cells are built!')
+
+        io.log_info('Cells are built!')
 
         for netname in graph.external_networks():
             network.set_external_connections(netname)
 
         network.set_recurrent_connections()
-        io.print2log0('Network is built!')
+        io.log_info('Network is built!')
 
         if network.save_connections:
             io.print2log0('Saving synaptic connections:')

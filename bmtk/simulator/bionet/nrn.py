@@ -37,27 +37,36 @@ pc = h.ParallelContext()
 
     
 def quit_execution(): # quit the execution with a message
-
     pc.done()
     sys.exit()
-    
     return
-
 
 def clear_gids():
     pc.gid_clear()
     pc.barrier()
 
 
-def load_neuron_modules(conf, **cm):
+def load_neuron_modules(mechanisms_dir, templates_dir, default_templates=True):
+    """
+
+    :param mechanisms_dir:
+    :param templates_dir:
+    :param default_templates:
+    """
     h.load_file('stdgui.hoc')
 
     bionet_dir = os.path.dirname(__file__)
-    h.load_file(bionet_dir+'/import3d.hoc') # loads hoc files from package directory ./import3d. It is used because read_swc.hoc is modified to suppress some warnings.
-    h.load_file(bionet_dir+'/advance.hoc')
+    h.load_file(os.path.join(bionet_dir, 'import3d.hoc'))  # customized import3d.hoc to supress warnings
+    h.load_file(os.path.join(bionet_dir, 'advance.hoc'))
 
-    neuron.load_mechanisms(str(conf["components"]["mechanisms_dir"]))
-    load_templates(conf["components"]["templates_dir"])
+    if mechanisms_dir is not None:
+        neuron.load_mechanisms(str(mechanisms_dir))
+
+    if default_templates:
+        load_templates(os.path.join(bionet_dir, 'default_templates'))
+
+    if templates_dir:
+        load_templates(templates_dir)
 
 
 def load_templates(template_dir):
@@ -74,7 +83,3 @@ def load_templates(template_dir):
         h.load_file(str(hoc_template))
 
     os.chdir(cwd)
-
-
-
-        

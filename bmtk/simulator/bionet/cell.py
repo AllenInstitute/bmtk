@@ -35,9 +35,11 @@ class Cell(object):
     a Cell object directly. Cell classes act as wrapper around HOC cell object with extra functionality for setting
     positions, synapses, and other parameters depending on the desired cell class.
     """
-    def __init__(self, node):
+    def __init__(self, node, prop_map):
         self._node = node
-        self._gid = node.node_id
+        self._prop_map = prop_map
+        self._gid = self._prop_map.gid(node)
+        self._node_id = node.node_id
         self._props = node
         self._netcons = []  # list of NEURON network connection object attached to this cell
 
@@ -48,7 +50,7 @@ class Cell(object):
         pc.set_gid2node(self.gid, MPI_RANK)
 
         # Load the NEURON HOC object
-        self._hobj = node.load_hobj()
+        self._hobj = self._prop_map.load_cell(node)
 
     @property
     def hobj(self):
@@ -57,6 +59,14 @@ class Cell(object):
     @property
     def gid(self):
         return self._gid
+
+    @property
+    def node_id(self):
+        return self._node_id
+
+    @property
+    def group_id(self):
+        return self._node.group_id
 
     @property
     def network_name(self):
@@ -71,7 +81,7 @@ class Cell(object):
         return self._pos_soma
 
     def set_soma_position(self):
-        positions = self._props.positions
+        positions = self._prop_map.positions(self._props)
         if positions is not None:
             self._pos_soma = positions.reshape(3, 1)
 

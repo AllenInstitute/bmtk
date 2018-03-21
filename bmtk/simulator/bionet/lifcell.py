@@ -31,8 +31,8 @@ pc = h.ParallelContext()    # object to access MPI methods
 
 class LIFCell(Cell):
     """Implimentation of a Leaky Integrate-and-file neuron type cell."""
-    def __init__(self, cell_prop):
-        super(LIFCell, self).__init__(cell_prop)
+    def __init__(self, node, bionetwork, prop_map):
+        super(LIFCell, self).__init__(node, prop_map)
         self.set_spike_detector()
         self._src_gids = []
         self._src_nets = []
@@ -46,7 +46,7 @@ class LIFCell(Cell):
         pass
 
     def set_syn_connection(self, edge_prop, src_node, stim=None):
-        src_gid = src_node.node_id
+        #src_gid = src_node.node_id
         syn_params = edge_prop['dynamics_params']
         nsyns = edge_prop.nsyns
         delay = edge_prop['delay']
@@ -57,8 +57,10 @@ class LIFCell(Cell):
             syn_weight *= syn_params['sign'] * nsyns
 
         if stim is not None:
+            src_gid = -1
             nc = h.NetCon(stim.hobj, self.hobj)
         else:
+            src_gid = src_node.node_id
             nc = pc.gid_connect(src_gid, self.hobj)
 
         weight = syn_weight
@@ -66,8 +68,10 @@ class LIFCell(Cell):
         nc.delay = delay
         self._netcons.append(nc)
         self._src_gids.append(src_gid)
-        self._src_nets.append(src_node.network)
-        self._edge_type_id.append(edge_prop.edge_type_id)
+        #self._src_nets.append(src_node.network)
+        self._src_nets.append(-1)
+        #self._edge_type_id.append(edge_prop.edge_type_id)
+        self._edge_type_id.append(-1)
         return nsyns
 
     def set_syn_connections(self, nsyn, syn_weight, edge_type, src_gid, stim=None):

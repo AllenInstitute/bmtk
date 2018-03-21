@@ -33,22 +33,22 @@ class BioCell(Cell):
     """Implemntation of a morphologically and biophysically detailed type cell.
 
     """
-    def __init__(self, node, spike_threshold, dL, calc_ecp=False, save_connection=True):
-        super(BioCell, self).__init__(node)
+    def __init__(self, node, bionetwork, prop_map):
+        super(BioCell, self).__init__(node, prop_map)
 
         # Set up netcon object that can be used to detect and communicate cell spikes.
-        self.set_spike_detector(spike_threshold)
+        self.set_spike_detector(bionetwork.spike_threshold)
 
         self._morph = None
         self._seg_coords = {}
 
         # Determine number of segments and store a list of all sections.
         self._nseg = 0
-        self.set_nseg(dL)
+        self.set_nseg(bionetwork.dL)
         self._secs = []
         self.set_sec_array()
 
-        self._save_conn = save_connection
+        self._save_conn = False # bionetwork.save_connection
         self._synapses = []
         self._syn_src_net = []
         self._syn_src_gid = []
@@ -56,10 +56,17 @@ class BioCell(Cell):
         self._syn_sec_x = []
         self._edge_type_id = []
 
-        if calc_ecp:
+        # potentially used by ecp module
+        self.im_ptr = None
+        self.im_Vec = None
+
+
+        '''
+        if bionetwork.calc_ecp:
             self.im_ptr = h.PtrVector(self._nseg)  # pointer vector
             self.im_ptr.ptr_update_callback(self.set_im_ptr)   # used for gathering an array of  i_membrane values from the pointer vector
             self.imVec = h.Vector(self._nseg)
+        '''
 
     def set_spike_detector(self, spike_threshold):
         nc = h.NetCon(self.hobj.soma[0](0.5)._ref_v, None, sec=self.hobj.soma[0])  # attach spike detector to cell
@@ -75,8 +82,16 @@ class BioCell(Cell):
 
     def calc_seg_coords(self, morph_seg_coords):
         """Calculate segment coordinates for individual cells"""
-        phi_y = self._props.rotation_angle_yaxis  # self._props['rotation_angle_yaxis']
-        phi_z = self._props.rotation_angle_zaxis  # self._props['rotation_angle_zaxis']
+        #print self.gid
+        #print self._prop_map
+        #print self._prop_map.rotation_angle_yaxis(self._props)
+        #exit()
+        #phi_y = self._props['rotation_angle_yaxis']
+        #phi_y = self._props.rotation_angle_yaxis  # self._props['rotation_angle_yaxis']
+
+        phi_y = self._prop_map.rotation_angle_yaxis(self._props)  # self._props['rotation_angle_zaxis']
+        phi_z = self._prop_map.rotation_angle_zaxis(self._props)  # self._props['rotation_angle_zaxis']
+
 
         RotY = utils.rotation_matrix([0, 1, 0], phi_y)  # rotate segments around yaxis normal to pia
         RotZ = utils.rotation_matrix([0, 0, 1], -phi_z) # rotate segments around zaxis to get a proper orientation
@@ -88,7 +103,11 @@ class BioCell(Cell):
 
     def get_seg_coords(self):
         return self._seg_coords
-    
+
+    @property
+    def morphology_file(self):
+        return self._node['morphology_file']
+
     @property
     def morphology(self):
         return self._morph
@@ -227,6 +246,12 @@ class BioCell(Cell):
         self._syn_src_gid = []
         self._syn_seg_ix = []
         self._syn_sec_x = []
+
+    def setup_ecp(self):
+        self.im_ptr = h.PtrVector(self._nseg)  # pointer vector
+        # used for gathering an array of  i_membrane values from the pointer vector
+        self.im_ptr.ptr_update_callback(self.set_im_ptr)
+        self.imVec = h.Vector(self._nseg)
 
     def set_im_ptr(self): 
         """Set PtrVector to point to the i_membrane_"""
