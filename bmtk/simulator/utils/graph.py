@@ -27,6 +27,8 @@ import config as cfg
 from bmtk.utils.io import TabularNetwork
 from bmtk.utils.property_schema import PropertySchema
 
+from bmtk.utils import sonata
+
 
 """Creates a graph of nodes and edges from multiple network files for all simulators.
 
@@ -109,6 +111,8 @@ class SimGraph(object):
 
         self._property_schema = property_schema
 
+        self._io = None  # TODO: create default io module (without mpi)
+
     @property
     def networks(self):
         """Returns list of all network names, external and internal"""
@@ -121,6 +125,10 @@ class SimGraph(object):
     @property_schema.setter
     def property_schema(self, value):
         self._property_schema = value
+
+    @property
+    def io(self):
+        return self._io
 
     def external_networks(self):
         """List of all external network names"""
@@ -163,12 +171,26 @@ class SimGraph(object):
         # TODO: need to implement
         return True
 
-    def add_nodes(self, nodes, network=None):
+    def add_nodes(self, file, populations=None):
         """Add nodes from a network to the graph.
 
         :param nodes: A NodesFormat type object containing list of nodes.
         :param network: name/identifier of network. If none will attempt to retrieve from nodes object
         """
+        nodes = file.nodes
+        selected_populations = nodes.population_names if populations is None else populations
+        for pop_name in selected_populations:
+            if pop_name not in nodes:
+                continue
+
+            node_pop = nodes[pop_name]
+            print node_pop.node_types_table.columns
+            for grp in node_pop.groups:
+
+                print grp.all_columns
+
+        exit()
+
         if network is None:
             # TODO: Throw an error if network name cannot be resolved.
             network = nodes.name
@@ -211,7 +233,13 @@ class SimGraph(object):
         self._networks[network][node_params.node_id] = node_params
         self._external_networks.add(network)
 
-    def add_edges(self, edges, source_network=None, target_network=None):
+    def add_edges(self, file, source_network=None, target_network=None):
+        edges = file.edges
+        print edges
+
+        exit()
+
+        '''
         src_network = source_network if source_network is not None else edges.source_network
         trg_network = target_network if target_network is not None else edges.target_network
         if trg_network is None:
@@ -226,6 +254,7 @@ class SimGraph(object):
                 raise Exception('Network {} has not been added to the graph, can not make connections'.format(net))
 
         self._edges_table[(trg_network, src_network)] = edges
+        '''
 
     def edges_table(self, target_network, source_network):
         return self._edges_table.get((target_network, source_network), None)
@@ -281,43 +310,35 @@ class SimGraph(object):
         :return: A graph object of type cls
         """
         graph = cls(property_schema) if not properties else cls(property_schema, **properties)
+        # io = cls.get_io()
         if isinstance(conf, basestring):
             config = graph._from_json(conf)
         elif isinstance(conf, dict):
             config = conf
         else:
-            raise Exception('Could not convert {} (type "{}") to json.'.format(conf, type(conf)))
+            graph.io.log_exception('Could not convert {} (type "{}") to json.'.format(conf, type(conf)))
 
-        if 'components' in config:
-            for name, value in config['components'].iteritems():
-                graph.add_component(name, value)
-            graph._validate_components()
+        if not config.with_networks:
+            graph.io.log_exception('Could not find any network files. Unable to build network.')
 
-        if 'networks' not in config:
-            raise Exception('Could not find any network files. Unable to build network.')
+        # load components
+        for name, value in config.components.items():
+            graph.add_component(name, value)
+        graph._validate_components()
 
-        network_files = config['networks']
-        if 'nodes' not in network_files:
-            raise Exception("Could not find any node files. Unable to build network.")
+        # load nodes
+        for node_dict in config.nodes:
+            nodes_net = sonata.File(data_files=node_dict['nodes_file'], data_type_files=node_dict['node_types_file'])
+            graph.add_nodes(nodes_net)
 
-        for nodes_config in config['networks']['nodes']:
-            nodes_file = nodes_config['nodes_file']
-            node_types_file = nodes_config['node_types_file']
-            network_name = None if 'name' not in nodes_config else nodes_config['name']
-            nf = network_format.load_nodes(nodes_file, node_types_file)
-            graph.add_nodes(nf, network_name)
-
-        if 'edges' in config['networks']:
-            for edges_config in config['networks']['edges']:
-                if not edges_config.get('active', True):
-                    continue
-
-                edges_file = edges_config['edges_file']
-                edge_types_file = edges_config['edge_types_file']
-
-                ef = network_format.load_edges(edges_file, edge_types_file)
-                target_network = edges_config['target'] if 'target' in edges_config else None
-                source_network = edges_config['source'] if 'source' in edges_config else None
-                graph.add_edges(ef, target_network=target_network, source_network=source_network)
+        # load edges
+        for edge_dict in config.edges:
+            target_network = edge_dict['target'] if 'target' in edge_dict else None
+            source_network = edge_dict['source'] if 'source' in edge_dict else None
+            edge_net = sonata.File(data_files=edge_dict['edges_file'], data_type_files=edge_dict['edge_types_file'])
+            graph.add_edges(edge_net, source_pop=target_network, target_pop=source_network)
 
         return graph
+
+    def virtual_populations(self):
+        pass

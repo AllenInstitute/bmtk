@@ -151,7 +151,7 @@ class Simulation(object):
 
         if self._start_from_state:
             # io.read_state()
-            io.print2log0('Read the initial state saved at t_sim: {} ms'.format(h.t))
+            io.log_info('Read the initial state saved at t_sim: {} ms'.format(h.t))
         else:
             h.v_init = self.v_init
 
@@ -166,14 +166,14 @@ class Simulation(object):
 
     def set_recordings(self):
         """Set recordings of ECP, spikes and somatic traces"""
-        io.print2log0('Setting up recordings...')
+        io.log_info('Setting up recordings.')
         if not self._start_from_state:
             # if starting from a new initial state
             io.create_output_files(self, self.gids)
         else:
             io.extend_output_files(self.gids)
 
-        io.print2log0('Recordings are set!')
+        io.log_info('Recordings are set!')
         pc.barrier()
 
     def attach_current_clamp(self, amplitude, delay, duration, gids=None):
@@ -187,7 +187,7 @@ class Simulation(object):
 
         for gid in gids:
             if gid not in self.gids['biophysical']:
-                io.print2log0("Warning: attempting to attach current clamp to non-biophysical gid {}.".format(gid))
+                io.log_warning("Attempting to attach current clamp to non-biophysical gid {}.".format(gid))
 
             cell = self.net.cells[gid]
             Ic = IClamp(amplitude, delay, duration)
@@ -210,9 +210,9 @@ class Simulation(object):
         pc.timeout(0)
          
         pc.barrier()  # wait for all hosts to get to this point
-        io.print2log0('Running simulation for {:.3f} ms with the time step {:.3f} ms'.format(self.tstop, self.dt))
-        io.print2log0('Starting timestep: {} at t_sim: {:.3f} ms'.format(self.tstep, h.t))
-        io.print2log0('Block save every {} steps'.format(self.nsteps_block))
+        io.log_info('Running simulation for {:.3f} ms with the time step {:.3f} ms'.format(self.tstop, self.dt))
+        io.log_info('Starting timestep: {} at t_sim: {:.3f} ms'.format(self.tstep, h.t))
+        io.log_info('Block save every {} steps'.format(self.nsteps_block))
 
         if self._start_from_state:
             h.continuerun(h.tstop)
@@ -228,17 +228,17 @@ class Simulation(object):
         end_time = time.time()
 
         sim_time = self.__elapsed_time(end_time - s_time)
-        io.print2log0now('Simulation completed in {} '.format(sim_time))
+        io.log_info('Simulation completed in {} '.format(sim_time))
 
     def report_load_balance(self):
         comptime = pc.step_time()
         print('comptime: ', comptime, pc.allreduce(comptime, 1))
         avgcomp = pc.allreduce(comptime, 1)/pc.nhost()
         maxcomp = pc.allreduce(comptime, 2)
-        io.print2log0('Maximum compute time is {} seconds.'.format(maxcomp))
-        io.print2log0('Approximate exchange time is {} seconds.'.format(comptime - maxcomp))
+        io.log_info('Maximum compute time is {} seconds.'.format(maxcomp))
+        io.log_info('Approximate exchange time is {} seconds.'.format(comptime - maxcomp))
         if maxcomp != 0.0:
-            io.print2log0('Load balance is {}.'.format(avgcomp/maxcomp))
+            io.log_info('Load balance is {}.'.format(avgcomp/maxcomp))
 
     def post_fadvance(self): 
         """
@@ -254,7 +254,7 @@ class Simulation(object):
 
         # self.save_data_to_block(tstep_block)
         if (self.tstep % self.nsteps_block == 0) or self.tstep == self.nsteps:
-            io.print2log0('    step:%d t_sim:%.3f ms' % (self.tstep, h.t))
+            io.log_info('    step:%d t_sim:%.3f ms' % (self.tstep, h.t))
             self.__tstep_end_block = self.tstep
            
             time_step_interval = (self.__tstep_start_block, self.__tstep_end_block)
@@ -268,37 +268,81 @@ class Simulation(object):
 
     @classmethod
     def from_config(cls, config, network, set_recordings=True):
-        sim = cls(network=network,
-                  dt=config['run']['dt'],
-                  tstop=config['run']['tstop'],
-                  v_init=config['conditions']['v_init'],
-                  celsius=config['conditions']['celsius'],
-                  nsteps_block=config['run']['nsteps_block'])
+        # TODO: convert from json to sonata config if necessary
 
+        sim = cls(network=network,
+                  dt=config.dt,
+                  tstop=config.tstop,
+                  v_init=config.v_init,
+                  celsius=config.celsius,
+                  nsteps_block=config.block_step)
+
+        # print config.reports
+        # TODO: Organize the reports into a better structure
+        # TODO: Need to create a gid selector
+        #print {report['module']: report for _, report in config.reports.items()}
+        membrane_reports = config.get_modules(module_name='membrane_report')
+        if len(membrane_reports) > 0:
+            # Organize into where the output will be saved
+            combined_reports = {}
+            for report in membrane_reports:
+                var_name = report['variable_name']
+                cells = report['cells']
+                output_dir = report['output_dir']
+                key = (cells, output_dir)
+                if key in combined_reports:
+                    combined_reports[key].append(var_name)
+                else:
+                    combined_reports[key] = [var_name]
+
+            for (cells, output_dir), variables in combined_reports.items():
+                # print cells, output_dir
+                cellvars_mod = mods.CellVarsMod(outputdir=output_dir, variables=variables)
+                sim.add_mod(cellvars_mod)
+
+        '''
         if config['run']['save_cell_vars']:
             # Initialize save biophysical cell variables
             cell_vars = config['run']['save_cell_vars']
             cell_vars_output = config['output']['cell_vars_dir']
             cellvars_mod = mods.CellVarsMod(outputdir=cell_vars_output, variables=cell_vars)
             sim.add_mod(cellvars_mod)
+        '''
 
         if set_recordings:
             config_output = config['output']
             output_dir = config_output['output_dir']
 
             # Recording spikes
-            spikes_csv_file = config_output.get('spikes_ascii_file', None)
-            spikes_h5_file = config_output.get('spikes_hdf5_file', None)
+            spikes_csv_file = config_output.get('spikes_file_csv', None)
+            spikes_h5_file = config_output.get('spikes_file', None)
             if spikes_csv_file is not None or spikes_h5_file is not None:
                 spikes_mod = mods.SpikesMod(tmpdir=output_dir,csv_filename=spikes_csv_file, h5_filename=spikes_h5_file)
                 sim.add_mod(spikes_mod)
 
             # recording extracell field potential
+            ecp_list = config.get_modules('extracellular')
+            for ecp_mod_params in ecp_list:
+                ecp_mod = mods.EcpMod(ecp_file=ecp_mod_params['ecp_file'],
+                                      positions_file=ecp_mod_params['electrode_positions'],
+                                      tmp_outputdir=config.output_dir)
+                sim.add_mod(ecp_mod)
+                # TODO: Let the module setup ecp for all cells
+                # TODO: Check the selected cells
+                # TODO: Allow ECP for point cells?
+                for gid in network._cell_model_gids['biophysical']:
+                    network._cells[gid].setup_ecp()
+
+                # exit()
+
+
+            '''
             if config['run']['calc_ecp']:
                 ecp_mod = mods.EcpMod(ecp_file=config['output']['ecp_file'],
                                       positions_file=config['recXelectrode']['positions'],
                                       tmp_outputdir=config['output']['output_dir'])
                 sim.add_mod(ecp_mod)
+            '''
             sim.set_recordings()
 
         if 'input' in config:

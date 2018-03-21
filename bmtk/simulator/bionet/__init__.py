@@ -21,3 +21,5 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 from bmtk.simulator.bionet.pyfunction_cache import synapse_model, synaptic_weight, cell_model
+
+from config import Config

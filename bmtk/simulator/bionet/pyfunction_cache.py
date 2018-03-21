@@ -58,16 +58,23 @@ class _PyFunctions(object):
         """return the synpatic weight function"""
         return self.__syn_weights[name]
 
-    def add_cell_model(self, name, func, overwrite=True):
-        if overwrite or name not in self.__cell_models:
-            self.__cell_models[name] = func
+    def __cell_model_key(self, directive, model_type):
+        return (directive, model_type)
+
+    def add_cell_model(self, directive, model_type, func, overwrite=True):
+        key = self.__cell_model_key(directive, model_type)
+        if overwrite or key not in self.__cell_models:
+            self.__cell_models[key] = func
 
     @property
     def cell_models(self):
         return self.__cell_models.keys()
 
-    def cell_model(self, name):
-        return self.__cell_models[name]
+    def cell_model(self, directive, model_type):
+        return self.__cell_models[self.__cell_model_key(directive, model_type)]
+
+    def has_cell_model(self, directive, model_type):
+        return self.__cell_model_key(directive, model_type) in self.__cell_models
 
     def add_synapse_model(self, name, func, overwrite=True):
         if overwrite or name not in self.__synapse_models:
@@ -182,10 +189,10 @@ def add_weight_function(func, name=None, overwrite=True):
     py_modules.add_synaptic_weight(func_name, func, overwrite)
 
 
-def add_cell_model(func, name=None, overwrite=True):
+def add_cell_model(func, directive, model_type, overwrite=True):
     assert(callable(func))
-    func_name = name if name is not None else func.__name__
-    py_modules.add_cell_model(func_name, func, overwrite)
+    # func_name = name if name is not None else func.__name__
+    py_modules.add_cell_model(directive, model_type, func, overwrite)
 
 
 def add_synapse_model(func, name=None, overwrite=True):

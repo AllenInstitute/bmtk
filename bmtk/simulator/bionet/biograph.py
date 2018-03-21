@@ -23,11 +23,24 @@
 import os
 import json
 
+import nrn
+
+
+import numpy as np
+from neuron import h
+
 from bmtk.simulator.utils.graph import SimGraph, SimEdge, SimNode
 import bmtk.simulator.bionet.config as cfg
 from bmtk.simulator.bionet.property_schemas import DefaultPropertySchema, CellTypes
+from . import io
+from property_map import PropertyMap, EdgePropertyMap
+
+pc = h.ParallelContext()  # object to access MPI methods
+MPI_size = int(pc.nhost())
+MPI_rank = int(pc.id())
 
 
+'''
 class BioEdge(SimEdge):
     def __init__(self, original_params, dynamics_params, graph):
         super(BioEdge, self).__init__(original_params, dynamics_params)
@@ -58,8 +71,47 @@ class BioEdge(SimEdge):
 
     def load_synapses(self, section_x, section_id):
         return self._graph.property_schema.load_synapse_obj(self, section_x, section_id)
+'''
+class BioEdge(object):
+    def __init__(self, sonata_edge, graph, prop_map):
+        #super(BioEdge, self).__init__(original_params, dynamics_params)
+        self._sonata_edge = sonata_edge
+        self._graph = graph
+        self._prop_map = prop_map
+        #self._preselected_targets = graph.property_schema.preselected_targets()
+        #self._target_sections = graph.property_schema.target_sections(original_params)
+        #self._target_distance = graph.property_schema.target_distance(original_params)
+        #self._nsyns = graph.property_schema.nsyns(original_params)
+
+    @property
+    def preselected_targets(self):
+        return self._prop_map.preselected_targets
+
+    def weight(self, source, target):
+        return self._prop_map.weight(self._sonata_edge, source, target)
+        #return self._graph.property_schema.get_edge_weight(source, target, self)
+
+    @property
+    def target_sections(self):
+        return self._target_sections
+
+    @property
+    def target_distance(self):
+        return self._target_distance
+
+    @property
+    def nsyns(self):
+        return self._prop_map.nsyns(self._sonata_edge)
+
+    def load_synapses(self, section_x, section_id):
+        return self._graph.property_schema.load_synapse_obj(self, section_x, section_id)
+
+    def __getitem__(self, item):
+        return self._sonata_edge[item]
 
 
+
+'''
 class BioNode(SimNode):
     def __init__(self, node_id, graph, network, node_params):
         super(BioNode, self).__init__(node_id, graph, network, node_params)
@@ -101,9 +153,97 @@ class BioNode(SimNode):
 
     def load_hobj(self):
         return self._graph.property_schema.load_cell_hobj(self)
+'''
+
+class BioNode(object):
+    pass
+
+
+
+
+class PropertyMapS(object):
+    def __init__(self, biograph):
+        self._template_cache = {}
+        self._biograph = biograph
+
+    def _parse_model_template(self, model_template):
+        if model_template in self._template_cache:
+            return self._template_cache[model_template]
+        else:
+            template_parts = model_template.split(':')
+            assert(len(template_parts) == 2)
+            directive, template = template_parts[0], template_parts[1]
+            self._template_cache[model_template] = (directive, template)
+            return directive, template
+
+    def load_cell(self, node):
+        model_template = node['model_template']
+        model_type = node['model_type']
+        if nrn.py_modules.has_cell_model(model_template, model_type):
+            cell_fnc = nrn.py_modules.cell_model(model_template, node['model_type'])
+            template_name = None
+        else:
+            directive, template_name = self._parse_model_template(node['model_template'])
+            cell_fnc = nrn.py_modules.cell_model(directive, node['model_type'])
+
+        #print(node['model_type'])
+        #print()
+        #print(node['model_processing'])
+
+        #model_type = self.model_type(node)
+        #cell_fnc = nrn.py_modules.cell_model(directive, node['model_type'])
+        dynamics_params = self.dynamics_params(node)
+        return cell_fnc(node, template_name, dynamics_params)
+
+    @classmethod
+    def parse_group(cls, node_group, biograph):
+        #print node_group
+
+        prop_map = cls(biograph)
+
+        if 'positions' in node_group.all_columns:
+            prop_map.positions = lambda self, node: node['positions']
+        elif 'position' in node_group.all_columns:
+            prop_map.positions = lambda self, node: node['position']
+        else:
+            prop_map.positions = lambda self, node: [0, 0, 0]
+
+        # Use gids or node_ids
+        if node_group.has_gids:
+            prop_map.gid = lambda self, node: node.gid
+        else:
+            prop_map.gid = lambda self, node: node.node_id
+
+        # dynamics_params
+        if node_group.has_dynamics_params:
+            prop_map.dynamics_params = lambda self, node: node.dynamics_params
+        else:
+            prop_map.dynamics_params = lambda self, node: node['dynamics_params']
+
+        # Rotation angles
+        if 'rotation_angle_xaxis' in node_group.all_columns:
+            prop_map.rotation_angle_xaxis = lambda self, node: node['rotation_angle_xaxis']
+        else:
+            prop_map.rotation_angle_xaxis = lambda self, _: 0.0
+
+        print 'rotation_angle_yaxis' in node_group.all_columns
+        if 'rotation_angle_yaxis' in node_group.all_columns:
+            cls.rotation_angle_yaxis = lambda self, node: node['rotation_angle_yaxis']
+        else:
+            cls.rotation_angle_yaxis = lambda self, _: 0.0
+
+        if 'rotation_angle_zaxis' in node_group.all_columns:
+            cls.rotation_angle_zaxis = lambda self, node: node['rotation_angle_zaxis']
+        else:
+            cls.rotation_angle_zaxis = lambda self, _: 0.0
+
+
+        return prop_map
 
 
 class BioGraph(SimGraph):
+    model_type_col = 'model_type'
+
     def __init__(self, property_schema=None):
         property_schema = property_schema if property_schema is not None else DefaultPropertySchema
         super(BioGraph, self).__init__(property_schema)
@@ -112,15 +252,37 @@ class BioGraph(SimGraph):
         self.__virtual_nodes_table = {}
         self.__morphology_cache = {}
 
-        self._params_cache = {}
+        #self._params_cache = {}
         self._params_column = self.property_schema.get_params_column()
+        self._io = io
+
+        #self._virtual_node_groups = []
+        #self._local_node_groups = []
+        #self._nodes = {'biophysical': [], 'point_soma': [], 'point_process': [], 'virtual': []}
+
+        self._internal_populations = []
+        self._internal_pop_names = set()
+        self._virtual_populations = []
+        self._virtual_pop_names = set()
+
+        self._recurrent_edges = {}  # organize edges by their target_population
+        self._external_edges = {}
+
+        self._node_property_maps = {}
+        self._edge_property_maps = {}
+
+        self._edge_params_cache = {}
+        self._node_params_cache = {}
+        self._internal_populations_map = {}
+        self._virtual_populations_map = {}
+
 
     @staticmethod
     def get_default_property_schema():
         raise NotImplementedError()
 
     def _from_json(self, file_name):
-        return cfg.from_json(file_name, validate=True)
+        return cfg.Config.from_dict(file_name, validate=True)
 
     def __get_morphology(self, node):
         morphology_file = node['morphology_file']
@@ -131,6 +293,39 @@ class BioGraph(SimGraph):
             self.__morphology_cache[morphology_file] = full_path
             return full_path
 
+    def get_node_params(self, node):
+        model_type = node['model_type']
+        params_file = node['dynamics_params']
+        key = (model_type, params_file)
+        if key in self._node_params_cache:
+            return self._node_params_cache[key]
+        else:
+            if model_type == 'biophysical':
+                params_dir = self.get_component('biophysical_neuron_models_dir')
+            elif model_type == 'point_process':
+                params_dir = self.get_component('point_neuron_models_dir')
+            elif model_type == 'point_soma':
+                params_dir = self.get_component('point_neuron_models_dir')
+            else:
+                # Not sure what to do in this case, throw Exception?
+                params_dir = self.get_component('custom_neuron_models')
+
+            params_path = os.path.join(params_dir, params_file)
+
+            # see if we can load the dynamics_params as a dictionary. Otherwise just save the file path and let the
+            # cell_model loader function handle the extension.
+            try:
+                params_val = json.load(open(params_path, 'r'))
+            except Exception:
+                # TODO: Check dynamics_params before
+                self.io.log_exception('Could not find node dynamics_params file {}.'.format(params_path))
+
+            # cache and return the value
+            self._node_params_cache[key] = params_val
+            return params_val
+
+
+    '''
     def __get_params(self, node, cell_type):
         if node.with_dynamics_params:
             return node[self._params_column]
@@ -162,6 +357,7 @@ class BioGraph(SimGraph):
             # cache and return the value
             self._params_cache[params_file] = params_val
             return params_val
+    '''
 
     def _create_edge(self, edge, dynamics_params):
         return BioEdge(edge, dynamics_params, self)
@@ -183,3 +379,213 @@ class BioGraph(SimGraph):
 
         else:
             raise Exception('Unknown model type {}'.format(node_params['model_type']))
+
+    def __avail_model_types(self, population):
+        model_types = set()
+        for grp in population.groups:
+            if self.model_type_col not in grp.all_columns:
+                self.io.log_exception('model_type is missing from nodes.')
+
+            model_types.update(set(np.unique(grp.get_values(self.model_type_col))))
+        return model_types
+
+    def __preprocess_node_types(self, node_population):
+        # TODO: The following figures out the actually used node-type-ids. For mem and speed may be better to just process them all
+        node_type_ids = node_population.type_ids
+        # TODO: Verify all the node_type_ids are in the table
+
+        node_types_table = node_population.types_table
+
+        morph_dir = self.get_component('morphologies_dir')
+        if morph_dir is not None and 'morphology_file' in node_types_table.columns:
+            for nt_id in node_type_ids:
+                node_type = node_types_table[nt_id]
+                if node_type['morphology_file'] is None:
+                    continue
+                #print node_type['morphology_file']
+                # TODO: Check the file exits
+                # TODO: See if absolute path is stored in csv
+                node_type['morphology_file'] = os.path.join(morph_dir, node_type['morphology_file'])
+
+        if 'dynamics_params' in node_types_table.columns and 'model_type' in node_types_table.columns:
+            for nt_id in node_type_ids:
+                node_type = node_types_table[nt_id]
+                dynamics_params = node_type['dynamics_params']
+                model_type = node_type['model_type']
+                if model_type == 'biophysical':
+                    params_dir = self.get_component('biophysical_neuron_models_dir')
+                elif model_type == 'point_process':
+                    params_dir = self.get_component('point_neuron_models_dir')
+                elif model_type == 'point_soma':
+                    params_dir = self.get_component('point_neuron_models_dir')
+                else:
+                    # Not sure what to do in this case, throw Exception?
+                    params_dir = self.get_component('custom_neuron_models')
+
+                params_path = os.path.join(params_dir, dynamics_params)
+
+                # see if we can load the dynamics_params as a dictionary. Otherwise just save the file path and let the
+                # cell_model loader function handle the extension.
+                try:
+                    params_val = json.load(open(params_path, 'r'))
+                    node_type['dynamics_params'] = params_val
+                except Exception:
+                    # TODO: Check dynamics_params before
+                    self.io.log_exception('Could not find node dynamics_params file {}.'.format(params_path))
+
+    def add_nodes(self, sonata_file, populations=None):
+        """Add nodes from a network to the graph.
+
+        :param nodes: A NodesFormat type object containing list of nodes.
+        :param network: name/identifier of network. If none will attempt to retrieve from nodes object
+        """
+        nodes = sonata_file.nodes
+
+        selected_populations = nodes.population_names if populations is None else populations
+        for pop_name in selected_populations:
+            if pop_name not in nodes:
+                continue
+            node_pop = nodes[pop_name]
+
+            self.__preprocess_node_types(node_pop)
+
+            # TODO: Check for population name collisions
+
+            # Segregate into virtual populations and non-virtual populations
+            model_types = self.__avail_model_types(node_pop)
+            if 'virtual' in model_types:
+                self._virtual_populations.append(node_pop)
+                self._virtual_populations_map[pop_name] = node_pop
+                self._virtual_pop_names.add(pop_name)
+                model_types -= set(['virtual'])
+                if model_types:
+                    # We'll allow a population to have virtual and non-virtual nodes but it is not ideal
+                    self.io.log_warning('Node population {} contains both virtual and non-virtual nodes which can ' +
+                                        'cause memory and build-time inefficency. Consider separating virtual nodes ' +
+                                        'into their own population'.format(pop_name))
+
+            if model_types:
+                self._internal_populations.append(node_pop)
+                self._internal_populations_map[pop_name] = node_pop
+                self._internal_pop_names.add(pop_name)
+
+            self._node_property_maps[pop_name] = {}
+            for grp in node_pop.groups:
+                prop_map = PropertyMap.build_map(grp, self)
+                self._node_property_maps[pop_name][grp.group_id] = prop_map
+
+    def build_nodes(self):
+        # TODO: Raise a warning if more than one internal population and no gids (node_id collision)
+        # TODO: Verify there actually is at least one internal population
+
+        for node_pop in self._internal_populations:
+            for node in node_pop[MPI_rank::MPI_size+2]:
+                print node.node_id
+
+            print node_pop, len(node_pop)
+
+    def __preprocess_edge_types(self, edge_pop):
+        edge_types_table = edge_pop.types_table
+        edge_type_ids = edge_pop.type_ids
+        if 'dynamics_params' in edge_types_table.columns:
+            for et_id in edge_type_ids:
+                edge_type = edge_types_table[et_id]
+                dynamics_params = edge_type['dynamics_params']
+                params_dir = self.get_component('synaptic_models_dir')
+
+                params_path = os.path.join(params_dir, dynamics_params)
+
+                # see if we can load the dynamics_params as a dictionary. Otherwise just save the file path and let the
+                # cell_model loader function handle the extension.
+                try:
+                    params_val = json.load(open(params_path, 'r'))
+                    edge_type['dynamics_params'] = params_val
+                except Exception:
+                    # TODO: Check dynamics_params before
+                    self.io.log_exception('Could not find edge dynamics_params file {}.'.format(params_path))
+
+    def add_edges(self, sonata_file, populations=None, source_pop=None, target_pop=None):
+        edges = sonata_file.edges
+
+        selected_populations = edges.population_names if populations is None else populations
+        for pop_name in selected_populations:
+            if pop_name not in edges:
+                continue
+
+            edge_pop = edges[pop_name]
+
+            # TODO: Preprocess edge_types_table
+            self.__preprocess_edge_types(edge_pop)
+
+            # Check the source nodes exists
+            src_pop = source_pop if source_pop is not None else edge_pop.source_population
+            internal_src = src_pop in self._internal_pop_names
+            external_src = src_pop in self._virtual_pop_names
+
+            trg_pop = target_pop if target_pop is not None else edge_pop.target_population
+            internal_trg = trg_pop in self._internal_pop_names
+
+            if not internal_trg:
+                self.io.log_exception(('Node population {} does not exists or consists of only virtual nodes. ' +
+                                      '{} edges cannot create connections.').format(trg_pop, pop_name))
+
+            if not (internal_src or external_src):
+                self.io.log_exception('Source node population {} not found. Please update {} edges'.format(src_pop,
+                                                                                                           pop_name))
+
+            if internal_src:
+                if trg_pop not in self._recurrent_edges:
+                    self._recurrent_edges[trg_pop] = []
+                self._recurrent_edges[trg_pop].append(edge_pop)
+
+            if external_src:
+                if trg_pop not in self._external_edges:
+                    self._external_edges[(src_pop, trg_pop)] = []
+                self._external_edges[(src_pop, trg_pop)].append(edge_pop)
+
+            self._edge_property_maps[pop_name] = {}
+            for grp in edge_pop.groups:
+                prop_map = EdgePropertyMap.build_map(grp, self)
+                self._edge_property_maps[pop_name][grp.group_id] = prop_map
+
+
+    '''
+    def internal_nodes_itr(self, start=0, step=1):
+        for node_pop in self._internal_populations:
+            prop_maps = self._node_property_maps[node_pop.name]
+            #print prop_maps
+            for node in node_pop[start::step]:
+                #print prop_maps[node.group_id]
+                yield node, prop_maps[node.group_id]
+    '''
+    def internal_nodes_itr(self, population_name, start=0, step=1):
+        prop_maps = self._node_property_maps[population_name]
+        node_pop = self._internal_populations_map[population_name]
+        #print prop_maps
+        for node in node_pop[start::step]:
+            #print prop_maps[node.group_id]
+            yield node, prop_maps[node.group_id]
+
+    def external_nodes_itr(self, population_name, start=0, step=1):
+        node_pop = self._virtual_populations_map[population_name]
+        for node in node_pop[start::step]:
+            yield node
+
+    def virtual_populations(self):
+        return self._virtual_populations
+
+    def virtual_pop_names(self):
+        return list(self._virtual_pop_names)
+
+    def external_edge_populations(self, src_pop, trg_pop):
+        return self._external_edges.get((src_pop, trg_pop), [])
+
+    '''
+    def external_edges_itr(self, src_pop, trg_pop, node_ids):
+        for edge_pop in self._graph.external_edge_populations(src_pop=pop_name, trg_pop=trg_pop):
+            for trg_node in self._population_map[trg_pop]:
+                for edge in edge_pop.get_target(trg_node.node_id):
+                    stim = source_stims[edge.source_node_id]
+                    syn_counter += trg_node.set_syn_connection(edge, stim, stim)
+                    print
+    '''
