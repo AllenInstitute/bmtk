@@ -384,11 +384,11 @@ class EdgePopulation(Population):
 
     @staticmethod
     def get_source_population(pop_group_h5):
-        return get_attribute_h5(pop_group_h5['source_node_id'], 'network', None)
+        return get_attribute_h5(pop_group_h5['source_node_id'], 'node_population', None)
 
     @staticmethod
     def get_target_population(pop_group_h5):
-        return get_attribute_h5(pop_group_h5['target_node_id'], 'network', None)
+        return get_attribute_h5(pop_group_h5['target_node_id'], 'node_population', None)
 
     @property
     def edge_types_table(self):

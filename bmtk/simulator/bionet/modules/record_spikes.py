@@ -25,7 +25,9 @@ import csv
 import h5py
 import numpy as np
 from bmtk.simulator.bionet.modules.sim_module import SimulatorMod
-from bmtk.simulator.bionet.io import print2log0
+#from bmtk.simulator.bionet.io import print2log0
+from bmtk.utils.io.spike_trains import SpikeTrainWriter
+
 
 from neuron import h
 try:
@@ -45,25 +47,19 @@ class SpikesMod(SimulatorMod):
 
     """
 
-    def __init__(self, tmpdir, csv_filename=None, h5_filename=None):
+    def __init__(self, tmpdir, csv_filename=None, h5_filename=None, sort_order=None):
         self._csv_fname = csv_filename
-        self._csv_fhandle = None
-        self._csv_writer = None
         self._save_csv = csv_filename is not None
 
         self._h5_fname = h5_filename
-        self._h5_fhandle = None
-        self._gids_dataset = None
-        self._times_dataset = None
         self._save_h5 = h5_filename is not None
 
         self._tmpdir = tmpdir
-        self._tmp_file = self._get_tmp_filename(MPI_RANK)  # os.path.join(tmpdir, 'tmp_{}_spikes.csv'.format(MPI_RANK))
-        self._tmp_spikes_handles = {}
-        self._n_spikes_rank = 0
-        self._n_spikes_total = 0
-        self._row_itr = 0
+        self._sort_order = sort_order
 
+        self._spike_writer = SpikeTrainWriter(tmp_dir=tmpdir, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)
+
+    '''
     def _get_tmp_filename(self, rank):
         return os.path.join(self._tmpdir, 'tmp_{}_spikes.csv'.format(rank))
 
@@ -163,6 +159,7 @@ class SpikesMod(SimulatorMod):
         if os.path.exists(self._tmp_file):
             os.remove(self._tmp_file)
 
+
     def next_spike(self, rank):
         """Acts as an iterator of the spikes for a given mpi rank.
 
@@ -174,6 +171,7 @@ class SpikesMod(SimulatorMod):
             return float(val[0]), int(val[1]), rank
         except StopIteration:
             return None
+    '''
 
     def initialize(self, sim):
         # TODO: since it's possible that other modules may need to access spikes, set_spikes_recordings() should
@@ -182,22 +180,22 @@ class SpikesMod(SimulatorMod):
 
     def block(self, sim, block_interval):
         # take spikes from Simulator spikes vector and save to the tmp file
-        tspikes_handle = open(self._tmp_file, 'a')
         for gid, tVec in sim.spikes_table.items():
             for t in tVec:
-                tspikes_handle.write('{:.3f} {}\n'.format(t, gid))
-                self._n_spikes_rank += 1
+                self._spike_writer.add_spike(time=t, gid=gid)
 
         pc.barrier()  # wait until all ranks have been saved
         sim.set_spikes_recording()  # reset recording vector
 
     def finalize(self, sim):
         pc.barrier()
-        self._tmp_spikes_handles = {str(r): csv.reader(open(self._get_tmp_filename(r), 'r'), delimiter=' ')
-                                    for r in range(N_HOSTS)}
-        self._open_output()  # create csv and/or h5 files to write to
-        self._save_sorted()  # save
-        self._close_output()  # flush and close the output files
-        pc.barrier()
 
-        self._delete_tmp_file()  # remove the temporary files used to save spike data on each block
+        if self._save_csv:
+            self._spike_writer.to_csv(self._csv_fname, sort_order='time')
+            pc.barrier()
+
+        if self._save_h5:
+            self._spike_writer.to_hdf5(self._h5_fname, sort_order='time')
+            pc.barrier()
+
+        self._spike_writer.close()

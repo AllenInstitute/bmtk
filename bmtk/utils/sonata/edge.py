@@ -80,7 +80,7 @@ class Edge(object):
         elif prop_key in self._edge_type_props:
             return self._edge_type_props[prop_key]
         else:
-            raise KeyError
+            raise KeyError('Property {} not found in edge.'.format(prop_key))
 
     def __contains__(self, prop_key):
         return prop_key in self._group_props or prop_key in self._edge_type_props

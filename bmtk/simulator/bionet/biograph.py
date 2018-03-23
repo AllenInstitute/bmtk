@@ -22,6 +22,7 @@
 #
 import os
 import json
+import ast
 
 import nrn
 
@@ -92,23 +93,25 @@ class BioEdge(object):
         return self._prop_map.preselected_targets
 
     def weight(self, source, target):
-        return self._prop_map.weight(self._sonata_edge, source, target)
-        #return self._graph.property_schema.get_edge_weight(source, target, self)
+        return self._prop_map.syn_weight(self._sonata_edge, source, target)
 
     @property
     def target_sections(self):
-        return self._target_sections
+        # TODO: Use property-map
+        return self._sonata_edge['target_sections']
 
     @property
     def target_distance(self):
-        return self._target_distance
+        # TODO: Use property map
+        return self._sonata_edge['distance_range']
 
     @property
     def nsyns(self):
         return self._prop_map.nsyns(self._sonata_edge)
 
     def load_synapses(self, section_x, section_id):
-        return self._graph.property_schema.load_synapse_obj(self, section_x, section_id)
+        return self._prop_map.load_synapse_obj(self._sonata_edge, section_x, section_id)
+        #return self._graph.property_schema.load_synapse_obj(self, section_x, section_id)
 
     def __getitem__(self, item):
         return self._sonata_edge[item]
@@ -190,19 +193,11 @@ class PropertyMapS(object):
             directive, template_name = self._parse_model_template(node['model_template'])
             cell_fnc = nrn.py_modules.cell_model(directive, node['model_type'])
 
-        #print(node['model_type'])
-        #print()
-        #print(node['model_processing'])
-
-        #model_type = self.model_type(node)
-        #cell_fnc = nrn.py_modules.cell_model(directive, node['model_type'])
         dynamics_params = self.dynamics_params(node)
         return cell_fnc(node, template_name, dynamics_params)
 
     @classmethod
     def parse_group(cls, node_group, biograph):
-        #print node_group
-
         prop_map = cls(biograph)
 
         if 'positions' in node_group.all_columns:
@@ -230,7 +225,6 @@ class PropertyMapS(object):
         else:
             prop_map.rotation_angle_xaxis = lambda self, _: 0.0
 
-        # print 'rotation_angle_yaxis' in node_group.all_columns
         if 'rotation_angle_yaxis' in node_group.all_columns:
             cls.rotation_angle_yaxis = lambda self, node: node['rotation_angle_yaxis']
         else:
@@ -397,18 +391,15 @@ class BioGraph(SimGraph):
         # TODO: The following figures out the actually used node-type-ids. For mem and speed may be better to just process them all
         node_type_ids = node_population.type_ids
         # TODO: Verify all the node_type_ids are in the table
-
         node_types_table = node_population.types_table
 
         # TODO: Convert model_type to a enum
-
         morph_dir = self.get_component('morphologies_dir')
         if morph_dir is not None and 'morphology_file' in node_types_table.columns:
             for nt_id in node_type_ids:
                 node_type = node_types_table[nt_id]
                 if node_type['morphology_file'] is None:
                     continue
-                #print node_type['morphology_file']
                 # TODO: Check the file exits
                 # TODO: See if absolute path is stored in csv
                 node_type['morphology_file'] = os.path.join(morph_dir, node_type['morphology_file'])
@@ -656,13 +647,14 @@ class BioGraph(SimGraph):
                 self.__morphologies_cache[morphology_file] = morph
                 self._morphology_lookup[morphology_file] = [cell.gid]
 
-
     def get_node(self, population, node_id):
         pop_cache = self._node_cache[population]
         if node_id in pop_cache:
             return pop_cache[node_id]
         else:
             # Load node into cache.
+            print node_id
+            print population
             raise NotImplementedError
 
     _connections_initialized = False
@@ -715,6 +707,32 @@ class BioGraph(SimGraph):
                     # TODO: Check dynamics_params before
                     self.io.log_exception('Could not find edge dynamics_params file {}.'.format(params_path))
 
+                # Split target_sections
+                if 'target_sections' in edge_type:
+                    trg_sec = edge_type['target_sections']
+                    if trg_sec is not None:
+                        try:
+                            edge_type['target_sections'] = ast.literal_eval(trg_sec)
+                        except Exception as exc:
+                            io.log_warning('Unable to split target_sections list {}'.format(trg_sec))
+                            edge_type['target_sections'] = None
+
+                # Split target distances
+                if 'distance_range' in edge_type:
+                    dist_range = edge_type['distance_range']
+                    if dist_range is not None:
+                        try:
+                            # TODO: Make the distance range has at most two values
+                            edge_type['distance_range'] = json.loads(dist_range)
+                        except Exception as e:
+                            try:
+                                edge_type['distance_range'] = [0.0, float(dist_range)]
+                            except Exception as e:
+                                io.log_warning('Unable to parse distance_range {}'.format(dist_range))
+                                edge_type['distance_range'] = None
+
+
+
     def add_edges(self, sonata_file, populations=None, source_pop=None, target_pop=None):
         edges = sonata_file.edges
 
@@ -738,7 +756,7 @@ class BioGraph(SimGraph):
             internal_trg = trg_pop in self._internal_pop_names
 
             if not internal_trg:
-                self.io.log_exception(('Node population {} does not exists or consists of only virtual nodes. ' +
+                self.io.log_exception(('Node population {} does not exists (or consists of only virtual nodes). ' +
                                       '{} edges cannot create connections.').format(trg_pop, pop_name))
 
             if not (internal_src or external_src):

@@ -227,7 +227,9 @@ def log_exception(message):
         bionet_logger.error(message)
 
     pc.barrier()
-    nrn.quit_execution()
+    pc.done()
+    raise Exception(message)
+    # nrn.quit_execution()
 
 
 '''
