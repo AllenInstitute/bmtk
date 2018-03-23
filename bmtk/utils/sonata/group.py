@@ -84,6 +84,10 @@ class Group(object):
     def has_gids(self):
         return self._parent.has_gids
 
+    @property
+    def parent(self):
+        return self._parent
+
     def column(self, column_name, group_only=False):
         if column_name in self._group_column_map:
             return self._group_column_map[column_name]

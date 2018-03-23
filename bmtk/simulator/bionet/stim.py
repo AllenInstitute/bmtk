@@ -30,14 +30,18 @@ TODO:
  * This is the biggest bottleneck when loading a network, find a way to optimize.
 """
 class Stim(object):
-    def __init__(self, stim_prop, spike_train_dataset):
-
-        self.stim_gid = stim_prop.node_id
+    def __init__(self, node, spike_train_dataset):
+        self._node_id = node.node_id
+        self.stim_gid = node.gid
         self.rand_streams = []
         self._spike_train_dataset = spike_train_dataset
 
-        self.set_stim(stim_prop, self._spike_train_dataset)
+        self.set_stim(node, self._spike_train_dataset)
         
+    @property
+    def node_id(self):
+        return self._node_id
+
     def set_stim(self, stim_prop, spike_train):
         #spike_trains_handle = input_prop["spike_trains_handle"]
         #self.spike_train = spike_trains_handle['%d/data' % self.stim_gid][:]

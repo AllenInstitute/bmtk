@@ -34,12 +34,11 @@ from bmtk.simulator.bionet.pyfunction_cache import synapse_model, synaptic_weigh
 pc = h.ParallelContext()
 
 
-
-    
 def quit_execution(): # quit the execution with a message
     pc.done()
     sys.exit()
     return
+
 
 def clear_gids():
     pc.gid_clear()

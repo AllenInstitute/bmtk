@@ -50,13 +50,16 @@ class _PyFunctions(object):
             self.__syn_weights[name] = func
 
     @property
-    def synaptic_weights(self):
+    def synaptic_weight(self):
         """return list of the names of all available synaptic weight functions"""
         return self.__syn_weights.keys()
 
     def synaptic_weight(self, name):
         """return the synpatic weight function"""
         return self.__syn_weights[name]
+
+    def has_synaptic_weight(self, name):
+        return name in self.__syn_weights
 
     def __cell_model_key(self, directive, model_type):
         return (directive, model_type)

@@ -53,7 +53,7 @@ def load_csv(csvfile):
 
 
 def get_attribute_h5(h5obj, attribut_name, default=None):
-    val = h5obj.attrs.get('network', default)
+    val = h5obj.attrs.get(attribut_name, default)
     if using_py3 and isinstance(val, bytes):
         # There is an but with h5py returning unicode/str based attributes as bytes
         val = val.decode()

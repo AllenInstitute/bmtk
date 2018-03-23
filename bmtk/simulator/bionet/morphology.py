@@ -171,6 +171,7 @@ class Morphology(object):
     def get_target_segments(self, edge_type):
         # Determine the target segments and their probabilities of connections for each new edge-type. Save the
         # information for each additional time a given edge-type is used on this morphology
+        # TODO: Don't rely on edge-type-table, just use the edge?
         if edge_type in self._segments:
             return self._segments[edge_type]
 
