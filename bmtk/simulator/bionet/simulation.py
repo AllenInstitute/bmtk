@@ -255,11 +255,11 @@ class Simulation(object):
         Called after every time step to perform computation and save data to memory block or to disk.
         The initial condition tstep=0 is not being saved 
         """
-        self.tstep += 1
-        tstep_block = self.tstep - self.tstep_start_block  # time step within a block
-
         for mod in self._sim_mods:
             mod.step(self, self.tstep)
+
+        self.tstep += 1
+        tstep_block = self.tstep - self.tstep_start_block  # time step within a block
 
         # self.save_data_to_block(tstep_block)
         if (self.tstep % self.nsteps_block == 0) or self.tstep == self.nsteps:
