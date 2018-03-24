@@ -40,7 +40,7 @@ class CellVarRecorder(object):
         self._mapping_element_pos = []
         self._mapping_index = [0]
         #self._mapping_index_ptr = 0
-        self._total_segments = 0
+        #self._total_segments = 0
 
         self._buffer_data = buffer_data
         self._data_block = None
@@ -50,25 +50,37 @@ class CellVarRecorder(object):
         #self._index_modifer = 0
         self._total_steps = 0
 
+        self._n_gids_all = 0
+        self._n_gids_local = 0
+        self._gids_beg = 0
+        self._gids_end = 0
+
         self._n_segments_all = 0
         self._n_segments_local = 0
         self._seg_offset_beg = 0
         self._seg_offset_end = 0
 
     def _calc_offset(self):
+        self._n_segments_all = self._n_segments_local
         self._seg_offset_beg = 0
-        self._seg_offset_end = self._total_segments
+        self._seg_offset_end = self._n_segments_local
 
+        self._n_gids_all = self._n_gids_local
+        self._gids_beg = 0
+        self._gids_end = self._n_segments_local
 
     def add_cell(self, gid, sec_list, seg_list):
         assert(len(sec_list) == len(seg_list))
+        # TODO: Check the same gid isn't added twice
         n_segs = len(seg_list)
-        self._gid_map[gid] = (self._total_segments, self._total_segments + n_segs)
+        self._gid_map[gid] = (self._n_segments_local, self._n_segments_local + n_segs)
         self._mapping_gids.append(gid)
         self._mapping_element_ids.extend(sec_list)
         self._mapping_element_pos.extend(seg_list)
         self._mapping_index.append(self._mapping_index[-1] + n_segs)
-        self._total_segments += n_segs
+        self._n_segments_local += n_segs
+        self._n_gids_local += 1
+
 
     def initialize(self, n_steps, buffer_size=0):
         self._calc_offset()
@@ -76,11 +88,16 @@ class CellVarRecorder(object):
         # print self._file_name
         self._h5_handle = h5file = h5py.File(self._file_name, 'w') #, driver='mpio', comm=MPI.COMM_WORLD)
         var_grp = h5file.create_group(self._variable)
-        '''
-        var_grp.create_dataset('mapping/gids', shape=(self._n))
-        var_grp.create_dataset('mapping/element_id', data=self._mapping_element_ids)
-        var_grp.create_dataset('mapping/element_pos', data=self._mapping_element_pos)
-        var_grp.create_dataset('mapping/index_pointer', data=self._mapping_index)
+
+        var_grp.create_dataset('mapping/gids', shape=(self._n_gids_all,), dtype=np.uint)
+        var_grp.create_dataset('mapping/element_id', shape=(self._n_segments_all,), dtype=np.uint)
+        var_grp.create_dataset('mapping/element_pos', shape=(self._n_segments_all,), dtype=np.float)
+        var_grp.create_dataset('mapping/index_pointer', shape=(self._n_gids_all+1,), dtype=np.uint64)
+
+        var_grp['mapping/gids'][self._gids_beg:self._gids_end] = self._mapping_gids
+        var_grp['mapping/element_id'][self._seg_offset_beg:self._seg_offset_end] = self._mapping_element_ids
+        var_grp['mapping/element_pos'][self._seg_offset_beg:self._seg_offset_end] = self._mapping_element_pos
+        var_grp['mapping/index_pointer'][self._gids_beg:self._gids_end] = self._mapping_index
 
         '''
         var_grp.create_dataset('mapping/gids', data=self._mapping_gids)
@@ -92,13 +109,16 @@ class CellVarRecorder(object):
 
         self._total_steps = n_steps
         if self._buffer_data:
-            self._buffer_block = np.zeros((buffer_size, self._total_segments), dtype=np.float)
-            self._data_block = var_grp.create_dataset('data', shape=(n_steps, self._total_segments), dtype=np.float,
+            self._buffer_block = np.zeros((buffer_size, self._n_segments_local), dtype=np.float)
+            self._data_block = var_grp.create_dataset('data', shape=(n_steps, self._n_segments_all), dtype=np.float,
                                                       chunks=True)
             self._buffer_block_num = 0
             self._buffer_block_size = buffer_size
         else:
-            self._buffer_block = var_grp.create_dataset('data', shape=(n_steps, self._total_segments), dtype=np.float,
+            for gid, gid_offset in self._gid_map.items():
+                self._gid_map[gid] = (gid_offset[0] + self._seg_offset_beg, gid_offset[1] + self._seg_offset_beg)
+
+            self._buffer_block = var_grp.create_dataset('data', shape=(n_steps, self._n_segments_all), dtype=np.float,
                                                         chunks=True)
 
     def record_cell(self, gid, seg_vals, tstep):
@@ -144,12 +164,15 @@ class CellVarRecorder(object):
             gids_tracker = []
 
             gid_offset = 0
+
+
             for h5handle in tmp_h5_handles:
-                seg_count = h5handle['/v/data'].shape[1]
+                var_grp = h5handle[self._variable]
+                seg_count = var_grp['data'].shape[1]
                 tmp_file_seg_counts.append(seg_count)
                 offsets.append(offsets[-1] + seg_count)
 
-                gid_count = h5handle['/v/mapping/gids'].shape[0]
+                gid_count = var_grp['mapping/gids'].shape[0]
                 #offset = gid[]
                 gids_tracker.append((gid_offset, gid_offset+gid_count))
                 gid_offset += gid_count
@@ -160,26 +183,29 @@ class CellVarRecorder(object):
             print total_seg_count
             print self._total_steps
             gid_total = gids_tracker[-1][1]
-            data_ds = h5final.create_dataset('/v/data', shape=(self._total_steps, total_seg_count), dtype=float)
+            output_var_grp = h5final.create_dataset(self._variable)
+            data_ds = output_var_grp.create_dataset('data', shape=(self._total_steps, total_seg_count), dtype=float)
             #h5final.create_dataset('/v/mapping/gids', shape=(total_seg_count,), dtype=)
-            element_id_ds = h5final.create_dataset('/v/mapping/element_id', shape=(total_seg_count,), dtype=np.uint)
-            el_pos_ds = h5final.create_dataset('/v/mapping/element_pos', shape=(total_seg_count,), dtype=np.float)
-            gids_ds = h5final.create_dataset('/v/mapping/gids', shape=(gid_total,), dtype=np.uint)
-            index_pointer_ds = h5final.create_dataset('/v/mapping/index_pointer', shape=(gid_total+1,), dtype=np.uint)
+            element_id_ds = output_var_grp.create_dataset('mapping/element_id', shape=(total_seg_count,), dtype=np.uint)
+            el_pos_ds = output_var_grp.create_dataset('mapping/element_pos', shape=(total_seg_count,), dtype=np.float)
+            gids_ds = output_var_grp.create_dataset('mapping/gids', shape=(gid_total,), dtype=np.uint)
+            index_pointer_ds = output_var_grp.create_dataset('mapping/index_pointer', shape=(gid_total+1,), dtype=np.uint)
             for i, h5handle in enumerate(tmp_h5_handles):
+                var_grp = h5handle[self._variable]
+
                 beg = offsets[i]
                 end = beg + tmp_file_seg_counts[i]
                 print beg, end
                 #print h5handle['/v/mapping/element_id'].shape
-                element_id_ds[beg:end] = h5handle['/v/mapping/element_id']
-                el_pos_ds[beg:end] = h5handle['/v/mapping/element_pos']
-                print h5handle['/v/data'].shape
+                element_id_ds[beg:end] = var_grp['mapping/element_id']
+                el_pos_ds[beg:end] = var_grp['mapping/element_pos']
+                #print h5handle['/v/data'].shape
 
-                #data_ds[:, beg:end] = h5handle['/v/data']
+                data_ds[:, beg:end] = var_grp['data']
 
                 gid_beg, gid_end = gids_tracker[i]
-                gids_ds[gid_beg:gid_end] = h5handle['/v/mapping/gids']
-                index_pointer = np.array(h5handle['/v/mapping/index_pointer'])
+                gids_ds[gid_beg:gid_end] = var_grp['mapping/gids']
+                index_pointer = np.array(var_grp['mapping/index_pointer'])
 
                 update_index = beg + index_pointer
                 print gid_beg, gid_end

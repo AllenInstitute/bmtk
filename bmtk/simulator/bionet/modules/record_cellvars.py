@@ -161,3 +161,8 @@ class CellVarsMod(SimulatorMod):
         self._var_recorder.close()
         pc.barrier()
         self._var_recorder.merge()
+
+
+class SomaVarMod(SimulatorMod):
+    def __init__(self, outputdir, variables):
+        pass
