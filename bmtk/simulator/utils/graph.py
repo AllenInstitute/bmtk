@@ -379,7 +379,7 @@ class SimGraph(object):
 
             # graph.io.log_info('    Setting up external cells...')
             graph.io.log_info('Setting up virtual nodes')
-            graph.make_stims()
+            # graph.make_stims()
 
         return graph
 

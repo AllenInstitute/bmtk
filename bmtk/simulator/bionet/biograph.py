@@ -627,6 +627,7 @@ class BioGraph(SimGraph):
         # TODO: Let other types have morphologies
         # TODO: Get all available morphologies from TypesTable or group
         for cell in self.get_cells('biophysical'):
+            # print MPI_rank, cell.gid
             morphology_file = cell.morphology_file
             if morphology_file in self.__morphologies_cache:
                 # create a single morphology object for each model_group which share that morphology
@@ -647,15 +648,43 @@ class BioGraph(SimGraph):
                 self.__morphologies_cache[morphology_file] = morph
                 self._morphology_lookup[morphology_file] = [cell.gid]
 
+        pc.barrier()
+
     def get_node(self, population, node_id):
         pop_cache = self._node_cache[population]
         if node_id in pop_cache:
             return pop_cache[node_id]
         else:
             # Load node into cache.
-            print node_id
-            print population
-            raise NotImplementedError
+            #nodes_pop = self._internal_populations
+            node_pop= self._internal_populations_map[population]
+            sonata_node = node_pop.get_node_id(node_id)
+            prop_map = self._node_property_maps[population][sonata_node.group_id]
+            bnode = self.BioNode(sonata_node, prop_map, self)
+            pop_cache[node_id] = bnode
+            return bnode
+
+    '''
+                pop_name = node_pop.name
+            prop_map = self._node_property_maps[pop_name]
+            node_cache = {}  # TODO: See if we can preallocate
+            local_cells = {}
+            for node in node_pop[MPI_rank::MPI_size]:
+                # Convert sonata node into a bionet node
+                # TODO: It might be faster to build and cache all nodes, especially connection_function is used.
+                bnode = self.BioNode(node, prop_map[node.group_id], self)
+                node_cache[node.node_id] = bnode
+
+                # build a Cell which contains NEURON objects
+                cell = self._build_cell(bnode)
+                if cell is not None:
+                    self._local_cells_gid[cell.gid] = cell
+                    self._local_cells_type[bnode.model_type][cell.gid] = cell
+                    local_cells[bnode.node_id] = cell
+
+            self._node_cache[pop_name] = node_cache
+    '''
+
 
     _connections_initialized = False
 

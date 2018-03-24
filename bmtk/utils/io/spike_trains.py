@@ -128,29 +128,35 @@ class SpikeTrainWriter(object):
                 self._merge_files(file_write_fnc)
 
     def to_csv(self, csv_file, sort_order=None):
-        # For the single rank case don't just copy the tmp-csv to the new name. It will fail if user calls to_hdf5 or
-        # to_nwb after calling to_csv.
-        csv_handle = open(csv_file, 'w')
-        csv_writer = csv.writer(csv_handle, delimiter=' ')
-        file_write_fnc = lambda time, gid, indx: csv_writer.writerow([time, gid])
-        self._to_file(csv_file, sort_order, file_write_fnc)
-        csv_handle.close()
+        if self._mpi_rank == 0:
+            # For the single rank case don't just copy the tmp-csv to the new name. It will fail if user calls to_hdf5
+            # or to_nwb after calling to_csv.
+            csv_handle = open(csv_file, 'w')
+            csv_writer = csv.writer(csv_handle, delimiter=' ')
+            file_write_fnc = lambda time, gid, indx: csv_writer.writerow([time, gid])
+            self._to_file(csv_file, sort_order, file_write_fnc)
+            csv_handle.close()
+
+        # TODO: Let user pass in in barrier and use it here
 
     def to_nwb(self, nwb_file):
         raise NotImplementedError
 
     def to_hdf5(self, hdf5_file, sort_order=None):
-        with h5py.File(hdf5_file, 'w') as h5:
-            self._count_spikes()
-            spikes_grp = h5.create_group('/spikes')
-            spikes_grp.attrs['sorting'] = 'none' if sort_order is None else sort_order
-            time_ds = spikes_grp.create_dataset('timestamps', shape=(self._spike_count,), dtype=np.float)
-            gid_ds = spikes_grp.create_dataset('gids', shape=(self._spike_count+1,), dtype=np.uint64)
+        if self._mpi_rank == 0:
+            with h5py.File(hdf5_file, 'w') as h5:
+                self._count_spikes()
+                spikes_grp = h5.create_group('/spikes')
+                spikes_grp.attrs['sorting'] = 'none' if sort_order is None else sort_order
+                time_ds = spikes_grp.create_dataset('timestamps', shape=(self._spike_count,), dtype=np.float)
+                gid_ds = spikes_grp.create_dataset('gids', shape=(self._spike_count+1,), dtype=np.uint64)
 
-            def file_write_fnc(time, gid, indx):
-                time_ds[indx] = time
-                gid_ds[indx] = gid
-            self._to_file(hdf5_file, sort_order, file_write_fnc)
+                def file_write_fnc(time, gid, indx):
+                    time_ds[indx] = time
+                    gid_ds[indx] = gid
+                self._to_file(hdf5_file, sort_order, file_write_fnc)
+
+        # TODO: Need to make sure a barrier is used here (before close is called)
 
     def close(self):
         fname = self._all_tmp_files[self._mpi_rank].file_name

@@ -1,15 +1,36 @@
+import os
 import h5py
 import numpy as np
 
+from mpi4py import MPI
+
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
+nhosts = comm.Get_size()
+
+
+
 
 class CellVarRecorder(object):
-    def __init__(self, file_name, tmp_dir, variable, buffer_data=True):
+    def __init__(self, file_name, tmp_dir, variable, buffer_data=True, mpi_rank=0, mpi_size=1):
         self._file_name = file_name
+        self._h5_handle = None
         self._tmp_dir = tmp_dir
         self._variable = variable
 
-        #self._mpi_rank = mpi_rank
-        #self._mpi_size = mpi_size
+        #
+        self._mpi_rank = mpi_rank
+        self._mpi_size = mpi_size
+        self._tmp_files = []
+        self._saved_file = file_name
+        if mpi_size > 1:
+            # io.log_warning('Cell Var Recorder')
+            self._tmp_files = [os.path.join(tmp_dir, '__bmtk_tmp_cellvars_{}.h5'.format(r))
+                               for r in range(self._mpi_size)]
+            self._file_name = self._tmp_files[self._mpi_rank]
+
+        self._mpi_offset = 0
+        self._total_segments_mpi = 0
 
         self._mapping_gids = []
         self._gid_map = {}
@@ -27,6 +48,17 @@ class CellVarRecorder(object):
         self._last_save_indx = 0
         self._buffer_block_size = 0
         #self._index_modifer = 0
+        self._total_steps = 0
+
+        self._n_segments_all = 0
+        self._n_segments_local = 0
+        self._seg_offset_beg = 0
+        self._seg_offset_end = 0
+
+    def _calc_offset(self):
+        self._seg_offset_beg = 0
+        self._seg_offset_end = self._total_segments
+
 
     def add_cell(self, gid, sec_list, seg_list):
         assert(len(sec_list) == len(seg_list))
@@ -39,15 +71,29 @@ class CellVarRecorder(object):
         self._total_segments += n_segs
 
     def initialize(self, n_steps, buffer_size=0):
-        h5file = h5py.File(self._file_name, 'w')
+        self._calc_offset()
+
+        # print self._file_name
+        self._h5_handle = h5file = h5py.File(self._file_name, 'w') #, driver='mpio', comm=MPI.COMM_WORLD)
         var_grp = h5file.create_group(self._variable)
+        '''
+        var_grp.create_dataset('mapping/gids', shape=(self._n))
+        var_grp.create_dataset('mapping/element_id', data=self._mapping_element_ids)
+        var_grp.create_dataset('mapping/element_pos', data=self._mapping_element_pos)
+        var_grp.create_dataset('mapping/index_pointer', data=self._mapping_index)
+
+        '''
         var_grp.create_dataset('mapping/gids', data=self._mapping_gids)
         var_grp.create_dataset('mapping/element_id', data=self._mapping_element_ids)
         var_grp.create_dataset('mapping/element_pos', data=self._mapping_element_pos)
+        var_grp.create_dataset('mapping/index_pointer', data=self._mapping_index)
+        '''
 
+
+        self._total_steps = n_steps
         if self._buffer_data:
             self._buffer_block = np.zeros((buffer_size, self._total_segments), dtype=np.float)
-            self._data_block = var_grp.create_dataset('data', shape=(buffer_size, self._total_segments), dtype=np.float,
+            self._data_block = var_grp.create_dataset('data', shape=(n_steps, self._total_segments), dtype=np.float,
                                                       chunks=True)
             self._buffer_block_num = 0
             self._buffer_block_size = buffer_size
@@ -75,7 +121,94 @@ class CellVarRecorder(object):
         if self._buffer_data:
             blk_beg = self._last_save_indx
             blk_end = blk_beg + self._buffer_block_size
-            print blk_beg, blk_end
+            # print blk_beg, blk_end
 
             self._data_block[blk_beg:blk_end, :] = self._buffer_block
             self._last_save_indx += self._buffer_block_size
+
+    def close(self):
+        # print 'close'
+        self._h5_handle.close()
+
+    def merge(self):
+        if self._mpi_size > 1 and self._mpi_rank == 0:
+            print 'blah'
+            h5final = h5py.File(self._saved_file, 'w')
+            print self._tmp_files
+
+            tmp_h5_handles = [h5py.File(name, 'r') for name in self._tmp_files]
+            tmp_file_seg_counts = []
+            offsets = [0]
+            total_seg_count = 0
+            #gid_offsets = [0]
+            gids_tracker = []
+
+            gid_offset = 0
+            for h5handle in tmp_h5_handles:
+                seg_count = h5handle['/v/data'].shape[1]
+                tmp_file_seg_counts.append(seg_count)
+                offsets.append(offsets[-1] + seg_count)
+
+                gid_count = h5handle['/v/mapping/gids'].shape[0]
+                #offset = gid[]
+                gids_tracker.append((gid_offset, gid_offset+gid_count))
+                gid_offset += gid_count
+
+                #total_seg_count += h5handle['/v/data'].shape[1]
+
+            total_seg_count = sum(tmp_file_seg_counts)
+            print total_seg_count
+            print self._total_steps
+            gid_total = gids_tracker[-1][1]
+            data_ds = h5final.create_dataset('/v/data', shape=(self._total_steps, total_seg_count), dtype=float)
+            #h5final.create_dataset('/v/mapping/gids', shape=(total_seg_count,), dtype=)
+            element_id_ds = h5final.create_dataset('/v/mapping/element_id', shape=(total_seg_count,), dtype=np.uint)
+            el_pos_ds = h5final.create_dataset('/v/mapping/element_pos', shape=(total_seg_count,), dtype=np.float)
+            gids_ds = h5final.create_dataset('/v/mapping/gids', shape=(gid_total,), dtype=np.uint)
+            index_pointer_ds = h5final.create_dataset('/v/mapping/index_pointer', shape=(gid_total+1,), dtype=np.uint)
+            for i, h5handle in enumerate(tmp_h5_handles):
+                beg = offsets[i]
+                end = beg + tmp_file_seg_counts[i]
+                print beg, end
+                #print h5handle['/v/mapping/element_id'].shape
+                element_id_ds[beg:end] = h5handle['/v/mapping/element_id']
+                el_pos_ds[beg:end] = h5handle['/v/mapping/element_pos']
+                print h5handle['/v/data'].shape
+
+                #data_ds[:, beg:end] = h5handle['/v/data']
+
+                gid_beg, gid_end = gids_tracker[i]
+                gids_ds[gid_beg:gid_end] = h5handle['/v/mapping/gids']
+                index_pointer = np.array(h5handle['/v/mapping/index_pointer'])
+
+                update_index = beg + index_pointer
+                print gid_beg, gid_end
+                index_pointer_ds[gid_beg:(gid_end+1)] = update_index
+                #exit()
+
+
+                # data_ds[:, beg:end] = h5handle['/v/data']
+
+            #h5final.create_
+
+
+
+class CellVarRecorderParallel(CellVarRecorder):
+    def __init__(self, file_name, tmp_dir, variable, buffer_data=True, mpi_rank=0, mpi_size=1):
+        pass
+
+    def _calc_offset(self):
+        for r in range(comm.Get_size()):
+            if rank == r:
+                if rank < (nhosts - 1):
+                    offset = np.array([self._total_segments], dtype=np.uint)
+                    comm.Send([offset, MPI.UNSIGNED_INT], dest=(rank+1))
+
+                if rank > 0:
+                    offset = np.empty(1, dtype=np.uint)
+                    comm.Recv([offset, MPI.UNSIGNED_INT], source=(r-1))
+                    self._offset = offset[0]
+                    #offset = comm.Recv(source=(r-1))
+                    #print r, offset[0]
+
+            comm.Barrier()

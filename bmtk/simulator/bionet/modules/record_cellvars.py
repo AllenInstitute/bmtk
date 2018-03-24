@@ -24,9 +24,16 @@ import os
 import numpy as np
 import h5py
 
+from neuron import h
+
 from bmtk.simulator.bionet.modules.sim_module import SimulatorMod
 from bmtk.simulator.bionet import io
 from bmtk.utils.io.cell_vars import CellVarRecorder
+
+
+pc = h.ParallelContext()
+MPI_RANK = int(pc.id())
+N_HOSTS = int(pc.nhost())
 
 
 class CellVarsMod(SimulatorMod):
@@ -42,7 +49,8 @@ class CellVarsMod(SimulatorMod):
         # TODO: Pass in full file_name
         # TODO: Pass in list of gids and segments
         file_name = os.path.join(outputdir, 'cell_vars.h5')
-        self._var_recorder = CellVarRecorder(file_name, outputdir, 'v')
+        self._var_recorder = CellVarRecorder(file_name, outputdir, 'v', buffer_data=True, mpi_rank=MPI_RANK,
+                                             mpi_size=N_HOSTS)
 
         self._gid_list = []  # list of all gids that will have their variables saved
         self._data_block = {}  # table of variable data indexed by [gid][variable]
@@ -55,8 +63,8 @@ class CellVarsMod(SimulatorMod):
 
     def initialize(self, sim):
         # get list of gids to save. Will only work for biophysical cells saved on the current MPI rank
-        self._gid_list = list(set(sim.gids['biophysical']) & set(sim.gids['save_cell_vars']))
-        self._gid_list = range(10)
+        self._gid_list = list(set(sim.gids['biophysical']))  # & set(sim.gids['save_cell_vars']))
+        #self._gid_list = range(10)
 
 
         #print self._gid_list
@@ -69,7 +77,7 @@ class CellVarsMod(SimulatorMod):
                 for seg in sec:
                     sec_list.append(sec_id)
                     seg_list.append(seg.x)
-            self._var_recorder.add_cell(gid, seg_list, seg_list)
+            self._var_recorder.add_cell(gid, sec_list, seg_list)
 
         self._var_recorder.initialize(sim.n_steps, sim.nsteps_block)
         '''
@@ -145,5 +153,11 @@ class CellVarsMod(SimulatorMod):
 
     def finalize(self, sim):
         if self._block_step > 0:
+            # TODO: Write partial block
             # just in case the simulation doesn't end on a block step
             self.block(sim, (sim.n_steps - self._block_step, sim.n_steps))
+
+        pc.barrier()
+        self._var_recorder.close()
+        pc.barrier()
+        self._var_recorder.merge()
