@@ -68,7 +68,7 @@ def Biophys1(cell, template_name, dynamic_params):
     '''
 
 def Biophys1_nml(json_file):
-    # TODO: look at pgleeson examples to see how to convert .nml files
+    # TODO: look at examples to see how to convert .nml files
     raise NotImplementedError()
 
 

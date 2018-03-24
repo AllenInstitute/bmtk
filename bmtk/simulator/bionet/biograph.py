@@ -731,8 +731,6 @@ class BioGraph(SimGraph):
                                 io.log_warning('Unable to parse distance_range {}'.format(dist_range))
                                 edge_type['distance_range'] = None
 
-
-
     def add_edges(self, sonata_file, populations=None, source_pop=None, target_pop=None):
         edges = sonata_file.edges
 

@@ -29,6 +29,13 @@
       "input_file": "$INPUT_DIR/lgn_spikes.nwb",
       "node_set": "lgn",
       "trial": "trial_0"
+    },
+    "TW_spikes": {
+      "input_type": "spikes",
+      "module": "nwb",
+      "input_file": "$INPUT_DIR/tw_spikes.nwb",
+      "node_set": "tw",
+      "trial": "trial_0"
     }
   },
 
@@ -52,24 +59,24 @@
     "calcium_concentration": {
       "cells": "biophysical",
       "variable_name": "cai",
-      "module": "membrane_report",
-      "output_dir": "$OUTPUT_DIR/cellvars"
+      "module": "membrane_reportX",
+      "output_dir": "$OUTPUT_DIR"
     },
 
     "membrane_potential": {
       "cells": "biophysical",
       "variable_name": "v",
       "module": "membrane_report",
-      "output_dir": "$OUTPUT_DIR/cellvars"
+      "output_dir": "$OUTPUT_DIR"
     },
 
     "ecp": {
       "cell": "biophysical",
       "variable_name": "v",
-      "module": "extracellular",
+      "module": "extracellularX",
       "electrode_positions": "$COMPONENT_DIR/recXelectrodes/linear_electrode.csv",
       "ecp_file": "$OUTPUT_DIR/ecp.h5",
-      "output_dir": "$OUTPUT_DIR/cellvars"
+      "output_dir": "$OUTPUT_DIR/"
     }
   },
 

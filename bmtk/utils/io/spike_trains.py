@@ -103,9 +103,10 @@ class SpikeTrainWriter(object):
     def _merge_files(self, file_write_fnc):
         indx = 0
         for fdata in self._all_tmp_files:
-            with csv.reader(open(fdata.file_name, 'r'), delimiter=' ') as csv_reader:
+            with open(fdata.file_name, 'r') as csv_file:
+                csv_reader = csv.reader(csv_file, delimiter=' ')
                 for row in csv_reader:
-                    file_write_fnc(row[0], row[1], indx)
+                    file_write_fnc(float(row[0]), int(row[1]), indx)
                     indx += 1
 
     def _to_file(self, file_name, sort_order, file_write_fnc):
@@ -143,7 +144,7 @@ class SpikeTrainWriter(object):
             self._count_spikes()
             spikes_grp = h5.create_group('/spikes')
             spikes_grp.attrs['sorting'] = 'none' if sort_order is None else sort_order
-            time_ds = spikes_grp.create_dataset('timestamps', shape=(self._spike_count,), dtype=np.double)
+            time_ds = spikes_grp.create_dataset('timestamps', shape=(self._spike_count,), dtype=np.float)
             gid_ds = spikes_grp.create_dataset('gids', shape=(self._spike_count+1,), dtype=np.uint64)
 
             def file_write_fnc(time, gid, indx):

@@ -60,6 +60,8 @@ class BioCell(Cell):
         self.im_ptr = None
         self.im_Vec = None
 
+        self._segments = None
+
 
         '''
         if bionetwork.calc_ecp:
@@ -119,9 +121,25 @@ class BioCell(Cell):
     def set_morphology(self, morphology_obj):
         self._morph = morphology_obj
 
+    def get_sections(self):
+        return self._secs
+
+    def get_section(self, sec_id):
+        return self._secs[sec_id]
+
+    def store_segments(self):
+        self._segments = []
+        for sec in self._secs:
+            for seg in sec:
+                self._segments.append(seg)
+
+    def get_segments(self):
+        return self._segments
+
     def set_sec_array(self):
         """Arrange sections in an array to be access by index"""
         secs = []  # build ref to sections
+        # TODO: We should calculate and save sections in the morphology object since they should be the same.
         for sec in self.hobj.all:
             for _ in sec:
                 secs.append(sec)  # section to which segments belongs
@@ -154,7 +172,6 @@ class BioCell(Cell):
         self._netcons.append(nc)
         self._synapses.append(syn)
         if self._save_conn:
-            print edge_prop.edge_id
             self._save_connection(src_gid=src_node.node_id, src_net=src_node.network, sec_x=sec_x, seg_ix=sec_id,
                                   edge_type_id=edge_prop.edge_type_id)
 
