@@ -4,8 +4,11 @@ import os
 class SimReport(object):
     default_dir = '.'
 
-    def __init__(self, name):
-        self._report_name = name
+    def __init__(self, name, module):
+        self.report_name = name
+        self.module = module
+        self.params = {}
+
 
     @classmethod
     def build(cls, name, params):
@@ -14,7 +17,7 @@ class SimReport(object):
 
 class MembraneReport(SimReport):
     def __init__(self, name):
-        super(MembraneReport, self).__init__(name)
+        super(MembraneReport, self).__init__(name, 'SpikesMod')
         self.cells = None
         self.sections = None
         self.file_name = None
@@ -51,7 +54,7 @@ class MembraneReport(SimReport):
 
 class SpikesReport(SimReport):
     def __init__(self, name):
-        super(SpikesReport, self).__init__(name)
+        super(SpikesReport, self).__init__(name, 'SpikesReport')
         self.h5_file = None
         self.csv_file = None
         self.nwb_file = None
@@ -84,9 +87,25 @@ class VClampReport(SimReport):
 
 
 class ECPReport(SimReport):
+    def __init__(self, name):
+        super(ECPReport, self).__init__(name, 'EcpMod')
+        self.tmp_dir = self.default_dir
+        self.positions_file = None
+        self.file_name = None
+
     @classmethod
     def build(cls, name, params):
         report = cls(name)
+
+        if 'file_name' in params:
+            report.file_name = params['file_name']
+            report.tmp_dir = os.path.dirname(os.path.realpath(report.file_name))
+        else:
+            report.file_name = os.path.join(cls.default_dir, 'ecp.h5')
+            report.tmp_dir = cls.default_dir
+
+        report.contributions_dir = params.get('contributions_dir', cls.default_dir)
+        report.positions_file = params['electrode_positions']
         return report
 
 
