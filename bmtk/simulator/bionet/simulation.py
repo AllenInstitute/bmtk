@@ -308,8 +308,16 @@ class Simulation(object):
                                               variables=report.variables, gids=report.cells,
                                               sections=report.sections, buffer_data=report.buffer)
 
+            elif isinstance(report, reports.ECPReport):
+                # TODO: All for a different set of cells other than just biophysical
+                mod = mods.EcpMod(tmp_dir=report.tmp_dir, ecp_file=report.file_name,
+                                  positions_file=report.positions_file, contributions_dir=report.contributions_dir)
+                for cell in network.get_cells('biophysical'):
+                    # Set up the ability for ecp on all relevant cells
+                    cell.setup_ecp()
+
             else:
-                # Should Never get here,
+                # Allow for customized modules
                 continue
 
             sim.add_mod(mod)
@@ -344,8 +352,6 @@ class Simulation(object):
             cellvars_mod = mods.CellVarsMod(outputdir=cell_vars_output, variables=cell_vars)
             sim.add_mod(cellvars_mod)
         '''
-
-
 
         '''
         if set_recordings:
