@@ -21,5 +21,5 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 from ecp import EcpMod
-from record_cellvars import CellVarsMod
+from record_cellvars import MembraneReport, SomaReport
 from record_spikes import SpikesMod

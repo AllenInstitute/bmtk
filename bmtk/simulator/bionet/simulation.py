@@ -26,6 +26,8 @@ from bmtk.simulator.bionet import io
 from bmtk.simulator.bionet.iclamp import IClamp
 from bmtk.simulator.bionet import modules as mods
 
+import bmtk.simulator.utils.simulation_reports as reports
+
 
 pc = h.ParallelContext()    # object to access MPI methods
 
@@ -290,6 +292,30 @@ class Simulation(object):
         # TODO: Organize the reports into a better structure
         # TODO: Need to create a gid selector
         #print {report['module']: report for _, report in config.reports.items()}
+        sim_reports = reports.from_config(config)
+        for report in sim_reports:
+            if isinstance(report, reports.SpikesReport):
+                mod = mods.SpikesMod(tmpdir=report.tmp_dir, csv_filename=report.csv_file, h5_filename=report.h5_file,
+                                     nwb_filename=report.nwb_file, sort_order=report.sort_order)
+
+            elif isinstance(report, reports.MembraneReport):
+                if report.sections == 'soma':
+                    mod = mods.SomaReport(tmp_dir=report.tmp_dir, file_name=report.file_name,
+                                          variables=report.variables, gids=report.cells, buffer_data=report.buffer)
+
+                else:
+                    mod = mods.MembraneReport(tmp_dir=report.tmp_dir, file_name=report.file_name,
+                                              variables=report.variables, gids=report.cells,
+                                              sections=report.sections, buffer_data=report.buffer)
+
+            else:
+                # Should Never get here,
+                continue
+
+            sim.add_mod(mod)
+        #exit()
+
+        '''
         membrane_reports = config.get_modules(module_name='membrane_report')
         if len(membrane_reports) > 0:
             # Organize into where the output will be saved
@@ -308,6 +334,7 @@ class Simulation(object):
                 # print cells, output_dir
                 cellvars_mod = mods.CellVarsMod(outputdir=output_dir, variables=variables)
                 sim.add_mod(cellvars_mod)
+        '''
 
         '''
         if config['run']['save_cell_vars']:
@@ -318,6 +345,9 @@ class Simulation(object):
             sim.add_mod(cellvars_mod)
         '''
 
+
+
+        '''
         if set_recordings:
             config_output = config['output']
             output_dir = config_output['output_dir']
@@ -348,16 +378,17 @@ class Simulation(object):
                 #    network._cells[gid].setup_ecp()
 
                 # exit()
+        '''
 
+        '''
+        if config['run']['calc_ecp']:
+            ecp_mod = mods.EcpMod(ecp_file=config['output']['ecp_file'],
+                                  positions_file=config['recXelectrode']['positions'],
+                                  tmp_outputdir=config['output']['output_dir'])
+            sim.add_mod(ecp_mod)
+        sim.set_recordings()
+        '''
 
-            '''
-            if config['run']['calc_ecp']:
-                ecp_mod = mods.EcpMod(ecp_file=config['output']['ecp_file'],
-                                      positions_file=config['recXelectrode']['positions'],
-                                      tmp_outputdir=config['output']['output_dir'])
-                sim.add_mod(ecp_mod)
-            '''
-            sim.set_recordings()
 
         if 'input' in config:
             for input_dict in config['input']:

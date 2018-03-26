@@ -57,23 +57,27 @@
 
   "reports": {
     "calcium_concentration": {
-      "cells": "biophysical",
+      "cells": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
       "variable_name": "cai",
-      "module": "membrane_reportX",
-      "output_dir": "$OUTPUT_DIR"
+      "module": "membrane_report",
+      "file_name": "$OUTPUT_DIR/cell_vars.h5",
+      "sections": "soma",
+      "enabled": true
     },
 
     "membrane_potential": {
-      "cells": "biophysical",
+      "cells": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
       "variable_name": "v",
       "module": "membrane_report",
-      "output_dir": "$OUTPUT_DIR"
+      "file_name": "$OUTPUT_DIR/cell_vars.h5",
+      "sections": "soma",
+      "enabled": true
     },
 
     "ecp": {
       "cell": "biophysical",
       "variable_name": "v",
-      "module": "extracellularX",
+      "module": "extracellular",
       "electrode_positions": "$COMPONENT_DIR/recXelectrodes/linear_electrode.csv",
       "ecp_file": "$OUTPUT_DIR/ecp.h5",
       "output_dir": "$OUTPUT_DIR/"

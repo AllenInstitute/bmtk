@@ -20,136 +20,94 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-import os
-import numpy as np
-import h5py
 
+import h5py
 from neuron import h
 
 from bmtk.simulator.bionet.modules.sim_module import SimulatorMod
 from bmtk.simulator.bionet import io
-from bmtk.utils.io.cell_vars import CellVarRecorder
 
+from bmtk.utils.io import cell_vars
+try:
+    # Check to see if h5py is built to run in parallel
+    if h5py.get_config().mpi:
+        MembraneRecorder = cell_vars.CellVarRecorderParallel
+    else:
+        MembraneRecorder = cell_vars.CellVarRecorder
+
+except Exception as e:
+    MembraneRecorder = cell_vars.CellVarRecorder
+
+MembraneRecorder._io = io
 
 pc = h.ParallelContext()
 MPI_RANK = int(pc.id())
 N_HOSTS = int(pc.nhost())
 
 
-class CellVarsMod(SimulatorMod):
-    def __init__(self, outputdir, variables):
+class MembraneReport(SimulatorMod):
+    def __init__(self, tmp_dir, file_name, variables, gids, sections='all', buffer_data=True):
         """Module used for saving NEURON cell properities at each given step of the simulation.
 
-        :param outputdir: directory where variables will be saved to.
-        :param variables: list of NEURON variables (strings) to collect and save each step
+        :param tmp_dir:
+        :param file_name: name of h5 file to save variable.
+        :param variables: list of cell variables to record
+        :param gids: list of gids to to record
+        :param sections:
+        :param buffer_data: Set to true then data will be saved to memory until written to disk during each block, reqs.
+        more memory but faster. Set to false and data will be written to disk on each step (default: True)
         """
-        self._cell_vars = variables
-        self._outputdir = outputdir
+        self._variables = variables
+        self._tmp_dir = tmp_dir
+        self._file_name = file_name
+        self._all_gids = gids
+        self._local_gids = []
+        self._sections = sections
 
-        # TODO: Pass in full file_name
-        # TODO: Pass in list of gids and segments
-        file_name = os.path.join(outputdir, 'cell_vars.h5')
-        self._var_recorder = CellVarRecorder(file_name, outputdir, 'v', buffer_data=True, mpi_rank=MPI_RANK,
-                                             mpi_size=N_HOSTS)
+        self._var_recorder = MembraneRecorder(file_name, tmp_dir, self._variables, buffer_data=buffer_data,
+                                              mpi_rank=MPI_RANK, mpi_size=N_HOSTS)
 
         self._gid_list = []  # list of all gids that will have their variables saved
         self._data_block = {}  # table of variable data indexed by [gid][variable]
         self._block_step = 0  # time step within a given block
 
-        # self._sections = sections
-
-    def _get_filename(self, gid):
-        return os.path.join(self._outputdir, '{}.h5'.format(gid))
+    def _get_gids(self, sim):
+        # get list of gids to save. Will only work for biophysical cells saved on the current MPI rank
+        self._local_gids = list(set(sim.gids['biophysical']) & set(self._all_gids))
 
     def initialize(self, sim):
-        # get list of gids to save. Will only work for biophysical cells saved on the current MPI rank
-        self._gid_list = list(set(sim.gids['biophysical']))  # & set(sim.gids['save_cell_vars']))
-        #self._gid_list = range(10)
+        self._get_gids(sim)
 
-
-        #print self._gid_list
-        for gid in self._gid_list:
+        # TODO: get section by name and/or list of section ids
+        # Build segment/section list
+        for gid in self._local_gids:
             sec_list = []
             seg_list = []
             cell = sim.net.get_local_cell(gid)
             cell.store_segments()
             for sec_id, sec in enumerate(cell.get_sections()):
                 for seg in sec:
+                    # TODO: Make sure the seg has the recorded variable(s)
                     sec_list.append(sec_id)
                     seg_list.append(seg.x)
+
             self._var_recorder.add_cell(gid, sec_list, seg_list)
 
         self._var_recorder.initialize(sim.n_steps, sim.nsteps_block)
-        '''
-        print sec_list
-        print seg_list
-
-
-        print sim.n_steps
-
-
-        # preallocate block data for saving variables
-        self._data_block = {gid: {v: np.zeros(sim.nsteps_block) for v in self._cell_vars} for gid in self._gid_list}
-
-        # Create directory if it doesn't exists
-        io.create_dir(self._outputdir, overwrite=False)
-
-        # Create files for saving variables
-        for gid in self._gid_list:
-            with h5py.File(self._get_filename(gid), 'w') as h5:
-                h5.attrs['dt'] = sim.dt
-                h5.attrs['tstart'] = 0.0
-                h5.attrs['tstop'] = sim.tstop
-
-                for v in self._cell_vars:
-                    h5.create_dataset(v, (sim.n_steps,), chunks=True)
-        '''
 
     def step(self, sim, tstep, rel_time=0.0):
-
         # save all necessary cells/variables at the current time-step into memory
-        for gid in self._gid_list:
+        for gid in self._local_gids:
             cell = sim.net.get_local_cell(gid)
-            seg_vals = [getattr(seg, 'v') for seg in cell.get_segments()]
-            self._var_recorder.record_cell(gid, seg_vals, tstep)
-            #print vals
-            #exit()
-            #voltage = getattr(cell.get_section(0)(0.5), 'v')
-            #self._var_recorder.add_val(gid, element_id=0, element_pos=0.5, value=voltage, tstep=tstep)
-
-
-            '''
-            print self._data_block[gid]
-            print dir(cell._secs[0])
-            print cell._secs[0].nseg
-            print cell._secs[0].name()
-            for seg in cell._secs[0]:
-                print dir(seg)
-                print seg.x
-                print seg.v
-
-
-            # cell = sim.net.cells[gid]
-            for variable, data_block in self._data_block[gid].items():
-                data_block[self._block_step] = getattr(cell.hobj.soma[0](0.5), variable)
-            '''
+            for var_name in self._variables:
+                seg_vals = [getattr(seg, var_name) for seg in cell.get_segments()]
+                self._var_recorder.record_cell(gid, var_name, seg_vals, tstep)
 
         self._block_step += 1
 
     def block(self, sim, block_interval):
         # write variables in memory to file
         self._var_recorder.flush()
-        '''
-        itstart, itend = block_interval
-        # TODO: keep a reference to the hdf5 file instead of opening it on every block
-        for gid, var_table in self._data_block.items():
-            with h5py.File(self._get_filename(gid), 'a') as h5:
-                for var_name, var_data in var_table.items():
-                    h5[var_name][itstart:itend] = var_data[0:(itend-itstart)]
-                    self._data_block[gid][var_name][:] = 0.0  # np.zeros(sim.nsteps_block)
-
-        self._block_step = 0
-        '''
 
     def finalize(self, sim):
         if self._block_step > 0:
@@ -159,10 +117,30 @@ class CellVarsMod(SimulatorMod):
 
         pc.barrier()
         self._var_recorder.close()
+
         pc.barrier()
         self._var_recorder.merge()
 
 
-class SomaVarMod(SimulatorMod):
-    def __init__(self, outputdir, variables):
-        pass
+class SomaReport(MembraneReport):
+    """Special case for when only needing to save the soma variable"""
+    def __init__(self, tmp_dir, file_name, variables, gids, buffer_data=True):
+        super(SomaReport, self).__init__(tmp_dir=tmp_dir, file_name=file_name, variables=variables, gids=gids,
+                                         sections='soma', buffer_data=buffer_data)
+
+    def initialize(self, sim):
+        self._get_gids(sim)
+
+        for gid in self._local_gids:
+            self._var_recorder.add_cell(gid, [0], [0.5])
+        self._var_recorder.initialize(sim.n_steps, sim.nsteps_block)
+
+    def step(self, sim, tstep, rel_time=0.0):
+        # save all necessary cells/variables at the current time-step into memory
+        for gid in self._local_gids:
+            cell = sim.net.get_local_cell(gid)
+            for var_name in self._variables:
+                var_val = getattr(cell.hobj.soma[0](0.5), var_name)
+                self._var_recorder.record_cell(gid, var_name, [var_val], tstep)
+
+        self._block_step += 1

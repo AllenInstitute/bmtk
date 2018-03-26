@@ -36,7 +36,7 @@ N_HOSTS = int(pc.nhost())
 
 
 class EcpMod(SimulatorMod):
-    def __init__(self, ecp_file, positions_file, tmp_outputdir):
+    def __init__(self, ecp_file, positions_file, gids, tmp_outputdir):
         self._ecp_output = ecp_file
         self._positions_file = positions_file
         self._tmp_outputdir = tmp_outputdir
@@ -147,7 +147,9 @@ class EcpMod(SimulatorMod):
     def initialize(self, sim):
         self._block_size = sim.nsteps_block
         self._biophys_gids = sim.gids['biophysical']  # gids for biophysical cells on this rank
-        self._cell_vars_dir = sim.cell_var_output
+        #self._cell_vars_dir = sim.cell_var_output
+        print self._cell_var_files
+        exit()
 
         self._calculate_ecp(sim)
         self._create_ecp_file(sim)
