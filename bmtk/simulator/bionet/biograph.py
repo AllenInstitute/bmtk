@@ -695,7 +695,6 @@ class BioGraph(SimGraph):
                 cell.init_connections()
             self._connections_initialized = True
 
-
     def build_recurrent_edges(self):
         self._init_connections()
         io.log_info('building recurrent connections')
@@ -712,9 +711,6 @@ class BioGraph(SimGraph):
                         bioedge = BioEdge(edge, self, prop_maps[edge.group_id])
                         src_node = self.get_node(src_pop_name, edge.source_node_id)
                         syn_count += trg_cell.set_syn_connection(bioedge, src_node)
-
-        io.log_info('  Created {} synapses'.format(syn_count))
-
 
     def __preprocess_edge_types(self, edge_pop):
         edge_types_table = edge_pop.types_table

@@ -40,13 +40,16 @@ class SpikesMod(SimulatorMod):
 
     """
 
-    def __init__(self, tmpdir, csv_filename=None, h5_filename=None, sort_order=None):
+    def __init__(self, tmpdir, csv_filename=None, h5_filename=None, nwb_filename=None, sort_order=None):
         # TODO: Have option to turn off caching spikes to csv.
         self._csv_fname = csv_filename
         self._save_csv = csv_filename is not None
 
         self._h5_fname = h5_filename
         self._save_h5 = h5_filename is not None
+
+        self._nwb_fname = nwb_filename
+        self._save_nwb = nwb_filename is not None
 
         self._tmpdir = tmpdir
         self._sort_order = sort_order
@@ -76,6 +79,10 @@ class SpikesMod(SimulatorMod):
 
         if self._save_h5:
             self._spike_writer.to_hdf5(self._h5_fname, sort_order=self._sort_order)
+            pc.barrier()
+
+        if self._save_nwb:
+            self._spike_writer.to_nwb(self._nwb_fname, sort_order=self._sort_order)
             pc.barrier()
 
         self._spike_writer.close()

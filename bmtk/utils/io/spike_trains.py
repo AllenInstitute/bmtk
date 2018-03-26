@@ -30,7 +30,6 @@ class SpikeTrainWriter(object):
         self._tmp_spikes_handles = []  # used when sorting mulitple file
         self._spike_count = -1
 
-
     def _get_tmp_filename(self, rank):
         return os.path.join(self._tmp_dir, '_bmtk_tmp_spikes_{}.csv'.format(rank))
 
