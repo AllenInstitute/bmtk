@@ -36,9 +36,10 @@ N_HOSTS = int(pc.nhost())
 
 
 class EcpMod(SimulatorMod):
-    def __init__(self, tmp_dir, ecp_file, positions_file, contributions_dir, gids=[]):
+    def __init__(self, tmp_dir, ecp_file, electrode_positions, contributions_dir, cells=[], variable_name='v',
+                 electrode_channels=None):
         self._ecp_output = ecp_file
-        self._positions_file = positions_file
+        self._positions_file = electrode_positions
         self._tmp_outputdir = tmp_dir
         self._contributions_dir = contributions_dir
         #self._cell_vars_dir = None

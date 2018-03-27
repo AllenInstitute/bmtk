@@ -288,36 +288,31 @@ class Simulation(object):
                   celsius=config.celsius,
                   nsteps_block=config.block_step)
 
-        # print config.reports
-        # TODO: Organize the reports into a better structure
         # TODO: Need to create a gid selector
         #print {report['module']: report for _, report in config.reports.items()}
+
+        # Parse the "reports" section of the config and load an associated output module for each report
         sim_reports = reports.from_config(config)
         for report in sim_reports:
             if isinstance(report, reports.SpikesReport):
-                mod = mods.SpikesMod(tmpdir=report.tmp_dir, csv_filename=report.csv_file, h5_filename=report.h5_file,
-                                     nwb_filename=report.nwb_file, sort_order=report.sort_order)
+                mod = mods.SpikesMod(**report.params)
 
             elif isinstance(report, reports.MembraneReport):
-                if report.sections == 'soma':
-                    mod = mods.SomaReport(tmp_dir=report.tmp_dir, file_name=report.file_name,
-                                          variables=report.variables, gids=report.cells, buffer_data=report.buffer)
+                if report.params['sections'] == 'soma':
+                    mod = mods.SomaReport(**report.params)
 
                 else:
-                    mod = mods.MembraneReport(tmp_dir=report.tmp_dir, file_name=report.file_name,
-                                              variables=report.variables, gids=report.cells,
-                                              sections=report.sections, buffer_data=report.buffer)
+                    mod = mods.MembraneReport(**report.params)
 
             elif isinstance(report, reports.ECPReport):
-                # TODO: All for a different set of cells other than just biophysical
-                mod = mods.EcpMod(tmp_dir=report.tmp_dir, ecp_file=report.file_name,
-                                  positions_file=report.positions_file, contributions_dir=report.contributions_dir)
+                mod = mods.EcpMod(**report.params)
+                # Set up the ability for ecp on all relevant cells
+                # TODO: According to spec we need to allow a different subset other than only biophysical cells
                 for cell in network.get_cells('biophysical'):
-                    # Set up the ability for ecp on all relevant cells
                     cell.setup_ecp()
-
             else:
-                # Allow for customized modules
+                # TODO: Allow users to register customized modules using pymodules
+                io.log_warning('Unrecognized module {}, skipping.'.format(report.module))
                 continue
 
             sim.add_mod(mod)
