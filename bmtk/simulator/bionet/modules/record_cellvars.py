@@ -46,7 +46,7 @@ N_HOSTS = int(pc.nhost())
 
 
 class MembraneReport(SimulatorMod):
-    def __init__(self, tmp_dir, file_name, variables, gids, sections='all', buffer_data=True):
+    def __init__(self, tmp_dir, file_name, variables, cells, sections='all', buffer_data=True):
         """Module used for saving NEURON cell properities at each given step of the simulation.
 
         :param tmp_dir:
@@ -60,7 +60,7 @@ class MembraneReport(SimulatorMod):
         self._variables = variables
         self._tmp_dir = tmp_dir
         self._file_name = file_name
-        self._all_gids = gids
+        self._all_gids = cells
         self._local_gids = []
         self._sections = sections
 
@@ -124,9 +124,9 @@ class MembraneReport(SimulatorMod):
 
 class SomaReport(MembraneReport):
     """Special case for when only needing to save the soma variable"""
-    def __init__(self, tmp_dir, file_name, variables, gids, buffer_data=True):
-        super(SomaReport, self).__init__(tmp_dir=tmp_dir, file_name=file_name, variables=variables, gids=gids,
-                                         sections='soma', buffer_data=buffer_data)
+    def __init__(self, tmp_dir, file_name, variable_name, cells, sections='soma', buffer_data=True):
+        super(SomaReport, self).__init__(tmp_dir=tmp_dir, file_name=file_name, variables=variable_name, cells=cells,
+                                         sections=sections, buffer_data=buffer_data)
 
     def initialize(self, sim):
         self._get_gids(sim)

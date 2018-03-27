@@ -40,21 +40,21 @@ class SpikesMod(SimulatorMod):
 
     """
 
-    def __init__(self, tmpdir, csv_filename=None, h5_filename=None, nwb_filename=None, sort_order=None):
+    def __init__(self, tmp_dir, spikes_file_csv=None, spikes_file=None, spikes_file_nwb=None, spikes_sort_order=None):
         # TODO: Have option to turn off caching spikes to csv.
-        self._csv_fname = csv_filename
-        self._save_csv = csv_filename is not None
+        self._csv_fname = spikes_file_csv
+        self._save_csv = spikes_file_csv is not None
 
-        self._h5_fname = h5_filename
-        self._save_h5 = h5_filename is not None
+        self._h5_fname = spikes_file
+        self._save_h5 = spikes_file is not None
 
-        self._nwb_fname = nwb_filename
-        self._save_nwb = nwb_filename is not None
+        self._nwb_fname = spikes_file_nwb
+        self._save_nwb = spikes_file_nwb is not None
 
-        self._tmpdir = tmpdir
-        self._sort_order = sort_order
+        self._tmpdir = tmp_dir
+        self._sort_order = spikes_sort_order
 
-        self._spike_writer = SpikeTrainWriter(tmp_dir=tmpdir, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)
+        self._spike_writer = SpikeTrainWriter(tmp_dir=tmp_dir, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)
 
     def initialize(self, sim):
         # TODO: since it's possible that other modules may need to access spikes, set_spikes_recordings() should
