@@ -153,8 +153,9 @@ class EdgePropertyMap(object):
             prop_map.preselected_targets = False
             prop_map.nsyns = types.MethodType(nsyns, prop_map)
         else:
-            # I'd like to put a warning or exception however we have to consider point neuron synapses
-            pass
+            # It will get here for connections onto point neurons
+            prop_map.preselected_targets = True
+            prop_map.nsyns = types.MethodType(no_nsyns, prop_map)
 
         # For target sections
         '''

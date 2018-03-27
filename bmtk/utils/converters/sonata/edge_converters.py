@@ -72,6 +72,14 @@ def update_h5_edges(edges_file, edge_types_file, src_network=None, population_na
         grp.move('target_gid', 'target_node_id')
         grp.move('edge_group', 'edge_group_id')
 
+        if 'network' in grp['source_node_id'].attrs:
+            del grp['source_node_id'].attrs['network']
+        grp['source_node_id'].attrs['node_population'] = src_network
+
+        if 'network' in grp['target_node_id'].attrs:
+            del grp['target_node_id'].attrs['network']
+        grp['target_node_id'].attrs['node_population'] = trg_network
+
         create_index(input_h5['edges/target_gid'], grp, index_type=INDEX_TARGET)
         create_index(input_h5['edges/source_gid'], grp, index_type=INDEX_SOURCE)
 

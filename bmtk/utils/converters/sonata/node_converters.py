@@ -14,7 +14,7 @@ def convert_nodes(nodes_file, node_types_file, **params):
         pass
 
     if is_h5:
-        update_h5_nodes(nodes_file, node_types_file **params)
+        update_h5_nodes(nodes_file, node_types_file, **params)
         return
 
     update_csv_nodes(nodes_file, node_types_file, **params)
@@ -34,8 +34,70 @@ column_renames = {
 }
 
 
-def update_h5_nodes(nodes_file, node_types_file, network_name, output_dir='output', sort_order=[]):
+def update_h5_nodes(nodes_file, node_types_file, network_name, output_dir='output',
+                    column_order=('node_type_id', 'model_type', 'model_template', 'model_processing', 'dynamics_params',
+                                  'morphology_file')):
     # open nodes and node-types into a single table
+    input_h5 = h5py.File(nodes_file, 'r')
+
+    output_name = '{}_nodes.h5'.format(network_name)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    nodes_output_fn = os.path.join(output_dir, output_name)
+
+    # save nodes hdf5
+    with h5py.File(nodes_output_fn, 'w') as h5:
+        #h5.copy()
+        #grp = h5.create_group('/nodes/{}'.format(network_name))
+        #input_grp = input_h5['/nodes/']
+        nodes_path = '/nodes/{}'.format(network_name)
+        h5.copy(input_h5['/nodes/'], nodes_path)
+        grp = h5[nodes_path]
+        grp.move('node_gid', 'node_id')
+        grp.move('node_group', 'node_group_id')
+
+    node_types_csv = pd.read_csv(node_types_file, sep=' ')
+
+    # Change values for model type
+    model_type_map = {
+        'biophysical': 'biophysical',
+        'point_IntFire1': 'point_process',
+        'virtual': 'virtual',
+    }
+    node_types_csv['model_type'] = node_types_csv.apply(lambda row: model_type_map[row['model_type']], axis=1)
+
+    # Add model_template column
+    def model_template(row):
+        model_type = row['model_type']
+        if model_type == 'biophysical':
+            return 'ctdb:Biophys1.hoc'
+        elif model_type == 'point_process':
+            return 'nrn:IntFire1'
+        else:
+            return 'NONE'
+    node_types_csv['model_template'] = node_types_csv.apply(model_template, axis=1)
+
+    # Add model_processing column
+    def model_processing(row):
+        model_type = row['model_type']
+        if model_type == 'biophysical':
+            return 'aibs_perisomatic'
+        else:
+            return 'NONE'
+    node_types_csv['model_processing'] = node_types_csv.apply(model_processing, axis=1)
+
+    # Reorder columns
+    orig_columns = node_types_csv.columns
+    col_order = [cn for cn in column_order if cn in orig_columns]
+    col_order += [cn for cn in node_types_csv.columns if cn not in column_order]
+    node_types_csv = node_types_csv[col_order]
+
+    # Save node-types csv
+    node_types_output_fn = os.path.join(output_dir, '{}_node_types.csv'.format(network_name))
+    node_types_csv.to_csv(node_types_output_fn, sep=' ', index=False, na_rep='NONE')
+    # open nodes and node-types into a single table
+
+    '''
     print('loading csv files')
     nodes_tmp = pd.read_csv(nodes_file, sep=' ')
     node_types_tmp = pd.read_csv(node_types_file, sep=' ')
@@ -156,6 +218,7 @@ def update_h5_nodes(nodes_file, node_types_file, network_name, output_dir='outpu
         node_types_table = node_types_table.sort_values(by=sort_order)
 
     node_types_table.to_csv(node_types_output_fn, sep=' ', index=False) # , na_rep='NONE')
+    '''
 
 
 def update_csv_nodes(nodes_file, node_types_file, network_name, output_dir='network',
