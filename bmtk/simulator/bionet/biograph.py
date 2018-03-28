@@ -40,6 +40,9 @@ from bmtk.simulator.bionet.lifcell import LIFCell
 from bmtk.simulator.bionet.stim import Stim
 from bmtk.simulator.bionet.morphology import Morphology
 
+# TODO: leave this import, it will initialize some of the default functions for building neurons/synapses/weights.
+import bmtk.simulator.bionet.default_setters
+
 pc = h.ParallelContext()  # object to access MPI methods
 MPI_size = int(pc.nhost())
 MPI_rank = int(pc.id())

@@ -313,7 +313,7 @@ class SimGraph(object):
 
 
     @classmethod
-    def from_config(cls, conf, network_format=TabularNetwork, property_schema=None, **properties):
+    def from_config(cls, conf, **properties):
         """Generates a graph structure from a json config file or dictionary.
 
         :param conf: name of json config file, or a dictionary with config parameters
@@ -322,7 +322,8 @@ class SimGraph(object):
         :param properties: optional properties.
         :return: A graph object of type cls
         """
-        graph = cls(property_schema) if not properties else cls(property_schema, **properties)
+        graph = cls(**properties)
+        #graph = cls() if not properties else cls(property_schema, **properties)
         # io = cls.get_io()
         if isinstance(conf, basestring):
             config = graph._from_json(conf)
@@ -380,6 +381,7 @@ class SimGraph(object):
             # graph.io.log_info('    Setting up external cells...')
             graph.io.log_info('Setting up virtual nodes')
             graph.make_stims()
+
 
         return graph
 
