@@ -10,6 +10,8 @@ import io
 class PropertyMap(object):
     def __init__(self, graph):
         self._graph = graph
+        # TODO: Move template_cache to parent graph so it can be shared across diff populations.
+        self._template_cache = {}
 
     def _parse_model_template(self, model_template):
         if model_template in self._template_cache:

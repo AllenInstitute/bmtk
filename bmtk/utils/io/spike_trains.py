@@ -87,7 +87,7 @@ class SpikeTrainWriter(object):
             for i, spike in enumerate(spikes[1:]):
                 if spike[sort_column] < selected_val:
                     selected_index = i + 1
-                    selected_time = spike[0]
+                    selected_val = spike[sort_column]
 
             # write the spike to the file
             t, gid, rank = spikes.pop(selected_index)
@@ -161,3 +161,12 @@ class SpikeTrainWriter(object):
         fname = self._all_tmp_files[self._mpi_rank].file_name
         if os.path.exists(fname):
             os.remove(fname)
+
+
+class SpikeTrainInput(object):
+    def __init__(self, format='nwb', trial=None):
+        pass
+
+
+    def get_spikes(self, gid):
+        pass

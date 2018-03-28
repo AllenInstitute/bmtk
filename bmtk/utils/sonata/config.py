@@ -150,6 +150,10 @@ class SonataConfig(dict):
     def reports(self):
         return self.get('reports', {})
 
+    @property
+    def inputs(self):
+        return self.get('inputs', {})
+
     def get_modules(self, module_name):
         return [report for report in self.reports.values() if report['module'] == module_name]
 

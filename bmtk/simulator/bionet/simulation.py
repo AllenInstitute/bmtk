@@ -27,6 +27,7 @@ from bmtk.simulator.bionet.iclamp import IClamp
 from bmtk.simulator.bionet import modules as mods
 
 import bmtk.simulator.utils.simulation_reports as reports
+import bmtk.simulator.utils.simulation_inputs as inputs
 
 
 pc = h.ParallelContext()    # object to access MPI methods
@@ -291,6 +292,14 @@ class Simulation(object):
         # TODO: Need to create a gid selector
         #print {report['module']: report for _, report in config.reports.items()}
 
+        '''
+        # Parse the inputs section of the config
+        sim_inputs = inputs.from_config(config)
+        print sim_inputs
+        #exit()
+        '''
+
+
         # Parse the "reports" section of the config and load an associated output module for each report
         sim_reports = reports.from_config(config)
         for report in sim_reports:
@@ -389,7 +398,6 @@ class Simulation(object):
             sim.add_mod(ecp_mod)
         sim.set_recordings()
         '''
-
 
         if 'input' in config:
             for input_dict in config['input']:

@@ -2,16 +2,13 @@
 
 
 import sys, os
-import bmtk.simulator.bionet.config as config
 from bmtk.simulator.bionet import io, nrn
 from bmtk.simulator.bionet.simulation import Simulation
-from bmtk.analyzer.spikes_analyzer import spike_files_equal
 from bmtk.simulator.bionet.biograph import BioGraph
-from bmtk.simulator.bionet.bionetwork import BioNetwork
 from bmtk.simulator.bionet import Config
 
-from bmtk.utils.io import TabularNetwork_AI
-from bmtk.simulator.bionet.property_schemas import AIPropertySchema
+#from bmtk.utils.io import TabularNetwork_AI
+#from bmtk.simulator.bionet.property_schemas import AIPropertySchema
 
 
 #import set_weights
@@ -35,10 +32,13 @@ def run(config_file):
                         syn_models=set_syn_params,
                         syn_weights=set_weights)
     '''
+    graph = BioGraph.from_config(conf)
 
+    '''
     graph = BioGraph.from_config(conf,                # create network graph containing parameters of the model
                                  network_format=TabularNetwork_AI,
                                  property_schema=AIPropertySchema)
+    '''
 
     #net = BioNetwork.from_config(conf, graph)   # create network of in NEURON
 

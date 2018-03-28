@@ -151,8 +151,9 @@ class EcpMod(SimulatorMod):
             os.remove(self._tmp_ecp_file)
 
     def initialize(self, sim):
-        if self._contributions_dir and not os.path.exists(self._contributions_dir):
+        if self._contributions_dir and (not os.path.exists(self._contributions_dir)) and MPI_RANK == 0:
             os.makedirs(self._contributions_dir)
+        pc.barrier()
 
         self._block_size = sim.nsteps_block
         # TODO: Allow for a custom subset of cells
