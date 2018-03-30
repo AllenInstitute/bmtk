@@ -365,6 +365,7 @@ class SimGraph(object):
         graph.build_nodes()
         graph.build_recurrent_edges()
 
+        '''
         if 'inputs' in config:
             for _, netinput in config['inputs'].items():
                 if netinput['input_type'] == 'spikes' and netinput['module'] == 'nwb':
@@ -381,6 +382,7 @@ class SimGraph(object):
             # graph.io.log_info('    Setting up external cells...')
             graph.io.log_info('Setting up virtual nodes')
             graph.make_stims()
+        '''
 
 
         return graph

@@ -28,6 +28,7 @@ from bmtk.simulator.bionet import modules as mods
 
 import bmtk.simulator.utils.simulation_reports as reports
 import bmtk.simulator.utils.simulation_inputs as inputs
+from bmtk.utils.io import spike_trains
 
 
 pc = h.ParallelContext()    # object to access MPI methods
@@ -201,7 +202,8 @@ class Simulation(object):
             if gid not in self.gids['biophysical']:
                 io.log_warning("Attempting to attach current clamp to non-biophysical gid {}.".format(gid))
 
-            cell = self.net.cells[gid]
+            #cell = self.net.cells[gid]
+            cell = self.net.get_local_cell(gid)
             Ic = IClamp(amplitude, delay, duration)
             Ic.attach_current(cell)
             self._iclamps.append(Ic)
@@ -292,12 +294,29 @@ class Simulation(object):
         # TODO: Need to create a gid selector
         #print {report['module']: report for _, report in config.reports.items()}
 
-        '''
+
         # Parse the inputs section of the config
-        sim_inputs = inputs.from_config(config)
-        print sim_inputs
-        #exit()
-        '''
+        #sim_inputs = inputs.from_config(config)
+        #print sim_inputs
+        for sim_input in inputs.from_config(config):
+            if sim_input.input_type == 'spikes':
+                spikes = spike_trains.SpikesInput(name=sim_input.name, module=sim_input.module,
+                                                  input_type=sim_input.input_type, params=sim_input.params)
+                io.log_info('Build virtual cell stimulations for {}'.format(sim_input.name))
+                network.add_spike_trains(spikes)
+                #print sim_input
+                #spike_trains.SpikeTrainInput.load(sim_input)
+
+            elif sim_input.module == 'IClamp':
+                # TODO: Parse from csv file
+                amplitude = sim_input.params['amp']
+                delay = sim_input.params['delay']
+                duration = sim_input.params['duration']
+                gids = sim_input.params['node_set']
+                sim.attach_current_clamp(amplitude, delay, duration, gids)
+
+            else:
+                io.log_exception('Can not parse inputs {}'.format(sim_input.name))
 
 
         # Parse the "reports" section of the config and load an associated output module for each report

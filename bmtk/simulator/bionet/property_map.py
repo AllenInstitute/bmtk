@@ -1,8 +1,8 @@
 import types
 import ast
+import numpy as np
 
 import nrn
-
 import io
 
 
@@ -23,6 +23,14 @@ class PropertyMap(object):
             self._template_cache[model_template] = (directive, template)
             return directive, template
 
+    def _parse_model_processing(self, node):
+        model_processing_str = node['model_processing']
+        if model_processing_str is None:
+            return []
+        else:
+            # TODO: Split in the node_types_table when possible
+            return [nrn.py_modules.cell_processor(fnc_name) for fnc_name in model_processing_str.split(',')]
+
     def load_cell(self, node):
         model_template = node['model_template']
         model_type = node['model_type']
@@ -34,7 +42,13 @@ class PropertyMap(object):
             cell_fnc = nrn.py_modules.cell_model(directive, node['model_type'])
 
         dynamics_params = self.dynamics_params(node)
-        return cell_fnc(node, template_name, dynamics_params)
+        hobj = cell_fnc(node, template_name, dynamics_params)
+
+        for processing_fnc in self._parse_model_processing(node):
+            hobj = processing_fnc(hobj, node, dynamics_params)
+
+        return hobj
+
 
     @classmethod
     def build_map(cls, node_group, biograph):
@@ -82,7 +96,7 @@ class PropertyMap(object):
 
 
 def positions_default(self, node):
-    return [0.0, 0.0, 0.0]
+    return np.array([0.0, 0.0, 0.0])
 
 
 def positions(self, node):

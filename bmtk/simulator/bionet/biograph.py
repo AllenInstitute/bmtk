@@ -243,6 +243,13 @@ class PropertyMapS(object):
 
 
 class BioGraph(SimGraph):
+    class NodePopulationMetaData(object):
+        def __init__(self):
+            self.internal = False
+            self.external = False
+            self.property_maps = {}
+
+
     model_type_col = 'model_type'
 
     def __init__(self, property_schema=None):
@@ -277,10 +284,35 @@ class BioGraph(SimGraph):
         self._internal_populations_map = {}
         self._virtual_populations_map = {}
 
+        self._model_type_map = {
+            'biophysical': BioCell,
+            'point_process': LIFCell,
+            'point_soma': lambda *x: None,
+            'virtual': lambda *x: None
+        }
 
+        # _local_nodes = {}
+        self._node_cache = {}
+        self._local_cells_nid = {}
+        self._local_cells_gid = {}
+        # TODO: Find a way to add new types
+        self._local_cells_type = {mtype: {} for mtype in self._model_type_map.keys()}
+
+        self._connections_initialized = False
+
+        self._virtual_cells_nid = {}
+
+        self._node_populations = {}
+
+
+
+
+
+    '''
     @staticmethod
     def get_default_property_schema():
         raise NotImplementedError()
+    '''
 
     def _from_json(self, file_name):
         return cfg.Config.from_dict(file_name, validate=True)
@@ -325,7 +357,6 @@ class BioGraph(SimGraph):
             self._node_params_cache[key] = params_val
             return params_val
 
-
     '''
     def __get_params(self, node, cell_type):
         if node.with_dynamics_params:
@@ -360,9 +391,12 @@ class BioGraph(SimGraph):
             return params_val
     '''
 
+
+
     def _create_edge(self, edge, dynamics_params):
         return BioEdge(edge, dynamics_params, self)
 
+    '''
     def _add_node(self, node_params, network):
         node = BioNode(node_params.gid, self, network, node_params)
         if node.cell_type == CellTypes.Biophysical:
@@ -380,6 +414,7 @@ class BioGraph(SimGraph):
 
         else:
             raise Exception('Unknown model type {}'.format(node_params['model_type']))
+    '''
 
     def __avail_model_types(self, population):
         model_types = set()
@@ -391,7 +426,8 @@ class BioGraph(SimGraph):
         return model_types
 
     def __preprocess_node_types(self, node_population):
-        # TODO: The following figures out the actually used node-type-ids. For mem and speed may be better to just process them all
+        # TODO: The following figures out the actually used node-type-ids. For mem and speed may be better to just
+        # process them all
         node_type_ids = node_population.type_ids
         # TODO: Verify all the node_type_ids are in the table
         node_types_table = node_population.types_table
@@ -434,25 +470,32 @@ class BioGraph(SimGraph):
                     self.io.log_exception('Could not find node dynamics_params file {}.'.format(params_path))
 
 
+    @property
+    def node_populations(self):
+        return list(self._node_populations.keys())
+
+
     def add_nodes(self, sonata_file, populations=None):
         """Add nodes from a network to the graph.
 
-        :param nodes: A NodesFormat type object containing list of nodes.
-        :param network: name/identifier of network. If none will attempt to retrieve from nodes object
+        :param sonata_file: A NodesFormat type object containing list of nodes.
+        :param populations: name/identifier of network. If none will attempt to retrieve from nodes object
         """
         nodes = sonata_file.nodes
 
         selected_populations = nodes.population_names if populations is None else populations
         for pop_name in selected_populations:
             if pop_name not in nodes:
+                # when user wants to simulation only a few populations in the file
                 continue
 
-            pop_metadata = NodePopulationMetaData(self)
+            if pop_name in self.node_populations:
+                # Make sure their aren't any collisions
+                io.log_exception('There are multiple node populations with name {}.'.format(pop_name))
+
             node_pop = nodes[pop_name]
-
+            pop_metadata = self.NodePopulationMetaData()
             self.__preprocess_node_types(node_pop)
-
-            # TODO: Check for population name collisions
 
             # Segregate into virtual populations and non-virtual populations
             model_types = self.__avail_model_types(node_pop)
@@ -460,6 +503,7 @@ class BioGraph(SimGraph):
                 self._virtual_populations.append(node_pop)
                 self._virtual_populations_map[pop_name] = node_pop
                 self._virtual_pop_names.add(pop_name)
+                self._virtual_cells_nid[pop_name] = {}
                 model_types -= set(['virtual'])
                 if model_types:
                     # We'll allow a population to have virtual and non-virtual nodes but it is not ideal
@@ -486,18 +530,7 @@ class BioGraph(SimGraph):
 
 
 
-    _model_type_map = {
-        'biophysical': BioCell,
-        'point_process': LIFCell,
-        'point_soma': lambda *x: None,
-        'virtual': lambda *x: None
-    }
 
-    #_local_nodes = {}
-    _node_cache = {}
-    _local_cells_nid = {}
-    _local_cells_gid = {}
-    _local_cells_type = {mtype: {} for mtype in _model_type_map.keys()}  # TODO: Find a way to add new types
 
     @property
     def local_cells(self):
@@ -560,6 +593,7 @@ class BioGraph(SimGraph):
         # TODO: Raise a warning if more than one internal population and no gids (node_id collision)
         # TODO: Verify there actually is at least one internal population
         io.log_info('building cells.')
+
 
         for node_pop in self._internal_populations:
             pop_name = node_pop.name
@@ -653,6 +687,20 @@ class BioGraph(SimGraph):
 
         pc.barrier()
 
+    def get_virt_node(self, population, node_id):
+        pop_cache = self._node_cache[population]
+        if node_id in pop_cache:
+            return pop_cache[node_id]
+        else:
+            # Load node into cache.
+            #nodes_pop = self._internal_populations
+            node_pop = self._virtual_populations_map[population]
+            sonata_node = node_pop.get_node_id(node_id)
+            prop_map = self._node_property_maps[population][sonata_node.group_id]
+            bnode = self.BioNode(sonata_node, prop_map, self)
+            pop_cache[node_id] = bnode
+            return bnode
+
     def get_node(self, population, node_id):
         pop_cache = self._node_cache[population]
         if node_id in pop_cache:
@@ -660,7 +708,7 @@ class BioGraph(SimGraph):
         else:
             # Load node into cache.
             #nodes_pop = self._internal_populations
-            node_pop= self._internal_populations_map[population]
+            node_pop = self._internal_populations_map[population]
             sonata_node = node_pop.get_node_id(node_id)
             prop_map = self._node_property_maps[population][sonata_node.group_id]
             bnode = self.BioNode(sonata_node, prop_map, self)
@@ -689,7 +737,7 @@ class BioGraph(SimGraph):
     '''
 
 
-    _connections_initialized = False
+
 
     def _init_connections(self):
         if not self._connections_initialized:
@@ -699,9 +747,13 @@ class BioGraph(SimGraph):
             self._connections_initialized = True
 
     def build_recurrent_edges(self):
+        if not self._recurrent_edges:
+            return 0
+
         self._init_connections()
         io.log_info('building recurrent connections')
         syn_count = 0
+
         # TODO: Check the order, I believe this can be built faster
         for trg_pop_name, nid_table in self._local_cells_nid.items():
             for edge_pop in self._recurrent_edges[trg_pop_name]:
@@ -866,7 +918,46 @@ class BioGraph(SimGraph):
 
     saved_gids = range(0,10)
 
+    '''
+    cell = self._build_cell(bnode)
+    if cell is not None:
+        self._local_cells_gid[cell.gid] = cell
+        self._local_cells_type[bnode.model_type][cell.gid] = cell
+        local_cells[bnode.node_id] = cell
+    '''
 
+
+
+    def get_virt_cell(self, population, node_id, spike_train):
+        pop_lkup = self._virtual_cells_nid[population]
+        if node_id in pop_lkup:
+            return pop_lkup[node_id]
+        else:
+            node_pop = self._virtual_populations_map[population]
+            sonata_node = node_pop.get_node_id(node_id)
+            prop_map = self._node_property_maps[population][sonata_node.group_id]
+            bnode = self.BioNode(sonata_node, prop_map, self)
+            stim = Stim(bnode, spike_train)
+            self._virtual_cells_nid[population][node_id] = stim
+            return stim
+
+
+
+    def add_spike_trains(self, spike_trains):
+        for pop_name in self.virtual_pop_names():
+            if pop_name not in spike_trains.populations:
+                continue
+
+            for trg_pop_name in self._local_cells_nid.keys():
+                for edge_pop in self.external_edge_populations(src_pop=pop_name, trg_pop=trg_pop_name):
+                    prop_maps = self._edge_property_maps[edge_pop.name]
+                    for trg_nid, trg_cell in self._local_cells_nid[trg_pop_name].items():
+                        for edge in edge_pop.get_target(trg_nid):
+                            virt_edge = BioEdge(edge, self, prop_maps[edge.group_id])
+                            src_cell = self.get_virt_cell(pop_name, edge.source_node_id, spike_trains)
+                            trg_cell.set_syn_connection(virt_edge, src_cell, src_cell)
+
+    '''
     def make_stims(self):
         """Create the stims/virtual/external nodes.
 
@@ -901,17 +992,7 @@ class BioGraph(SimGraph):
                             stim = source_stims[edge.source_node_id]
                             syn_counter += trg_cell.set_syn_connection(virt_edge, stim, stim)
 
-                    '''
-                    for trg_node_ in self._local_cells_nid[trg_pop]:
-                        print trg_node, trg_pop
-                        exit()
-                        trg_cell self.get_node()
-                        #prop_map = prop_maps[trg_node.group_id]
-                        for edge in edge_pop.get_target(trg_node.node_id):
-                            bioedge = BioEdge(edge, self._graph, prop_map)
-                            stim = source_stims[edge.source_node_id]
-                            syn_counter += trg_node.set_syn_connection(bioedge, stim, stim)
-                    '''
+    '''
 
 '''
     def build_recurrent_edges(self):
@@ -935,7 +1016,8 @@ class BioGraph(SimGraph):
 
 
     def build_nodes(self):
-        # TODO: Raise a warning if more than one internal population and no gids (node_id collision)
+        # TODO: Raise a warning if more than one in
+        ternal population and no gids (node_id collision)
         # TODO: Verify there actually is at least one internal population
         io.log_info('building cells.')
 
@@ -965,7 +1047,4 @@ class BioGraph(SimGraph):
 
 
 
-class NodePopulationMetaData(object):
-    def __init__(self, graph):
-        self.mixed_types = False
-        self.property_maps = {}
+

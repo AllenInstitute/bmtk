@@ -38,11 +38,13 @@ class _PyFunctions(object):
         self.__syn_weights = {}
         self.__cell_models = {}
         self.__synapse_models = {}
+        self.__cell_processors = {}
 
     def clear(self):
         self.__syn_weights.clear()
         self.__cell_models.clear()
         self.__synapse_models.clear()
+        self.__cell_processors.clear()
 
     def add_synaptic_weight(self, name, func, overwrite=True):
         """stores synpatic fuction for given name"""
@@ -89,6 +91,18 @@ class _PyFunctions(object):
 
     def synapse_model(self, name):
         return self.__synapse_models[name]
+
+
+    @property
+    def cell_processors(self):
+        return self.__cell_processors.keys()
+
+    def cell_processor(self, name):
+        return self.__cell_processors[name]
+
+    def add_cell_processor(self, name, func, overwrite=True):
+        if overwrite or name not in self.__syn_weights:
+            self.__cell_processors[name] = func
 
     def __repr__(self):
         rstr = '{}: {}\n'.format('cell_models', self.cell_models)
@@ -196,6 +210,12 @@ def add_cell_model(func, directive, model_type, overwrite=True):
     assert(callable(func))
     # func_name = name if name is not None else func.__name__
     py_modules.add_cell_model(directive, model_type, func, overwrite)
+
+
+def add_cell_processor(func, name=None, overwrite=True):
+    assert(callable(func))
+    func_name = name if name is not None else func.__name__
+    py_modules.add_cell_processor(func_name, func, overwrite)
 
 
 def add_synapse_model(func, name=None, overwrite=True):
