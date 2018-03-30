@@ -163,10 +163,24 @@ class SpikeTrainWriter(object):
             os.remove(fname)
 
 
-class SpikeTrainInput(object):
-    def __init__(self, format='nwb', trial=None):
-        pass
+class SpikesInput(object):
+    def __init__(self, name, module, input_type, params):
+        self.input_file = params['input_file']
+        self.trial = params['trial']
+        self.node_population = params['node_set']
 
+        self._h5_handle = h5py.File(self.input_file, 'r')
+        self._spike_trains_handles = {}
+        for node_id, h5grp in self._h5_handle['processing'][self.trial]['spike_train'].items():
+            self._spike_trains_handles[int(node_id)] = h5grp['data']
 
     def get_spikes(self, gid):
-        pass
+        return np.array(self._spike_trains_handles[gid])
+
+    def load_config(self, config):
+        print config
+
+    @property
+    def populations(self):
+        return [self.node_population]
+

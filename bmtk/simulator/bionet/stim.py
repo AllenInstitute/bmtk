@@ -46,7 +46,7 @@ class Stim(object):
         #spike_trains_handle = input_prop["spike_trains_handle"]
         #self.spike_train = spike_trains_handle['%d/data' % self.stim_gid][:]
 
-        self.train_vec = h.Vector(spike_train[:])
+        self.train_vec = h.Vector(spike_train.get_spikes(self.node_id))
         vecstim = h.VecStim()
         vecstim.play(self.train_vec)
         

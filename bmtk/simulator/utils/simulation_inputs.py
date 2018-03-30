@@ -3,7 +3,7 @@ class SimInput(object):
     registry = {}  # For factory function
 
     def __init__(self, input_name, input_type, module, params):
-        self.input_name = input_name
+        self.name = input_name
         self.input_type = input_type
         self.module = module
         self.params = params.copy()
@@ -68,10 +68,12 @@ def from_config(cfg):
             inputs_list.append(input_setting)
 
 
-    print inputs_list
+    #print inputs_list
 
     #exit()
     #print cfg.inputs
-    return None
+    #return None
+    return inputs_list
+
 
 
