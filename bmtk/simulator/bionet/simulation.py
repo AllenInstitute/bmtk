@@ -39,8 +39,7 @@ class Simulation(object):
 
     def __init__(self, network, dt, tstop, v_init, celsius, nsteps_block, start_from_state=False):
         self.net = network
-        self.gids = {
-            'save_cell_vars': self.net.saved_gids, 'biophysical': self.net.biopyhys_gids}
+        #self.gids = {'save_cell_vars': self.net.saved_gids, 'biophysical': self.net.biopyhys_gids}
 
         self._start_from_state = start_from_state
         self.dt = dt
@@ -79,6 +78,8 @@ class Simulation(object):
         self._cell_vars_dir = 'output/cellvars'
 
         self._sim_mods = []  # list of modules.SimulatorMod's
+
+        self._biophys_gids = network.biopyhys_gids
 
     @property
     def dt(self):
@@ -136,6 +137,10 @@ class Simulation(object):
     def h(self):
         return self._h
 
+    @property
+    def biophysical_gids(self):
+        return self._biophys_gids
+
     def __elapsed_time(self, time_s):
         if time_s < 120:
             return '{:.4} seconds'.format(time_s)
@@ -170,7 +175,7 @@ class Simulation(object):
             pc.spike_record(gid, tvec, gidvec)
             self._spikes[gid] = tvec
 
-
+    '''
     def set_recordings(self):
         # TODO: Remove, this should be taken care of in the modules
         """Set recordings of ECP, spikes and somatic traces"""
@@ -187,6 +192,7 @@ class Simulation(object):
 
         io.log_info('Recordings are set!')
         pc.barrier()
+    '''
 
     def attach_current_clamp(self, amplitude, delay, duration, gids=None):
         # TODO: verify current clamp works with MPI
@@ -202,7 +208,6 @@ class Simulation(object):
             if gid not in self.gids['biophysical']:
                 io.log_warning("Attempting to attach current clamp to non-biophysical gid {}.".format(gid))
 
-            #cell = self.net.cells[gid]
             cell = self.net.get_local_cell(gid)
             Ic = IClamp(amplitude, delay, duration)
             Ic.attach_current(cell)
@@ -292,20 +297,12 @@ class Simulation(object):
                   nsteps_block=config.block_step)
 
         # TODO: Need to create a gid selector
-        #print {report['module']: report for _, report in config.reports.items()}
-
-
-        # Parse the inputs section of the config
-        #sim_inputs = inputs.from_config(config)
-        #print sim_inputs
         for sim_input in inputs.from_config(config):
             if sim_input.input_type == 'spikes':
                 spikes = spike_trains.SpikesInput(name=sim_input.name, module=sim_input.module,
                                                   input_type=sim_input.input_type, params=sim_input.params)
                 io.log_info('Build virtual cell stimulations for {}'.format(sim_input.name))
                 network.add_spike_trains(spikes)
-                #print sim_input
-                #spike_trains.SpikeTrainInput.load(sim_input)
 
             elif sim_input.module == 'IClamp':
                 # TODO: Parse from csv file
@@ -317,7 +314,6 @@ class Simulation(object):
 
             else:
                 io.log_exception('Can not parse inputs {}'.format(sim_input.name))
-
 
         # Parse the "reports" section of the config and load an associated output module for each report
         sim_reports = reports.from_config(config)
@@ -344,7 +340,6 @@ class Simulation(object):
                 continue
 
             sim.add_mod(mod)
-        #exit()
 
         '''
         membrane_reports = config.get_modules(module_name='membrane_report')

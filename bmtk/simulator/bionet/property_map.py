@@ -7,7 +7,7 @@ import io
 
 
 # TODO: Consider using partial functions
-class PropertyMap(object):
+class NodePropertyMap(object):
     def __init__(self, graph):
         self._graph = graph
         # TODO: Move template_cache to parent graph so it can be shared across diff populations.
