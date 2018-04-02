@@ -35,9 +35,7 @@ def run(config_file):
                         syn_weights=set_weights)
     '''
 
-    graph = BioGraph.from_config(conf,                # create network graph containing parameters of the model
-                                 network_format=TabularNetwork_AI,
-                                 property_schema=AIPropertySchema)
+    graph = BioGraph.from_config(conf)
 
     #net = BioNetwork.from_config(conf, graph)   # create network of in NEURON
 

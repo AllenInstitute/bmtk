@@ -94,3 +94,8 @@ class Config(SonataConfig):
 
     def load_nrn_modules(self):
         nrn.load_neuron_modules(self.mechanisms_dir, self.templates_dir)
+
+    def build_env(self):
+        self.create_output_dir()
+        self.copy_to_output()
+        self.load_nrn_modules()
