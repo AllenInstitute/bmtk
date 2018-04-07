@@ -188,6 +188,9 @@ class SimGraph(object):
             for nt_id in node_type_ids:
                 node_type = node_types_table[nt_id]
                 dynamics_params = node_type['dynamics_params']
+                if isinstance(dynamics_params, dict):
+                    continue
+
                 model_type = node_type['model_type']
                 if model_type == 'biophysical':
                     params_dir = self.get_component('biophysical_neuron_models_dir')
@@ -212,7 +215,7 @@ class SimGraph(object):
 
     def _preprocess_edge_types(self, edge_pop):
         edge_types_table = edge_pop.types_table
-        edge_type_ids = edge_pop.type_ids
+        edge_type_ids = np.unique(edge_pop.type_ids)
 
         for et_id in edge_type_ids:
             if 'dynamics_params' in edge_types_table.columns:
@@ -254,6 +257,9 @@ class SimGraph(object):
                         except Exception as e:
                             self.io.log_warning('Unable to parse distance_range {}'.format(dist_range))
                             edge_type['distance_range'] = None
+
+    def external_edge_populations(self, src_pop, trg_pop):
+        return self._external_edges.get((src_pop, trg_pop), [])
 
     def add_nodes(self, sonata_file, populations=None):
         """Add nodes from a network to the graph.
@@ -391,10 +397,12 @@ class SimGraph(object):
             edge_net = sonata.File(data_files=edge_dict['edges_file'], data_type_files=edge_dict['edge_types_file'])
             graph.add_edges(edge_net, source_pop=target_network, target_pop=source_network)
 
+        '''
         graph.io.log_info('Building cells.')
         graph.build_nodes()
 
         graph.io.log_info('Building recurrent connections')
         graph.build_recurrent_edges()
+        '''
 
         return graph
