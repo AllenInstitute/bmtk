@@ -35,6 +35,19 @@ import logging
 # For older versions of NEST we must call nest before calling mpi4py, otherwise nest.NumProcesses() gets set to 1.
 import nest
 
+rank = nest.Rank()
+n_nodes = nest.NumProcesses()
+barrier = lambda: None
+try:
+    barrier = nest.SyncProcesses
+except AttributeError as exc:
+    try:
+        from mpi4py import MPI
+        barrier = MPI.COMM_WORLD.Barrier
+    except:
+        barrier = lambda: None
+
+'''
 try:
     from mpi4py import MPI
     comm = MPI.COMM_WORLD
@@ -43,8 +56,10 @@ try:
 except:
     rank = 0
     n_nodes = 1
+'''
 
-log_format = logging.Formatter('%(asctime)s [%(threadName)-12.12s] %(message)s')
+
+log_format = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
 pointnet_logger = logging.getLogger()
 pointnet_logger.setLevel(logging.DEBUG)
 
@@ -57,7 +72,7 @@ def collect_gdf_files(gdf_dir, output_file, nest_id_map, overwrite=False):
 
     if n_nodes > 0:
         # Wait until all nodes are finished
-        comm.Barrier()
+        barrier()
 
     if rank != 0:
         return
@@ -96,11 +111,8 @@ def setup_output_dir(config):
         except Exception as exc:
             print(exc)
 
-    try:
-        comm.Barrier()
-    except Exception as exc:
-        print(exc)
-        pass
+
+    barrier()
 
 
 def quiet_nest():
@@ -111,5 +123,26 @@ def log(message, all_ranks=False):
     if all_ranks is False and rank != 0:
         return
 
-    # print message
     pointnet_logger.info(message)
+
+
+def log_info(message, all_ranks=False):
+    if all_ranks is False and rank != 0:
+        return
+
+    pointnet_logger.info(message)
+
+
+def log_warning(message, all_ranks=False):
+    if all_ranks is False and rank != 0:
+        return
+
+    pointnet_logger.warning(message)
+
+
+def log_exception(message):
+    if rank == 0:
+        pointnet_logger.error(message)
+
+    barrier()
+    raise Exception(message)

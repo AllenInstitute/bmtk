@@ -38,7 +38,6 @@ from neuron import h
 from bmtk.simulator.bionet import nrn
 
 log_format = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
-#log_format = logging.Formatter('%(asctime)s [%(threadName)-12.12s] %(message)s')
 bionet_logger = logging.getLogger()
 bionet_logger.setLevel(logging.DEBUG)
 

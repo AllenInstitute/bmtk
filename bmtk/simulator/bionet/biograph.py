@@ -334,8 +334,10 @@ class BioGraph(SimGraph):
     def virtual_populations(self):
         return self._virtual_populations
 
+    '''
     def external_edge_populations(self, src_pop, trg_pop):
         return self._external_edges.get((src_pop, trg_pop), [])
+    '''
 
     def get_virt_cell(self, population, node_id, spike_train):
         pop_lkup = self._virtual_cells_nid[population]

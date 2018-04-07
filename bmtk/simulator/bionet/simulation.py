@@ -296,6 +296,13 @@ class Simulation(object):
                   celsius=config.celsius,
                   nsteps_block=config.block_step)
 
+        network.io.log_info('Building cells.')
+        network.build_nodes()
+
+        network.io.log_info('Building recurrent connections')
+        network.build_recurrent_edges()
+
+
         # TODO: Need to create a gid selector
         for sim_input in inputs.from_config(config):
             if sim_input.input_type == 'spikes':

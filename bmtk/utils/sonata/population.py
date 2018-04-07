@@ -71,7 +71,7 @@ class Population(object):
 
     @property
     def type_ids(self):
-        return np.unique(self._type_id_ds)
+        return np.array(self._type_id_ds)
 
     @property
     def group_id_ds(self):
