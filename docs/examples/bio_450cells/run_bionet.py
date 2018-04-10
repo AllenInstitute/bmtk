@@ -3,11 +3,12 @@
 
 import sys, os
 import bmtk.simulator.bionet.config as config
-from bmtk.simulator.bionet import io, nrn
+from bmtk.simulator.bionet.io_tools import io
+from bmtk.simulator.bionet import nrn
+#from bmtk.simulator.bionet import io, nrn
 from bmtk.simulator.bionet.simulation import Simulation
 from bmtk.analyzer.spikes_analyzer import spike_files_equal
 from bmtk.simulator.bionet.biograph import BioGraph
-from bmtk.simulator.bionet.bionetwork import BioNetwork
 from bmtk.simulator.bionet import Config
 
 from bmtk.utils.io import TabularNetwork_AI

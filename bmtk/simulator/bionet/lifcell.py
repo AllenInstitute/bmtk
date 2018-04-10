@@ -21,7 +21,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 from bmtk.simulator.bionet.cell import Cell
-from bmtk.simulator.bionet import io,nrn
+# from bmtk.simulator.bionet import io,nrn
 
 from neuron import h
 

@@ -26,147 +26,7 @@ import re
 import copy
 import datetime
 
-
-class SonataConfig(dict):
-    def __init__(self, *args, **kwargs):
-        super(SonataConfig, self).__init__(*args, **kwargs)
-        self._env_built = False
-
-    @property
-    def run(self):
-        return self['run']
-
-    @property
-    def tstart(self):
-        return self.run.get('tstart', 0.0)
-
-    @property
-    def tstop(self):
-        return self.run['tstop']
-
-    @property
-    def dt(self):
-        return self.run.get('dt', 0.1)
-
-    @property
-    def block_step(self):
-        return self.run.get('nsteps_block', 5000)
-
-    @property
-    def conditions(self):
-        return self['conditions']
-
-    @property
-    def celsius(self):
-        return self.conditions['celsius']
-
-    @property
-    def v_init(self):
-        return self.conditions['v_init']
-
-    @property
-    def path(self):
-        return self['config_path']
-
-    @property
-    def output(self):
-        return self['output']
-
-    @property
-    def output_dir(self):
-        return self.output['output_dir']
-
-    @property
-    def overwrite_output(self):
-        return self.output['overwrite_output_dir']
-
-    @property
-    def log_file(self):
-        return self.output['log_file']
-
-    @property
-    def components(self):
-        return self.get('components', {})
-
-    @property
-    def morphologies_dir(self):
-        return self.components['morphologies_dir']
-
-    @property
-    def synaptic_models_dir(self):
-        return self.components['synaptic_models_dir']
-
-    @property
-    def point_neuron_models_dir(self):
-        return self.components['point_neuron_models_dir']
-
-    @property
-    def mechanisms_dir(self):
-        return self.components['mechanisms_dir']
-
-    @property
-    def biophysical_neuron_models_dir(self):
-        return self.components['biophysical_neuron_models_dir']
-
-    @property
-    def templates_dir(self):
-        return self.components.get('templates_dir', None)
-
-    @property
-    def with_networks(self):
-        return 'networks' in self and len(self.nodes) > 0
-
-    @property
-    def networks(self):
-        return self['networks']
-
-    @property
-    def nodes(self):
-        return self.networks.get('nodes', [])
-
-    @property
-    def edges(self):
-        return self.networks.get('edges', [])
-
-    def copy_to_output(self):
-        copy_config(self)
-
-    @staticmethod
-    def get_validator():
-        raise NotImplementedError
-
-    @classmethod
-    def from_json(cls, config_file, validate=False):
-        validator = cls.get_validator() if validate else None
-        return cls(from_json(config_file, validator))
-
-    @classmethod
-    def from_dict(cls, config_dict, validate=False):
-        validator = cls.get_validator() if validate else None
-        return cls(from_dict(config_dict, validator))
-
-    @classmethod
-    def from_yaml(cls, config_file, validate=False):
-        raise NotImplementedError
-
-    @property
-    def reports(self):
-        return self.get('reports', {})
-
-    @property
-    def inputs(self):
-        return self.get('inputs', {})
-
-    def get_modules(self, module_name):
-        return [report for report in self.reports.values() if report['module'] == module_name]
-
-    def build_env(self):
-        if self._env_built:
-            return
-
-        self.create_output_dir()
-        self.copy_to_output()
-        self._env_built = True
+from bmtk.simulator.core.io_tools import io
 
 
 def from_json(config_file, validator=None):
@@ -199,7 +59,7 @@ def from_dict(config_dict, validator=None):
     :return: A dictionary, verified against json validator and with manifest variables resolved.
     """
     assert(isinstance(config_dict, dict))
-    conf = copy.deepcopy(config_dict) # Since the functions will mutate the dictionary we will copy just-in-case.
+    conf = copy.deepcopy(config_dict)  # Since the functions will mutate the dictionary we will copy just-in-case.
 
     if 'config_path' not in conf:
         conf['config_path'] = os.path.abspath(__file__)
@@ -221,7 +81,7 @@ def from_dict(config_dict, validator=None):
 
             # Build individual json file and merge into parent.
             child_json = from_json(conf_path)
-            del child_json['config_path'] # we don't want 'config_path' of parent being overwritten.
+            del child_json['config_path']  # we don't want 'config_path' of parent being overwritten.
             conf.update(child_json)
 
     # Run the validator
@@ -236,11 +96,14 @@ def copy_config(conf):
 
     :param conf: configuration dictionary
     """
-    output_dir = conf["output"]["output_dir"]
+    output_dir = conf.output_dir
     config_name = os.path.basename(conf['config_path'])
     output_path = os.path.join(output_dir, config_name)
     with open(output_path, 'w') as fp:
-        json.dump(conf, fp, indent=2)
+        out_cfg = conf.copy()
+        if 'manifest' in out_cfg:
+            del out_cfg['manifest']
+        json.dump(out_cfg, fp, indent=2)
 
 
 def __special_variables(conf):
@@ -339,3 +202,174 @@ def __find_variables(json_str, manifest):
             json_str = json_str.replace(var.group(), manifest[var_lookup])
 
     return json_str
+
+
+class ConfigDict(dict):
+    def __init__(self, *args, **kwargs):
+        self.update(*args, **kwargs)
+        self._env_built = False
+        self._io = None
+
+    @property
+    def io(self):
+        if self._io is None:
+            self._io = io
+        return self._io
+
+    @io.setter
+    def io(self, io):
+        self._io = io
+
+    @property
+    def run(self):
+        return self['run']
+
+    @property
+    def tstart(self):
+        return self.run.get('tstart', 0.0)
+
+    @property
+    def tstop(self):
+        return self.run['tstop']
+
+    @property
+    def dt(self):
+        return self.run.get('dt', 0.1)
+
+    @property
+    def block_step(self):
+        return self.run.get('nsteps_block', 5000)
+
+    @property
+    def conditions(self):
+        return self['conditions']
+
+    @property
+    def celsius(self):
+        return self.conditions['celsius']
+
+    @property
+    def v_init(self):
+        return self.conditions['v_init']
+
+    @property
+    def path(self):
+        return self['config_path']
+
+    @property
+    def output(self):
+        return self['output']
+
+    @property
+    def output_dir(self):
+        return self.output['output_dir']
+
+    @property
+    def overwrite_output(self):
+        return self.output.get('overwrite_output_dir', False)
+
+    @property
+    def log_file(self):
+        return self.output['log_file']
+
+    @property
+    def components(self):
+        return self.get('components', {})
+
+    @property
+    def morphologies_dir(self):
+        return self.components['morphologies_dir']
+
+    @property
+    def synaptic_models_dir(self):
+        return self.components['synaptic_models_dir']
+
+    @property
+    def point_neuron_models_dir(self):
+        return self.components['point_neuron_models_dir']
+
+    @property
+    def mechanisms_dir(self):
+        return self.components['mechanisms_dir']
+
+    @property
+    def biophysical_neuron_models_dir(self):
+        return self.components['biophysical_neuron_models_dir']
+
+    @property
+    def templates_dir(self):
+        return self.components.get('templates_dir', None)
+
+    @property
+    def with_networks(self):
+        return 'networks' in self and len(self.nodes) > 0
+
+    @property
+    def networks(self):
+        return self['networks']
+
+    @property
+    def nodes(self):
+        return self.networks.get('nodes', [])
+
+    @property
+    def edges(self):
+        return self.networks.get('edges', [])
+
+    @property
+    def reports(self):
+        return self.get('reports', {})
+
+    @property
+    def inputs(self):
+        return self.get('inputs', {})
+
+    def copy_to_output(self):
+        copy_config(self)
+
+    def get_modules(self, module_name):
+        return [report for report in self.reports.values() if report['module'] == module_name]
+
+    def _set_logging(self):
+        """Check if log-level and/or log-format string is being changed through the config"""
+        output_sec = self.output
+        if 'log_format' in output_sec:
+            self._io.set_log_format(output_sec['log_format'])
+
+        if 'log_level' in output_sec:
+            self._io.set_log_level(output_sec['log_level'])
+
+        if 'log_to_console' in output_sec:
+            self._io.log_to_console = output_sec['log_to_console']
+
+        if 'quiet_simulator' in output_sec and output_sec['quiet_simulator']:
+            self._io.quiet_simulator()
+
+    def build_env(self):
+        if self._env_built:
+            return
+
+        self._set_logging()
+        self._io.setup_output_dir(self.output_dir, self.log_file, self.overwrite_output)
+        self.copy_to_output()
+        self._env_built = True
+
+    @staticmethod
+    def get_validator():
+        raise NotImplementedError
+
+    @classmethod
+    def from_json(cls, config_file, validate=False):
+        validator = cls.get_validator() if validate else None
+        return cls(from_json(config_file, validator))
+
+    @classmethod
+    def from_dict(cls, config_dict, validate=False):
+        validator = cls.get_validator() if validate else None
+        return cls(from_dict(config_dict, validator))
+
+    @classmethod
+    def from_yaml(cls, config_file, validate=False):
+        raise NotImplementedError
+
+

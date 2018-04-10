@@ -3,7 +3,8 @@
 
 import sys, os
 
-from bmtk.simulator.bionet import io, nrn, Config
+from bmtk.simulator.bionet import nrn, Config
+#from bmtk.simulator.bionet import io, nrn, Config
 from bmtk.simulator.bionet.simulation import Simulation
 from bmtk.simulator.bionet.biograph import BioGraph
 

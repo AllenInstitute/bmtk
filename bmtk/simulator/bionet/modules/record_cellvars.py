@@ -25,7 +25,7 @@ import h5py
 from neuron import h
 
 from bmtk.simulator.bionet.modules.sim_module import SimulatorMod
-from bmtk.simulator.bionet import io
+from bmtk.simulator.bionet.io_tools import io
 
 from bmtk.utils.io import cell_vars
 try:

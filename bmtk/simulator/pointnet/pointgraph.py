@@ -23,16 +23,17 @@
 import os
 import json
 import functools
-
 from collections import Counter
 
 import numpy as np
+import nest
+
 
 from bmtk.simulator.utils.graph import SimGraph, SimEdge, SimNode
 from property_schemas import CellTypes, DefaultPropertySchema
-from . import io
+#from bmtk.simulator.pointnet.io import NestIOUtils
+from bmtk.simulator.pointnet.io_tools import io
 
-import nest
 
 
 class PointEdge(SimEdge):
@@ -194,6 +195,8 @@ class PointGraph(SimGraph):
     _nest_id_map = {}
     _nestid2nodeid_map = {}
 
+    _nestid2gid = {}
+
 
     def build_nodes(self):
         for node_pop in self._internal_populations_map.values():
@@ -203,13 +206,18 @@ class PointGraph(SimGraph):
 
             node_ids = node_pop.node_ids
             node_type_ids = node_pop.type_ids
+            node_gids = node_pop.gids
+            if node_gids is None:
+                node_gids = node_ids
 
             ntids_counter = Counter(node_type_ids)
             node_groups = {nt_id: np.zeros(ntids_counter[nt_id], dtype=np.uint32) for nt_id in ntids_counter}
+            gid_groups = {nt_id: np.zeros(ntids_counter[nt_id], dtype=np.uint32) for nt_id in ntids_counter}
             node_groups_counter = {nt_id: 0 for nt_id in ntids_counter}
-            for node_id, node_type_id in zip(node_ids, node_type_ids):
+            for node_id, gid, node_type_id in zip(node_ids, node_gids, node_type_ids):
                 grp_indx = node_groups_counter[node_type_id]
                 node_groups[node_type_id][grp_indx] = node_id
+                gid_groups[node_type_id][grp_indx] = gid
                 node_groups_counter[node_type_id] += 1
 
             node_types_table = node_pop.types_table
@@ -220,9 +228,10 @@ class PointGraph(SimGraph):
 
                 # TODO: Save a list of all internal nest_id objects so it can be accessed for setting recordings, etc.
                 nest_ids = nest.Create(nest_model, n_nodes, params)
-                for node_id, nest_id in zip(node_groups[nt_id], nest_ids):
+                for node_id, gid, nest_id in zip(node_groups[nt_id], gid_groups[nt_id], nest_ids):
                     id_map[node_id] = nest_id
                     nest_id_map[nest_id] = node_id
+                    self._nestid2gid[nest_id] = gid
 
             self._nest_id_map[node_pop.name] = id_map
             self._nestid2nodeid_map[node_pop.name] = nest_id_map

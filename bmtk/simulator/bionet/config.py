@@ -26,10 +26,11 @@ import json
 from neuron import h
 
 #import bmtk.simulator.utils.config as msdk_config
-from bmtk.utils.sonata.config import SonataConfig
+#from bmtk.utils.sonata.config import SonataConfig
+from bmtk.simulator.core.config import ConfigDict
 from bmtk.simulator.utils.sim_validator import SimConfigValidator
 
-from . import io
+from bmtk.simulator.bionet.io_tools import io
 from . import nrn
 
 pc = h.ParallelContext()    # object to access MPI methods
@@ -55,36 +56,7 @@ with open(config_schema_file, 'r') as f:
 bionet_validator = SimConfigValidator(config_schema, file_formats=file_formats)
 
 
-'''
-def from_json(config_file, validate=True):
-    """Converts a config file into a dictionary. Will resolve manifest variables, validate schema and input files, as
-    well as other behind-the-scenes actions required by bionet.
-
-    :param config_file: json file object or path to json configuration file
-    :param validate: will validate the config file against schemas/config_schema.json (Default True)
-    :return: config json file in dictionary format
-    """
-    validator = bionet_validator if validate else None
-    return msdk_config.from_json(config_file, validator)
-
-
-def from_dict(config_dict, validate=True):
-    """Same as from_json, but allows for direct input of dictionary object (use from_json when possible).
-
-    :param config_dict:
-    :param validate:
-    :return:
-    """
-    validator = bionet_validator if validate else None
-    return msdk_config.from_dict(config_dict, validator)
-
-
-def copy(config_file):
-    return msdk_config.copy_config(config_file)
-'''
-
-
-class Config(SonataConfig):
+class Config(ConfigDict):
     @staticmethod
     def get_validator():
         return bionet_validator

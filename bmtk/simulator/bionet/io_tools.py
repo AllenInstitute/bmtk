@@ -36,7 +36,9 @@ from neuron import h
 
 #import bmtk.simulator.bionet.config as config
 from bmtk.simulator.bionet import nrn
+from bmtk.simulator.core.io_tools import IOUtils
 
+'''
 log_format = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
 bionet_logger = logging.getLogger()
 bionet_logger.setLevel(logging.DEBUG)
@@ -44,11 +46,22 @@ bionet_logger.setLevel(logging.DEBUG)
 console_handler = logging.StreamHandler(sys.stdout)
 console_handler.setFormatter(log_format)
 bionet_logger.addHandler(console_handler)
+'''
 
 pc = h.ParallelContext()
 MPI_Rank = int(pc.id())
+MPI_Size = int(pc.nhost())
 
 
+class NEURONIOUtils(IOUtils):
+    def __init__(self):
+        super(NEURONIOUtils, self).__init__()
+        self.mpi_rank = MPI_Rank
+        self.mpi_size = MPI_Size
+
+io = NEURONIOUtils()
+
+'''
 def load_json(fullpath):
     """Tries to load a json file
 
@@ -133,13 +146,8 @@ def extend_output_files(gids):
 
 
 def create_output_files(simulator, gids):
-    '''
-    if simulator.calculate_ecp:  # creat single file for ecp from all contributing cells
-        print2log0('    Will save time series of the ECP!')
-        create_ecp_file(simulator)
-    '''
-
-    if simulator.cell_variables: # conf["run"]["save_cell_vars"]:
+    if simulator.cell_variables: # conf["run"]["save_ce
+    ll_vars"]:
         print2log0('    Will save time series of individual cells')
         create_cell_vars_files(simulator, gids)
                 
@@ -199,11 +207,6 @@ def setup_output_dir(config_dir, log_file, overwrite=True):
 
     pc.barrier()
 
-'''
-def save_config(config, output_dir):
-    config.copy()
-'''
-
 
 def log_info(message, all_ranks=False):
     if all_ranks is False and MPI_Rank != 0:
@@ -229,6 +232,7 @@ def log_exception(message):
     pc.done()
     raise Exception(message)
     # nrn.quit_execution()
+'''
 
 
 '''
@@ -265,6 +269,7 @@ def setup_output_dir(conf):
     print2log0('Config file: %s' % conf["config_path"])
 '''
 
+'''
 def save_state(conf):
     state = h.SaveState()
     state.save()
@@ -291,3 +296,4 @@ def read_state(conf):
     for r_tmp in rlist:
         r_tmp.seq(f.scanvar())
     f.close()
+'''
