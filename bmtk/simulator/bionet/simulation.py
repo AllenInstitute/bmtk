@@ -22,7 +22,7 @@
 #
 import time
 from neuron import h
-from bmtk.simulator.bionet import io
+from bmtk.simulator.bionet.io_tools import io
 from bmtk.simulator.bionet.iclamp import IClamp
 from bmtk.simulator.bionet import modules as mods
 

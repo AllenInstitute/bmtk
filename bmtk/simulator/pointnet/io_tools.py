@@ -24,20 +24,14 @@
 Functions for logging, writing and reading from file.
 
 """
-import os
-import sys
-import shutil
-import glob
-import csv
-import pandas as pd
-import logging
-
-# For older versions of NEST we must call nest before calling mpi4py, otherwise nest.NumProcesses() gets set to 1.
 import nest
 
+from bmtk.simulator.core.io_tools import IOUtils
+
+# Want users to be able to use NEST whether or not it is compiled in parallel mode or not, which means checking if
+# the method nest.SyncPRocesses (aka MPI Barrier) exists. If it doesn't try getting barrier from mpi4py
 rank = nest.Rank()
 n_nodes = nest.NumProcesses()
-barrier = lambda: None
 try:
     barrier = nest.SyncProcesses
 except AttributeError as exc:
@@ -45,20 +39,27 @@ except AttributeError as exc:
         from mpi4py import MPI
         barrier = MPI.COMM_WORLD.Barrier
     except:
+        # Barrier is just an empty function, no problem if running on one core.
         barrier = lambda: None
 
-'''
-try:
-    from mpi4py import MPI
-    comm = MPI.COMM_WORLD
-    rank = comm.Get_rank()
-    n_nodes = comm.Get_size()
-except:
-    rank = 0
-    n_nodes = 1
-'''
+
+class NestIOUtils(IOUtils):
+    def __init__(self):
+        super(NestIOUtils, self).__init__()
+        self.mpi_rank = rank
+        self.mpi_size = n_nodes
+
+    def barrier(self):
+        barrier()
+
+    def quiet_simulator(self):
+        nest.set_verbosity('M_QUIET')
 
 
+io = NestIOUtils()
+
+
+'''
 log_format = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
 pointnet_logger = logging.getLogger()
 pointnet_logger.setLevel(logging.DEBUG)
@@ -111,38 +112,6 @@ def setup_output_dir(config):
         except Exception as exc:
             print(exc)
 
-
     barrier()
+'''
 
-
-def quiet_nest():
-    nest.set_verbosity('M_QUIET')
-
-
-def log(message, all_ranks=False):
-    if all_ranks is False and rank != 0:
-        return
-
-    pointnet_logger.info(message)
-
-
-def log_info(message, all_ranks=False):
-    if all_ranks is False and rank != 0:
-        return
-
-    pointnet_logger.info(message)
-
-
-def log_warning(message, all_ranks=False):
-    if all_ranks is False and rank != 0:
-        return
-
-    pointnet_logger.warning(message)
-
-
-def log_exception(message):
-    if rank == 0:
-        pointnet_logger.error(message)
-
-    barrier()
-    raise Exception(message)

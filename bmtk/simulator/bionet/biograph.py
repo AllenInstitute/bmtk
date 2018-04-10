@@ -32,12 +32,13 @@ from neuron import h
 from bmtk.simulator.utils.graph import SimGraph, SimEdge, SimNode
 import bmtk.simulator.bionet.config as cfg
 # from bmtk.simulator.bionet.property_schemas import DefaultPropertySchema, CellTypes
-from . import io
+#from . import io
 from property_map import NodePropertyMap, EdgePropertyMap
 from bmtk.simulator.bionet.biocell import BioCell
 from bmtk.simulator.bionet.lifcell import LIFCell
 from bmtk.simulator.bionet.stim import Stim
 from bmtk.simulator.bionet.morphology import Morphology
+from bmtk.simulator.bionet.io_tools import io
 
 # TODO: leave this import, it will initialize some of the default functions for building neurons/synapses/weights.
 import bmtk.simulator.bionet.default_setters

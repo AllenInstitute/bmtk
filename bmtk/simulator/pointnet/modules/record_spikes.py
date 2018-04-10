@@ -21,69 +21,64 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import os
-import csv
-import h5py
-import numpy as np
-from bmtk.simulator.bionet.modules.sim_module import SimulatorMod
+import glob
 from bmtk.utils.io.spike_trains import SpikeTrainWriter
+from bmtk.simulator.pointnet.io_tools import io
 
-from neuron import h
-
-
-pc = h.ParallelContext()
-MPI_RANK = int(pc.id())
-N_HOSTS = int(pc.nhost())
+import nest
 
 
-class SpikesMod(SimulatorMod):
+MPI_RANK = nest.Rank()
+N_HOSTS = nest.NumProcesses()
+
+
+class SpikesMod(object):
     """Module use for saving spikes
 
     """
 
     def __init__(self, tmp_dir, spikes_file_csv=None, spikes_file=None, spikes_file_nwb=None, spikes_sort_order=None):
-        # TODO: Have option to turn off caching spikes to csv.
         self._csv_fname = spikes_file_csv
-        self._save_csv = spikes_file_csv is not None
-
         self._h5_fname = spikes_file
-        self._save_h5 = spikes_file is not None
-
         self._nwb_fname = spikes_file_nwb
-        self._save_nwb = spikes_file_nwb is not None
 
-        self._tmpdir = tmp_dir
-        self._sort_order = spikes_sort_order
+        self._tmp_dir = tmp_dir
+        self._tmp_file_base = 'tmp_spike_times'
+        self._spike_labels = os.path.join(self._tmp_dir, self._tmp_file_base)
 
         self._spike_writer = SpikeTrainWriter(tmp_dir=tmp_dir, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)
+        self._spike_writer.delimiter = '\t'
+        self._spike_writer.gid_col = 0
+        self._spike_writer.time_col = 1
+        self._sort_order = spikes_sort_order
+
+        self._spike_detector = None
 
     def initialize(self, sim):
-        # TODO: since it's possible that other modules may need to access spikes, set_spikes_recordings() should
-        # probably be called in the simulator itself.
-        sim.set_spikes_recording()
+        self._spike_detector = nest.Create("spike_detector", 1, {'label': self._spike_labels, 'withtime': True,
+                                                                 'withgid': True, 'to_file': True})
 
-    def block(self, sim, block_interval):
-        # take spikes from Simulator spikes vector and save to the tmp file
-        for gid, tVec in sim.spikes_table.items():
-            for t in tVec:
-                self._spike_writer.add_spike(time=t, gid=gid)
-
-        pc.barrier()  # wait until all ranks have been saved
-        sim.set_spikes_recording()  # reset recording vector
+        for pop_name, pop in sim._graph._nestid2nodeid_map.items():
+            nest.Connect(pop.keys(), self._spike_detector)
 
     def finalize(self, sim):
-        self._spike_writer.flush()
-        pc.barrier()
+        if MPI_RANK == 0:
+            for gdf_file in glob.glob(self._spike_labels + '*.gdf'):
+                self._spike_writer.add_spikes_file(gdf_file)
+        io.barrier()
 
-        if self._save_csv:
-            self._spike_writer.to_csv(self._csv_fname, sort_order=self._sort_order)
-            pc.barrier()
+        gid_map = sim._graph._nestid2gid
 
-        if self._save_h5:
-            self._spike_writer.to_hdf5(self._h5_fname, sort_order=self._sort_order)
-            pc.barrier()
+        if self._csv_fname is not None:
+            self._spike_writer.to_csv(self._csv_fname, sort_order=self._sort_order, gid_map=gid_map)
+            io.barrier()
 
-        if self._save_nwb:
-            self._spike_writer.to_nwb(self._nwb_fname, sort_order=self._sort_order)
-            pc.barrier()
+        if self._h5_fname is not None:
+            self._spike_writer.to_hdf5(self._h5_fname, sort_order=self._sort_order, gid_map=gid_map)
+            io.barrier()
+
+        if self._nwb_fname is not None:
+            self._spike_writer.to_nwb(self._nwb_fname, sort_order=self._sort_order, gid_map=gid_map)
+            io.barrier()
 
         self._spike_writer.close()

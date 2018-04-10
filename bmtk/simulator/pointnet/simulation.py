@@ -2,11 +2,12 @@ import os
 import glob
 
 import bmtk.simulator.pointnet.config as cfg
-from . import io
+from bmtk.simulator.pointnet.io_tools import io
 import bmtk.simulator.utils.simulation_reports as reports
 
 import bmtk.simulator.utils.simulation_inputs as inputs
 from bmtk.utils.io import spike_trains
+import modules as mods
 
 import nest
 
@@ -34,6 +35,8 @@ class Simulation(object):
         self._spike_trains_ds = {}  # used to temporary store NWB datasets containing spike trains
 
         self._spike_detector = None
+
+        self._mods = []
 
         # Reset the NEST kernel for a new simualtion
         # TODO: move this into it's own function and make sure it is called before network is built
@@ -70,10 +73,13 @@ class Simulation(object):
         # exit()
 
     def run(self, duration=None):
-        print len(nest.GetConnections())
-
         if duration is None:
             duration = self.duration
+
+        for mod in self._mods:
+            mod.initialize(self)
+
+        io.barrier()
 
         n, res, data_res = self._get_block_trial(duration)
         if n > 0:
@@ -84,10 +90,18 @@ class Simulation(object):
         if n < 0:
             nest.Simulate(duration)
 
+        io.barrier()
+        for mod in self._mods:
+            mod.finalize(self)
+        io.barrier()
+
         #if n_nodes > 1:
         #    comm.Barrier()
 
         # io.collect_gdf_files(self.output_dir, self._spikes_file, self._nest_id_map, self._overwrite)
+
+    def add_mod(self, mod):
+        self._mods.append(mod)
 
     @classmethod
     def from_config(cls, configure, graph):
@@ -113,7 +127,7 @@ class Simulation(object):
         if 'output_dir' in config['output']:
             network.output_dir = config['output']['output_dir']
 
-        network.spikes_file = config['output']['spikes_ascii']
+        # network.spikes_file = config['output']['spikes_ascii']
 
         if 'block_run' in run_dict and run_dict['block_run']:
             if 'block_size' not in run_dict:
@@ -124,7 +138,7 @@ class Simulation(object):
             network.duration = run_dict['duration']
 
         # Create the output-directory, or delete existing files if it already exists
-        io.log('Setting up output directory')
+        graph.io.log_info('Setting up output directory')
         if not os.path.exists(config['output']['output_dir']):
             os.mkdir(config['output']['output_dir'])
         elif overwrite:
@@ -147,9 +161,12 @@ class Simulation(object):
         sim_reports = reports.from_config(config)
         for report in sim_reports:
             if report.module == 'spikes_report':
-                network.set_spikes_recordings()
+                mod = mods.SpikesMod(**report.params)
+                #print report.params
+                #exit()
+                # network.set_spikes_recordings()
 
-
+            network.add_mod(mod)
 
         # exit()
 
@@ -186,5 +203,5 @@ class Simulation(object):
             network.make_stims()
         '''
 
-        io.log('Network created.')
+        io.log_info('Network created.')
         return network

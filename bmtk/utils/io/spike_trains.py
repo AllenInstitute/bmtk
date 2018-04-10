@@ -30,6 +30,11 @@ class SpikeTrainWriter(object):
         self._tmp_spikes_handles = []  # used when sorting mulitple file
         self._spike_count = -1
 
+        # Nest gid files uses tab seperators and a different order for tmp spike files.
+        self.delimiter = ' '  # delimiter for temporary file
+        self.time_col = 0
+        self.gid_col = 1
+
     def _get_tmp_filename(self, rank):
         return os.path.join(self._tmp_dir, '_bmtk_tmp_spikes_{}.csv'.format(rank))
 
@@ -41,7 +46,7 @@ class SpikeTrainWriter(object):
             self._spike_count = 0
             for tmp_file in self._all_tmp_files:
                 with open(tmp_file.file_name, 'r') as csvfile:
-                    csv_reader = csv.reader(csvfile, delimiter=' ')
+                    csv_reader = csv.reader(csvfile, delimiter=self.delimiter)
                     self._spike_count += sum(1 for _ in csv_reader)
 
     def _sort_tmp_file(self, filedata, sort_order):
@@ -63,13 +68,16 @@ class SpikeTrainWriter(object):
             return None
 
     def add_spike(self, time, gid):
-        self._tmp_file_handle.write('{:.3f} {}\n'.format(time, gid))
+        self._tmp_file_handle.write('{:.6f} {}\n'.format(time, gid))
+
+    def add_spikes_file(self, file, sort_order=None):
+        self._all_tmp_files.append(self.TmpFileMetadata(file, sort_order))
 
     def _sort_files(self, sort_order, sort_column, file_write_fnc):
         self._tmp_spikes_handles = []
         for fdata in self._all_tmp_files:
             self._sort_tmp_file(fdata, sort_order)
-            self._tmp_spikes_handles.append(csv.reader(open(fdata.file_name, 'r'), delimiter=' '))
+            self._tmp_spikes_handles.append(csv.reader(open(fdata.file_name, 'r'), delimiter=self.delimiter))
 
         spikes = []
         for rank in range(self._mpi_size):
@@ -102,19 +110,22 @@ class SpikeTrainWriter(object):
     def _merge_files(self, file_write_fnc):
         indx = 0
         for fdata in self._all_tmp_files:
+            if not os.path.exists(fdata.file_name):
+                continue
+
             with open(fdata.file_name, 'r') as csv_file:
-                csv_reader = csv.reader(csv_file, delimiter=' ')
+                csv_reader = csv.reader(csv_file, delimiter=self.delimiter)
                 for row in csv_reader:
-                    file_write_fnc(float(row[0]), int(row[1]), indx)
+                    file_write_fnc(float(row[self.time_col]), int(row[self.gid_col]), indx)
                     indx += 1
 
     def _to_file(self, file_name, sort_order, file_write_fnc):
         if sort_order is None:
             sort_column = 0
         elif sort_order == 'time':
-            sort_column = 0
+            sort_column = self.time_col
         elif sort_order == 'gid':
-            sort_column = 1
+            sort_column = self.gid_col
         else:
             raise Exception('Unknown sort order {}'.format(sort_order))
 
@@ -126,13 +137,23 @@ class SpikeTrainWriter(object):
             else:
                 self._merge_files(file_write_fnc)
 
-    def to_csv(self, csv_file, sort_order=None):
+    def to_csv(self, csv_file, sort_order=None, gid_map=None):
+        # TODO: Need to call flush and then barrier
         if self._mpi_rank == 0:
             # For the single rank case don't just copy the tmp-csv to the new name. It will fail if user calls to_hdf5
             # or to_nwb after calling to_csv.
+            self._count_spikes()
             csv_handle = open(csv_file, 'w')
             csv_writer = csv.writer(csv_handle, delimiter=' ')
-            file_write_fnc = lambda time, gid, indx: csv_writer.writerow([time, gid])
+
+            def file_write_fnc_identity(time, gid, indx):
+                csv_writer.writerow([time, gid])
+
+            def file_write_fnc_transform(time, gid, indx):
+                # For the case when NEURON/NEST ids don't match with the user's gid table
+                csv_writer.writerow([time, gid_map[gid]])
+
+            file_write_fnc = file_write_fnc_identity if gid_map is None else file_write_fnc_transform
             self._to_file(csv_file, sort_order, file_write_fnc)
             csv_handle.close()
 
@@ -141,7 +162,7 @@ class SpikeTrainWriter(object):
     def to_nwb(self, nwb_file):
         raise NotImplementedError
 
-    def to_hdf5(self, hdf5_file, sort_order=None):
+    def to_hdf5(self, hdf5_file, sort_order=None, gid_map=None):
         if self._mpi_rank == 0:
             with h5py.File(hdf5_file, 'w') as h5:
                 self._count_spikes()
@@ -150,17 +171,31 @@ class SpikeTrainWriter(object):
                 time_ds = spikes_grp.create_dataset('timestamps', shape=(self._spike_count,), dtype=np.float)
                 gid_ds = spikes_grp.create_dataset('gids', shape=(self._spike_count+1,), dtype=np.uint64)
 
-                def file_write_fnc(time, gid, indx):
+                def file_write_fnc_identity(time, gid, indx):
                     time_ds[indx] = time
                     gid_ds[indx] = gid
+
+                def file_write_fnc_transform(time, gid, indx):
+                    time_ds[indx] = time
+                    gid_ds[indx] = gid_map[gid]
+
+                file_write_fnc = file_write_fnc_identity if gid_map is None else file_write_fnc_transform
                 self._to_file(hdf5_file, sort_order, file_write_fnc)
 
         # TODO: Need to make sure a barrier is used here (before close is called)
 
+    def flush(self):
+        self._tmp_file_handle.flush()
+
     def close(self):
-        fname = self._all_tmp_files[self._mpi_rank].file_name
-        if os.path.exists(fname):
-            os.remove(fname)
+        #fname = self._all_tmp_files[self._mpi_rank].file_name
+        #if os.path.exists(fname):
+        #    os.remove(fname)
+
+        if self._mpi_rank == 0:
+            for tmp_file in self._all_tmp_files:
+                if os.path.exists(tmp_file.file_name):
+                    os.remove(tmp_file.file_name)
 
 
 class SpikesInput(object):
