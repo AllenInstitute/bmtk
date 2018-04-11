@@ -71,6 +71,10 @@ class Edge(object):
         return self._group_id
 
     @property
+    def edge_type_id(self):
+        return self._edge_type_props['edge_type_id']
+
+    @property
     def dynamics_params(self):
         raise NotImplementedError
 

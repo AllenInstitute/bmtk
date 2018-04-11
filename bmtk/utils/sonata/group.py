@@ -77,6 +77,10 @@ class Group(object):
         return self._group_columns
 
     @property
+    def group_columns(self):
+        return self._group_columns
+
+    @property
     def all_columns(self):
         return self._all_columns
 
