@@ -237,6 +237,18 @@ class ConfigDict(dict):
         return self.run.get('dt', 0.1)
 
     @property
+    def spike_threshold(self):
+        return self.run.get('spike_threshold', -15.0)
+
+    @property
+    def dL(self):
+        return self.run.get('dL', 20.0)
+
+    @property
+    def gid_mappings(self):
+        return self.get('gid_mapping_file', None)
+
+    @property
     def block_step(self):
         return self.run.get('nsteps_block', 5000)
 
@@ -370,6 +382,11 @@ class ConfigDict(dict):
 
     @classmethod
     def from_yaml(cls, config_file, validate=False):
+        raise NotImplementedError
+
+    @classmethod
+    def load(cls, config_file, validate=False):
+        # TODO: Implement factory method that can resolve the format/type of input configuration.
         raise NotImplementedError
 
 
