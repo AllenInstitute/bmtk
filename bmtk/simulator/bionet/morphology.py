@@ -71,7 +71,8 @@ class Morphology(object):
         
         p0 = np.zeros((3, self.nseg))  # hold the coordinates of segment starting points
         p1 = np.zeros((3, self.nseg))  # hold the coordinates of segment end points
-        d0 = np.zeros(self.nseg) 
+        p05 = np.zeros((3, self.nseg))
+        d0 = np.zeros(self.nseg)
         d1 = np.zeros(self.nseg) 
 
         for sec in self.hobj.all:
@@ -91,11 +92,13 @@ class Morphology(object):
             nseg = sec.nseg
             
             l0 = np.zeros(nseg)     # keep range of segment starting point 
-            l1 = np.zeros(nseg)     # keep range of segment ending point 
+            l1 = np.zeros(nseg)     # keep range of segment ending point
+            l05 = np.zeros(nseg)
             
             for iseg, seg in enumerate(sec):
                 l0[iseg] = seg.x - 0.5*1/nseg   # x (normalized distance along the section) for the beginning of the segment
                 l1[iseg] = seg.x + 0.5*1/nseg   # x for the end of the segment
+                l05[iseg] = seg.x
 
             p0[0, ix:ix+nseg] = np.interp(l0, l3d, p3d[0, :])
             p0[1, ix:ix+nseg] = np.interp(l0, l3d, p3d[1, :])
@@ -106,12 +109,18 @@ class Morphology(object):
             p1[1, ix:ix+nseg] = np.interp(l1, l3d, p3d[1, :])
             p1[2, ix:ix+nseg] = np.interp(l1, l3d, p3d[2, :])
             d1[ix:ix+nseg] = np.interp(l1, l3d, diam3d[:])
+
+            p05[0,ix:ix+nseg] = np.interp(l05, l3d, p3d[0,:])
+            p05[1,ix:ix+nseg] = np.interp(l05, l3d, p3d[1,:])
+            p05[2,ix:ix+nseg] = np.interp(l05, l3d, p3d[2,:])
+
             ix += nseg
 
         self.seg_coords = {}
 
         self.seg_coords['p0'] = p0
         self.seg_coords['p1'] = p1
+        self.seg_coords['p05'] = p05
 
         self.seg_coords['d0'] = d0
         self.seg_coords['d1'] = d1

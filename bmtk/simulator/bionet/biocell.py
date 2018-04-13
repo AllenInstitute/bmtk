@@ -55,20 +55,14 @@ class BioCell(Cell):
         self._syn_seg_ix = []
         self._syn_sec_x = []
         self._edge_type_id = []
+        self._segments = None
 
         # potentially used by ecp module
         self.im_ptr = None
-        self.im_Vec = None
+        self.imVec = None
 
-        self._segments = None
-
-
-        '''
-        if bionetwork.calc_ecp:
-            self.im_ptr = h.PtrVector(self._nseg)  # pointer vector
-            self.im_ptr.ptr_update_callback(self.set_im_ptr)   # used for gathering an array of  i_membrane values from the pointer vector
-            self.imVec = h.Vector(self._nseg)
-        '''
+        # used by xstim module
+        self.ptr2e_extracellular = None
 
     def set_spike_detector(self, spike_threshold):
         nc = h.NetCon(self.hobj.soma[0](0.5)._ref_v, None, sec=self.hobj.soma[0])  # attach spike detector to cell
@@ -101,6 +95,7 @@ class BioCell(Cell):
         # rotated coordinates around z axis first then shift relative to the soma
         self._seg_coords['p0'] = self._pos_soma + np.dot(RotYZ, morph_seg_coords['p0'])
         self._seg_coords['p1'] = self._pos_soma + np.dot(RotYZ, morph_seg_coords['p1'])
+        self._seg_coords['p05'] = self._pos_soma + np.dot(RotYZ, morph_seg_coords['p05'])
 
     def get_seg_coords(self):
         return self._seg_coords
@@ -270,18 +265,37 @@ class BioCell(Cell):
         self.im_ptr.ptr_update_callback(self.set_im_ptr)
         self.imVec = h.Vector(self._nseg)
 
-    def set_im_ptr(self): 
+    def setup_xstim(self, set_nrn_mechanism=True):
+        self.ptr2e_extracellular = h.PtrVector(self._nseg)
+        self.ptr2e_extracellular.ptr_update_callback(self.set_ptr2e_extracellular)
+
+        # Set the e_extracellular mechanism for all sections on this hoc object
+        if set_nrn_mechanism:
+            for sec in self.hobj.all:
+                sec.insert('extracellular')
+
+    def set_im_ptr(self):
         """Set PtrVector to point to the i_membrane_"""
         jseg = 0
         for sec in self.hobj.all:  
-            for seg in sec:    
-                self.im_ptr.pset(jseg,seg._ref_i_membrane_)  # notice the underscore at the end
+            for seg in sec:
+                self.im_ptr.pset(jseg, seg._ref_i_membrane_)  # notice the underscore at the end
                 jseg += 1
 
     def get_im(self):
         """Gather membrane currents from PtrVector into imVec (does not need a loop!)"""
         self.im_ptr.gather(self.imVec)
         return self.imVec.as_numpy()  # (nA)
+
+    def set_ptr2e_extracellular(self):
+        jseg = 0
+        for sec in self.hobj.all:
+            for seg in sec:
+                self.ptr2e_extracellular.pset(jseg, seg._ref_e_extracellular)
+                jseg += 1
+
+    def set_e_extracellular(self, vext):
+        self.ptr2e_extracellular.scatter(vext)
 
     def print_synapses(self):
         rstr = ''

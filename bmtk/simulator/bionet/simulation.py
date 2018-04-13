@@ -79,7 +79,7 @@ class Simulation(object):
 
         self._sim_mods = []  # list of modules.SimulatorMod's
 
-        self._biophys_gids = network.biopyhys_gids
+        #self._biophys_gids = network.biopyhys_gids
 
     @property
     def dt(self):
@@ -139,7 +139,11 @@ class Simulation(object):
 
     @property
     def biophysical_gids(self):
-        return self._biophys_gids
+        return self.net.biopyhys_gids
+
+    @property
+    def local_gids(self):
+        return self.net.local_gids
 
     def __elapsed_time(self, time_s):
         if time_s < 120:
@@ -302,7 +306,6 @@ class Simulation(object):
         network.io.log_info('Building recurrent connections')
         network.build_recurrent_edges()
 
-
         # TODO: Need to create a gid selector
         for sim_input in inputs.from_config(config):
             if sim_input.input_type == 'spikes':
@@ -319,8 +322,11 @@ class Simulation(object):
                 gids = sim_input.params['node_set']
                 sim.attach_current_clamp(amplitude, delay, duration, gids)
 
+            elif sim_input.module == 'xstim':
+                sim.add_mod(mods.XStimMod(**sim_input.params))
+
             else:
-                io.log_exception('Can not parse inputs {}'.format(sim_input.name))
+                io.log_exception('Can not parse input format {}'.format(sim_input.name))
 
         # Parse the "reports" section of the config and load an associated output module for each report
         sim_reports = reports.from_config(config)
@@ -333,6 +339,7 @@ class Simulation(object):
                     mod = mods.SomaReport(**report.params)
 
                 else:
+                    print report.params
                     mod = mods.MembraneReport(**report.params)
 
             elif isinstance(report, reports.ECPReport):

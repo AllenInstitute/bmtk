@@ -45,8 +45,17 @@ MPI_RANK = int(pc.id())
 N_HOSTS = int(pc.nhost())
 
 
+def first_element(lst):
+    return lst[0]
+
+
+transforms_table = {
+    'first_element': first_element,
+}
+
+
 class MembraneReport(SimulatorMod):
-    def __init__(self, tmp_dir, file_name, variables, cells, sections='all', buffer_data=True):
+    def __init__(self, tmp_dir, file_name, variable_name, cells, sections='all', buffer_data=True, transform={}):
         """Module used for saving NEURON cell properities at each given step of the simulation.
 
         :param tmp_dir:
@@ -57,14 +66,26 @@ class MembraneReport(SimulatorMod):
         :param buffer_data: Set to true then data will be saved to memory until written to disk during each block, reqs.
         more memory but faster. Set to false and data will be written to disk on each step (default: True)
         """
-        self._variables = variables
+        self._all_variables = list(variable_name)
+        self._variables = list(variable_name)
+        self._transforms = {}
+        # self._special_variables = []
+        for var_name, fnc_name in transform.items():
+            if fnc_name is None or len(fnc_name) == 0:
+                del self._transforms[var_name]
+                continue
+
+            fnc = transforms_table[fnc_name]
+            self._transforms[var_name] = fnc
+            self._variables.remove(var_name)
+
         self._tmp_dir = tmp_dir
         self._file_name = file_name
         self._all_gids = cells
         self._local_gids = []
         self._sections = sections
 
-        self._var_recorder = MembraneRecorder(file_name, tmp_dir, self._variables, buffer_data=buffer_data,
+        self._var_recorder = MembraneRecorder(file_name, tmp_dir, self._all_variables, buffer_data=buffer_data,
                                               mpi_rank=MPI_RANK, mpi_size=N_HOSTS)
 
         self._gid_list = []  # list of all gids that will have their variables saved
@@ -95,12 +116,16 @@ class MembraneReport(SimulatorMod):
 
         self._var_recorder.initialize(sim.n_steps, sim.nsteps_block)
 
-    def step(self, sim, tstep, rel_time=0.0):
+    def step(self, sim, tstep):
         # save all necessary cells/variables at the current time-step into memory
         for gid in self._local_gids:
             cell = sim.net.get_local_cell(gid)
             for var_name in self._variables:
                 seg_vals = [getattr(seg, var_name) for seg in cell.get_segments()]
+                self._var_recorder.record_cell(gid, var_name, seg_vals, tstep)
+
+            for var_name, fnc in self._transforms.items():
+                seg_vals = [fnc(getattr(seg, var_name)) for seg in cell.get_segments()]
                 self._var_recorder.record_cell(gid, var_name, seg_vals, tstep)
 
         self._block_step += 1
@@ -124,9 +149,9 @@ class MembraneReport(SimulatorMod):
 
 class SomaReport(MembraneReport):
     """Special case for when only needing to save the soma variable"""
-    def __init__(self, tmp_dir, file_name, variable_name, cells, sections='soma', buffer_data=True):
-        super(SomaReport, self).__init__(tmp_dir=tmp_dir, file_name=file_name, variables=variable_name, cells=cells,
-                                         sections=sections, buffer_data=buffer_data)
+    def __init__(self, tmp_dir, file_name, variable_name, cells, sections='soma', buffer_data=True, transform={}):
+        super(SomaReport, self).__init__(tmp_dir=tmp_dir, file_name=file_name, variable_name=variable_name, cells=cells,
+                                         sections=sections, buffer_data=buffer_data, transform=transform)
 
     def initialize(self, sim):
         self._get_gids(sim)
@@ -142,5 +167,10 @@ class SomaReport(MembraneReport):
             for var_name in self._variables:
                 var_val = getattr(cell.hobj.soma[0](0.5), var_name)
                 self._var_recorder.record_cell(gid, var_name, [var_val], tstep)
+
+            for var_name, fnc in self._transforms.items():
+                var_val = getattr(cell.hobj.soma[0](0.5), var_name)
+                new_val = fnc(var_val)
+                self._var_recorder.record_cell(gid, var_name, [new_val], tstep)
 
         self._block_step += 1

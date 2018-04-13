@@ -194,6 +194,10 @@ class BioGraph(SimGraph):
         return self._local_cells_type[model_type].values()
 
     @property
+    def local_gids(self):
+        return self._local_cells_gid.keys()
+
+    @property
     def biopyhys_gids(self):
         return list(self._local_cells_type['biophysical'].keys())
 
