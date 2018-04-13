@@ -75,7 +75,7 @@ class IOUtils(object):
                 if overwrite:
                     shutil.rmtree(config_dir)
                 else:
-                    self.log_exception('ERROR: Directory already exists (remove or set to overwrite).')
+                    self.log_exception('Directory already exists (remove or set to overwrite).')
             os.makedirs(config_dir)
 
             # Create log file

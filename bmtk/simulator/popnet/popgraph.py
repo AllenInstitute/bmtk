@@ -22,17 +22,123 @@
 #
 import os
 import json
+import numpy as np
 
-from bmtk.simulator.utils.graph import SimGraph
+from bmtk.simulator.core.graph import SimGraph
 from property_schemas import PopTypes, DefaultPropertySchema
-from popnode import InternalNode, ExternalPopulation
+#from popnode import InternalNode, ExternalPopulation
 from popedge import PopEdge
+import bmtk.simulator.popnet.utils as poputils
+
+from dipde.internals.internalpopulation import InternalPopulation
+from dipde.internals.externalpopulation import ExternalPopulation
+from dipde.internals.connection import Connection
+
+
+class PopNode(object):
+    def __init__(self, node, property_map, graph):
+        self._node = node
+        self._property_map = property_map
+        self._graph = graph
+
+    @property
+    def dynamics_params(self):
+        # TODO: Use propert map
+        return self._node['dynamics_params']
+
+    @property
+    def node_id(self):
+        # TODO: Use property map
+        return self._node.node_id
+
+
+class Population(object):
+    def __init__(self, pop_id):
+        self._pop_id = pop_id
+        self._nodes = []
+
+        self._dipde_obj = None
+
+    def add_node(self, pnode):
+        self._nodes.append(pnode)
+
+    @property
+    def pop_id(self):
+        return self._pop_id
+
+    @property
+    def dipde_obj(self):
+        return self._dipde_obj
+
+    @property
+    def record(self):
+        return True
+
+    def build(self):
+        params = self._nodes[0].dynamics_params
+        self._dipde_obj = InternalPopulation(**params)
+
+    def get_gids(self):
+        for node in self._nodes:
+            yield node.node_id
+
+    def __repr__(self):
+        return str(self._pop_id)
+
+
+class ExtPopulation(Population):
+    @property
+    def record(self):
+        return False
+
+    def build(self, firing_rate):
+        self._dipde_obj = ExternalPopulation(firing_rate)
+
+
+class PopEdge(object):
+    def __init__(self, edge, property_map, graph):
+        self._edge = edge
+        self._prop_map = property_map
+        self._graph = graph
+
+    @property
+    def nsyns(self):
+        # TODO: Use property map
+        return self._edge['nsyns']
+
+    @property
+    def delay(self):
+        return self._edge['delay']
+
+    @property
+    def weight(self):
+        return self._edge['syn_weight']
+
+
+class PopConnection(object):
+    def __init__(self, src_pop, trg_pop):
+        self._src_pop = src_pop
+        self._trg_pop = trg_pop
+        self._edges = []
+
+        self._dipde_conn = None
+
+    def add_edge(self, edge):
+        self._edges.append(edge)
+
+    def build(self):
+        edge = self._edges[0]
+        self._dipde_conn = Connection(self._src_pop._dipde_obj, self._trg_pop._dipde_obj, edge.nsyns, edge.delay,
+                                      edge.weight)
+
+    @property
+    def dipde_obj(self):
+        return self._dipde_conn
 
 
 class PopGraph(SimGraph):
-    def __init__(self, property_schema=None, group_by='node_type_id', **properties):
-        property_schema = property_schema if property_schema is not None else DefaultPropertySchema
-        super(PopGraph, self).__init__(property_schema)
+    def __init__(self, group_by='node_id', **properties):
+        super(PopGraph, self).__init__()
 
         self.__all_edges = []
         self._group_key = group_by
@@ -42,8 +148,133 @@ class PopGraph(SimGraph):
         self._source_edges = {}
 
         self._params_cache = {}
-        self._params_column = property_schema.get_params_column()
+        #self._params_column = property_schema.get_params_column()
+        self._dipde_pops = {}
+        self._external_pop = {}
+        self._all_populations = []
+        # self._loaded_external_pops = {}
 
+        self._nodeid2pop_map = {}
+
+        self._connections = {}
+        self._external_connections = {}
+        self._all_connections = []
+
+    @property
+    def populations(self):
+        return self._all_populations
+
+    @property
+    def connections(self):
+        return self._all_connections
+
+    @property
+    def internal_populations(self):
+        return self._dipde_pops.values()
+
+    def build_nodes(self):
+        # Organize every single sonata-node into a given population.
+        # TODO: If grouping by node_id ignore this step
+        for node_pop in self._internal_populations_map.values():
+            prop_maps = self._node_property_maps[node_pop.name]
+            nid2pop_map = {}
+            for node in node_pop:
+                #
+                pop_key = node[self._group_key]
+                pnode = PopNode(node, prop_maps[node.group_id], self)
+                if pop_key not in self._dipde_pops:
+                    pop = Population(pop_key)
+                    self._dipde_pops[pop_key] = pop
+                    self._all_populations.append(pop)
+
+                pop = self._dipde_pops[pop_key]
+                pop.add_node(pnode)
+                nid2pop_map[node.node_id] = pop
+
+
+            self._nodeid2pop_map[node_pop.name] = nid2pop_map
+
+        for dpop in self._dipde_pops.values():
+            dpop.build()
+
+    def build_recurrent_edges(self):
+        recurrent_edges = [edge_pop for _, edge_list in self._recurrent_edges.items() for edge_pop in edge_list]
+        for edge_pop in recurrent_edges:
+            prop_maps = self._edge_property_maps[edge_pop.name]
+            src_pop_maps = self._nodeid2pop_map[edge_pop.source_population]
+            trg_pop_maps = self._nodeid2pop_map[edge_pop.target_population]
+            for edge in edge_pop:
+                src_pop = src_pop_maps[edge.source_node_id]
+                trg_pop = trg_pop_maps[edge.target_node_id]
+                conn_key = (src_pop, trg_pop)
+                if conn_key not in self._connections:
+                    conn = PopConnection(src_pop, trg_pop)
+                    self._connections[conn_key] = conn
+                    self._all_connections.append(conn)
+
+                pop_edge = PopEdge(edge, prop_maps[edge.group_id], self)
+                self._connections[conn_key].add_edge(pop_edge)
+
+        for conn in self._connections.values():
+            conn.build()
+        # print len(self._connections)
+
+    def add_spike_trains(self, spike_trains):
+        for pop_name, node_pop in self._virtual_populations_map.items():
+            if pop_name not in spike_trains.populations:
+                continue
+
+            # Build external population if it already hasn't been built
+            if pop_name not in self._external_pop:
+                prop_maps = self._node_property_maps[pop_name]
+                external_pop_map = {}
+                src_pop_map = {}
+                for node in node_pop:
+                    pop_key = node[self._group_key]
+                    pnode = PopNode(node, prop_maps[node.group_id], self)
+                    if pop_key not in external_pop_map:
+                        pop = ExtPopulation(pop_key)
+                        external_pop_map[pop_key] = pop
+                        self._all_populations.append(pop)
+
+                    pop = external_pop_map[pop_key]
+                    pop.add_node(pnode)
+                    src_pop_map[node.node_id] = pop
+
+                self._nodeid2pop_map[pop_name] = src_pop_map
+
+                firing_rates = poputils.get_firing_rates(external_pop_map.values(), spike_trains)
+                self._external_pop[pop_name] = external_pop_map
+                for dpop in external_pop_map.values():
+                    dpop.build(firing_rates[dpop.pop_id])
+
+            else:
+                # TODO: Throw error spike trains should only be called once per source population
+                # external_pop_map = self._external_pop[pop_name]
+                src_pop_map = self._nodeid2pop_map[pop_name]
+
+            unbuilt_connections = []
+            for node_pop in self._internal_populations_map.values():
+                trg_pop_map = self._nodeid2pop_map[node_pop.name]
+                for edge_pop in self.external_edge_populations(src_pop=pop_name, trg_pop=node_pop.name):
+                    for edge in edge_pop:
+                        src_pop = src_pop_map[edge.source_node_id]
+                        trg_pop = trg_pop_map[edge.target_node_id]
+                        conn_key = (src_pop, trg_pop)
+                        if conn_key not in self._external_connections:
+                            pconn = PopConnection(src_pop, trg_pop)
+                            self._external_connections[conn_key] = pconn
+                            unbuilt_connections.append(pconn)
+                            self._all_connections.append(pconn)
+
+                        pop_edge = PopEdge(edge, prop_maps[edge.group_id], self)
+                        self._external_connections[conn_key].add_edge(pop_edge)
+
+            for pedge in unbuilt_connections:
+                pedge.build()
+
+
+    '''
     def _add_node(self, node, network):
         pops = self._networks[network]
         pop_key = node[self._group_key]
@@ -71,6 +302,7 @@ class PopGraph(SimGraph):
             if network not in self._gid_table:
                 self._gid_table[network] = {}
             self._gid_table[network][node.gid] = pop
+    '''
 
     def __get_params(self, node_params):
         if node_params.with_dynamics_params:
@@ -86,7 +318,42 @@ class PopGraph(SimGraph):
             self._params_cache[params_file] = params_dict
             return params_dict
 
+    def _preprocess_node_types(self, node_population):
+        node_type_ids = np.unique(node_population.type_ids)
+        # TODO: Verify all the node_type_ids are in the table
+        node_types_table = node_population.types_table
 
+        if 'dynamics_params' in node_types_table.columns and 'model_type' in node_types_table.columns:
+            for nt_id in node_type_ids:
+                node_type = node_types_table[nt_id]
+                dynamics_params = node_type['dynamics_params']
+                model_type = node_type['model_type']
+
+                if model_type == 'biophysical':
+                    params_dir = self.get_component('biophysical_neuron_models_dir')
+                elif model_type == 'point_process':
+                    params_dir = self.get_component('point_neuron_models_dir')
+                elif model_type == 'point_soma':
+                    params_dir = self.get_component('point_neuron_models_dir')
+                elif model_type == 'population':
+                    params_dir = self.get_component('population_models_dir')
+                else:
+                    # Not sure what to do in this case, throw Exception?
+                    params_dir = self.get_component('custom_neuron_models')
+
+                params_path = os.path.join(params_dir, dynamics_params)
+
+                # see if we can load the dynamics_params as a dictionary. Otherwise just save the file path and let the
+                # cell_model loader function handle the extension.
+                try:
+                    params_val = json.load(open(params_path, 'r'))
+                    node_type['dynamics_params'] = params_val
+                except Exception:
+                    # TODO: Check dynamics_params before
+                    self.io.log_exception('Could not find node dynamics_params file {}.'.format(params_path))
+
+
+    '''
     def add_edges(self, edges, target_network=None, source_network=None):
         # super(PopGraph, self).add_edges(edges)
 
@@ -107,6 +374,7 @@ class PopGraph(SimGraph):
                 for edge in edges.edges_itr(target_gid):
                     source_pop = source_gid_table[edge.source_gid]
                     self._add_edge(source_pop, target_pop, edge)
+    '''
 
     def _add_edge(self, source_pop, target_pop, edge):
         src_id = source_pop.node_id
