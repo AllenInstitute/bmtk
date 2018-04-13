@@ -29,6 +29,7 @@ from bmtk.simulator.core.config import ConfigDict
 #import config as cfg
 from bmtk.simulator.utils.property_maps import NodePropertyMap, EdgePropertyMap
 from bmtk.utils import sonata
+from bmtk.simulator.core.io_tools import io
 
 
 """Creates a graph of nodes and edges from multiple network files for all simulators.
@@ -103,7 +104,7 @@ class SimGraph(object):
 
     def __init__(self):
         self._components = {}  # components table, i.e. paths to model files.
-        self._io = None  # TODO: create default io module (without mpi)
+        self._io = io
 
         self._node_property_maps = {}
         self._edge_property_maps = {}

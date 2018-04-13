@@ -67,6 +67,30 @@ def get_firing_rate_from_nwb(populations, nwb_file, trial):
     return firing_rates
 
 
+def get_firing_rates(populations, spike_trains):
+    """Calculates firing rates for an external population"""
+    #h5_file = h5py.File(nwb_file, 'r')
+    #spike_trains_ds = h5_file['processing'][trial]['spike_train']
+
+    # TODO: look into adding a time window rather than searching for min/max t.
+    firing_rates = {}
+    for pop in populations:
+        spike_counts = []
+        spike_min_t = 1.0e30
+        spike_max_t = 0.0
+        for gid in pop.get_gids():
+            spike_times = spike_trains.get_spikes(gid)
+            if spike_times is not None and len(spike_times) > 0:
+                tmp_min = min(spike_times)
+                spike_min_t = tmp_min if tmp_min < spike_min_t else spike_min_t
+                tmp_max = max(spike_times)
+                spike_max_t = tmp_max if tmp_max > spike_max_t else spike_max_t
+                spike_counts.append(len(spike_times))
+
+        # TODO make sure t_diffs is not null and spike_counts has some values
+        firing_rates[pop.pop_id] = 1.0e03 * np.mean(spike_counts) / (spike_max_t - spike_min_t)
+    return firing_rates
+
 #############################################
 # Depreciated
 #############################################

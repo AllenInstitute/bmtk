@@ -150,11 +150,12 @@ class BioCell(Cell):
             return self._set_connections(edge_prop, src_node, syn_weight, stim)
 
     def _set_connection_preselected(self, edge_prop, src_node, syn_weight, stim=None):
+        # TODO: synapses should be loaded by edge_prop.load_synapse
         sec_x = edge_prop['sec_x']
         sec_id = edge_prop['sec_id']
         section = self._secs[sec_id]
         delay = edge_prop['delay']
-        synapse_fnc = nrn.py_modules.synapse_model(edge_prop['template'])
+        synapse_fnc = nrn.py_modules.synapse_model(edge_prop['model_template'])
         syn = synapse_fnc(edge_prop['dynamics_params'], sec_x, section)
 
         if stim is not None:
