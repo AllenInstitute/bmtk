@@ -20,10 +20,15 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-import json
+import numpy as np
 from neuron import h
+try:
+    from sklearn.decomposition import PCA
+except Exception as e:
+    pass
 
 from bmtk.simulator.bionet.pyfunction_cache import add_cell_model, add_cell_processor
+from bmtk.simulator.bionet.io_tools import io
 
 """
 Functions for loading NEURON cell objects.
@@ -111,6 +116,7 @@ def set_params_peri(hobj, biophys_params):
         sec.Ra = passive['ra']
         sec.cm = cm_dict[sec.name().split(".")[1][:4]]
         sec.insert('pas')
+        # sec.insert('extracellular')
 
         for seg in sec:
             seg.pas.e = passive["e_pas"]
@@ -202,7 +208,7 @@ def set_params_allactive(hobj, params_dict):
             sec.Ra = ra_val
 
     if 'cm' in passive:
-        print('Setting cm')
+        # print('Setting cm')
         for cm_dict in passive['cm']:
             cm = cm_dict['cm']
             for sec in section_map.get(cm_dict['section'], []):
@@ -211,7 +217,7 @@ def set_params_allactive(hobj, params_dict):
     for genome_dict in genome:
         g_section = genome_dict['section']
         if genome_dict['section'] == 'glob':
-            print("WARNING: There is a section called glob, probably old json file")
+            io.log_warning("There is a section called glob, probably old json file")
             continue
 
         g_value = float(genome_dict['value'])
@@ -234,20 +240,147 @@ def set_params_allactive(hobj, params_dict):
                 if h.ismembrane('na_ion', sec=sec) == 1:
                     setattr(sec, 'ena', erev_ena)
         else:
-            print("Warning: can't set erev for {}, section array doesn't exist".format(erev_section))
+            io.log_warning("Can't set erev for {}, section array doesn't exist".format(erev_section))
 
 
-#add_cell_model(Biophys1, directive='ctdb', model_type='biophysical', overwrite=False)
+def aibs_perisomatic_directed(hobj, cell, dynamics_params):
+    fix_axon_perisomatic_directed(hobj)
+    set_params_peri(hobj, dynamics_params)
+    return hobj
+
+
+def aibs_allactive_directed(hobj, cell, dynamics_params):
+    fix_axon_allactive_directed(hobj)
+    set_params_allactive(hobj, dynamics_params)
+    return hobj
+
+
+def fix_axon_perisomatic_directed(hobj):
+    # io.log_info('Fixing Axon like perisomatic')
+    all_sec_names = []
+    for sec in hobj.all:
+        all_sec_names.append(sec.name().split(".")[1][:4])
+
+    if 'axon' not in all_sec_names:
+        io.log_exception('There is no axonal recostruction in swc file.')
+    else:
+        beg1, end1, beg2, end2 = get_axon_direction(hobj)
+
+    for sec in hobj.axon:
+        h.delete_section(sec=sec)
+    h.execute('create axon[2]', hobj)
+
+    h.pt3dadd(beg1[0], beg1[1], beg1[2], 1, sec=hobj.axon[0])
+    h.pt3dadd(end1[0], end1[1], end1[2], 1, sec=hobj.axon[0])
+    hobj.all.append(sec=hobj.axon[0])
+    h.pt3dadd(beg2[0], beg2[1], beg2[2], 1, sec=hobj.axon[1])
+    h.pt3dadd(end2[0], end2[1], end2[2], 1, sec=hobj.axon[1])
+    hobj.all.append(sec=hobj.axon[1])
+
+    hobj.axon[0].connect(hobj.soma[0], 0.5, 0)
+    hobj.axon[1].connect(hobj.axon[0], 1.0, 0)
+
+    hobj.axon[0].L = 30.0
+    hobj.axon[1].L = 30.0
+
+    h.define_shape()
+
+    for sec in hobj.axon:
+        # print "sec.L:", sec.L
+        if np.abs(30-sec.L) > 0.0001:
+            io.log_exception('Axon stub L is less than 30')
+
+
+def fix_axon_allactive_directed(hobj):
+    all_sec_names = []
+    for sec in hobj.all:
+        all_sec_names.append(sec.name().split(".")[1][:4])
+
+    if 'axon' not in all_sec_names:
+        io.log_exception('There is no axonal recostruction in swc file.')
+    else:
+        beg1, end1, beg2, end2 = get_axon_direction(hobj)
+
+    axon_diams = [hobj.axon[0].diam, hobj.axon[0].diam]
+    for sec in hobj.all:
+        section_name = sec.name().split(".")[1][:4]
+        if section_name == 'axon':
+            axon_diams[1] = sec.diam
+
+    for sec in hobj.axon:
+        h.delete_section(sec=sec)
+    h.execute('create axon[2]', hobj)
+    hobj.axon[0].connect(hobj.soma[0], 1.0, 0)
+    hobj.axon[1].connect(hobj.axon[0], 1.0, 0)
+
+    h.pt3dadd(beg1[0], beg1[1], beg1[2], axon_diams[0], sec=hobj.axon[0])
+    h.pt3dadd(end1[0], end1[1], end1[2], axon_diams[0], sec=hobj.axon[0])
+    hobj.all.append(sec=hobj.axon[0])
+    h.pt3dadd(beg2[0], beg2[1], beg2[2], axon_diams[1], sec=hobj.axon[1])
+    h.pt3dadd(end2[0], end2[1], end2[2], axon_diams[1], sec=hobj.axon[1])
+    hobj.all.append(sec=hobj.axon[1])
+
+    hobj.axon[0].L = 30.0
+    hobj.axon[1].L = 30.0
+
+    h.define_shape()
+
+    for sec in hobj.axon:
+        # io.log_info('sec.L: {}'.format(sec.L))
+        if np.abs(30 - sec.L) > 0.0001:
+            io.log_exception('Axon stub L is less than 30')
+
+
+def get_axon_direction(hobj):
+    for sec in hobj.somatic:
+        n3d = int(h.n3d())  # get number of n3d points in each section
+        soma_end = np.asarray([h.x3d(n3d - 1), h.y3d(n3d - 1), h.z3d(n3d - 1)])
+        mid_point = int(n3d / 2)
+        soma_mid = np.asarray([h.x3d(mid_point), h.y3d(mid_point), h.z3d(mid_point)])
+
+    for sec in hobj.all:
+        section_name = sec.name().split(".")[1][:4]
+        if section_name == 'axon':
+            n3d = int(h.n3d())  # get number of n3d points in each section
+            axon_p3d = np.zeros((n3d, 3))  # to hold locations of 3D morphology for the current section
+            for i in range(n3d):
+                axon_p3d[i, 0] = h.x3d(i)
+                axon_p3d[i, 1] = h.y3d(i)  # shift coordinates such to place soma at the origin.
+                axon_p3d[i, 2] = h.z3d(i)
+
+    # Add soma coordinates to the list
+    p3d = np.concatenate(([soma_mid], axon_p3d), axis=0)
+
+    # Compute PCA
+    pca = PCA(n_components=3)
+    pca.fit(p3d)
+    unit_v = pca.components_[0]
+
+    mag_v = np.sqrt(pow(unit_v[0], 2) + pow(unit_v[1], 2) + pow(unit_v[2], 2))
+    unit_v[0] = unit_v[0] / mag_v
+    unit_v[1] = unit_v[1] / mag_v
+    unit_v[2] = unit_v[2] / mag_v
+
+    # Find the direction
+    axon_end = axon_p3d[-1] - soma_mid
+    if np.dot(unit_v, axon_end) < 0:
+        unit_v *= -1
+
+    axon_seg_coor = np.zeros((4, 3))
+    # unit_v = np.asarray([0,1,0])
+    axon_seg_coor[0] = soma_end
+    axon_seg_coor[1] = soma_end + (unit_v * 30.)
+    axon_seg_coor[2] = soma_end + (unit_v * 30.)
+    axon_seg_coor[3] = soma_end + (unit_v * 60.)
+
+    return axon_seg_coor
+
+
 add_cell_model(Biophys1, directive='ctdb:Biophys1', model_type='biophysical', overwrite=False)
 add_cell_model(Biophys1, directive='ctdb:Biophys1.hoc', model_type='biophysical', overwrite=False)
 add_cell_model(IntFire1, directive='nrn:IntFire1', model_type='point_process', overwrite=False)
 
 add_cell_processor(aibs_perisomatic, overwrite=False)
 add_cell_processor(aibs_allactive, overwrite=False)
-
-#add_cell_model(Biophys1, overwrite=False)
-#add_cell_model(Biophys1_adjusted, 'biophysical_adjusted', overwrite=False)
-#add_cell_model(Biophys1_adjusted, overwrite=False)
-#add_cell_model(IntFire1, 'point_IntFire1', overwrite=False)
-#add_cell_model(IntFire1, 'intfire', overwrite=False)
-#add_cell_model(IntFire1, overwrite=False)
+add_cell_processor(aibs_perisomatic_directed, overwrite=False)
+add_cell_processor(aibs_allactive_directed, overwrite=False)

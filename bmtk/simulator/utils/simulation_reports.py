@@ -81,15 +81,20 @@ class MembraneReport(SimReport, object):
 
         self.params['buffer_data'] = self.params.pop('buffer')
 
+        if self.params['transform'] and not isinstance(self.params['transform'], dict):
+            self.params['transform'] = {var_name: self.params['transform'] for var_name in self.variables}
+
+
     def _get_defaults(self):
         tmp_dir = os.path.dirname(os.path.realpath(self.params['file_name'])) if 'file_name' in self.params else \
             self.default_dir
         file_name = os.path.join(tmp_dir, 'cell_vars.h5')
         return [('cells', 'biophysical'), ('sections', 'all'), ('tmp_dir', tmp_dir), ('file_name', file_name),
-                ('buffer', True)]
+                ('buffer', True), ('transform', {})]
 
-    def add_variables(self, var_name):
+    def add_variables(self, var_name, transform):
         self.params['variable_name'].extend(var_name)
+        self.params['transform'].update(transform)
 
     def can_combine(self, other):
         def param_eq(key):
@@ -221,7 +226,6 @@ def from_config(cfg):
 
         report = SimReport.build(report_name, report_params)
 
-
         '''
         print report_params
         if 'module' not in report_params:
@@ -242,7 +246,7 @@ def from_config(cfg):
             # except for the variable name differs.
             for existing_report in membrane_reports:
                 if existing_report.can_combine(report):
-                    existing_report.add_variables(report.variables)
+                    existing_report.add_variables(report.variables, report.params['transform'])
                     break
             else:
                 reports_list.append(report)

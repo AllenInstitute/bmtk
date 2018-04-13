@@ -52,7 +52,7 @@ class EcpMod(SimulatorMod):
         self._nsteps = 0
 
         self._tstep = 0  # accumlative time step
-        self._rel_time = 0  #
+        # self._rel_time = 0  #
         self._block_step = 0  # time step within the given block of time
         self._tstep_start_block = 0
         self._data_block = None
@@ -171,7 +171,7 @@ class EcpMod(SimulatorMod):
 
         pc.barrier()
 
-    def step(self, sim, tstep, rel_time=0):
+    def step(self, sim, tstep):
         for gid in self._biophys_gids:  # compute ecp only from the biophysical cells
             cell = sim.net.get_local_cell(gid)
             # cell = sim.net.cells[gid]

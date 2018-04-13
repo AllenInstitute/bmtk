@@ -41,7 +41,7 @@ class SimulatorMod(object):
         """
         pass
 
-    def step(self, sim, tstep, rel_time=0.0):
+    def step(self, sim, tstep):
         """Called on every single time step (dt).
 
         The step method is used for anything that should be recorded or changed continously. dt is determined during
@@ -49,7 +49,6 @@ class SimulatorMod(object):
 
         :param sim: Simulation object.
         :param tstep: The decrete time-step
-        :param rel_time: The real time
         """
         pass
 
