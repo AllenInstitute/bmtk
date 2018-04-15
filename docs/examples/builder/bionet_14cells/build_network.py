@@ -9,7 +9,7 @@ from bmtk.builder.networks import NetworkBuilder
 
 
 def build_l4():
-    net = NetworkBuilder("V1/L4")
+    net = NetworkBuilder("v1")
     net.add_nodes(N=2, pop_name='Scnn1a',
                   positions=[(28.753, -364.868, -161.705), (48.753, -344.868, -141.705)],
                   tuning_angle=[0.0, 25.0],
@@ -215,13 +215,13 @@ def build_l4():
 
     assert(os.path.exists('output/v1_nodes.h5'))
     nodes_h5 = h5py.File('output/v1_nodes.h5')
-    assert(len(nodes_h5['/nodes/node_gid']) == 14)
-    assert(len(nodes_h5['/nodes/node_type_id']) == 14)
-    assert(len(nodes_h5['/nodes/node_group']) == 14)
-    assert(len(nodes_h5['/nodes/node_group_index']) == 14)
-    assert(set(nodes_h5['/nodes/0'].keys()) == {'positions', 'rotation_angle_yaxis', 'tuning_angle'})
-    assert(len(nodes_h5['/nodes/0/positions']) == 10)
-    assert(len(nodes_h5['/nodes/1/positions']) == 4)
+    assert(len(nodes_h5['/nodes/v1/node_id']) == 14)
+    assert(len(nodes_h5['/nodes/v1/node_type_id']) == 14)
+    assert(len(nodes_h5['/nodes/v1/node_group_id']) == 14)
+    assert(len(nodes_h5['/nodes/v1/node_group_index']) == 14)
+    assert(set(nodes_h5['/nodes/v1/0'].keys()) == {'positions', 'rotation_angle_yaxis', 'tuning_angle'})
+    assert(len(nodes_h5['/nodes/v1/0/positions']) == 10)
+    assert(len(nodes_h5['/nodes/v1/1/positions']) == 4)
 
     assert(os.path.exists('output/v1_v1_edge_types.csv'))
     edge_types_csv = pd.read_csv('output/v1_v1_edge_types.csv', sep=' ')
@@ -232,10 +232,10 @@ def build_l4():
 
     assert(os.path.exists('output/v1_v1_edges.h5'))
     edges_h5 = h5py.File('output/v1_v1_edges.h5')
-    assert(len(edges_h5['/edges/index_pointer']) == 14+1)
-    assert(len(edges_h5['/edges/target_gid']) == 14*14)
-    assert(len(edges_h5['/edges/source_gid']) == 14*14)
-    assert(len(edges_h5['/edges/0/nsyns']) == 14*14)
+    # assert(len(edges_h5['/edges/v1_to_v1/index_pointer']) == 14+1)
+    assert(len(edges_h5['/edges/v1_to_v1/target_node_id']) == 14*14)
+    assert(len(edges_h5['/edges/v1_to_v1/source_node_id']) == 14*14)
+    assert(len(edges_h5['/edges/v1_to_v1/0/nsyns']) == 14*14)
 
     return net
 
@@ -256,7 +256,7 @@ def build_lgn():
     if not os.path.exists('output'):
         os.makedirs('output')
 
-    LGN = NetworkBuilder("LGN")
+    LGN = NetworkBuilder("lgn")
     LGN.add_nodes(N=3000,
                   positions=generate_positions(3000),
                   location='LGN',
@@ -278,7 +278,7 @@ def build_lgn():
                   pop_name='tONOFF',
                   ei='e')
 
-    VL4 = NetworkBuilder('V1/L4')
+    VL4 = NetworkBuilder('v1')
     VL4.import_nodes(nodes_file_name='output/v1_nodes.h5', node_types_file_name='output/v1_node_types.csv')
     VL4.add_edges(source=LGN.nodes(), target={'pop_name': 'Rorb'},
                   iterator='all_to_one',
@@ -372,12 +372,12 @@ def build_lgn():
 
     assert(os.path.exists('output/lgn_nodes.h5'))
     nodes_h5 = h5py.File('output/lgn_nodes.h5')
-    assert(len(nodes_h5['/nodes/node_gid']) == 9000)
-    assert(len(nodes_h5['/nodes/node_type_id']) == 9000)
-    assert(len(nodes_h5['/nodes/node_group']) == 9000)
-    assert(len(nodes_h5['/nodes/node_group_index']) == 9000)
-    assert(set(nodes_h5['/nodes/0'].keys()) == {'positions'})
-    assert(len(nodes_h5['/nodes/0/positions']) == 9000)
+    assert(len(nodes_h5['/nodes/lgn/node_id']) == 9000)
+    assert(len(nodes_h5['/nodes/lgn/node_type_id']) == 9000)
+    assert(len(nodes_h5['/nodes/lgn/node_group_id']) == 9000)
+    assert(len(nodes_h5['/nodes/lgn/node_group_index']) == 9000)
+    assert(set(nodes_h5['/nodes/lgn/0'].keys()) == {'positions'})
+    assert(len(nodes_h5['/nodes/lgn/0/positions']) == 9000)
 
     assert(os.path.exists('output/lgn_v1_edge_types.csv'))
     edge_types_csv = pd.read_csv('output/lgn_v1_edge_types.csv', sep=' ')
@@ -388,10 +388,10 @@ def build_lgn():
 
     assert(os.path.exists('output/lgn_v1_edges.h5'))
     edges_h5 = h5py.File('output/lgn_v1_edges.h5')
-    assert(len(edges_h5['/edges/index_pointer']) == 14+1)
-    assert(len(edges_h5['/edges/target_gid']) == 6000*14)
-    assert(len(edges_h5['/edges/source_gid']) == 6000*14)
-    assert(len(edges_h5['/edges/0/nsyns']) == 6000*14)
+    # assert(len(edges_h5['/edges/index_pointer']) == 14+1)
+    assert(len(edges_h5['/edges/lgn_to_v1/target_node_id']) == 6000*14)
+    assert(len(edges_h5['/edges/lgn_to_v1/source_node_id']) == 6000*14)
+    assert(len(edges_h5['/edges/lgn_to_v1/0/nsyns']) == 6000*14)
 
 
 def build_tw():

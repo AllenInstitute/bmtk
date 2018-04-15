@@ -97,6 +97,14 @@ class Node(object):
         return self._node_type_id
 
     @property
+    def group_props(self):
+        return self._group_props
+
+    @property
+    def node_type_properties(self):
+        return self._node_type_props
+
+    @property
     def dynamics_params(self):
         raise NotImplementedError
 

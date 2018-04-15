@@ -29,6 +29,7 @@ from ..network import Network
 from bmtk.utils.io import TabularNetwork
 from bmtk.builder.node import Node
 from bmtk.builder.edge import Edge
+from bmtk.utils import sonata
 
 
 class DenseNetwork(Network):
@@ -104,24 +105,22 @@ class DenseNetwork(Network):
                 prop_ds.append(node.params[key])
 
         with h5py.File(nodes_file_name, 'w') as hf:
-            hf.create_dataset('nodes/node_gid', data=node_gid_table, dtype='uint64')
-            hf['nodes/node_gid'].attrs['network'] = self.name
-            hf.create_dataset('nodes/node_type_id', data=node_type_id_table, dtype='uint64')
-            hf.create_dataset('nodes/node_group', data=node_group_table, dtype='uint32')
-            hf.create_dataset('nodes/node_group_index', data=node_group_index_tables, dtype='uint64')
-
+            pop_grp = hf.create_group('/nodes/{}'.format(self.name))
+            pop_grp.create_dataset('node_id', data=node_gid_table, dtype='uint64')
+            pop_grp.create_dataset('node_type_id', data=node_type_id_table, dtype='uint64')
+            pop_grp.create_dataset('node_group_id', data=node_group_table, dtype='uint32')
+            pop_grp.create_dataset('node_group_index', data=node_group_index_tables, dtype='uint64')
 
             for grp_id, props in group_props.items():
-                #if len(props.items()) == 0:
-                hf.create_group('nodes/{}'.format(grp_id))
+                model_grp = pop_grp.create_group('{}'.format(grp_id))
 
                 for key, dataset in props.items():
-                    ds_path = 'nodes/{}/{}'.format(grp_id, key)
+                    # ds_path = 'nodes/{}/{}'.format(grp_id, key)
                     try:
-                        hf.create_dataset(ds_path, data=dataset)
+                        model_grp.create_dataset(key, data=dataset)
                     except TypeError:
                         str_list = [str(d) for d in dataset]
-                        hf.create_dataset(ds_path, data=str_list)
+                        hf.create_dataset(key, data=str_list)
 
     def nodes_iter(self, node_ids=None):
         if node_ids is not None:
@@ -132,15 +131,32 @@ class DenseNetwork(Network):
     def _process_nodepool(self, nodepool):
         return nodepool
 
-    def import_nodes(self, nodes_file_name, node_types_file_name):
-        nodes_network = TabularNetwork.load_nodes(nodes_file=nodes_file_name, node_types_file=node_types_file_name)
-        for node_type_id, node_type_props in nodes_network.node_types_table.items():
+    def import_nodes(self, nodes_file_name, node_types_file_name, population=None):
+        sonata_file = sonata.File(data_files=nodes_file_name, data_type_files=node_types_file_name)
+        if sonata_file.nodes is None:
+            raise Exception('nodes file {} does not have any nodes.'.format(nodes_file_name))
+
+        populations = sonata_file.nodes.populations
+        if len(populations) == 1:
+            node_pop = populations[0]
+        elif population is None:
+            raise Exception('The nodes file {} contains multiple populations.'.format(nodes_file_name) +
+                            'Please specify population parameter.')
+        else:
+            for pop in populations:
+                if pop.name == population:
+                    node_pop = pop
+                    break
+            else:
+                raise Exception('Nodes file {} does not contain population {}.'.format(nodes_file_name, population))
+
+        # print node_pop.node_types_table
+        for node_type_props in node_pop.node_types_table:
             self._add_node_type(node_type_props)
 
-        nodes = []
-        for n in nodes_network:
-            self._node_id_gen.remove_id(n.gid)
-            self._nodes.append(Node(n.gid, n.node_props, n.node_type_props))
+        for node in node_pop:
+            self._node_id_gen.remove_id(node.node_id)
+            self._nodes.append(Node(node.node_id, node.group_props, node.node_type_properties))
 
     def _add_edges(self, connection_map, i):
         syn_table = self.EdgeTable(connection_map)
@@ -198,7 +214,7 @@ class DenseNetwork(Network):
 
         self.__edges_tables.append(edge_table)
 
-    def _save_edges(self, edges_file_name, src_network, trg_network):
+    def _save_edges(self, edges_file_name, src_network, trg_network, name=None):
         groups = {}
         group_dtypes = {}  # TODO: this should be stored in PropertyTable
         grp_id_itr = 0
@@ -209,7 +225,7 @@ class DenseNetwork(Network):
                                 if et['source_network'] == src_network and et['target_network'] == trg_network]
 
         for ets in matching_edge_tables:
-            params_hash =  str(ets['params'].keys())
+            params_hash = str(ets['params'].keys())
             group_id = groups_lookup.get(params_hash, None)
             if group_id is None:
                 group_id = grp_id_itr
@@ -288,27 +304,69 @@ class DenseNetwork(Network):
         edge_group_index = edge_group_index[:gid_indx]
         edge_type_ids = edge_type_ids[:gid_indx]
 
+        pop_name = '{}_to_{}'.format(src_network, trg_network) if name is None else name
+
         index_ptrs[index_ptr_itr] = gid_indx
-
         with h5py.File(edges_file_name, 'w') as hf:
-            hf.create_dataset('edges/target_gid', data=trg_gids, dtype='uint64')
-            hf['edges/target_gid'].attrs['network'] = trg_network
-            hf.create_dataset('edges/source_gid', data=src_gids, dtype='uint64')
-            hf['edges/source_gid'].attrs['network'] = src_network
+            pop_grp = hf.create_group('/edges/{}'.format(pop_name))
+            pop_grp.create_dataset('target_node_id', data=trg_gids, dtype='uint64')
+            pop_grp['target_node_id'].attrs['node_populution'] = trg_network
+            pop_grp.create_dataset('source_node_id', data=src_gids, dtype='uint64')
+            pop_grp['source_node_id'].attrs['node_populution'] = src_network
 
-            hf.create_dataset('edges/edge_group', data=edge_groups, dtype='uint16')
-            hf.create_dataset('edges/edge_group_index', data=edge_group_index, dtype='uint32')
-            hf.create_dataset('edges/edge_type_id', data=edge_type_ids, dtype='uint32')
-            hf.create_dataset('edges/index_pointer', data=index_ptrs, dtype='uint32')
+            pop_grp.create_dataset('edge_group_id', data=edge_groups, dtype='uint16')
+            pop_grp.create_dataset('edge_group_index', data=edge_group_index, dtype='uint32')
+            pop_grp.create_dataset('edge_type_id', data=edge_type_ids, dtype='uint32')
+            # pop_grp.create_dataset('edges/index_pointer', data=index_ptrs, dtype='uint32')
 
             for group_id, params_dict in groups.items():
+                model_grp = pop_grp.create_group(str(group_id))
                 for params_key, params_vals in params_dict.items():
-                    group_path = 'edges/{}/{}'.format(group_id, params_key)
+                    #group_path = 'edges/{}/{}'.format(group_id, params_key)
                     dtype = group_dtypes[group_id][params_key]
                     if dtype is not None:
-                        hf.create_dataset(group_path, data=list(params_vals), dtype=dtype)
+                        model_grp.create_dataset(params_key, data=list(params_vals), dtype=dtype)
                     else:
-                        hf.create_dataset(group_path, data=list(params_vals))
+                        model_grp.create_dataset(params_key, data=list(params_vals))
+
+            self._create_index(pop_grp['target_node_id'], pop_grp, index_type='target')
+            self._create_index(pop_grp['source_node_id'], pop_grp, index_type='source')
+
+    def _create_index(self, node_ids_ds, output_grp, index_type='target'):
+        if index_type == 'target':
+            edge_nodes = np.array(node_ids_ds, dtype=np.int64)
+            output_grp = output_grp.create_group('indicies/target_to_source')
+        elif index_type == 'source':
+            edge_nodes = np.array(node_ids_ds, dtype=np.int64)
+            output_grp = output_grp.create_group('indicies/source_to_target')
+
+        edge_nodes = np.append(edge_nodes, [-1])
+        n_targets = np.max(edge_nodes)
+        ranges_list = [[] for _ in xrange(n_targets + 1)]
+
+        n_ranges = 0
+        begin_index = 0
+        cur_trg = edge_nodes[begin_index]
+        for end_index, trg_gid in enumerate(edge_nodes):
+            if cur_trg != trg_gid:
+                ranges_list[cur_trg].append((begin_index, end_index))
+                cur_trg = int(trg_gid)
+                begin_index = end_index
+                n_ranges += 1
+
+        node_id_to_range = np.zeros((n_targets + 1, 2))
+        range_to_edge_id = np.zeros((n_ranges, 2))
+        range_index = 0
+        for node_index, trg_ranges in enumerate(ranges_list):
+            if len(trg_ranges) > 0:
+                node_id_to_range[node_index, 0] = range_index
+                for r in trg_ranges:
+                    range_to_edge_id[range_index, :] = r
+                    range_index += 1
+                node_id_to_range[node_index, 1] = range_index
+
+        output_grp.create_dataset('range_to_edge_id', data=range_to_edge_id, dtype='uint64')
+        output_grp.create_dataset('node_id_to_range', data=node_id_to_range, dtype='uint64')
 
     def _clear(self):
         self._nedges = 0

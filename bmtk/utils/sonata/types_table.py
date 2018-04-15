@@ -46,6 +46,9 @@ class TypesTable(object):
         self._cached_node_types = {}
         self._df_cache = None
 
+        self._itr_indx = 0
+        self._itr_end = 0
+
     @property
     def index_column_name(self):
         raise NotImplementedError
@@ -124,6 +127,22 @@ class TypesTable(object):
             self._df_cache = merged_table
 
         return merged_table
+
+    def __iter__(self):
+        self._itr_indx = 0
+        self._itr_end = len(self.type_ids)
+        return self
+
+    def next(self):
+        return self.__next__()
+
+    def __next__(self):
+        if self._itr_indx >= self._itr_end:
+            raise StopIteration
+
+        ntid = self.type_ids[self._itr_indx]
+        self._itr_indx += 1
+        return self[ntid]
 
     def __getitem__(self, type_id):
         if isinstance(type_id, tuple):
