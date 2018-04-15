@@ -21,6 +21,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import threading
+import numpy as np
+
 
 
 class IDGenerator(object):
@@ -38,7 +40,7 @@ class IDGenerator(object):
         self.__lock = threading.Lock()
 
     def remove_id(self, gid):
-        assert isinstance(gid, (int, long))
+        assert isinstance(gid, np.integer)
         if gid >= self.__counter:
             self.__taken.add(gid)
 

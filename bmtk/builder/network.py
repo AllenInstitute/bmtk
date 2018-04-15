@@ -351,7 +351,7 @@ class Network (object):
         raise NotImplementedError
 
     def save_edges(self, edges_file_name=None, edge_types_file_name=None, output_dir='.', src_network=None,
-                   trg_network=None, force_build=True, force_overwrite=False):
+                   trg_network=None, name=None, force_build=True, force_overwrite=False):
         # Make sure edges exists and are built
         if len(self._connection_maps) == 0:
             print("Warning: no edges have been made for this network, skipping saving.")
@@ -387,7 +387,7 @@ class Network (object):
                 self._save_edge_types(os.path.join(output_dir, p[3]), p[0], p[1])
 
             if p[2] is not None:
-                self._save_edges(os.path.join(output_dir, p[2]), p[0], p[1])
+                self._save_edges(os.path.join(output_dir, p[2]), p[0], p[1], name)
 
     def _save_edge_types(self, edge_types_file_name, src_network, trg_network):
 
