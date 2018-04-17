@@ -21,9 +21,9 @@ def run(config_file):
     graph = BioGraph.from_config(conf, network_format=TabularNetwork_AI, property_schema=AIPropertySchema)
 
     net = BioNetwork.from_config(conf, graph)   # create network of in NEURON
-    sim = Simulation(conf, network=net)         # initialize a simulation
-    sim.attach_current_clamp()
-    sim.set_recordings()                        # set recordings of relevant variables to be saved as an ouput
+    sim = Simulation.from_config(conf, network=net)         # initialize a simulation
+    #sim.attach_current_clamp()
+    # sim.set_recordings()                        # set recordings of relevant variables to be saved as an ouput
     sim.run()                                   # run simulation
 
     nrn.quit_execution()                        # exit
