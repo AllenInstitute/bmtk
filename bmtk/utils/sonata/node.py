@@ -20,6 +20,8 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+
+
 class NodeSet(object):
     # TODO: Merge NodeSet and NodePopulation
     def __init__(self, node_indicies, population, **parameters):
@@ -114,7 +116,7 @@ class Node(object):
         elif prop_key in self._node_type_props:
             return self._node_type_props[prop_key]
         else:
-            raise KeyError
+            raise KeyError('Unknown property {}'.format(prop_key))
 
     def __contains__(self, prop_key):
         return prop_key in self._group_props or prop_key in self._node_type_props

@@ -224,8 +224,8 @@ class SimGraph(object):
         edge_type_ids = np.unique(edge_pop.type_ids)
 
         for et_id in edge_type_ids:
+            edge_type = edge_types_table[et_id]
             if 'dynamics_params' in edge_types_table.columns:
-                edge_type = edge_types_table[et_id]
                 dynamics_params = edge_type['dynamics_params']
                 params_dir = self.get_component('synaptic_models_dir')
 
