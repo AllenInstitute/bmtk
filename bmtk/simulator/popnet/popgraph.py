@@ -173,13 +173,34 @@ class PopGraph(SimGraph):
         return self._dipde_pops.values()
 
     def build_nodes(self):
+        if self._group_key == 'node_id' or self._group_key is None:
+            self._build_nodes()
+        else:
+            self._build_nodes_grouped()
+
+    def _build_nodes(self):
+        for node_pop in self._internal_populations_map.values():
+            prop_maps = self._node_property_maps[node_pop.name]
+            nid2pop_map = {}
+            for node in node_pop:
+                pnode = PopNode(node, prop_maps[node.group_id], self)
+                pop = Population(node.node_id)
+                pop.add_node(pnode)
+                pop.build()
+
+                self._dipde_pops[node.node_id] = pop
+                self._all_populations.append(pop)
+                nid2pop_map[node.node_id] = pop
+
+            self._nodeid2pop_map[node_pop.name] = nid2pop_map
+
+    def _build_nodes_grouped(self):
         # Organize every single sonata-node into a given population.
         # TODO: If grouping by node_id ignore this step
         for node_pop in self._internal_populations_map.values():
             prop_maps = self._node_property_maps[node_pop.name]
             nid2pop_map = {}
             for node in node_pop:
-                #
                 pop_key = node[self._group_key]
                 pnode = PopNode(node, prop_maps[node.group_id], self)
                 if pop_key not in self._dipde_pops:
@@ -190,7 +211,6 @@ class PopGraph(SimGraph):
                 pop = self._dipde_pops[pop_key]
                 pop.add_node(pnode)
                 nid2pop_map[node.node_id] = pop
-
 
             self._nodeid2pop_map[node_pop.name] = nid2pop_map
 
@@ -272,6 +292,48 @@ class PopGraph(SimGraph):
 
             for pedge in unbuilt_connections:
                 pedge.build()
+
+
+
+    def add_rates(self, rates):
+        if self._group_key == 'node_id':
+            id_lookup = lambda n: n.node_id
+        else:
+            id_lookup = lambda n: n[self._group_key]
+
+        for pop_name, node_pop in self._virtual_populations_map.items():
+            if pop_name not in rates.populations:
+                continue
+
+            # Build external population if it already hasn't been built
+            if pop_name not in self._external_pop:
+                prop_maps = self._node_property_maps[pop_name]
+                external_pop_map = {}
+                src_pop_map = {}
+                for node in node_pop:
+                    pop_key = id_lookup(node)
+                    #pop_key = node[self._group_key]
+                    pnode = PopNode(node, prop_maps[node.group_id], self)
+                    if pop_key not in external_pop_map:
+                        pop = ExtPopulation(pop_key)
+                        external_pop_map[pop_key] = pop
+                        self._all_populations.append(pop)
+
+                    pop = external_pop_map[pop_key]
+                    pop.add_node(pnode)
+                    src_pop_map[node.node_id] = pop
+
+                self._nodeid2pop_map[pop_name] = src_pop_map
+
+                firing_rate = rates.get_rate(pop_key)
+                self._external_pop[pop_name] = external_pop_map
+                for dpop in external_pop_map.values():
+                    dpop.build(firing_rate)
+
+            else:
+                # TODO: Throw error spike trains should only be called once per source population
+                # external_pop_map = self._external_pop[pop_name]
+                src_pop_map = self._nodeid2pop_map[pop_name]
 
 
     '''

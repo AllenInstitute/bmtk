@@ -310,9 +310,9 @@ class DenseNetwork(Network):
         with h5py.File(edges_file_name, 'w') as hf:
             pop_grp = hf.create_group('/edges/{}'.format(pop_name))
             pop_grp.create_dataset('target_node_id', data=trg_gids, dtype='uint64')
-            pop_grp['target_node_id'].attrs['node_populution'] = trg_network
+            pop_grp['target_node_id'].attrs['node_population'] = trg_network
             pop_grp.create_dataset('source_node_id', data=src_gids, dtype='uint64')
-            pop_grp['source_node_id'].attrs['node_populution'] = src_network
+            pop_grp['source_node_id'].attrs['node_population'] = src_network
 
             pop_grp.create_dataset('edge_group_id', data=edge_groups, dtype='uint16')
             pop_grp.create_dataset('edge_group_index', data=edge_group_index, dtype='uint32')

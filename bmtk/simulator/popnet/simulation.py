@@ -31,7 +31,7 @@ import dipde
 import bmtk.simulator.popnet.config as cfg
 import bmtk.simulator.popnet.utils as poputils
 import bmtk.simulator.utils.simulation_inputs as inputs
-from bmtk.utils.io import spike_trains
+from bmtk.utils.io import spike_trains, firing_rates
 
 
 
@@ -386,6 +386,9 @@ class Simulation (object):
                                                   input_type=sim_input.input_type, params=sim_input.params)
                 graph.io.log_info('Build virtual cell stimulations for {}'.format(sim_input.name))
                 graph.add_spike_trains(spikes)
+            else:
+                rates = firing_rates.RatesInput(sim_input.params)
+                graph.add_rates(rates)
 
         # Create the output file
         if 'output' in config:
