@@ -210,6 +210,9 @@ class ConfigDict(dict):
         self._env_built = False
         self._io = None
 
+        self._node_set = {}
+        self._load_node_set()
+
     @property
     def io(self):
         if self._io is None:
@@ -335,6 +338,27 @@ class ConfigDict(dict):
     @property
     def inputs(self):
         return self.get('inputs', {})
+
+    @property
+    def node_sets(self):
+        return self._node_set
+
+    def _load_node_set(self):
+        if 'node_sets_file' in self.keys():
+            node_set_val = self['node_sets_file']
+        elif 'node_sets' in self.keys():
+            node_set_val = self['node_sets']
+        else:
+            self._node_set = {}
+            return
+
+        if isinstance(node_set_val, dict):
+            self._node_set = node_set_val
+        else:
+            try:
+                self._node_set = json.load(open(node_set_val, 'r'))
+            except Exception as e:
+                io.log_exception('Unable to load node_sets_file {}'.format(node_set_val))
 
     def copy_to_output(self):
         copy_config(self)

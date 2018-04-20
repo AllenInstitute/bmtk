@@ -27,6 +27,10 @@ class SimInput(object):
 
         # Check there are no missing parameters
 
+    @property
+    def node_set(self):
+        return self.params.get('node_set', None)
+
     def _get_defaults(self):
         return []
 
@@ -67,12 +71,6 @@ def from_config(cfg):
         if input_setting.enabled:
             inputs_list.append(input_setting)
 
-
-    #print inputs_list
-
-    #exit()
-    #print cfg.inputs
-    #return None
     return inputs_list
 
 

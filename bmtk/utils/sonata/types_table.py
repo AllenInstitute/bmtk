@@ -96,13 +96,18 @@ class TypesTable(object):
         if not silent and column_key not in self.columns:
             raise KeyError
 
+        is_list = isinstance(column_val, list)
         selected_ids = []  # running list of valid type-ids
         column_dtype = self.column(column_key).dtype
         for df in self._column_map[column_key]:
             # if a csv column has all NONE values, pandas will load the values as float(NaN)'s. Thus for str/object
             # columns we need to check dtype otherwise we'll get an invalid comparisson.
             if df[column_key].dtype == column_dtype:
-                indicies = df[df[column_key] == column_val].index
+                if is_list:
+                    indicies = df[df[column_key].isin(column_val)].index
+                else:
+                    indicies = df[df[column_key] == column_val].index
+
                 if len(indicies) > 0:
                     selected_ids.extend(list(indicies))
 

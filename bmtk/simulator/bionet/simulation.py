@@ -209,8 +209,8 @@ class Simulation(object):
             gids = [int(gids)]
 
         for gid in gids:
-            if gid not in self.gids['biophysical']:
-                io.log_warning("Attempting to attach current clamp to non-biophysical gid {}.".format(gid))
+            #if gid not in self.gids['biophysical']:
+            #    io.log_warning("Attempting to attach current clamp to non-biophysical gid {}.".format(gid))
 
             cell = self.net.get_local_cell(gid)
             Ic = IClamp(amplitude, delay, duration)
@@ -304,15 +304,16 @@ class Simulation(object):
         network.build_nodes()
 
         network.io.log_info('Building recurrent connections')
-        network.build_recurrent_edges()
+        #network.build_recurrent_edges()
 
         # TODO: Need to create a gid selector
         for sim_input in inputs.from_config(config):
+            node_set = network.get_node_set(sim_input.node_set)
             if sim_input.input_type == 'spikes':
                 spikes = spike_trains.SpikesInput(name=sim_input.name, module=sim_input.module,
                                                   input_type=sim_input.input_type, params=sim_input.params)
                 io.log_info('Build virtual cell stimulations for {}'.format(sim_input.name))
-                network.add_spike_trains(spikes)
+                network.add_spike_trains(spikes, node_set)
 
             elif sim_input.module == 'IClamp':
                 # TODO: Parse from csv file
@@ -331,6 +332,7 @@ class Simulation(object):
         # Parse the "reports" section of the config and load an associated output module for each report
         sim_reports = reports.from_config(config)
         for report in sim_reports:
+            node_set = network.get_node_set(report.node_set)
             if isinstance(report, reports.SpikesReport):
                 mod = mods.SpikesMod(**report.params)
 
@@ -339,7 +341,7 @@ class Simulation(object):
                     mod = mods.SomaReport(**report.params)
 
                 else:
-                    print report.params
+                    #print report.params
                     mod = mods.MembraneReport(**report.params)
 
             elif isinstance(report, reports.ECPReport):

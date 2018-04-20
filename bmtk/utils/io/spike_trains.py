@@ -202,7 +202,7 @@ class SpikesInput(object):
     def __init__(self, name, module, input_type, params):
         self.input_file = params['input_file']
         self.trial = params['trial']
-        self.node_population = params['node_set']
+        #self.node_population = params['node_set']
 
         self._h5_handle = h5py.File(self.input_file, 'r')
         self._spike_trains_handles = {}
@@ -215,7 +215,8 @@ class SpikesInput(object):
     def load_config(self, config):
         print config
 
+    '''
     @property
     def populations(self):
         return [self.node_population]
-
+    '''
