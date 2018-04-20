@@ -31,6 +31,8 @@ from bmtk.simulator.utils.property_maps import NodePropertyMap, EdgePropertyMap
 from bmtk.utils import sonata
 from bmtk.simulator.core.io_tools import io
 
+from bmtk.simulator.core.node_sets import NodeSet, NodeSetAll
+
 
 """Creates a graph of nodes and edges from multiple network files for all simulators.
 
@@ -118,6 +120,8 @@ class SimGraph(object):
         self._recurrent_edges = {}
         self._external_edges = {}
 
+        self._node_sets = {}
+
     @property
     def io(self):
         return self._io
@@ -131,6 +135,22 @@ class SimGraph(object):
     @property
     def node_populations(self):
         return list(self._node_populations.keys())
+
+    def get_node_set(self, node_set):
+        if node_set in self._node_sets.keys():
+            return self._node_sets[node_set]
+
+        elif isinstance(node_set, (dict, list)):
+            return NodeSet(node_set, self)
+
+        else:
+            self.io.log_exception('Unable to load or find node_set "{}"'.format(node_set))
+
+    def get_node_populations(self):
+        return self._node_populations.values()
+
+    def get_node_population(self, population_name):
+        return self._node_populations[population_name]
 
     def get_component(self, key):
         """Get the value of item in the components dictionary.
@@ -304,6 +324,7 @@ class SimGraph(object):
             if model_types:
                 self._internal_populations_map[pop_name] = node_pop
 
+            self._node_sets[pop_name] = NodeSet({'population': pop_name}, self)
             self._node_property_maps[pop_name] = {grp.group_id: self._create_nodes_prop_map(grp)
                                                   for grp in node_pop.groups}
 
@@ -405,5 +426,13 @@ class SimGraph(object):
             source_network = edge_dict['source'] if 'source' in edge_dict else None
             edge_net = sonata.File(data_files=edge_dict['edges_file'], data_type_files=edge_dict['edge_types_file'])
             graph.add_edges(edge_net, source_pop=target_network, target_pop=source_network)
+
+        graph._node_sets['all'] = NodeSetAll(graph)
+        for ns_name, ns_filter in conf.node_sets.items():
+            graph._node_sets[ns_name] = NodeSet(ns_filter, graph)
+
+        #print graph._node_sets
+        print list(graph.get_node_set('point_cells').gids())
+        exit()
 
         return graph

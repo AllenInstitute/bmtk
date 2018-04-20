@@ -289,6 +289,11 @@ class NodePopulation(Population):
         row_indx = self._index_gid2row.iloc[gid]['row_id']
         return self.get_row(row_indx)
 
+    def filter(self, **filter_props):
+        for grp in self.groups:
+            for node in grp.filter(**filter_props):
+                yield node
+
     def _build_node_id_index(self, force=False):
         if self._node_id_index_built and not force:
             return
@@ -412,7 +417,6 @@ class EdgePopulation(Population):
                     raise Exception('index {} in {} edges is missing column {}.'.format(index_name, self.name,
                                                                                         'node_id_to_range'))
                 if 'range_to_edge_id' not in index_grp:
-                    # TODO: make this more general, i.e 'id_to_range' thus we can index on gids, edge_types, etc
                     raise Exception('index {} in {} edges is missing column {}.'.format(index_name, self.name,
                                                                                         'range_to_edge_id'))
 

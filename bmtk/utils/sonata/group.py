@@ -288,6 +288,7 @@ class NodeGroup(Group):
 
             if group_filter:
                 # Filter by group property values
+                # TODO: Allow group properties to handle lists
                 src_failed = True
                 for k, v in group_prop_filter.items():
                     if node[k] != v:

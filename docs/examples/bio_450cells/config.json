@@ -46,6 +46,18 @@
     "spikes_file_csv": "$OUTPUT_DIR/spikes.csv"
   },
 
+  "node_sets": {
+    "bio_cells": {
+      "model_type": "biophysical"
+    },
+    "point_cells": {
+      "model_type": ["point_process", "point_soma"]
+    },
+    "lgn_cells": {
+      "population": "lgn"
+    }
+  },
+
   "components": {
     "morphologies_dir": "$COMPONENT_DIR/morphologies",
     "synaptic_models_dir": "$COMPONENT_DIR/synaptic_models",
@@ -53,7 +65,6 @@
     "biophysical_neuron_models_dir": "$COMPONENT_DIR/biophysical_neuron_templates",
     "point_neuron_models_dir": "$COMPONENT_DIR/point_neuron_templates"
   },
-
 
   "reports": {
     "calcium_concentration": {

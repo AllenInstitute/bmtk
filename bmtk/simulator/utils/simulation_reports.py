@@ -20,6 +20,10 @@ class SimReport(object):
         # Set default parameter values (when not explicity stated). Should occur on a module-by-module basis
         self._set_defaults()
 
+    @property
+    def node_set(self):
+        return self.params.get('cells', 'all')
+
     def _set_defaults(self):
         for var_name, default_val in self._get_defaults():
             if var_name not in self.params:

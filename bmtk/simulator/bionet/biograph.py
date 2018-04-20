@@ -29,7 +29,8 @@ import os
 import numpy as np
 from neuron import h
 
-from bmtk.simulator.utils.graph import SimGraph, SimEdge, SimNode
+from bmtk.simulator.core.graph import SimGraph
+#from bmtk.simulator.utils.graph import SimGraph, SimEdge, SimNode
 import bmtk.simulator.bionet.config as cfg
 # from bmtk.simulator.bionet.property_schemas import DefaultPropertySchema, CellTypes
 #from . import io
@@ -312,7 +313,7 @@ class BioGraph(SimGraph):
 
     def _init_connections(self):
         if not self._connections_initialized:
-            io.log_info('Initializing connections.')
+            # io.log_info('Initializing connections.')
             for gid, cell in self._local_cells_gid.items():
                 cell.init_connections()
             self._connections_initialized = True
@@ -357,9 +358,12 @@ class BioGraph(SimGraph):
             self._virtual_cells_nid[population][node_id] = stim
             return stim
 
-    def add_spike_trains(self, spike_trains):
+    def add_spike_trains(self, spike_trains, node_set):
+        # TODO: Allow user to pass in a NWB/CSV file also
+        self._init_connections()
+
         for pop_name in self._virtual_populations_map.keys():
-            if pop_name not in spike_trains.populations:
+            if pop_name not in node_set.population_names():
                 continue
 
             for trg_pop_name in self._local_cells_nid.keys():
@@ -368,5 +372,6 @@ class BioGraph(SimGraph):
                     for trg_nid, trg_cell in self._local_cells_nid[trg_pop_name].items():
                         for edge in edge_pop.get_target(trg_nid):
                             virt_edge = BioEdge(edge, self, prop_maps[edge.group_id])
+                            # TODO: Filter out source cells using the nodeset
                             src_cell = self.get_virt_cell(pop_name, edge.source_node_id, spike_trains)
                             trg_cell.set_syn_connection(virt_edge, src_cell, src_cell)
