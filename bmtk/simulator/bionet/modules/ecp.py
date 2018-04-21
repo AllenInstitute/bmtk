@@ -47,7 +47,7 @@ class EcpMod(SimulatorMod):
         self._fih1 = None
         self._rel_nsites = 0
         self._block_size = 0
-        self._biophys_gids = []
+        # self._biophys_gids = []
         self._saved_gids = {}
         self._nsteps = 0
 
@@ -61,6 +61,8 @@ class EcpMod(SimulatorMod):
         self._tmp_ecp_file = self._get_tmp_fname(MPI_RANK)
         self._tmp_ecp_handle = None
         # self._tmp_ecp_dataset = None
+
+        self._local_gids = []
 
     def _get_tmp_fname(self, rank):
         return os.path.join(self._tmp_outputdir, 'tmp_{}_ecp.h5'.format(MPI_RANK))
@@ -98,7 +100,7 @@ class EcpMod(SimulatorMod):
 
     def _calculate_ecp(self, sim):
         self._rel = RecXElectrode(self._positions_file)
-        for gid in self._biophys_gids:
+        for gid in self._local_gids:
             cell = sim.net.get_local_cell(gid)
             # cell = sim.net.cells[gid]
             self._rel.calc_transfer_resistance(gid, cell.get_seg_coords())
@@ -154,8 +156,10 @@ class EcpMod(SimulatorMod):
         pc.barrier()
 
         self._block_size = sim.nsteps_block
-        # TODO: Allow for a custom subset of cells
-        self._biophys_gids = sim.biophysical_gids  # gids for biophysical cells on this rank
+
+        # Get list of gids being recorded
+        selected_gids = set(sim.net.get_node_set(self._cells).gids())
+        self._local_gids = list(set(sim.biophysical_gids) & selected_gids)
 
         self._calculate_ecp(sim)
         self._create_ecp_file(sim)
@@ -165,14 +169,14 @@ class EcpMod(SimulatorMod):
 
         # create list of all cells whose ecp values will be saved separetly
         self._saved_gids = {gid: np.empty((self._block_size, self._rel_nsites))
-                            for gid in self._biophys_gids if gid in self._cells}
+                            for gid in self._local_gids}
         for gid in self._saved_gids.keys():
             self._create_cell_file(gid)
 
         pc.barrier()
 
     def step(self, sim, tstep):
-        for gid in self._biophys_gids:  # compute ecp only from the biophysical cells
+        for gid in self._local_gids:  # compute ecp only from the biophysical cells
             cell = sim.net.get_local_cell(gid)
             # cell = sim.net.cells[gid]
             im = cell.get_im()

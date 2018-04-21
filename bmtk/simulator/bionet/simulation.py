@@ -255,7 +255,6 @@ class Simulation(object):
 
     def report_load_balance(self):
         comptime = pc.step_time()
-        print('comptime: ', comptime, pc.allreduce(comptime, 1))
         avgcomp = pc.allreduce(comptime, 1)/pc.nhost()
         maxcomp = pc.allreduce(comptime, 2)
         io.log_info('Maximum compute time is {} seconds.'.format(maxcomp))
@@ -332,7 +331,6 @@ class Simulation(object):
         # Parse the "reports" section of the config and load an associated output module for each report
         sim_reports = reports.from_config(config)
         for report in sim_reports:
-            node_set = network.get_node_set(report.node_set)
             if isinstance(report, reports.SpikesReport):
                 mod = mods.SpikesMod(**report.params)
 

@@ -121,6 +121,7 @@ class SimGraph(object):
         self._external_edges = {}
 
         self._node_sets = {}
+        self._using_gids = False
 
     @property
     def io(self):
@@ -430,9 +431,5 @@ class SimGraph(object):
         graph._node_sets['all'] = NodeSetAll(graph)
         for ns_name, ns_filter in conf.node_sets.items():
             graph._node_sets[ns_name] = NodeSet(ns_filter, graph)
-
-        #print graph._node_sets
-        print list(graph.get_node_set('point_cells').gids())
-        exit()
 
         return graph

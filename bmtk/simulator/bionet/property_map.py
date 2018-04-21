@@ -3,7 +3,7 @@ import ast
 import numpy as np
 
 import nrn
-import io
+from bmtk.simulator.bionet.io_tools import io
 
 
 # TODO: Consider using partial functions

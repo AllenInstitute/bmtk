@@ -47,14 +47,9 @@
   },
 
   "node_sets": {
-    "bio_cells": {
-      "model_type": "biophysical"
-    },
+    "biophysical": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
     "point_cells": {
       "model_type": ["point_process", "point_soma"]
-    },
-    "lgn_cells": {
-      "population": "lgn"
     }
   },
 
@@ -73,11 +68,11 @@
       "module": "membrane_report",
       "file_name": "$OUTPUT_DIR/cell_vars.h5",
       "sections": "soma",
-      "enabled": true
+      "enabled": false
     },
 
     "membrane_potential": {
-      "cells": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+      "cells": "biophysical",
       "variable_name": "v",
       "module": "membrane_report",
       "file_name": "$OUTPUT_DIR/cell_vars.h5",
@@ -86,7 +81,7 @@
     },
 
     "ecp": {
-      "cells": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+      "cells": "biophysical",
       "variable_name": "v",
       "module": "extracellular",
       "electrode_positions": "$COMPONENT_DIR/recXelectrodes/linear_electrode.csv",
