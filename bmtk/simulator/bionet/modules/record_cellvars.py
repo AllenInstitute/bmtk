@@ -94,7 +94,8 @@ class MembraneReport(SimulatorMod):
 
     def _get_gids(self, sim):
         # get list of gids to save. Will only work for biophysical cells saved on the current MPI rank
-        self._local_gids = list(set(sim.biophysical_gids) & set(self._all_gids))
+        selected_gids = set(sim.net.get_node_set(self._all_gids).gids())
+        self._local_gids = list(set(sim.biophysical_gids) & selected_gids)
 
     def initialize(self, sim):
         self._get_gids(sim)
