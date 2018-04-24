@@ -164,7 +164,8 @@ class SomaReport(MembraneReport):
     def step(self, sim, tstep, rel_time=0.0):
         # save all necessary cells/variables at the current time-step into memory
         for gid in self._local_gids:
-            cell = sim.net.get_local_cell(gid)
+            cell = sim.net.get_cell_gid(gid)
+            #cell = sim.net.get_local_cell(gid)
             for var_name in self._variables:
                 var_val = getattr(cell.hobj.soma[0](0.5), var_name)
                 self._var_recorder.record_cell(gid, var_name, [var_val], tstep)

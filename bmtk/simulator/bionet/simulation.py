@@ -139,7 +139,8 @@ class Simulation(object):
 
     @property
     def biophysical_gids(self):
-        return self.net.biopyhys_gids
+        return self.net.cell_type_maps('biophysical').keys()
+        #return self.net.biopyhys_gids
 
     @property
     def local_gids(self):
@@ -172,7 +173,8 @@ class Simulation(object):
         h.celsius = self.celsius
                 
     def set_spikes_recording(self):
-        for gid, _ in self.net.local_cells.items():
+        for gid, _ in self.net.get_local_cells().items():
+        #for gid, _ in self.net.local_cells.items():
             #for gid in self.net.cells:
             tvec = self.h.Vector()
             gidvec = self.h.Vector()
@@ -303,7 +305,7 @@ class Simulation(object):
         network.build_nodes()
 
         network.io.log_info('Building recurrent connections')
-        #network.build_recurrent_edges()
+        network.build_recurrent_edges()
 
         # TODO: Need to create a gid selector
         for sim_input in inputs.from_config(config):
@@ -346,7 +348,9 @@ class Simulation(object):
                 mod = mods.EcpMod(**report.params)
                 # Set up the ability for ecp on all relevant cells
                 # TODO: According to spec we need to allow a different subset other than only biophysical cells
-                for cell in network.get_cells('biophysical'):
+                for gid, cell in network.cell_type_maps('biophysical').items():
+                    print cell
+                    #for cell in network.get_cells('biophysical'):
                     cell.setup_ecp()
             else:
                 # TODO: Allow users to register customized modules using pymodules

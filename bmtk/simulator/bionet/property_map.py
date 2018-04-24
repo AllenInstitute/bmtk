@@ -49,7 +49,6 @@ class NodePropertyMap(object):
 
         return hobj
 
-
     @classmethod
     def build_map(cls, node_group, biograph):
         prop_map = cls(biograph)
