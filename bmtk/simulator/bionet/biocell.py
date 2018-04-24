@@ -48,7 +48,7 @@ class BioCell(Cell):
         self._secs = []
         self.set_sec_array()
 
-        self._save_conn = False # bionetwork.save_connection
+        self._save_conn = False  # bionetwork.save_connection
         self._synapses = []
         self._syn_src_net = []
         self._syn_src_gid = []
@@ -103,7 +103,7 @@ class BioCell(Cell):
     @property
     def morphology_file(self):
         # TODO: Get from self._node.morphology_file
-        return self._node['morphology_file']
+        return self._node.morphology_file
 
     @property
     def morphology(self):
@@ -142,7 +142,7 @@ class BioCell(Cell):
         self._secs = np.array(secs)
 
     def set_syn_connection(self, edge_prop, src_node, stim=None):
-        syn_weight = edge_prop.weight(src_node, self._node)
+        syn_weight = edge_prop.syn_weight(src_node=src_node, trg_node=self._node)
 
         if edge_prop.preselected_targets:
             return self._set_connection_preselected(edge_prop, src_node, syn_weight, stim)

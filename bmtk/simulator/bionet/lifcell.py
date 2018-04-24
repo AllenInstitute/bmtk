@@ -48,11 +48,11 @@ class LIFCell(Cell):
 
     def set_syn_connection(self, edge_prop, src_node, stim=None):
         #src_gid = src_node.node_id
-        syn_params = edge_prop['dynamics_params']
+        syn_params = edge_prop.dynamics_params
         nsyns = edge_prop.nsyns
-        delay = edge_prop['delay']
+        delay = edge_prop.delay
 
-        syn_weight = edge_prop.weight(src_node, self._node)
+        syn_weight = edge_prop.syn_weight(src_node, self._node)
         if not edge_prop.preselected_targets:
             # TODO: this is not very robust, need some other way
             syn_weight *= syn_params['sign'] * nsyns

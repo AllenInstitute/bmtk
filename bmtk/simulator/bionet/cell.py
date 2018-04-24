@@ -53,6 +53,10 @@ class Cell(object):
         self._hobj = node.load_cell()
 
     @property
+    def node(self):
+        return self._node
+
+    @property
     def hobj(self):
         return self._hobj
 
@@ -81,7 +85,7 @@ class Cell(object):
         return self._pos_soma
 
     def set_soma_position(self):
-        positions = self._node.positions
+        positions = self._node.position
         if positions is not None:
             self._pos_soma = positions.reshape(3, 1)
 
