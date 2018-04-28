@@ -29,7 +29,6 @@ from neuron import h
 #from bmtk.utils.sonata.config import SonataConfig
 from bmtk.simulator.core.config import ConfigDict
 from bmtk.simulator.utils.sim_validator import SimConfigValidator
-
 from bmtk.simulator.bionet.io_tools import io
 from . import nrn
 

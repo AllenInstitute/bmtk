@@ -78,15 +78,8 @@ class BioCell(Cell):
 
     def calc_seg_coords(self, morph_seg_coords):
         """Calculate segment coordinates for individual cells"""
-        #print self.gid
-        #print self._prop_map
-        #print self._prop_map.rotation_angle_yaxis(self._props)
-        #exit()
-        #phi_y = self._props['rotation_angle_yaxis']
-        #phi_y = self._props.rotation_angle_yaxis  # self._props['rotation_angle_yaxis']
-
-        phi_y = self._node.rotation_angle_yaxis  # self._props['rotation_angle_zaxis']
-        phi_z = self._node.rotation_angle_zaxis  # self._props['rotation_angle_zaxis']
+        phi_y = self._node.rotation_angle_yaxis
+        phi_z = self._node.rotation_angle_zaxis
 
         RotY = utils.rotation_matrix([0, 1, 0], phi_y)  # rotate segments around yaxis normal to pia
         RotZ = utils.rotation_matrix([0, 0, 1], -phi_z) # rotate segments around zaxis to get a proper orientation
@@ -191,10 +184,6 @@ class BioCell(Cell):
             for i in range(nsyns):
                 self._save_connection(src_gid, src_node.network, sec_x=xs[i], seg_ix=segs_ix[i],
                                       edge_type_id=edge_prop.edge_type_id)
-                # self._save_connection(src_gid, src_node.network, xs[i], segs_ix[i])
-
-        # self._syn_seg_ix.extend(segs_ix)  # use only when need to output synaptic locations
-        # self._syn_src_gid.extend([src_gid] * nsyns)
 
         for syn in synapses:
             # connect synapses
@@ -220,38 +209,6 @@ class BioCell(Cell):
         return [[self.gid, self._syn_src_gid[i], self.network_name, self._syn_src_net[i], self._syn_seg_ix[i],
                  self._syn_sec_x[i], self.netcons[i].weight[0], self.netcons[i].delay, self._edge_type_id[i], 0]
                 for i in range(len(self._synapses))]
-
-    '''
-    def set_syn_connections(self, nsyn, syn_weight, edge_type, src_gid, stim=None):
-        """Set synaptic connections"""
-        tar_seg_ix, tar_seg_prob = self._morph.get_target_segments(edge_type)
-
-        # choose nsyn elements from seg_ix with probability proportional to segment area
-        segs_ix = self.prng.choice(tar_seg_ix, nsyn, p=tar_seg_prob)
-        secs = self.secs[segs_ix]  # sections where synapases connect
-        xs = self._morph.seg_prop['x'][segs_ix]  # distance along the section where synapse connects, i.e., seg_x
-
-        syn_params = edge_type['params'] #edge_type.syn_params
-        set_syns_func = nrn.py_modules.synapse_model(edge_type['set_params_function'])
-        syns = set_syns_func(syn_params, xs, secs)
-            
-        weight = syn_weight
-        delay = edge_type['delay']
-        self._synapses.extend(syns)
-        self._syn_seg_ix.extend(segs_ix)  # use only when need to output synaptic locations
-        self._syn_src_gid.extend([src_gid]*len(syns))
-
-        for syn in syns:
-            # connect synapses
-            if stim:
-                nc = h.NetCon(stim.hobj, syn)   # stim.hobj - source, syn - target
-            else:
-                nc = pc.gid_connect(src_gid, syn)
- 
-            nc.weight[0] = weight
-            nc.delay = delay      
-            self.netcons.append(nc)
-    '''
 
     def init_connections(self):
         Cell.init_connections(self)

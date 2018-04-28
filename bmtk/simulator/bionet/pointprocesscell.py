@@ -20,20 +20,17 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-from bmtk.simulator.bionet.cell import Cell
-# from bmtk.simulator.bionet import io,nrn
-
 from neuron import h
+from bmtk.simulator.bionet.cell import Cell
 
 
 pc = h.ParallelContext()    # object to access MPI methods
 
 
-class LIFCell(Cell):
-    # TODO: Rename to PointProcessCell
+class PointProcessCell(Cell):
     """Implimentation of a Leaky Integrate-and-file neuron type cell."""
     def __init__(self, node, bionetwork):
-        super(LIFCell, self).__init__(node)
+        super(PointProcessCell, self).__init__(node)
         self.set_spike_detector()
         self._src_gids = []
         self._src_nets = []
@@ -47,7 +44,6 @@ class LIFCell(Cell):
         pass
 
     def set_syn_connection(self, edge_prop, src_node, stim=None):
-        #src_gid = src_node.node_id
         syn_params = edge_prop.dynamics_params
         nsyns = edge_prop.nsyns
         delay = edge_prop.delay
@@ -69,27 +65,9 @@ class LIFCell(Cell):
         nc.delay = delay
         self._netcons.append(nc)
         self._src_gids.append(src_gid)
-        #self._src_nets.append(src_node.network)
         self._src_nets.append(-1)
-        #self._edge_type_id.append(edge_prop.edge_type_id)
         self._edge_type_id.append(-1)
         return nsyns
-
-    def set_syn_connections(self, nsyn, syn_weight, edge_type, src_gid, stim=None):
-        """Set synaptic connection"""
-        syn_params = edge_type['params']
-        delay = edge_type['delay']
-
-        if stim:
-            nc = h.NetCon(stim.hobj, self.hobj)
-        else:
-            nc = pc.gid_connect(src_gid, self.hobj)
-
-        # scale weight by the number of synapse the artificial cell receives
-        weight = nsyn * syn_weight * syn_params['sign']
-        nc.weight[0] = weight
-        nc.delay = delay
-        self._netcons.append(nc)
 
     def get_connection_info(self):
         # TODO: There should be a more effecient and robust way to return synapse information.

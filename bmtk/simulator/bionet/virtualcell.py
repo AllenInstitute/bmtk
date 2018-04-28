@@ -22,32 +22,30 @@
 #
 from neuron import h
 
-"""
-Representation of a Virtual/External/Stim node.
 
-TODO:
- * Rename to Virtual
- * This is the biggest bottleneck when loading a network, find a way to optimize.
-"""
-class Stim(object):
+class VirtualCell(object):
+    """Representation of a Virtual/External node"""
+
     def __init__(self, node, spike_train_dataset):
+        # VirtualCell is currently not a subclass of bionet.Cell class b/c the parent has a bunch of properties that
+        # just don't apply to a virtual cell. May want to make bionet.Cell more generic in the future.
         self._node_id = node.node_id
-        self.stim_gid = node.gid
-        self.rand_streams = []
+        self._hobj = None
         self._spike_train_dataset = spike_train_dataset
-
+        self._train_vec = []
         self.set_stim(node, self._spike_train_dataset)
         
     @property
     def node_id(self):
         return self._node_id
 
-    def set_stim(self, stim_prop, spike_train):
-        #spike_trains_handle = input_prop["spike_trains_handle"]
-        #self.spike_train = spike_trains_handle['%d/data' % self.stim_gid][:]
+    @property
+    def hobj(self):
+        return self._hobj
 
-        self.train_vec = h.Vector(spike_train.get_spikes(self.node_id))
+    def set_stim(self, stim_prop, spike_train):
+        """Gets the spike trains for each individual cell."""
+        self._train_vec = h.Vector(spike_train.get_spikes(self.node_id))
         vecstim = h.VecStim()
-        vecstim.play(self.train_vec)
-        
-        self.hobj = vecstim
+        vecstim.play(self._train_vec)
+        self._hobj = vecstim
