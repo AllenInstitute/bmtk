@@ -23,9 +23,9 @@
 import sys
 import os
 import glob
-
 import neuron
 from neuron import h
+
 from bmtk.simulator.bionet.pyfunction_cache import py_modules
 from bmtk.simulator.bionet.pyfunction_cache import load_py_modules
 from bmtk.simulator.bionet.pyfunction_cache import synapse_model, synaptic_weight, cell_model
@@ -56,7 +56,7 @@ def load_neuron_modules(mechanisms_dir, templates_dir, default_templates=True):
 
     bionet_dir = os.path.dirname(__file__)
     h.load_file(os.path.join(bionet_dir, 'import3d.hoc'))  # customized import3d.hoc to supress warnings
-    h.load_file(os.path.join(bionet_dir, 'advance.hoc'))
+    h.load_file(os.path.join(bionet_dir,'default_templates',  'advance.hoc'))
 
     if mechanisms_dir is not None:
         neuron.load_mechanisms(str(mechanisms_dir))
@@ -69,10 +69,7 @@ def load_neuron_modules(mechanisms_dir, templates_dir, default_templates=True):
 
 
 def load_templates(template_dir):
-    
-    '''
-    Load all templates to be available in the hoc namespace for instantiating cells
-    '''
+    """Load all templates to be available in the hoc namespace for instantiating cells"""
     cwd = os.getcwd()
     os.chdir(template_dir)
 

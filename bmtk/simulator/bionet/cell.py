@@ -37,7 +37,6 @@ class Cell(object):
     """
     def __init__(self, node):
         self._node = node
-        #self._prop_map = prop_map
         self._gid = node.gid
         self._node_id = node.node_id
         self._props = node

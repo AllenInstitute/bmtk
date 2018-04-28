@@ -5,7 +5,7 @@ import numpy as np
 import nrn
 from bmtk.simulator.bionet.io_tools import io
 
-
+'''
 # TODO: Consider using partial functions
 class NodePropertyMap(object):
     def __init__(self, graph):
@@ -173,7 +173,7 @@ class EdgePropertyMap(object):
             prop_map.nsyns = types.MethodType(no_nsyns, prop_map)
 
         # For target sections
-        '''
+        """
         if 'syn_weight' not in edge_group.all_columns:
             io.log_exception('Edges {} missing syn_weight property for connections.'.format(edge_group.parent.name))
         else:
@@ -187,7 +187,7 @@ class EdgePropertyMap(object):
             prop_map.nsyns = types.MethodType(no_nsyns, prop_map)
         else:
             prop_map.preselected_targets = False
-        '''
+        """
         return prop_map
 
 
@@ -222,4 +222,4 @@ def target_sections(self, edge):
     print edge['distance_range']
     exit()
     return edge['distance_range']
-
+'''
