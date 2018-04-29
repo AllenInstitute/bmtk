@@ -59,6 +59,7 @@ class Simulation(object):
             data_res = -1
         return n, res, data_res
 
+    '''
     def set_spikes_recordings(self):
         # TODO: Pass in output-dir and file name to save to
         # TODO: Allow for sorting - overwrite bionet module
@@ -71,6 +72,7 @@ class Simulation(object):
 
             nest.Connect(pop.keys(), self._spike_detector)
         # exit()
+    '''
 
     def run(self, duration=None):
         if duration is None:
@@ -94,11 +96,6 @@ class Simulation(object):
         for mod in self._mods:
             mod.finalize(self)
         io.barrier()
-
-        #if n_nodes > 1:
-        #    comm.Barrier()
-
-        # io.collect_gdf_files(self.output_dir, self._spikes_file, self._nest_id_map, self._overwrite)
 
     def add_mod(self, mod):
         self._mods.append(mod)
@@ -127,8 +124,6 @@ class Simulation(object):
         if 'output_dir' in config['output']:
             network.output_dir = config['output']['output_dir']
 
-        # network.spikes_file = config['output']['spikes_ascii']
-
         if 'block_run' in run_dict and run_dict['block_run']:
             if 'block_size' not in run_dict:
                 raise Exception('"block_run" is set to True but "block_size" not found.')
@@ -152,56 +147,19 @@ class Simulation(object):
         graph.build_recurrent_edges()
 
         for sim_input in inputs.from_config(config):
+            node_set = graph.get_node_set(sim_input.node_set)
             if sim_input.input_type == 'spikes':
                 spikes = spike_trains.SpikesInput(name=sim_input.name, module=sim_input.module,
                                                   input_type=sim_input.input_type, params=sim_input.params)
                 io.log_info('Build virtual cell stimulations for {}'.format(sim_input.name))
-                graph.add_spike_trains(spikes)
+                graph.add_spike_trains(spikes, node_set)
 
         sim_reports = reports.from_config(config)
         for report in sim_reports:
             if report.module == 'spikes_report':
                 mod = mods.SpikesMod(**report.params)
-                #print report.params
-                #exit()
-                # network.set_spikes_recordings()
 
             network.add_mod(mod)
-
-        # exit()
-
-
-        # build the cells
-        #io.log('Building cells')
-        #network.build_cells()
-
-        # Build internal connections
-        #if run_dict['connect_internal']:
-        #    io.log('Creating recurrent connections')
-        #    network.set_recurrent_connections()
-
-        # Build external connections. Set connection to default True and turn off only if explicitly stated.
-        # NOTE: It might be better to set to default off?!?! Need to dicuss what would be more intuitive for the users.
-        # TODO: ignore case of network name
-
-        '''
-        external_network_settings = {name: True for name in graph.external_networks()}
-        if 'connect_external' in run_dict:
-            external_network_settings.update(run_dict['connect_external'])
-        for netname, connect in external_network_settings.items():
-            if connect:
-                io.log('Setting external connections for {}'.format(netname))
-                network.set_external_connections(netname)
-
-        # Build inputs
-        if 'input' in config:
-            for netinput in config['input']:
-                if netinput['type'] == 'external_spikes' and netinput['format'] == 'nwb' and netinput['active']:
-                    network.add_spikes_nwb(netinput['source_nodes'], netinput['file'], netinput['trial'])
-
-            io.log_info('Adding stimulations')
-            network.make_stims()
-        '''
 
         io.log_info('Network created.')
         return network

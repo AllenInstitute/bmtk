@@ -1,3 +1,5 @@
+import os
+import json
 import types
 
 
@@ -72,6 +74,57 @@ class NodeAdaptor(object):
         else:
             # TODO: Split in the node_types_table when possible
             return model_processing_str.split(',')
+
+    @staticmethod
+    def preprocess_node_types(network, node_population):
+        # TODO: The following figures out the actually used node-type-ids. For mem and speed may be better to just
+        # process them all
+        node_type_ids = node_population.type_ids
+        # TODO: Verify all the node_type_ids are in the table
+        node_types_table = node_population.types_table
+
+        # TODO: Convert model_type to a enum
+        if network.has_component('morphologies_dir'):
+            morph_dir = network.get_component('morphologies_dir')
+            if morph_dir is not None and 'morphology_file' in node_types_table.columns:
+                for nt_id in node_type_ids:
+                    node_type = node_types_table[nt_id]
+                    if node_type['morphology_file'] is None:
+                        continue
+                    # TODO: Check the file exits
+                    # TODO: See if absolute path is stored in csv
+                    node_type['morphology_file'] = os.path.join(morph_dir, node_type['morphology_file'])
+
+        if 'dynamics_params' in node_types_table.columns and 'model_type' in node_types_table.columns:
+            for nt_id in node_type_ids:
+                node_type = node_types_table[nt_id]
+                dynamics_params = node_type['dynamics_params']
+                if isinstance(dynamics_params, dict):
+                    continue
+
+                model_type = node_type['model_type']
+                if model_type == 'biophysical':
+                    params_dir = network.get_component('biophysical_neuron_models_dir')
+                elif model_type == 'point_process':
+                    params_dir = network.get_component('point_neuron_models_dir')
+                elif model_type == 'point_soma':
+                    params_dir = network.get_component('point_neuron_models_dir')
+                else:
+                    # Not sure what to do in this case, throw Exception?
+                    params_dir = network.get_component('custom_neuron_models')
+
+                params_path = os.path.join(params_dir, dynamics_params)
+
+                # see if we can load the dynamics_params as a dictionary. Otherwise just save the file path and let the
+                # cell_model loader function handle the extension.
+                try:
+                    params_val = json.load(open(params_path, 'r'))
+                    node_type['dynamics_params'] = params_val
+                except Exception:
+                    # TODO: Check dynamics_params before
+                    network.io.log_exception('Could not find node dynamics_params file {}.'.format(params_path))
+
+        # TODO: Use adaptor to validate model_type and model_template values
 
     @classmethod
     def create_adaptor(cls, node_group, network):
