@@ -1,4 +1,9 @@
+import os
+import ast
+import json
 import types
+
+import numpy as np
 
 
 class SonataBaseEdge(object):
@@ -61,6 +66,52 @@ class EdgeAdaptor(object):
     def get_edge(self, sonata_node):
         return SonataBaseEdge(sonata_node, self)
 
+    @staticmethod
+    def preprocess_edge_types(network, edge_population):
+        edge_types_table = edge_population.types_table
+        edge_type_ids = np.unique(edge_population.type_ids)
+
+        for et_id in edge_type_ids:
+            edge_type = edge_types_table[et_id]
+            if 'dynamics_params' in edge_types_table.columns:
+                dynamics_params = edge_type['dynamics_params']
+                params_dir = network.get_component('synaptic_models_dir')
+
+                params_path = os.path.join(params_dir, dynamics_params)
+
+                # see if we can load the dynamics_params as a dictionary. Otherwise just save the file path and let the
+                # cell_model loader function handle the extension.
+                try:
+                    params_val = json.load(open(params_path, 'r'))
+                    edge_type['dynamics_params'] = params_val
+                except Exception:
+                    # TODO: Check dynamics_params before
+                    network.io.log_exception('Could not find edge dynamics_params file {}.'.format(params_path))
+
+            # Split target_sections
+            if 'target_sections' in edge_type:
+                trg_sec = edge_type['target_sections']
+                if trg_sec is not None:
+                    try:
+                        edge_type['target_sections'] = ast.literal_eval(trg_sec)
+                    except Exception as exc:
+                        network.io.log_warning('Unable to split target_sections list {}'.format(trg_sec))
+                        edge_type['target_sections'] = None
+
+            # Split target distances
+            if 'distance_range' in edge_type:
+                dist_range = edge_type['distance_range']
+                if dist_range is not None:
+                    try:
+                        # TODO: Make the distance range has at most two values
+                        edge_type['distance_range'] = json.loads(dist_range)
+                    except Exception as e:
+                        try:
+                            edge_type['distance_range'] = [0.0, float(dist_range)]
+                        except Exception as e:
+                            network.io.log_warning('Unable to parse distance_range {}'.format(dist_range))
+                            edge_type['distance_range'] = None
+
     @classmethod
     def create_adaptor(cls, edge_group, network):
         prop_map = cls(network)
@@ -73,7 +124,6 @@ class EdgeAdaptor(object):
             adaptor.dynamics_params = types.MethodType(group_dynamics_params, adaptor)
         else:  # 'dynamics_params' in node_group.all_columns:
             adaptor.dynamics_params = types.MethodType(types_dynamics_params, adaptor)
-
 
         # For fetching/calculating synaptic weights
         if 'weight_function' in edge_group.all_columns:

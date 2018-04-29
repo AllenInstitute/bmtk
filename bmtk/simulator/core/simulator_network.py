@@ -50,6 +50,9 @@ class SimNetwork(object):
         else:
             return self._components[name]
 
+    def has_component(self, name):
+        return name in self._components
+
     def get_node_population(self, name):
         return self._node_populations[name]
 

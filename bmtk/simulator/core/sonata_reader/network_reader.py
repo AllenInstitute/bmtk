@@ -29,6 +29,10 @@ class SonataNodes(NodesReader):
     def name(self):
         return self._pop_name
 
+    @property
+    def adaptor(self):
+        return self._adaptor
+
     def initialize(self, network):
         # Determine the various mode-types available in the Node Population, whether or not a population of nodes
         # contains virtual/external nodes, internal nodes, or a mix of both affects how to nodes are built
@@ -48,12 +52,14 @@ class SonataNodes(NodesReader):
         if model_types:
             self._has_internal_nodes = True
 
-        self._preprocess_node_types(network)
+        self._adaptor.preprocess_node_types(network, self._node_pop)
+        #self._preprocess_node_types(network)
         self._prop_adaptors = {grp.group_id: self._create_adaptor(grp, network) for grp in self._node_pop.groups}
 
     def _create_adaptor(self, grp, network):
         return self._adaptor.create_adaptor(grp, network)
 
+    '''
     def _preprocess_node_types(self, network):
         # TODO: The following figures out the actually used node-type-ids. For mem and speed may be better to just
         # process them all
@@ -62,15 +68,16 @@ class SonataNodes(NodesReader):
         node_types_table = self._node_pop.types_table
 
         # TODO: Convert model_type to a enum
-        morph_dir = network.get_component('morphologies_dir')
-        if morph_dir is not None and 'morphology_file' in node_types_table.columns:
-            for nt_id in node_type_ids:
-                node_type = node_types_table[nt_id]
-                if node_type['morphology_file'] is None:
-                    continue
-                # TODO: Check the file exits
-                # TODO: See if absolute path is stored in csv
-                node_type['morphology_file'] = os.path.join(morph_dir, node_type['morphology_file'])
+        if network.has_component('morphologies_dir'):
+            morph_dir = network.get_component('morphologies_dir')
+            if morph_dir is not None and 'morphology_file' in node_types_table.columns:
+                for nt_id in node_type_ids:
+                    node_type = node_types_table[nt_id]
+                    if node_type['morphology_file'] is None:
+                        continue
+                    # TODO: Check the file exits
+                    # TODO: See if absolute path is stored in csv
+                    node_type['morphology_file'] = os.path.join(morph_dir, node_type['morphology_file'])
 
         if 'dynamics_params' in node_types_table.columns and 'model_type' in node_types_table.columns:
             for nt_id in node_type_ids:
@@ -102,6 +109,7 @@ class SonataNodes(NodesReader):
                     network.io.log_exception('Could not find node dynamics_params file {}.'.format(params_path))
 
         # TODO: Use adaptor to validate model_type and model_template values
+    '''
 
     @classmethod
     def load(cls, nodes_h5, node_types_csv, gid_table=None, selected_nodes=None, adaptor=NodeAdaptor):
@@ -119,6 +127,19 @@ class SonataNodes(NodesReader):
         for base_node in self._node_pop[item]:
             snode = self._prop_adaptors[base_node.group_id].get_node(base_node)
             yield snode
+
+    def __iter__(self):
+        return self
+
+    def get_nodes(self):
+        for node_group in self._node_pop.groups:
+            node_adaptor = self._prop_adaptors[node_group.group_id]
+            if node_adaptor.batch_process:
+                for batch in node_adaptor.get_batches(node_group):
+                    yield batch
+            else:
+                for node in node_group:
+                    yield node_adaptor.get_node(node)
 
 
 class SonataEdges(EdgesReader):
@@ -140,7 +161,8 @@ class SonataEdges(EdgesReader):
         return self._edge_pop.target_population
 
     def initialize(self, network):
-        self._preprocess_edge_types(network)
+        self._adaptor_cls.preprocess_edge_types(network, self._edge_pop)
+        # self._preprocess_edge_types(network)
         self._edge_adaptors = {grp.group_id: self._adaptor_cls.create_adaptor(grp, network)
                                for grp in self._edge_pop.groups}
 
@@ -148,6 +170,17 @@ class SonataEdges(EdgesReader):
         for edge in self._edge_pop.get_target(node_id):
             yield self._edge_adaptors[edge.group_id].get_edge(edge)
 
+    def get_edges(self):
+        for edge_group in self._edge_pop.groups:
+            edge_adaptor = self._edge_adaptors[edge_group.group_id]
+            if edge_adaptor.batch_process:
+                for edge in edge_adaptor.get_batches(edge_group):
+                    yield edge
+            else:
+                pass
+
+
+    '''
     def _preprocess_edge_types(self, network):
         edge_types_table = self._edge_pop.types_table
         edge_type_ids = np.unique(self._edge_pop.type_ids)
@@ -192,6 +225,7 @@ class SonataEdges(EdgesReader):
                         except Exception as e:
                             self.io.log_warning('Unable to parse distance_range {}'.format(dist_range))
                             edge_type['distance_range'] = None
+    '''
 
     @classmethod
     def load(cls, edges_h5, edge_types_csv, selected_populations=None, adaptor=EdgeAdaptor):
