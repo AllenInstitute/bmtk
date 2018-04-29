@@ -21,3 +21,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import default_setters
+from config import Config
+from pointnetwork import PointNetwork
+from pointsimulator import PointSimulator
