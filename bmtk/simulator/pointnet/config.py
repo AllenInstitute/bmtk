@@ -32,3 +32,8 @@ def from_json(config_file, validate=False):
     conf_dict = ConfigDict.from_json(config_file)
     conf_dict.io = io
     return conf_dict
+
+class Config(ConfigDict):
+    @property
+    def io(self):
+        return io
