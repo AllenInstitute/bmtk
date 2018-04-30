@@ -63,6 +63,14 @@ class EdgeAdaptor(object):
         self._network = network
         self._func_caches = self._network.py_function_caches
 
+    @property
+    def batch_process(self):
+        return False
+
+    @batch_process.setter
+    def batch_process(self, flag):
+        pass
+
     def get_edge(self, sonata_node):
         return SonataBaseEdge(sonata_node, self)
 

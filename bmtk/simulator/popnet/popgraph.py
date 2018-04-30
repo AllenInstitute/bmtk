@@ -24,11 +24,13 @@ import os
 import json
 import numpy as np
 
-from bmtk.simulator.core.graph import SimGraph
+from bmtk.simulator.core.simulator_network import SimNetwork
+#from bmtk.simulator.core.graph import SimGraph
 from property_schemas import PopTypes, DefaultPropertySchema
 #from popnode import InternalNode, ExternalPopulation
 from popedge import PopEdge
 import bmtk.simulator.popnet.utils as poputils
+from bmtk.simulator.popnet.sonata_adaptors import PopEdgeAdaptor
 
 from dipde.internals.internalpopulation import InternalPopulation
 from dipde.internals.externalpopulation import ExternalPopulation
@@ -129,14 +131,14 @@ class PopConnection(object):
     def build(self):
         edge = self._edges[0]
         self._dipde_conn = Connection(self._src_pop._dipde_obj, self._trg_pop._dipde_obj, edge.nsyns, edge.delay,
-                                      edge.weight)
+                                      edge.syn_weight)
 
     @property
     def dipde_obj(self):
         return self._dipde_conn
 
 
-class PopGraph(SimGraph):
+class PopGraph(SimNetwork):
     def __init__(self, group_by='node_id', **properties):
         super(PopGraph, self).__init__()
 
@@ -172,6 +174,10 @@ class PopGraph(SimGraph):
     def internal_populations(self):
         return self._dipde_pops.values()
 
+    def _register_adaptors(self):
+        super(PopGraph, self)._register_adaptors()
+        self._edge_adaptors['sonata'] = PopEdgeAdaptor
+
     def build_nodes(self):
         if self._group_key == 'node_id' or self._group_key is None:
             self._build_nodes()
@@ -179,6 +185,22 @@ class PopGraph(SimGraph):
             self._build_nodes_grouped()
 
     def _build_nodes(self):
+        for node_pop in self.node_populations:
+            if node_pop.internal_nodes_only:
+                nid2pop_map = {}
+                for node in node_pop.get_nodes():
+                    #pnode = PopNode(node, prop_maps[node.group_id], self)
+                    pop = Population(node.node_id)
+                    pop.add_node(node)
+                    pop.build()
+
+                    self._dipde_pops[node.node_id] = pop
+                    self._all_populations.append(pop)
+                    nid2pop_map[node.node_id] = pop
+
+                self._nodeid2pop_map[node_pop.name] = nid2pop_map
+
+        """
         for node_pop in self._internal_populations_map.values():
             prop_maps = self._node_property_maps[node_pop.name]
             nid2pop_map = {}
@@ -193,10 +215,30 @@ class PopGraph(SimGraph):
                 nid2pop_map[node.node_id] = pop
 
             self._nodeid2pop_map[node_pop.name] = nid2pop_map
+        """
 
     def _build_nodes_grouped(self):
         # Organize every single sonata-node into a given population.
-        # TODO: If grouping by node_id ignore this step
+        for node_pop in self.node_populations:
+            nid2pop_map = {}
+            if node_pop.internal_nodes_only:
+                for node in node_pop.get_nodes():
+                    pop_key = node[self._group_key]
+                    if pop_key not in self._dipde_pops:
+                        pop = Population(pop_key)
+                        self._dipde_pops[pop_key] = pop
+                        self._all_populations.append(pop)
+
+                    pop = self._dipde_pops[pop_key]
+                    pop.add_node(node)
+                    nid2pop_map[node.node_id] = pop
+
+                self._nodeid2pop_map[node_pop.name] = nid2pop_map
+
+            for dpop in self._dipde_pops.values():
+                dpop.build()
+
+        """
         for node_pop in self._internal_populations_map.values():
             prop_maps = self._node_property_maps[node_pop.name]
             nid2pop_map = {}
@@ -216,8 +258,33 @@ class PopGraph(SimGraph):
 
         for dpop in self._dipde_pops.values():
             dpop.build()
+        """
 
     def build_recurrent_edges(self):
+        recurrent_edge_pops = [ep for ep in self._edge_populations if not ep.virtual_connections]
+
+        for edge_pop in recurrent_edge_pops:
+            if edge_pop.recurrent_connections:
+                src_pop_maps = self._nodeid2pop_map[edge_pop.source_nodes]
+                trg_pop_maps = self._nodeid2pop_map[edge_pop.target_nodes]
+                for edge in edge_pop.get_edges():
+                    src_pop = src_pop_maps[edge.source_node_id]
+                    trg_pop = trg_pop_maps[edge.target_node_id]
+                    conn_key = (src_pop, trg_pop)
+                    if conn_key not in self._connections:
+                        conn = PopConnection(src_pop, trg_pop)
+                        self._connections[conn_key] = conn
+                        self._all_connections.append(conn)
+
+                    self._connections[conn_key].add_edge(edge)
+
+            elif edge_pop.mixed_connections:
+                raise NotImplementedError()
+
+        for conn in self._connections.values():
+            conn.build()
+
+        """
         recurrent_edges = [edge_pop for _, edge_list in self._recurrent_edges.items() for edge_pop in edge_list]
         for edge_pop in recurrent_edges:
             prop_maps = self._edge_property_maps[edge_pop.name]
@@ -238,8 +305,86 @@ class PopGraph(SimGraph):
         for conn in self._connections.values():
             conn.build()
         # print len(self._connections)
+        """
 
-    def add_spike_trains(self, spike_trains):
+    def find_edges(self, source_nodes=None, target_nodes=None):
+        # TODO: Move to parent
+        selected_edges = self._edge_populations[:]
+
+        if source_nodes is not None:
+            selected_edges = [edge_pop for edge_pop in selected_edges if edge_pop.source_nodes == source_nodes]
+
+        if target_nodes is not None:
+            selected_edges = [edge_pop for edge_pop in selected_edges if edge_pop.target_nodes == target_nodes]
+
+        return selected_edges
+
+    def add_spike_trains(self, spike_trains, node_set):
+        # Build external node populations
+        src_nodes = [node_pop for node_pop in self.node_populations if node_pop.name in node_set.population_names()]
+        for node_pop in src_nodes:
+            pop_name = node_pop.name
+            if node_pop.name not in self._external_pop:
+                external_pop_map = {}
+                src_pop_map = {}
+                for node in node_pop.get_nodes():
+                    pop_key = node[self._group_key]
+                    if pop_key not in external_pop_map:
+                        pop = ExtPopulation(pop_key)
+                        external_pop_map[pop_key] = pop
+                        self._all_populations.append(pop)
+
+                    pop = external_pop_map[pop_key]
+                    pop.add_node(node)
+                    src_pop_map[node.node_id] = pop
+
+                self._nodeid2pop_map[pop_name] = src_pop_map
+
+                firing_rates = poputils.get_firing_rates(external_pop_map.values(), spike_trains)
+                self._external_pop[pop_name] = external_pop_map
+                for dpop in external_pop_map.values():
+                    dpop.build(firing_rates[dpop.pop_id])
+
+            else:
+                # TODO: Throw error spike trains should only be called once per source population
+                # external_pop_map = self._external_pop[pop_name]
+                src_pop_map = self._nodeid2pop_map[pop_name]
+
+            unbuilt_connections = []
+            for source_reader in src_nodes:
+                for edge_pop in self.find_edges(source_nodes=source_reader.name):
+                    trg_pop_map = self._nodeid2pop_map[edge_pop.target_nodes]
+                    for edge in edge_pop.get_edges():
+                        src_pop = src_pop_map[edge.source_node_id]
+                        trg_pop = trg_pop_map[edge.target_node_id]
+                        conn_key = (src_pop, trg_pop)
+                        if conn_key not in self._external_connections:
+                            pconn = PopConnection(src_pop, trg_pop)
+                            self._external_connections[conn_key] = pconn
+                            unbuilt_connections.append(pconn)
+                            self._all_connections.append(pconn)
+
+                        #pop_edge = PopEdge(edge, prop_maps[edge.group_id], self)
+                        self._external_connections[conn_key].add_edge(edge)
+
+            for pedge in unbuilt_connections:
+                pedge.build()
+        #exit()
+
+        """
+            print node_pop.name
+
+
+            exit()
+            if node_pop.name in self._virtual_ids_map:
+                 continue
+
+            virt_node_map = {}
+            if node_pop.virtual_nodes_only:
+                print 'HERE'
+                exit()
+
+
         for pop_name, node_pop in self._virtual_populations_map.items():
             if pop_name not in spike_trains.populations:
                 continue
@@ -292,15 +437,65 @@ class PopGraph(SimGraph):
 
             for pedge in unbuilt_connections:
                 pedge.build()
+        """
 
 
-
-    def add_rates(self, rates):
+    def add_rates(self, rates, node_set):
         if self._group_key == 'node_id':
             id_lookup = lambda n: n.node_id
         else:
             id_lookup = lambda n: n[self._group_key]
 
+        src_nodes = [node_pop for node_pop in self.node_populations if node_pop.name in node_set.population_names()]
+        for node_pop in src_nodes:
+            pop_name = node_pop.name
+            if node_pop.name not in self._external_pop:
+                external_pop_map = {}
+                src_pop_map = {}
+                for node in node_pop.get_nodes():
+                    pop_key = id_lookup(node)
+                    if pop_key not in external_pop_map:
+                        pop = ExtPopulation(pop_key)
+                        external_pop_map[pop_key] = pop
+                        self._all_populations.append(pop)
+
+                    pop = external_pop_map[pop_key]
+                    pop.add_node(node)
+                    src_pop_map[node.node_id] = pop
+
+                self._nodeid2pop_map[pop_name] = src_pop_map
+
+                firing_rates = rates.get_rate(pop_key)
+                self._external_pop[pop_name] = external_pop_map
+                for dpop in external_pop_map.values():
+                    dpop.build(firing_rates)
+
+            else:
+                # TODO: Throw error spike trains should only be called once per source population
+                # external_pop_map = self._external_pop[pop_name]
+                src_pop_map = self._nodeid2pop_map[pop_name]
+
+            unbuilt_connections = []
+            for source_reader in src_nodes:
+                for edge_pop in self.find_edges(source_nodes=source_reader.name):
+                    trg_pop_map = self._nodeid2pop_map[edge_pop.target_nodes]
+                    for edge in edge_pop.get_edges():
+                        src_pop = src_pop_map[edge.source_node_id]
+                        trg_pop = trg_pop_map[edge.target_node_id]
+                        conn_key = (src_pop, trg_pop)
+                        if conn_key not in self._external_connections:
+                            pconn = PopConnection(src_pop, trg_pop)
+                            self._external_connections[conn_key] = pconn
+                            unbuilt_connections.append(pconn)
+                            self._all_connections.append(pconn)
+
+                        #pop_edge = PopEdge(edge, prop_maps[edge.group_id], self)
+                        self._external_connections[conn_key].add_edge(edge)
+
+            for pedge in unbuilt_connections:
+                pedge.build()
+
+        """
         for pop_name, node_pop in self._virtual_populations_map.items():
             if pop_name not in rates.populations:
                 continue
@@ -334,7 +529,7 @@ class PopGraph(SimGraph):
                 # TODO: Throw error spike trains should only be called once per source population
                 # external_pop_map = self._external_pop[pop_name]
                 src_pop_map = self._nodeid2pop_map[pop_name]
-
+        """
 
     '''
     def _add_node(self, node, network):

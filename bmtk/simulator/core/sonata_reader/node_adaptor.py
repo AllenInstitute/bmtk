@@ -48,6 +48,14 @@ class NodeAdaptor(object):
         self._model_template_cache = {}
         self._model_processing_cache = {}
 
+    @property
+    def batch_process(self):
+        return False
+
+    @batch_process.setter
+    def batch_process(self, flag):
+        pass
+
     def node_id(self, node):
         return node.node_id
 
@@ -109,6 +117,8 @@ class NodeAdaptor(object):
                     params_dir = network.get_component('point_neuron_models_dir')
                 elif model_type == 'point_soma':
                     params_dir = network.get_component('point_neuron_models_dir')
+                elif model_type == 'population':
+                    params_dir = network.get_component('population_models_dir')
                 else:
                     # Not sure what to do in this case, throw Exception?
                     params_dir = network.get_component('custom_neuron_models')
