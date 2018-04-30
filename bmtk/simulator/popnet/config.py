@@ -20,9 +20,11 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-import bmtk.simulator.utils.config as msdk_config
+# import bmtk.simulator.utils.config as msdk_config
+from bmtk.simulator.core.config import ConfigDict
+from bmtk.simulator.core.io_tools import io
 
-
-# TODO: Implement pointnet validator and create json schema for popnet
 def from_json(config_file, validate=False):
-    return msdk_config.from_json(config_file)
+    conf_dict = ConfigDict.from_json(config_file)
+    conf_dict.io = io
+    return conf_dict

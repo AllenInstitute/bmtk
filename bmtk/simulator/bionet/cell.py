@@ -37,7 +37,8 @@ class Cell(object):
     """
     def __init__(self, node):
         self._node = node
-        self._gid = node.node_id
+        self._gid = node.gid
+        self._node_id = node.node_id
         self._props = node
         self._netcons = []  # list of NEURON network connection object attached to this cell
 
@@ -48,7 +49,11 @@ class Cell(object):
         pc.set_gid2node(self.gid, MPI_RANK)
 
         # Load the NEURON HOC object
-        self._hobj = node.load_hobj()
+        self._hobj = node.load_cell()
+
+    @property
+    def node(self):
+        return self._node
 
     @property
     def hobj(self):
@@ -57,6 +62,14 @@ class Cell(object):
     @property
     def gid(self):
         return self._gid
+
+    @property
+    def node_id(self):
+        return self._node_id
+
+    @property
+    def group_id(self):
+        return self._node.group_id
 
     @property
     def network_name(self):
@@ -71,7 +84,7 @@ class Cell(object):
         return self._pos_soma
 
     def set_soma_position(self):
-        positions = self._props.positions
+        positions = self._node.position
         if positions is not None:
             self._pos_soma = positions.reshape(3, 1)
 

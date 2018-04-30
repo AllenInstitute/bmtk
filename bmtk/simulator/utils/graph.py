@@ -22,10 +22,12 @@
 #
 import os
 import json
+import ast
+import numpy as np
 
 import config as cfg
-from bmtk.utils.io import TabularNetwork
-from bmtk.utils.property_schema import PropertySchema
+from property_maps import NodePropertyMap, EdgePropertyMap
+from bmtk.utils import sonata
 
 
 """Creates a graph of nodes and edges from multiple network files for all simulators.
@@ -96,39 +98,35 @@ class SimNode(object):
 
 
 class SimGraph(object):
-    def __init__(self, property_schema=PropertySchema):
-        self._networks = {}  # table of networks/node_ids
-        self._internal_nodes_table = {}  # table of just the internal nodes by node_id
-        self._internal_networks = set()  # list of internal network names
-        self._external_networks = set()  # list of external network names
+    model_type_col = 'model_type'
 
+    def __init__(self):
         self._components = {}  # components table, i.e. paths to model files.
+        self._io = None  # TODO: create default io module (without mpi)
 
-        self._edges_table = {}  # table of edges, organized by (target_network,source_network)
-        self.__edge_params_cache = {}  # dynamics_params for edges
+        self._node_property_maps = {}
+        self._edge_property_maps = {}
 
-        self._property_schema = property_schema
+        self._node_populations = {}
+        self._internal_populations_map = {}
+        self._virtual_populations_map = {}
+
+        self._virtual_cells_nid = {}
+
+        self._recurrent_edges = {}
+        self._external_edges = {}
 
     @property
-    def networks(self):
-        """Returns list of all network names, external and internal"""
-        return self._networks.keys()
+    def io(self):
+        return self._io
 
     @property
-    def property_schema(self):
-        return self._property_schema
+    def internal_pop_names(self):
+        return self
 
-    @property_schema.setter
-    def property_schema(self, value):
-        self._property_schema = value
-
-    def external_networks(self):
-        """List of all external network names"""
-        return list(self._external_networks)
-
-    def internal_networks(self):
-        """List of all internal network names"""
-        return list(self._internal_networks)
+    @property
+    def node_populations(self):
+        return list(self._node_populations.keys())
 
     def get_component(self, key):
         """Get the value of item in the components dictionary.
@@ -146,178 +144,265 @@ class SimGraph(object):
         """
         self._components[key] = value
 
-    def get_nodes(self, network):
-        return self._networks[network].values()
-
-    def get_node(self, node_id, network):
-        return self._networks[network][node_id]
-
-    def get_internal_nodes(self):
-        return self._internal_nodes_table.values()
-
     def _from_json(self, file_name):
         return cfg.from_json(file_name)
 
     def _validate_components(self):
         """Make sure various components (i.e. paths) exists before attempting to build the graph."""
-        # TODO: need to implement
         return True
 
-    def add_nodes(self, nodes, network=None):
+    def _create_nodes_prop_map(self, grp):
+        return NodePropertyMap()
+
+    def _create_edges_prop_map(self, grp):
+        return EdgePropertyMap()
+
+    def __avail_model_types(self, population):
+        model_types = set()
+        for grp in population.groups:
+            if self.model_type_col not in grp.all_columns:
+                self.io.log_exception('model_type is missing from nodes.')
+
+            model_types.update(set(np.unique(grp.get_values(self.model_type_col))))
+        return model_types
+
+    def _preprocess_node_types(self, node_population):
+        # TODO: The following figures out the actually used node-type-ids. For mem and speed may be better to just
+        # process them all
+        node_type_ids = node_population.type_ids
+        # TODO: Verify all the node_type_ids are in the table
+        node_types_table = node_population.types_table
+
+        # TODO: Convert model_type to a enum
+        morph_dir = self.get_component('morphologies_dir')
+        if morph_dir is not None and 'morphology_file' in node_types_table.columns:
+            for nt_id in node_type_ids:
+                node_type = node_types_table[nt_id]
+                if node_type['morphology_file'] is None:
+                    continue
+                # TODO: Check the file exits
+                # TODO: See if absolute path is stored in csv
+                node_type['morphology_file'] = os.path.join(morph_dir, node_type['morphology_file'])
+
+        if 'dynamics_params' in node_types_table.columns and 'model_type' in node_types_table.columns:
+            for nt_id in node_type_ids:
+                node_type = node_types_table[nt_id]
+                dynamics_params = node_type['dynamics_params']
+                if isinstance(dynamics_params, dict):
+                    continue
+
+                model_type = node_type['model_type']
+                if model_type == 'biophysical':
+                    params_dir = self.get_component('biophysical_neuron_models_dir')
+                elif model_type == 'point_process':
+                    params_dir = self.get_component('point_neuron_models_dir')
+                elif model_type == 'point_soma':
+                    params_dir = self.get_component('point_neuron_models_dir')
+                else:
+                    # Not sure what to do in this case, throw Exception?
+                    params_dir = self.get_component('custom_neuron_models')
+
+                params_path = os.path.join(params_dir, dynamics_params)
+
+                # see if we can load the dynamics_params as a dictionary. Otherwise just save the file path and let the
+                # cell_model loader function handle the extension.
+                try:
+                    params_val = json.load(open(params_path, 'r'))
+                    node_type['dynamics_params'] = params_val
+                except Exception:
+                    # TODO: Check dynamics_params before
+                    self.io.log_exception('Could not find node dynamics_params file {}.'.format(params_path))
+
+    def _preprocess_edge_types(self, edge_pop):
+        edge_types_table = edge_pop.types_table
+        edge_type_ids = np.unique(edge_pop.type_ids)
+
+        for et_id in edge_type_ids:
+            if 'dynamics_params' in edge_types_table.columns:
+                edge_type = edge_types_table[et_id]
+                dynamics_params = edge_type['dynamics_params']
+                params_dir = self.get_component('synaptic_models_dir')
+
+                params_path = os.path.join(params_dir, dynamics_params)
+
+                # see if we can load the dynamics_params as a dictionary. Otherwise just save the file path and let the
+                # cell_model loader function handle the extension.
+                try:
+                    params_val = json.load(open(params_path, 'r'))
+                    edge_type['dynamics_params'] = params_val
+                except Exception:
+                    # TODO: Check dynamics_params before
+                    self.io.log_exception('Could not find edge dynamics_params file {}.'.format(params_path))
+
+            # Split target_sections
+            if 'target_sections' in edge_type:
+                trg_sec = edge_type['target_sections']
+                if trg_sec is not None:
+                    try:
+                        edge_type['target_sections'] = ast.literal_eval(trg_sec)
+                    except Exception as exc:
+                        self.io.log_warning('Unable to split target_sections list {}'.format(trg_sec))
+                        edge_type['target_sections'] = None
+
+            # Split target distances
+            if 'distance_range' in edge_type:
+                dist_range = edge_type['distance_range']
+                if dist_range is not None:
+                    try:
+                        # TODO: Make the distance range has at most two values
+                        edge_type['distance_range'] = json.loads(dist_range)
+                    except Exception as e:
+                        try:
+                            edge_type['distance_range'] = [0.0, float(dist_range)]
+                        except Exception as e:
+                            self.io.log_warning('Unable to parse distance_range {}'.format(dist_range))
+                            edge_type['distance_range'] = None
+
+    def external_edge_populations(self, src_pop, trg_pop):
+        return self._external_edges.get((src_pop, trg_pop), [])
+
+    def add_nodes(self, sonata_file, populations=None):
         """Add nodes from a network to the graph.
 
-        :param nodes: A NodesFormat type object containing list of nodes.
-        :param network: name/identifier of network. If none will attempt to retrieve from nodes object
+        :param sonata_file: A NodesFormat type object containing list of nodes.
+        :param populations: name/identifier of network. If none will attempt to retrieve from nodes object
         """
-        if network is None:
-            # TODO: Throw an error if network name cannot be resolved.
-            network = nodes.name
+        nodes = sonata_file.nodes
 
-        if network in self._networks:
-            raise Exception('Network {} already exists.'.format(network))
-        else:
-            # TODO: Is it beneficial to preallocate list and use insert instead of append?
-            self._networks[network] = {}
+        selected_populations = nodes.population_names if populations is None else populations
+        for pop_name in selected_populations:
+            if pop_name not in nodes:
+                # when user wants to simulation only a few populations in the file
+                continue
 
-        # go through each node in the network and add them to the graph
-        for node in nodes:
-            self._add_node(node, network)
+            if pop_name in self.node_populations:
+                # Make sure their aren't any collisions
+                self.io.log_exception('There are multiple node populations with name {}.'.format(pop_name))
 
-    def _add_node(self, node, network):
-        raise NotImplementedError()
+            node_pop = nodes[pop_name]
+            self._preprocess_node_types(node_pop)
+            self._node_populations[pop_name] = node_pop
 
-    def _add_internal_node(self, node_params, network):
-        """Add node from network into graph
+            # Segregate into virtual populations and non-virtual populations
+            model_types = self.__avail_model_types(node_pop)
+            if 'virtual' in model_types:
+                self._virtual_populations_map[pop_name] = node_pop
+                self._virtual_cells_nid[pop_name] = {}
+                model_types -= set(['virtual'])
+                if model_types:
+                    # We'll allow a population to have virtual and non-virtual nodes but it is not ideal
+                    self.io.log_warning('Node population {} contains both virtual and non-virtual nodes which can ' +
+                                        'cause memory and build-time inefficency. Consider separating virtual nodes ' +
+                                        'into their own population'.format(pop_name))
 
-        :param node_params: A node object to add to the graph
-        :param network: Name of network
+            if model_types:
+                self._internal_populations_map[pop_name] = node_pop
+
+            self._node_property_maps[pop_name] = {grp.group_id: self._create_nodes_prop_map(grp)
+                                                  for grp in node_pop.groups}
+
+    def build_nodes(self):
+        raise NotImplementedError
+
+    def build_recurrent_edges(self):
+        raise NotImplementedError
+
+    def add_edges(self, sonata_file, populations=None, source_pop=None, target_pop=None):
         """
-        gid = node_params.node_id
-        if gid in self._internal_nodes_table:
-            raise Exception('Found multiple nodes with gid {}. Please fix.'.format(gid))
 
-        self._networks[network][gid] = node_params
-        self._internal_nodes_table[gid] = node_params
-        self._internal_networks.add(network)  # indicate that 'network' contains internal nodes
-
-    def _add_external_node(self, node_params, network):
-        """Add a virtual node to the graph.
-
-        :param node_params: node object
-        :param network: name of network
+        :param sonata_file:
+        :param populations:
+        :param source_pop:
+        :param target_pop:
+        :return:
         """
-        # TODO: There must be a separate external network table, in the case the network is mixed then
-        #       self._networks[network] will als be mixed.
-        self._networks[network][node_params.node_id] = node_params
-        self._external_networks.add(network)
+        edges = sonata_file.edges
+        selected_populations = edges.population_names if populations is None else populations
 
-    def add_edges(self, edges, source_network=None, target_network=None):
-        src_network = source_network if source_network is not None else edges.source_network
-        trg_network = target_network if target_network is not None else edges.target_network
-        if trg_network is None:
-            raise Exception('Unable to resolve name for target network in edges file.')
-        if src_network is None:
-            raise Exception('Unable to resolve name for source network in edges file.')
+        for pop_name in selected_populations:
+            if pop_name not in edges:
+                continue
 
-        # TODO: reimplement ability to set weight with functions. Scan each group properities to see 'syn_weight' exists
-        #       or if 'weight_function'. Create edge template that passes back weight accordingly
-        for net in [src_network, trg_network]:
-            if net not in self.networks:
-                raise Exception('Network {} has not been added to the graph, can not make connections'.format(net))
+            edge_pop = edges[pop_name]
+            self._preprocess_edge_types(edge_pop)
 
-        self._edges_table[(trg_network, src_network)] = edges
+            # Check the source nodes exists
+            src_pop = source_pop if source_pop is not None else edge_pop.source_population
+            is_internal_src = src_pop in self._internal_populations_map.keys()
+            is_external_src = src_pop in self._virtual_populations_map.keys()
 
-    def edges_table(self, target_network, source_network):
-        return self._edges_table.get((target_network, source_network), None)
+            trg_pop = target_pop if target_pop is not None else edge_pop.target_population
+            is_internal_trg = trg_pop in self._internal_populations_map.keys()
 
-    def edges_iterator(self, target_gid, source_network):
-        target_node = self._internal_nodes_table[target_gid]
-        target_network = target_node.network
-        source_network_table = self._networks[source_network]
+            if not is_internal_trg:
+                self.io.log_exception(('Node population {} does not exists (or consists of only virtual nodes). ' +
+                                      '{} edges cannot create connections.').format(trg_pop, pop_name))
 
-        edges = self.edges_table(target_network, source_network)
-        if edges is None:
-            return
+            if not (is_internal_src or is_external_src):
+                self.io.log_exception('Source node population {} not found. Please update {} edges'.format(src_pop,
+                                                                                                           pop_name))
+            if is_internal_src:
+                if trg_pop not in self._recurrent_edges:
+                    self._recurrent_edges[trg_pop] = []
+                self._recurrent_edges[trg_pop].append(edge_pop)
 
-        for e in edges.edges_itr(target_gid):
-            dynamics_params = self._get_edge_params(e)
-            edge_wrapper = self._create_edge(e, dynamics_params)
-            source_node = source_network_table[e.source_gid]
+            if is_external_src:
+                if trg_pop not in self._external_edges:
+                    self._external_edges[(src_pop, trg_pop)] = []
+                self._external_edges[(src_pop, trg_pop)].append(edge_pop)
 
-            yield target_node, source_node, edge_wrapper
-
-    def _create_edge(self, edge, dynamics_params):
-        return SimEdge(edge, dynamics_params)
-
-    def _get_edge_params(self, edge):
-        if edge.with_dynamics_params:
-            return edge['dynamics_params']
-
-        # TODO: need to find a way to dynamically determine params columns once
-        if 'dynamics_params' in edge:
-            params_file = edge['dynamics_params']
-        elif 'params_file' in edge:
-            params_file = edge['params_file']
-        else:
-            raise Exception('No params file for edge model.')
-
-        if params_file in self.__edge_params_cache:
-            return self.__edge_params_cache[params_file]
-        else:
-            params_dir = self.get_component('synaptic_models_dir')
-            params_path = os.path.join(params_dir, params_file)
-            params_dict = json.load(open(params_path, 'r'))
-            self.__edge_params_cache[params_file] = params_dict
-            return params_dict
+            self._edge_property_maps[pop_name] = {grp.group_id: self._create_edges_prop_map(grp)
+                                                  for grp in edge_pop.groups}
 
     @classmethod
-    def from_config(cls, conf, network_format=TabularNetwork, property_schema=None, **properties):
+    def from_config(cls, conf, **properties):
         """Generates a graph structure from a json config file or dictionary.
 
         :param conf: name of json config file, or a dictionary with config parameters
-        :param network_format: storage representation of networks
-        :param property_schema: column schema used to build graph
         :param properties: optional properties.
         :return: A graph object of type cls
         """
-        graph = cls(property_schema) if not properties else cls(property_schema, **properties)
+        graph = cls(**properties)
         if isinstance(conf, basestring):
             config = graph._from_json(conf)
         elif isinstance(conf, dict):
             config = conf
         else:
-            raise Exception('Could not convert {} (type "{}") to json.'.format(conf, type(conf)))
+            graph.io.log_exception('Could not convert {} (type "{}") to json.'.format(conf, type(conf)))
 
-        if 'components' in config:
-            for name, value in config['components'].iteritems():
-                graph.add_component(name, value)
-            graph._validate_components()
+        run_dict = config['run']
+        if 'spike_threshold' in run_dict:
+            # TODO: FIX, spike-thresholds should be set by simulation code, allow for diff. values based on node-group
+            graph.spike_threshold = run_dict['spike_threshold']
+        if 'dL' in run_dict:
+            graph.dL = run_dict['dL']
 
-        if 'networks' not in config:
-            raise Exception('Could not find any network files. Unable to build network.')
+        if not config.with_networks:
+            graph.io.log_exception('Could not find any network files. Unable to build network.')
 
-        network_files = config['networks']
-        if 'nodes' not in network_files:
-            raise Exception("Could not find any node files. Unable to build network.")
+        # load components
+        for name, value in config.components.items():
+            graph.add_component(name, value)
+        graph._validate_components()
 
-        for nodes_config in config['networks']['nodes']:
-            nodes_file = nodes_config['nodes_file']
-            node_types_file = nodes_config['node_types_file']
-            network_name = None if 'name' not in nodes_config else nodes_config['name']
-            nf = network_format.load_nodes(nodes_file, node_types_file)
-            graph.add_nodes(nf, network_name)
+        # load nodes
+        for node_dict in config.nodes:
+            nodes_net = sonata.File(data_files=node_dict['nodes_file'], data_type_files=node_dict['node_types_file'])
+            graph.add_nodes(nodes_net)
 
-        if 'edges' in config['networks']:
-            for edges_config in config['networks']['edges']:
-                if not edges_config.get('active', True):
-                    continue
+        # load edges
+        for edge_dict in config.edges:
+            target_network = edge_dict['target'] if 'target' in edge_dict else None
+            source_network = edge_dict['source'] if 'source' in edge_dict else None
+            edge_net = sonata.File(data_files=edge_dict['edges_file'], data_type_files=edge_dict['edge_types_file'])
+            graph.add_edges(edge_net, source_pop=target_network, target_pop=source_network)
 
-                edges_file = edges_config['edges_file']
-                edge_types_file = edges_config['edge_types_file']
+        '''
+        graph.io.log_info('Building cells.')
+        graph.build_nodes()
 
-                ef = network_format.load_edges(edges_file, edge_types_file)
-                target_network = edges_config['target'] if 'target' in edges_config else None
-                source_network = edges_config['source'] if 'source' in edges_config else None
-                graph.add_edges(ef, target_network=target_network, source_network=source_network)
+        graph.io.log_info('Building recurrent connections')
+        graph.build_recurrent_edges()
+        '''
 
         return graph
