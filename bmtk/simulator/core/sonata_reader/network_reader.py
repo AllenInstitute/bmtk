@@ -177,8 +177,8 @@ class SonataEdges(EdgesReader):
                 for edge in edge_adaptor.get_batches(edge_group):
                     yield edge
             else:
-                pass
-
+                for edge in self._edge_pop:
+                    yield edge_adaptor.get_edge(edge)
 
     '''
     def _preprocess_edge_types(self, network):

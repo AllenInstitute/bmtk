@@ -3,7 +3,6 @@ from bmtk.simulator.core.config import ConfigDict
 from bmtk.simulator.core.node_sets import NodeSet, NodeSetAll
 from bmtk.simulator.core import sonata_reader
 
-
 class SimNetwork(object):
     def __init__(self):
         self._components = {}
@@ -30,10 +29,13 @@ class SimNetwork(object):
     def recurrent_edges(self):
         return [ep for ep in self._edge_populations if ep.recurrent_connections]
 
+    @property
+    def py_function_caches(self):
+        return None
+
     def _register_adaptors(self):
-        #self._node_adaptors['sonata'] = SonataNodes
-        #self._edge_adaptors['sonata'] = SonataEdges
-        pass
+        self._node_adaptors['sonata'] = sonata_reader.NodeAdaptor
+        self._edge_adaptors['sonata'] = sonata_reader.EdgeAdaptor
 
     def get_node_adaptor(self, name):
         return self._node_adaptors[name]

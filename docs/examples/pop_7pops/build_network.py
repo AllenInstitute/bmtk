@@ -155,7 +155,7 @@ def build_lgn():
     VL4.import_nodes(nodes_file_name='network/v1_nodes.h5', node_types_file_name='network/v1_node_types.csv')
     VL4.add_edges(source=LGN.nodes(), target={'pop_name': 'Rorb'},
                   connection_rule=10,
-                  weight_max=5e-05,
+                  syn_weight=5e-05,
                   weight_function='wmax',
                   distance_range=[0.0, 150.0],
                   target_sections=['basal', 'apical'],
@@ -165,7 +165,7 @@ def build_lgn():
 
     VL4.add_edges(source=LGN.nodes(), target={'pop_name': 'Nr5a1'},
                   connection_rule=10,
-                  weight_max=5e-05,
+                  syn_weight=5e-05,
                   weight_function='wmax',
                   distance_range=[0.0, 150.0],
                   target_sections=['basal', 'apical'],
@@ -175,7 +175,7 @@ def build_lgn():
 
     VL4.add_edges(source=LGN.nodes(), target={'pop_name': 'Scnn1a'},
                   connection_rule=10,
-                  weight_max=4e-05,
+                  syn_weight=4e-05,
                   weight_function='wmax',
                   distance_range=[0.0, 150.0],
                   target_sections=['basal', 'apical'],
@@ -185,7 +185,7 @@ def build_lgn():
 
     VL4.add_edges(source=LGN.nodes(), target={'pop_name': 'PV1'},
                   connection_rule=10,
-                  weight_max=0.0001,
+                  syn_weight=0.0001,
                   weight_function='wmax',
                   distance_range=[0.0, 1.0e+20],
                   target_sections=['somatic', 'basal'],
@@ -195,7 +195,7 @@ def build_lgn():
 
     VL4.add_edges(source=LGN.nodes(), target={'pop_name': 'PV2'},
                   connection_rule=10,
-                  weight_max=9e-05,
+                  syn_weight=9e-05,
                   weight_function='wmax',
                   distance_range=[0.0, 1.0e+20],
                   target_sections=['somatic', 'basal'],
@@ -205,7 +205,7 @@ def build_lgn():
 
     VL4.add_edges(source=LGN.nodes(), target={'pop_name': 'LIF_exc'},
                   connection_rule=10,
-                  weight_max=0.0045,
+                  syn_weight=0.0045,
                   weight_function='wmax',
                   delay=2.0,
                   params_file='instanteneousExc.json',
@@ -213,7 +213,7 @@ def build_lgn():
 
     VL4.add_edges(source=LGN.nodes(), target={'pop_name': 'LIF_inh'},
                   connection_rule=10,
-                  weight_max=0.002,
+                  syn_weight=0.002,
                   weight_function='wmax',
                   delay=2.0,
                   params_file='instanteneousExc.json',
