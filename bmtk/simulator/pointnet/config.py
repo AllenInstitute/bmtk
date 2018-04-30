@@ -23,10 +23,17 @@
 import os
 import json
 
-import bmtk.simulator.utils.config as msdk_config
-from bmtk.simulator.utils.sim_validator import SimConfigValidator
+from bmtk.simulator.core.config import ConfigDict
+from bmtk.simulator.pointnet.io_tools import io
 
 
 # TODO: Implement pointnet validator and create json schema for pointnet
 def from_json(config_file, validate=False):
-    return msdk_config.from_json(config_file)
+    conf_dict = ConfigDict.from_json(config_file)
+    conf_dict.io = io
+    return conf_dict
+
+class Config(ConfigDict):
+    @property
+    def io(self):
+        return io

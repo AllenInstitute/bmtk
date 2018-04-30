@@ -22,3 +22,6 @@
 #
 from tabular_network_v1 import TabularNetwork
 from tabular_network_v0 import TabularNetwork as TabularNetwork_AI
+
+def log_warning(message):
+    pass

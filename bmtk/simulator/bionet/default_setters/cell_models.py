@@ -20,10 +20,15 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-import json
+import numpy as np
 from neuron import h
+try:
+    from sklearn.decomposition import PCA
+except Exception as e:
+    pass
 
-from bmtk.simulator.bionet.pyfunction_cache import add_cell_model
+from bmtk.simulator.bionet.pyfunction_cache import add_cell_model, add_cell_processor
+from bmtk.simulator.bionet.io_tools import io
 
 """
 Functions for loading NEURON cell objects.
@@ -33,34 +38,25 @@ loaded with Cell-Types json files or their NeuroML equivelent, but may be overri
 """
 
 
-def IntFire1(node):
+def IntFire1(cell, template_name, dynamics_params):
     """Loads a point integrate and fire neuron"""
-    model_params = node.model_params
     hobj = h.IntFire1()
-    hobj.tau = model_params['tau']*1000.0  # Convert from seconds to ms.
-    hobj.refrac = model_params['refrac']*1000.0  # Convert from seconds to ms.
+    hobj.tau = dynamics_params['tau']*1000.0  # Convert from seconds to ms.
+    hobj.refrac = dynamics_params['refrac']*1000.0  # Convert from seconds to ms.
     return hobj
 
 
-def Biophys1(cell):
+def Biophys1(cell, template_name, dynamic_params):
     """Loads a biophysical NEURON hoc object using Cell-Types database objects."""
-    if isinstance(cell.model_params, dict):
-        # load directly from the dictionary.
-        return Biophys1_dict(cell)
-
-    elif isinstance(cell.model_params, basestring):
-        # see if the model_params is a NeuroML or json file and load thoses
-        file_ext = cell.model_params[-4:].lower()
-        if file_ext == '.xml' or file_ext == '.nml':
-            return Biophys1_nml(cell.model_params)
-        elif file_ext == 'json':
-            return Biophys1_dict(json.load(open(cell.model_params, 'r')))
-    else:
-        raise Exception('Biophys1: Was unable to determin model params type for {}'.format(cell.model_params))
+    morphology_file = cell['morphology_file']
+    hobj = h.Biophys1(str(morphology_file))
+    #fix_axon(hobj)
+    #set_params_peri(hobj, dynamic_params)
+    return hobj
 
 
 def Biophys1_nml(json_file):
-    # TODO: look at pgleeson examples to see how to convert .nml files
+    # TODO: look at examples to see how to convert .nml files
     raise NotImplementedError()
 
 
@@ -70,85 +66,37 @@ def Biophys1_dict(cell):
     """
     morphology_file = cell['morphology_file']
     hobj = h.Biophys1(str(morphology_file))
-    fix_axon(hobj)
-    set_params_peri(hobj, cell.model_params)
+    #fix_axon_peri(hobj)
+    #set_params_peri(hobj, cell.model_params)
     return hobj
 
 
-def Biophys1_adjusted(cell_prop):
-    morphology_file_name = str(cell_prop['morphology_file'])
-    hobj = h.Biophys1(morphology_file_name)
-    fix_axon_allactive(hobj)
-    # set_params_peri(hobj, cell_prop.model_params)
-    set_params(hobj, cell_prop.model_params)
+def aibs_perisomatic(hobj, cell, dynamics_params):
+    fix_axon_peri(hobj)
+    set_params_peri(hobj, dynamics_params)
     return hobj
 
 
-def set_params(hobj, params_dict):
-    # params_dict = json.load(open(params_file_name, 'r'))
-    passive = params_dict['passive'][0]
-    genome = params_dict['genome']
-    conditions = params_dict['conditions'][0]
+def fix_axon_peri(hobj):
+    """Replace reconstructed axon with a stub
 
-    section_map = {}
-    for sec in hobj.all:
-        section_name = sec.name().split(".")[1][:4]
-        if section_name in section_map:
-            section_map[section_name].append(sec)
-        else:
-            section_map[section_name] = [sec]
+    :param hobj: hoc object
+    """
+    for sec in hobj.axon:
+        h.delete_section(sec=sec)
 
-    for sec in hobj.all:
-        sec.insert('pas')
-        # sec.insert('extracellular')
+    h.execute('create axon[2]', hobj)
 
-    if 'e_pas' in passive:
-        e_pas_val = passive['e_pas']
-        for sec in hobj.all:
-            for seg in sec:
-                seg.pas.e = e_pas_val
+    for sec in hobj.axon:
+        sec.L = 30
+        sec.diam = 1
+        hobj.axonal.append(sec=sec)
+        hobj.all.append(sec=sec)  # need to remove this comment
 
-    if 'ra' in passive:
-        ra_val = passive['ra']
-        for sec in hobj.all:
-            sec.Ra = ra_val
+    hobj.axon[0].connect(hobj.soma[0], 0.5, 0)
+    hobj.axon[1].connect(hobj.axon[0], 1, 0)
 
-    if 'cm' in passive:
-        print('Setting cm')
-        for cm_dict in passive['cm']:
-            cm = cm_dict['cm']
-            for sec in section_map.get(cm_dict['section'], []):
-                sec.cm = cm
-
-    for genome_dict in genome:
-        g_section = genome_dict['section']
-        if genome_dict['section'] == 'glob':
-            print("WARNING: There is a section called glob, probably old json file")
-            continue
-
-        g_value = float(genome_dict['value'])
-        g_name = genome_dict['name']
-        g_mechanism = genome_dict.get("mechanism", "")
-        for sec in section_map.get(g_section, []):
-            if g_mechanism != "":
-                sec.insert(g_mechanism)
-            setattr(sec, g_name, g_value)
-
-        print('setting {} to {} in {}'.format(g_name, g_value, g_section))
-
-    for erev in conditions['erev']:
-        erev_section = erev['section']
-        erev_ena = erev['ena']
-        erev_ek = erev['ek']
-
-        if erev_section in section_map:
-            for sec in section_map.get(erev_section, []):
-                if h.ismembrane('k_ion', sec=sec) == 1:
-                    setattr(sec, 'ek', erev_ek)
-                if h.ismembrane('na_ion', sec=sec) == 1:
-                    setattr(sec, 'ena', erev_ena)
-        else:
-            print("Warning: can't set erev for {}, section array doesn't exist".format(erev_section))
+    h.define_shape()
 
 
 def set_params_peri(hobj, biophys_params):
@@ -168,6 +116,7 @@ def set_params_peri(hobj, biophys_params):
         sec.Ra = passive['ra']
         sec.cm = cm_dict[sec.name().split(".")[1][:4]]
         sec.insert('pas')
+        # sec.insert('extracellular')
 
         for seg in sec:
             seg.pas.e = passive["e_pas"]
@@ -189,26 +138,11 @@ def set_params_peri(hobj, biophys_params):
             sec.ek = erev["ek"]
 
 
-def fix_axon(hobj):
-    """Replace reconstructed axon with a stub
+def aibs_allactive(hobj, cell, dynamics_params):
+    fix_axon_allactive(hobj)
+    set_params_allactive(hobj, dynamics_params)
+    return hobj
 
-    :param hobj: hoc object
-    """
-    for sec in hobj.axon:
-        h.delete_section(sec=sec)
-
-    h.execute('create axon[2]', hobj)
-
-    for sec in hobj.axon:
-        sec.L = 30
-        sec.diam = 1
-        hobj.axonal.append(sec=sec)
-        hobj.all.append(sec=sec)  # need to remove this comment
-
-    hobj.axon[0].connect(hobj.soma[0], 0.5, 0)
-    hobj.axon[1].connect(hobj.axon[0], 1, 0)
-
-    h.define_shape()
 
 
 def fix_axon_allactive(hobj):
@@ -244,10 +178,209 @@ def fix_axon_allactive(hobj):
     h.define_shape()
 
 
-add_cell_model(Biophys1, 'biophysical', overwrite=False)
-add_cell_model(Biophys1, overwrite=False)
-add_cell_model(Biophys1_adjusted, 'biophysical_adjusted', overwrite=False)
-add_cell_model(Biophys1_adjusted, overwrite=False)
-add_cell_model(IntFire1, 'point_IntFire1', overwrite=False)
-add_cell_model(IntFire1, 'intfire', overwrite=False)
-add_cell_model(IntFire1, overwrite=False)
+def set_params_allactive(hobj, params_dict):
+    # params_dict = json.load(open(params_file_name, 'r'))
+    passive = params_dict['passive'][0]
+    genome = params_dict['genome']
+    conditions = params_dict['conditions'][0]
+
+    section_map = {}
+    for sec in hobj.all:
+        section_name = sec.name().split(".")[1][:4]
+        if section_name in section_map:
+            section_map[section_name].append(sec)
+        else:
+            section_map[section_name] = [sec]
+
+    for sec in hobj.all:
+        sec.insert('pas')
+        # sec.insert('extracellular')
+
+    if 'e_pas' in passive:
+        e_pas_val = passive['e_pas']
+        for sec in hobj.all:
+            for seg in sec:
+                seg.pas.e = e_pas_val
+
+    if 'ra' in passive:
+        ra_val = passive['ra']
+        for sec in hobj.all:
+            sec.Ra = ra_val
+
+    if 'cm' in passive:
+        # print('Setting cm')
+        for cm_dict in passive['cm']:
+            cm = cm_dict['cm']
+            for sec in section_map.get(cm_dict['section'], []):
+                sec.cm = cm
+
+    for genome_dict in genome:
+        g_section = genome_dict['section']
+        if genome_dict['section'] == 'glob':
+            io.log_warning("There is a section called glob, probably old json file")
+            continue
+
+        g_value = float(genome_dict['value'])
+        g_name = genome_dict['name']
+        g_mechanism = genome_dict.get("mechanism", "")
+        for sec in section_map.get(g_section, []):
+            if g_mechanism != "":
+                sec.insert(g_mechanism)
+            setattr(sec, g_name, g_value)
+
+    for erev in conditions['erev']:
+        erev_section = erev['section']
+        erev_ena = erev['ena']
+        erev_ek = erev['ek']
+
+        if erev_section in section_map:
+            for sec in section_map.get(erev_section, []):
+                if h.ismembrane('k_ion', sec=sec) == 1:
+                    setattr(sec, 'ek', erev_ek)
+                if h.ismembrane('na_ion', sec=sec) == 1:
+                    setattr(sec, 'ena', erev_ena)
+        else:
+            io.log_warning("Can't set erev for {}, section array doesn't exist".format(erev_section))
+
+
+def aibs_perisomatic_directed(hobj, cell, dynamics_params):
+    fix_axon_perisomatic_directed(hobj)
+    set_params_peri(hobj, dynamics_params)
+    return hobj
+
+
+def aibs_allactive_directed(hobj, cell, dynamics_params):
+    fix_axon_allactive_directed(hobj)
+    set_params_allactive(hobj, dynamics_params)
+    return hobj
+
+
+def fix_axon_perisomatic_directed(hobj):
+    # io.log_info('Fixing Axon like perisomatic')
+    all_sec_names = []
+    for sec in hobj.all:
+        all_sec_names.append(sec.name().split(".")[1][:4])
+
+    if 'axon' not in all_sec_names:
+        io.log_exception('There is no axonal recostruction in swc file.')
+    else:
+        beg1, end1, beg2, end2 = get_axon_direction(hobj)
+
+    for sec in hobj.axon:
+        h.delete_section(sec=sec)
+    h.execute('create axon[2]', hobj)
+
+    h.pt3dadd(beg1[0], beg1[1], beg1[2], 1, sec=hobj.axon[0])
+    h.pt3dadd(end1[0], end1[1], end1[2], 1, sec=hobj.axon[0])
+    hobj.all.append(sec=hobj.axon[0])
+    h.pt3dadd(beg2[0], beg2[1], beg2[2], 1, sec=hobj.axon[1])
+    h.pt3dadd(end2[0], end2[1], end2[2], 1, sec=hobj.axon[1])
+    hobj.all.append(sec=hobj.axon[1])
+
+    hobj.axon[0].connect(hobj.soma[0], 0.5, 0)
+    hobj.axon[1].connect(hobj.axon[0], 1.0, 0)
+
+    hobj.axon[0].L = 30.0
+    hobj.axon[1].L = 30.0
+
+    h.define_shape()
+
+    for sec in hobj.axon:
+        # print "sec.L:", sec.L
+        if np.abs(30-sec.L) > 0.0001:
+            io.log_exception('Axon stub L is less than 30')
+
+
+def fix_axon_allactive_directed(hobj):
+    all_sec_names = []
+    for sec in hobj.all:
+        all_sec_names.append(sec.name().split(".")[1][:4])
+
+    if 'axon' not in all_sec_names:
+        io.log_exception('There is no axonal recostruction in swc file.')
+    else:
+        beg1, end1, beg2, end2 = get_axon_direction(hobj)
+
+    axon_diams = [hobj.axon[0].diam, hobj.axon[0].diam]
+    for sec in hobj.all:
+        section_name = sec.name().split(".")[1][:4]
+        if section_name == 'axon':
+            axon_diams[1] = sec.diam
+
+    for sec in hobj.axon:
+        h.delete_section(sec=sec)
+    h.execute('create axon[2]', hobj)
+    hobj.axon[0].connect(hobj.soma[0], 1.0, 0)
+    hobj.axon[1].connect(hobj.axon[0], 1.0, 0)
+
+    h.pt3dadd(beg1[0], beg1[1], beg1[2], axon_diams[0], sec=hobj.axon[0])
+    h.pt3dadd(end1[0], end1[1], end1[2], axon_diams[0], sec=hobj.axon[0])
+    hobj.all.append(sec=hobj.axon[0])
+    h.pt3dadd(beg2[0], beg2[1], beg2[2], axon_diams[1], sec=hobj.axon[1])
+    h.pt3dadd(end2[0], end2[1], end2[2], axon_diams[1], sec=hobj.axon[1])
+    hobj.all.append(sec=hobj.axon[1])
+
+    hobj.axon[0].L = 30.0
+    hobj.axon[1].L = 30.0
+
+    h.define_shape()
+
+    for sec in hobj.axon:
+        # io.log_info('sec.L: {}'.format(sec.L))
+        if np.abs(30 - sec.L) > 0.0001:
+            io.log_exception('Axon stub L is less than 30')
+
+
+def get_axon_direction(hobj):
+    for sec in hobj.somatic:
+        n3d = int(h.n3d())  # get number of n3d points in each section
+        soma_end = np.asarray([h.x3d(n3d - 1), h.y3d(n3d - 1), h.z3d(n3d - 1)])
+        mid_point = int(n3d / 2)
+        soma_mid = np.asarray([h.x3d(mid_point), h.y3d(mid_point), h.z3d(mid_point)])
+
+    for sec in hobj.all:
+        section_name = sec.name().split(".")[1][:4]
+        if section_name == 'axon':
+            n3d = int(h.n3d())  # get number of n3d points in each section
+            axon_p3d = np.zeros((n3d, 3))  # to hold locations of 3D morphology for the current section
+            for i in range(n3d):
+                axon_p3d[i, 0] = h.x3d(i)
+                axon_p3d[i, 1] = h.y3d(i)  # shift coordinates such to place soma at the origin.
+                axon_p3d[i, 2] = h.z3d(i)
+
+    # Add soma coordinates to the list
+    p3d = np.concatenate(([soma_mid], axon_p3d), axis=0)
+
+    # Compute PCA
+    pca = PCA(n_components=3)
+    pca.fit(p3d)
+    unit_v = pca.components_[0]
+
+    mag_v = np.sqrt(pow(unit_v[0], 2) + pow(unit_v[1], 2) + pow(unit_v[2], 2))
+    unit_v[0] = unit_v[0] / mag_v
+    unit_v[1] = unit_v[1] / mag_v
+    unit_v[2] = unit_v[2] / mag_v
+
+    # Find the direction
+    axon_end = axon_p3d[-1] - soma_mid
+    if np.dot(unit_v, axon_end) < 0:
+        unit_v *= -1
+
+    axon_seg_coor = np.zeros((4, 3))
+    # unit_v = np.asarray([0,1,0])
+    axon_seg_coor[0] = soma_end
+    axon_seg_coor[1] = soma_end + (unit_v * 30.)
+    axon_seg_coor[2] = soma_end + (unit_v * 30.)
+    axon_seg_coor[3] = soma_end + (unit_v * 60.)
+
+    return axon_seg_coor
+
+
+add_cell_model(Biophys1, directive='ctdb:Biophys1', model_type='biophysical', overwrite=False)
+add_cell_model(Biophys1, directive='ctdb:Biophys1.hoc', model_type='biophysical', overwrite=False)
+add_cell_model(IntFire1, directive='nrn:IntFire1', model_type='point_process', overwrite=False)
+
+add_cell_processor(aibs_perisomatic, overwrite=False)
+add_cell_processor(aibs_allactive, overwrite=False)
+add_cell_processor(aibs_perisomatic_directed, overwrite=False)
+add_cell_processor(aibs_allactive_directed, overwrite=False)

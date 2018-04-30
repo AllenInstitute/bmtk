@@ -1,0 +1,32 @@
+begintemplate Biophys1
+
+public init
+public soma, dend, apic, axon
+public all, somatic, basal, apical, axonal
+
+objref all, somatic, basal, apical, axonal
+objref this
+
+create soma[1]
+create dend[1]
+create apic[1]
+create axon[1]
+
+
+proc init() {localobj nl, import
+	all = new SectionList()
+	somatic = new SectionList()
+	basal = new SectionList()
+	apical = new SectionList()
+	axonal = new SectionList()
+	forall delete_section()
+
+	nl = new Import3d_SWC_read()
+	nl.quiet = 1
+	nl.input($s1)
+	import = new Import3d_GUI(nl, 0)
+	import.instantiate(this)
+	
+}
+
+endtemplate Biophys1

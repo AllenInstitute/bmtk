@@ -36,21 +36,23 @@ N_HOSTS = int(pc.nhost())
 
 
 class EcpMod(SimulatorMod):
-    def __init__(self, ecp_file, positions_file, tmp_outputdir):
+    def __init__(self, tmp_dir, ecp_file, electrode_positions, contributions_dir, cells=[], variable_name='v',
+                 electrode_channels=None):
         self._ecp_output = ecp_file
-        self._positions_file = positions_file
-        self._tmp_outputdir = tmp_outputdir
-        self._cell_vars_dir = None
+        self._positions_file = electrode_positions
+        self._tmp_outputdir = tmp_dir
+        self._contributions_dir = contributions_dir
+        self._cells = cells
         self._rel = None
         self._fih1 = None
         self._rel_nsites = 0
         self._block_size = 0
-        self._biophys_gids = []
+        # self._biophys_gids = []
         self._saved_gids = {}
         self._nsteps = 0
 
         self._tstep = 0  # accumlative time step
-        self._rel_time = 0  #
+        # self._rel_time = 0  #
         self._block_step = 0  # time step within the given block of time
         self._tstep_start_block = 0
         self._data_block = None
@@ -59,6 +61,8 @@ class EcpMod(SimulatorMod):
         self._tmp_ecp_file = self._get_tmp_fname(MPI_RANK)
         self._tmp_ecp_handle = None
         # self._tmp_ecp_dataset = None
+
+        self._local_gids = []
 
     def _get_tmp_fname(self, rank):
         return os.path.join(self._tmp_outputdir, 'tmp_{}_ecp.h5'.format(MPI_RANK))
@@ -70,44 +74,52 @@ class EcpMod(SimulatorMod):
 
         # create file to temporary store ecp data on each rank
         self._tmp_ecp_handle = h5py.File(self._tmp_ecp_file, 'a')
-        self._tmp_ecp_handle.create_dataset('ecp', (self._nsteps, self._rel_nsites), maxshape=(None, self._rel_nsites),
+        self._tmp_ecp_handle.create_dataset('data', (self._nsteps, self._rel_nsites), maxshape=(None, self._rel_nsites),
                                             chunks=True)
 
         # only the primary node will need to save the final ecp
         if MPI_RANK == 0:
             with h5py.File(self._ecp_output, 'w') as f5:
-                f5.create_dataset('ecp', (self._nsteps, self._rel_nsites), maxshape=(None, self._rel_nsites),
+                f5.create_dataset('data', (self._nsteps, self._rel_nsites), maxshape=(None, self._rel_nsites),
                                   chunks=True)
                 f5.attrs['dt'] = dt
                 f5.attrs['tstart'] = 0.0
                 f5.attrs['tstop'] = tstop
+
+                # Save channels. Current we record from all channels, may want to be more selective in the future.
+                f5.create_dataset('channel_id', data=np.arange(self._rel.nsites))
+
         pc.barrier()
 
     def _create_cell_file(self, gid):
-        file_name = os.path.join(self._cell_vars_dir, '{}.h5'.format(int(gid)))
+        file_name = os.path.join(self._contributions_dir, '{}.h5'.format(int(gid)))
         file_h5 = h5py.File(file_name, 'a')
         self._cell_var_files[gid] = file_h5
-        file_h5.create_dataset('ecp', (self._nsteps, self._rel_nsites), maxshape=(None, self._rel_nsites), chunks=True)
+        file_h5.create_dataset('data', (self._nsteps, self._rel_nsites), maxshape=(None, self._rel_nsites), chunks=True)
         # self._cell_var_files[gid] = file_h5['ecp']
 
     def _calculate_ecp(self, sim):
         self._rel = RecXElectrode(self._positions_file)
-        for gid in self._biophys_gids:
-            cell = sim.net.cells[gid]
+        for gid in self._local_gids:
+            cell = sim.net.get_cell_gid(gid)
+            #cell = sim.net.get_local_cell(gid)
+            # cell = sim.net.cells[gid]
             self._rel.calc_transfer_resistance(gid, cell.get_seg_coords())
 
         self._rel_nsites = self._rel.nsites
         sim.h.cvode.use_fast_imem(1)  # make i_membrane_ a range variable
 
         def set_pointers():
-            for gid, cell in sim.net.cells.items():
+            for gid, cell in sim.net.get_local_cells().items():
+            #for gid, cell in sim.net.local_cells.items():
+                # for gid, cell in sim.net.cells.items():
                 cell.set_im_ptr()
         self._fih1 = sim.h.FInitializeHandler(0, set_pointers)
 
     def _save_block(self, interval):
         """Add """
         itstart, itend = interval
-        self._tmp_ecp_handle['ecp'][itstart:itend, :] += self._data_block[0:(itend - itstart), :]
+        self._tmp_ecp_handle['data'][itstart:itend, :] += self._data_block[0:(itend - itstart), :]
         self._tmp_ecp_handle.flush()
         self._data_block[:] = 0.0
 
@@ -122,8 +134,8 @@ class EcpMod(SimulatorMod):
         for rank in xrange(N_HOSTS):  # iterate over the ranks
             if rank == MPI_RANK:  # wait until finished with a particular rank
                 with h5py.File(self._ecp_output, 'a') as ecp_f5:
-                    for i in range(len(ivals) - 1):
-                        ecp_f5['ecp'][ivals[i]:ivals[i + 1], :] += self._tmp_ecp_handle['ecp'][ivals[i]:ivals[i + 1], :]
+                    for i in range(len(ivals)-1):
+                        ecp_f5['data'][ivals[i]:ivals[i+1], :] += self._tmp_ecp_handle['data'][ivals[i]:ivals[i+1], :]
 
             pc.barrier()
 
@@ -132,7 +144,7 @@ class EcpMod(SimulatorMod):
 
         for gid, data in self._saved_gids.items():
             h5_file = self._cell_var_files[gid]
-            h5_file['ecp'][itstart:itend, :] = data[0:(itend-itstart), :]
+            h5_file['data'][itstart:itend, :] = data[0:(itend-itstart), :]
             h5_file.flush()
             data[:] = 0.0
 
@@ -141,9 +153,15 @@ class EcpMod(SimulatorMod):
             os.remove(self._tmp_ecp_file)
 
     def initialize(self, sim):
+        if self._contributions_dir and (not os.path.exists(self._contributions_dir)) and MPI_RANK == 0:
+            os.makedirs(self._contributions_dir)
+        pc.barrier()
+
         self._block_size = sim.nsteps_block
-        self._biophys_gids = sim.gids['biophysical']  # gids for biophysical cells on this rank
-        self._cell_vars_dir = sim.cell_var_output
+
+        # Get list of gids being recorded
+        selected_gids = set(sim.net.get_node_set(self._cells).gids())
+        self._local_gids = list(set(sim.biophysical_gids) & selected_gids)
 
         self._calculate_ecp(sim)
         self._create_ecp_file(sim)
@@ -153,15 +171,17 @@ class EcpMod(SimulatorMod):
 
         # create list of all cells whose ecp values will be saved separetly
         self._saved_gids = {gid: np.empty((self._block_size, self._rel_nsites))
-                            for gid in self._biophys_gids if gid in sim.gids['save_cell_vars']}
+                            for gid in self._local_gids}
         for gid in self._saved_gids.keys():
             self._create_cell_file(gid)
 
         pc.barrier()
 
-    def step(self, sim, tstep, rel_time=0):
-        for gid in self._biophys_gids:  # compute ecp only from the biophysical cells
-            cell = sim.net.cells[gid]
+    def step(self, sim, tstep):
+        for gid in self._local_gids:  # compute ecp only from the biophysical cells
+            cell = sim.net.get_cell_gid(gid)
+            #cell = sim.net.get_local_cell(gid)
+            # cell = sim.net.cells[gid]
             im = cell.get_im()
             tr = self._rel.get_transfer_resistance(gid)
             ecp = np.dot(tr, im)
@@ -203,9 +223,9 @@ class RecXElectrode(object):
         # self.conf = conf
         electrode_file = positions  # self.conf["recXelectrode"]["positions"]
 
+        # convert coordinates to ndarray, The first index is xyz and the second is the channel number
         el_df = pd.read_csv(electrode_file, sep=' ')
-        self.pos = el_df.as_matrix(columns=['x_pos', 'y_pos',
-                                            'z_pos']).T  # convert coordinates to ndarray, The first index is xyz and the second is the channel number
+        self.pos = el_df.as_matrix(columns=['x_pos', 'y_pos', 'z_pos']).T
         self.nsites = self.pos.shape[1]
         # self.conf['run']['nsites'] = self.nsites  # add to the config
         self.transfer_resistances = {}  # V_e = transfer_resistance*Im
