@@ -1,15 +1,11 @@
 import sys
-import os
-
-import bmtk.simulator.popnet.config as config
-from bmtk.simulator.popnet.popgraph import PopGraph
-from bmtk.simulator.popnet.simulation import Simulation
+from bmtk.simulator import popnet
 
 
 def main(config_file):
-    configure = config.from_json(config_file)
-    graph = PopGraph.from_config(configure, group_by='node_type_id')
-    sim = Simulation.from_config(configure, graph)
+    configure = popnet.config.from_json(config_file)
+    network = popnet.PopNetwork.from_config(configure, group_by='node_type_id')
+    sim = popnet.PopSimulator.from_config(configure, network)
     sim.run()
 
 

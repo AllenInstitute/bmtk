@@ -199,24 +199,62 @@ class SpikeTrainWriter(object):
 
 
 class SpikesInput(object):
+    def get_spikes(self, gid):
+        raise NotImplementedError()
+
+    @staticmethod
+    def load(name, module, input_type, params):
+        module_lc = module.lower()
+        if module_lc == 'nwb':
+            return SpikesInputNWBv1(name, module, input_type, params)
+        elif module_lc == 'h5' or module_lc == 'hdf5':
+            return SpikesInputH5(name, module, input_type, params)
+        else:
+            raise Exception('Unable to load spikes for module type {}'.format(module))
+
+
+class SpikesInputNWBv1(SpikesInput):
     def __init__(self, name, module, input_type, params):
         self.input_file = params['input_file']
-        self.trial = params['trial']
-        #self.node_population = params['node_set']
-
         self._h5_handle = h5py.File(self.input_file, 'r')
-        self._spike_trains_handles = {}
-        for node_id, h5grp in self._h5_handle['processing'][self.trial]['spike_train'].items():
-            self._spike_trains_handles[int(node_id)] = h5grp['data']
+
+        if 'trial' in params:
+            self.trial = params['trial']
+            self._spike_trains_handles = {}
+            for node_id, h5grp in self._h5_handle['processing'][self.trial]['spike_train'].items():
+                self._spike_trains_handles[int(node_id)] = h5grp['data']
+
+        elif '/spikes' in self._h5_handle:
+            raise Exception
 
     def get_spikes(self, gid):
         return np.array(self._spike_trains_handles[gid])
 
-    def load_config(self, config):
-        print config
 
-    '''
-    @property
-    def populations(self):
-        return [self.node_population]
-    '''
+class SpikesInputH5(SpikesInput):
+    def __init__(self, name, module, input_type, params):
+        self._input_file = params['input_file']
+        self._h5_handle = h5py.File(self._input_file, 'r')
+        self._sort_order = self._h5_handle['/spikes'].attrs.get('sorting', None)
+        self._gid_ds = self._h5_handle['/spikes/gids']
+        self._timestamps_ds = self._h5_handle['/spikes/timestamps']
+
+        self._gid_indicies = {}
+        self._build_indicies()
+
+    def _build_indicies(self):
+        if self._sort_order == 'by_gid':
+            indx_beg = 0
+            c_gid = self._gid_ds[0]
+            for indx, gid in enumerate(self._gid_ds):
+                if gid != c_gid:
+                    self._gid_indicies[c_gid] = slice(indx_beg, indx)
+                    c_gid = gid
+                    indx_beg = indx
+            self._gid_indicies[c_gid] = slice(indx_beg, indx+1)
+
+        else:
+            raise NotImplementedError
+
+    def get_spikes(self, gid):
+        return self._timestamps_ds[self._gid_indicies[gid]]

@@ -87,6 +87,7 @@ class CellVarRecorder(object):
         self._gids_end = self._n_gids_local
 
     def _create_h5_file(self):
+        print self._file_name
         self._h5_handle = h5py.File(self._file_name, 'w')
 
     def add_cell(self, gid, sec_list, seg_list):

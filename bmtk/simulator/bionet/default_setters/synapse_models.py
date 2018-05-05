@@ -34,6 +34,7 @@ def exp2syn(syn_params, xs, secs):
     :return: list of NEURON synpase objects
     """
     syns = []
+    print xs
 
     for x, sec in zip(xs, secs):
         syn = h.Exp2Syn(x, sec=sec)
@@ -59,5 +60,6 @@ def Exp2Syn(syn_params, sec_x, sec_id):
     return syn
 
 
-add_synapse_model(exp2syn, overwrite=False)
+add_synapse_model(Exp2Syn, 'exp2syn', overwrite=False)
+#add_synapse_model(exp2syn, overwrite=False)
 add_synapse_model(Exp2Syn, overwrite=False)

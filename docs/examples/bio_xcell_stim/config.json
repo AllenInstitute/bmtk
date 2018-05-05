@@ -26,6 +26,7 @@
   "inputs": {
     "Extracellular_Stim": {
       "input_type": "lfp",
+      "node_set": "all",
       "module": "xstim",
       "positions_file": "$STIM_DIR/485058595_0000.csv",
       "mesh_files_dir": "$STIM_DIR",
@@ -71,7 +72,7 @@
       "variable_name": "v",
       "module": "membrane_report",
       "file_name": "$OUTPUT_DIR/cell_vars.h5",
-      "sections": "soma",
+      "sections": "all",
       "enabled": false
     },
 
@@ -89,7 +90,7 @@
       "variable_name": "i_membrane",
       "module": "membrane_report",
       "file_name": "$OUTPUT_DIR/cell_vars.h5",
-      "sections": "soma",
+      "sections": "all",
       "enabled": true
     },
 
@@ -98,7 +99,7 @@
       "variable_name": "vext",
       "module": "membrane_report",
       "file_name": "$OUTPUT_DIR/cell_vars.h5",
-      "sections": "soma",
+      "sections": "all",
       "transform": "first_element",
       "enabled": true
     },
