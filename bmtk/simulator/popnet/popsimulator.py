@@ -383,8 +383,8 @@ class PopSimulator(Simulator):
         for sim_input in inputs.from_config(config):
             node_set = graph.get_node_set(sim_input.node_set)
             if sim_input.input_type == 'spikes':
-                spikes = spike_trains.SpikesInput(name=sim_input.name, module=sim_input.module,
-                                                  input_type=sim_input.input_type, params=sim_input.params)
+                spikes = spike_trains.SpikesInput.load(name=sim_input.name, module=sim_input.module,
+                                                       input_type=sim_input.input_type, params=sim_input.params)
                 graph.io.log_info('Build virtual cell stimulations for {}'.format(sim_input.name))
                 graph.add_spike_trains(spikes, node_set)
             else:

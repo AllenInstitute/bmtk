@@ -3,6 +3,7 @@ import os
 
 from bmtk.simulator import popnet
 
+
 def main(config_file):
     configure = popnet.config.from_json(config_file)
     network = popnet.PopNetwork.from_config(configure)

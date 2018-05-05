@@ -157,7 +157,7 @@ class NodeAdaptor(object):
             adaptor.model_template = types.MethodType(none_function, adaptor)
 
         if 'model_processing' not in node_group.all_columns:
-            adaptor.model_processing = types.MethodType(none_function, adaptor)
+            adaptor.model_processing = types.MethodType(empty_list, adaptor)
 
         return adaptor
 
@@ -167,6 +167,10 @@ class NodeAdaptor(object):
 
 def none_function(self, node):
     return None
+
+
+def empty_list(self, node):
+    return []
 
 
 def types_dynamics_params(self, node):
