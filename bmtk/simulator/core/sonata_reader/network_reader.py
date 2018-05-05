@@ -131,6 +131,10 @@ class SonataNodes(NodesReader):
     def __iter__(self):
         return self
 
+    def filter(self, filter_conditons):
+        for node in self._node_pop.filter(**filter_conditons):
+            yield node
+
     def get_nodes(self):
         for node_group in self._node_pop.groups:
             node_adaptor = self._prop_adaptors[node_group.group_id]

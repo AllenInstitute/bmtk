@@ -177,7 +177,7 @@ class BioCell(Cell):
         xs = self._morph.seg_prop['x'][segs_ix]  # distance along the section where synapse connects, i.e., seg_x
 
         # TODO: this should be done just once
-        synapses = edge_prop.load_synapses(xs, secs)
+        synapses = [edge_prop.load_synapses(x, sec) for x, sec in zip(xs, secs)]
         delay = edge_prop['delay']
         self._synapses.extend(synapses)
         if self._save_conn:

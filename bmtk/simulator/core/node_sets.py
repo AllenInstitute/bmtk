@@ -38,11 +38,8 @@ class NodeSet(object):
                 yield gid
         else:
             for pop in self._populations:
-                node_pop_maps = self._network._node_property_maps[pop.name]
-                for grp in pop.groups:
-                    node_prop_map = node_pop_maps[grp.group_id]
-                    for node in grp.filter(**self._filter):
-                        yield node_prop_map.gid(node)
+                for node in pop.filter(self._filter):
+                    yield node.node_id
 
     def nodes(self):
         return None

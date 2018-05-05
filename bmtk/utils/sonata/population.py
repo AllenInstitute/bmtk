@@ -491,7 +491,6 @@ class EdgePopulation(Population):
                     group_props=edge_group_props, edge_types_props=edge_types_props)
 
     def filter(self, **filter_props):
-
         selected_edge_types = set(self.edge_types_table.edge_type_ids)
         types_filter = False  # Do we need to filter results by edge_type_id
         if 'edge_type_id' in filter_props:

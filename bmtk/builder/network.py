@@ -318,6 +318,10 @@ class Network (object):
         else:
             return os.path.join(path_dir, filename)
 
+    def save(self, output_dir='.'):
+        self.save_nodes(output_dir=output_dir)
+        self.save_edges(output_dir=output_dir)
+
     def save_nodes(self, nodes_file_name=None, node_types_file_name=None, output_dir='.', force_overwrite=True):
         nodes_file = self.__get_path(nodes_file_name, output_dir, 'nodes.h5')
         if not force_overwrite and os.path.exists(nodes_file):
