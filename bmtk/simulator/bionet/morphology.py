@@ -165,6 +165,12 @@ class Morphology(object):
         if edge_type in self._segments:
             return self._segments[edge_type]
 
+        else:
+            tar_seg_ix, tar_seg_prob = self.find_sections(edge_type.target_sections, edge_type.target_distance)
+            self._segments[edge_type] = (tar_seg_ix, tar_seg_prob)
+            return tar_seg_ix, tar_seg_prob
+
+        """
         tar_sec_labels = edge_type.target_sections
         drange = edge_type.target_distance
         dmin, dmax = drange[0], drange[1]
@@ -195,4 +201,34 @@ class Morphology(object):
         tar_seg_prob = tar_seg_length / np.sum(tar_seg_length)  # probability of targeting segments
 
         self._segments[edge_type] = (tar_seg_ix, tar_seg_prob)
+        return tar_seg_ix, tar_seg_prob
+        """
+
+    def find_sections(self, target_sections, distance_range):
+        dmin, dmax = distance_range[0], distance_range[1]
+
+        seg_d0 = self.seg_prop['dist0']  # use a more compact variables
+        seg_d1 = self.seg_prop['dist1']
+        seg_length = self.seg_prop['length']
+        seg_area = self.seg_prop['area']
+        seg_type = self.seg_prop['type']
+
+        # Find the fractional overlap between the segment and the distance range:
+        # this is done by finding the overlap between [d0,d1] and [dmin,dmax]
+        # np.minimum(seg_d1,dmax) find the smaller of the two end locations
+        # np.maximum(seg_d0,dmin) find the larger of the two start locations
+        # np.maximum(0,overlap) is used to return zero when segments do not overlap
+        # and then dividing by the segment length
+        frac_overlap = np.maximum(0, (np.minimum(seg_d1, dmax) - np.maximum(seg_d0, dmin))) / seg_length
+        ix_drange = np.where(frac_overlap > 0)  # find indexes with non-zero overlap
+        ix_labels = np.array([], dtype=np.int)
+
+        for tar_sec_label in target_sections:  # find indexes within sec_labels
+            sec_type = self.sec_type_swc[tar_sec_label]  # get swc code for the section label
+            ix_label = np.where(seg_type == sec_type)
+            ix_labels = np.append(ix_labels, ix_label)  # target segment indexes
+
+        tar_seg_ix = np.intersect1d(ix_drange, ix_labels)  # find intersection between indexes for range and labels
+        tar_seg_length = seg_length[tar_seg_ix] * frac_overlap[tar_seg_ix]  # weighted length of targeted segments
+        tar_seg_prob = tar_seg_length / np.sum(tar_seg_length)  # probability of targeting segments
         return tar_seg_ix, tar_seg_prob

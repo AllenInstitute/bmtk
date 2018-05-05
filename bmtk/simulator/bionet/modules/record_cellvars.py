@@ -105,7 +105,8 @@ class MembraneReport(SimulatorMod):
         for gid in self._local_gids:
             sec_list = []
             seg_list = []
-            cell = sim.net.get_local_cell(gid)
+            # cell = sim.net.get_local_cell(gid)
+            cell = sim.net.get_cell_gid(gid)
             cell.store_segments()
             for sec_id, sec in enumerate(cell.get_sections()):
                 for seg in sec:
@@ -120,7 +121,8 @@ class MembraneReport(SimulatorMod):
     def step(self, sim, tstep):
         # save all necessary cells/variables at the current time-step into memory
         for gid in self._local_gids:
-            cell = sim.net.get_local_cell(gid)
+            cell = sim.net.get_cell_gid(gid)
+            #cell = sim.net.get_local_cell(gid)
             for var_name in self._variables:
                 seg_vals = [getattr(seg, var_name) for seg in cell.get_segments()]
                 self._var_recorder.record_cell(gid, var_name, seg_vals, tstep)

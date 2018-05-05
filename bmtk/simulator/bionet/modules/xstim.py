@@ -12,7 +12,8 @@ from bmtk.simulator.bionet.io_tools import io
 
 
 class XStimMod(SimulatorMod):
-    def __init__(self, positions_file, waveform, mesh_files_dir=None, cells=None, set_nrn_mechanisms=True):
+    def __init__(self, positions_file, waveform, mesh_files_dir=None, cells=None, set_nrn_mechanisms=True,
+                 node_set=None):
         self._positions_file = positions_file
         self._mesh_files_dir = mesh_files_dir if mesh_files_dir is not None \
             else os.path.dirname(os.path.realpath(self._positions_file))
@@ -38,20 +39,23 @@ class XStimMod(SimulatorMod):
 
         self._electrode = StimXElectrode(self._positions_file, self._waveform, self._mesh_files_dir, sim.dt)
         for gid in self._local_gids:
-            cell = sim.net.get_local_cell(gid)
+            # cell = sim.net.get_local_cell(gid)
+            cell = sim.net.get_cell_gid(gid)
             cell.setup_xstim(self._set_nrn_mechanisms)
             self._electrode.set_transfer_resistance(gid, cell.get_seg_coords())
 
         def set_pointers():
             for gid in self._local_gids:
-                cell = sim.net.get_local_cell(gid)
+                cell = sim.net.get_cell_gid(gid)
+                #cell = sim.net.get_local_cell(gid)
                 cell.set_ptr2e_extracellular()
 
         self._fih = sim.h.FInitializeHandler(0, set_pointers)
 
     def step(self, sim, tstep):
         for gid in self._local_gids:
-            cell = sim.net.get_local_cell(gid)
+            cell = sim.net.get_cell_gid(gid)
+            # cell = sim.net.get_local_cell(gid)
             self._electrode.calculate_waveforms(tstep)
             vext_vec = self._electrode.get_vext(gid)
             cell.set_e_extracellular(vext_vec)
