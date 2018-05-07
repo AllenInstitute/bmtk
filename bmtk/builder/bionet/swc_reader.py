@@ -44,3 +44,10 @@ class SWCReader(object):
                 raise NotImplementedError
 
         return absolute_coords
+
+    def get_dist(self, sec_ids):
+        return [self._morphology.seg_prop['dist'][sec_id] for sec_id in sec_ids]
+
+    def get_type(self, sec_ids):
+        return [self._morphology.seg_prop['type'][sec_id] for sec_id in sec_ids]
+
