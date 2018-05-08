@@ -97,8 +97,14 @@ class MembraneReport(SimulatorMod):
         selected_gids = set(sim.net.get_node_set(self._all_gids).gids())
         self._local_gids = list(set(sim.biophysical_gids) & selected_gids)
 
+    def _save_sim_data(self, sim):
+        self._var_recorder.tstart = 0.0
+        self._var_recorder.tstop = sim.tstop
+        self._var_recorder.dt = sim.dt
+
     def initialize(self, sim):
         self._get_gids(sim)
+        self._save_sim_data(sim)
 
         # TODO: get section by name and/or list of section ids
         # Build segment/section list
@@ -158,6 +164,7 @@ class SomaReport(MembraneReport):
 
     def initialize(self, sim):
         self._get_gids(sim)
+        self._save_sim_data(sim)
 
         for gid in self._local_gids:
             self._var_recorder.add_cell(gid, [0], [0.5])

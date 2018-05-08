@@ -169,7 +169,7 @@ class SpikeTrainWriter(object):
                 spikes_grp = h5.create_group('/spikes')
                 spikes_grp.attrs['sorting'] = 'none' if sort_order is None else sort_order
                 time_ds = spikes_grp.create_dataset('timestamps', shape=(self._spike_count,), dtype=np.float)
-                gid_ds = spikes_grp.create_dataset('gids', shape=(self._spike_count+1,), dtype=np.uint64)
+                gid_ds = spikes_grp.create_dataset('gids', shape=(self._spike_count,), dtype=np.uint64)
 
                 def file_write_fnc_identity(time, gid, indx):
                     time_ds[indx] = time

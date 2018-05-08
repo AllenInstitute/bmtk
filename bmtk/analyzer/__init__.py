@@ -63,10 +63,11 @@ def plot_potential(cell_vars_h5=None, config_file=None, gids=None, show_plot=Tru
 
 def plot_potential_hdf5(cell_vars_h5, title='membrane potential', show_plot=True, save_as=None):
     data_h5 = h5py.File(cell_vars_h5, 'r')
-    membrane_trace = data_h5['v']
+    membrane_trace = data_h5['v/data']
 
-    tstart = data_h5.attrs['tstart']
-    tstop = data_h5.attrs['tstop']
+    time_ds = data_h5['/mapping/time']
+    tstart = time_ds[0]
+    tstop = time_ds[1]
     x_axis = np.linspace(tstart, tstop, len(membrane_trace), endpoint=True)
 
     plt.plot(x_axis, membrane_trace)
@@ -107,10 +108,11 @@ def plot_calcium(cell_vars_h5=None, config_file=None, gids=None, show_plot=True,
 
 def plot_calcium_hdf5(cell_vars_h5, title='Ca2+ influx', show_plot=True, save_as=None):
     data_h5 = h5py.File(cell_vars_h5, 'r')
-    cai_trace = data_h5['cai']
+    cai_trace = data_h5['cai/data']
 
-    tstart = data_h5.attrs['tstart']
-    tstop = data_h5.attrs['tstop']
+    time_ds = data_h5['/mapping/time']
+    tstart = time_ds[0]
+    tstop = time_ds[1]
     x_axis = np.linspace(tstart, tstop, len(cai_trace), endpoint=True)
 
     plt.plot(x_axis, cai_trace)
@@ -125,7 +127,11 @@ def plot_calcium_hdf5(cell_vars_h5, title='Ca2+ influx', show_plot=True, save_as
         plt.show()
 
 
-def spikes_table(config_file):
+def spikes_table(config_file, spikes_file=None):
     config = _get_config(config_file)
-    spikes_ascii = config['output']['spikes_ascii_file']
-    return pd.read_csv(spikes_ascii, names=['time (ms)', 'cell gid'], sep=' ')
+    spikes_file = config['output']['spikes_file']
+    spikes_h5 = h5py.File(spikes_file, 'r')
+    gids = np.array(spikes_h5['/spikes/gids'], dtype=np.uint)
+    times = np.array(spikes_h5['/spikes/timestamps'], dtype=np.float)
+    return pd.DataFrame(data={'gid': gids, 'spike time (ms)': times})
+    #return pd.read_csv(spikes_ascii, names=['time (ms)', 'cell gid'], sep=' ')
