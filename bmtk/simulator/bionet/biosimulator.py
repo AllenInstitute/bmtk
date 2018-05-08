@@ -26,7 +26,7 @@ from bmtk.simulator.core.simulator import Simulator
 from bmtk.simulator.bionet.io_tools import io
 from bmtk.simulator.bionet.iclamp import IClamp
 from bmtk.simulator.bionet import modules as mods
-
+from bmtk.simulator.core.node_sets import NodeSet
 import bmtk.simulator.utils.simulation_reports as reports
 import bmtk.simulator.utils.simulation_inputs as inputs
 from bmtk.utils.io import spike_trains
@@ -185,6 +185,8 @@ class BioSimulator(Simulator):
             gids = [gids]
         elif isinstance(gids, basestring):
             gids = [int(gids)]
+        elif isinstance(gids, NodeSet):
+            gids = gids.gids()
 
         for gid in gids:
             cell = self.net.get_cell_gid(gid)
@@ -292,7 +294,7 @@ class BioSimulator(Simulator):
                 delay = sim_input.params['delay']
                 duration = sim_input.params['duration']
                 gids = sim_input.params['node_set']
-                sim.attach_current_clamp(amplitude, delay, duration, gids)
+                sim.attach_current_clamp(amplitude, delay, duration, node_set)
 
             elif sim_input.module == 'xstim':
                 sim.add_mod(mods.XStimMod(**sim_input.params))

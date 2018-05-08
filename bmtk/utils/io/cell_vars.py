@@ -77,6 +77,34 @@ class CellVarRecorder(object):
         self._seg_offset_beg = 0
         self._seg_offset_end = 0
 
+        self._tstart = 0.0
+        self._tstop = 0.0
+        self._dt = 0.01
+
+    @property
+    def tstart(self):
+        return self._tstart
+
+    @tstart.setter
+    def tstart(self, time_ms):
+        self._tstart = time_ms
+
+    @property
+    def tstop(self):
+        return self._tstop
+
+    @tstop.setter
+    def tstop(self, time_ms):
+        self._tstop = time_ms
+
+    @property
+    def dt(self):
+        return self._dt
+
+    @dt.setter
+    def dt(self, time_ms):
+        self._dt = time_ms
+
     def _calc_offset(self):
         self._n_segments_all = self._n_segments_local
         self._seg_offset_beg = 0
@@ -110,6 +138,7 @@ class CellVarRecorder(object):
         var_grp.create_dataset('element_id', shape=(self._n_segments_all,), dtype=np.uint)
         var_grp.create_dataset('element_pos', shape=(self._n_segments_all,), dtype=np.float)
         var_grp.create_dataset('index_pointer', shape=(self._n_gids_all+1,), dtype=np.uint64)
+        var_grp.create_dataset('time', data=[self.tstart, self.tstop, self.dt])
 
         var_grp['gids'][self._gids_beg:self._gids_end] = self._mapping_gids
         var_grp['element_id'][self._seg_offset_beg:self._seg_offset_end] = self._mapping_element_ids
