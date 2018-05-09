@@ -188,15 +188,10 @@ class SpikeTrainWriter(object):
         self._tmp_file_handle.flush()
 
     def close(self):
-        #fname = self._all_tmp_files[self._mpi_rank].file_name
-        #if os.path.exists(fname):
-        #    os.remove(fname)
-
         if self._mpi_rank == 0:
             for tmp_file in self._all_tmp_files:
                 if os.path.exists(tmp_file.file_name):
                     os.remove(tmp_file.file_name)
-
 
 class SpikesInput(object):
     def get_spikes(self, gid):
@@ -209,6 +204,8 @@ class SpikesInput(object):
             return SpikesInputNWBv1(name, module, input_type, params)
         elif module_lc == 'h5' or module_lc == 'hdf5':
             return SpikesInputH5(name, module, input_type, params)
+        elif module_lc == 'csv':
+            return SpikesInputCSV(name, module, input_type, params)
         else:
             raise Exception('Unable to load spikes for module type {}'.format(module))
 
@@ -258,3 +255,12 @@ class SpikesInputH5(SpikesInput):
 
     def get_spikes(self, gid):
         return self._timestamps_ds[self._gid_indicies[gid]]
+
+
+class SpikesInputCSV(SpikesInput):
+    def __init__(self, name, module, input_type, params):
+        self._spikes_df = pd.read_csv(params['input_file'], index_col='gid', sep=' ')
+
+    def get_spikes(self, gid):
+        spike_times_str = self._spikes_df.iloc[gid]['spike-times']
+        return np.array(spike_times_str.split(','), dtype=float)

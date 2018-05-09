@@ -409,7 +409,8 @@ class Network (object):
             csvw = csv.writer(csvfile, delimiter=' ')
             csvw.writerow(cols)
             for edge_type in matching_et:
-                csvw.writerow([edge_type.get(cname, 'NULL') for cname in cols])
+                csvw.writerow([edge_type.get(cname, 'NULL') if edge_type.get(cname, 'NULL') is not None else 'NULL'
+                               for cname in cols])
 
     def _save_edges(self, edges_file_name, src_network, trg_network):
         raise NotImplementedError
