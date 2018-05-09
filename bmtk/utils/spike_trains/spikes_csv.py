@@ -25,6 +25,8 @@ import numpy as np
 import csv
 import h5py
 
+from bmtk.utils import sonata
+
 class Rates(object):
     def __iter__(self):
         return self
@@ -52,13 +54,20 @@ class NormalRates(Rates):
 
 
 class SpikesGenerator(object):
-    def __init__(self, nodes, t_min=0, t_max=1.0):
+    def __init__(self, nodes, populations=None, t_min=0, t_max=1.0):
         self._t_min = t_min
         self._t_max = t_max
 
         if isinstance(nodes, basestring):
             nodes_h5 = h5py.File(nodes, 'r')
-            nodes = list(nodes_h5['nodes']['node_gid'])
+            nodes_grp = nodes_h5['/nodes']
+            if populations is None:
+                populations = nodes_grp.keys()
+
+            # TODO: Need a way to Use sonata library without having to use node-types
+            nodes = []
+            for node_pop in populations:
+                nodes.extend(nodes_grp[node_pop]['node_id'])
 
         self._nodes = {n: Rates() for n in nodes}
 
