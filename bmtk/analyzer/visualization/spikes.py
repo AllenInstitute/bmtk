@@ -38,7 +38,13 @@ def _create_node_table(node_file, node_type_file, group_key=None, exclude=[]):
     """Creates a merged nodes.csv and node_types.csv dataframe with excluded items removed. Returns a dataframe."""
     node_types_df = pd.read_csv(node_type_file, sep=' ', index_col='node_type_id')
     nodes_h5 = h5py.File(node_file)
-    nodes_df = pd.DataFrame({'node_id': nodes_h5['/nodes/node_gid'], 'node_type_id': nodes_h5['/nodes/node_type_id']})
+    # TODO: Use utils.spikesReader
+    node_pop_name = nodes_h5['/nodes'].keys()[0]
+
+    nodes_grp = nodes_h5['/nodes'][node_pop_name]
+    # TODO: Need to be able to handle gid or node_id
+    nodes_df = pd.DataFrame({'node_id': nodes_grp['node_id'], 'node_type_id': nodes_grp['node_type_id']})
+    #nodes_df = pd.DataFrame({'node_id': nodes_h5['/nodes/node_gid'], 'node_type_id': nodes_h5['/nodes/node_type_id']})
     nodes_df.set_index('node_id', inplace=True)
 
     # nodes_df = pd.read_csv(node_file, sep=' ', index_col='node_id')
@@ -77,6 +83,23 @@ def _count_spikes(spikes_file, max_gid, interval=None):
     max_gid = int(max_gid)  # strange bug where max_gid was being returned as a float.
     spikes = [[] for _ in xrange(max_gid+1)]
     spike_sums = np.zeros(max_gid+1)
+    # TODO: Use utils.spikesReader
+    spikes_h5 = h5py.File(spikes_file, 'r')
+    #print spikes_h5['/spikes'].keys()
+    gid_ds = spikes_h5['/spikes/gids']
+    ts_ds = spikes_h5['/spikes/timestamps']
+
+    for i in range(len(gid_ds)):
+        ts = ts_ds[i]
+        gid = gid_ds[i]
+
+        if gid <= max_gid and t_bounds_low <= ts <= t_bounds_high:
+            spikes[gid].append(ts)
+            spike_sums[gid] += 1
+            t_min = ts if ts < t_min else t_min
+            t_max = ts if ts > t_max else t_max
+
+    """
     with open(spikes_file, 'r') as fspikes:
         for line in fspikes:
             ts, gid = parse_line(line)
@@ -85,7 +108,7 @@ def _count_spikes(spikes_file, max_gid, interval=None):
                 spike_sums[gid] += 1
                 t_min = ts if ts < t_min else t_min
                 t_max = ts if ts > t_max else t_max
-
+    """
     return spikes, spike_sums/(float(t_max-t_min)*1e-3)
 
 
@@ -133,6 +156,7 @@ def plot_spikes(cells_file, cell_models_file, spikes_file, population=None, grou
                         left_on='node_type_id',
                         right_index=True)  # use 'model_id' key to merge, for right table the "model_id" is an index
 
+    # TODO: Uses utils.SpikesReader to open
     spikes_h5 = h5py.File(spikes_file, 'r')
     spike_gids = np.array(spikes_h5['/spikes/gids'], dtype=np.uint)
     spike_times = np.array(spikes_h5['/spikes/timestamps'], dtype=np.float)
