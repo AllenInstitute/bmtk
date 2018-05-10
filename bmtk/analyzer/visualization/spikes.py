@@ -105,9 +105,8 @@ def plot_spikes_config(configure, group_key=None, exclude=[], save_as=None, show
     plot_spikes(cells_file_name, cell_models_file_name, spikes_file, group_key, exclude, save_as, show_plot)
 
 
-
-def plot_spikes(cells_file, cell_models_file, spikes_file, group_key=None, exclude=[], save_as=None, show=True,
-                title=None):
+def plot_spikes(cells_file, cell_models_file, spikes_file, population=None, group_key=None, exclude=[], save_as=None,
+                show=True, title=None):
     # check if can be shown and/or saved
     #if save_as is not None:
     #    if os.path.exists(save_as):
@@ -116,8 +115,16 @@ def plot_spikes(cells_file, cell_models_file, spikes_file, group_key=None, exclu
     cm_df = pd.read_csv(cell_models_file, sep=' ')
     cm_df.set_index('node_type_id', inplace=True)
 
-    cells_h5 = h5py.File(cells_file)
-    c_df = pd.DataFrame({'node_id': cells_h5['/nodes/node_gid'], 'node_type_id': cells_h5['/nodes/node_type_id']})
+    cells_h5 = h5py.File(cells_file, 'r')
+    # TODO: Use sonata api
+    if population is None:
+        if len(cells_h5['/nodes']) > 1:
+            raise Exception('Multiple populations in nodes file. Please specify one to plot using population param')
+        else:
+            population = cells_h5['/nodes'].keys()[0]
+
+    nodes_grp = cells_h5['/nodes'][population]
+    c_df = pd.DataFrame({'node_id': nodes_grp['node_id'], 'node_type_id': nodes_grp['node_type_id']})
     # c_df = pd.read_csv(cells_file, sep=' ')
     c_df.set_index('node_id', inplace=True)
     nodes_df = pd.merge(left=c_df,
@@ -126,8 +133,10 @@ def plot_spikes(cells_file, cell_models_file, spikes_file, group_key=None, exclu
                         left_on='node_type_id',
                         right_index=True)  # use 'model_id' key to merge, for right table the "model_id" is an index
 
-
-    spike_times, spike_gids = np.loadtxt(spikes_file, dtype='float32,int', unpack=True)
+    spikes_h5 = h5py.File(spikes_file, 'r')
+    spike_gids = np.array(spikes_h5['/spikes/gids'], dtype=np.uint)
+    spike_times = np.array(spikes_h5['/spikes/timestamps'], dtype=np.float)
+    # spike_times, spike_gids = np.loadtxt(spikes_file, dtype='float32,int', unpack=True)
     # spike_gids, spike_times = np.loadtxt(spikes_file, dtype='int,float32', unpack=True)
 
     spike_times = spike_times * 1.0e-3
@@ -175,6 +184,7 @@ def plot_spikes(cells_file, cell_models_file, spikes_file, group_key=None, exclu
     ax2 = plt.subplot(gs[1])
     plt.hist(spike_times, 100)
     ax2.set_xlabel('time (s)')
+    ax2.set_xlim([0, max(spike_times)])
     ax2.axes.get_yaxis().set_visible(False)
     if title is not None:
         ax1.set_title(title)

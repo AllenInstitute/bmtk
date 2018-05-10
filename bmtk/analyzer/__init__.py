@@ -42,7 +42,8 @@ def plot_potential(cell_vars_h5=None, config_file=None, gids=None, show_plot=Tru
         raise Exception('Please specify a cell_vars hdf5 file or a simulation config.')
 
     if cell_vars_h5 is not None:
-        plot_potential_hdf5(cell_vars_h5, show_plot, save_as='sim_potential.jpg' if save else None)
+        plot_potential_hdf5(cell_vars_h5, gids=gids, show_plot=show_plot,
+                            save_as='sim_potential.jpg' if save else None)
 
     else:
         # load the json file or object
@@ -61,7 +62,7 @@ def plot_potential(cell_vars_h5=None, config_file=None, gids=None, show_plot=Tru
             plot_potential_hdf5(var_h5, title, show_plot, save_as)
 
 
-def plot_potential_hdf5(cell_vars_h5, title='membrane potential', show_plot=True, save_as=None):
+def plot_potential_hdf5(cell_vars_h5, gids, title='membrane potential', show_plot=True, save_as=None):
     data_h5 = h5py.File(cell_vars_h5, 'r')
     membrane_trace = data_h5['v/data']
 
@@ -70,10 +71,18 @@ def plot_potential_hdf5(cell_vars_h5, title='membrane potential', show_plot=True
     tstop = time_ds[1]
     x_axis = np.linspace(tstart, tstop, len(membrane_trace), endpoint=True)
 
-    plt.plot(x_axis, membrane_trace)
+    gids_ds = data_h5['/mapping/gids']
+    index_ds = data_h5['/mapping/index_pointer']
+    index_lookup = {gids_ds[i]: (index_ds[i], index_ds[i+1]) for i in range(len(gids_ds))}
+    gids = gids_ds.keys() if gids_ds is None else gids
+    for gid in gids:
+        var_indx = index_lookup[gid][0]
+        plt.plot(x_axis, membrane_trace[:, var_indx], label=gid)
+
     plt.xlabel('time (ms)')
     plt.ylabel('membrane (mV)')
     plt.title(title)
+    plt.legend(markerscale=2, scatterpoints=1)
 
     if save_as is not None:
         plt.savefig(save_as)
@@ -87,7 +96,7 @@ def plot_calcium(cell_vars_h5=None, config_file=None, gids=None, show_plot=True,
         raise Exception('Please specify a cell_vars hdf5 file or a simulation config.')
 
     if cell_vars_h5 is not None:
-        plot_calcium_hdf5(cell_vars_h5, show_plot, save_as='sim_ca.jpg' if save else None)
+        plot_calcium_hdf5(cell_vars_h5, gids, show_plot=show_plot, save_as='sim_ca.jpg' if save else None)
 
     else:
         # load the json file or object
@@ -106,7 +115,7 @@ def plot_calcium(cell_vars_h5=None, config_file=None, gids=None, show_plot=True,
             plot_calcium_hdf5(var_h5, title, show_plot, save_as)
 
 
-def plot_calcium_hdf5(cell_vars_h5, title='Ca2+ influx', show_plot=True, save_as=None):
+def plot_calcium_hdf5(cell_vars_h5, gids, title='Ca2+ influx', show_plot=True, save_as=None):
     data_h5 = h5py.File(cell_vars_h5, 'r')
     cai_trace = data_h5['cai/data']
 
@@ -115,10 +124,19 @@ def plot_calcium_hdf5(cell_vars_h5, title='Ca2+ influx', show_plot=True, save_as
     tstop = time_ds[1]
     x_axis = np.linspace(tstart, tstop, len(cai_trace), endpoint=True)
 
-    plt.plot(x_axis, cai_trace)
+    gids_ds = data_h5['/mapping/gids']
+    index_ds = data_h5['/mapping/index_pointer']
+    index_lookup = {gids_ds[i]: (index_ds[i], index_ds[i+1]) for i in range(len(gids_ds))}
+    gids = gids_ds.keys() if gids_ds is None else gids
+    for gid in gids:
+        var_indx = index_lookup[gid][0]
+        plt.plot(x_axis, cai_trace[:, var_indx], label=gid)
+
+    #plt.plot(x_axis, cai_trace)
     plt.xlabel('time (ms)')
     plt.ylabel('calcium [Ca2+]')
     plt.title(title)
+    plt.legend(markerscale=2, scatterpoints=1)
 
     if save_as is not None:
         plt.savefig(save_as)
