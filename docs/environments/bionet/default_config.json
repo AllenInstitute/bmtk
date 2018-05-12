@@ -1,0 +1,47 @@
+{
+  "manifest": {
+    "$OUTPUT_DIR": "output"
+  },
+
+  "target_simulator":"BioNet",
+
+  "run": {
+    "tstop": 0.0,
+    "dt": 0.1,
+    "dL": 20,
+    "overwrite_output_dir": true,
+    "spike_threshold": -15,
+    "nsteps_block": 5000
+  },
+
+  "conditions": {
+    "celsius": 34.0,
+    "v_init": -80
+  },
+
+  "inputs": {},
+
+  "reports": {},
+
+  "output": {
+    "log_file": "${OUTPUT_DIR}/log.txt",
+    "output_dir": "${OUTPUT_DIR}",
+    "spikes_file": "${OUTPUT_DIR}/spikes.h5",
+    "spikes_file_csv": "${OUTPUT_DIR}/spikes.csv"
+  },
+
+  "components": {
+    "morphologies_dir": "${COMPONENTS_DIR}/biophysical/morphology",
+    "synaptic_models_dir": "${COMPONENTS_DIR}/synaptic_models",
+    "mechanisms_dir":"${COMPONENTS_DIR}/mechanisms",
+    "biophysical_neuron_models_dir": "${COMPONENTS_DIR}/biophysical/electrophysiology",
+    "point_neuron_models_dir": "${COMPONENTS_DIR}/intfire",
+    "templates_dir": "${COMPONENTS_DIR}/hoc_templates"
+  },
+
+  "networks": {
+    "nodes": [],
+
+    "edges": []
+  }
+}
