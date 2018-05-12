@@ -1,0 +1,61 @@
+begintemplate BioAxonStub
+
+public init
+public soma, dend, apic, axon
+public all, somatic, basal, apical, axonal
+
+objref all, somatic, basal, apical, axonal
+objref this
+
+create soma[1]
+create dend[1]
+create apic[1]
+create axon[1]
+
+
+proc init() {localobj nl, import
+	all = new SectionList()
+	somatic = new SectionList()
+	basal = new SectionList()
+	apical = new SectionList()
+	axonal = new SectionList()
+	forall delete_section()
+
+//  nl = new Import3d_Neurolucida3()
+	nl = new Import3d_SWC_read()
+	nl.quiet = 1
+	nl.input($s1)
+	import = new Import3d_GUI(nl, 0)
+//	import.quite = 1
+	import.instantiate(this)
+	
+	simplify_axon()
+}
+
+proc simplify_axon() {
+
+	forsec axonal { delete_section() } 
+	create axon[2]
+	
+	axon[0] { 
+	    L = 30 
+	    diam = 1 
+	    nseg = 1+2*int(L/40) 
+	    all.append() 
+	    axonal.append() 
+	} 
+	axon[1] { 
+	    L = 30 
+	    diam = 1 
+	    nseg = 1+2*int(L/40) 
+	    all.append() 
+	    axonal.append() 
+	} 
+	connect axon(0), soma(0.5) 
+	connect axon[1](0), axon[0](1) 
+	define_shape()
+	
+
+}
+
+endtemplate BioAxonStub
