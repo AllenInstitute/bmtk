@@ -153,3 +153,36 @@ def spikes_table(config_file, spikes_file=None):
     times = np.array(spikes_h5['/spikes/timestamps'], dtype=np.float)
     return pd.DataFrame(data={'gid': gids, 'spike time (ms)': times})
     #return pd.read_csv(spikes_ascii, names=['time (ms)', 'cell gid'], sep=' ')
+
+
+def nodes_table(nodes_file, population):
+    # TODO: Integrate into sonata api
+    nodes_h5 = h5py.File(nodes_file, 'r')
+    nodes_pop = nodes_h5['/nodes'][population]
+    root_df = pd.DataFrame(data={'node_id': nodes_pop['node_id'], 'node_type_id': nodes_pop['node_type_id'],
+                                 'node_group_id': nodes_pop['node_group_id'],
+                                 'node_group_index': nodes_pop['node_group_index']}) #,
+                           #index=[nodes_pop['node_group_id'], nodes_pop['node_group_index']])
+    root_df = root_df.set_index(['node_group_id', 'node_group_index'])
+
+    node_grps = np.unique(nodes_pop['node_group_id'])
+    for grp_id in node_grps:
+        sub_group = nodes_pop[str(grp_id)]
+        grp_df = pd.DataFrame()
+        for hf_key in sub_group:
+            hf_obj = sub_group[hf_key]
+            if isinstance(hf_obj, h5py.Dataset):
+                grp_df[hf_key] = hf_obj
+
+        subgrp_len = len(grp_df)
+        if subgrp_len > 0:
+            grp_df['node_group_id'] = [grp_id]*subgrp_len
+            grp_df['node_group_index'] = range(subgrp_len)
+            grp_df = grp_df.set_index(['node_group_id', 'node_group_index'])
+            root_df = root_df.join(other=grp_df, how='left')
+
+    return root_df.reset_index(drop=True)
+
+
+def node_types_table(node_types_file, population):
+    return pd.read_csv(node_types_file, sep=' ')
