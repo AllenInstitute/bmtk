@@ -193,6 +193,36 @@ class SpikeTrainWriter(object):
                 if os.path.exists(tmp_file.file_name):
                     os.remove(tmp_file.file_name)
 
+
+class PoissonSpikesGenerator(object):
+    def __init__(self, gids, firing_rate, tstart=0.0, tstop=1000.0):
+        self._gids = gids
+        self._firing_rate = firing_rate / 1000.0
+        self._tstart = tstart
+        self._tstop = tstop
+
+    def to_hdf5(self, file_name, sort_order='gid'):
+        if sort_order == 'gid':
+            gid_list = []
+            times_list = []
+            if sort_order == 'gid':
+                for gid in self._gids:
+                    c_time = self._tstart
+                    while c_time < self._tstop:
+                        interval = -np.log(1.0 - np.random.uniform()) / self._firing_rate
+                        c_time += interval
+                        gid_list.append(gid)
+                        times_list.append(c_time)
+
+            with h5py.File(file_name, 'w') as h5:
+                h5.create_dataset('/spikes/gids', data=gid_list, dtype=np.uint)
+                h5.create_dataset('/spikes/timestamps', data=times_list, dtype=np.float)
+                h5['/spikes'].attrs['sorting'] = 'by_gid'
+
+        else:
+            raise NotImplementedError
+
+
 class SpikesInput(object):
     def get_spikes(self, gid):
         raise NotImplementedError()

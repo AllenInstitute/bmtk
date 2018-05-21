@@ -46,6 +46,7 @@ def from_json(config_file, validator=None):
     # insert file path into dictionary
     if 'config_path' not in conf:
         conf['config_path'] = os.path.abspath(config_file)
+        conf['config_dir'] = os.path.dirname(conf['config_path'])
 
     # Will resolve manifest variables and validate
     return from_dict(conf, validator)
@@ -63,6 +64,7 @@ def from_dict(config_dict, validator=None):
 
     if 'config_path' not in conf:
         conf['config_path'] = os.path.abspath(__file__)
+        conf['config_dir'] = os.path.dirname(conf['config_path'])
 
     # Build the manifest and resolve variables.
     # TODO: Check that manifest exists
@@ -77,7 +79,7 @@ def from_dict(config_dict, validator=None):
             # Try to resolve the path of the network/simulation config files. If an absolute path isn't used find
             # the file relative to the current config file. TODO: test if this will work on windows?
             conf_str = conf[childconfig]
-            conf_path = conf_str if conf_str.startswith('/') else os.path.join(conf['config_path'], conf_str)
+            conf_path = conf_str if conf_str.startswith('/') else os.path.join(conf['config_dir'], conf_str)
 
             # Build individual json file and merge into parent.
             child_json = from_json(conf_path)
