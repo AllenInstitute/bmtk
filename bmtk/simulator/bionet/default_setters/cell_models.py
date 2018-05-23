@@ -20,6 +20,7 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+import os
 import numpy as np
 from neuron import h
 try:
@@ -29,6 +30,7 @@ except Exception as e:
 
 from bmtk.simulator.bionet.pyfunction_cache import add_cell_model, add_cell_processor
 from bmtk.simulator.bionet.io_tools import io
+from bmtk.simulator.bionet.nml_reader import NMLTree
 
 """
 Functions for loading NEURON cell objects.
@@ -66,8 +68,6 @@ def Biophys1_dict(cell):
     """
     morphology_file = cell['morphology_file']
     hobj = h.Biophys1(str(morphology_file))
-    #fix_axon_peri(hobj)
-    #set_params_peri(hobj, cell.model_params)
     return hobj
 
 
@@ -116,7 +116,6 @@ def set_params_peri(hobj, biophys_params):
         sec.Ra = passive['ra']
         sec.cm = cm_dict[sec.name().split(".")[1][:4]]
         sec.insert('pas')
-        # sec.insert('extracellular')
 
         for seg in sec:
             seg.pas.e = passive["e_pas"]
@@ -142,7 +141,6 @@ def aibs_allactive(hobj, cell, dynamics_params):
     fix_axon_allactive(hobj)
     set_params_allactive(hobj, dynamics_params)
     return hobj
-
 
 
 def fix_axon_allactive(hobj):
@@ -376,9 +374,75 @@ def get_axon_direction(hobj):
     return axon_seg_coor
 
 
+nml_files = {}  # For caching neuroml file trees
+def NMLLoad(cell, template_name, dynamic_params):
+    """Convert a NEUROML file to a NEURON hoc cell object.
+
+    Current limitations:
+    * Ignores nml morphology section. You must pass in a swc file
+    * Only for biophysically detailed cell biophysical components. All properties must be assigned to a segment group.
+
+    :param cell:
+    :param template_name:
+    :param dynamic_params:
+    :return:
+    """
+    # Last I checked there is no built in way to load a NML file directly into NEURON through the API, instead we have
+    # to manually parse the nml file and build the NEUROM cell object section-by-section.
+    morphology_file = cell['morphology_file']
+    hobj = h.Biophys1(str(morphology_file))
+    # Depending on if the axon is cut before or after setting cell channels and mechanism can create drastically
+    # different results. Currently NML files doesn't produce the same results if you use model_processing directives.
+    # TODO: Find a way to specify model_processing directive with NML file
+    fix_axon_peri(hobj)
+
+    # Load the hoc template containing a swc initialized NEURON cell
+    if template_name in nml_files:
+        nml_params = nml_files[template_name]
+    else:
+        # Parse the NML parameters file xml tree and cache.
+        biophys_dirs = cell.network.get_component('biophysical_neuron_models_dir')
+        nml_path = os.path.join(biophys_dirs, template_name)
+        nml_params = NMLTree(nml_path)
+        nml_files[template_name] = nml_params
+
+    # Iterate through the NML tree by section and use the properties to manually create cell mechanisms
+    section_lists = [(sec, sec.name().split(".")[1][:4]) for sec in hobj.all]
+    for sec, sec_name in section_lists:
+        for prop_name, prop_obj in nml_params[sec_name].items():
+            if prop_obj.element_tag() == 'resistivity':
+                sec.Ra = prop_obj.value
+
+            elif prop_obj.element_tag() == 'specificCapacitance':
+                sec.cm = prop_obj.value
+
+            elif prop_obj.element_tag() == 'channelDensity' and prop_obj.ion_channel == 'pas':
+                sec.insert('pas')
+                setattr(sec, 'g_pas', prop_obj.cond_density)
+                for seg in sec:
+                    seg.pas.e = prop_obj.erev
+
+            elif prop_obj.element_tag() == 'channelDensity' or prop_obj.element_tag() == 'channelDensityNernst':
+                sec.insert(prop_obj.ion_channel)
+                setattr(sec, prop_obj.id, prop_obj.cond_density)
+                if prop_obj.ion == 'na' and prop_obj:
+                    sec.ena = prop_obj.erev
+                elif prop_obj.ion == 'k':
+                    sec.ek = prop_obj.erev
+
+            elif prop_obj.element_tag() == 'concentrationModel':
+                sec.insert(prop_obj.id)
+                setattr(sec, 'gamma_' + prop_obj.type, prop_obj.gamma)
+                setattr(sec, 'decay_' + prop_obj.type, prop_obj.decay)
+
+    return hobj
+
+
+add_cell_model(NMLLoad, directive='nml', model_type='biophysical')
 add_cell_model(Biophys1, directive='ctdb:Biophys1', model_type='biophysical', overwrite=False)
 add_cell_model(Biophys1, directive='ctdb:Biophys1.hoc', model_type='biophysical', overwrite=False)
 add_cell_model(IntFire1, directive='nrn:IntFire1', model_type='point_process', overwrite=False)
+
 
 add_cell_processor(aibs_perisomatic, overwrite=False)
 add_cell_processor(aibs_allactive, overwrite=False)

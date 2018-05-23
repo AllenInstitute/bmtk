@@ -1,6 +1,7 @@
 import os
 import json
 import types
+import numpy as np
 
 
 class SonataBaseNode(object):
@@ -31,6 +32,10 @@ class SonataBaseNode(object):
     @property
     def model_processing(self):
         return self._prop_adaptor.model_processing(self._node)
+
+    @property
+    def network(self):
+        return self._prop_adaptor.network
 
     def __getitem__(self, prop_key):
         return self._node[prop_key]
@@ -87,7 +92,8 @@ class NodeAdaptor(object):
     def preprocess_node_types(network, node_population):
         # TODO: The following figures out the actually used node-type-ids. For mem and speed may be better to just
         # process them all
-        node_type_ids = node_population.type_ids
+        #node_type_ids = node_population.type_ids
+        node_type_ids = np.unique(node_population.type_ids)
         # TODO: Verify all the node_type_ids are in the table
         node_types_table = node_population.types_table
 
@@ -108,6 +114,9 @@ class NodeAdaptor(object):
                 node_type = node_types_table[nt_id]
                 dynamics_params = node_type['dynamics_params']
                 if isinstance(dynamics_params, dict):
+                    continue
+
+                if dynamics_params is None:
                     continue
 
                 model_type = node_type['model_type']
@@ -139,10 +148,12 @@ class NodeAdaptor(object):
     @classmethod
     def create_adaptor(cls, node_group, network):
         prop_map = cls(network)
-        return cls.patch_adaptor(prop_map, node_group)
+        return cls.patch_adaptor(prop_map, node_group, network)
 
-    @staticmethod
-    def patch_adaptor(adaptor, node_group):
+    @classmethod
+    def patch_adaptor(cls, adaptor, node_group, network):
+        adaptor.network = network
+
         # Use node_id if the user hasn't specified a gid table
         if not node_group.has_gids:
             adaptor.gid = types.MethodType(NodeAdaptor.node_id, adaptor)
@@ -150,8 +161,10 @@ class NodeAdaptor(object):
         # dynamics_params
         if node_group.has_dynamics_params:
             adaptor.dynamics_params = types.MethodType(group_dynamics_params, adaptor)
-        else:  # 'dynamics_params' in node_group.all_columns:
+        elif 'dynamics_params' in node_group.all_columns:
             adaptor.dynamics_params = types.MethodType(types_dynamics_params, adaptor)
+        else:
+            adaptor.dynamics_params = types.MethodType(none_function, adaptor)
 
         if 'model_template' not in node_group.all_columns:
             adaptor.model_template = types.MethodType(none_function, adaptor)
