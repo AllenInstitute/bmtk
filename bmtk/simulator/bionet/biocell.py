@@ -64,6 +64,8 @@ class BioCell(Cell):
         # used by xstim module
         self.ptr2e_extracellular = None
 
+        self.__extracellular_mech = False
+
     def set_spike_detector(self, spike_threshold):
         nc = h.NetCon(self.hobj.soma[0](0.5)._ref_v, None, sec=self.hobj.soma[0])  # attach spike detector to cell
         nc.threshold = spike_threshold     
@@ -217,11 +219,21 @@ class BioCell(Cell):
         self._syn_seg_ix = []
         self._syn_sec_x = []
 
+    def __set_extracell_mechanism(self):
+        if not self.__extracellular_mech:
+            for sec in self.hobj.all:
+                sec.insert('extracellular')
+            self.__extracellular_mech = True
+
     def setup_ecp(self):
         self.im_ptr = h.PtrVector(self._nseg)  # pointer vector
         # used for gathering an array of  i_membrane values from the pointer vector
         self.im_ptr.ptr_update_callback(self.set_im_ptr)
         self.imVec = h.Vector(self._nseg)
+
+        self.__set_extracell_mechanism()
+        #for sec in self.hobj.all:
+        #    sec.insert('extracellular')
 
     def setup_xstim(self, set_nrn_mechanism=True):
         self.ptr2e_extracellular = h.PtrVector(self._nseg)
@@ -229,8 +241,9 @@ class BioCell(Cell):
 
         # Set the e_extracellular mechanism for all sections on this hoc object
         if set_nrn_mechanism:
-            for sec in self.hobj.all:
-                sec.insert('extracellular')
+            self.__set_extracell_mechanism()
+            #for sec in self.hobj.all:
+            #    sec.insert('extracellular')
 
     def set_im_ptr(self):
         """Set PtrVector to point to the i_membrane_"""

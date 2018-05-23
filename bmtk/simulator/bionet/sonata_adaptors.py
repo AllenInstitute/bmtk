@@ -72,9 +72,9 @@ class BioNodeAdaptor(NodeAdaptor):
     def get_node(self, sonata_node):
         return BioNode(sonata_node, self)
 
-    @staticmethod
-    def patch_adaptor(adaptor, node_group):
-        node_adaptor = NodeAdaptor.patch_adaptor(adaptor, node_group)
+    @classmethod
+    def patch_adaptor(cls, adaptor, node_group, network):
+        node_adaptor = NodeAdaptor.patch_adaptor(adaptor, node_group, network)
 
         # Position
         if 'positions' in node_group.all_columns:
