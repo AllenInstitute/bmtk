@@ -72,8 +72,10 @@ def Biophys1_dict(cell):
 
 
 def aibs_perisomatic(hobj, cell, dynamics_params):
-    fix_axon_peri(hobj)
-    set_params_peri(hobj, dynamics_params)
+    if dynamics_params is not None:
+        fix_axon_peri(hobj)
+        set_params_peri(hobj, dynamics_params)
+
     return hobj
 
 
@@ -437,6 +439,10 @@ def NMLLoad(cell, template_name, dynamic_params):
 
     return hobj
 
+def set_extracellular(hobj, cell, dynamics_params):
+    for sec in hobj.all:
+        sec.insert('extracellular')
+
 
 add_cell_model(NMLLoad, directive='nml', model_type='biophysical')
 add_cell_model(Biophys1, directive='ctdb:Biophys1', model_type='biophysical', overwrite=False)
@@ -448,3 +454,5 @@ add_cell_processor(aibs_perisomatic, overwrite=False)
 add_cell_processor(aibs_allactive, overwrite=False)
 add_cell_processor(aibs_perisomatic_directed, overwrite=False)
 add_cell_processor(aibs_allactive_directed, overwrite=False)
+add_cell_processor(set_extracellular, overwrite=False)
+add_cell_processor(set_extracellular, 'extracellular', overwrite=True)
