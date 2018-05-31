@@ -67,6 +67,9 @@ class Config(ConfigDict):
         nrn.load_neuron_modules(self.mechanisms_dir, self.templates_dir)
 
     def build_env(self):
-        self.create_output_dir()
-        self.copy_to_output()
+        if MPI_Rank == 0:
+            self.create_output_dir()
+            self.copy_to_output()
+
+        pc.barrier()
         self.load_nrn_modules()
