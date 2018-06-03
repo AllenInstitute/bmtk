@@ -4,16 +4,17 @@ from bmtk.simulator.core.simulator import Simulator
 import bmtk.simulator.utils.simulation_inputs as inputs
 from bmtk.simulator.filternet.config import Config
 from bmtk.simulator.filternet.lgnmodel.movie import *
+from bmtk.simulator.filternet import modules as mods
 
 
 class FilterSimulator(Simulator):
     def __init__(self, network, dt, tstop):
+        super(FilterSimulator, self).__init__()
         self._network = network
         self._dt = dt
         self._tstop = tstop/1000.0
 
         self.rates_csv = None
-
         self._movies = []
 
     def add_movie(self, movie_type, params):
@@ -40,18 +41,25 @@ class FilterSimulator(Simulator):
             raise Exception('Unknown movie type {}'.format(movie_type))
 
     def run(self):
-        if self.rates_csv is not None:
-            csv_fhandle = open(self.rates_csv, 'w')
-            csv_writer = csv.writer(csv_fhandle, delimiter=' ')
+        for mod in self._sim_mods:
+            mod.initialize(self)
 
         for cell in self._network.cells():
             for movie in self._movies:
-                t, f_tot = cell.lgn_cell_obj.evaluate(movie, downsample=1, separable=True)
+                ts, f_rates = cell.lgn_cell_obj.evaluate(movie, downsample=1, separable=True)
+
+                for mod in self._sim_mods:
+                    mod.save(self, cell.gid, ts, f_rates)
+
+                """
                 if self.rates_csv is not None:
                     print 'saving {}'.format(cell.gid)
                     for t, f in zip(t, f_tot):
                         csv_writer.writerow([t, f, cell.gid])
                     csv_fhandle.flush()
+                """
+        for mod in self._sim_mods:
+            mod.finalize(self)
 
     """
     def generate_spikes(LGN, trials, duration, output_file_name):
@@ -138,7 +146,17 @@ class FilterSimulator(Simulator):
                 io.log_exception('Can not parse input format {}'.format(sim_input.name))
             """
 
-        sim.rates_csv = config.output.get('rates_file', None)
+
+        rates_csv = config.output.get('rates_csv', None)
+        rates_h5 = config.output.get('rates_h5', None)
+        if rates_csv or rates_h5:
+            sim.add_mod(mods.RecordRates(rates_csv, rates_h5, config.output_dir))
+
+        spikes_csv = config.output.get('spikes_csv', None)
+        spikes_h5 = config.output.get('spikes_h5', None)
+        spikes_nwb = config.output.get('spikes_nwb', None)
+        if spikes_csv or spikes_h5 or spikes_nwb:
+            sim.add_mod(mods.SpikesGenerator(spikes_csv, spikes_h5, spikes_nwb, config.output_dir))
 
         # Parse the "reports" section of the config and load an associated output module for each report
         """
