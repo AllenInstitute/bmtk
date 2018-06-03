@@ -7,7 +7,7 @@ import scipy.optimize as sopt
 import warnings
 import scipy.interpolate as sinterp
 
-def get_vanhateren(filename, src_dir='/local2'):
+def get_vanhateren(filename, src_dir):
     with open(filename, 'rb') as handle:
         s = handle.read()
     arr = array.array('H', s)

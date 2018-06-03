@@ -1,13 +1,12 @@
 import os
-#import matplotlib.pyplot as plt
+import re
 import matplotlib.mlab as mlab
 import numpy as np
-from movie import Movie, FullFieldFlashMovie
 import scipy.io as sio
-
-import re
 from scipy.fftpack import fft
 import pandas as pd
+from movie import Movie, FullFieldFlashMovie
+
 
 pd.set_option('display.width', 1000)
 pd.set_option('display.max_columns', 100)
@@ -67,12 +66,13 @@ def create_grating_movie_list(gr_dir_name):
 
 
 ##################################################
+metrics_dir = os.path.join(os.path.dirname(__file__), 'cell_metrics')
 def get_data_metrics_for_each_subclass(ctype):
     # Load csv file into dataframe
     if ctype.find('_sus') >= 0:
-        prs_fn = '/data/mat/RamIyer/Sev_data_Feb2016/' + ctype + '_cells_v3.csv'
+        prs_fn = os.path.join(metrics_dir, '{}_cells_v3.csv'.format(ctype))
     else:
-        prs_fn = '/data/mat/RamIyer/Sev_data_Feb2016/' + ctype + '_cell_data.csv'
+        prs_fn = os.path.join(metrics_dir, '{}_cell_data.csv'.format(ctype))
 
     prs_df = pd.read_csv(prs_fn)
     N_class, nmet = np.shape(prs_df)
@@ -137,7 +137,6 @@ def get_data_metrics_for_each_subclass(ctype):
             si_inf_exp = (si_exp - tcross / 200.) * (200. / (200. - tcross - 40.))
 
         dict_key = exp_means.iloc[scn].name[3:]
-        # print dict_key
         exp_prs_dict[dict_key] = {}
         exp_prs_dict[dict_key]['f0_exp'] = f0_exp
         exp_prs_dict[dict_key]['f1_exp'] = f1_exp
@@ -187,8 +186,5 @@ def get_tcross_from_temporal_kernel(temporal_kernel):
     min_ind = np.argmin(temporal_kernel)
 
     temp_tcross_ind = mlab.cross_from_above(temporal_kernel[max_ind:min_ind], 0.0)
-    # print temp_tcross_ind[0]
-    # print max_ind + temp_tcross_ind[0]
-
     tcross_ind = max_ind + temp_tcross_ind[0]
     return tcross_ind
