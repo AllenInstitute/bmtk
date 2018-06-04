@@ -392,6 +392,7 @@ class ConfigDict(dict):
             return
 
         self._set_logging()
+        print self.overwrite_output
         self.io.setup_output_dir(self.output_dir, self.log_file, self.overwrite_output)
         self.copy_to_output()
         self._env_built = True
@@ -416,7 +417,15 @@ class ConfigDict(dict):
 
     @classmethod
     def load(cls, config_file, validate=False):
-        # TODO: Implement factory method that can resolve the format/type of input configuration.
-        raise NotImplementedError
+        # Implement factory method that can resolve the format/type of input configuration.
+        if isinstance(config_file, dict):
+            return cls.from_dict(config_file, validate)
+        elif isinstance(config_file, basestring):
+            if config_file.endswith('yml') or config_file.endswith('yaml'):
+                return cls.from_yaml(config_file, validate)
+            else:
+                return cls.from_json(config_file, validate)
+        else:
+            raise Exception
 
 

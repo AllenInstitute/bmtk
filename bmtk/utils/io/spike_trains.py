@@ -70,6 +70,10 @@ class SpikeTrainWriter(object):
     def add_spike(self, time, gid):
         self._tmp_file_handle.write('{:.6f} {}\n'.format(time, gid))
 
+    def add_spikes(self, times, gid):
+        for t in times:
+            self.add_spike(t, gid)
+
     def add_spikes_file(self, file, sort_order=None):
         self._all_tmp_files.append(self.TmpFileMetadata(file, sort_order))
 
