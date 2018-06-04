@@ -97,7 +97,7 @@ def get_firing_rates(populations, spike_trains):
 def list_of_dicts_to_dict_of_lists(list_of_dicts, default=None):
     new_dict = {}
     for curr_dict in list_of_dicts:
-        print curr_dict.keys()
+        print(curr_dict.keys())
 
 
 #############################################
@@ -192,7 +192,7 @@ def population_to_dict_for_dataframe(p):
 # Depreciated
 #############################################
 def network_dict_to_target_adjacency_dict(network_dict):
-    print network_dict
+    print(network_dict)
 
 
 #############################################

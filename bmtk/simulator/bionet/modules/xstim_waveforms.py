@@ -98,7 +98,7 @@ def stimx_waveform_factory(waveform):
             with open(waveform, 'r') as f:
                 waveform = json.load(f)
         else:
-            print "Warning: unknwon filetype for waveform"
+            io.log_warning('Unknwon filetype for waveform')
 
     shape_key = waveform["shape"].lower()
 
@@ -120,7 +120,7 @@ def iclamp_waveform_factory(conf):
     shape_key = iclamp_waveform_conf["shape"].lower()
 
     if shape_key not in shape_classes:
-        print "Warning: iclamp waveform shape not known"  # throw error?
+        io.log_warning('iclamp waveform shape not known')  # throw error?
 
     Constructor = shape_classes[shape_key]
     return Constructor(iclamp_waveform_conf)

@@ -62,7 +62,7 @@ class SpikeTrainWriter(object):
 
     def _next_spike(self, rank):
         try:
-            val = self._tmp_spikes_handles[rank].next()
+            val = next(self._tmp_spikes_handles[rank])
             return float(val[0]), int(val[1]), rank
         except StopIteration:
             return None

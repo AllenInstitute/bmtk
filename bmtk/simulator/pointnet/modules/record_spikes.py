@@ -59,7 +59,7 @@ class SpikesMod(object):
                                                                  'withgid': True, 'to_file': True})
 
         for pop_name, pop in sim._graph._nestid2nodeid_map.items():
-            nest.Connect(pop.keys(), self._spike_detector)
+            nest.Connect(list(pop.keys()), self._spike_detector)
 
     def finalize(self, sim):
         if MPI_RANK == 0:

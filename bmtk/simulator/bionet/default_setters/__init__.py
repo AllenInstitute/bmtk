@@ -20,6 +20,6 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-import cell_models
-import synapse_models
-import synaptic_weights
+from . import cell_models
+from . import synapse_models
+from . import synaptic_weights

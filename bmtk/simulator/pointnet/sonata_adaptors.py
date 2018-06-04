@@ -138,8 +138,8 @@ class PointNodeAdaptor(NodeAdaptor):
                 for nt_id in ntids_counter]
 
     @staticmethod
-    def patch_adaptor(adaptor, node_group):
-        node_adaptor = NodeAdaptor.patch_adaptor(adaptor, node_group)
+    def patch_adaptor(adaptor, node_group, network):
+        node_adaptor = NodeAdaptor.patch_adaptor(adaptor, node_group, network)
 
         # If dynamics params is stored in the nodes.h5 then we have to build each node separate
         if node_group.has_dynamics_params:

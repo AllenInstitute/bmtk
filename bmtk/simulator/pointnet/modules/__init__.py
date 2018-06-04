@@ -1,1 +1,1 @@
-from record_spikes import SpikesMod
+from .record_spikes import SpikesMod
