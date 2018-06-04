@@ -55,8 +55,9 @@ class XStimMod(SimulatorMod):
     def step(self, sim, tstep):
         for gid in self._local_gids:
             cell = sim.net.get_cell_gid(gid)
-            # cell = sim.net.get_local_cell(gid)
-            self._electrode.calculate_waveforms(tstep)
+            # Use tstep +1 to match isee-engine existing results. This will make it so that it begins a step earlier
+            # than if using just tstep.
+            self._electrode.calculate_waveforms(tstep+1)
             vext_vec = self._electrode.get_vext(gid)
             cell.set_e_extracellular(vext_vec)
 
