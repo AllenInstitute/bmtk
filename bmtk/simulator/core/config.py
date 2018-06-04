@@ -392,7 +392,6 @@ class ConfigDict(dict):
             return
 
         self._set_logging()
-        print self.overwrite_output
         self.io.setup_output_dir(self.output_dir, self.log_file, self.overwrite_output)
         self.copy_to_output()
         self._env_built = True

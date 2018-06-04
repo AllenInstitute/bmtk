@@ -1,7 +1,7 @@
 import os
 import csv
 
-from base import SimModule
+from .base import SimModule
 
 
 class RecordRates(SimModule):

@@ -5,6 +5,7 @@ import bmtk.simulator.utils.simulation_inputs as inputs
 from bmtk.simulator.filternet.config import Config
 from bmtk.simulator.filternet.lgnmodel.movie import *
 from bmtk.simulator.filternet import modules as mods
+from six import string_types
 
 
 class FilterSimulator(Simulator):
@@ -19,7 +20,7 @@ class FilterSimulator(Simulator):
 
     def add_movie(self, movie_type, params):
         # TODO: Move this into its own factory
-        movie_type = movie_type.lower() if isinstance(movie_type, basestring) else 'movie'
+        movie_type = movie_type.lower() if isinstance(movie_type, string_types) else 'movie'
         if movie_type == 'movie' or not movie_type:
             raise NotImplementedError
 
@@ -46,6 +47,7 @@ class FilterSimulator(Simulator):
 
         for cell in self._network.cells():
             for movie in self._movies:
+                print(type(cell.lgn_cell_obj))
                 ts, f_rates = cell.lgn_cell_obj.evaluate(movie, downsample=1, separable=True)
 
                 for mod in self._sim_mods:

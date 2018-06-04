@@ -3,19 +3,19 @@ import os
 import itertools
 import matplotlib.pyplot as plt
 import numpy as np
-import utilities as util
+from . import utilities as util
 import importlib
-from kernel import Kernel2D, Kernel3D
-from linearfilter import SpatioTemporalFilter
+from .kernel import Kernel2D, Kernel3D
+from .linearfilter import SpatioTemporalFilter
 import json
-from spatialfilter import GaussianSpatialFilter
-from transferfunction import ScalarTransferFunction
-from temporalfilter import TemporalFilterCosineBump
-from cursor import LNUnitCursor, MultiLNUnitCursor
-from movie import Movie    
-from lgnmodel1 import LGNModel, heat_plot
-from transferfunction import MultiTransferFunction, ScalarTransferFunction
-from lnunit import LNUnit, MultiLNUnit    
+from .spatialfilter import GaussianSpatialFilter
+from .transferfunction import ScalarTransferFunction
+from .temporalfilter import TemporalFilterCosineBump
+from .cursor import LNUnitCursor, MultiLNUnitCursor
+from .movie import Movie
+from .lgnmodel1 import LGNModel, heat_plot
+from .transferfunction import MultiTransferFunction, ScalarTransferFunction
+from .lnunit import LNUnit, MultiLNUnit
 from sympy.abc import x as symbolic_x
 from sympy.abc import y as symbolic_y
 

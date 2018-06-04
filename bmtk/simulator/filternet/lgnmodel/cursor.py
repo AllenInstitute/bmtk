@@ -1,11 +1,11 @@
-from movie import Movie
+from .movie import Movie
 import numpy as np
-from linearfilter import SpatioTemporalFilter
-from spatialfilter import GaussianSpatialFilter
-from temporalfilter import TemporalFilterCosineBump
-from utilities import convert_tmin_tmax_framerate_to_trange
+from .linearfilter import SpatioTemporalFilter
+from .spatialfilter import GaussianSpatialFilter
+from .temporalfilter import TemporalFilterCosineBump
+from .utilities import convert_tmin_tmax_framerate_to_trange
 import matplotlib.pyplot as plt
-from kernel import Kernel3D
+from .kernel import Kernel3D
 import scipy.signal as spsig
 import time
 

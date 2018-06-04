@@ -1,8 +1,8 @@
 import numpy as np
-import fitfuns
+from . import fitfuns
 import scipy.interpolate as spinterp
 import matplotlib.pyplot as plt
-from kernel import Kernel1D
+from .kernel import Kernel1D
 
 class TemporalFilter(object):
 

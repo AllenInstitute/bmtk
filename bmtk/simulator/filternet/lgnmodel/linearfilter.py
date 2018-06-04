@@ -1,5 +1,5 @@
 import numpy as np
-from kernel import Kernel3D
+from .kernel import Kernel3D
 import matplotlib.pyplot as plt
 
 class SpatioTemporalFilter(object):
