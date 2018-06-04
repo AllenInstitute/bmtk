@@ -25,6 +25,8 @@ import json
 import re
 import copy
 import datetime
+from six import string_types
+
 
 from bmtk.simulator.core.io_tools import io
 
@@ -36,9 +38,11 @@ def from_json(config_file, validator=None):
     :param validator: A SimConfigValidator object to validate json file. Won't validate if set to None
     :return: A dictionary, verified against json validator and with manifest variables resolved.
     """
-    if isinstance(config_file, file):
-        conf = json.load(config_file)
-    elif isinstance(config_file, basestring):
+    #print(config_file)
+    #if os.path.isfile(config_file):
+    #if isinstance(config_file, file):
+    #    conf = json.load(config_file)
+    if isinstance(config_file, string_types):
         conf = json.load(open(config_file, 'r'))
     else:
         raise Exception('{} is not a file or file path.'.format(config_file))
@@ -166,7 +170,7 @@ def __recursive_insert(json_obj, manifest):
     :param manifest: A dictionary of variable values
     :return: A new json dictionar config file with variables resolved
     """
-    if isinstance(json_obj, basestring):
+    if isinstance(json_obj, string_types):
         return __find_variables(json_obj, manifest)
 
     elif isinstance(json_obj, list):

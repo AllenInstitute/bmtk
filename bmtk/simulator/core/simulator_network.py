@@ -1,7 +1,10 @@
+from six import string_types
+
 from bmtk.simulator.core.io_tools import io
 from bmtk.simulator.core.config import ConfigDict
 from bmtk.simulator.core.node_sets import NodeSet, NodeSetAll
 from bmtk.simulator.core import sonata_reader
+
 
 class SimNetwork(object):
     def __init__(self):
@@ -65,7 +68,7 @@ class SimNetwork(object):
         self._node_sets[name] = node_set
 
     def get_node_set(self, node_set):
-        if node_set in self._node_sets.keys():
+        if isinstance(node_set, string_types) and node_set in self._node_sets:
             return self._node_sets[node_set]
 
         elif isinstance(node_set, (dict, list)):

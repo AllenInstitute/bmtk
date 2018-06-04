@@ -131,7 +131,7 @@ class EcpMod(SimulatorMod):
         if remain != 0:
             ivals.append(self._nsteps)
 
-        for rank in xrange(N_HOSTS):  # iterate over the ranks
+        for rank in range(N_HOSTS):  # iterate over the ranks
             if rank == MPI_RANK:  # wait until finished with a particular rank
                 with h5py.File(self._ecp_output, 'a') as ecp_f5:
                     for i in range(len(ivals)-1):
@@ -248,7 +248,7 @@ class RecXElectrode(object):
 
         tr = np.zeros((self.nsites, nseg))
 
-        for j in xrange(self.nsites):  # calculate mapping for each site on the electrode
+        for j in range(self.nsites):  # calculate mapping for each site on the electrode
             rel = np.expand_dims(self.pos[:, j], axis=1)  # coordinates of a j-th site on the electrode
             rel_05 = rel - r05  # distance between electrode and segment centers
 

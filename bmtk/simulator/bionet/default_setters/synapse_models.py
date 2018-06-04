@@ -34,8 +34,6 @@ def exp2syn(syn_params, xs, secs):
     :return: list of NEURON synpase objects
     """
     syns = []
-    print xs
-
     for x, sec in zip(xs, secs):
         syn = h.Exp2Syn(x, sec=sec)
         syn.e = syn_params['erev']

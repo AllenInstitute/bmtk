@@ -23,6 +23,7 @@
 import os
 import glob
 import nest
+from six import string_types
 
 from bmtk.simulator.core.simulator import Simulator
 from bmtk.simulator.pointnet.config import Config
@@ -31,7 +32,7 @@ from bmtk.simulator.pointnet.io_tools import io
 import bmtk.simulator.utils.simulation_reports as reports
 import bmtk.simulator.utils.simulation_inputs as inputs
 from bmtk.utils.io import spike_trains
-import modules as mods
+from . import modules as mods
 
 
 class PointSimulator(Simulator):
@@ -125,7 +126,7 @@ class PointSimulator(Simulator):
     @classmethod
     def from_config(cls, configure, graph):
         # load the json file or object
-        if isinstance(configure, basestring):
+        if isinstance(configure, string_types):
             config = Config.from_json(configure, validate=True)
         elif isinstance(configure, dict):
             config = configure

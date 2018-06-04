@@ -22,6 +22,7 @@
 #
 import os
 import logging
+from six import string_types
 
 from dipde.internals.internalpopulation import InternalPopulation
 from dipde.internals.externalpopulation import ExternalPopulation
@@ -29,8 +30,8 @@ from dipde.internals.connection import Connection
 import dipde
 
 from bmtk.simulator.core.simulator import Simulator
-import config as cfg
-import utils as poputils
+from . import config as cfg
+from . import utils as poputils
 import bmtk.simulator.utils.simulation_inputs as inputs
 from bmtk.utils.io import spike_trains, firing_rates
 
@@ -238,11 +239,11 @@ class PopSimulator(Simulator):
         #print tstop, self.dt
         #print self._graph.populations
         #exit()
-        print "running simulation..."
+        print("running simulation...")
         self._dipde_network.run(t0=0.0, tf=tstop, dt=self.dt)
         # TODO: make record_rates optional?
         self.__record_rates()
-        print "done simulation."
+        print("done simulation.")
 
     def __create_internal_pop(self, params):
         # TODO: use getter methods directly in case arguments are not stored in dynamics params
@@ -343,7 +344,7 @@ class PopSimulator(Simulator):
     @classmethod
     def from_config(cls, configure, graph):
         # load the json file or object
-        if isinstance(configure, basestring):
+        if isinstance(configure, string_types):
             config = cfg.from_json(configure, validate=True)
         elif isinstance(configure, dict):
             config = configure
