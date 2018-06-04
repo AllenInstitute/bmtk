@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from utilities import convert_tmin_tmax_framerate_to_trange
+from .utilities import convert_tmin_tmax_framerate_to_trange
 
 
 class Movie(object):

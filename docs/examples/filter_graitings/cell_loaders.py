@@ -42,7 +42,7 @@ def createOneUnitOfTwoSubunitFilter(prs, ttp_exp):
         prs['opt_delays'] = delays
         filt_new = create_temporal_filter(prs)
     else:
-        print 'del_offset < 0'
+        print('del_offset < 0')
 
     return filt_new, filt_sum
 
@@ -54,7 +54,6 @@ def load_cell(node):
     sigma = (sigma, sigma)
     spatial_filter = GaussianSpatialFilter(translate=translate, sigma=sigma, origin=origin)
 
-    print node.node_id
     if node['pop_name'] == 'sONsOFF_001':
 
         # sON temporal filter

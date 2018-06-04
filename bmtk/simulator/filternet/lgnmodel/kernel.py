@@ -1,4 +1,4 @@
-from matplotlib import _cntr as cntr
+#from matplotlib import _cntr as cntr
 import matplotlib as mpl
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
@@ -25,7 +25,8 @@ def find_l_r_in_t_range(t_range, t):
             return tl, tr    
 
 def get_contour(X, Y, Z, c):
-    contour_obj = cntr.Cntr(X, Y, Z)
+    contour_obj = plt.contour(X, Y, Z)
+    #contour_obj = cntr.Cntr(X, Y, Z)
     res = contour_obj.trace(c)
     nseg = len(res) // 2
     if nseg > 0:

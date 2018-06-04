@@ -5,7 +5,7 @@ import numpy as np
 import scipy.io as sio
 from scipy.fftpack import fft
 import pandas as pd
-from movie import Movie, FullFieldFlashMovie
+from .movie import Movie, FullFieldFlashMovie
 
 
 pd.set_option('display.width', 1000)

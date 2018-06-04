@@ -2,13 +2,12 @@ from scipy import ndimage
 import numpy as np
 import itertools
 import importlib
-from kernel import Kernel2D
 import scipy.interpolate as spinterp
-import utilities as util
+from . import utilities as util
 import matplotlib.pyplot as plt
 import scipy.misc as spmisc
 import scipy.ndimage as spndimage
-from kernel import Kernel2D, Kernel3D
+from .kernel import Kernel2D, Kernel3D
 
 class ArrayFilter(object):
     

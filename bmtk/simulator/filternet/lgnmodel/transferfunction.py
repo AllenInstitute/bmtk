@@ -51,7 +51,7 @@ class MultiTransferFunction(object):
         if isinstance(s[0], (float,)):
             return self.closure(*s)
         else:
-            return np.array(map(lambda x: self.closure(*x), zip(*s)))
+            return np.array(list(map(lambda x: self.closure(*x), zip(*s))))
     
     def to_dict(self):
         return {'class': (__name__, self.__class__.__name__),
