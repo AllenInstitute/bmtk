@@ -94,8 +94,6 @@ class SimNetwork(object):
         # Used in inputs/reports when needed to get all gids belonging to a node population
         self._node_sets[pop_name] = NodeSet({'population': pop_name}, self)
 
-
-
     def add_edges(self, edge_population):
         edge_population.initialize(self)
         pop_name = edge_population.name
@@ -181,7 +179,7 @@ class SimNetwork(object):
 
         # Add nodeset section
         network.add_node_set('all', NodeSetAll(network))
-        for ns_name, ns_filter in conf.node_sets.items():
+        for ns_name, ns_filter in config.node_sets.items():
             network.add_node_set(ns_name, NodeSet(ns_filter, network))
 
         return network
