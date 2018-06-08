@@ -2,6 +2,7 @@ import numpy as np
 from collections import Counter
 import numbers
 import nest
+import types
 
 from bmtk.simulator.core.sonata_reader import NodeAdaptor, SonataBaseNode, EdgeAdaptor, SonataBaseEdge
 
@@ -243,4 +244,12 @@ class PointEdgeAdaptor(EdgeAdaptor):
     @staticmethod
     def patch_adaptor(adaptor, edge_group):
         edge_adaptor = EdgeAdaptor.patch_adaptor(adaptor, edge_group)
+
+        if 'weight_function' not in edge_group.all_columns and 'syn_weight' in edge_group.all_columns:
+            adaptor.syn_weight = types.MethodType(point_syn_weight, adaptor)
+
         return edge_adaptor
+
+
+def point_syn_weight(self, edge, src_node, trg_node):
+    return edge['syn_weight']*edge.nsyns
