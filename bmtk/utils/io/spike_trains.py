@@ -63,24 +63,26 @@ class SpikeTrainWriter(object):
     def _next_spike(self, rank):
         try:
             val = self._tmp_spikes_handles[rank].next()
-            return float(val[0]), int(val[1]), rank
+            return val[0], val[1], rank
+            # return float(val[0]), int(val[1]), rank
         except StopIteration:
             return None
 
     def add_spike(self, time, gid):
         self._tmp_file_handle.write('{:.6f} {}\n'.format(time, gid))
 
-    def add_spikes_file(self, file, sort_order=None):
-        self._all_tmp_files.append(self.TmpFileMetadata(file, sort_order))
+    def add_spikes_file(self, file_name, sort_order=None):
+        self._all_tmp_files.append(self.TmpFileMetadata(file_name, sort_order))
 
     def _sort_files(self, sort_order, sort_column, file_write_fnc):
         self._tmp_spikes_handles = []
         for fdata in self._all_tmp_files:
             self._sort_tmp_file(fdata, sort_order)
+
             self._tmp_spikes_handles.append(csv.reader(open(fdata.file_name, 'r'), delimiter=self.delimiter))
 
         spikes = []
-        for rank in range(self._mpi_size):
+        for rank in range(len(self._tmp_spikes_handles)):  # range(self._mpi_size):
             spike = self._next_spike(rank)
             if spike is not None:
                 spikes.append(spike)
@@ -98,8 +100,8 @@ class SpikeTrainWriter(object):
                     selected_val = spike[sort_column]
 
             # write the spike to the file
-            t, gid, rank = spikes.pop(selected_index)
-            file_write_fnc(t, gid, indx)
+            row = spikes.pop(selected_index)
+            file_write_fnc(float(row[self.time_col]), int(row[self.gid_col]), indx)
             indx += 1
 
             # get the next spike on that rank and replace in spikes table

@@ -153,6 +153,8 @@ class PointSimulator(Simulator):
 
         if 'duration' in run_dict:
             network.duration = run_dict['duration']
+        elif 'tstop' in run_dict:
+            network.duration = run_dict['tstop']
 
         # Create the output-directory, or delete existing files if it already exists
         graph.io.log_info('Setting up output directory')
@@ -180,6 +182,9 @@ class PointSimulator(Simulator):
         for report in sim_reports:
             if report.module == 'spikes_report':
                 mod = mods.SpikesMod(**report.params)
+
+            else:
+                graph.io.log_exception('Unknown report type {}'.format(report.module))
 
             network.add_mod(mod)
 

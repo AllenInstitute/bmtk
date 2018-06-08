@@ -80,6 +80,9 @@ class PointNetwork(SimNetwork):
         fnc_name = name if name is not None else function.__name__
         self.__weight_functions[fnc_name] = functools.partial(function)
 
+    def set_default_weight_function(self, function):
+        self.add_weight_function(function, 'default_weight_fnc', overwrite=True)
+
     def get_weight_function(self, name):
         return self.__weight_functions[name]
 
