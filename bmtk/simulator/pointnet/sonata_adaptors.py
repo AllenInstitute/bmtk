@@ -2,6 +2,7 @@ import numpy as np
 from collections import Counter
 import numbers
 import nest
+import types
 
 from bmtk.simulator.core.sonata_reader import NodeAdaptor, SonataBaseNode, EdgeAdaptor, SonataBaseEdge
 
@@ -138,8 +139,8 @@ class PointNodeAdaptor(NodeAdaptor):
                 for nt_id in ntids_counter]
 
     @staticmethod
-    def patch_adaptor(adaptor, node_group):
-        node_adaptor = NodeAdaptor.patch_adaptor(adaptor, node_group)
+    def patch_adaptor(adaptor, node_group, network):
+        node_adaptor = NodeAdaptor.patch_adaptor(adaptor, node_group, network)
 
         # If dynamics params is stored in the nodes.h5 then we have to build each node separate
         if node_group.has_dynamics_params:
@@ -243,4 +244,12 @@ class PointEdgeAdaptor(EdgeAdaptor):
     @staticmethod
     def patch_adaptor(adaptor, edge_group):
         edge_adaptor = EdgeAdaptor.patch_adaptor(adaptor, edge_group)
+
+        if 'weight_function' not in edge_group.all_columns and 'syn_weight' in edge_group.all_columns:
+            adaptor.syn_weight = types.MethodType(point_syn_weight, adaptor)
+
         return edge_adaptor
+
+
+def point_syn_weight(self, edge, src_node, trg_node):
+    return edge['syn_weight']*edge.nsyns
