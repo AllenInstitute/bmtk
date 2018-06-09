@@ -25,10 +25,10 @@ import numpy as np
 import types
 import csv
 
-from node_pool import NodePool
-from connection_map import ConnectionMap
-from node_set import NodeSet
-from id_generator import IDGenerator
+from .node_pool import NodePool
+from .connection_map import ConnectionMap
+from .node_set import NodeSet
+from .id_generator import IDGenerator
 
 
 class Network (object):
