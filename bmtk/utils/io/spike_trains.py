@@ -64,7 +64,6 @@ class SpikeTrainWriter(object):
         try:
             val = next(self._tmp_spikes_handles[rank])
             return val[0], val[1], rank
-            # return float(val[0]), int(val[1]), rank
         except StopIteration:
             return None
 
@@ -82,7 +81,6 @@ class SpikeTrainWriter(object):
         self._tmp_spikes_handles = []
         for fdata in self._all_tmp_files:
             self._sort_tmp_file(fdata, sort_order)
-
             self._tmp_spikes_handles.append(csv.reader(open(fdata.file_name, 'r'), delimiter=self.delimiter))
 
         spikes = []
@@ -109,7 +107,7 @@ class SpikeTrainWriter(object):
             indx += 1
 
             # get the next spike on that rank and replace in spikes table
-            another_spike = self._next_spike(rank)
+            another_spike = self._next_spike(row[2])
             if another_spike is not None:
                 spikes.append(another_spike)
 
