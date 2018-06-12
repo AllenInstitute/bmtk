@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import random
+import six
 
 from .base import SimModule
 from bmtk.utils.io.spike_trains import SpikeTrainWriter
@@ -64,7 +65,7 @@ def f_rate_to_spike_train(t, f_rate, random_seed, t_window_start, t_window_end, 
   random.seed(random_seed)
 
   # Assume here for each pair (t[k], f_rate[k]) that the f_rate[k] value applies to the time interval [t[k], t[k+1]).
-  for k in xrange(0, len(f_rate)-1):
+  for k in six.moves.range(0, len(f_rate)-1):
     t_k = t[k]
     t_k_1 = t[k+1]
     if ((t_k >= t_window_start) and (t_k_1 <= t_window_end)):
@@ -81,7 +82,7 @@ def f_rate_to_spike_train(t, f_rate, random_seed, t_window_start, t_window_end, 
         t_base = t[k]
         t_bin = 1.0 * delta_t / N_bins
         p_spike_bin = 1.0 * av_N_spikes / N_bins
-        for i_bin in xrange(0, N_bins):
+        for i_bin in six.moves.range(0, N_bins):
           rand_tmp = random()
           if rand_tmp < p_spike_bin:
             spike_t = t_base + random() * t_bin

@@ -23,6 +23,7 @@
 import numpy as np
 from bmtk.simulator.bionet import utils, nrn
 from bmtk.simulator.bionet.cell import Cell
+import six
 
 from neuron import h
 
@@ -270,7 +271,7 @@ class BioCell(Cell):
 
     def print_synapses(self):
         rstr = ''
-        for i in xrange(len(self._syn_src_gid)):
+        for i in six.moves.range(len(self._syn_src_gid)):
             rstr += '{}> <-- {} ({}, {}, {}, {})\n'.format(i, self._syn_src_gid[i], self.netcons[i].weight[0],
                                                            self.netcons[i].delay, self._syn_seg_ix[i],
                                                            self._syn_sec_x[i])

@@ -23,6 +23,7 @@
 import os
 import csv
 import h5py
+from six import string_types
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -114,7 +115,7 @@ def _count_spikes(spikes_file, max_gid, interval=None):
 
 
 def plot_spikes_config(configure, group_key=None, exclude=[], save_as=None, show_plot=True):
-    if isinstance(configure, basestring):
+    if isinstance(configure, string_types):
         conf = config.from_json(configure)
     elif isinstance(configure, dict):
         conf = configure
