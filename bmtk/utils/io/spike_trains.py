@@ -1,10 +1,10 @@
 import os
+import sys
 import csv
 
 import h5py
 import pandas as pd
 import numpy as np
-
 
 class SpikeTrainWriter(object):
     class TmpFileMetadata(object):
@@ -267,6 +267,10 @@ class SpikesInputH5(SpikesInput):
         self._input_file = params['input_file']
         self._h5_handle = h5py.File(self._input_file, 'r')
         self._sort_order = self._h5_handle['/spikes'].attrs.get('sorting', None)
+        if sys.version_info[0] >= 3:
+            # h5py attributes return str in py 2, bytes in py 3
+            self._sort_order = self._sort_order.decode()
+
         self._gid_ds = self._h5_handle['/spikes/gids']
         self._timestamps_ds = self._h5_handle['/spikes/timestamps']
 

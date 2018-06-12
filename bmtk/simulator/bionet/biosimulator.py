@@ -21,6 +21,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import time
+from six import string_types
 from neuron import h
 from bmtk.simulator.core.simulator import Simulator
 from bmtk.simulator.bionet.io_tools import io
@@ -183,7 +184,7 @@ class BioSimulator(Simulator):
             gids = self.gids['biophysical']
         if isinstance(gids, int):
             gids = [gids]
-        elif isinstance(gids, basestring):
+        elif isinstance(gids, string_types):
             gids = [int(gids)]
         elif isinstance(gids, NodeSet):
             gids = gids.gids()
