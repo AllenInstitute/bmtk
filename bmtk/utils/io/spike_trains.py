@@ -267,7 +267,7 @@ class SpikesInputH5(SpikesInput):
         self._input_file = params['input_file']
         self._h5_handle = h5py.File(self._input_file, 'r')
         self._sort_order = self._h5_handle['/spikes'].attrs.get('sorting', None)
-        if sys.version_info[0] >= 3:
+        if sys.version_info[0] >= 3 and isinstance(self._sort_order, bytes):
             # h5py attributes return str in py 2, bytes in py 3
             self._sort_order = self._sort_order.decode()
 
