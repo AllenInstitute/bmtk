@@ -36,8 +36,8 @@ Running a test example
 ----------------------
 
 There are a few examples of how to run BioNet using existing networks located in the directory
-docs/examples. There is an example of a small 14 cell network (/14cells) and a slightly larger
-network with 450 cells (/450cells). 
+docs/examples. There is an example of a small 14 cell network (/bio_14cells) and a slightly larger
+network with 450 cells (/bio_450cells). 
 
 The networks utilize models of individual cells, synapse and recording electrodes defined in docs/examples/simulators/biophys_components directory.
 
