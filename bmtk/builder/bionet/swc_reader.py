@@ -37,7 +37,7 @@ class SWCReader(object):
             sec = self._secs[sec_id]
             n_coords = int(h.n3d(sec=sec))
             coord_indx = int(sec_x*(n_coords - 1))
-            swc_coords = np.array([h.x3d(coord_indx, sec=sec), h.x3d(coord_indx, sec=sec), h.x3d(coord_indx, sec=sec)])
+            swc_coords = np.array([h.x3d(coord_indx, sec=sec), h.y3d(coord_indx, sec=sec), h.x3d(coord_indx, sec=sec)])
             absolute_coords.append(swc_coords - adjusted)
 
             if rotations is not None:

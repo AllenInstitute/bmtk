@@ -223,7 +223,7 @@ def add_synapse_model(func, name=None, overwrite=True):
     py_modules.add_synapse_model(func_name, func, overwrite)
 
 
-def load_py_modules(cell_models=None, syn_models=None, syn_weights=None):
+def load_py_modules(cell_models=None, syn_models=None, syn_weights=None, cell_processors=None):
     # py_modules.clear()
 
     if cell_models is not None:
@@ -243,3 +243,9 @@ def load_py_modules(cell_models=None, syn_models=None, syn_weights=None):
         for f in [syn_weights.__dict__.get(f) for f in dir(syn_weights)]:
             if isinstance(f, types.FunctionType):
                 py_modules.add_synaptic_weight(f.__name__, f)
+
+    if cell_processors is not None:
+        assert(isinstance(cell_processors, types.ModuleType))
+        for f in [cell_processors.__dict__.get(f) for f in dir(cell_processors)]:
+            if isinstance(f, types.FunctionType):
+                py_modules.add_cell_processor(f.__name__, f)
