@@ -26,6 +26,7 @@ import shutil
 import re
 import copy
 import datetime
+from six import string_types
 
 
 def from_json(config_file, validator=None):
@@ -37,7 +38,7 @@ def from_json(config_file, validator=None):
     """
     if isinstance(config_file, file):
         conf = json.load(config_file)
-    elif isinstance(config_file, basestring):
+    elif isinstance(config_file, string_types):
         conf = json.load(open(config_file, 'r'))
     else:
         raise Exception('{} is not a file or file path.'.format(config_file))
@@ -72,7 +73,7 @@ def from_dict(config_dict, validator=None):
     # In our work with Blue-Brain it was agreed that 'network' and 'simulator' parts of config may be split up into
     # separate files. If this is the case we build each sub-file separately and merge into this one
     for childconfig in ['network', 'simulation']:
-        if childconfig in conf and isinstance(conf[childconfig], basestring):
+        if childconfig in conf and isinstance(conf[childconfig], string_types):
             # Try to resolve the path of the network/simulation config files. If an absolute path isn't used find
             # the file relative to the current config file. TODO: test if this will work on windows?
             conf_str = conf[childconfig]
@@ -160,7 +161,7 @@ def __recursive_insert(json_obj, manifest):
     :param manifest: A dictionary of variable values
     :return: A new json dictionar config file with variables resolved
     """
-    if isinstance(json_obj, basestring):
+    if isinstance(json_obj, string_types):
         return __find_variables(json_obj, manifest)
 
     elif isinstance(json_obj, list):

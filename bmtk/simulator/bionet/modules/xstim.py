@@ -2,7 +2,7 @@ import os
 import math
 import pandas as pd
 import numpy as np
-
+import six
 from neuron import h
 
 from bmtk.simulator.bionet.modules.sim_module import SimulatorMod
@@ -133,7 +133,7 @@ class StimXElectrode(object):
         r05 = seg_coords['p05']
         nseg = r05.shape[1]
         cell_map = np.zeros((self.elnsites, nseg))
-        for el in xrange(self.elnsites):
+        for el in six.moves.range(self.elnsites):
 
             mesh_size = self.el_mesh_size[el]
 

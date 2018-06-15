@@ -24,6 +24,7 @@ import os
 import glob
 import nest
 from six import string_types
+from six import moves
 
 from bmtk.simulator.core.simulator import Simulator
 from bmtk.simulator.pointnet.config import Config
@@ -108,7 +109,7 @@ class PointSimulator(Simulator):
 
         n, res, data_res = self._get_block_trial(duration)
         if n > 0:
-            for r in xrange(n):
+            for r in moves.range(n):
                 nest.Simulate(data_res)
         if res > 0:
             nest.Simulate(res * self.dt)

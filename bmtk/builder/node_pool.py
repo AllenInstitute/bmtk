@@ -21,6 +21,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 from ast import literal_eval
+from six import string_types
 
 
 class NodePool(object):
@@ -64,7 +65,7 @@ class NodePool(object):
                 self.__filter_str = '*'
             else:
                 self.__filter_str = ''
-                for k, v in self.__properties.iteritems():
+                for k, v in self.__properties.items():
                     conditional = "{}=='{}'".format(k, v)
                     self.__filter_str += conditional + '&'
                 if self.__filter_str.endswith('&'):
@@ -74,7 +75,7 @@ class NodePool(object):
 
     @classmethod
     def from_filter(cls, network, filter_str):
-        assert(isinstance(filter_str, basestring))
+        assert(isinstance(filter_str, string_types))
         if len(filter_str) == 0 or filter_str == '*':
             return cls(network, position=None)
 
@@ -88,7 +89,7 @@ class NodePool(object):
         if props is None:
             return True
 
-        for k, v in props.iteritems():
+        for k, v in props.items():
             ov = obj.get(k, None)
             if ov is None:
                 return False
