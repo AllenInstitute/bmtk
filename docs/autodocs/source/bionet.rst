@@ -54,7 +54,7 @@ Inside each example folder you will find:
 
 
 These examples use biophysically-detailed models of individual cells, and thus require additional NEURON channel
-mechanisms describing dynamics of ionic channels. To compile these NEURON mechanims go to the subdirectory docs/examples/simulators/biophys_compoennts and run the NEURON command
+mechanisms describing dynamics of ionic channels. To compile these NEURON mechanims go to the subdirectory docs/examples/simulators/biophys_components/mechanisms and run the NEURON command
 ::
    nrnivmodl modfiles/
 
