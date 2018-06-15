@@ -36,10 +36,10 @@ Running a test example
 ----------------------
 
 There are a few examples of how to run BioNet using existing networks located in the directory
-docs/examples/simulators/bionet. There is an example of a small 14 cell network (/14cells) and a slightly larger
+docs/examples. There is an example of a small 14 cell network (/14cells) and a slightly larger
 network with 450 cells (/450cells). 
 
-The networks utilize models of individual cells, synapse and recording electrodes defined in docs/examples/simulators/bionet/components/mechanisms directory.
+The networks utilize models of individual cells, synapse and recording electrodes defined in docs/examples/simulators/biophys_components directory.
 
 
 Inside each example folder you will find:
@@ -54,7 +54,7 @@ Inside each example folder you will find:
 
 
 These examples use biophysically-detailed models of individual cells, and thus require additional NEURON channel
-mechanisms describing dynamics of ionic channels. To compile these NEURON mechanims go to the subdirectory docs/examples/simulators/bionet/components/mechanisms and run the NEURON command
+mechanisms describing dynamics of ionic channels. To compile these NEURON mechanims go to the subdirectory docs/examples/simulators/biophys_compoennts and run the NEURON command
 ::
    nrnivmodl modfiles/
 
