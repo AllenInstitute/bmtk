@@ -1,10 +1,10 @@
 import os
+import sys
 import csv
 
 import h5py
 import pandas as pd
 import numpy as np
-
 
 class SpikeTrainWriter(object):
     class TmpFileMetadata(object):
@@ -64,7 +64,6 @@ class SpikeTrainWriter(object):
         try:
             val = next(self._tmp_spikes_handles[rank])
             return val[0], val[1], rank
-            # return float(val[0]), int(val[1]), rank
         except StopIteration:
             return None
 
@@ -82,7 +81,6 @@ class SpikeTrainWriter(object):
         self._tmp_spikes_handles = []
         for fdata in self._all_tmp_files:
             self._sort_tmp_file(fdata, sort_order)
-
             self._tmp_spikes_handles.append(csv.reader(open(fdata.file_name, 'r'), delimiter=self.delimiter))
 
         spikes = []
@@ -109,7 +107,7 @@ class SpikeTrainWriter(object):
             indx += 1
 
             # get the next spike on that rank and replace in spikes table
-            another_spike = self._next_spike(rank)
+            another_spike = self._next_spike(row[2])
             if another_spike is not None:
                 spikes.append(another_spike)
 
@@ -269,6 +267,10 @@ class SpikesInputH5(SpikesInput):
         self._input_file = params['input_file']
         self._h5_handle = h5py.File(self._input_file, 'r')
         self._sort_order = self._h5_handle['/spikes'].attrs.get('sorting', None)
+        if sys.version_info[0] >= 3:
+            # h5py attributes return str in py 2, bytes in py 3
+            self._sort_order = self._sort_order.decode()
+
         self._gid_ds = self._h5_handle['/spikes/gids']
         self._timestamps_ds = self._h5_handle['/spikes/timestamps']
 

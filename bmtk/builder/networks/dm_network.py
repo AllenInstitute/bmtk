@@ -23,6 +23,7 @@
 import os
 import numpy as np
 import h5py
+import six
 import csv
 
 from ..network import Network
@@ -341,7 +342,7 @@ class DenseNetwork(Network):
 
         edge_nodes = np.append(edge_nodes, [-1])
         n_targets = np.max(edge_nodes)
-        ranges_list = [[] for _ in xrange(n_targets + 1)]
+        ranges_list = [[] for _ in six.moves.range(n_targets + 1)]
 
         n_ranges = 0
         begin_index = 0

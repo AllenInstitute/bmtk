@@ -20,7 +20,8 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-from node import Node
+import six
+from .node import Node
 
 
 class NodeSet(object):
@@ -33,7 +34,7 @@ class NodeSet(object):
         self.__node_type_id = node_type_properties['node_type_id']
 
         # Used for determining which node_sets share the same params columns
-        columns = self.__node_params.keys()
+        columns = list(self.__node_params.keys())
         columns.sort()
         self.__params_col_hash = hash(str(columns))
 
@@ -60,8 +61,8 @@ class NodeSet(object):
             node_ids = [nid for nid in nid_generator(self.N)]
 
         # turn node_params from dictionary of lists to a list of dictionaries.
-        ap_flat = [{} for _ in xrange(self.N)]
-        for key, plist in self.__node_params.iteritems():
+        ap_flat = [{} for _ in six.moves.range(self.N)]
+        for key, plist in self.__node_params.items():
             for i, val in enumerate(plist):
                 ap_flat[i][key] = val
 

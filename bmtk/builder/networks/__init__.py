@@ -20,7 +20,7 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-from dm_network import DenseNetwork
+from .dm_network import DenseNetwork
 NetworkBuilder = dm_network.DenseNetwork
 
-from mpi_network import MPINetwork, MPINetwork as MPIBuilder
+from .mpi_network import MPINetwork, MPINetwork as MPIBuilder

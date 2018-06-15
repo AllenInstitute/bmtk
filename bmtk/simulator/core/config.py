@@ -79,7 +79,7 @@ def from_dict(config_dict, validator=None):
     # In our work with Blue-Brain it was agreed that 'network' and 'simulator' parts of config may be split up into
     # separate files. If this is the case we build each sub-file separately and merge into this one
     for childconfig in ['network', 'simulation']:
-        if childconfig in conf and isinstance(conf[childconfig], basestring):
+        if childconfig in conf and isinstance(conf[childconfig], string_types):
             # Try to resolve the path of the network/simulation config files. If an absolute path isn't used find
             # the file relative to the current config file. TODO: test if this will work on windows?
             conf_str = conf[childconfig]
@@ -419,7 +419,7 @@ class ConfigDict(dict):
         # Implement factory method that can resolve the format/type of input configuration.
         if isinstance(config_file, dict):
             return cls.from_dict(config_file, validate)
-        elif isinstance(config_file, basestring):
+        elif isinstance(config_file, string_types):
             if config_file.endswith('yml') or config_file.endswith('yaml'):
                 return cls.from_yaml(config_file, validate)
             else:

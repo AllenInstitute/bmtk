@@ -21,6 +21,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 from neuron import h
+import six
 from bmtk.simulator.bionet.cell import Cell
 
 
@@ -77,7 +78,7 @@ class PointProcessCell(Cell):
 
     def print_synapses(self):
         rstr = ''
-        for i in xrange(len(self._src_gids)):
+        for i in six.moves.range(len(self._src_gids)):
             rstr += '{}> <-- {} ({}, {})\n'.format(i, self._src_gids[i], self.netcons[i].weight[0],
                                                    self.netcons[i].delay)
 

@@ -24,11 +24,12 @@ import os
 import numpy as np
 import types
 import csv
+import six
 
-from node_pool import NodePool
-from connection_map import ConnectionMap
-from node_set import NodeSet
-from id_generator import IDGenerator
+from .node_pool import NodePool
+from .connection_map import ConnectionMap
+from .node_set import NodeSet
+from .id_generator import IDGenerator
 
 
 class Network (object):
@@ -264,7 +265,7 @@ class Network (object):
         self._clear()
 
     def _node_id(self, N):
-        for i in xrange(N):
+        for i in six.moves.range(N):
             yield self.__node_id_counter
             self.__node_id_counter += 1
 

@@ -22,6 +22,7 @@
 #
 import threading
 import numpy as np
+import six
 
 
 
@@ -66,5 +67,5 @@ class IDGenerator(object):
             N = args['N']
 
         assert(isinstance(N, (int, long)))
-        return [self.next() for _ in xrange(N)]
+        return [self.next() for _ in six.moves.range(N)]
 
