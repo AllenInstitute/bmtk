@@ -1,10 +1,6 @@
 """Simulates an example network of 450 cell receiving two kinds of exernal input as defined in the configuration file"""
-
-
 import sys
-
 from bmtk.simulator import bionet
-from bmtk.analyzer.spikes_analyzer import spike_files_equal
 
 
 def run(config_file):
@@ -14,8 +10,6 @@ def run(config_file):
     graph = bionet.BioNetwork.from_config(conf)
     sim = bionet.BioSimulator.from_config(conf, network=graph)
     sim.run()
-
-    assert (spike_files_equal(conf['output']['spikes_file_csv'], 'expected/spikes.csv'))
     bionet.nrn.quit_execution()
 
 
