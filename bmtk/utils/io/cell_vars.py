@@ -183,9 +183,15 @@ class CellVarRecorder(object):
         if self._buffer_data:
             blk_beg = self._last_save_indx
             blk_end = blk_beg + self._buffer_block_size
-            self._last_save_indx += self._buffer_block_size
+            if blk_end > self._total_steps:
+                # Need to handle the case that simulation doesn't end on a block step
+                blk_end = blk_beg + self._total_steps - blk_beg
+
+            block_size = blk_end - blk_beg
+            self._last_save_indx += block_size
+
             for _, data_table in self._data_blocks.items():
-                data_table.data_block[blk_beg:blk_end, :] = data_table.buffer_block
+                data_table.data_block[blk_beg:blk_end, :] = data_table.buffer_block[:block_size, :]
 
     def close(self):
         self._h5_handle.close()

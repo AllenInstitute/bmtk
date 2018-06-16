@@ -111,7 +111,6 @@ class MembraneReport(SimulatorMod):
         for gid in self._local_gids:
             sec_list = []
             seg_list = []
-            # cell = sim.net.get_local_cell(gid)
             cell = sim.net.get_cell_gid(gid)
             cell.store_segments()
             for sec_id, sec in enumerate(cell.get_sections()):
@@ -128,7 +127,6 @@ class MembraneReport(SimulatorMod):
         # save all necessary cells/variables at the current time-step into memory
         for gid in self._local_gids:
             cell = sim.net.get_cell_gid(gid)
-            #cell = sim.net.get_local_cell(gid)
             for var_name in self._variables:
                 seg_vals = [getattr(seg, var_name) for seg in cell.get_segments()]
                 self._var_recorder.record_cell(gid, var_name, seg_vals, tstep)
@@ -144,11 +142,7 @@ class MembraneReport(SimulatorMod):
         self._var_recorder.flush()
 
     def finalize(self, sim):
-        if self._block_step > 0:
-            # TODO: Write partial block
-            # just in case the simulation doesn't end on a block step
-            self.block(sim, (sim.n_steps - self._block_step, sim.n_steps))
-
+        # TODO: Build in mpi signaling into var_recorder
         pc.barrier()
         self._var_recorder.close()
 
@@ -174,7 +168,6 @@ class SomaReport(MembraneReport):
         # save all necessary cells/variables at the current time-step into memory
         for gid in self._local_gids:
             cell = sim.net.get_cell_gid(gid)
-            #cell = sim.net.get_local_cell(gid)
             for var_name in self._variables:
                 var_val = getattr(cell.hobj.soma[0](0.5), var_name)
                 self._var_recorder.record_cell(gid, var_name, [var_val], tstep)
