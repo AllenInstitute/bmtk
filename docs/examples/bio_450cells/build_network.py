@@ -94,79 +94,73 @@ for model_props in point_models:
     positions = positions_columinar(N=n_cells, center=[0, 10.0, 0], max_radius=50.0, height=200.0)
     internal.add_nodes(N=n_cells,
                        x=positions[:, 0], y=positions[:, 1], z=positions[:, 2],
-                       rotation_angle_yaxis=xiter_random(N=n_cells, min_x=0.0, max_x=2 * np.pi),  # randomly rotate y axis
-                       rotation_angle_zaxis=xiter_random(N=n_cells, min_x=0.0, max_x=2 * np.pi),  #
                        model_type='point_process',
                        model_template='nrn:IntFire1',
                        **model_props)
 
-if __name__ == '__main__':
-    if build_recurrent_edges:
-        def n_connections(src, trg, prob=0.5, min_syns=2, max_syns=7):
-            return 0 if np.random.uniform() > prob else np.random.randint(min_syns, max_syns)
+if build_recurrent_edges:
+    def n_connections(src, trg, prob=0.1, min_syns=1, max_syns=5):
+        if src.node_id == trg.node_id:
+            return 0
 
-        # Connections onto biophysical components, use the connection map to save section and position of every synapse
-        # exc --> exc connections
-        cm = internal.add_edges(source={'ei': 'e'}, target={'ei': 'e', 'model_type': 'biophysical'},
-                                connection_rule=n_connections,
-                                connection_params={'prob': 0.2},
-                                dynamics_params='AMPA_ExcToExc.json',
-                                model_template='Exp2Syn',
-                                delay=2.0)
-        cm.add_properties('syn_weight', rule=6.0e-05, dtypes=np.float)
-        cm.add_properties(['sec_id', 'sec_x', 'pos_x', 'pos_y', 'pos_z', 'dist', 'type'],
-                          rule=build_edges,
-                          rule_params={'sections': ['basal', 'apical'], 'dist_range': [30.0, 150.0]},
-                          dtypes=[np.int32, np.float, np.float, np.float, np.float, np.float, np.uint8])
+        return 0 if np.random.uniform() > prob else np.random.randint(min_syns, max_syns)
 
-        # exc --> inh connections
-        cm = internal.add_edges(source={'ei': 'e'}, target={'ei': 'i', 'model_type': 'biophysical'},
-                                connection_rule=n_connections,
-                                dynamics_params='AMPA_ExcToInh.json',
-                                model_template='Exp2Syn',
-                                delay=2.0)
-        cm.add_properties('syn_weight', rule=0.0006, dtypes=np.float)
-        cm.add_properties(['sec_id', 'sec_x', 'pos_x', 'pos_y', 'pos_z', 'dist', 'type'],
-                          rule=build_edges,
-                          rule_params={'sections': ['somatic', 'basal'], 'dist_range': [0.0, 1.0e+20]},
-                          dtypes=[np.int32, np.float, np.float, np.float, np.float, np.float, np.uint8])
 
-        # inh --> exc connections
-        cm = internal.add_edges(source={'ei': 'i'}, target={'ei': 'i', 'model_type': 'biophysical'},
-                                connection_rule=n_connections,
-                                dynamics_params='GABA_InhToExc.json',
-                                model_template='Exp2Syn',
-                                delay=2.0)
-        cm.add_properties('syn_weight', rule=0.002, dtypes=np.float)
-        cm.add_properties(['sec_id', 'sec_x', 'pos_x', 'pos_y', 'pos_z', 'dist', 'type'],
-                          rule=build_edges,
-                          rule_params={'sections': ['somatic', 'basal', 'apical'], 'dist_range': [0.0, 50.0]},
-                          dtypes=[np.int32, np.float, np.float, np.float, np.float, np.float, np.uint8])
+    # Connections onto biophysical components, use the connection map to save section and position of every synapse
+    # exc --> exc connections
+    internal.add_edges(source={'ei': 'e'}, target={'ei': 'e', 'model_type': 'biophysical'},
+                       connection_rule=n_connections,
+                       connection_params={'prob': 0.2},
+                       dynamics_params='AMPA_ExcToExc.json',
+                       model_template='Exp2Syn',
+                       syn_weight=6.0e-05,
+                       delay=2.0,
+                       target_sections=['basal', 'apical'],
+                       distance_range=[30.0, 150.0])
 
-        # inh --> inh connections
-        cm = internal.add_edges(source={'ei': 'i'}, target={'ei': 'i', 'model_type': 'biophysical'},
-                                connection_rule=n_connections,
-                                dynamics_params='GABA_InhToInh.json',
-                                model_template='Exp2Syn',
-                                delay=2.0)
-        cm.add_properties('syn_weight', rule=0.00015, dtypes=np.float)
-        cm.add_properties(['sec_id', 'sec_x', 'pos_x', 'pos_y', 'pos_z', 'dist', 'type'],
-                          rule=build_edges,
-                          rule_params={'sections': ['somatic', 'basal'], 'dist_range': [0.0, 1.0e+20]},
-                          dtypes=[np.int32, np.float, np.float, np.float, np.float, np.float, np.uint8])
+    # exc --> inh connections
+    internal.add_edges(source={'ei': 'e'}, target={'ei': 'i', 'model_type': 'biophysical'},
+                       connection_rule=n_connections,
+                       dynamics_params='AMPA_ExcToInh.json',
+                       model_template='Exp2Syn',
+                       syn_weight=0.0006,
+                       delay=2.0,
+                       target_sections=['somatic', 'basal'],
+                       distance_range=[0.0, 1.0e+20])
 
-        # For connections on point neurons it doesn't make sense to save syanpatic location
-        cm = internal.add_edges(source={'ei': 'e'}, target={'model_type': 'point_process'},
-                                connection_rule=n_connections,
-                                dynamics_params='instanteneousExc.json',
-                                delay=2.0)
-        cm.add_properties('syn_weight', rule=0.0019, dtypes=np.float)
+    # inh --> exc connections
+    internal.add_edges(source={'ei': 'i'}, target={'ei': 'e', 'model_type': 'biophysical'},
+                       connection_rule=n_connections,
+                       dynamics_params='GABA_InhToExc.json',
+                       model_template='Exp2Syn',
+                       syn_weight=0.002,
+                       delay=2.0,
+                       target_sections=['somatic', 'basal', 'apical'],
+                       distance_range=[0.0, 50.0])
 
-        cm = internal.add_edges(source={'ei': 'i'}, target={'model_type': 'point_process'},
-                                connection_rule=n_connections,
-                                dynamics_params='instanteneousExc.json',
-                                delay=2.0)
-        cm.add_properties('syn_weight', rule=0.0019, dtypes=np.float)
+    # inh --> inh connections
+    internal.add_edges(source={'ei': 'i'}, target={'ei': 'i', 'model_type': 'biophysical'},
+                       connection_rule=n_connections,
+                       connection_params={'prob': 0.2},
+                       dynamics_params='GABA_InhToInh.json',
+                       model_template='Exp2Syn',
+                       syn_weight=0.00015,
+                       delay=2.0,
+                       target_sections=['somatic', 'basal'],
+                       distance_range=[0.0, 1.0e+20])
+
+    # For connections on point neurons it doesn't make sense to save syanpatic location
+    cm = internal.add_edges(source={'ei': 'e'}, target={'model_type': 'point_process'},
+                            connection_rule=n_connections,
+                            dynamics_params='instanteneousExc.json',
+                            syn_weight=0.0019,
+                            delay=2.0)
+
+    cm = internal.add_edges(source={'ei': 'i'}, target={'model_type': 'point_process'},
+                            connection_rule=n_connections,
+                            dynamics_params='instanteneousInh.json',
+                            syn_weight=0.0019,
+                            delay=2.0)
 
 internal.build()
 
