@@ -21,3 +21,5 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 from spikes_csv import SpikesGenerator
+
+from .spikes_file import SpikesFile

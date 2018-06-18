@@ -249,11 +249,9 @@ class BioSimulator(Simulator):
             mod.step(self, self.tstep)
 
         self.tstep += 1
-        tstep_block = self.tstep - self.tstep_start_block  # time step within a block
 
-        # self.save_data_to_block(tstep_block)
         if (self.tstep % self.nsteps_block == 0) or self.tstep == self.nsteps:
-            io.log_info('    step:%d t_sim:%.3f ms' % (self.tstep, h.t))
+            io.log_info('    step:{} t_sim:{:.2f} ms'.format(self.tstep, h.t))
             self.__tstep_end_block = self.tstep
             time_step_interval = (self.__tstep_start_block, self.__tstep_end_block)
 
