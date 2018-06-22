@@ -255,14 +255,10 @@ def plot_ratess(cells_file, cell_models_file, spikes_file, group_key='pop_name',
         rates[gid] += 1
 
     for color, (group_name, group_df) in zip(color_map, groupings):
-        print group_name
-        print group_df.index
-        print rates[group_df.index]
         plt.plot(group_df.index, rates[group_df.index], '.', color=color)
 
     plt.show()
 
-    print n_colors
     exit()
 
 
@@ -276,8 +272,9 @@ def plot_ratess(cells_file, cell_models_file, spikes_file, group_key='pop_name',
     color_map = [scalar_map.to_rgba(i) for i in range(0, n_colors)]
 
     for color, (group_name, group_df) in zip(color_map, groupings):
-        print group_name
-        print group_df.index
+        # print group_name
+        # print group_df.index
+        pass
 
     exit()
 
@@ -402,7 +399,7 @@ def plot_rates_popnet(cell_models_file, rates_file, model_keys=None, save_as=Non
 
     # plot the rates
     plt.figure()
-    for pop_name, r in rates.iteritems():
+    for pop_name, r in rates.items():
         label = pop_keys[pop_name]
         times = r[0]
         rates = r[1]
@@ -484,7 +481,7 @@ def plot_tuning(sg_analysis, node, band, Freq=0, show=True, save_as=None):
     #fig, ax = plt.subplots(1, n_ph, figsize=(12, 16), sharex=True, sharey=True)
     fig, ax = plt.subplots(1, n_ph, figsize=(13.9, 4.3), sharex=False, sharey=True)
 
-    print sg_analysis.orientations
+    # print sg_analysis.orientations
     for phase in range(n_ph):
         tuning_to_plot = tuning_matrix[:, :, phase]
 
