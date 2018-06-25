@@ -180,23 +180,21 @@ class BioCell(Cell):
 
         # TODO: this should be done just once
         synapses = [edge_prop.load_synapses(x, sec) for x, sec in zip(xs, secs)]
+
         delay = edge_prop['delay']
         self._synapses.extend(synapses)
-        if self._save_conn:
-            for i in range(nsyns):
-                self._save_connection(src_gid, src_node.network, sec_x=xs[i], seg_ix=segs_ix[i],
-                                      edge_type_id=edge_prop.edge_type_id)
 
         for syn in synapses:
             # connect synapses
             if stim:
-                nc = h.NetCon(stim.hobj, syn)  # stim.hobj - source, syn - target
+                nc = h.NetCon(stim.hobj, syn)
             else:
                 nc = pc.gid_connect(src_gid, syn)
 
             nc.weight[0] = syn_weight
             nc.delay = delay
             self.netcons.append(nc)
+
         return nsyns
 
     def _save_connection(self, src_gid, src_net, sec_x, seg_ix, edge_type_id):
@@ -213,7 +211,7 @@ class BioCell(Cell):
                 for i in range(len(self._synapses))]
 
     def init_connections(self):
-        Cell.init_connections(self)
+        super(BioCell, self).init_connections()
         self._synapses = []
         self._syn_src_gid = []
         self._syn_seg_ix = []
