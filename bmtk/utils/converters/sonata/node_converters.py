@@ -58,12 +58,16 @@ def update_h5_nodes(nodes_file, node_types_file, network_name, output_dir='outpu
 
     node_types_csv = pd.read_csv(node_types_file, sep=' ')
 
+    node_types_csv = node_types_csv.rename(index=str, columns=column_renames)
+
     # Change values for model type
     model_type_map = {
         'biophysical': 'biophysical',
         'point_IntFire1': 'point_process',
+        'intfire': 'point_process',
         'virtual': 'virtual',
-        'iaf_psc_alpha': 'nest:iaf_psc_alpha'
+        'iaf_psc_alpha': 'nest:iaf_psc_alpha',
+        'filter': 'virtual'
     }
     node_types_csv['model_type'] = node_types_csv.apply(lambda row: model_type_map[row['model_type']], axis=1)
 

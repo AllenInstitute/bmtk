@@ -465,9 +465,9 @@ class PopNetwork(SimNetwork):
 
                 self._nodeid2pop_map[pop_name] = src_pop_map
 
-                firing_rates = rates.get_rate(pop_key)
                 self._external_pop[pop_name] = external_pop_map
                 for dpop in external_pop_map.values():
+                    firing_rates = rates.get_rate(dpop.pop_id)
                     dpop.build(firing_rates)
 
             else:
