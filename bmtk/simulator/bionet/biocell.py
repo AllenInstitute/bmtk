@@ -54,7 +54,7 @@ class BioCell(Cell):
         self._syn_src_gid = []
         self._syn_seg_ix = []
         self._syn_sec_x = []
-        self._edge_type_id = []
+        self._edge_type_ids = []
         self._segments = None
 
         # potentially used by ecp module
@@ -183,6 +183,9 @@ class BioCell(Cell):
 
         delay = edge_prop['delay']
         self._synapses.extend(synapses)
+
+        # TODO: Don't save this if not needed
+        self._edge_type_ids.extend([edge_prop.edge_type_id]*len(synapses))
 
         for syn in synapses:
             # connect synapses

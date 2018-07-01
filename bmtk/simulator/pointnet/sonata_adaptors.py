@@ -5,6 +5,8 @@ import nest
 import types
 
 from bmtk.simulator.core.sonata_reader import NodeAdaptor, SonataBaseNode, EdgeAdaptor, SonataBaseEdge
+from bmtk.simulator.pointnet.io_tools import io
+from bmtk.simulator.pointnet.pyfunction_cache import py_modules
 
 
 def all_null(node_group, column_name):
@@ -85,15 +87,15 @@ class PointNode(SonataBaseNode):
     def nest_params(self):
         return self.dynamics_params
 
-    def build(self, node):
+    def build(self):
         nest_model = self.nest_model
         dynamics_params = self.dynamics_params
-        fnc_name = node['model_processing']
+        fnc_name = self._node['model_processing']
         if fnc_name is None:
             self._nest_ids = nest.Create(nest_model, 1, dynamics_params)
         else:
-            cell_fnc = self._prop_adaptor.py_modules.cell_processor(fnc_name)
-            self._nest_ids = cell_fnc(nest_model, node, dynamics_params)
+            cell_fnc = py_modules.cell_processor(fnc_name)
+            self._nest_ids = cell_fnc(nest_model, self._node, dynamics_params)
 
 
 class PointNodeAdaptor(NodeAdaptor):
@@ -152,6 +154,9 @@ class PointNodeAdaptor(NodeAdaptor):
             node_adaptor.batch_process = False
         elif 'model_processing' in node_group.all_columns and not all_null(node_group, 'model_processing'):
             node_adaptor.batch_process = False
+
+        if node_adaptor.batch_process:
+            io.log_info('Batch processing nodes for {}.'.format(node_group.parent.name))
 
         return node_adaptor
 
