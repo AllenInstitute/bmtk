@@ -390,6 +390,12 @@ def plot_rates_popnet(cell_models_file, rates_file, model_keys=None, save_as=Non
 
     # organize the rates file by population
     rates = {pop_name: ([], []) for pop_name in pop_keys.keys()}
+    rates_df = pd.read_csv(rates_file, sep=' ', name=['id', 'times', 'rates'])
+    for grp_key, grp_df in rates_df.groupby('id'):
+        grp_label = pop_keys[str(grp_key)]
+        plt.plot(grp_df['times'], grp_df['rates'], label=grp_label)
+
+    '''
     with open(rates_file, 'r') as f:
         reader = csv.reader(f, delimiter=' ')
         for row in reader:
@@ -408,9 +414,11 @@ def plot_rates_popnet(cell_models_file, rates_file, model_keys=None, save_as=Non
 
         plt.plot(times, rates, label=label)
 
+    '''
     plt.legend(fontsize='x-small')
     plt.xlabel('time (s)')
     plt.ylabel('firing rates (Hz)')
+    
 
     if save_as is not None:
         plt.savefig(save_as)
