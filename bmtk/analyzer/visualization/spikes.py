@@ -390,7 +390,7 @@ def plot_rates_popnet(cell_models_file, rates_file, model_keys=None, save_as=Non
 
     # organize the rates file by population
     rates = {pop_name: ([], []) for pop_name in pop_keys.keys()}
-    rates_df = pd.read_csv(rates_file, sep=' ', name=['id', 'times', 'rates'])
+    rates_df = pd.read_csv(rates_file, sep=' ', names=['id', 'times', 'rates'])
     for grp_key, grp_df in rates_df.groupby('id'):
         grp_label = pop_keys[str(grp_key)]
         plt.plot(grp_df['times'], grp_df['rates'], label=grp_label)
