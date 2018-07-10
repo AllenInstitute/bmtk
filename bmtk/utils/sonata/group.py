@@ -92,6 +92,9 @@ class Group(object):
     def parent(self):
         return self._parent
 
+    def get_dataset(self, column_name):
+        return self._group_table[column_name]
+
     def column(self, column_name, group_only=False):
         if column_name in self._group_column_map:
             return self._group_column_map[column_name]
@@ -328,6 +331,28 @@ class EdgeGroup(Group):
 
     def to_dataframe(self):
         raise NotImplementedError
+
+
+    def _get_parent_ds(self, parent_ds):
+        self.build_indicies()
+        ds_vals = np.zeros(self._indicies_count, dtype=parent_ds.dtype)
+        c_indx = 0
+        for indx_range in self._parent_indicies:
+            indx_beg, indx_end = indx_range[0], indx_range[1]
+            n_indx = c_indx + (indx_end - indx_beg)
+            ds_vals[c_indx:n_indx] = parent_ds[indx_beg:indx_end]
+            c_indx = n_indx
+
+        return ds_vals
+
+    def src_node_ids(self):
+        return self._get_parent_ds(self.parent._source_node_id_ds)
+
+    def trg_node_ids(self):
+        return self._get_parent_ds(self.parent._target_node_id_ds)
+
+    def node_type_ids(self):
+        return self._get_parent_ds(self.parent._type_id_ds)
 
     def get_values(self, property_name, all_rows=False):
         # TODO: Need to take into account if property_name is in the edge-types

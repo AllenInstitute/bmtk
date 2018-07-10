@@ -121,8 +121,12 @@ class PointNetwork(SimNetwork):
             for edge in edge_pop.get_edges():
                 nest_srcs = [src_nest_ids[nid] for nid in edge.source_node_ids]
                 nest_trgs = [trg_nest_ids[nid] for nid in edge.target_node_ids]
-                nest.Connect(nest_srcs, nest_trgs, conn_spec='one_to_one',
-                             syn_spec=edge.nest_params)
+                print nest_srcs
+                print nest_trgs
+                #print edge.nest_params['model']
+                nest.Connect(nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=edge.nest_params)
+
+            #exit()
 
     def find_edges(self, source_nodes=None, target_nodes=None):
         # TODO: Move to parent
@@ -149,6 +153,7 @@ class PointNetwork(SimNetwork):
                     nest_ids = nest.Create('spike_generator', node.n_nodes, {})
                     for node_id, nest_id in zip(node.node_ids, nest_ids):
                         virt_node_map[node_id] = nest_id
+                        print node_id
                         nest.SetStatus([nest_id], {'spike_times': spike_trains.get_spikes(node_id)})
 
             elif node_pop.mixed_nodes:
