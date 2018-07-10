@@ -284,7 +284,10 @@ class SpikesInputH5(SpikesInput):
             raise NotImplementedError
 
     def get_spikes(self, gid):
-        return self._timestamps_ds[self._gid_indicies[gid]]
+        if gid in self._gid_indicies:
+            return self._timestamps_ds[self._gid_indicies[gid]]
+        else:
+            return []
 
 
 class SpikesInputCSV(SpikesInput):
