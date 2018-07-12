@@ -14,14 +14,14 @@ net.add_nodes(pop_name='inhibitory',
               dynamics_params='inh_model.json')
 
 net.add_edges(source={'ei': 'e'}, target={'ei': 'i'},
-              syn_weight=0.0019,
-              nsyns=5,
+              syn_weight=0.005,
+              nsyns=20,
               delay=0.002,
               dynamics_params='ExcToInh.json')
 
 net.add_edges(source={'ei': 'i'}, target={'ei': 'e'},
-              syn_weight=-0.0015,
-              nsyns=5,
+              syn_weight=-0.002,
+              nsyns=10,
               delay=0.002,
               dynamics_params='InhToExc.json')
 
@@ -36,16 +36,10 @@ input_net.add_nodes(pop_name='tON',
                     model_type='virtual')
 
 input_net.add_edges(target=net.nodes(ei='e'),
-                    syn_weight=0.0015,
-                    nsyns=5,
+                    syn_weight=0.0025,
+                    nsyns=10,
                     delay=0.002,
                     dynamics_params='input_ExcToExc.json')
-
-input_net.add_edges(target=net.nodes(ei='i'),
-                    syn_weight=0.002,
-                    nsyns=5,
-                    delay=0.002,
-                    dynamics_params='input_ExcToInh.json')
 
 input_net.build()
 input_net.save_nodes(nodes_file_name='input_nodes.h5', node_types_file_name='input_node_types.csv',
