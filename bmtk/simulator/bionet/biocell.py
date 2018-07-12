@@ -46,6 +46,7 @@ class BioCell(Cell):
         self._nseg = 0
         self.set_nseg(bionetwork.dL)
         self._secs = []
+        self._secs_by_id = []
         self.set_sec_array()
 
         self._save_conn = False  # bionetwork.save_connection
@@ -112,7 +113,11 @@ class BioCell(Cell):
         self._morph = morphology_obj
 
     def get_sections(self):
+        #return self._secs_by_id
         return self._secs
+
+    def get_sections_id(self):
+        return self._secs_by_id
 
     def get_section(self, sec_id):
         return self._secs[sec_id]
@@ -129,8 +134,10 @@ class BioCell(Cell):
     def set_sec_array(self):
         """Arrange sections in an array to be access by index"""
         secs = []  # build ref to sections
+        self._secs_by_id = []
         # TODO: We should calculate and save sections in the morphology object since they should be the same.
         for sec in self.hobj.all:
+            self._secs_by_id.append(sec)
             for _ in sec:
                 secs.append(sec)  # section to which segments belongs
 
@@ -148,7 +155,8 @@ class BioCell(Cell):
         # TODO: synapses should be loaded by edge_prop.load_synapse
         sec_x = edge_prop['sec_x']
         sec_id = edge_prop['sec_id']
-        section = self._secs[sec_id]
+        section = self._secs_by_id[sec_id]
+        #section = self._secs[sec_id]
         delay = edge_prop['delay']
         synapse_fnc = nrn.py_modules.synapse_model(edge_prop['model_template'])
         syn = synapse_fnc(edge_prop['dynamics_params'], sec_x, section)
