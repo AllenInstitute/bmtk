@@ -65,7 +65,7 @@ class SaveSynapses(SimulatorMod):
                 #pprint({i: s_name for i, s_name in enumerate(cell.get_sections())})
                 #exit()
                 # sections = cell._syn_seg_ix
-                self._sec_lookup[gid] = {sec_name: sec_id for sec_id, sec_name in enumerate(cell.get_sections())}
+                self._sec_lookup[gid] = {sec_name: sec_id for sec_id, sec_name in enumerate(cell.get_sections_id())}
 
             else:
                 sections = [-1]*len(cell.netcons)
