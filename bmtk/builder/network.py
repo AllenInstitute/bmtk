@@ -155,6 +155,10 @@ class Network (object):
         edge_type_properties['source_query'] = source.filter_str
         edge_type_properties['target_query'] = target.filter_str
 
+        if 'nsyns' in edge_type_properties:
+            connection_rule = edge_type_properties['nsyns']
+            del edge_type_properties['nsyns']
+
         # self._edge_types_columns.update(edge_type_properties.keys())
         connection = ConnectionMap(source, target, connection_rule, connection_params, iterator, edge_type_properties)
         self._connection_maps.append(connection)
