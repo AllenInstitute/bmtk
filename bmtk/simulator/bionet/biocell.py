@@ -46,6 +46,7 @@ class BioCell(Cell):
         self._nseg = 0
         self.set_nseg(bionetwork.dL)
         self._secs = []
+        self._secs_by_id = []
         self.set_sec_array()
 
         self._save_conn = False  # bionetwork.save_connection
@@ -54,7 +55,7 @@ class BioCell(Cell):
         self._syn_src_gid = []
         self._syn_seg_ix = []
         self._syn_sec_x = []
-        self._edge_type_id = []
+        self._edge_type_ids = []
         self._segments = None
 
         # potentially used by ecp module
@@ -112,7 +113,11 @@ class BioCell(Cell):
         self._morph = morphology_obj
 
     def get_sections(self):
+        #return self._secs_by_id
         return self._secs
+
+    def get_sections_id(self):
+        return self._secs_by_id
 
     def get_section(self, sec_id):
         return self._secs[sec_id]
@@ -129,8 +134,10 @@ class BioCell(Cell):
     def set_sec_array(self):
         """Arrange sections in an array to be access by index"""
         secs = []  # build ref to sections
+        self._secs_by_id = []
         # TODO: We should calculate and save sections in the morphology object since they should be the same.
         for sec in self.hobj.all:
+            self._secs_by_id.append(sec)
             for _ in sec:
                 secs.append(sec)  # section to which segments belongs
 
@@ -148,7 +155,8 @@ class BioCell(Cell):
         # TODO: synapses should be loaded by edge_prop.load_synapse
         sec_x = edge_prop['sec_x']
         sec_id = edge_prop['sec_id']
-        section = self._secs[sec_id]
+        section = self._secs_by_id[sec_id]
+        #section = self._secs[sec_id]
         delay = edge_prop['delay']
         synapse_fnc = nrn.py_modules.synapse_model(edge_prop['model_template'])
         syn = synapse_fnc(edge_prop['dynamics_params'], sec_x, section)
@@ -180,23 +188,24 @@ class BioCell(Cell):
 
         # TODO: this should be done just once
         synapses = [edge_prop.load_synapses(x, sec) for x, sec in zip(xs, secs)]
+
         delay = edge_prop['delay']
         self._synapses.extend(synapses)
-        if self._save_conn:
-            for i in range(nsyns):
-                self._save_connection(src_gid, src_node.network, sec_x=xs[i], seg_ix=segs_ix[i],
-                                      edge_type_id=edge_prop.edge_type_id)
+
+        # TODO: Don't save this if not needed
+        self._edge_type_ids.extend([edge_prop.edge_type_id]*len(synapses))
 
         for syn in synapses:
             # connect synapses
             if stim:
-                nc = h.NetCon(stim.hobj, syn)  # stim.hobj - source, syn - target
+                nc = h.NetCon(stim.hobj, syn)
             else:
                 nc = pc.gid_connect(src_gid, syn)
 
             nc.weight[0] = syn_weight
             nc.delay = delay
             self.netcons.append(nc)
+
         return nsyns
 
     def _save_connection(self, src_gid, src_net, sec_x, seg_ix, edge_type_id):
@@ -213,7 +222,7 @@ class BioCell(Cell):
                 for i in range(len(self._synapses))]
 
     def init_connections(self):
-        Cell.init_connections(self)
+        super(BioCell, self).init_connections()
         self._synapses = []
         self._syn_src_gid = []
         self._syn_seg_ix = []

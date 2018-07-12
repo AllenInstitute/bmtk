@@ -105,6 +105,7 @@ class PointSimulator(Simulator):
 
         io.barrier()
 
+        io.log_info('Starting Simulation')
         n, res, data_res = self._get_block_trial(duration)
         if n > 0:
             for r in xrange(n):
@@ -115,9 +116,11 @@ class PointSimulator(Simulator):
             nest.Simulate(duration)
 
         io.barrier()
+        io.log_info('Simulation finished, finalizing results.')
         for mod in self._mods:
             mod.finalize(self)
         io.barrier()
+        io.log_info('Done.')
 
     def add_mod(self, mod):
         self._mods.append(mod)

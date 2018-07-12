@@ -37,6 +37,10 @@ class SonataBaseNode(object):
     def network(self):
         return self._prop_adaptor.network
 
+    @property
+    def population(self):
+        return self._prop_adaptor.network
+
     def __getitem__(self, prop_key):
         return self._node[prop_key]
 
