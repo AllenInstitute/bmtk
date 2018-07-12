@@ -55,6 +55,11 @@ class NestIOUtils(IOUtils):
     def quiet_simulator(self):
         nest.set_verbosity('M_QUIET')
 
+    def setup_output_dir(self, config_dir, log_file, overwrite=True):
+        super(NestIOUtils, self).setup_output_dir(config_dir, log_file, overwrite=True)
+        if n_nodes > 1 and rank == 0:
+            io.log_info('Running NEST with MPI ({} cores)'.format(n_nodes))
+
 
 io = NestIOUtils()
 

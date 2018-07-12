@@ -34,7 +34,7 @@ class PointProcessCell(Cell):
         self.set_spike_detector()
         self._src_gids = []
         self._src_nets = []
-        self._edge_type_id = []
+        self._edge_type_ids = []
 
     def set_spike_detector(self):
         nc = h.NetCon(self.hobj, None)
@@ -66,7 +66,7 @@ class PointProcessCell(Cell):
         self._netcons.append(nc)
         self._src_gids.append(src_gid)
         self._src_nets.append(-1)
-        self._edge_type_id.append(-1)
+        self._edge_type_ids.append(edge_prop.edge_type_id)
         return nsyns
 
     def get_connection_info(self):

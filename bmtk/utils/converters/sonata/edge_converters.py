@@ -22,6 +22,7 @@ def convert_edges(edges_file, edge_types_file, **params):
     is_new_h5 = False
     try:
         h5file = h5py.File(edges_file, 'r')
+        print
         if 'edges' in h5file:
             is_new_h5 = True
         elif 'num_syns' in h5file:
@@ -40,7 +41,7 @@ def convert_edges(edges_file, edge_types_file, **params):
         edges_csv2h5(edges_file, **params)
         return
     except Exception as exc:
-        pass
+        raise exc
 
     raise Exception('Could not parse edges file')
 

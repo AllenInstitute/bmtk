@@ -22,3 +22,4 @@
 #
 from popnetwork import PopNetwork
 from popsimulator import PopSimulator
+from config import Config

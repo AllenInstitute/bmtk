@@ -5,12 +5,13 @@ import numpy as np
 class CellVarsFile(object):
     def __init__(self, filename, mode='r', **params):
         self._h5_handle = h5py.File(filename, 'r')
+        self._h5_root = self._h5_handle[params['h5_root']] if 'h5_root' in params else self._h5_handle['/']
         self._var_data = {}
         self._mapping = None
 
         # Look for variabl and mapping groups
-        for var_name in self._h5_handle.keys():
-            hf_grp = self._h5_handle[var_name]
+        for var_name in self._h5_root.keys():
+            hf_grp = self._h5_root[var_name]
             if not isinstance(hf_grp, h5py.Group):
                 continue
 
@@ -24,7 +25,7 @@ class CellVarsFile(object):
 
         # create map between gids and tables
         self._gid2data_table = {}
-        if self._mapping == None:
+        if self._mapping is None:
             raise Exception('could not find /mapping group')
         else:
             gids_ds = self._mapping['gids']
@@ -62,6 +63,10 @@ class CellVarsFile(object):
     def time_trace(self):
         return np.linspace(self.t_start, self.t_stop, num=self._n_steps, endpoint=True)
 
+    @property
+    def h5(self):
+        return self._h5_root
+
     def n_compartments(self, gid):
         bounds = self._gid2data_table[gid]
         return bounds[1] - bounds[0]
@@ -81,8 +86,11 @@ class CellVarsFile(object):
         if time_window is None:
             time_slice = slice(0, self._n_steps)
         else:
-            window_beg = max(int(time_window[0]/self.dt), 0)
-            window_end = min(int(time_window[1]/self.dt), self._n_steps)
+            if len(time_window) != 2:
+                raise Exception('Invalid time_window, expecting tuple [being, end].')
+
+            window_beg = max(int((time_window[0] - self.t_start)/self.dt), 0)
+            window_end = min(int((time_window[1] - self.t_start)/self.dt), self._n_steps/self.dt)
             time_slice = slice(window_beg, window_end)
 
         multi_compartments = True

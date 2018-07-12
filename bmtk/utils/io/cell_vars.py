@@ -209,6 +209,7 @@ class CellVarRecorder(object):
             seg_ranges = []
             seg_offset = 0
             total_seg_count = 0  # total number of segments across all ranks
+            time_ds = None
             for h5_tmp in tmp_h5_handles:
                 seg_count = len(h5_tmp['/mapping/element_pos'])
                 seg_ranges.append((seg_offset, seg_offset+seg_count))
@@ -220,7 +221,11 @@ class CellVarRecorder(object):
                 gid_offset += gid_count
                 total_gid_count += gid_count
 
+                time_ds = h5_tmp['mapping/time']
+
             mapping_grp = h5final.create_group('mapping')
+            if time_ds:
+                mapping_grp.create_dataset('time', data=time_ds)
             element_id_ds = mapping_grp.create_dataset('element_id', shape=(total_seg_count,), dtype=np.uint)
             el_pos_ds = mapping_grp.create_dataset('element_pos', shape=(total_seg_count,), dtype=np.float)
             gids_ds = mapping_grp.create_dataset('gids', shape=(total_gid_count,), dtype=np.uint)
