@@ -204,14 +204,10 @@ class PointEdgeAdaptor(EdgeAdaptor):
         return params_dict
 
     def get_batches(self, edge_group):
-        shared_properties = {}
-        core_properties = {}
         src_ids = {}
         trg_ids = {}
         edge_types_table = edge_group.parent.edge_types_table
 
-        #print edge_group.src_node_ids()
-        #print edge_group.trg_node_ids()
         edge_type_ids = edge_group.node_type_ids()
         et_id_counter = Counter(edge_type_ids)
         tmp_df = pd.DataFrame({'etid': edge_type_ids, 'src_nids': edge_group.src_node_ids(),
@@ -221,14 +217,7 @@ class PointEdgeAdaptor(EdgeAdaptor):
             src_ids[et_id] = np.array(grp_vals['src_nids'])
             trg_ids[et_id] = np.array(grp_vals['trg_nids'])
 
-        #print et_id_counter[100]
-        #print et_id_counter.keys()
-
-
-        selected_etids = np.unique(edge_type_ids)
-        #print edge_group.columns
-        #print edge_types_table.columns
-
+        # selected_etids = np.unique(edge_type_ids)
         type_params = {et_id: {} for et_id in et_id_counter.keys()}
         for et_id, p_dict in type_params.items():
             p_dict.update(edge_types_table[et_id]['dynamics_params'])
@@ -250,7 +239,6 @@ class PointEdgeAdaptor(EdgeAdaptor):
                 p_dict['weight'] = et_dict['nsyns']*et_dict['syn_weight']
 
         else:
-            #tmp_df = pd.DataFrame({'etid': edge_type_ids})
             if not scalar_nsyns and not scalar_syn_weight:
                 tmp_df['nsyns'] = edge_group.get_dataset('nsyns')
                 tmp_df['syn_weight'] = edge_group.get_dataset('syn_weight')
@@ -267,99 +255,10 @@ class PointEdgeAdaptor(EdgeAdaptor):
                 for et_id, grp_vals in tmp_df.groupby('etid'):
                     type_params[et_id]['weight'] = np.array(grp_vals['nsyns']) * edge_types_table[et_id]['syn_weight']
 
-
-        #print src_ids
-        #print trg_ids
-        #print type_params
         batched_edges = []
         for et_id in et_id_counter.keys():
-            #shared_properties[et_id].update(core_properties[et_id])
             batched_edges.append(PointEdgeBatched(src_ids[et_id], trg_ids[et_id], type_params[et_id]))
 
-        return batched_edges
-
-        """
-            tmp_df = pd.DataFrame({'edge_type_ids': edge_type_ids, 'nsyns': edge_group.get_dataset('nsyns')})
-            for et_id, grp_vals in tmp_df.groupby('edge_type_ids'):
-                print np.array(grp_vals['nsyns'])
-            exit()
-
-            def grp_fetch(indx, _, col_name):
-                return edge_group.get_dataset(col_name)[indx]
-
-            def table_fetch(_, et_id, col_name):
-                return edge_types_table[et_id][col_name]
-
-            et_indicies = Counter({et_id: 0 for et_id in type_params.keys()})
-            #et_indices = {et_id: 0 for et_id in type_params.keys()}
-            for et_id, p_dict in type_params.items():
-                p_dict['weight'] = np.zeros(et_id_counter[et_id], dtype=np.float)
-
-            nsyn_fetch = table_fetch if scalar_nsyns else grp_fetch
-            syn_weight_fetch = table_fetch if scalar_syn_weight else grp_fetch
-
-            for i, et_id in enumerate(edge_type_ids):
-
-                type_params[et_id][et_indicies[et_id]] = nsyn_fetch(i, et_id, 'nsyns')*syn_weight_fetch(i, et_id, 'syn_weight')
-                et_indicies[et_id] += 1
-        """
-
-        print type_params
-        exit()
-
-
-        print 'delay' in edge_types_table.columns
-
-        print 'syn_weight'
-
-        #for et_id in np.unique(edge_type_ids):
-
-        exit()
-
-
-        #print edge_group.parent._source_node_id_ds.dtype
-
-        for i, edge in enumerate(edge_group):
-            if i == 10000:
-                break
-
-            pointnet_edge = self.get_edge(edge)
-            trg_nid = edge.target_node_id
-            src_nid = edge.source_node_id
-            et_id = edge.edge_type_id
-
-            if et_id not in shared_properties:
-                c_props = {}
-                s_props = {}
-                if 'model_template' in edge_types_table[et_id]:
-                    c_props['model'] = edge_types_table[et_id]['model_template']
-                for key, val in self.synaptic_params(pointnet_edge).items():
-                    if isinstance(val, numbers.Number):
-                        # TODO: Preallocate lists
-                        s_props[key] = [val]
-                    else:
-                        c_props[key] = val
-
-                shared_properties[et_id] = s_props
-                core_properties[et_id] = c_props
-                src_ids[et_id] = [src_nid]
-                trg_ids[et_id] = [trg_nid]
-
-            else:
-                src_ids[et_id].append(src_nid)
-                trg_ids[et_id].append(trg_nid)
-                grp_dict = shared_properties[et_id]
-                syn_dict = self.synaptic_params(pointnet_edge)
-                for key in grp_dict.keys():
-                    grp_dict[key].append(syn_dict[key])
-
-        print shared_properties
-        print core_properties
-        #exit()
-        batched_edges = []
-        for et_id in shared_properties.keys():
-            shared_properties[et_id].update(core_properties[et_id])
-            batched_edges.append(PointEdgeBatched(src_ids[et_id], trg_ids[et_id], shared_properties[et_id]))
         return batched_edges
 
     @staticmethod
