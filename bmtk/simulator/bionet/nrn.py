@@ -1,7 +1,4 @@
-# Allen Institute Software License - This software license is the 2-clause BSD license plus clause a third
-# clause that prohibits redistribution for commercial purposes without further permission.
-#
-# Copyright 2017. Allen Institute. All rights reserved.
+# Copyright 2017. Allen Institute. All rights reserved
 #
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 # following conditions are met:
@@ -12,10 +9,8 @@
 # 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following
 # disclaimer in the documentation and/or other materials provided with the distribution.
 #
-# 3. Redistributions for commercial purposes are not permitted without the Allen Institute's written permission. For
-# purposes of this license, commercial purposes is the incorporation of the Allen Institute's software into anything for
-# which you will charge fees or other compensation. Contact terms@alleninstitute.org for commercial licensing
-# opportunities.
+# 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote
+# products derived from this software without specific prior written permission.
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
 # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -28,9 +23,9 @@
 import sys
 import os
 import glob
-
 import neuron
 from neuron import h
+
 from bmtk.simulator.bionet.pyfunction_cache import py_modules
 from bmtk.simulator.bionet.pyfunction_cache import load_py_modules
 from bmtk.simulator.bionet.pyfunction_cache import synapse_model, synaptic_weight, cell_model
@@ -39,13 +34,9 @@ from bmtk.simulator.bionet.pyfunction_cache import synapse_model, synaptic_weigh
 pc = h.ParallelContext()
 
 
-
-    
 def quit_execution(): # quit the execution with a message
-
     pc.done()
     sys.exit()
-    
     return
 
 
@@ -54,22 +45,31 @@ def clear_gids():
     pc.barrier()
 
 
-def load_neuron_modules(conf, **cm):
+def load_neuron_modules(mechanisms_dir, templates_dir, default_templates=True):
+    """
+
+    :param mechanisms_dir:
+    :param templates_dir:
+    :param default_templates:
+    """
     h.load_file('stdgui.hoc')
 
     bionet_dir = os.path.dirname(__file__)
-    h.load_file(bionet_dir+'/import3d.hoc') # loads hoc files from package directory ./import3d. It is used because read_swc.hoc is modified to suppress some warnings.
-    h.load_file(bionet_dir+'/advance.hoc')
+    h.load_file(os.path.join(bionet_dir, 'import3d.hoc'))  # customized import3d.hoc to supress warnings
+    h.load_file(os.path.join(bionet_dir,'default_templates',  'advance.hoc'))
 
-    neuron.load_mechanisms(str(conf["components"]["mechanisms_dir"]))
-    load_templates(conf["components"]["templates_dir"])
+    if mechanisms_dir is not None:
+        neuron.load_mechanisms(str(mechanisms_dir))
+
+    if default_templates:
+        load_templates(os.path.join(bionet_dir, 'default_templates'))
+
+    if templates_dir:
+        load_templates(templates_dir)
 
 
 def load_templates(template_dir):
-    
-    '''
-    Load all templates to be available in the hoc namespace for instantiating cells
-    '''
+    """Load all templates to be available in the hoc namespace for instantiating cells"""
     cwd = os.getcwd()
     os.chdir(template_dir)
 
@@ -79,7 +79,3 @@ def load_templates(template_dir):
         h.load_file(str(hoc_template))
 
     os.chdir(cwd)
-
-
-
-        

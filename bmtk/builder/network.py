@@ -1,7 +1,4 @@
-# Allen Institute Software License - This software license is the 2-clause BSD license plus clause a third
-# clause that prohibits redistribution for commercial purposes without further permission.
-#
-# Copyright 2017. Allen Institute. All rights reserved.
+# Copyright 2017. Allen Institute. All rights reserved
 #
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 # following conditions are met:
@@ -12,10 +9,8 @@
 # 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following
 # disclaimer in the documentation and/or other materials provided with the distribution.
 #
-# 3. Redistributions for commercial purposes are not permitted without the Allen Institute's written permission. For
-# purposes of this license, commercial purposes is the incorporation of the Allen Institute's software into anything for
-# which you will charge fees or other compensation. Contact terms@alleninstitute.org for commercial licensing
-# opportunities.
+# 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote
+# products derived from this software without specific prior written permission.
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
 # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -159,6 +154,10 @@ class Network (object):
 
         edge_type_properties['source_query'] = source.filter_str
         edge_type_properties['target_query'] = target.filter_str
+
+        if 'nsyns' in edge_type_properties:
+            connection_rule = edge_type_properties['nsyns']
+            del edge_type_properties['nsyns']
 
         # self._edge_types_columns.update(edge_type_properties.keys())
         connection = ConnectionMap(source, target, connection_rule, connection_params, iterator, edge_type_properties)
@@ -323,6 +322,10 @@ class Network (object):
         else:
             return os.path.join(path_dir, filename)
 
+    def save(self, output_dir='.'):
+        self.save_nodes(output_dir=output_dir)
+        self.save_edges(output_dir=output_dir)
+
     def save_nodes(self, nodes_file_name=None, node_types_file_name=None, output_dir='.', force_overwrite=True):
         nodes_file = self.__get_path(nodes_file_name, output_dir, 'nodes.h5')
         if not force_overwrite and os.path.exists(nodes_file):
@@ -356,7 +359,7 @@ class Network (object):
         raise NotImplementedError
 
     def save_edges(self, edges_file_name=None, edge_types_file_name=None, output_dir='.', src_network=None,
-                   trg_network=None, force_build=True, force_overwrite=False):
+                   trg_network=None, name=None, force_build=True, force_overwrite=False):
         # Make sure edges exists and are built
         if len(self._connection_maps) == 0:
             print("Warning: no edges have been made for this network, skipping saving.")
@@ -392,7 +395,7 @@ class Network (object):
                 self._save_edge_types(os.path.join(output_dir, p[3]), p[0], p[1])
 
             if p[2] is not None:
-                self._save_edges(os.path.join(output_dir, p[2]), p[0], p[1])
+                self._save_edges(os.path.join(output_dir, p[2]), p[0], p[1], name)
 
     def _save_edge_types(self, edge_types_file_name, src_network, trg_network):
 
@@ -410,7 +413,8 @@ class Network (object):
             csvw = csv.writer(csvfile, delimiter=' ')
             csvw.writerow(cols)
             for edge_type in matching_et:
-                csvw.writerow([edge_type.get(cname, 'NULL') for cname in cols])
+                csvw.writerow([edge_type.get(cname, 'NULL') if edge_type.get(cname, 'NULL') is not None else 'NULL'
+                               for cname in cols])
 
     def _save_edges(self, edges_file_name, src_network, trg_network):
         raise NotImplementedError

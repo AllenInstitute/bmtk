@@ -1,7 +1,4 @@
-# Allen Institute Software License - This software license is the 2-clause BSD license plus clause a third
-# clause that prohibits redistribution for commercial purposes without further permission.
-#
-# Copyright 2017. Allen Institute. All rights reserved.
+# Copyright 2017. Allen Institute. All rights reserved
 #
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 # following conditions are met:
@@ -12,10 +9,8 @@
 # 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following
 # disclaimer in the documentation and/or other materials provided with the distribution.
 #
-# 3. Redistributions for commercial purposes are not permitted without the Allen Institute's written permission. For
-# purposes of this license, commercial purposes is the incorporation of the Allen Institute's software into anything for
-# which you will charge fees or other compensation. Contact terms@alleninstitute.org for commercial licensing
-# opportunities.
+# 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote
+# products derived from this software without specific prior written permission.
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
 # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -42,7 +37,8 @@ class Cell(object):
     """
     def __init__(self, node):
         self._node = node
-        self._gid = node.node_id
+        self._gid = node.gid
+        self._node_id = node.node_id
         self._props = node
         self._netcons = []  # list of NEURON network connection object attached to this cell
 
@@ -53,7 +49,11 @@ class Cell(object):
         pc.set_gid2node(self.gid, MPI_RANK)
 
         # Load the NEURON HOC object
-        self._hobj = node.load_hobj()
+        self._hobj = node.load_cell()
+
+    @property
+    def node(self):
+        return self._node
 
     @property
     def hobj(self):
@@ -62,6 +62,14 @@ class Cell(object):
     @property
     def gid(self):
         return self._gid
+
+    @property
+    def node_id(self):
+        return self._node_id
+
+    @property
+    def group_id(self):
+        return self._node.group_id
 
     @property
     def network_name(self):
@@ -76,7 +84,7 @@ class Cell(object):
         return self._pos_soma
 
     def set_soma_position(self):
-        positions = self._props.positions
+        positions = self._node.position
         if positions is not None:
             self._pos_soma = positions.reshape(3, 1)
 
