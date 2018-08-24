@@ -27,6 +27,9 @@ install:
   # Install BMTK
   - python setup.py install 
   
+  # Get latest Pandas
+  - pip install pandas --upgrade 
+  
   # Install OMV: framework for running automated tests on OSB using Travis-CI, see https://github.com/OpenSourceBrain/osb-model-validation
   - pip install git+https://github.com/OpenSourceBrain/osb-model-validation
 
