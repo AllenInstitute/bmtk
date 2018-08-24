@@ -42,9 +42,12 @@ script:
   
   ######  Install NEURON using OMV & compile mod files
   
+  - pwd
   - omv install NEURON
+  - pwd
   - cd ../simulator/bionet/components/mechanisms/
   - /home/travis/neuron/nrn/x86_64/bin/nrnivmodl modfiles
+  
   
   
   ######  Test running simulator examples
