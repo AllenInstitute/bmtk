@@ -1,7 +1,4 @@
-# Allen Institute Software License - This software license is the 2-clause BSD license plus clause a third
-# clause that prohibits redistribution for commercial purposes without further permission.
-#
-# Copyright 2017. Allen Institute. All rights reserved.
+# Copyright 2017. Allen Institute. All rights reserved
 #
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 # following conditions are met:
@@ -12,10 +9,8 @@
 # 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following
 # disclaimer in the documentation and/or other materials provided with the distribution.
 #
-# 3. Redistributions for commercial purposes are not permitted without the Allen Institute's written permission. For
-# purposes of this license, commercial purposes is the incorporation of the Allen Institute's software into anything for
-# which you will charge fees or other compensation. Contact terms@alleninstitute.org for commercial licensing
-# opportunities.
+# 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote
+# products derived from this software without specific prior written permission.
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
 # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -26,289 +21,153 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import os
-import glob
-import h5py
-
-import bmtk.simulator.pointnet.config as cfg
-from bmtk.simulator.pointnet.cell import NestCell, VirtualCell
-from bmtk.simulator.pointnet.property_schemas import CellTypes
-import bmtk.simulator.pointnet.io as io
-
+import json
+import functools
 import nest
 
-try:
-    # NOTE; nest.SyncProcesses/NumProcesses doesn't always work depending on the version of nest, so using mpi4py
-    from mpi4py import MPI
-    comm = MPI.COMM_WORLD
-    rank = comm.Get_rank()
-    n_nodes = comm.Get_size()
-except Exception as e:
-    rank = 0
-    n_nodes = 1
+from bmtk.simulator.core.simulator_network import SimNetwork
+from bmtk.simulator.pointnet.sonata_adaptors import PointNodeAdaptor, PointEdgeAdaptor
+from bmtk.simulator.pointnet import pyfunction_cache
+from bmtk.simulator.pointnet.io_tools import io
 
 
-class PointNetwork(object):
-    """Creates a network of NEST cells and connections from a graph, simulates and saves the output.
+class PointNetwork(SimNetwork):
+    def __init__(self, **properties):
+        super(PointNetwork, self).__init__(**properties)
+        self._io = io
 
-    Takes in a built PointGraph to build the network. For best results use PointNetwork.from_json(config, graph) to
-    create the simulation input and parameters from a config file, the use the run() function to simulate.
+        self.__weight_functions = {}
+        self._params_cache = {}
 
-    TODO:
-        * Save parameters like membrane voltage using a multimeter on individual nodes.
-        * Add ability to insert current and voltage clamps directly into internal nodes.
-    """
-    def __init__(self, graph, dt=0.001, overwrite=True, print_time=False):
-        self._duration = 0.0  # simulation time
-        self._dt = dt  # time step
-        self._output_dir = './output/'  # directory where log and temporary output will be stored
-        self._overwrite = overwrite
-        self._block_run = False
-        self._block_size = -1
+        self._virtual_ids_map = {}
 
-        self._cells_built = False
-        self._internal_connections_built = False
+        self._batch_nodes = True
 
-        self._graph = graph
-        self._external_cells = {}  # dict-of-dict of external pointnet cells with keys [network_name][cell_id]
-        self._internal_cells = {}  # dictionary of internal pointnet cells with cell_id as key
-        self._nest_id_map = {}  # a map between NEST IDs and Node-IDs
+        self._nest_id_map = {}
+        self._nestid2nodeid_map = {}
 
-        self._spikedetector = None
-        self._spikes_file = None  # File where all output spikes will be collected and saved
-        self._tmp_spikes_file = None  # temporary gdf files of spike-trains
-        self._spike_trains_ds = {}  # used to temporary store NWB datasets containing spike trains
+        self._nestid2gid = {}
 
-        # Reset the NEST kernel for a new simualtion
-        # TODO: move this into it's own function and make sure it is called before network is built
-        nest.ResetKernel()
-        nest.SetKernelStatus({"resolution": self._dt, "overwrite_files": self._overwrite, "print_time": print_time})
+        self._nodes_table = {}
 
     @property
-    def dt(self):
-        # TODO: validated dt > 0.0
-        return self._dt
+    def py_function_caches(self):
+        return pyfunction_cache
 
-    @property
-    def spikes_file(self):
-        return self._spikes_file
+    def __get_params(self, node_params):
+        if node_params.with_dynamics_params:
+            # TODO: use property, not name
+            return node_params['dynamics_params']
 
-    @spikes_file.setter
-    def spikes_file(self, value):
-        self._spikes_file = value
-
-    @property
-    def output_dir(self):
-        return self._output_dir
-
-    @output_dir.setter
-    def output_dir(self, value):
-        self._output_dir = value
-
-    @property
-    def block_run(self):
-        return self._block_run
-
-    @property
-    def block_size(self):
-        return self._block_size
-
-    @block_size.setter
-    def block_size(self, value):
-        self._block_run = True
-        self._block_size = value
-
-    @property
-    def duration(self):
-        return self._duration
-
-    @duration.setter
-    def duration(self, value):
-        # TODO: validate that it is a positive number
-        self._duration = value
-
-    def build_cells(self):
-        """Build NEST-based cells from graph"""
-        # Create spike detector to attach to all internal nodes
-        self._spikes_file = self.spikes_file  # location where spikes will be written.
-        self._tmp_spikes_file = os.path.join(self.output_dir, 'tmp_spike_time')  # temporary gdf files
-        self._spikedetector = nest.Create("spike_detector", 1)
-        nest.SetStatus(self._spikedetector, {'label': os.path.join(self.output_dir, 'tmp_spike_times'),
-                                             'withtime': True, 'withgid': True, 'to_file': True})
-
-        # build internal nodes
-        # TODO: since networks can be mixed we should loop around entire network checking if nodes are virtual or not.
-        for node in self._graph.get_internal_nodes():
-            ncell = NestCell(node)
-            ncell.set_spike_detector(self._spikedetector)
-            self._internal_cells[node.node_id] = ncell
-            self._nest_id_map[ncell.nest_id] = node.node_id
-
-        # build external nodes
-        for network in self._graph.external_networks():
-            self._external_cells[network] = {}
-            for node in self._graph.get_nodes(network):
-                if node.model_class == CellTypes.Virtual:
-                    # TODO: if dynamics_params are globally set then we can create all nodes at once.
-                    # TODO: Put nest_id param in PointGraph.Node and we can set vcell.nest_id =
-                    vcell = VirtualCell(node)
-                    self._external_cells[network][vcell.node_id] = vcell
-
-        self._cells_built = True
-
-    def set_recurrent_connections(self):
-        """Creates recurrent (internal) connections"""
-        for src_network in self._graph.internal_networks():
-            for trg_gid, trg_cell in self._internal_cells.items():
-                for _, src_prop, edge_prop in self._graph.edges_iterator(trg_gid, src_network):
-                    src_cell = self._internal_cells[src_prop.node_id]
-                    trg_cell.set_synaptic_connection(src_cell, trg_cell, edge_prop)
-
-    def set_external_connections(self, source_network):
-        """Connect virtual nodes of an external network onto the internal network.
-
-        :param source_network: Name of external network that targets internal nodes.
-        """
-        # for every internal target get source nodes and edges that connect to it create a NEST connection.
-        for trg_gid, trg_cell in self._internal_cells.items():
-            for _, src_prop, edge_prop in self._graph.edges_iterator(trg_gid, source_network):
-                src_cell = self._external_cells[source_network][src_prop.node_id]  # NEST implementation of source
-                trg_cell.set_synaptic_connection(src_cell, trg_cell, edge_prop)
-
-    def add_spikes_nwb(self, network, nwb_file, trial):
-        """Adds spike trains from nwb file
-
-        :param network: name of external network to add spike trains.
-        :param nwb_file: NWB file with spike trains for a subset of gids in network
-        :param trial: trail name in NWB file (processing/trial/spike_trains/...)
-        """
-        h5_file = h5py.File(nwb_file, 'r')
-        self._spike_trains_ds[network] = h5_file['processing'][trial]['spike_train']
-
-    def _get_spike_trains(self, src_gid, network):
-        if network in self._spike_trains_ds:
-            h5ds = self._spike_trains_ds[network]
-            src_gid_str = str(src_gid)
-            if src_gid_str in h5ds.keys():
-                return h5ds[src_gid_str]['data']
-
-        return None
-
-    def make_stims(self):
-        """Initialize all stimulations (spikes, injections, etc)"""
-        # TODO: this is a hold-over from bionet, it may be better to set stimulations in their respective functions.
-        # TODO: it is very slow, investigate
-        for network in self._graph.external_networks():
-            # For each external node in the graph grab the spike-trains
-            # TODO: skip if external network is not connected.
-            for node_id, node in self._external_cells[network].items():
-                spikes = self._get_spike_trains(node_id, network)
-                if spikes is not None:
-                    node.set_spike_train(spikes[:])
-
-    def _get_block_trial(self, duration):
-        """
-        Compute necessary number of block trials, the length of block simulation and the simulation length of the last
-        block run, if necessary.
-        """
-        if self._block_run:
-            data_res = self._block_size * self._dt
-            fn = duration / data_res
-            n = int(fn)
-            res = fn - n
+        params_file = node_params[self._params_column]
+        # params_file = self._MT.params_column(node_params) #node_params['dynamics_params']
+        if params_file in self._params_cache:
+            return self._params_cache[params_file]
         else:
-            n = -1
-            res = -1
-            data_res = -1
-        return n, res, data_res
+            params_dir = self.get_component('models_dir')
+            params_path = os.path.join(params_dir, params_file)
+            params_dict = json.load(open(params_path, 'r'))
+            self._params_cache[params_file] = params_dict
+            return params_dict
 
-    def run(self, duration=None):
-        if duration is None:
-            duration = self.duration
+    def _register_adaptors(self):
+        super(PointNetwork, self)._register_adaptors()
+        self._node_adaptors['sonata'] = PointNodeAdaptor
+        self._edge_adaptors['sonata'] = PointEdgeAdaptor
 
-        n, res, data_res = self._get_block_trial(duration)
-        if n > 0:
-            for r in xrange(n):
-                nest.Simulate(data_res)
-        if res > 0:
-            nest.Simulate(res * self.dt)
-        if n < 0:
-            nest.Simulate(duration)
+    # TODO: reimplement with py_modules like in bionet
+    def add_weight_function(self, function, name=None):
+        fnc_name = name if name is not None else function.__name__
+        self.__weight_functions[fnc_name] = functools.partial(function)
 
-        if n_nodes > 1:
-            comm.Barrier()
+    def set_default_weight_function(self, function):
+        self.add_weight_function(function, 'default_weight_fnc', overwrite=True)
 
-        io.collect_gdf_files(self.output_dir, self._spikes_file, self._nest_id_map, self._overwrite)
+    def get_weight_function(self, name):
+        return self.__weight_functions[name]
 
-    @classmethod
-    def from_config(cls, configure, graph):
-        # load the json file or object
-        if isinstance(configure, basestring):
-            config = cfg.from_json(configure, validate=True)
-        elif isinstance(configure, dict):
-            config = configure
-        else:
-            raise Exception('Could not convert {} (type "{}") to json.'.format(configure, type(configure)))
+    def build_nodes(self):
+        for node_pop in self.node_populations:
+            nid2nest_map = {}
+            nest2nid_map = {}
+            if node_pop.internal_nodes_only:
+                for node in node_pop.get_nodes():
+                    node.build()
+                    for nid, gid, nest_id in zip(node.node_ids, node.gids, node.nest_ids):
+                        self._nestid2gid[nest_id] = gid
+                        nid2nest_map[nid] = nest_id
+                        nest2nid_map[nest_id] = nid
 
-        if 'run' not in config:
-            raise Exception('Json file is missing "run" entry. Unable to build Bionetwork.')
-        run_dict = config['run']
+            elif node_pop.mixed_nodes:
+                for node in node_pop.get_nodes():
+                    if node.model_type != 'virtual':
+                        node.build()
+                        for nid, gid, nest_id in zip(node.node_ids, node.gids, node.nest_ids):
+                            self._nestid2gid[nest_id] = gid
+                            nid2nest_map[nid] = nest_id
+                            nest2nid_map[nest_id] = nid
 
-        # Get network parameters
-        # step time (dt) is set in the kernel and should be passed
-        overwrite = run_dict['overwrite_output_dir'] if 'overwrite_output_dir' in run_dict else True
-        print_time = run_dict['print_time'] if 'print_time' in run_dict else False
-        dt = run_dict['dt']  # TODO: make sure dt exists
-        network = cls(graph, dt=dt, overwrite=overwrite)
+            self._nest_id_map[node_pop.name] = nid2nest_map
+            self._nestid2nodeid_map[node_pop.name] = nest2nid_map
 
-        if 'output_dir' in config['output']:
-            network.output_dir = config['output']['output_dir']
+    def build_recurrent_edges(self):
+        recurrent_edge_pops = [ep for ep in self._edge_populations if not ep.virtual_connections]
+        if not recurrent_edge_pops:
+            return
 
-        network.spikes_file = config['output']['spikes_ascii']
+        for edge_pop in recurrent_edge_pops:
+            src_nest_ids = self._nest_id_map[edge_pop.source_nodes]
+            trg_nest_ids = self._nest_id_map[edge_pop.target_nodes]
+            for edge in edge_pop.get_edges():
+                nest_srcs = [src_nest_ids[nid] for nid in edge.source_node_ids]
+                nest_trgs = [trg_nest_ids[nid] for nid in edge.target_node_ids]
+                nest.Connect(nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=edge.nest_params)
 
-        if 'block_run' in run_dict and run_dict['block_run']:
-            if 'block_size' not in run_dict:
-                raise Exception('"block_run" is set to True but "block_size" not found.')
-            network._block_size = run_dict['block_size']
+    def find_edges(self, source_nodes=None, target_nodes=None):
+        # TODO: Move to parent
+        selected_edges = self._edge_populations[:]
 
-        if 'duration' in run_dict:
-            network.duration = run_dict['duration']
+        if source_nodes is not None:
+            selected_edges = [edge_pop for edge_pop in selected_edges if edge_pop.source_nodes == source_nodes]
 
-        # Create the output-directory, or delete existing files if it already exists
-        io.log('Setting up output directory')
-        if not os.path.exists(config['output']['output_dir']):
-            os.mkdir(config['output']['output_dir'])
-        elif overwrite:
-            for gfile in glob.glob(os.path.join(config['output']['output_dir'], '*.gdf')):
-                os.remove(gfile)
+        if target_nodes is not None:
+            selected_edges = [edge_pop for edge_pop in selected_edges if edge_pop.target_nodes == target_nodes]
 
-        # build the cells
-        io.log('Building cells')
-        network.build_cells()
+        return selected_edges
 
-        # Build internal connections
-        if run_dict['connect_internal']:
-            io.log('Creating recurrent connections')
-            network.set_recurrent_connections()
+    def add_spike_trains(self, spike_trains, node_set):
+        # Build the virtual nodes
+        src_nodes = [node_pop for node_pop in self.node_populations if node_pop.name in node_set.population_names()]
+        for node_pop in src_nodes:
+            if node_pop.name in self._virtual_ids_map:
+                 continue
 
-        # Build external connections. Set connection to default True and turn off only if explicitly stated.
-        # NOTE: It might be better to set to default off?!?! Need to dicuss what would be more intuitive for the users.
-        # TODO: ignore case of network name
-        external_network_settings = {name: True for name in graph.external_networks()}
-        if 'connect_external' in run_dict:
-            external_network_settings.update(run_dict['connect_external'])
-        for netname, connect in external_network_settings.items():
-            if connect:
-                io.log('Setting external connections for {}'.format(netname))
-                network.set_external_connections(netname)
+            virt_node_map = {}
+            if node_pop.virtual_nodes_only:
+                for node in node_pop.get_nodes():
+                    nest_ids = nest.Create('spike_generator', node.n_nodes, {})
+                    for node_id, nest_id in zip(node.node_ids, nest_ids):
+                        virt_node_map[node_id] = nest_id
+                        nest.SetStatus([nest_id], {'spike_times': spike_trains.get_spikes(node_id)})
 
-        # Build inputs
-        if 'input' in config:
-            for netinput in config['input']:
-                if netinput['type'] == 'external_spikes' and netinput['format'] == 'nwb' and netinput['active']:
-                    network.add_spikes_nwb(netinput['source_nodes'], netinput['file'], netinput['trial'])
+            elif node_pop.mixed_nodes:
+                for node in node_pop.get_nodes():
+                    if node.model_type != 'virtual':
+                        continue
 
-            io.log('Adding stimulations')
-            network.make_stims()
+                    nest_ids = nest.Create('spike_generator', node.n_nodes, {})
+                    for node_id, nest_id in zip(node.node_ids, nest_ids):
+                        virt_node_map[node_id] = nest_id
+                        nest.SetStatus([nest_id], {'spike_times': spike_trains.get_spikes(node_id)})
 
-        io.log('Network created.')
-        return network
+            self._virtual_ids_map[node_pop.name] = virt_node_map
+
+        # Create virtual synaptic connections
+        for source_reader in src_nodes:
+            for edge_pop in self.find_edges(source_nodes=source_reader.name):
+                src_nest_ids = self._virtual_ids_map[edge_pop.source_nodes]
+                trg_nest_ids = self._nest_id_map[edge_pop.target_nodes]
+                for edge in edge_pop.get_edges():
+                    nest_srcs = [src_nest_ids[nid] for nid in edge.source_node_ids]
+                    nest_trgs = [trg_nest_ids[nid] for nid in edge.target_node_ids]
+                    nest.Connect(nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=edge.nest_params)

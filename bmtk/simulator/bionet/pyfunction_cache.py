@@ -1,7 +1,4 @@
-# Allen Institute Software License - This software license is the 2-clause BSD license plus clause a third
-# clause that prohibits redistribution for commercial purposes without further permission.
-#
-# Copyright 2017. Allen Institute. All rights reserved.
+# Copyright 2017. Allen Institute. All rights reserved
 #
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 # following conditions are met:
@@ -12,10 +9,8 @@
 # 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following
 # disclaimer in the documentation and/or other materials provided with the distribution.
 #
-# 3. Redistributions for commercial purposes are not permitted without the Allen Institute's written permission. For
-# purposes of this license, commercial purposes is the incorporation of the Allen Institute's software into anything for
-# which you will charge fees or other compensation. Contact terms@alleninstitute.org for commercial licensing
-# opportunities.
+# 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote
+# products derived from this software without specific prior written permission.
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
 # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -43,11 +38,13 @@ class _PyFunctions(object):
         self.__syn_weights = {}
         self.__cell_models = {}
         self.__synapse_models = {}
+        self.__cell_processors = {}
 
     def clear(self):
         self.__syn_weights.clear()
         self.__cell_models.clear()
         self.__synapse_models.clear()
+        self.__cell_processors.clear()
 
     def add_synaptic_weight(self, name, func, overwrite=True):
         """stores synpatic fuction for given name"""
@@ -63,16 +60,26 @@ class _PyFunctions(object):
         """return the synpatic weight function"""
         return self.__syn_weights[name]
 
-    def add_cell_model(self, name, func, overwrite=True):
-        if overwrite or name not in self.__cell_models:
-            self.__cell_models[name] = func
+    def has_synaptic_weight(self, name):
+        return name in self.__syn_weights
+
+    def __cell_model_key(self, directive, model_type):
+        return (directive, model_type)
+
+    def add_cell_model(self, directive, model_type, func, overwrite=True):
+        key = self.__cell_model_key(directive, model_type)
+        if overwrite or key not in self.__cell_models:
+            self.__cell_models[key] = func
 
     @property
     def cell_models(self):
         return self.__cell_models.keys()
 
-    def cell_model(self, name):
-        return self.__cell_models[name]
+    def cell_model(self, directive, model_type):
+        return self.__cell_models[self.__cell_model_key(directive, model_type)]
+
+    def has_cell_model(self, directive, model_type):
+        return self.__cell_model_key(directive, model_type) in self.__cell_models
 
     def add_synapse_model(self, name, func, overwrite=True):
         if overwrite or name not in self.__synapse_models:
@@ -84,6 +91,17 @@ class _PyFunctions(object):
 
     def synapse_model(self, name):
         return self.__synapse_models[name]
+
+    @property
+    def cell_processors(self):
+        return self.__cell_processors.keys()
+
+    def cell_processor(self, name):
+        return self.__cell_processors[name]
+
+    def add_cell_processor(self, name, func, overwrite=True):
+        if overwrite or name not in self.__syn_weights:
+            self.__cell_processors[name] = func
 
     def __repr__(self):
         rstr = '{}: {}\n'.format('cell_models', self.cell_models)
@@ -187,10 +205,16 @@ def add_weight_function(func, name=None, overwrite=True):
     py_modules.add_synaptic_weight(func_name, func, overwrite)
 
 
-def add_cell_model(func, name=None, overwrite=True):
+def add_cell_model(func, directive, model_type, overwrite=True):
+    assert(callable(func))
+    # func_name = name if name is not None else func.__name__
+    py_modules.add_cell_model(directive, model_type, func, overwrite)
+
+
+def add_cell_processor(func, name=None, overwrite=True):
     assert(callable(func))
     func_name = name if name is not None else func.__name__
-    py_modules.add_cell_model(func_name, func, overwrite)
+    py_modules.add_cell_processor(func_name, func, overwrite)
 
 
 def add_synapse_model(func, name=None, overwrite=True):

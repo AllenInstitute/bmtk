@@ -1,7 +1,4 @@
-# Allen Institute Software License - This software license is the 2-clause BSD license plus clause a third
-# clause that prohibits redistribution for commercial purposes without further permission.
-#
-# Copyright 2017. Allen Institute. All rights reserved.
+# Copyright 2017. Allen Institute. All rights reserved
 #
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 # following conditions are met:
@@ -12,10 +9,8 @@
 # 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following
 # disclaimer in the documentation and/or other materials provided with the distribution.
 #
-# 3. Redistributions for commercial purposes are not permitted without the Allen Institute's written permission. For
-# purposes of this license, commercial purposes is the incorporation of the Allen Institute's software into anything for
-# which you will charge fees or other compensation. Contact terms@alleninstitute.org for commercial licensing
-# opportunities.
+# 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote
+# products derived from this software without specific prior written permission.
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
 # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -43,7 +38,13 @@ def _create_node_table(node_file, node_type_file, group_key=None, exclude=[]):
     """Creates a merged nodes.csv and node_types.csv dataframe with excluded items removed. Returns a dataframe."""
     node_types_df = pd.read_csv(node_type_file, sep=' ', index_col='node_type_id')
     nodes_h5 = h5py.File(node_file)
-    nodes_df = pd.DataFrame({'node_id': nodes_h5['/nodes/node_gid'], 'node_type_id': nodes_h5['/nodes/node_type_id']})
+    # TODO: Use utils.spikesReader
+    node_pop_name = nodes_h5['/nodes'].keys()[0]
+
+    nodes_grp = nodes_h5['/nodes'][node_pop_name]
+    # TODO: Need to be able to handle gid or node_id
+    nodes_df = pd.DataFrame({'node_id': nodes_grp['node_id'], 'node_type_id': nodes_grp['node_type_id']})
+    #nodes_df = pd.DataFrame({'node_id': nodes_h5['/nodes/node_gid'], 'node_type_id': nodes_h5['/nodes/node_type_id']})
     nodes_df.set_index('node_id', inplace=True)
 
     # nodes_df = pd.read_csv(node_file, sep=' ', index_col='node_id')
@@ -82,6 +83,23 @@ def _count_spikes(spikes_file, max_gid, interval=None):
     max_gid = int(max_gid)  # strange bug where max_gid was being returned as a float.
     spikes = [[] for _ in xrange(max_gid+1)]
     spike_sums = np.zeros(max_gid+1)
+    # TODO: Use utils.spikesReader
+    spikes_h5 = h5py.File(spikes_file, 'r')
+    #print spikes_h5['/spikes'].keys()
+    gid_ds = spikes_h5['/spikes/gids']
+    ts_ds = spikes_h5['/spikes/timestamps']
+
+    for i in range(len(gid_ds)):
+        ts = ts_ds[i]
+        gid = gid_ds[i]
+
+        if gid <= max_gid and t_bounds_low <= ts <= t_bounds_high:
+            spikes[gid].append(ts)
+            spike_sums[gid] += 1
+            t_min = ts if ts < t_min else t_min
+            t_max = ts if ts > t_max else t_max
+
+    """
     with open(spikes_file, 'r') as fspikes:
         for line in fspikes:
             ts, gid = parse_line(line)
@@ -90,7 +108,7 @@ def _count_spikes(spikes_file, max_gid, interval=None):
                 spike_sums[gid] += 1
                 t_min = ts if ts < t_min else t_min
                 t_max = ts if ts > t_max else t_max
-
+    """
     return spikes, spike_sums/(float(t_max-t_min)*1e-3)
 
 
@@ -110,9 +128,8 @@ def plot_spikes_config(configure, group_key=None, exclude=[], save_as=None, show
     plot_spikes(cells_file_name, cell_models_file_name, spikes_file, group_key, exclude, save_as, show_plot)
 
 
-
-def plot_spikes(cells_file, cell_models_file, spikes_file, group_key=None, exclude=[], save_as=None, show=True,
-                title=None):
+def plot_spikes(cells_file, cell_models_file, spikes_file, population=None, group_key=None, exclude=[], save_as=None,
+                show=True, title=None):
     # check if can be shown and/or saved
     #if save_as is not None:
     #    if os.path.exists(save_as):
@@ -121,8 +138,16 @@ def plot_spikes(cells_file, cell_models_file, spikes_file, group_key=None, exclu
     cm_df = pd.read_csv(cell_models_file, sep=' ')
     cm_df.set_index('node_type_id', inplace=True)
 
-    cells_h5 = h5py.File(cells_file)
-    c_df = pd.DataFrame({'node_id': cells_h5['/nodes/node_gid'], 'node_type_id': cells_h5['/nodes/node_type_id']})
+    cells_h5 = h5py.File(cells_file, 'r')
+    # TODO: Use sonata api
+    if population is None:
+        if len(cells_h5['/nodes']) > 1:
+            raise Exception('Multiple populations in nodes file. Please specify one to plot using population param')
+        else:
+            population = cells_h5['/nodes'].keys()[0]
+
+    nodes_grp = cells_h5['/nodes'][population]
+    c_df = pd.DataFrame({'node_id': nodes_grp['node_id'], 'node_type_id': nodes_grp['node_type_id']})
     # c_df = pd.read_csv(cells_file, sep=' ')
     c_df.set_index('node_id', inplace=True)
     nodes_df = pd.merge(left=c_df,
@@ -131,8 +156,11 @@ def plot_spikes(cells_file, cell_models_file, spikes_file, group_key=None, exclu
                         left_on='node_type_id',
                         right_index=True)  # use 'model_id' key to merge, for right table the "model_id" is an index
 
-
-    spike_times, spike_gids = np.loadtxt(spikes_file, dtype='float32,int', unpack=True)
+    # TODO: Uses utils.SpikesReader to open
+    spikes_h5 = h5py.File(spikes_file, 'r')
+    spike_gids = np.array(spikes_h5['/spikes/gids'], dtype=np.uint)
+    spike_times = np.array(spikes_h5['/spikes/timestamps'], dtype=np.float)
+    # spike_times, spike_gids = np.loadtxt(spikes_file, dtype='float32,int', unpack=True)
     # spike_gids, spike_times = np.loadtxt(spikes_file, dtype='int,float32', unpack=True)
 
     spike_times = spike_times * 1.0e-3
@@ -180,6 +208,7 @@ def plot_spikes(cells_file, cell_models_file, spikes_file, group_key=None, exclu
     ax2 = plt.subplot(gs[1])
     plt.hist(spike_times, 100)
     ax2.set_xlabel('time (s)')
+    ax2.set_xlim([0, max(spike_times)])
     ax2.axes.get_yaxis().set_visible(False)
     if title is not None:
         ax1.set_title(title)
@@ -362,24 +391,11 @@ def plot_rates_popnet(cell_models_file, rates_file, model_keys=None, save_as=Non
     pop_keys = {str(r['node_type_id']): r[lookup_col] for _, r in pops_df.iterrows()}
 
     # organize the rates file by population
-    rates = {pop_name: ([], []) for pop_name in pop_keys.keys()}
-    with open(rates_file, 'r') as f:
-        reader = csv.reader(f, delimiter=' ')
-        for row in reader:
-            if row[0] in rates:
-                rates[row[0]][0].append(row[1])
-                rates[row[0]][1].append(row[2])
-
-    # plot the rates
-    plt.figure()
-    for pop_name, r in rates.iteritems():
-        label = pop_keys[pop_name]
-        times = r[0]
-        rates = r[1]
-        if len(times) == 0:
-            continue
-
-        plt.plot(times, rates, label=label)
+    # rates = {pop_name: ([], []) for pop_name in pop_keys.keys()}
+    rates_df = pd.read_csv(rates_file, sep=' ', names=['id', 'times', 'rates'])
+    for grp_key, grp_df in rates_df.groupby('id'):
+        grp_label = pop_keys[str(grp_key)]
+        plt.plot(grp_df['times'], grp_df['rates'], label=grp_label)
 
     plt.legend(fontsize='x-small')
     plt.xlabel('time (s)')

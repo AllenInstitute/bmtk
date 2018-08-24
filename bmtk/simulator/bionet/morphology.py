@@ -1,7 +1,4 @@
-# Allen Institute Software License - This software license is the 2-clause BSD license plus clause a third
-# clause that prohibits redistribution for commercial purposes without further permission.
-#
-# Copyright 2017. Allen Institute. All rights reserved.
+# Copyright 2017. Allen Institute. All rights reserved
 #
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 # following conditions are met:
@@ -12,10 +9,8 @@
 # 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following
 # disclaimer in the documentation and/or other materials provided with the distribution.
 #
-# 3. Redistributions for commercial purposes are not permitted without the Allen Institute's written permission. For
-# purposes of this license, commercial purposes is the incorporation of the Allen Institute's software into anything for
-# which you will charge fees or other compensation. Contact terms@alleninstitute.org for commercial licensing
-# opportunities.
+# 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote
+# products derived from this software without specific prior written permission.
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
 # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -26,7 +21,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import numpy as np
-
 from neuron import h
 
 
@@ -76,7 +70,8 @@ class Morphology(object):
         
         p0 = np.zeros((3, self.nseg))  # hold the coordinates of segment starting points
         p1 = np.zeros((3, self.nseg))  # hold the coordinates of segment end points
-        d0 = np.zeros(self.nseg) 
+        p05 = np.zeros((3, self.nseg))
+        d0 = np.zeros(self.nseg)
         d1 = np.zeros(self.nseg) 
 
         for sec in self.hobj.all:
@@ -96,11 +91,13 @@ class Morphology(object):
             nseg = sec.nseg
             
             l0 = np.zeros(nseg)     # keep range of segment starting point 
-            l1 = np.zeros(nseg)     # keep range of segment ending point 
+            l1 = np.zeros(nseg)     # keep range of segment ending point
+            l05 = np.zeros(nseg)
             
             for iseg, seg in enumerate(sec):
                 l0[iseg] = seg.x - 0.5*1/nseg   # x (normalized distance along the section) for the beginning of the segment
                 l1[iseg] = seg.x + 0.5*1/nseg   # x for the end of the segment
+                l05[iseg] = seg.x
 
             p0[0, ix:ix+nseg] = np.interp(l0, l3d, p3d[0, :])
             p0[1, ix:ix+nseg] = np.interp(l0, l3d, p3d[1, :])
@@ -111,12 +108,18 @@ class Morphology(object):
             p1[1, ix:ix+nseg] = np.interp(l1, l3d, p3d[1, :])
             p1[2, ix:ix+nseg] = np.interp(l1, l3d, p3d[2, :])
             d1[ix:ix+nseg] = np.interp(l1, l3d, diam3d[:])
+
+            p05[0,ix:ix+nseg] = np.interp(l05, l3d, p3d[0,:])
+            p05[1,ix:ix+nseg] = np.interp(l05, l3d, p3d[1,:])
+            p05[2,ix:ix+nseg] = np.interp(l05, l3d, p3d[2,:])
+
             ix += nseg
 
         self.seg_coords = {}
 
         self.seg_coords['p0'] = p0
         self.seg_coords['p1'] = p1
+        self.seg_coords['p05'] = p05
 
         self.seg_coords['d0'] = d0
         self.seg_coords['d1'] = d1
@@ -146,24 +149,6 @@ class Morphology(object):
                 seg_type.append(sec_type_swc)           # record section type in a list
                 seg_dist.append(h.distance(seg.x))  # distance to the center of the segment
 
-        '''
-        for sec in self.hobj.all:
-            sec_name = sec.name()
-            segs = [s for s in sec]
-            seg_len = sec.L / sec.nseg
-            print sec_name, sec.L, len(segs),':',
-            for s in segs:
-                seg_dist = h.distance(s.x)
-                print '[{} - {} - {}]'.format(seg_dist-seg_len/2, seg_dist, seg_dist+seg_len/2),
-                # print h.distance(s.x),
-                #print s.x,
-
-            print '({})'.format(sec.L/sec.nseg)
-            #print '              ',
-            #for s in segs:
-            #    print '[{} - {}]'.format()
-            #print sec.name(), '-', len([s for s in sec])
-        '''
         self.seg_prop = {}
         self.seg_prop['type'] = np.array(seg_type)
         self.seg_prop['area'] = np.array(seg_area)
@@ -176,9 +161,16 @@ class Morphology(object):
     def get_target_segments(self, edge_type):
         # Determine the target segments and their probabilities of connections for each new edge-type. Save the
         # information for each additional time a given edge-type is used on this morphology
+        # TODO: Don't rely on edge-type-table, just use the edge?
         if edge_type in self._segments:
             return self._segments[edge_type]
 
+        else:
+            tar_seg_ix, tar_seg_prob = self.find_sections(edge_type.target_sections, edge_type.target_distance)
+            self._segments[edge_type] = (tar_seg_ix, tar_seg_prob)
+            return tar_seg_ix, tar_seg_prob
+
+        """
         tar_sec_labels = edge_type.target_sections
         drange = edge_type.target_distance
         dmin, dmax = drange[0], drange[1]
@@ -210,67 +202,33 @@ class Morphology(object):
 
         self._segments[edge_type] = (tar_seg_ix, tar_seg_prob)
         return tar_seg_ix, tar_seg_prob
+        """
 
-    """
-    def find_tar_segs(self, con_types_model_df):
-        '''
-        Find segment indexes which are targeted  and corresponding probabilities of placing synapse
+    def find_sections(self, target_sections, distance_range):
+        dmin, dmax = distance_range[0], distance_range[1]
 
-        Parameters
-        ----------
-        con_types_model_df: pandas data frame
-            includes connection types for a given source type from connection_types table
-        
-        
-        Returns
-        -------
-        innerv: dict[key: string] = {'ix': ndarray,'p':ndarray}
-            dictionary of innervated segments indexes 'ix' and their probabilities 'p' 
-            
-        '''
+        seg_d0 = self.seg_prop['dist0']  # use a more compact variables
+        seg_d1 = self.seg_prop['dist1']
+        seg_length = self.seg_prop['length']
+        seg_area = self.seg_prop['area']
+        seg_type = self.seg_prop['type']
 
-        self.innerv = {}
-        
-        for con_key, con_prop in con_types_model_df.iterrows():
+        # Find the fractional overlap between the segment and the distance range:
+        # this is done by finding the overlap between [d0,d1] and [dmin,dmax]
+        # np.minimum(seg_d1,dmax) find the smaller of the two end locations
+        # np.maximum(seg_d0,dmin) find the larger of the two start locations
+        # np.maximum(0,overlap) is used to return zero when segments do not overlap
+        # and then dividing by the segment length
+        frac_overlap = np.maximum(0, (np.minimum(seg_d1, dmax) - np.maximum(seg_d0, dmin))) / seg_length
+        ix_drange = np.where(frac_overlap > 0)  # find indexes with non-zero overlap
+        ix_labels = np.array([], dtype=np.int)
 
-            tar_sec_labels = json.loads(con_prop['target_sections'])
-            drange = json.loads(con_prop['distance_range'])
-            dmin = drange[0];     dmax = drange[1]
+        for tar_sec_label in target_sections:  # find indexes within sec_labels
+            sec_type = self.sec_type_swc[tar_sec_label]  # get swc code for the section label
+            ix_label = np.where(seg_type == sec_type)
+            ix_labels = np.append(ix_labels, ix_label)  # target segment indexes
 
-            seg_d0 = self.seg_prop['dist0']    # use a more compact variables
-            seg_d1 = self.seg_prop['dist1']
-            seg_length = self.seg_prop['length']
-            seg_area = self.seg_prop['area']
-            seg_type = self.seg_prop['type']
-
-            # Find the fractional overlap between the segment and the distance range:            
-            # this is done by finding the overlap between [d0,d1] and [dmin,dmax]
-            # np.minimum(seg_d1,dmax) find the smaller of the two end locations
-            # np.maximum(seg_d0,dmin) find the larger of the two start locations
-            # np.maximum(0,overlap) is used to return zero when segments do not overlap
-            # and then dividing by the segment length
-
-            frac_overlap = np.maximum(0,(np.minimum(seg_d1,dmax) - np.maximum(seg_d0,dmin)))/seg_length    
-            ix_drange = np.where(frac_overlap>0)    # find indexes with non-zero overlap
-
-
-            ix_labels = np.array([], dtype=np.int)
-            
-            for tar_sec_label in tar_sec_labels:    # find indexes within sec_labels
-
-                sec_type = self.sec_type_swc[tar_sec_label] # get swc code for the section label
-                ix_label = np.where(seg_type == sec_type)   
-                ix_labels = np.append(ix_labels, ix_label)  # target segment indexes
-
-                        
-            tar_seg_ix = np.intersect1d(ix_drange,ix_labels)    # find intersection between indexes for range and labels
-
-#            tar_seg_area = seg_area[tar_seg_ix]*frac_overlap[tar_seg_ix]    # weighted area of targeted segments
-            tar_seg_length = seg_length[tar_seg_ix]*frac_overlap[tar_seg_ix]    # weighted length of targeted segments
-
-            tar_seg_prob = tar_seg_length/np.sum(tar_seg_length)    # probability of targeting segments
-#            tar_seg_prob = tar_seg_area/np.sum(tar_seg_area)    # probability of targeting segments
-
-            
-            self.innerv[con_key] = (tar_seg_ix, tar_seg_prob)   # return indexes of targeted section and the corresponding probabilities
-    """
+        tar_seg_ix = np.intersect1d(ix_drange, ix_labels)  # find intersection between indexes for range and labels
+        tar_seg_length = seg_length[tar_seg_ix] * frac_overlap[tar_seg_ix]  # weighted length of targeted segments
+        tar_seg_prob = tar_seg_length / np.sum(tar_seg_length)  # probability of targeting segments
+        return tar_seg_ix, tar_seg_prob

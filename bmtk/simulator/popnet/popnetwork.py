@@ -1,7 +1,4 @@
-# Allen Institute Software License - This software license is the 2-clause BSD license plus clause a third
-# clause that prohibits redistribution for commercial purposes without further permission.
-#
-# Copyright 2017. Allen Institute. All rights reserved.
+# Copyright 2017. Allen Institute. All rights reserved
 #
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 # following conditions are met:
@@ -12,10 +9,8 @@
 # 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following
 # disclaimer in the documentation and/or other materials provided with the distribution.
 #
-# 3. Redistributions for commercial purposes are not permitted without the Allen Institute's written permission. For
-# purposes of this license, commercial purposes is the incorporation of the Allen Institute's software into anything for
-# which you will charge fees or other compensation. Contact terms@alleninstitute.org for commercial licensing
-# opportunities.
+# 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote
+# products derived from this software without specific prior written permission.
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
 # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -26,307 +21,675 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import os
-import logging
+import json
+import numpy as np
+
+from bmtk.simulator.core.simulator_network import SimNetwork
+#from bmtk.simulator.core.graph import SimGraph
+#from property_schemas import PopTypes, DefaultPropertySchema
+#from popnode import InternalNode, ExternalPopulation
+#from popedge import PopEdge
+from bmtk.simulator.popnet import utils as poputils
+from bmtk.simulator.popnet.sonata_adaptors import PopEdgeAdaptor
 
 from dipde.internals.internalpopulation import InternalPopulation
 from dipde.internals.externalpopulation import ExternalPopulation
 from dipde.internals.connection import Connection
-import dipde
 
-import bmtk.simulator.popnet.config as cfg
-import bmtk.simulator.popnet.utils as poputils
-
-
-class PopNetwork (object):
-    def __init__(self, graph):
+'''
+class PopNode(object):
+    def __init__(self, node, property_map, graph):
+        self._node = node
+        self._property_map = property_map
         self._graph = graph
 
-        self._duration = 0.0
-        self._dt = 0.0001
-        self._rates_file = None  # name of file where the output is saved
-
-        self.__population_list = []  # list of all populations, internal and external
-        self.__population_table = {graph: {} for graph in self._graph.networks}  # population lookup by [network][id]
-        self.__connection_list = []  # list of all connections
-        self._dipde_network = None  # reference to dipde.Network object
-
-        # diction of rates for every external network/pop_id. Prepopulate dictionary with populations whose rates
-        # have already been manually set, otherwise they should use one of the add_rates_* function.
-        self._rates = {network: {pop.pop_id: pop.firing_rate for pop in self._graph.get_populations(network)
-                                 if not pop.is_internal and pop.is_firing_rate_set}
-                       for network in self._graph.networks}
-
-        """
-        for network in self._graph.networks:
-            for pop in self._graph.get_populations(network):
-
-                if pop.is_internal:
-                    dipde_pop = self.__create_internal_pop(pop)
-
-                else:
-                    if pop.is_firing_rate_set:
-                        rates = pop.firing_rate
-        """
+    @property
+    def dynamics_params(self):
+        # TODO: Use propert map
+        return self._node['dynamics_params']
 
     @property
-    def duration(self):
-        return self._duration
+    def node_id(self):
+        # TODO: Use property map
+        return self._node.node_id
+'''
 
-    @duration.setter
-    def duration(self, value):
-        self._duration = value
+
+class Population(object):
+    def __init__(self, pop_id):
+        self._pop_id = pop_id
+        self._nodes = []
+        self._params = None
+
+        self._dipde_obj = None
+
+    def add_node(self, pnode):
+        self._nodes.append(pnode)
+        if self._params is None and pnode.dynamics_params is not None:
+            self._params = pnode.dynamics_params.copy()
 
     @property
-    def dt(self):
-        return self._dt
-
-    @dt.setter
-    def dt(self, value):
-        self._dt = value
+    def pop_id(self):
+        return self._pop_id
 
     @property
-    def rates_file(self):
-        return self._rates_file
+    def dipde_obj(self):
+        return self._dipde_obj
 
-    @rates_file.setter
-    def rates_file(self, value):
-        self._rates_file = value
+    @property
+    def record(self):
+        return True
+
+    def build(self):
+        params = self._nodes[0].dynamics_params
+        self._dipde_obj = InternalPopulation(**params)
+
+    def get_gids(self):
+        for node in self._nodes:
+            yield node.node_id
+
+    def __getitem__(self, item):
+        return self._params[item]
+
+    def __setitem__(self, key, value):
+        self._params[key] = value
+
+    def __repr__(self):
+        return str(self._pop_id)
+
+
+class ExtPopulation(Population):
+    def __init__(self, pop_id):
+        super(ExtPopulation, self).__init__(pop_id)
+        self._firing_rate = None
+
+    @property
+    def record(self):
+        return False
+
+    @property
+    def firing_rate(self):
+        return self._firing_rate
+
+    @firing_rate.setter
+    def firing_rate(self, value):
+        self.build(value)
+
+    def build(self, firing_rate):
+        if firing_rate is not None:
+            self._firing_rate = firing_rate
+
+        self._dipde_obj = ExternalPopulation(firing_rate)
+
+
+class PopEdge(object):
+    def __init__(self, edge, property_map, graph):
+        self._edge = edge
+        self._prop_map = property_map
+        self._graph = graph
+
+    @property
+    def nsyns(self):
+        # TODO: Use property map
+        return self._edge['nsyns']
+
+    @property
+    def delay(self):
+        return self._edge['delay']
+
+    @property
+    def weight(self):
+        return self._edge['syn_weight']
+
+
+class PopConnection(object):
+    def __init__(self, src_pop, trg_pop):
+        self._src_pop = src_pop
+        self._trg_pop = trg_pop
+        self._edges = []
+
+        self._dipde_conn = None
+
+    def add_edge(self, edge):
+        self._edges.append(edge)
+
+    def build(self):
+        edge = self._edges[0]
+        self._dipde_conn = Connection(self._src_pop._dipde_obj, self._trg_pop._dipde_obj, edge.nsyns, edge.delay,
+                                      edge.syn_weight)
+
+    @property
+    def dipde_obj(self):
+        return self._dipde_conn
+
+
+class PopNetwork(SimNetwork):
+    def __init__(self, group_by='node_type_id', **properties):
+        super(PopNetwork, self).__init__()
+
+        self.__all_edges = []
+        self._group_key = group_by
+        self._gid_table = {}
+        self._edges = {}
+        self._target_edges = {}
+        self._source_edges = {}
+
+        self._params_cache = {}
+        #self._params_column = property_schema.get_params_column()
+        self._dipde_pops = {}
+        self._external_pop = {}
+        self._all_populations = []
+        # self._loaded_external_pops = {}
+
+        self._nodeid2pop_map = {}
+
+        self._connections = {}
+        self._external_connections = {}
+        self._all_connections = []
 
     @property
     def populations(self):
-        return self.__population_list
+        return self._all_populations
 
     @property
     def connections(self):
-        return self.__connection_list
+        return self._all_connections
 
-    def add_rates_nwb(self, network, nwb_file, trial, force=False):
-        """Creates external population firing rates from an NWB file.
+    @property
+    def internal_populations(self):
+        return self._dipde_pops.values()
 
-        Will iterate through a processing trial of an NWB file by assigning gids the population it belongs too and
-        taking the average firing rate.
+    def _register_adaptors(self):
+        super(PopNetwork, self)._register_adaptors()
+        self._edge_adaptors['sonata'] = PopEdgeAdaptor
 
-        This should be done before calling build_cells(). If a population has already been assigned a firing rate an
-        error will occur unless force=True.
-
-        :param network: Name of network with external populations.
-        :param nwb_file: NWB file with spike rates.
-        :param trial: trial id in NWB file
-        :param force: will overwrite existing firing rates
-        """
-        existing_rates = self._rates[network]  # TODO: validate network exists
-        # Get all unset, external populations in a network.
-        network_pops = self._graph.get_populations(network)
-        selected_pops = []
-        for pop in network_pops:
-            if pop.is_internal:
-                continue
-            elif not force and pop.pop_id in existing_rates:
-                print('Firing rate for {}/{} has already been set, skipping.'.format(network, pop.pop_id))
-            else:
-                selected_pops.append(pop)
-
-        if selected_pops:
-            # assign firing rates from NWB file
-            # TODO:
-            rates_dict = poputils.get_firing_rate_from_nwb(selected_pops, nwb_file, trial)
-            self._rates[network].update(rates_dict)
-
-    def add_rate_hz(self, network, pop_id, rate, force=False):
-        """Set the firing rate of an external population.
-
-        This should be done before calling build_cells(). If a population has already been assigned a firing rate an
-        error will occur unless force=True.
-
-        :param network: name of network with wanted exteranl population
-        :param pop_id: name/id of external population
-        :param rate: firing rate in Hz.
-        :param force: will overwrite existing firing rates
-        """
-        self.__add_rates_validator(network, pop_id, force)
-        self._rates[network][pop_id] = rate
-
-    def __add_rates_validator(self, network, pop_id, force):
-        if network not in self._graph.networks:
-            raise Exception('No network {} found in PopGraph.'.format(network))
-
-        pop = self._graph.get_population(network, pop_id)
-        if pop is None:
-            raise Exception('No population with id {} found in {}.'.format(pop_id, network))
-        if pop.is_internal:
-            raise Exception('Population {} in {} is not an external population.'.format(pop_id, network))
-        if not force and pop_id in self._rates[network]:
-            raise Exception('The firing rate for {}/{} already set and force=False.'.format(network, pop_id))
-
-    def _get_rate(self, network, pop):
-        """Gets the firing rate for a given population"""
-        return self._rates[network][pop.pop_id]
-
-    def build_populations(self):
-        """Build dipde Population objects from graph nodes.
-
-        To calculate external populations firing rates, it first see if a population's firing rate has been manually
-        set in the graph. Otherwise it attempts to calulate the firing rate from the call to add_rate_hz, add_rates_NWB,
-        etc. (which should be called first).
-        """
-        for network in self._graph.networks:
-            for pop in self._graph.get_populations(network):
-                if pop.is_internal:
-                    dipde_pop = self.__create_internal_pop(pop)
-
-                else:
-                    dipde_pop = self.__create_external_pop(pop, self._get_rate(network, pop))
-
-                self.__population_list.append(dipde_pop)
-                self.__population_table[network][pop.pop_id] = dipde_pop
-
-    def set_logging(self, log_file):
-        # TODO: move this out of the function, put in io class
-        if os.path.exists(log_file):
-            os.remove(log_file)
-
-        # get root logger
-        logger = logging.getLogger()
-        for h in list(logger.handlers):
-            # remove existing handlers that will write to console.
-            logger.removeHandler(h)
-
-        # creates handler that write to log_file
-        logging.basicConfig(filename=log_file, filemode='w', level=logging.DEBUG)
-
-    def set_external_connections(self, network_name):
-        """Sets the external connections for populations in a given network.
-
-        :param network_name: name of external network with External Populations to connect to internal pops.
-        """
-        for edge in self._graph.get_edges(network_name):
-            # Get source and target populations
-            src = edge.source
-            source_pop = self.__population_table[src.network][src.pop_id]
-            trg = edge.target
-            target_pop = self.__population_table[trg.network][trg.pop_id]
-
-            # build a connection.
-            self.__connection_list.append(self.__create_connection(source_pop, target_pop, edge))
-
-    def set_recurrent_connections(self):
-        """Initialize internal connections."""
-        for network in self._graph.internal_networks():
-            for edge in self._graph.get_edges(network):
-                src = edge.source
-                source_pop = self.__population_table[src.network][src.pop_id]
-                trg = edge.target
-                target_pop = self.__population_table[trg.network][trg.pop_id]
-                self.__connection_list.append(self.__create_connection(source_pop, target_pop, edge))
-
-    def run(self, duration=None):
-        # TODO: Check if cells/connections need to be rebuilt.
-
-        # Create the networ
-        self._dipde_network = dipde.Network(population_list=self.populations, connection_list=self.__connection_list)
-
-        if duration is None:
-            duration = self.duration
-
-        print "running simulation..."
-        self._dipde_network.run(t0=0.0, tf=duration, dt=self.dt)
-        # TODO: make record_rates optional?
-        self.__record_rates()
-        print "done simulation."
-
-    def __create_internal_pop(self, params):
-        # TODO: use getter methods directly in case arguments are not stored in dynamics params
-        # pop = InternalPopulation(**params.dynamics_params)
-        pop = InternalPopulation(**params.model_params)
-        return pop
-
-    def __create_external_pop(self, params, rates):
-        pop = ExternalPopulation(rates, record=False)
-        return pop
-
-    def __create_connection(self, source, target, params):
-        return Connection(source, target, nsyn=params.nsyns, delays=params.delay, weights=params.weight)
-
-    def __record_rates(self):
-        with open(self._rates_file, 'w') as f:
-            # TODO: store internal populations separately, unless there is a reason to save external populations
-            #      (there isn't and it will be problematic)
-            for network, pop_list in self.__population_table.items():
-                for pop_id, pop in pop_list.items():
-                    if pop.record:
-                        for time, rate in zip(pop.t_record, pop.firing_rate_record):
-                            f.write('{} {} {}\n'.format(pop_id, time, rate))
-
-    @classmethod
-    def from_config(cls, configure, graph):
-        # load the json file or object
-        if isinstance(configure, basestring):
-            config = cfg.from_json(configure, validate=True)
-        elif isinstance(configure, dict):
-            config = configure
+    def build_nodes(self):
+        if self._group_key == 'node_id' or self._group_key is None:
+            self._build_nodes()
         else:
-            raise Exception('Could not convert {} (type "{}") to json.'.format(configure, type(configure)))
-        network = cls(graph)
+            self._build_nodes_grouped()
 
-        if 'run' not in config:
-            raise Exception('Json file is missing "run" entry. Unable to build Bionetwork.')
-        run_dict = config['run']
+    def _build_nodes(self):
+        for node_pop in self.node_populations:
+            if node_pop.internal_nodes_only:
+                nid2pop_map = {}
+                for node in node_pop.get_nodes():
+                    #pnode = PopNode(node, prop_maps[node.group_id], self)
+                    pop = Population(node.node_id)
+                    pop.add_node(node)
+                    pop.build()
 
-        # Create the output file
-        if 'output' in config:
-            out_dict = config['output']
+                    self._dipde_pops[node.node_id] = pop
+                    self._all_populations.append(pop)
+                    nid2pop_map[node.node_id] = pop
 
-            rates_file = out_dict.get('rates_file', None)
-            if rates_file is not None:
-                # create directory if required
-                network.rates_file = rates_file
-                parent_dir = os.path.dirname(rates_file)
-                if not os.path.exists(parent_dir):
-                    os.makedirs(parent_dir)
+                self._nodeid2pop_map[node_pop.name] = nid2pop_map
 
-            if 'log_file' in out_dict:
-                log_file = out_dict['log_file']
-                network.set_logging(log_file)
+        """
+        for node_pop in self._internal_populations_map.values():
+            prop_maps = self._node_property_maps[node_pop.name]
+            nid2pop_map = {}
+            for node in node_pop:
+                pnode = PopNode(node, prop_maps[node.group_id], self)
+                pop = Population(node.node_id)
+                pop.add_node(pnode)
+                pop.build()
 
-        # get network parameters
-        if 'duration' in run_dict:
-            network.duration = run_dict['duration']
+                self._dipde_pops[node.node_id] = pop
+                self._all_populations.append(pop)
+                nid2pop_map[node.node_id] = pop
 
-        if 'dt' in run_dict:
-            network.dt = run_dict['dt']
+            self._nodeid2pop_map[node_pop.name] = nid2pop_map
+        """
 
-        # TODO: need to get firing rates before building populations
-        if 'input' in config:
-            for netinput in config['input']:
-                if netinput['type'] == 'external_spikes' and netinput['format'] == 'nwb' and netinput['active']:
-                    # Load external network spike trains from an NWB file.
-                    print('Setting firing rates for {} from {}.'.format(netinput['source_nodes'], netinput['file']))
-                    network.add_rates_nwb(netinput['source_nodes'], netinput['file'], netinput['trial'])
+    def _build_nodes_grouped(self):
+        # Organize every single sonata-node into a given population.
+        for node_pop in self.node_populations:
+            nid2pop_map = {}
+            if node_pop.internal_nodes_only:
+                for node in node_pop.get_nodes():
+                    pop_key = node[self._group_key]
+                    if pop_key not in self._dipde_pops:
+                        pop = Population(pop_key)
+                        self._dipde_pops[pop_key] = pop
+                        self._all_populations.append(pop)
 
-                if netinput['type'] == 'pop_rate':
-                    print('Setting {}/{} to fire at {} Hz.'.format(netinput['source_nodes'], netinput['pop_id'], netinput['rate']))
-                    network.add_rate_hz(netinput['source_nodes'], netinput['pop_id'], netinput['rate'])
+                    pop = self._dipde_pops[pop_key]
+                    pop.add_node(node)
+                    nid2pop_map[node.node_id] = pop
 
-                # TODO: take input as function with Population argument
+                self._nodeid2pop_map[node_pop.name] = nid2pop_map
 
-        # Build populations
-        print('Building Populations')
-        network.build_populations()
+            for dpop in self._dipde_pops.values():
+                dpop.build()
 
-        # Build recurrent connections
-        if run_dict['connect_internal']:
-            print('Building recurrention connections')
-            network.set_recurrent_connections()
+        """
+        for node_pop in self._internal_populations_map.values():
+            prop_maps = self._node_property_maps[node_pop.name]
+            nid2pop_map = {}
+            for node in node_pop:
+                pop_key = node[self._group_key]
+                pnode = PopNode(node, prop_maps[node.group_id], self)
+                if pop_key not in self._dipde_pops:
+                    pop = Population(pop_key)
+                    self._dipde_pops[pop_key] = pop
+                    self._all_populations.append(pop)
 
-        # Build external connections. Set connection to default True and turn off only if explicitly stated.
-        # NOTE: It might be better to set to default off?!?! Need to dicuss what would be more intuitive for the users.
-        # TODO: ignore case of network name
-        external_network_settings = {name: True for name in graph.external_networks()}
-        if 'connect_external' in run_dict:
-            external_network_settings.update(run_dict['connect_external'])
-        for netname, connect in external_network_settings.items():
-            if connect:
-                print('Setting external connections for {}'.format(netname))
-                network.set_external_connections(netname)
+                pop = self._dipde_pops[pop_key]
+                pop.add_node(pnode)
+                nid2pop_map[node.node_id] = pop
 
-        return network
+            self._nodeid2pop_map[node_pop.name] = nid2pop_map
+
+        for dpop in self._dipde_pops.values():
+            dpop.build()
+        """
+
+    def build_recurrent_edges(self):
+        recurrent_edge_pops = [ep for ep in self._edge_populations if not ep.virtual_connections]
+
+        for edge_pop in recurrent_edge_pops:
+            if edge_pop.recurrent_connections:
+                src_pop_maps = self._nodeid2pop_map[edge_pop.source_nodes]
+                trg_pop_maps = self._nodeid2pop_map[edge_pop.target_nodes]
+                for edge in edge_pop.get_edges():
+                    src_pop = src_pop_maps[edge.source_node_id]
+                    trg_pop = trg_pop_maps[edge.target_node_id]
+                    conn_key = (src_pop, trg_pop)
+                    if conn_key not in self._connections:
+                        conn = PopConnection(src_pop, trg_pop)
+                        self._connections[conn_key] = conn
+                        self._all_connections.append(conn)
+
+                    self._connections[conn_key].add_edge(edge)
+
+            elif edge_pop.mixed_connections:
+                raise NotImplementedError()
+
+        for conn in self._connections.values():
+            conn.build()
+
+        """
+        recurrent_edges = [edge_pop for _, edge_list in self._recurrent_edges.items() for edge_pop in edge_list]
+        for edge_pop in recurrent_edges:
+            prop_maps = self._edge_property_maps[edge_pop.name]
+            src_pop_maps = self._nodeid2pop_map[edge_pop.source_population]
+            trg_pop_maps = self._nodeid2pop_map[edge_pop.target_population]
+            for edge in edge_pop:
+                src_pop = src_pop_maps[edge.source_node_id]
+                trg_pop = trg_pop_maps[edge.target_node_id]
+                conn_key = (src_pop, trg_pop)
+                if conn_key not in self._connections:
+                    conn = PopConnection(src_pop, trg_pop)
+                    self._connections[conn_key] = conn
+                    self._all_connections.append(conn)
+
+                pop_edge = PopEdge(edge, prop_maps[edge.group_id], self)
+                self._connections[conn_key].add_edge(pop_edge)
+
+        for conn in self._connections.values():
+            conn.build()
+        # print len(self._connections)
+        """
+
+    def find_edges(self, source_nodes=None, target_nodes=None):
+        # TODO: Move to parent
+        selected_edges = self._edge_populations[:]
+
+        if source_nodes is not None:
+            selected_edges = [edge_pop for edge_pop in selected_edges if edge_pop.source_nodes == source_nodes]
+
+        if target_nodes is not None:
+            selected_edges = [edge_pop for edge_pop in selected_edges if edge_pop.target_nodes == target_nodes]
+
+        return selected_edges
+
+    def add_spike_trains(self, spike_trains, node_set):
+        # Build external node populations
+        src_nodes = [node_pop for node_pop in self.node_populations if node_pop.name in node_set.population_names()]
+        for node_pop in src_nodes:
+            pop_name = node_pop.name
+            if node_pop.name not in self._external_pop:
+                external_pop_map = {}
+                src_pop_map = {}
+                for node in node_pop.get_nodes():
+                    pop_key = node[self._group_key]
+                    if pop_key not in external_pop_map:
+                        pop = ExtPopulation(pop_key)
+                        external_pop_map[pop_key] = pop
+                        self._all_populations.append(pop)
+
+                    pop = external_pop_map[pop_key]
+                    pop.add_node(node)
+                    src_pop_map[node.node_id] = pop
+
+                self._nodeid2pop_map[pop_name] = src_pop_map
+
+                firing_rates = poputils.get_firing_rates(external_pop_map.values(), spike_trains)
+                self._external_pop[pop_name] = external_pop_map
+                for dpop in external_pop_map.values():
+                    dpop.build(firing_rates[dpop.pop_id])
+
+            else:
+                # TODO: Throw error spike trains should only be called once per source population
+                # external_pop_map = self._external_pop[pop_name]
+                src_pop_map = self._nodeid2pop_map[pop_name]
+
+            unbuilt_connections = []
+            for source_reader in src_nodes:
+                for edge_pop in self.find_edges(source_nodes=source_reader.name):
+                    trg_pop_map = self._nodeid2pop_map[edge_pop.target_nodes]
+                    for edge in edge_pop.get_edges():
+                        src_pop = src_pop_map[edge.source_node_id]
+                        trg_pop = trg_pop_map[edge.target_node_id]
+                        conn_key = (src_pop, trg_pop)
+                        if conn_key not in self._external_connections:
+                            pconn = PopConnection(src_pop, trg_pop)
+                            self._external_connections[conn_key] = pconn
+                            unbuilt_connections.append(pconn)
+                            self._all_connections.append(pconn)
+
+                        #pop_edge = PopEdge(edge, prop_maps[edge.group_id], self)
+                        self._external_connections[conn_key].add_edge(edge)
+
+            for pedge in unbuilt_connections:
+                pedge.build()
+        #exit()
+
+        """
+            print node_pop.name
+
+
+            exit()
+            if node_pop.name in self._virtual_ids_map:
+                 continue
+
+            virt_node_map = {}
+            if node_pop.virtual_nodes_only:
+                print 'HERE'
+                exit()
+
+
+        for pop_name, node_pop in self._virtual_populations_map.items():
+            if pop_name not in spike_trains.populations:
+                continue
+
+            # Build external population if it already hasn't been built
+            if pop_name not in self._external_pop:
+                prop_maps = self._node_property_maps[pop_name]
+                external_pop_map = {}
+                src_pop_map = {}
+                for node in node_pop:
+                    pop_key = node[self._group_key]
+                    pnode = PopNode(node, prop_maps[node.group_id], self)
+                    if pop_key not in external_pop_map:
+                        pop = ExtPopulation(pop_key)
+                        external_pop_map[pop_key] = pop
+                        self._all_populations.append(pop)
+
+                    pop = external_pop_map[pop_key]
+                    pop.add_node(pnode)
+                    src_pop_map[node.node_id] = pop
+
+                self._nodeid2pop_map[pop_name] = src_pop_map
+
+                firing_rates = poputils.get_firing_rates(external_pop_map.values(), spike_trains)
+                self._external_pop[pop_name] = external_pop_map
+                for dpop in external_pop_map.values():
+                    dpop.build(firing_rates[dpop.pop_id])
+
+            else:
+                # TODO: Throw error spike trains should only be called once per source population
+                # external_pop_map = self._external_pop[pop_name]
+                src_pop_map = self._nodeid2pop_map[pop_name]
+
+            unbuilt_connections = []
+            for node_pop in self._internal_populations_map.values():
+                trg_pop_map = self._nodeid2pop_map[node_pop.name]
+                for edge_pop in self.external_edge_populations(src_pop=pop_name, trg_pop=node_pop.name):
+                    for edge in edge_pop:
+                        src_pop = src_pop_map[edge.source_node_id]
+                        trg_pop = trg_pop_map[edge.target_node_id]
+                        conn_key = (src_pop, trg_pop)
+                        if conn_key not in self._external_connections:
+                            pconn = PopConnection(src_pop, trg_pop)
+                            self._external_connections[conn_key] = pconn
+                            unbuilt_connections.append(pconn)
+                            self._all_connections.append(pconn)
+
+                        pop_edge = PopEdge(edge, prop_maps[edge.group_id], self)
+                        self._external_connections[conn_key].add_edge(pop_edge)
+
+            for pedge in unbuilt_connections:
+                pedge.build()
+        """
+
+
+    def add_rates(self, rates, node_set):
+        if self._group_key == 'node_id':
+            id_lookup = lambda n: n.node_id
+        else:
+            id_lookup = lambda n: n[self._group_key]
+
+        src_nodes = [node_pop for node_pop in self.node_populations if node_pop.name in node_set.population_names()]
+        for node_pop in src_nodes:
+            pop_name = node_pop.name
+            if node_pop.name not in self._external_pop:
+                external_pop_map = {}
+                src_pop_map = {}
+                for node in node_pop.get_nodes():
+                    pop_key = id_lookup(node)
+                    if pop_key not in external_pop_map:
+                        pop = ExtPopulation(pop_key)
+                        external_pop_map[pop_key] = pop
+                        self._all_populations.append(pop)
+
+                    pop = external_pop_map[pop_key]
+                    pop.add_node(node)
+                    src_pop_map[node.node_id] = pop
+
+                self._nodeid2pop_map[pop_name] = src_pop_map
+
+                self._external_pop[pop_name] = external_pop_map
+                for dpop in external_pop_map.values():
+                    firing_rates = rates.get_rate(dpop.pop_id)
+                    dpop.build(firing_rates)
+
+            else:
+                # TODO: Throw error spike trains should only be called once per source population
+                # external_pop_map = self._external_pop[pop_name]
+                src_pop_map = self._nodeid2pop_map[pop_name]
+
+            unbuilt_connections = []
+            for source_reader in src_nodes:
+                for edge_pop in self.find_edges(source_nodes=source_reader.name):
+                    trg_pop_map = self._nodeid2pop_map[edge_pop.target_nodes]
+                    for edge in edge_pop.get_edges():
+                        src_pop = src_pop_map[edge.source_node_id]
+                        trg_pop = trg_pop_map[edge.target_node_id]
+                        conn_key = (src_pop, trg_pop)
+                        if conn_key not in self._external_connections:
+                            pconn = PopConnection(src_pop, trg_pop)
+                            self._external_connections[conn_key] = pconn
+                            unbuilt_connections.append(pconn)
+                            self._all_connections.append(pconn)
+
+                        #pop_edge = PopEdge(edge, prop_maps[edge.group_id], self)
+                        self._external_connections[conn_key].add_edge(edge)
+
+            for pedge in unbuilt_connections:
+                pedge.build()
+
+        """
+        for pop_name, node_pop in self._virtual_populations_map.items():
+            if pop_name not in rates.populations:
+                continue
+
+            # Build external population if it already hasn't been built
+            if pop_name not in self._external_pop:
+                prop_maps = self._node_property_maps[pop_name]
+                external_pop_map = {}
+                src_pop_map = {}
+                for node in node_pop:
+                    pop_key = id_lookup(node)
+                    #pop_key = node[self._group_key]
+                    pnode = PopNode(node, prop_maps[node.group_id], self)
+                    if pop_key not in external_pop_map:
+                        pop = ExtPopulation(pop_key)
+                        external_pop_map[pop_key] = pop
+                        self._all_populations.append(pop)
+
+                    pop = external_pop_map[pop_key]
+                    pop.add_node(pnode)
+                    src_pop_map[node.node_id] = pop
+
+                self._nodeid2pop_map[pop_name] = src_pop_map
+
+                firing_rate = rates.get_rate(pop_key)
+                self._external_pop[pop_name] = external_pop_map
+                for dpop in external_pop_map.values():
+                    dpop.build(firing_rate)
+
+            else:
+                # TODO: Throw error spike trains should only be called once per source population
+                # external_pop_map = self._external_pop[pop_name]
+                src_pop_map = self._nodeid2pop_map[pop_name]
+        """
+
+    '''
+    def _add_node(self, node, network):
+        pops = self._networks[network]
+        pop_key = node[self._group_key]
+        if pop_key in pops:
+            pop = pops[pop_key]
+            pop.add_gid(node.gid)
+            self._gid_table[network][node.gid] = pop
+        else:
+            model_class = self.property_schema.get_pop_type(node)
+            if model_class == PopTypes.Internal:
+                pop = InternalNode(pop_key, self, network, node)
+                pop.add_gid(node.gid)
+                pop.model_params = self.__get_params(node)
+                self._add_internal_node(pop, network)
+
+            elif model_class == PopTypes.External:
+                # TODO: See if we can get firing rate from dynamics_params
+                pop = ExternalPopulation(pop_key, self, network, node)
+                pop.add_gid(node.gid)
+                self._add_external_node(pop, network)
+
+            else:
+                raise Exception('Unknown model type')
+
+            if network not in self._gid_table:
+                self._gid_table[network] = {}
+            self._gid_table[network][node.gid] = pop
+    '''
+
+    def __get_params(self, node_params):
+        if node_params.with_dynamics_params:
+            return node_params['dynamics_params']
+
+        params_file = node_params[self._params_column]
+        if params_file in self._params_cache:
+            return self._params_cache[params_file]
+        else:
+            params_dir = self.get_component('models_dir')
+            params_path = os.path.join(params_dir, params_file)
+            params_dict = json.load(open(params_path, 'r'))
+            self._params_cache[params_file] = params_dict
+            return params_dict
+
+    def _preprocess_node_types(self, node_population):
+        node_type_ids = np.unique(node_population.type_ids)
+        # TODO: Verify all the node_type_ids are in the table
+        node_types_table = node_population.types_table
+
+        if 'dynamics_params' in node_types_table.columns and 'model_type' in node_types_table.columns:
+            for nt_id in node_type_ids:
+                node_type = node_types_table[nt_id]
+                dynamics_params = node_type['dynamics_params']
+                model_type = node_type['model_type']
+
+                if model_type == 'biophysical':
+                    params_dir = self.get_component('biophysical_neuron_models_dir')
+                elif model_type == 'point_process':
+                    params_dir = self.get_component('point_neuron_models_dir')
+                elif model_type == 'point_soma':
+                    params_dir = self.get_component('point_neuron_models_dir')
+                elif model_type == 'population':
+                    params_dir = self.get_component('population_models_dir')
+                else:
+                    # Not sure what to do in this case, throw Exception?
+                    params_dir = self.get_component('custom_neuron_models')
+
+                params_path = os.path.join(params_dir, dynamics_params)
+
+                # see if we can load the dynamics_params as a dictionary. Otherwise just save the file path and let the
+                # cell_model loader function handle the extension.
+                try:
+                    params_val = json.load(open(params_path, 'r'))
+                    node_type['dynamics_params'] = params_val
+                except Exception:
+                    # TODO: Check dynamics_params before
+                    self.io.log_exception('Could not find node dynamics_params file {}.'.format(params_path))
+
+
+    '''
+    def add_edges(self, edges, target_network=None, source_network=None):
+        # super(PopGraph, self).add_edges(edges)
+
+        target_network = target_network if target_network is not None else edges.target_network
+        if target_network not in self._target_edges:
+            self._target_edges[target_network] = []
+
+        source_network = source_network if source_network is not None else edges.source_network
+        if source_network not in self._source_edges:
+            self._source_edges[source_network] = []
+
+        target_pops = self.get_populations(target_network)
+        source_pops = self.get_populations(source_network)
+        source_gid_table = self._gid_table[source_network]
+
+        for target_pop in target_pops:
+            for target_gid in target_pop.get_gids():
+                for edge in edges.edges_itr(target_gid):
+                    source_pop = source_gid_table[edge.source_gid]
+                    self._add_edge(source_pop, target_pop, edge)
+    '''
+
+    def _add_edge(self, source_pop, target_pop, edge):
+        src_id = source_pop.node_id
+        trg_id = target_pop.node_id
+        edge_type_id = edge['edge_type_id']
+        edge_key = (src_id, source_pop.network, trg_id, target_pop.network, edge_type_id)
+
+        if edge_key in self._edges:
+            return
+        else:
+            # TODO: implement dynamics params
+            dynamics_params = self._get_edge_params(edge)
+            pop_edge = PopEdge(source_pop, target_pop, edge, dynamics_params)
+            self._edges[edge_key] = pop_edge
+            self._source_edges[source_pop.network].append(pop_edge)
+            self._target_edges[target_pop.network].append(pop_edge)
+
+    def get_edges(self, source_network):
+        return self._source_edges[source_network]
+
+    def edges_table(self, target_network, source_network):
+        return self._edges_table[(target_network, source_network)]
+
+    def get_populations(self, network):
+        return super(PopNetwork, self).get_nodes(network)
+
+    def get_population(self, node_set, gid):
+        return self._nodeid2pop_map[node_set][gid]
+
+    def rebuild(self):
+        for _, ns in self._nodeid2pop_map.items():
+            for _, pop in ns.items():
+                pop.build()
+
+        for pc in self._all_connections:
+            pc.build()

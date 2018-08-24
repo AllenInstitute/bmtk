@@ -1,7 +1,4 @@
-# Allen Institute Software License - This software license is the 2-clause BSD license plus clause a third
-# clause that prohibits redistribution for commercial purposes without further permission.
-#
-# Copyright 2017. Allen Institute. All rights reserved.
+# Copyright 2017. Allen Institute. All rights reserved
 #
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 # following conditions are met:
@@ -12,10 +9,8 @@
 # 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following
 # disclaimer in the documentation and/or other materials provided with the distribution.
 #
-# 3. Redistributions for commercial purposes are not permitted without the Allen Institute's written permission. For
-# purposes of this license, commercial purposes is the incorporation of the Allen Institute's software into anything for
-# which you will charge fees or other compensation. Contact terms@alleninstitute.org for commercial licensing
-# opportunities.
+# 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote
+# products derived from this software without specific prior written permission.
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
 # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -71,6 +66,30 @@ def get_firing_rate_from_nwb(populations, nwb_file, trial):
         firing_rates[pop.pop_id] = 1.0e03 * np.mean(spike_counts) / (spike_max_t - spike_min_t)
     return firing_rates
 
+
+def get_firing_rates(populations, spike_trains):
+    """Calculates firing rates for an external population"""
+    #h5_file = h5py.File(nwb_file, 'r')
+    #spike_trains_ds = h5_file['processing'][trial]['spike_train']
+
+    # TODO: look into adding a time window rather than searching for min/max t.
+    firing_rates = {}
+    for pop in populations:
+        spike_counts = []
+        spike_min_t = 1.0e30
+        spike_max_t = 0.0
+        for gid in pop.get_gids():
+            spike_times = spike_trains.get_spikes(gid)
+            if spike_times is not None and len(spike_times) > 0:
+                tmp_min = min(spike_times)
+                spike_min_t = tmp_min if tmp_min < spike_min_t else spike_min_t
+                tmp_max = max(spike_times)
+                spike_max_t = tmp_max if tmp_max > spike_max_t else spike_max_t
+                spike_counts.append(len(spike_times))
+
+        # TODO make sure t_diffs is not null and spike_counts has some values
+        firing_rates[pop.pop_id] = 1.0e03 * np.mean(spike_counts) / (spike_max_t - spike_min_t)
+    return firing_rates
 
 #############################################
 # Depreciated
