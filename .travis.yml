@@ -35,56 +35,41 @@ script:
   
   ######  Test running builder examples
   
-  - cd docs/examples/builder/bionet_14cells
+  - cd docs/examples/bio_14cells
   - python build_network.py
   
-  - cd ../bionet_multinetwork
-  - python build_network.py
-  
-  - cd ../layer4_tests/
-  #- python build_l4.py          #    No output and hangs
-  #- python build_lgn.py         #    Throws an error...
-  
-  - cd ../popnet_2pops
-  #- python build_network.py     #  Throws an error...
-  
-  - cd ../mpibuilder
-  - python build_network.py 
-  
-  - cd ../pointnet_14cells
-  #- python build_network.py     #  Throws an error...
   
   
   ######  Install NEURON using OMV & compile mod files
   
   - omv install NEURON
-  - cd ../../simulator/bionet/components/mechanisms/
+  - cd ../simulator/bionet/components/mechanisms/
   - /home/travis/neuron/nrn/x86_64/bin/nrnivmodl modfiles
   
   
   ######  Test running simulator examples
   
-  - cd ../../14cells
+  - cd ../../../../bio_14cells/
   #- sed -i -e 's/: 3000.0,/: 600,/g'  config.json  # Run shorter simulation
   - python run_bionet.py config.json 
   
-  - cd ../14cells_multinode
+  #- cd ../14cells_multinode
   #- sed -i -e 's/: 3000.0,/: 600,/g'  config.json  # Run shorter simulation
   #- python run_bionet.py config.json 
   
-  - cd ../14cells_ecp
+  #- cd ../14cells_ecp
   #- sed -i -e 's/: 3000.0,/: 600,/g'  config.json  # Run shorter simulation
   #- python run_bionet.py config.json 
   
-  - cd ../14cells_nsyns
+  #- cd ../14cells_nsyns
   #- sed -i -e 's/: 3000.0,/: 600,/g'  config.json  # Run shorter simulation
   #- python run_bionet.py config.json 
   
-  - cd ../1cell_all_active
+  #- cd ../1cell_all_active
   #- sed -i -e 's/: 3000.0,/: 600,/g'  config.json  # Run shorter simulation
   #- python run_bionet.py config.json   #  Throws an error...
   
-  - cd ../450cells
+  #- cd ../450cells
   #- sed -i -e 's/: 3000.0,/: 600,/g'  config.json  # Run shorter simulation
   #- python run_bionet.py config.json   # Works locally, but will probably take too long on Travis
   
@@ -93,7 +78,7 @@ script:
   
   ######  Test running tutorial sources
   
-  - cd ../../../../tutorial/sources/chapter01/
+  - cd ../../tutorial/sources/chapter01/
   - python build_network.py
   
   
