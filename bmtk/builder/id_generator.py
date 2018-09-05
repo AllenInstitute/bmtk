@@ -40,7 +40,7 @@ class IDGenerator(object):
         self.__lock = threading.Lock()
 
     def remove_id(self, gid):
-        assert isinstance(gid, np.integer)
+        assert(np.issubdtype(type(gid), np.integer))
         if gid >= self.__counter:
             self.__taken.add(gid)
 

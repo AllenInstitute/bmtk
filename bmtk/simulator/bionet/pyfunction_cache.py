@@ -21,6 +21,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import types
+import warnings
 from functools import wraps
 
 
@@ -224,7 +225,9 @@ def add_synapse_model(func, name=None, overwrite=True):
 
 
 def load_py_modules(cell_models=None, syn_models=None, syn_weights=None):
-    # py_modules.clear()
+    # TODO: This won't work with cell-models, need a more powerful method
+
+    warnings.warn('Do not call this method directly', DeprecationWarning)
 
     if cell_models is not None:
         assert(isinstance(cell_models, types.ModuleType))
