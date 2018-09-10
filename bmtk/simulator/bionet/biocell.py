@@ -135,7 +135,6 @@ class BioCell(Cell):
         """Arrange sections in an array to be access by index"""
         secs = []  # build ref to sections
         self._secs_by_id = []
-        # TODO: We should calculate and save sections in the morphology object since they should be the same.
         for sec in self.hobj.all:
             self._secs_by_id.append(sec)
             for _ in sec:
@@ -156,7 +155,7 @@ class BioCell(Cell):
         sec_x = edge_prop['sec_x']
         sec_id = edge_prop['sec_id']
         section = self._secs_by_id[sec_id]
-        #section = self._secs[sec_id]
+        # section = self._secs[sec_id]
         delay = edge_prop['delay']
         synapse_fnc = nrn.py_modules.synapse_model(edge_prop['model_template'])
         syn = synapse_fnc(edge_prop['dynamics_params'], sec_x, section)

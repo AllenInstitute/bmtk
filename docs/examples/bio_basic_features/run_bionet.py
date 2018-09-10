@@ -42,6 +42,7 @@ if __name__ == '__main__':
     if __file__ != sys.argv[-1]:
         run(sys.argv[-1])
     else:
-        #run('config_iclamp.json')
-        #run('config_xstim.json')
-        run('config_spikes_input.json')
+        # Make sure to run only one at a time
+        run('config_iclamp.json')  # Current clamp stimulation
+        # run('config_xstim.json')  # Extracellular electrode stimulation
+        # run('config_spikes_input.json')  # Synaptic stimulation with external virtual cells
