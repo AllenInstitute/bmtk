@@ -12,27 +12,27 @@ build_recurrent_edges = True
 bio_models = [
     {
         'model_name': 'Scnn1a', 'ei': 'e',
-        'morphology_file': 'Scnn1a_473845048_m.swc',
+        'morphology': 'Scnn1a_473845048_m.swc',
         'model_template': 'nml:Cell_472363762.cell.nml'
     },
     {
         'model_name': 'Rorb', 'ei': 'e',
-        'morphology_file': 'Rorb_325404214_m.swc',
+        'morphology': 'Rorb_325404214_m.swc',
         'model_template': 'nml:Cell_473863510.cell.nml'
     },
     {
         'model_name': 'Nr5a1', 'ei': 'e',
-        'morphology_file': 'Nr5a1_471087815_m.swc',
+        'morphology': 'Nr5a1_471087815_m.swc',
         'model_template': 'nml:Cell_473863035.cell.nml'
     },
     {
         'model_name': 'PV1', 'ei': 'i',
-        'morphology_file': 'Pvalb_470522102_m.swc',
+        'morphology': 'Pvalb_470522102_m.swc',
         'model_template': 'nml:Cell_472912177.cell.nml'
     },
     {
         'model_name': 'PV2', 'ei': 'i',
-        'morphology_file': 'Pvalb_469628681_m.swc',
+        'morphology': 'Pvalb_469628681_m.swc',
         'model_template': 'nml:Cell_473862421.cell.nml'
     }
 ]
@@ -49,7 +49,7 @@ point_models = [
 ]
 
 
-morphologies = {p['model_name']: SWCReader(os.path.join('../biophys_components/morphologies', p['morphology_file']))
+morphologies = {p['model_name']: SWCReader(os.path.join('../biophys_components/morphologies', p['morphology']))
                 for p in bio_models}
 def build_edges(src, trg, sections=['basal', 'apical'], dist_range=[50.0, 150.0]):
     """Function used to randomly assign a synaptic location based on the section (soma, basal, apical) and an
@@ -184,9 +184,10 @@ cm = external.add_edges(target=internal.nodes(ei='e', model_type='biophysical'),
                         dynamics_params='AMPA_ExcToExc.json',
                         model_template='Exp2Syn',
                         delay=2.0)
-cm.add_properties('syn_weight', rule=2.1e-4, dtypes=np.float)
+cm.add_properties('syn_weight', rule=0.00041, dtypes=np.float)
 cm.add_properties(['sec_id', 'sec_x', 'pos_x', 'pos_y', 'pos_z', 'dist', 'type'],
                   rule=build_edges,
+                  rule_params={'sections': ['basal', 'apical', 'somatic']},
                   dtypes=[np.int32, np.float, np.float, np.float, np.float, np.float, np.uint8])
 
 cm = external.add_edges(target=internal.nodes(ei='i', model_type='biophysical'), source=external.nodes(),
@@ -194,7 +195,7 @@ cm = external.add_edges(target=internal.nodes(ei='i', model_type='biophysical'),
                         dynamics_params='AMPA_ExcToInh.json',
                         model_template='Exp2Syn',
                         delay=2.0)
-cm.add_properties('syn_weight', rule=0.0015, dtypes=np.float)
+cm.add_properties('syn_weight', rule=0.00095, dtypes=np.float)
 cm.add_properties(['sec_id', 'sec_x', 'pos_x', 'pos_y', 'pos_z', 'dist', 'type'],
                   rule=build_edges,
                   dtypes=[np.int32, np.float, np.float, np.float, np.float, np.float, np.uint8])
@@ -203,7 +204,7 @@ cm = external.add_edges(target=internal.nodes(model_type='point_process'), sourc
                         connection_rule=lambda *_: np.random.randint(0, 5),
                         dynamics_params='instanteneousExc.json',
                         delay=2.0)
-cm.add_properties('syn_weight', rule=0.0015, dtypes=np.float)
+cm.add_properties('syn_weight', rule=0.045, dtypes=np.float)
 
 
 external.build()
