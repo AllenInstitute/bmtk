@@ -80,18 +80,23 @@ class BioCell(Cell):
             self._nseg += sec.nseg # get the total number of segments in the cell
 
     def calc_seg_coords(self, morph_seg_coords):
-        """Calculate segment coordinates for individual cells"""
+        """Update the segment coordinates (after rotations) for individual cells"""
         phi_y = self._node.rotation_angle_yaxis
         phi_z = self._node.rotation_angle_zaxis
+        phi_x = self._node.rotation_angle_xaxis
 
+        # Rotate cell
+        # TODO: Rotations should follow as described in sonata (https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md).
+        #  Need someone with graphics experience to check they are being done correctly (I'm not sure atm).
+        RotX = utils.rotation_matrix([1, 0, 0], phi_x)
         RotY = utils.rotation_matrix([0, 1, 0], phi_y)  # rotate segments around yaxis normal to pia
-        RotZ = utils.rotation_matrix([0, 0, 1], -phi_z) # rotate segments around zaxis to get a proper orientation
-        RotYZ = RotY.dot(RotZ)
+        RotZ = utils.rotation_matrix([0, 0, 1], -phi_z)  # rotate segments around zaxis to get a proper orientation
+        RotXYZ = np.dot(RotX, RotY.dot(RotZ))
 
         # rotated coordinates around z axis first then shift relative to the soma
-        self._seg_coords['p0'] = self._pos_soma + np.dot(RotYZ, morph_seg_coords['p0'])
-        self._seg_coords['p1'] = self._pos_soma + np.dot(RotYZ, morph_seg_coords['p1'])
-        self._seg_coords['p05'] = self._pos_soma + np.dot(RotYZ, morph_seg_coords['p05'])
+        self._seg_coords['p0'] = self._pos_soma + np.dot(RotXYZ, morph_seg_coords['p0'])
+        self._seg_coords['p1'] = self._pos_soma + np.dot(RotXYZ, morph_seg_coords['p1'])
+        self._seg_coords['p05'] = self._pos_soma + np.dot(RotXYZ, morph_seg_coords['p05'])
 
     def get_seg_coords(self):
         return self._seg_coords
