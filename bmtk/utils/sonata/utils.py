@@ -25,6 +25,13 @@ import sys
 
 import h5py
 import pandas as pd
+import numpy as np
+
+
+MAGIC_ATTR = 'magic'
+MAGIC_VAL = 0x0A7A
+VERSION_ATTR = 'version'
+VERSION_NA = 'NA'
 
 
 def listify(files):
@@ -35,7 +42,7 @@ def listify(files):
         return files
 
 
-def load_h5(h5file, mode):
+def load_h5(h5file, mode='r'):
     # TODO: Allow for h5py.Group also
     if isinstance(h5file, h5py.File):
         return h5file
@@ -59,6 +66,30 @@ def get_attribute_h5(h5obj, attribut_name, default=None):
         val = val.decode()
 
     return val
+
+
+def check_magic(hdf5_file):
+    """Check the magic attribute exists according to the sonata format"""
+    h5_file_obj = load_h5(hdf5_file)
+    if MAGIC_ATTR not in h5_file_obj.attrs:
+        raise Exception('File {} missing top-level \"{}\" attribute.'.format(h5_file_obj.filename, MAGIC_ATTR))
+    elif np.uint32(get_attribute_h5(hdf5_file, MAGIC_ATTR)) != MAGIC_VAL:
+        raise Exception('File {} has unexpected magic value (expected {})'.format(h5_file_obj.filename, MAGIC_VAL))
+
+    return True
+
+
+def get_version(hdf5_file):
+    h5_file_obj = load_h5(hdf5_file)
+    if VERSION_ATTR not in h5_file_obj.attrs:
+        return VERSION_NA
+
+    else:
+        version_val = get_attribute_h5(h5_file_obj, VERSION_ATTR)
+        version_str = str(version_val[0])
+        for ver_sub in version_val[1:]:
+            version_str += '.{}'.format(ver_sub)
+        return version_str
 
 
 if sys.version_info[0] == 3:
