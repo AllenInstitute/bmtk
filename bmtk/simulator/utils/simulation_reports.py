@@ -206,14 +206,15 @@ class ECPReport(SimReport):
         report.positions_file = params['electrode_positions']
         return report
 
-'''
-module_lookup = {
-    'membrane_report': MembraneReport,
-    'extracellular': ECPReport,
-    'SEClamp': SEClampReport,
-    'spikes_report': SpikesReport
-}
-'''
+
+@SimReport.register_module
+class SaveSynapses(SimReport):
+    def __init__(self, report_name, module, params):
+        super(SaveSynapses, self).__init__(report_name, module, params)
+
+    @staticmethod
+    def avail_modules():
+        return 'SaveSynapses'
 
 
 def from_config(cfg):

@@ -99,6 +99,10 @@ class BioNetwork(SimNetwork):
     def get_local_cells(self):
         return self._rank_node_gids
 
+    @property
+    def local_gids(self):
+        return list(self._rank_node_gids.keys())
+
     def get_virtual_cells(self, population, node_id, spike_trains):
         if node_id in self._virtual_nodes[population]:
             return self._virtual_nodes[population][node_id]

@@ -121,8 +121,7 @@ class PointNetwork(SimNetwork):
             for edge in edge_pop.get_edges():
                 nest_srcs = [src_nest_ids[nid] for nid in edge.source_node_ids]
                 nest_trgs = [trg_nest_ids[nid] for nid in edge.target_node_ids]
-                nest.Connect(nest_srcs, nest_trgs, conn_spec='one_to_one',
-                             syn_spec=edge.nest_params)
+                nest.Connect(nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=edge.nest_params)
 
     def find_edges(self, source_nodes=None, target_nodes=None):
         # TODO: Move to parent

@@ -1,8 +1,8 @@
-node_type_id model_type model_template model_processing dynamics_params morphology_file ei pop_name location rotation_angle_yaxis rotation_angle_zaxis
-395830185 biophysical ctdb:Biophys1.hoc aibs_perisomatic 472363762_fit.json Scnn1a-Tg3-Cre_Ai14_IVSCC_-177300.01.02.01_473845048_m.swc e Scnn1a VisL4 3.555015935 -3.646878266
-314804042 biophysical ctdb:Biophys1.hoc aibs_perisomatic 473863510_fit.json Rorb-IRES2-Cre-D_Ai14_IVSCC_-168053.05.01.01_325404214_m.swc e Rorb VisL4 3.50934228724 -4.159763785
-318808427 biophysical ctdb:Biophys1.hoc aibs_perisomatic 473863035_fit.json Nr5a1-Cre_Ai14_IVSCC_-169250.03.02.01_471087815_m.swc e Nr5a1 VisL4 0.722028276949 -2.639275277
-330080937 biophysical ctdb:Biophys1.hoc aibs_perisomatic 472912177_fit.json Pvalb-IRES-Cre_Ai14_IVSCC_-176847.04.02.01_470522102_m.swc i PV1 VisL4 2.92043043246 -2.539551891
-318331342 biophysical ctdb:Biophys1.hoc aibs_perisomatic 473862421_fit.json Pvalb-IRES-Cre_Ai14_IVSCC_-169125.03.01.01_469628681_m.swc i PV2 VisL4 5.04333679818 -3.684439949
-100000101 point_process nrn:IntFire1 NONE IntFire1_exc_1.json NONE e LIF_exc VisL4 5.11801491066 NONE
-100000102 point_process nrn:IntFire1 NONE IntFire1_inh_1.json NONE i LIF_inh VisL4 4.56609155069 NONE
+node_type_id ei model_type model_processing pop_name location model_template morphology dynamics_params rotation_angle_zaxis
+100 e biophysical aibs_perisomatic Scnn1a VisL4 ctdb:Biophys1.hoc Scnn1a-Tg3-Cre_Ai14_IVSCC_-177300.01.02.01_473845048_m.swc 472363762_fit.json -3.646878266
+101 e biophysical aibs_perisomatic Rorb VisL4 ctdb:Biophys1.hoc Rorb-IRES2-Cre-D_Ai14_IVSCC_-168053.05.01.01_325404214_m.swc 473863510_fit.json -4.159763785
+102 e biophysical aibs_perisomatic Nr5a1 VisL4 ctdb:Biophys1.hoc Nr5a1-Cre_Ai14_IVSCC_-169250.03.02.01_471087815_m.swc 473863035_fit.json -2.639275277
+103 i biophysical aibs_perisomatic PV1 VisL4 ctdb:Biophys1.hoc Pvalb-IRES-Cre_Ai14_IVSCC_-176847.04.02.01_470522102_m.swc 472912177_fit.json -2.539551891
+104 i biophysical aibs_perisomatic PV2 VisL4 ctdb:Biophys1.hoc Pvalb-IRES-Cre_Ai14_IVSCC_-169125.03.01.01_469628681_m.swc 473862421_fit.json -3.684439949
+105 e point_process NULL LIF_exc VisL4 nrn:IntFire1 NULL IntFire1_exc_1.json NULL
+106 i point_process NULL LIF_inh VisL4 nrn:IntFire1 NULL IntFire1_inh_1.json NULL

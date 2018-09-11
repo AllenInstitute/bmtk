@@ -392,24 +392,11 @@ def plot_rates_popnet(cell_models_file, rates_file, model_keys=None, save_as=Non
     pop_keys = {str(r['node_type_id']): r[lookup_col] for _, r in pops_df.iterrows()}
 
     # organize the rates file by population
-    rates = {pop_name: ([], []) for pop_name in pop_keys.keys()}
-    with open(rates_file, 'r') as f:
-        reader = csv.reader(f, delimiter=' ')
-        for row in reader:
-            if row[0] in rates:
-                rates[row[0]][0].append(row[1])
-                rates[row[0]][1].append(row[2])
-
-    # plot the rates
-    plt.figure()
-    for pop_name, r in rates.iteritems():
-        label = pop_keys[pop_name]
-        times = r[0]
-        rates = r[1]
-        if len(times) == 0:
-            continue
-
-        plt.plot(times, rates, label=label)
+    # rates = {pop_name: ([], []) for pop_name in pop_keys.keys()}
+    rates_df = pd.read_csv(rates_file, sep=' ', names=['id', 'times', 'rates'])
+    for grp_key, grp_df in rates_df.groupby('id'):
+        grp_label = pop_keys[str(grp_key)]
+        plt.plot(grp_df['times'], grp_df['rates'], label=grp_label)
 
     plt.legend(fontsize='x-small')
     plt.xlabel('time (s)')

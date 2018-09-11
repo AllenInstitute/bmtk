@@ -54,15 +54,19 @@ class PopNode(object):
         return self._node.node_id
 '''
 
+
 class Population(object):
     def __init__(self, pop_id):
         self._pop_id = pop_id
         self._nodes = []
+        self._params = None
 
         self._dipde_obj = None
 
     def add_node(self, pnode):
         self._nodes.append(pnode)
+        if self._params is None and pnode.dynamics_params is not None:
+            self._params = pnode.dynamics_params.copy()
 
     @property
     def pop_id(self):
@@ -84,16 +88,37 @@ class Population(object):
         for node in self._nodes:
             yield node.node_id
 
+    def __getitem__(self, item):
+        return self._params[item]
+
+    def __setitem__(self, key, value):
+        self._params[key] = value
+
     def __repr__(self):
         return str(self._pop_id)
 
 
 class ExtPopulation(Population):
+    def __init__(self, pop_id):
+        super(ExtPopulation, self).__init__(pop_id)
+        self._firing_rate = None
+
     @property
     def record(self):
         return False
 
+    @property
+    def firing_rate(self):
+        return self._firing_rate
+
+    @firing_rate.setter
+    def firing_rate(self, value):
+        self.build(value)
+
     def build(self, firing_rate):
+        if firing_rate is not None:
+            self._firing_rate = firing_rate
+
         self._dipde_obj = ExternalPopulation(firing_rate)
 
 
@@ -139,7 +164,7 @@ class PopConnection(object):
 
 
 class PopNetwork(SimNetwork):
-    def __init__(self, group_by='node_id', **properties):
+    def __init__(self, group_by='node_type_id', **properties):
         super(PopNetwork, self).__init__()
 
         self.__all_edges = []
@@ -465,9 +490,9 @@ class PopNetwork(SimNetwork):
 
                 self._nodeid2pop_map[pop_name] = src_pop_map
 
-                firing_rates = rates.get_rate(pop_key)
                 self._external_pop[pop_name] = external_pop_map
                 for dpop in external_pop_map.values():
+                    firing_rates = rates.get_rate(dpop.pop_id)
                     dpop.build(firing_rates)
 
             else:
@@ -658,5 +683,13 @@ class PopNetwork(SimNetwork):
     def get_populations(self, network):
         return super(PopNetwork, self).get_nodes(network)
 
-    def get_population(self, network, pop_id):
-        return self.get_node(pop_id, network)
+    def get_population(self, node_set, gid):
+        return self._nodeid2pop_map[node_set][gid]
+
+    def rebuild(self):
+        for _, ns in self._nodeid2pop_map.items():
+            for _, pop in ns.items():
+                pop.build()
+
+        for pc in self._all_connections:
+            pc.build()

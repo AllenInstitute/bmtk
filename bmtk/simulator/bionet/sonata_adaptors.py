@@ -34,7 +34,7 @@ class BioNode(SonataBaseNode):
 
     @property
     def morphology_file(self):
-        return self._node['morphology_file']
+        return self._node['morphology']
 
     @property
     def rotation_angle_xaxis(self):
