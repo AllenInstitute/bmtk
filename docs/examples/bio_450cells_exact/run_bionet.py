@@ -3,7 +3,6 @@
 
 import sys, os
 from bmtk.simulator import bionet
-from bmtk.analyzer.spikes_analyzer import spike_files_equal
 
 
 def run(config_file):
@@ -11,11 +10,8 @@ def run(config_file):
     conf.build_env()
     net = bionet.BioNetwork.from_config(conf)
     sim = bionet.BioSimulator.from_config(conf, network=net)
-    sim.run()                                   # run simulation
-
-    #assert (spike_files_equal(conf['output']['spikes_file_csv'], 'expected/spikes.csv'))
-
-    bionet.nrn.quit_execution()                        # exit
+    sim.run()  # run simulation
+    bionet.nrn.quit_execution()  # exit
 
 
 if __name__ == '__main__':
