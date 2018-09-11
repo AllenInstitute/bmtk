@@ -71,5 +71,9 @@ class Config(ConfigDict):
             self.create_output_dir()
             self.copy_to_output()
 
+        if io.mpi_size > 1:
+            # A friendly message requested by fb
+            io.log_info('Running NEURON with mpi ({} cores).'.format(io.mpi_size))
+
         pc.barrier()
         self.load_nrn_modules()

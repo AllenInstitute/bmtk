@@ -1,12 +1,12 @@
-edge_type_id target_query source_query syn_weight weight_function weight_sigma distance_range target_sections delay dynamics_params model_template
-100 level_of_detail=='biophysical'&ei=='i' ei=='i' 0.0002 wmax NONE "[0.0, 1e+20]" "['somatic', 'basal']" 2.0 GABA_InhToInh.json exp2syn
-101 level_of_detail=='intfire'&ei=='i' ei=='i' 0.00225 wmax NONE NONE NONE 2.0 instanteneousInh.json NONE
-102 level_of_detail=='biophysical'&ei=='e' ei=='i' 0.00018 wmax NONE "[0.0, 50.0]" "['somatic', 'basal', 'apical']" 2.0 GABA_InhToExc.json exp2syn
-103 level_of_detail=='intfire'&ei=='e' ei=='i' 0.009 wmax NONE NONE NONE 2.0 instanteneousInh.json NONE
-104 pop_name=='PV1' ei=='e' 0.00035 wmax NONE "[0.0, 1e+20]" "['somatic', 'basal']" 2.0 AMPA_ExcToInh.json exp2syn
-105 pop_name=='PV2' ei=='e' 0.00027 wmax NONE "[0.0, 1e+20]" "['somatic', 'basal']" 2.0 AMPA_ExcToInh.json exp2syn
-106 pop_name=='LIF_inh' ei=='e' 0.0043 wmax NONE NONE NONE 2.0 instanteneousExc.json NONE
-107 pop_name=='Scnn1a' ei=='e' 6.4e-05 gaussianLL 50.0 "[30.0, 150.0]" "['basal', 'apical']" 2.0 AMPA_ExcToExc.json exp2syn
-108 pop_name=='Rorb' ei=='e' 5.5e-05 gaussianLL 50.0 "[30.0, 150.0]" "['basal', 'apical']" 2.0 AMPA_ExcToExc.json exp2syn
-109 pop_name=='Nr5a1' ei=='e' 7.2e-05 gaussianLL 50.0 "[30.0, 150.0]" "['basal', 'apical']" 2.0 AMPA_ExcToExc.json exp2syn
-110 pop_name=='LIF_exc' ei=='e' 0.0019 gaussianLL 50.0 NONE NONE 2.0 instanteneousExc.json NONE
+edge_type_id target_query source_query syn_weight dynamics_params distance_range delay target_sections weight_function model_template weight_sigma
+100 model_type=='biophysical'&ei=='i' ei=='i' 0.0002 GABA_InhToInh.json "[0.0, 1e+20]" 2.0 "['somatic', 'basal']" NULL exp2syn NULL
+101 model_type=='point_process'&ei=='i' ei=='i' 0.00225 instanteneousInh.json NULL 2.0 NULL wmax NULL NULL
+102 model_type=='biophysical'&ei=='e' ei=='i' 0.00018 GABA_InhToExc.json "[0.0, 50.0]" 2.0 "['somatic', 'basal', 'apical']" wmax exp2syn NULL
+103 model_type=='point_process'&ei=='e' ei=='i' 0.009 instanteneousInh.json NULL 2.0 NULL wmax NULL NULL
+104 pop_name=='PV1' ei=='e' 0.00035 AMPA_ExcToInh.json "[0.0, 1e+20]" 2.0 "['somatic', 'basal']" wmax exp2syn NULL
+105 pop_name=='PV2' ei=='e' 0.00027 AMPA_ExcToInh.json "[0.0, 1e+20]" 2.0 "['somatic', 'basal']" wmax exp2syn NULL
+106 pop_name=='LIF_inh' ei=='e' 0.0043 instanteneousExc.json NULL 2.0 NULL wmax NULL NULL
+107 pop_name=='Scnn1a' ei=='e' 6.4e-05 AMPA_ExcToExc.json "[30.0, 150.0]" 2.0 "['basal', 'apical']" gaussianLL exp2syn 50.0
+108 pop_name=='Rorb' ei=='e' 5.5e-05 AMPA_ExcToExc.json "[30.0, 150.0]" 2.0 "['basal', 'apical']" gaussianLL exp2syn 50.0
+109 pop_name=='Nr5a1' ei=='e' 7.2e-05 AMPA_ExcToExc.json "[30.0, 150.0]" 2.0 "['basal', 'apical']" gaussianLL exp2syn 50.0
+110 pop_name=='LIF_exc' ei=='e' 0.0019 instanteneousExc.json NULL 2.0 NULL gaussianLL NULL 50.0

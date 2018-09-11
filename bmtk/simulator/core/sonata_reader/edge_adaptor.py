@@ -44,6 +44,10 @@ class SonataBaseEdge(object):
         return self._edge['distance_range']
 
     @property
+    def edge_type_id(self):
+        return self._edge.edge_type_id
+
+    @property
     def nsyns(self):
         return self._prop_adaptor.nsyns(self._edge)
 

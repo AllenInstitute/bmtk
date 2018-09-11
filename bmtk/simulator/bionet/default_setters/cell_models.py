@@ -50,7 +50,7 @@ def IntFire1(cell, template_name, dynamics_params):
 
 def Biophys1(cell, template_name, dynamic_params):
     """Loads a biophysical NEURON hoc object using Cell-Types database objects."""
-    morphology_file = cell['morphology_file']
+    morphology_file = cell.morphology_file
     hobj = h.Biophys1(str(morphology_file))
     #fix_axon(hobj)
     #set_params_peri(hobj, dynamic_params)
@@ -66,7 +66,7 @@ def Biophys1_dict(cell):
     """ Set parameters for cells from the Allen Cell Types database Prior to setting parameters will replace the
     axon with the stub
     """
-    morphology_file = cell['morphology_file']
+    morphology_file = cell['morphology']
     hobj = h.Biophys1(str(morphology_file))
     return hobj
 
@@ -391,7 +391,7 @@ def NMLLoad(cell, template_name, dynamic_params):
     """
     # Last I checked there is no built in way to load a NML file directly into NEURON through the API, instead we have
     # to manually parse the nml file and build the NEUROM cell object section-by-section.
-    morphology_file = cell['morphology_file']
+    morphology_file = cell.morphology_file
     hobj = h.Biophys1(str(morphology_file))
     # Depending on if the axon is cut before or after setting cell channels and mechanism can create drastically
     # different results. Currently NML files doesn't produce the same results if you use model_processing directives.

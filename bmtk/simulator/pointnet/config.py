@@ -33,7 +33,16 @@ def from_json(config_file, validate=False):
     conf_dict.io = io
     return conf_dict
 
+def from_dict(config_file, validate=False):
+    conf_dict = ConfigDict.from_dict(config_file)
+    conf_dict.io = io
+    return conf_dict
+
 class Config(ConfigDict):
+    def __init__(self, dict_obj):
+        super(Config, self).__init__(dict_obj)
+        self._io = io
+
     @property
     def io(self):
         return io

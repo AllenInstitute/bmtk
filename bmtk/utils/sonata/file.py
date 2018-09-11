@@ -25,15 +25,29 @@ from .file_root import NodesRoot, EdgesRoot
 
 
 class File(object):
-    def __init__(self, data_files, data_type_files, mode='r', gid_table=None):
+    def __init__(self, data_files, data_type_files, mode='r', gid_table=None, require_magic=True):
         if mode != 'r':
             raise Exception('Currently only read mode is supported.')
 
         self._data_files = utils.listify(data_files)
         self._data_type_files = utils.listify(data_type_files)
 
-        # file handles
-        self._h5_file_handles = [(f, utils.load_h5(f, mode)) for f in self._data_files]
+        # Open and check HDF5 file(s)
+        self._h5_file_handles = [utils.load_h5(f, mode) for f in self._data_files]
+        if require_magic:
+            map(utils.check_magic, self._h5_file_handles)  # Check magic attribute in h5 files
+
+        # Check version number
+        avail_versions = set(map(utils.get_version, self._h5_file_handles))
+        if len(avail_versions) == 1:
+            self._version = list(avail_versions)[0]
+        elif len(avail_versions) > 1:
+            # TODO: log as warning
+            print('Warning: Passing in multiple hdf5 files of different version')
+            self._version = ','.join(avail_versions)
+        else:
+            self._version = utils.VERSION_NA
+
         self._csv_file_handles = [(f, utils.load_csv(f)) for f in self._data_type_files]
 
         self._has_nodes = False
@@ -75,6 +89,10 @@ class File(object):
     def has_edges(self):
         return self._has_edges
 
+    @property
+    def version(self):
+        return self._version
+
     def _sort_types_file(self):
         # TODO: node/edge type_id columnn names should not be hardcoded
         for filename, df in self._csv_file_handles:
@@ -92,11 +110,11 @@ class File(object):
                 print('Warning: Could not determine if file {} was an edge-types or node-types file. Ignoring'.format(filename))
 
     def _sort_h5_files(self):
-        for filename, h5 in self._h5_file_handles:
+        for h5 in self._h5_file_handles:
             has_nodes = '/nodes' in h5
             has_edges = '/edges' in h5
             if not (has_nodes or has_edges):
-                print('File {} contains neither nodes nor edges. Ignoring'.format(filename))
+                print('File {} contains neither nodes nor edges. Ignoring'.format(h5.filename))
             else:
                 if has_nodes:
                     self._nodes_groups.append(h5)

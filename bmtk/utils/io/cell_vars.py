@@ -183,9 +183,15 @@ class CellVarRecorder(object):
         if self._buffer_data:
             blk_beg = self._last_save_indx
             blk_end = blk_beg + self._buffer_block_size
-            self._last_save_indx += self._buffer_block_size
+            if blk_end > self._total_steps:
+                # Need to handle the case that simulation doesn't end on a block step
+                blk_end = blk_beg + self._total_steps - blk_beg
+
+            block_size = blk_end - blk_beg
+            self._last_save_indx += block_size
+
             for _, data_table in self._data_blocks.items():
-                data_table.data_block[blk_beg:blk_end, :] = data_table.buffer_block
+                data_table.data_block[blk_beg:blk_end, :] = data_table.buffer_block[:block_size, :]
 
     def close(self):
         self._h5_handle.close()
@@ -203,6 +209,7 @@ class CellVarRecorder(object):
             seg_ranges = []
             seg_offset = 0
             total_seg_count = 0  # total number of segments across all ranks
+            time_ds = None
             for h5_tmp in tmp_h5_handles:
                 seg_count = len(h5_tmp['/mapping/element_pos'])
                 seg_ranges.append((seg_offset, seg_offset+seg_count))
@@ -214,7 +221,11 @@ class CellVarRecorder(object):
                 gid_offset += gid_count
                 total_gid_count += gid_count
 
+                time_ds = h5_tmp['mapping/time']
+
             mapping_grp = h5final.create_group('mapping')
+            if time_ds:
+                mapping_grp.create_dataset('time', data=time_ds)
             element_id_ds = mapping_grp.create_dataset('element_id', shape=(total_seg_count,), dtype=np.uint)
             el_pos_ds = mapping_grp.create_dataset('element_pos', shape=(total_seg_count,), dtype=np.float)
             gids_ds = mapping_grp.create_dataset('gids', shape=(total_gid_count,), dtype=np.uint)

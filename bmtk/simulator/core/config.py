@@ -44,6 +44,8 @@ def from_json(config_file, validator=None):
     #    conf = json.load(config_file)
     if isinstance(config_file, string_types):
         conf = json.load(open(config_file, 'r'))
+    elif isinstance(config_file, dict):
+        conf = config_file.copy()
     else:
         raise Exception('{} is not a file or file path.'.format(config_file))
 
@@ -67,7 +69,7 @@ def from_dict(config_dict, validator=None):
     conf = copy.deepcopy(config_dict)  # Since the functions will mutate the dictionary we will copy just-in-case.
 
     if 'config_path' not in conf:
-        conf['config_path'] = os.path.abspath(__file__)
+        conf['config_path'] = os.path.join(os.getcwd(), 'tmp_cfg.dict')
         conf['config_dir'] = os.path.dirname(conf['config_path'])
 
     # Build the manifest and resolve variables.
