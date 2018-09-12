@@ -443,6 +443,8 @@ def set_extracellular(hobj, cell, dynamics_params):
     for sec in hobj.all:
         sec.insert('extracellular')
 
+    return hobj
+
 
 add_cell_model(NMLLoad, directive='nml', model_type='biophysical')
 add_cell_model(Biophys1, directive='ctdb:Biophys1', model_type='biophysical', overwrite=False)
@@ -455,4 +457,4 @@ add_cell_processor(aibs_allactive, overwrite=False)
 add_cell_processor(aibs_perisomatic_directed, overwrite=False)
 add_cell_processor(aibs_allactive_directed, overwrite=False)
 add_cell_processor(set_extracellular, overwrite=False)
-add_cell_processor(set_extracellular, 'extracellular', overwrite=True)
+add_cell_processor(set_extracellular, 'extracellular', overwrite=False)
