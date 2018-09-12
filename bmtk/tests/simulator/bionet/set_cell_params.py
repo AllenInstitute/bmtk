@@ -21,7 +21,7 @@ def Biophys1(cell_prop):
     Set parameters for cells from the Allen Cell Types database
     Prior to setting parameters will replace the axon with the stub
     """
-    morphology_file_name = str(cell_prop['morphology_file'])
+    morphology_file_name = str(cell_prop['morphology'])
     params_file_name = str(cell_prop['params_file'])
 
     hobj = h.Biophys1(morphology_file_name)
