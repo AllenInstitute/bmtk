@@ -89,7 +89,7 @@ class hmax (object):
         for (node_name, input_node, node_dict) in self.__get_edges(edges_file, self.config_data):
             model_class = self.__nodes_table[node_name]['model_id']
 
-            print "Constructing node:  ", node_name
+            print("Constructing node:  ", node_name)
             if model_class=='S1_Layer':
                 node_type = S1_Layer
                 freq_channel_params = node_dict['freq_channel_params']
@@ -173,7 +173,7 @@ class hmax (object):
 
         self.input_shape = (self.nodes['s1'].input_shape[1], self.nodes['s1'].input_shape[2])
 
-        print "Done"
+        print("Done")
         #writer = tf.train.SummaryWriter('tmp/hmax', self.nodes['s1'].tf_sess.graph_def)
 
 
@@ -234,14 +234,14 @@ class hmax (object):
 
         for node in self.train_order:
             if not self.train_state.get(node, False):
-                print "Training Node:  ", node
+                print("Training Node:  ", node)
 
                 if hasattr(self.nodes[node],'alt_image_dir') and self.nodes[node].alt_image_dir!='':
-                    print "\tUsing alternate image directory:  ",  self.nodes[node].alt_image_dir  # alt_image_dict[node]
+                    print("\tUsing alternate image directory:  ",  self.nodes[node].alt_image_dir)  # alt_image_dict[node]
                     self.nodes[node].train(self.nodes[node].alt_image_dir,batch_size=self.config_data['batch_size'],image_shape=self.input_shape)
                     self.train_state[node]=True
                 else:
-                    print "\tUsing default image directory:  ", self.image_dir
+                    print("\tUsing default image directory:  ", self.image_dir)
                     self.nodes[node].train(self.image_dir,batch_size=self.config_data['batch_size'],image_shape=self.input_shape)
                     self.train_state[node]=True
 
@@ -255,7 +255,7 @@ class hmax (object):
                 #     self.nodes[node].train(alt_image_dict[node],batch_size=self.config_data['batch_size'],image_shape=self.input_shape)
                 #     self.train_state[node]=True
 
-                print "Done"
+                print("Done")
 
             with open(self.config_data['train_state_file'], 'w') as f:
                 f.write(json.dumps(self.train_state))
@@ -269,7 +269,7 @@ class hmax (object):
 
         stim_template = stimulus.get_image_input(new_size=self.input_shape, add_channels=True)
 
-        print "Creating new output file:  ", output_file, " (and removing any previous one)"
+        print("Creating new output file:  ", output_file, " (and removing any previous one)")
         if os.path.exists(output_file):
             os.remove(output_file)
         output_h5 = h5py.File(output_file,'w')
@@ -358,9 +358,9 @@ class hmax (object):
         try:
             im_lib = Image_Library(self.image_dir,new_size=self.input_shape)
         except OSError as e:
-            print '''A repository of images (such as a collection from ImageNet - http://www.image-net.org) is required for input.
+            print('''A repository of images (such as a collection from ImageNet - http://www.image-net.org) is required for input.
                 An example would be too large to include in the isee_engine itself.
-                Set the path for this image repository in hmax/config_hmax.json'''
+                Set the path for this image repository in hmax/config_hmax.json''')
             raise e
 
         image_data = im_lib(1)
@@ -374,19 +374,19 @@ class hmax (object):
         nodes = self.nodes
 
         for node_to_plot in nodes:
-            print "Generating output for node ", node_to_plot
+            print("Generating output for node ", node_to_plot)
             node_output_dir = os.path.join(self.output_dir,node_to_plot)
 
             if not os.path.exists(node_output_dir):
                 os.makedirs(node_output_dir)
 
             if type(self.nodes[node_to_plot])==ViewTunedLayer:
-                print "ViewTunedLayer"
+                print("ViewTunedLayer")
                 self.nodes[node_to_plot].compute_output(image_data)
                 continue
 
             if type(self.nodes[node_to_plot])==Readout_Layer:
-                print "Readout_Layer"
+                print("Readout_Layer")
                 self.nodes[node_to_plot].compute_output(image_data)
                 continue
 

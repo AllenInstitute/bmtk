@@ -50,7 +50,7 @@ def read_conns(file_name):
     fc = h5py.File(file_name)
     indptr = fc['indptr']
     cell_size = len(indptr) - 1
-    print cell_size
+    print(cell_size)
     conns = {}
     source = fc['src_gids']
     for xin in six.moves.range(cell_size):

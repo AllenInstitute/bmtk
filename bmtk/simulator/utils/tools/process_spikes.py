@@ -75,7 +75,7 @@ def read_spk_h5(f_name):
     gids = np.array([])
     for i, gid in enumerate(f.keys()):  # save spikes of all gids
         if (i % 1000 == 0):
-            print i
+            print(i)
         spike_times = f[gid][...]
         t = np.append(t, spike_times)
         gids = np.append(gids, np.ones(spike_times.size)*int(gid))
@@ -127,7 +127,7 @@ def spikes_to_mean_f_rate(cells_f, spk_f, t_window, **kwargs):
     t_stop = t_window[1]
     delta_t = t_stop - t_start
     if (delta_t <= 0.0):
-        print 'spikes_to_mean_f_rate: stop time %f is <= start time %f; exiting.' % (t_stop, t_start)
+        print('spikes_to_mean_f_rate: stop time %f is <= start time %f; exiting.' % (t_stop, t_start))
         quit()
 
     # Read information about all cells.
@@ -144,12 +144,12 @@ def spikes_to_mean_f_rate(cells_f, spk_f, t_window, **kwargs):
         elif (spk_f_ext in ['h5']):
             spk_f_type = 'h5' # Assume this is an HDF5 file.
         else:
-            print 'spikes_to_mean_f_rate: unrecognized file extension.  Use the flag spk_f_type=\'txt\' or \'h5\' to override this message.  Exiting.'
+            print('spikes_to_mean_f_rate: unrecognized file extension.  Use the flag spk_f_type=\'txt\' or \'h5\' to override this message.  Exiting.')
             quit()
 
     # In case the spk_f_type was provided directly, check that the value is among those the code recognizes.
     if (spk_f_type not in ['txt', 'h5']):
-        print 'spikes_to_mean_f_rate: unrecognized value of spk_f_type.  The recognized values are \'txt\' or \'h5\'.  Exiting.'
+        print('spikes_to_mean_f_rate: unrecognized value of spk_f_type.  The recognized values are \'txt\' or \'h5\'.  Exiting.')
         quit()
 
     # Read spikes.
