@@ -270,7 +270,9 @@ class BioCell(Cell):
     def get_im(self):
         """Gather membrane currents from PtrVector into imVec (does not need a loop!)"""
         self.im_ptr.gather(self.imVec)
-        return self.imVec.as_numpy()  # (nA)
+        # Warning: as_numpy() seems to fail with in neuron 7.4 for python 3
+        # return self.imVec.as_numpy()  # (nA)
+        return np.array(self.imVec)
 
     def set_ptr2e_extracellular(self):
         jseg = 0

@@ -73,8 +73,8 @@ class StimXElectrode(object):
         stimelectrode_position_df = pd.read_csv(positions_file, sep=' ')
 
         self.elmesh_files = stimelectrode_position_df['electrode_mesh_file']
-        self.elpos = stimelectrode_position_df.as_matrix(columns=['pos_x', 'pos_y', 'pos_z']).T
-        self.elrot = stimelectrode_position_df.as_matrix(columns=['rotation_x', 'rotation_y', 'rotation_z'])
+        self.elpos = stimelectrode_position_df[['pos_x', 'pos_y', 'pos_z']].T.values
+        self.elrot = stimelectrode_position_df[['rotation_x', 'rotation_y', 'rotation_z']].values
         self.elnsites = self.elpos.shape[1]  # Number of electrodes in electrode file
         self.waveform = stimx_waveform_factory(waveform)
 
