@@ -23,4 +23,4 @@
 
 
 def example():
-    print 'OK'
+    print('OK')

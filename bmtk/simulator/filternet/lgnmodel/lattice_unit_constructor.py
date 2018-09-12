@@ -250,5 +250,5 @@ def make_separate_onoff_cell_list(lattice_unit_center):
 if __name__ == "__main__":
     lattice_unit_center = (40,30)
     lattice_cell_list = make_lattice_unit(lattice_unit_center)
-    print len(lattice_cell_list)
+    print(len(lattice_cell_list))
         

@@ -233,13 +233,13 @@ def test_C1_Layer():
     fig, ax = plt.subplots(1)
     ax.imshow(image_data[0,:,:,0],cmap='gray')
 
-    print image_data.shape
+    print(image_data.shape)
 
     fig, ax = plt.subplots(len(bands),len(orientations)*2)
     result = {}
     for b in range(len(bands)):
         result[b] = c1.compute_output(image_data,b)
-        print result[b].shape
+        print(result[b].shape)
         n, y,x,K = result[b].shape
 
         for k in range(K):
