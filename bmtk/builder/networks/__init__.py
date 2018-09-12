@@ -23,4 +23,8 @@
 from .dm_network import DenseNetwork
 NetworkBuilder = dm_network.DenseNetwork
 
-from .mpi_network import MPINetwork, MPINetwork as MPIBuilder
+try:
+    # If mpi4py is installed let users access MPIBuilder for parallel building networks
+    from .mpi_network import MPINetwork, MPINetwork as MPIBuilder
+except ImportError as err:
+    pass
