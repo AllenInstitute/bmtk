@@ -225,7 +225,8 @@ class RecXElectrode(object):
 
         # convert coordinates to ndarray, The first index is xyz and the second is the channel number
         el_df = pd.read_csv(electrode_file, sep=' ')
-        self.pos = el_df.as_matrix(columns=['x_pos', 'y_pos', 'z_pos']).T
+        self.pos = el_df[['x_pos', 'y_pos', 'z_pos']].T.values
+        #self.pos = el_df.as_matrix(columns=['x_pos', 'y_pos', 'z_pos']).T
         self.nsites = self.pos.shape[1]
         # self.conf['run']['nsites'] = self.nsites  # add to the config
         self.transfer_resistances = {}  # V_e = transfer_resistance*Im

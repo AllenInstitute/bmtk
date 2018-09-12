@@ -2,6 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 import json
+from six import string_types
 
 from bmtk.simulator.bionet.io_tools import io
 
@@ -87,7 +88,7 @@ def stimx_waveform_factory(waveform):
     Supports json config in conf as well as string pointer to a file.
     :rtype: BaseWaveformType
     """
-    if isinstance(waveform, (str, unicode)):
+    if isinstance(waveform, string_types):
         # if waveform_conf is str or unicode assume to be name of file in stim_dir
         # waveform_conf = str(waveform_conf)   # make consistent
         file_ext = os.path.splitext(waveform)
