@@ -109,9 +109,17 @@ class NodeAdaptor(object):
                     node_type = node_types_table[nt_id]
                     if node_type['morphology'] is None:
                         continue
-                    # TODO: Check the file exits
+
                     # TODO: See if absolute path is stored in csv
-                    node_type['morphology'] = os.path.join(morph_dir, node_type['morphology'])
+                    swc_path = os.path.join(morph_dir, node_type['morphology'])
+
+                    # According to Sonata format, the .swc extension is not needed. Thus we need to add it if req.
+                    if not os.path.exists(swc_path) and not swc_path.endswith('.swc'):
+                        swc_path += '.swc'
+                        if not os.path.exists(swc_path):
+                            network.io.log_exception('Could not find node morphology file {}.'.format(swc_path))
+
+                    node_type['morphology'] = swc_path
 
         if 'dynamics_params' in node_types_table.columns and 'model_type' in node_types_table.columns:
             for nt_id in node_type_ids:
