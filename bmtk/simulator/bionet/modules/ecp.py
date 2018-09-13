@@ -28,6 +28,7 @@ from neuron import h
 import numpy as np
 
 from bmtk.simulator.bionet.modules.sim_module import SimulatorMod
+from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
 
 
 pc = h.ParallelContext()
@@ -80,6 +81,8 @@ class EcpMod(SimulatorMod):
         # only the primary node will need to save the final ecp
         if MPI_RANK == 0:
             with h5py.File(self._ecp_output, 'w') as f5:
+                add_hdf5_magic(f5)
+                add_hdf5_version(f5)
                 f5.create_dataset('data', (self._nsteps, self._rel_nsites), maxshape=(None, self._rel_nsites),
                                   chunks=True)
                 f5.attrs['dt'] = dt

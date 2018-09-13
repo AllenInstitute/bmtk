@@ -3,6 +3,8 @@ import h5py
 import numpy as np
 
 from bmtk.utils import io
+from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
+
 
 try:
     from mpi4py import MPI
@@ -116,6 +118,8 @@ class CellVarRecorder(object):
 
     def _create_h5_file(self):
         self._h5_handle = h5py.File(self._file_name, 'w')
+        add_hdf5_version(self._h5_handle)
+        add_hdf5_magic(self._h5_handle)
 
     def add_cell(self, gid, sec_list, seg_list):
         assert(len(sec_list) == len(seg_list))
@@ -300,6 +304,8 @@ class CellVarRecorderParallel(CellVarRecorder):
 
     def _create_h5_file(self):
         self._h5_handle = h5py.File(self._file_name, 'w', driver='mpio', comm=MPI.COMM_WORLD)
+        add_hdf5_version(self._h5_handle)
+        add_hdf5_magic(self._h5_handle)
 
     def merge(self):
         pass
