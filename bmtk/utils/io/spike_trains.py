@@ -5,6 +5,8 @@ import csv
 import h5py
 import pandas as pd
 import numpy as np
+from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
+
 
 class SpikeTrainWriter(object):
     class TmpFileMetadata(object):
@@ -169,6 +171,9 @@ class SpikeTrainWriter(object):
     def to_hdf5(self, hdf5_file, sort_order=None, gid_map=None):
         if self._mpi_rank == 0:
             with h5py.File(hdf5_file, 'w') as h5:
+                add_hdf5_magic(h5)
+                add_hdf5_version(h5)
+
                 self._count_spikes()
                 spikes_grp = h5.create_group('/spikes')
                 spikes_grp.attrs['sorting'] = 'none' if sort_order is None else sort_order
