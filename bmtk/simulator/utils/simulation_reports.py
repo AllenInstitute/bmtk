@@ -90,17 +90,16 @@ class MembraneReport(SimReport, object):
 
     def _get_defaults(self):
         # directory for saving temporary files created during simulation
-        tmp_dir = os.path.dirname(os.path.realpath(self.params['file_name'])) if 'file_name' in self.params else \
-            self.default_dir
+        tmp_dir = self.default_dir
 
         # Find the report file name. Either look for "file_name" parameter, or else it is <report-name>.h5
         if 'file_name' in self.params:
             file_name = self.params['file_name']
         elif self.report_name.endswith('.h5') or self.report_name.endswith('.hdf') \
                 or self.report_name.endswith('.hdf5'):
-            file_name = os.path.join(self.default_dir, self.report_name)  # Check for case report.h5.h5
+            file_name = self.report_name  # Check for case report.h5.h5
         else:
-            file_name = os.path.join(self.default_dir, '{}.h5'.format(self.report_name))
+            file_name = '{}.h5'.format(self.report_name)
 
         return [('cells', 'biophysical'), ('sections', 'all'), ('tmp_dir', tmp_dir), ('file_name', file_name),
                 ('buffer', True), ('transform', {})]
@@ -193,10 +192,16 @@ class ECPReport(SimReport):
         return 'extracellular'
 
     def _get_defaults(self):
-        tmp_dir = os.path.dirname(os.path.realpath(self.params['ecp_file'])) if 'ecp_file' in self.params else \
-            self.default_dir
-        file_name = os.path.join(tmp_dir, 'ecp.h5')
-        return [('tmp_dir', tmp_dir), ('ecp_file', file_name)]
+        if 'file_name' in self.params:
+            file_name = self.params['file_name']
+        elif self.report_name.endswith('.h5') or self.report_name.endswith('.hdf') \
+                or self.report_name.endswith('.hdf5'):
+            file_name = self.report_name  # Check for case report.h5.h5
+        else:
+            file_name = '{}.h5'.format(self.report_name)
+
+        return [('tmp_dir', self.default_dir), ('file_name', file_name),
+                ('contributions_dir', os.path.join(self.default_dir, 'ecp_contributions'))]
 
     @classmethod
     def build(cls, name, params):
