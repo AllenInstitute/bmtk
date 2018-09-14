@@ -43,10 +43,10 @@
   },
 
   "output":{
-    "log_file": "$OUTPUT_DIR/log.txt",
+    "log_file": "log.txt",
     "output_dir": "$OUTPUT_DIR",
-    "spikes_file": "$OUTPUT_DIR/spikes.h5",
-    "spikes_file_csv": "$OUTPUT_DIR/spikes.csv",
+    "spikes_file": "spikes.h5",
+    "spikes_file_csv": "spikes.csv",
     "spikes_sort_order": "time"
   },
 
@@ -69,7 +69,7 @@
       "cells": "biophys_cells",
       "variable_name": "cai",
       "module": "membrane_report",
-      "file_name": "$OUTPUT_DIR/cell_vars.h5",
+      "file_name": "cell_vars.h5",
       "sections": "soma",
       "enabled": true
     },
@@ -78,7 +78,7 @@
       "cells": "biophys_cells",
       "variable_name": "v",
       "module": "membrane_report",
-      "file_name": "$OUTPUT_DIR/cell_vars.h5",
+      "file_name": "cell_vars.h5",
       "sections": "soma",
       "enabled": true
     },
@@ -87,7 +87,7 @@
       "cells": "biophys_cells",
       "variable_name": "e_extracellular",
       "module": "membrane_report",
-      "file_name": "$OUTPUT_DIR/cell_vars.h5",
+      "file_name": "cell_vars.h5",
       "sections": "soma",
       "enabled": true
     },
@@ -96,7 +96,7 @@
       "cells": "biophys_cells",
       "variable_name": "i_membrane",
       "module": "membrane_report",
-      "file_name": "$OUTPUT_DIR/cell_vars.h5",
+      "file_name": "cell_vars.h5",
       "sections": "soma",
       "enabled": true
     },
@@ -105,7 +105,7 @@
       "cells": "biophys_cells",
       "variable_name": "vext",
       "module": "membrane_report",
-      "file_name": "$OUTPUT_DIR/cell_vars.h5",
+      "file_name": "cell_vars.h5",
       "sections": "soma",
       "transform": "first_element",
       "enabled": true
@@ -116,9 +116,9 @@
       "variable_name": "v",
       "module": "extracellular",
       "electrode_positions": "$COMPONENT_DIR/recXelectrodes/linear_electrode.csv",
-      "ecp_file": "$OUTPUT_DIR/ecp.h5",
+      "file_name": "ecp.h5",
       "electrode_channels": "soma",
-      "contributions_dir": "$OUTPUT_DIR/ecp_contributions",
+      "contributions_dir": "ecp_contributions",
       "enabled": true
     }
   }

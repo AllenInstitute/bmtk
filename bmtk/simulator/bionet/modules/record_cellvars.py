@@ -20,7 +20,7 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-
+import os
 import h5py
 from neuron import h
 
@@ -80,13 +80,14 @@ class MembraneReport(SimulatorMod):
             self._variables.remove(var_name)
 
         self._tmp_dir = tmp_dir
-        self._file_name = file_name
+
+        self._file_name = file_name if os.path.isabs(file_name) else os.path.join(tmp_dir, file_name)
         self._all_gids = cells
         self._local_gids = []
         self._sections = sections
 
-        self._var_recorder = MembraneRecorder(file_name, tmp_dir, self._all_variables, buffer_data=buffer_data,
-                                              mpi_rank=MPI_RANK, mpi_size=N_HOSTS)
+        self._var_recorder = MembraneRecorder(self._file_name, self._tmp_dir, self._all_variables,
+                                              buffer_data=buffer_data, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)
 
         self._gid_list = []  # list of all gids that will have their variables saved
         self._data_block = {}  # table of variable data indexed by [gid][variable]
