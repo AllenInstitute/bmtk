@@ -24,6 +24,7 @@ import pandas as pd
 import numpy as np
 import csv
 import h5py
+from six import string_types
 
 from bmtk.utils import sonata
 
@@ -58,7 +59,7 @@ class SpikesGenerator(object):
         self._t_min = t_min
         self._t_max = t_max
 
-        if isinstance(nodes, basestring):
+        if isinstance(nodes, string_types):
             nodes_h5 = h5py.File(nodes, 'r')
             nodes_grp = nodes_h5['/nodes']
             if populations is None:

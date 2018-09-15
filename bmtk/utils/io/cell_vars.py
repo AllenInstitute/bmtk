@@ -3,6 +3,8 @@ import h5py
 import numpy as np
 
 from bmtk.utils import io
+from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
+
 
 try:
     from mpi4py import MPI
@@ -37,6 +39,7 @@ class CellVarRecorder(object):
         self._h5_handle = None
         self._tmp_dir = tmp_dir
         self._variables = variables if isinstance(variables, list) else [variables]
+        self._n_vars = len(self._variables)  # Used later to keep track if more than one var is saved to the same file.
 
         self._mpi_rank = mpi_rank
         self._mpi_size = mpi_size
@@ -116,6 +119,8 @@ class CellVarRecorder(object):
 
     def _create_h5_file(self):
         self._h5_handle = h5py.File(self._file_name, 'w')
+        add_hdf5_version(self._h5_handle)
+        add_hdf5_magic(self._h5_handle)
 
     def add_cell(self, gid, sec_list, seg_list):
         assert(len(sec_list) == len(seg_list))
@@ -154,16 +159,20 @@ class CellVarRecorder(object):
                 self._gid_map[gid] = (gid_offset[0] + self._seg_offset_beg, gid_offset[1] + self._seg_offset_beg)
 
         for var_name, data_tables in self._data_blocks.items():
-            data_grp = self._h5_handle.create_group('/{}'.format(var_name))
+            # If users are trying to save multiple variables in the same file put data table in its own /{var} group
+            # (not sonata compliant). Otherwise the data table is located at the root
+            data_grp = self._h5_handle if self._n_vars == 1 else self._h5_handle.create_group('/{}'.format(var_name))
             if self._buffer_data:
                 # Set up in-memory block to buffer recorded variables before writing to the dataset
                 data_tables.buffer_block = np.zeros((buffer_size, self._n_segments_local), dtype=np.float)
                 data_tables.data_block = data_grp.create_dataset('data', shape=(n_steps, self._n_segments_all),
                                                                  dtype=np.float, chunks=True)
+                data_tables.data_block.attrs['variable_name'] = var_name
             else:
                 # Since we are not buffering data, we just write directly to the on-disk dataset
                 data_tables.buffer_block = data_grp.create_dataset('data', shape=(n_steps, self._n_segments_all),
                                                                    dtype=np.float, chunks=True)
+                data_tables.buffer_block.attrs['variable_name'] = var_name
 
     def record_cell(self, gid, var_name, seg_vals, tstep):
         """Record cell parameters.
@@ -248,8 +257,10 @@ class CellVarRecorder(object):
 
             # combine the /var/data datasets
             for var_name in self._variables:
-                data_name = '/{}/data'.format(var_name)
+                data_name = '/data' if self._n_vars == 1 else '/{}/data'.format(var_name)
+                # data_name = '/{}/data'.format(var_name)
                 var_data = h5final.create_dataset(data_name, shape=(self._total_steps, total_seg_count), dtype=np.float)
+                var_data.attrs['variable_name'] = var_name
                 for i, h5_tmp in enumerate(tmp_h5_handles):
                     beg, end = seg_ranges[i]
                     var_data[:, beg:end] = h5_tmp[data_name]
@@ -300,6 +311,8 @@ class CellVarRecorderParallel(CellVarRecorder):
 
     def _create_h5_file(self):
         self._h5_handle = h5py.File(self._file_name, 'w', driver='mpio', comm=MPI.COMM_WORLD)
+        add_hdf5_version(self._h5_handle)
+        add_hdf5_magic(self._h5_handle)
 
     def merge(self):
         pass

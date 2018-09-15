@@ -1,1 +1,1 @@
-import synaptic_weights
+from . import synaptic_weights

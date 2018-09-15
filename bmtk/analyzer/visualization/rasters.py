@@ -47,7 +47,7 @@ def plot_raster_query(ax, spikes, nodes_df, cmap, twindow=[0, 3], marker=".", lw
     for query, col in cmap.items():
         query_df = nodes_df.query(query)
         gids_query = query_df.index
-        print query,  "ncells:", len(gids_query), col
+        print("{} ncells: {} {}".format(query, len(gids_query), col))
 
         ix_g = np.in1d(spike_gids, gids_query)
         ax.scatter(spike_times[ix_g], spike_gids[ix_g],

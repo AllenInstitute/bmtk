@@ -68,19 +68,20 @@ class IOUtils(object):
     def quiet_simulator(self):
         pass
 
-    def setup_output_dir(self, config_dir, log_file, overwrite=True):
+    def setup_output_dir(self, output_dir, log_file, overwrite=True):
         if self.mpi_rank == 0:
             # Create output directory
-            if os.path.exists(config_dir):
+            if os.path.exists(output_dir):
                 if overwrite:
-                    shutil.rmtree(config_dir)
+                    shutil.rmtree(output_dir)
                 else:
                     self.log_exception('Directory already exists (remove or set to overwrite).')
-            os.makedirs(config_dir)
+            os.makedirs(output_dir)
 
             # Create log file
             if log_file is not None:
-                file_logger = logging.FileHandler(log_file)
+                log_path = log_file if os.path.isabs(log_file) else os.path.join(output_dir, log_file)
+                file_logger = logging.FileHandler(log_path)
                 file_logger.setFormatter(self._log_format)
                 self.logger.addHandler(file_logger)
                 self.log_info('Created log file')

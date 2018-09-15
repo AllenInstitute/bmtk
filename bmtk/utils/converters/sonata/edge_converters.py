@@ -8,7 +8,7 @@ import h5py
 column_renames = {
     'params_file': 'dynamics_params',
     'level_of_detail': 'model_type',
-    'morphology': 'morphology_file',
+    'morphology': 'morphology',
     'x_soma': 'x',
     'y_soma': 'y',
     'z_soma': 'z',

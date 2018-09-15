@@ -433,8 +433,8 @@ def _set_data_external_link(parent_group, dataset_name, data):
      
 
 def _set_scale_external_link(parent_group, name, scale):
-    print parent_group, name, scale
-    print scale.file.filename, scale.name
+    print(parent_group, name, scale)
+    print(scale.file.filename, scale.name)
     parent_group[name] = h5py.ExternalLink(scale.file.filename, scale.name)
     return parent_group[name]
 
@@ -522,7 +522,7 @@ def get_stimulus(f):
     category = 'stimulus'
     for parent_group in f[category]:
         for data_group in f[category][parent_group]:
-            print f[category][parent_group][data_group] 
+            print(f[category][parent_group][data_group])
 
 
 def add_external_links(parent_group, external_file_name, external_group_name_list=top_level_data):

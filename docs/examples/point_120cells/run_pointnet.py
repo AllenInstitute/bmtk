@@ -25,7 +25,7 @@ def main(config_file):
 
     sim = pointnet.PointSimulator.from_config(configure, network)
     sim.run()
-    assert (spike_files_equal(configure['output']['spikes_file_csv'], 'expected/spikes.csv'))
+    assert (spike_files_equal('output/spikes.csv', 'expected/spikes.csv'))
 
 
 if __name__ == '__main__':

@@ -8,27 +8,27 @@ build_virtual_net = True
 
 cell_models = [
     {
-        'model_name': 'Scnn1a', 'ei': 'e', 'morphology_file': 'Scnn1a_473845048_m.swc',
+        'model_name': 'Scnn1a', 'ei': 'e', 'morphology': 'Scnn1a_473845048_m.swc',
         'model_template': 'ctdb:Biophys1.hoc',
         'dynamics_params': '472363762_fit.json',
     },
     {
-        'model_name': 'Rorb', 'ei': 'e', 'morphology_file': 'Rorb_325404214_m.swc',
+        'model_name': 'Rorb', 'ei': 'e', 'morphology': 'Rorb_325404214_m.swc',
         'model_template': 'ctdb:Biophys1.hoc',
         'dynamics_params': '473863510_fit.json',
     },
     {
-        'model_name': 'Nr5a1', 'ei': 'e', 'morphology_file': 'Nr5a1_471087815_m.swc',
+        'model_name': 'Nr5a1', 'ei': 'e', 'morphology': 'Nr5a1_471087815_m.swc',
         'model_template': 'ctdb:Biophys1.hoc',
         'dynamics_params': '473863035_fit.json',
     },
     {
-        'model_name': 'PV1', 'ei': 'i', 'morphology_file': 'Pvalb_470522102_m.swc',
+        'model_name': 'PV1', 'ei': 'i', 'morphology': 'Pvalb_470522102_m.swc',
         'model_template': 'ctdb:Biophys1.hoc',
         'dynamics_params': '472912177_fit.json',
     },
     {
-        'model_name': 'PV2', 'ei': 'i', 'morphology_file': 'Pvalb_469628681_m.swc',
+        'model_name': 'PV2', 'ei': 'i', 'morphology': 'Pvalb_469628681_m.swc',
         'model_template': 'ctdb:Biophys1.hoc',
         'dynamics_params': '473862421_fit.json',
     }
