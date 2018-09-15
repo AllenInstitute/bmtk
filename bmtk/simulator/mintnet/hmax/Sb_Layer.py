@@ -177,8 +177,8 @@ def test_S2b_Layer():
 
     c1 = C_Layer(s1,bands)
 
-    print "s1 shape:  ", s1.band_shape
-    print "c1 shape:  ", c1.band_shape
+    print("s1 shape:  ", s1.band_shape)
+    print("c1 shape:  ", c1.band_shape)
 
     grid_size = [6,9,12,15]
     pool_size = 10
@@ -186,14 +186,14 @@ def test_S2b_Layer():
 
     s2b = Sb_Layer(c1,grid_size,pool_size,K)
 
-    print "s2b shape:  ", s2b.band_shape
+    print("s2b shape:  ", s2b.band_shape)
 
     c2b_bands = [    [[0,1,2,3,4,5,6,7],40,40]]
 
     c2b = C_Layer(s2b,c2b_bands)
 
 
-    print "c2b shape:  ", c2b.band_shape
+    print("c2b shape:  ", c2b.band_shape)
     #print c2b.band_output.keys()
     # Test s2 on an image
     from Image_Library import Image_Library

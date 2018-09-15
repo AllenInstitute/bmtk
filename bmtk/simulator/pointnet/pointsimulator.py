@@ -23,6 +23,8 @@
 import os
 import glob
 import nest
+from six import string_types
+from six import moves
 
 from bmtk.simulator.core.simulator import Simulator
 from bmtk.simulator.pointnet.config import Config
@@ -31,7 +33,7 @@ from bmtk.simulator.pointnet.io_tools import io
 import bmtk.simulator.utils.simulation_reports as reports
 import bmtk.simulator.utils.simulation_inputs as inputs
 from bmtk.utils.io import spike_trains
-import modules as mods
+from . import modules as mods
 
 
 class PointSimulator(Simulator):
@@ -108,7 +110,7 @@ class PointSimulator(Simulator):
         io.log_info('Starting Simulation')
         n, res, data_res = self._get_block_trial(duration)
         if n > 0:
-            for r in xrange(n):
+            for r in moves.range(n):
                 nest.Simulate(data_res)
         if res > 0:
             nest.Simulate(res * self.dt)
@@ -128,7 +130,7 @@ class PointSimulator(Simulator):
     @classmethod
     def from_config(cls, configure, graph):
         # load the json file or object
-        if isinstance(configure, basestring):
+        if isinstance(configure, string_types):
             config = Config.from_json(configure, validate=True)
         elif isinstance(configure, dict):
             config = configure

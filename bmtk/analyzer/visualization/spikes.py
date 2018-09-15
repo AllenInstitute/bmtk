@@ -23,6 +23,7 @@
 import os
 import csv
 import h5py
+from six import string_types
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -114,7 +115,7 @@ def _count_spikes(spikes_file, max_gid, interval=None):
 
 
 def plot_spikes_config(configure, group_key=None, exclude=[], save_as=None, show_plot=True):
-    if isinstance(configure, basestring):
+    if isinstance(configure, string_types):
         conf = config.from_json(configure)
     elif isinstance(configure, dict):
         conf = configure
@@ -254,14 +255,14 @@ def plot_ratess(cells_file, cell_models_file, spikes_file, group_key='pop_name',
         rates[gid] += 1
 
     for color, (group_name, group_df) in zip(color_map, groupings):
-        print group_name
-        print group_df.index
-        print rates[group_df.index]
+        print(group_name)
+        print(group_df.index)
+        print(rates[group_df.index])
         plt.plot(group_df.index, rates[group_df.index], '.', color=color)
 
     plt.show()
 
-    print n_colors
+    print(n_colors)
     exit()
 
 
@@ -275,8 +276,8 @@ def plot_ratess(cells_file, cell_models_file, spikes_file, group_key='pop_name',
     color_map = [scalar_map.to_rgba(i) for i in range(0, n_colors)]
 
     for color, (group_name, group_df) in zip(color_map, groupings):
-        print group_name
-        print group_df.index
+        print(group_name)
+        print(group_df.index)
 
     exit()
 
@@ -470,7 +471,7 @@ def plot_tuning(sg_analysis, node, band, Freq=0, show=True, save_as=None):
     #fig, ax = plt.subplots(1, n_ph, figsize=(12, 16), sharex=True, sharey=True)
     fig, ax = plt.subplots(1, n_ph, figsize=(13.9, 4.3), sharex=False, sharey=True)
 
-    print sg_analysis.orientations
+    print(sg_analysis.orientations)
     for phase in range(n_ph):
         tuning_to_plot = tuning_matrix[:, :, phase]
 
@@ -495,4 +496,4 @@ def plot_tuning(sg_analysis, node, band, Freq=0, show=True, save_as=None):
 
 
             #config_file =
-#plot_spikes('../../examples/pointnet/example2/config.json', 'pop_name')
+# plot_spikes('../../examples/pointnet/example2/config.json', 'pop_name')

@@ -53,7 +53,7 @@ def write_edges_to_h5(network, filename, synapse_key=None, verbose=True):
             nsyns_table.append(lookup(edges[2]))
 
         if len(src_gids_table) == indptr_table[-1]:
-            print "node %d doesn't have any edges" % (tid)
+            print("node %d doesn't have any edges {}".format(tid))
         indptr_table.append(len(src_gids_table))
 
     # Save the tables in h5 format

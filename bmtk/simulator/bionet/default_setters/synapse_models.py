@@ -23,6 +23,7 @@
 from neuron import h
 
 from bmtk.simulator.bionet.pyfunction_cache import add_synapse_model
+from bmtk.simulator.bionet.nrn import *
 
 
 def exp2syn(syn_params, xs, secs):
@@ -34,8 +35,6 @@ def exp2syn(syn_params, xs, secs):
     :return: list of NEURON synpase objects
     """
     syns = []
-    print xs
-
     for x, sec in zip(xs, secs):
         syn = h.Exp2Syn(x, sec=sec)
         syn.e = syn_params['erev']
@@ -60,6 +59,148 @@ def Exp2Syn(syn_params, sec_x, sec_id):
     return syn
 
 
+
+@synapse_model
+def stp1syn(syn_params, xs, secs):
+    syns = []
+    for x, sec in zip(xs, secs):
+        syn = h.stp1syn(x, sec=sec)
+
+        syn.e = syn_params["erev"]
+        syn.p0 = 0.5
+        syn.tau_r = 200
+        syn.tau_1 = 5
+        syns.append(syn)
+
+    return syns
+
+
+@synapse_model
+def stp2syn(syn_params, x, sec):
+    syn = h.stp2syn(x, sec=sec)
+    syn.e = syn_params["erev"]
+    syn.p0 = syn_params["p0"]
+    syn.tau_r0 = syn_params["tau_r0"]
+    syn.tau_FDR = syn_params["tau_FDR"]
+    syn.tau_1 = syn_params["tau_1"]
+    return syn
+
+
+@synapse_model
+def stp3syn(syn_params, xs, secs):
+    syns = []
+    for x, sec in zip(xs, secs):
+        syn = h.stp3syn(x, sec=sec) # temporary
+        syn.e = syn_params["erev"]
+        syn.p0 = 0.6
+        syn.tau_r0 = 200
+        syn.tau_FDR = 2000
+        syn.tau_D = 500
+        syn.tau_1 = 5
+        syns.append(syn)
+
+    return syns
+
+
+@synapse_model
+def stp4syn(syn_params, xs, secs):
+    syns = []
+    for x, sec in zip(xs, secs):
+        syn = h.stp4syn(x, sec=sec)
+        syn.e = syn_params["erev"]
+        syn.p0 = 0.6
+        syn.tau_r = 200
+        syn.tau_1 = 5
+        syns.append(syn)
+
+    return syns
+
+
+@synapse_model
+def stp5syn(syn_params, x, sec):  # temporary
+    syn = h.stp5syn(x, sec=sec)
+    syn.e = syn_params["erev"]
+    syn.tau_1 = syn_params["tau_1"]
+    syn.tau_r0 = syn_params["tau_r0"]
+    syn.tau_FDR = syn_params["tau_FDR"]
+    syn.a_FDR = syn_params["a_FDR"]
+    syn.a_D = syn_params["a_D"]
+    syn.a_i = syn_params["a_i"]
+    syn.a_f = syn_params["a_f"]
+    syn.pbtilde = syn_params["pbtilde"]
+    return syn
+
+
+def stp5isyn(syn_params, xs, secs): # temporary
+    syns = []
+    for x, sec in zip(xs, secs):
+        syn = h.stp5isyn(x, sec=sec)
+        syn.e = syn_params["erev"]
+        syn.tau_1 = syn_params["tau_1"]
+        syn.tau_r0 = syn_params["tau_r0"]
+        syn.tau_FDR = syn_params["tau_FDR"]
+        syn.a_FDR = syn_params["a_FDR"]
+        syn.a_D = syn_params["a_D"]
+        syn.a_i = syn_params["a_i"]
+        syn.a_f = syn_params["a_f"]
+        syn.pbtilde = syn_params["pbtilde"]
+        syns.append(syn)
+
+    return syns
+
+
+@synapse_model
+def tmgsyn(syn_params, xs, secs):
+    syns = []
+    for x, sec in zip(xs, secs):
+        syn = h.tmgsyn(x, sec=sec)
+        syn.e = syn_params["erev"]
+        syn.tau_1 = syn_params["tau_1"]
+        syn.tau_rec = syn_params["tau_rec"]
+        syn.tau_facil = syn_params["tau_facil"]
+        syn.U = syn_params["U"]
+        syn.u0 = syn_params["u0"]
+        syns.append(syn)
+
+    return syns
+
+
+@synapse_model
+def expsyn(syn_params, x, sec):
+    """Create a list of expsyn synapses
+
+    :param syn_params: parameters of a synapse (dict)
+    :param x: normalized distance along the section (float)
+    :param sec: target section (hoc object)
+    :return: synapse objects
+    """
+    syn = h.ExpSyn(x, sec=sec)
+    syn.e = syn_params['erev']
+    syn.tau = syn_params["tau1"]
+    return syn
+
+
+@synapse_model
+def exp1syn(syn_params, xs, secs):
+    syns = []
+    for x, sec in zip(xs, secs):
+        syn = h.exp1syn(x, sec=sec)
+        syn.e = syn_params['erev']
+        syn.tau = syn_params["tau_1"]
+        syns.append(syn)
+    return syns
+
+
+@synapse_model
+def exp1isyn(syn_params, xs, secs):
+    syns = []
+    for x, sec in zip(xs, secs):
+        syn = h.exp1isyn(x, sec=sec)
+        syn.e = syn_params['erev']
+        syn.tau = syn_params["tau_1"]
+        syns.append(syn)
+    return syns
+
+
 add_synapse_model(Exp2Syn, 'exp2syn', overwrite=False)
-#add_synapse_model(exp2syn, overwrite=False)
 add_synapse_model(Exp2Syn, overwrite=False)

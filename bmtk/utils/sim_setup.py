@@ -45,7 +45,7 @@ config_order = [
 
 order_lookup = {k: i for i, k in enumerate(config_order)}
 def sort_config_keys(ckey):
-    print ckey
+    print(ckey)
     exit()
 
 
@@ -84,7 +84,7 @@ def build_env_bionet(base_dir='.', run_time=0.0, with_config=True, network_dir=N
             cwd = os.getcwd()
             os.chdir(component_paths['mechanisms_dir'])
             try:
-                print os.getcwd()
+                print(os.getcwd())
                 call(['nrnivmodl', 'modfiles'])
             except Exception as e:
                 print('Was unable to compile mechanism in {}'.format(component_paths['mechanisms_dir']))

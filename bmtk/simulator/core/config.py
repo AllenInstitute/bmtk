@@ -25,6 +25,8 @@ import json
 import re
 import copy
 import datetime
+from six import string_types
+
 
 from bmtk.simulator.core.io_tools import io
 
@@ -36,9 +38,11 @@ def from_json(config_file, validator=None):
     :param validator: A SimConfigValidator object to validate json file. Won't validate if set to None
     :return: A dictionary, verified against json validator and with manifest variables resolved.
     """
-    if isinstance(config_file, file):
-        conf = json.load(config_file)
-    elif isinstance(config_file, basestring):
+    #print(config_file)
+    #if os.path.isfile(config_file):
+    #if isinstance(config_file, file):
+    #    conf = json.load(config_file)
+    if isinstance(config_file, string_types):
         conf = json.load(open(config_file, 'r'))
     elif isinstance(config_file, dict):
         conf = config_file.copy()
@@ -77,7 +81,7 @@ def from_dict(config_dict, validator=None):
     # In our work with Blue-Brain it was agreed that 'network' and 'simulator' parts of config may be split up into
     # separate files. If this is the case we build each sub-file separately and merge into this one
     for childconfig in ['network', 'simulation']:
-        if childconfig in conf and isinstance(conf[childconfig], basestring):
+        if childconfig in conf and isinstance(conf[childconfig], string_types):
             # Try to resolve the path of the network/simulation config files. If an absolute path isn't used find
             # the file relative to the current config file. TODO: test if this will work on windows?
             conf_str = conf[childconfig]
@@ -168,7 +172,7 @@ def __recursive_insert(json_obj, manifest):
     :param manifest: A dictionary of variable values
     :return: A new json dictionar config file with variables resolved
     """
-    if isinstance(json_obj, basestring):
+    if isinstance(json_obj, string_types):
         return __find_variables(json_obj, manifest)
 
     elif isinstance(json_obj, list):
@@ -414,7 +418,15 @@ class ConfigDict(dict):
 
     @classmethod
     def load(cls, config_file, validate=False):
-        # TODO: Implement factory method that can resolve the format/type of input configuration.
-        raise NotImplementedError
+        # Implement factory method that can resolve the format/type of input configuration.
+        if isinstance(config_file, dict):
+            return cls.from_dict(config_file, validate)
+        elif isinstance(config_file, string_types):
+            if config_file.endswith('yml') or config_file.endswith('yaml'):
+                return cls.from_yaml(config_file, validate)
+            else:
+                return cls.from_json(config_file, validate)
+        else:
+            raise Exception
 
 

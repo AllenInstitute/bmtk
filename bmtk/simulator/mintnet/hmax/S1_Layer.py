@@ -235,11 +235,11 @@ def S1_Layer_test():
 
     number = 10
     runs = timeit.Timer(f).repeat(repeat=10,number=number)
-    print "Average time (s) for output evaluation for ", number, " runs:  ", np.mean(runs)/number, '+/-', np.std(runs)/np.sqrt(number)
+    print("Average time (s) for output evaluation for ", number, " runs:  ", np.mean(runs)/number, '+/-', np.std(runs)/np.sqrt(number))
 
 
 
-    print "Image shape = ", image_data.shape
+    print("Image shape = ", image_data.shape)
 
 
     fig_r, ax_r = plt.subplots(len(orientations),len(freq_channel_params))
@@ -248,7 +248,7 @@ def S1_Layer_test():
     for j,params in enumerate(freq_channel_params):
 
         result = s1.compute_output(image_data,j)
-        print "result shape = ", result.shape
+        print("result shape = ", result.shape)
 
         for i,theta in enumerate(orientations):
 

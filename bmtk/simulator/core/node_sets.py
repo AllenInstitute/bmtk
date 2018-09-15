@@ -1,4 +1,4 @@
-from io_tools import io
+from .io_tools import io
 
 
 class NodeSet(object):

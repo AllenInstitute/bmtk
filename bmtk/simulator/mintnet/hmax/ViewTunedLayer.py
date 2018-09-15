@@ -37,7 +37,7 @@ class ViewTunedLayer (object):
         self.alt_image_dir = alt_image_dir
 
         if file_name==None:
-            print "No filename given.  Generating new (random) weights for layer ", node_name
+            print("No filename given.  Generating new (random) weights for layer ", node_name)
             self.train_state = False
             new_weights=True
         else:
@@ -124,7 +124,7 @@ class ViewTunedLayer (object):
 
     def train(self,image_dir,batch_size=10,image_shape=(256,256)):  #,save_file=None):
 
-        print "Training"
+        print("Training")
 
         im_lib = Image_Library(image_dir,new_size=image_shape)
 
@@ -136,25 +136,25 @@ class ViewTunedLayer (object):
 
         for n in range(num_batches):
             #for k in range(self.K):
-            print "\t\tbatch: ", n, "  Total features:  ", n*batch_size
-            print "\t\t\tImporting images for batch"
+            print("\t\tbatch: ", n, "  Total features:  ", n*batch_size)
+            print("\t\t\tImporting images for batch")
             image_data = im_lib(batch_size,sequential=True)
-            print "\t\t\tDone"
+            print("\t\t\tDone")
 
-            print "\t\t\tComputing responses for batch"
+            print("\t\t\tComputing responses for batch")
             batch_output = self.tf_sess.run(self.input_unit_vector,feed_dict={self.input:image_data})
             new_weights[:,n*batch_size:(n+1)*batch_size] = batch_output.T
 
-            print "\t\t\tDone"
+            print("\t\t\tDone")
 
         if self.K%batch_size!=0:
             last_batch_size = self.K%batch_size
-            print "\t\tbatch: ", n+1, "  Total features:  ", (n+1)*batch_size
-            print "\t\t\tImporting images for batch"
+            print("\t\tbatch: ", n+1, "  Total features:  ", (n+1)*batch_size)
+            print("\t\t\tImporting images for batch")
             image_data = im_lib(last_batch_size,sequential=True)
-            print "\t\t\tDone"
+            print("\t\t\tDone")
 
-            print "\t\t\tComputing responses for batch"
+            print("\t\t\tComputing responses for batch")
             batch_output = self.tf_sess.run(self.input_unit_vector,feed_dict={self.input:image_data})
             new_weights[:,-last_batch_size:] = batch_output.T
 
@@ -162,8 +162,8 @@ class ViewTunedLayer (object):
 
         self.tf_sess.run(self.weights.assign(new_weights))
 
-        print
-        print "Saving weights to file ", self.weight_file
+        print("")
+        print("Saving weights to file ", self.weight_file)
         weight_h5 = h5py.File(self.weight_file,'a')
         weight_h5[self.node_name]['weights'][...] = new_weights
         weight_h5[self.node_name]['train_state'][...] = True
@@ -193,21 +193,21 @@ def test_ViewTunedLayer():
     image_shape = (256,256)
     weight_file_prefix = 'S2b_weights_500'
 
-    print "Configuring HMAX network"
+    print("Configuring HMAX network")
     hm = hmouse('config/nodes.csv','config/node_types.csv')
 
     for node in hm.nodes:
-        print node, "  num_units = ", hm.nodes[node].num_units
+        print(node, "  num_units = ", hm.nodes[node].num_units)
 
     s4 = ViewTunedLayer(10,hm.nodes['c1'],hm.nodes['c2'],hm.nodes['c2b'])  #,hm.nodes['c3'])
 
     im_lib = Image_Library(image_dir,new_size=image_shape)
     image_data = im_lib(1)
 
-    print s4.tf_sess.run(tf.shape(s4.input_unit_vector),feed_dict={s4.input:image_data})
-    print s4.tf_sess.run(tf.shape(s4.weights))
+    print(s4.tf_sess.run(tf.shape(s4.input_unit_vector),feed_dict={s4.input:image_data}))
+    print(s4.tf_sess.run(tf.shape(s4.weights)))
 
-    print s4.compute_output(image_data).shape
+    print(s4.compute_output(image_data).shape)
 
     #s4.train(image_dir,batch_size=10,image_shape=image_shape,save_file='s4_test_weights.pkl')
 

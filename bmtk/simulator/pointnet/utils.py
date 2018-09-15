@@ -24,6 +24,7 @@ import h5py
 from collections import defaultdict
 import pandas as pd
 import numpy as np
+import six
 """
 Most of these functions were collected from previous version of pointnet and are no longer tested and tested. However
 some functions may still be used by some people internally at AI for running their own simulations. I have marked all
@@ -49,10 +50,10 @@ def read_conns(file_name):
     fc = h5py.File(file_name)
     indptr = fc['indptr']
     cell_size = len(indptr) - 1
-    print cell_size
+    print(cell_size)
     conns = {}
     source = fc['src_gids']
-    for xin in xrange(cell_size):
+    for xin in six.moves.range(cell_size):
         conns[str(xin)] = list(source[indptr[xin]:indptr[xin+1]])
 
     return conns
@@ -68,7 +69,7 @@ def gen_recurrent_csv(num, offset, csv_file):
     pre = []
     cell_num = num
     params = []
-    for xin in xrange(cell_num):
+    for xin in six.moves.range(cell_num):
         pre.append(xin+offset)
         ind = np.where(source_ids == xin)
 
@@ -98,7 +99,7 @@ def gen_recurrent_h5(num, offset, h5_file):
     target_ids = []
     delay_v = 1.5  # arbitrary value
 
-    for xin in xrange(cell_size):
+    for xin in six.moves.range(cell_size):
         target_ids.append(xin)
         source_ids.append(list(src_gids[indptr[xin]:indptr[xin+1]]))
         weight_scale.append(list(nsyns[indptr[xin]:indptr[xin+1]]))
@@ -155,7 +156,7 @@ def load_params(node_name, model_name):
     # coordinates
     dict_coordinates = defaultdict(list)
 
-    for xin in xrange(len(node_info)):
+    for xin in six.moves.range(len(node_info)):
         dict_coordinates[str(node_info[xin, 0])] = [node_info[xin, 2], node_info[xin, 3], node_info[xin, 4]]
     return node_info, model_info, dict_coordinates
 
@@ -180,7 +181,7 @@ def load_conns(cnn_fn):
     delays = conns.delay
 
     conns_mapping = {}
-    for xin in xrange(len(targets)):
+    for xin in six.moves.range(len(targets)):
         keys = sources[xin] + '-' + targets[xin]
         conns_mapping[keys] = [weights[xin], delays[xin]]
 

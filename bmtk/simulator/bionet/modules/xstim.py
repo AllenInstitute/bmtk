@@ -2,7 +2,7 @@ import os
 import math
 import pandas as pd
 import numpy as np
-
+import six
 from neuron import h
 
 from bmtk.simulator.bionet.modules.sim_module import SimulatorMod
@@ -73,8 +73,8 @@ class StimXElectrode(object):
         stimelectrode_position_df = pd.read_csv(positions_file, sep=' ')
 
         self.elmesh_files = stimelectrode_position_df['electrode_mesh_file']
-        self.elpos = stimelectrode_position_df.as_matrix(columns=['pos_x', 'pos_y', 'pos_z']).T
-        self.elrot = stimelectrode_position_df.as_matrix(columns=['rotation_x', 'rotation_y', 'rotation_z'])
+        self.elpos = stimelectrode_position_df[['pos_x', 'pos_y', 'pos_z']].T.values
+        self.elrot = stimelectrode_position_df[['rotation_x', 'rotation_y', 'rotation_z']].values
         self.elnsites = self.elpos.shape[1]  # Number of electrodes in electrode file
         self.waveform = stimx_waveform_factory(waveform)
 
@@ -133,7 +133,7 @@ class StimXElectrode(object):
         r05 = seg_coords['p05']
         nseg = r05.shape[1]
         cell_map = np.zeros((self.elnsites, nseg))
-        for el in xrange(self.elnsites):
+        for el in six.moves.range(self.elnsites):
 
             mesh_size = self.el_mesh_size[el]
 

@@ -121,7 +121,7 @@ class ISeeFormat(IFormat):
         :param include_nsyns: setting to false will omit the nsyns table in the h5 file, default
             true (nsyn table included).
         """
-        print "save_edges"
+        print("save_edges")
 
         n_nodes = self._network.nnodes
         n_edges = self._network.nedges
