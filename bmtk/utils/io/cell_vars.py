@@ -187,6 +187,20 @@ class CellVarRecorder(object):
         update_index = (tstep - self._last_save_indx)
         buffer_block[update_index, gid_beg:gid_end] = seg_vals
 
+    def record_cell_block(self, gid, var_name, seg_vals):
+        """Save cell parameters one block at a time
+
+        :param gid: gid of cell.
+        :param var_name: name of variable being recorded.
+        :param seg_vals: A vector/matrix of values being recorded
+        """
+        gid_beg, gid_end = self._gid_map[gid]
+        buffer_block = self._data_blocks[var_name].buffer_block
+        if gid_end - gid_beg == 1:
+            buffer_block[:, gid_beg] = seg_vals
+        else:
+            buffer_block[:, gid_beg:gid_end] = seg_vals
+
     def flush(self):
         """Move data from memory to dataset"""
         if self._buffer_data:

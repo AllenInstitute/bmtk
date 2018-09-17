@@ -49,6 +49,7 @@ class PointNetwork(SimNetwork):
         self._nestid2gid = {}
 
         self._nodes_table = {}
+        self._gid2nestid = {}
 
     @property
     def py_function_caches(self):
@@ -95,6 +96,7 @@ class PointNetwork(SimNetwork):
                     node.build()
                     for nid, gid, nest_id in zip(node.node_ids, node.gids, node.nest_ids):
                         self._nestid2gid[nest_id] = gid
+                        self._gid2nestid[gid] = nest_id
                         nid2nest_map[nid] = nest_id
                         nest2nid_map[nest_id] = nid
 
@@ -104,6 +106,7 @@ class PointNetwork(SimNetwork):
                         node.build()
                         for nid, gid, nest_id in zip(node.node_ids, node.gids, node.nest_ids):
                             self._nestid2gid[nest_id] = gid
+                            self._gid2nestid[gid] = nest_id
                             nid2nest_map[nid] = nest_id
                             nest2nid_map[nest_id] = nid
 

@@ -38,7 +38,7 @@ from . import modules as mods
 
 class PointSimulator(Simulator):
     def __init__(self, graph, dt=0.001, overwrite=True, print_time=False):
-        self._duration = 0.0  # simulation time
+        self._tstop = 0.0  # simulation time
         self._dt = dt  # time step
         self._output_dir = './output/'  # directory where log and temporary output will be stored
         self._overwrite = overwrite
@@ -66,6 +66,34 @@ class PointSimulator(Simulator):
         # TODO: move this into it's own function and make sure it is called before network is built
         nest.ResetKernel()
         nest.SetKernelStatus({"resolution": self._dt, "overwrite_files": self._overwrite, "print_time": print_time})
+
+    @property
+    def tstart(self):
+        return 0.0
+
+    @property
+    def dt(self):
+        return self._dt
+
+    @property
+    def tstop(self):
+        return self._tstop
+
+    @tstop.setter
+    def tstop(self, val):
+        self._tstop = val
+
+    @property
+    def n_steps(self):
+        return long((self.tstop-self.tstart)/self.dt)
+
+    @property
+    def net(self):
+        return self._graph
+
+    @property
+    def gid_map(self):
+        return self._graph._nestid2gid
 
     def _get_block_trial(self, duration):
         """
@@ -98,9 +126,9 @@ class PointSimulator(Simulator):
         # exit()
     '''
 
-    def run(self, duration=None):
-        if duration is None:
-            duration = self.duration
+    def run(self, tstop=None):
+        if tstop is None:
+            tstop = self._tstop
 
         for mod in self._mods:
             mod.initialize(self)
@@ -108,14 +136,14 @@ class PointSimulator(Simulator):
         io.barrier()
 
         io.log_info('Starting Simulation')
-        n, res, data_res = self._get_block_trial(duration)
+        n, res, data_res = self._get_block_trial(tstop)
         if n > 0:
             for r in moves.range(n):
                 nest.Simulate(data_res)
         if res > 0:
             nest.Simulate(res * self.dt)
         if n < 0:
-            nest.Simulate(duration)
+            nest.Simulate(tstop)
 
         io.barrier()
         io.log_info('Simulation finished, finalizing results.')
@@ -157,9 +185,9 @@ class PointSimulator(Simulator):
             network._block_size = run_dict['block_size']
 
         if 'duration' in run_dict:
-            network.duration = run_dict['duration']
+            network.tstop = run_dict['duration']
         elif 'tstop' in run_dict:
-            network.duration = run_dict['tstop']
+            network.tstop = run_dict['tstop']
 
         # Create the output-directory, or delete existing files if it already exists
         graph.io.log_info('Setting up output directory')
@@ -187,6 +215,11 @@ class PointSimulator(Simulator):
         for report in sim_reports:
             if report.module == 'spikes_report':
                 mod = mods.SpikesMod(**report.params)
+
+            elif isinstance(report, reports.MembraneReport):
+                # For convience and for compliance with SONATA format. "membrane_report" and "multimeter_report is the
+                # same in pointnet.
+                mod = mods.MultimeterMod(**report.params)
 
             else:
                 graph.io.log_exception('Unknown report type {}'.format(report.module))
