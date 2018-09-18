@@ -10,13 +10,19 @@ from bmtk.simulator.filternet.lgnmodel import poissongeneration as pg
 
 class SpikesGenerator(SimModule):
     def __init__(self, spikes_file_csv=None, spikes_file=None, spikes_file_nwb=None, tmp_dir='output'):
-        self._csv_fname = spikes_file_csv
+        def _get_file_path(file_name):
+            if file_name is None or os.path.isabs(file_name):
+                return file_name
+
+            return os.path.join(tmp_dir, file_name)
+
+        self._csv_fname = _get_file_path(spikes_file_csv)
         self._save_csv = spikes_file_csv is not None
 
-        self._h5_fname = spikes_file
+        self._h5_fname = _get_file_path(spikes_file)
         self._save_h5 = spikes_file is not None
 
-        self._nwb_fname = spikes_file_nwb
+        self._nwb_fname = _get_file_path(spikes_file_nwb)
         self._save_nwb = spikes_file_nwb is not None
 
         self._tmpdir = tmp_dir
