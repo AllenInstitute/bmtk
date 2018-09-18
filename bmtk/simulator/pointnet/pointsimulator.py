@@ -34,6 +34,7 @@ import bmtk.simulator.utils.simulation_reports as reports
 import bmtk.simulator.utils.simulation_inputs as inputs
 from bmtk.utils.io import spike_trains
 from . import modules as mods
+from bmtk.simulator.core.node_sets import NodeSet
 
 
 class PointSimulator(Simulator):
@@ -61,6 +62,8 @@ class PointSimulator(Simulator):
         self._spike_detector = None
 
         self._mods = []
+
+        self._inputs = {}  # Used to hold references to nest input objects (current_generators, etc)
 
         # Reset the NEST kernel for a new simualtion
         # TODO: move this into it's own function and make sure it is called before network is built
@@ -125,6 +128,21 @@ class PointSimulator(Simulator):
             nest.Connect(pop.keys(), self._spike_detector)
         # exit()
     '''
+
+    def add_step_currents(self, amp_times, amp_values, node_set, input_name):
+        scg = nest.Create("step_current_generator",
+                          params={'amplitude_times': amp_times, 'amplitude_values': amp_values})
+
+        if not isinstance(node_set, NodeSet):
+            node_set = self.net.get_node_set(node_set)
+
+        # Convert node set into list of gids and then look-up the nest-ids
+        nest_ids = [self.net._gid2nestid[gid] for gid in node_set.gids()]
+
+        # Attach current clamp to nodes
+        nest.Connect(scg, nest_ids, syn_spec={'delay': self.dt})
+
+        self._inputs[input_name] = nest_ids
 
     def run(self, tstop=None):
         if tstop is None:
@@ -210,6 +228,24 @@ class PointSimulator(Simulator):
                                                        input_type=sim_input.input_type, params=sim_input.params)
                 io.log_info('Build virtual cell stimulations for {}'.format(sim_input.name))
                 graph.add_spike_trains(spikes, node_set)
+
+            elif sim_input.input_type == 'current_clamp':
+                # TODO: Need to make this more robust
+                amp_times = sim_input.params.get('amplitude_times', [])
+                amp_values = sim_input.params.get('amplitude_values', [])
+
+                if 'delay' in sim_input.params:
+                    amp_times.append(sim_input.params['delay'])
+                    amp_values.append(sim_input.params['amp'])
+
+                    if 'duration' in sim_input.params:
+                        amp_times.append(sim_input.params['delay'] + sim_input.params['duration'])
+                        amp_values.append(0.0)
+
+                network.add_step_currents(amp_times, amp_values, node_set, sim_input.name)
+
+            else:
+                graph.io.log_warning('Unknown input type {}'.format(sim_input.input_type))
 
         sim_reports = reports.from_config(config)
         for report in sim_reports:
