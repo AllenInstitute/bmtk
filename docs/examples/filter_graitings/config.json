@@ -37,11 +37,11 @@
   },
 
   "output":{ 
-    "log_file": "$OUTPUT_DIR/log.txt",
+    "log_file": "log.txt",
     "output_dir": "$OUTPUT_DIR",
-    "rates_csv": "$OUTPUT_DIR/rates.csv",
-    "spikes_csv": "$OUTPUT_DIR/spikes.csv",
-    "spikes_h5": "$OUTPUT_DIR/spikes.h5",
+    "rates_csv": "rates.csv",
+    "spikes_csv": "spikes.csv",
+    "spikes_h5": "spikes.h5",
     "overwrite_output_dir": true
   },
 
@@ -59,7 +59,7 @@
       "cells": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
       "variable_name": "cai",
       "module": "membrane_report",
-      "file_name": "$OUTPUT_DIR/cell_vars.h5",
+      "file_name": "cell_vars.h5",
       "sections": "soma",
       "enabled": true
     },
@@ -68,7 +68,7 @@
       "cells": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
       "variable_name": "v",
       "module": "membrane_report",
-      "file_name": "$OUTPUT_DIR/cell_vars.h5",
+      "file_name": "cell_vars.h5",
       "sections": "soma",
       "enabled": true
     },
@@ -78,9 +78,9 @@
       "variable_name": "v",
       "module": "extracellular",
       "electrode_positions": "$COMPONENT_DIR/recXelectrodes/linear_electrode.csv",
-      "ecp_file": "$OUTPUT_DIR/ecp.h5",
+      "ecp_file": "ecp.h5",
       "electrode_channels": "all",
-      "contributions_dir": "$OUTPUT_DIR/ecp_contributions"
+      "contributions_dir": "ecp_contributions"
     }
   },
 
