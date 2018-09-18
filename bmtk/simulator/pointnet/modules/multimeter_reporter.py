@@ -61,7 +61,7 @@ class MultimeterMod(object):
         self._interval = self._interval or sim.dt
         self._multimeter = nest.Create('multimeter',
                                        params={'interval': self._interval, 'start': self._tstart, 'stop': self._tstop,
-                                               'to_file': True, # 'to_memory': False,
+                                               'to_file': True, 'to_memory': False,
                                                'withtime': True,
                                                'record_from': self._variable_name,
                                                'label': self.__output_label})
@@ -74,16 +74,22 @@ class MultimeterMod(object):
         # min_delay needs to be fetched after simulation otherwise the value will be off. There also seems to be some
         # MPI barrier inside GetKernelStatus
         self._min_delay = nest.GetKernelStatus('min_delay')
+        # print self._min_delay
         if self._to_h5 and MPI_RANK == 0:
             for gid in self._gids:
                 self._var_recorder.add_cell(gid, sec_list=[0], seg_list=[0.0])
-            self._var_recorder.tstart = self._tstart + self._interval  # NEST will not record the initial value
 
-            # nest does not capture the last min_delay amount of time
-            self._var_recorder.tstop = self._tstop - self._min_delay
-            self._var_recorder.dt = self._interval
-            n_steps = long((self._var_recorder.tstop - self._var_recorder.tstart)/self._interval + 2)
-            self._var_recorder.initialize(n_steps)
+            # Initialize hdf5 file including preallocated data block of recorded variables
+            #   Unfortantely with NEST the final time-step recorded can't be calculated in advanced, and even with the
+            # same min/max_delay can be different. We need to read the output-file to get n_steps
+            def get_var_recorder(node_recording_df):
+                if not self._var_recorder.is_initialized:
+                    self._var_recorder.tstart = node_recording_df['time'].min()
+                    self._var_recorder.tstop = node_recording_df['time'].max()
+                    self._var_recorder.dt = self._interval
+                    self._var_recorder.initialize(len(node_recording_df))
+
+                return self._var_recorder
 
             gid_map = sim.net._nestid2gid
             for nest_file in glob.glob('{}*'.format(self.__output_label)):
@@ -91,8 +97,9 @@ class MultimeterMod(object):
                                         sep='\t')
                 for grp_id, grp_df in report_df.groupby(by='nest_id'):
                     gid = gid_map[grp_id]
+                    vr = get_var_recorder(grp_df)
                     for var_name in self._variable_name:
-                        self._var_recorder.record_cell_block(gid, var_name, grp_df[var_name])
+                        vr.record_cell_block(gid, var_name, grp_df[var_name])
 
                 if self._delete_dat:
                     # remove csv file created by nest

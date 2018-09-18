@@ -83,6 +83,7 @@ class CellVarRecorder(object):
         self._tstart = 0.0
         self._tstop = 0.0
         self._dt = 0.01
+        self._is_initialized = False
 
     @property
     def tstart(self):
@@ -107,6 +108,10 @@ class CellVarRecorder(object):
     @dt.setter
     def dt(self, time_ms):
         self._dt = time_ms
+
+    @property
+    def is_initialized(self):
+        return self._is_initialized
 
     def _calc_offset(self):
         self._n_segments_all = self._n_segments_local
@@ -173,6 +178,8 @@ class CellVarRecorder(object):
                 data_tables.buffer_block = data_grp.create_dataset('data', shape=(n_steps, self._n_segments_all),
                                                                    dtype=np.float, chunks=True)
                 data_tables.buffer_block.attrs['variable_name'] = var_name
+
+        self._is_initialized = True
 
     def record_cell(self, gid, var_name, seg_vals, tstep):
         """Record cell parameters.
