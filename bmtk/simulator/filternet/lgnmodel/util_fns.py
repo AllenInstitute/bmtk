@@ -79,9 +79,9 @@ def get_data_metrics_for_each_subclass(ctype):
 
     # Group data by subclasses based on max F0 vals
     exp_df = prs_df.iloc[:, [13, 14, 17, 18, 28, 45, 46, 47, 48, 49, 50, 51, 52, 53,
-                             54]]  # Bl_lat,Wh_lat,Bl_si, wh_si, spont, 5 F0s, 5 F1s
+                             54]].copy()  # Bl_lat,Wh_lat,Bl_si, wh_si, spont, 5 F0s, 5 F1s
     sub_df = exp_df.iloc[:, [5, 6, 7, 8, 9]]
-    exp_df['max_tf'] = sub_df.idxmax(axis=1)
+    exp_df['max_tf'] = sub_df.idxmax(axis=1).values  # sub_df.idxmax(axis=1)
 
     exp_means = exp_df.groupby(['max_tf']).mean()
     exp_std = exp_df.groupby(['max_tf']).std()

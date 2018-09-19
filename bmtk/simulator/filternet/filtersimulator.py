@@ -5,6 +5,7 @@ import bmtk.simulator.utils.simulation_inputs as inputs
 from bmtk.simulator.filternet.config import Config
 from bmtk.simulator.filternet.lgnmodel.movie import *
 from bmtk.simulator.filternet import modules as mods
+from bmtk.simulator.filternet.io_tools import io
 from six import string_types
 
 
@@ -45,9 +46,9 @@ class FilterSimulator(Simulator):
         for mod in self._sim_mods:
             mod.initialize(self)
 
+        io.log_info('Evaluating rates.')
         for cell in self._network.cells():
             for movie in self._movies:
-                print(type(cell.lgn_cell_obj))
                 ts, f_rates = cell.lgn_cell_obj.evaluate(movie, downsample=1, separable=True)
 
                 for mod in self._sim_mods:
@@ -60,6 +61,7 @@ class FilterSimulator(Simulator):
                         csv_writer.writerow([t, f, cell.gid])
                     csv_fhandle.flush()
                 """
+        io.log_info('Done.')
         for mod in self._sim_mods:
             mod.finalize(self)
 

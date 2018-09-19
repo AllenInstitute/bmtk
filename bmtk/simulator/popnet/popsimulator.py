@@ -399,6 +399,7 @@ class PopSimulator(Simulator):
 
             rates_file = out_dict.get('rates_file', None)
             if rates_file is not None:
+                rates_file = rates_file if os.path.isabs(rates_file) else os.path.join(config.output_dir, rates_file)
                 # create directory if required
                 network.rates_file = rates_file
                 parent_dir = os.path.dirname(rates_file)
