@@ -229,6 +229,15 @@ class SaveSynapses(SimReport):
         return 'SaveSynapses'
 
 
+@SimReport.register_module
+class MultimeterReport(MembraneReport):
+
+    @staticmethod
+    def avail_modules():
+        return ['multimeter', 'multimeter_report']
+
+
+
 def from_config(cfg):
     SimReport.default_dir = cfg.output_dir
 
