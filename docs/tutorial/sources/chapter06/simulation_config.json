@@ -1,0 +1,30 @@
+{
+  "manifest": {
+    "$OUTPUT_DIR": "$BASE_DIR/output", 
+    "$BASE_DIR": "."
+  }, 
+  "target_simulator": "DiPDE", 
+  "run": {
+    "tstop": 1500.0, 
+    "dt": 0.001
+  }, 
+  "conditions": {
+    "celsius": 34.0
+  }, 
+  "inputs": {
+    "LGN_pop_rates": {
+      "input_type": "csv",
+      "module": "pop_rates",
+      "rates": "${BASE_DIR}/lgn_rates.csv",
+      "node_set": "LGN"
+    }    
+  }, 
+  "output": {
+    "rates_file": "firing_rates.csv", 
+    "overwrite_output_dir": true, 
+    "output_dir": "${OUTPUT_DIR}", 
+    "log_file": "log.txt"
+  }, 
+  "reports": {}, 
+  "network": "./circuit_config.json"
+}
