@@ -172,6 +172,9 @@ class SimNetwork(object):
         # load edges
         edge_adaptor = network.get_edge_adaptor('sonata')
         for edge_dict in config.edges:
+            if not edge_dict.get('enabled', True):
+                continue
+
             edges = sonata_reader.load_edges(edge_dict['edges_file'], edge_dict['edge_types_file'],
                                              adaptor=edge_adaptor)
             for edge_pop in edges:
