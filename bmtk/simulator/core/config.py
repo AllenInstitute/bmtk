@@ -21,6 +21,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+from bmtk.simulator.utils.config import ConfigDict
+
 '''
 import os
 import json
