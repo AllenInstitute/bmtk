@@ -65,7 +65,7 @@ def plot_potential(cell_vars_h5=None, config_file=None, gids=None, show_plot=Tru
 
 def plot_potential_hdf5(cell_vars_h5, gids, title='membrane potential', show_plot=True, save_as=None):
     data_h5 = h5py.File(cell_vars_h5, 'r')
-    membrane_trace = data_h5['v/data']
+    membrane_trace = data_h5['data']
 
     time_ds = data_h5['/mapping/time']
     tstart = time_ds[0]
