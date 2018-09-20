@@ -360,7 +360,8 @@ class PopSimulator(Simulator):
         overwrite = run_dict['overwrite_output_dir'] if 'overwrite_output_dir' in run_dict else True
         print_time = run_dict['print_time'] if 'print_time' in run_dict else False
         dt = run_dict['dt']  # TODO: make sure dt exists
-        network = cls(graph, dt=config.dt, tstop=config.tstop, overwrite=overwrite)
+        tstop = float(config.tstop) / 1000.0
+        network = cls(graph, dt=config.dt, tstop=tstop, overwrite=overwrite)
 
         if 'output_dir' in config['output']:
             network.output_dir = config['output']['output_dir']

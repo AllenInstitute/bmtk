@@ -225,6 +225,39 @@ def build_env_bionet(base_dir='.', network_dir=None, reports=None, with_examples
     copy_config(base_dir, simulation_config, 'simulation_config.json')
 
 
+def build_env_popnet(base_dir='.', network_dir=None, reports=None, with_examples=True, tstop=1000.0, dt=0.001, **args):
+    simulator='popnet'
+    target_simulator='DiPDE'
+    components_dir='pop_components'
+
+    # Copy run script
+    copy_run_script(base_dir=base_dir, simulator=simulator, run_script='run_{}.py'.format(simulator))
+
+    # Build circuit_config and componenets directory
+    circuit_config = build_circuit_env(base_dir=base_dir, network_dir=network_dir, components_dir=components_dir,
+                                       simulator=simulator, with_examples=with_examples)
+    circuit_config['components']['population_models_dir'] = '$COMPONENTS_DIR/population_models'
+    # population_models_dir = os.path.join(base_dir, components_dir, 'population_models')
+    if with_examples:
+        models_dir =  os.path.join(base_dir, components_dir, 'population_models')
+        if os.path.exists(models_dir):
+            shutil.rmtree(models_dir)
+        shutil.copytree(os.path.join(scripts_path, simulator, 'population_models'), models_dir)
+
+    copy_config(base_dir, circuit_config, 'circuit_config.json')
+
+    # Build simulation config
+    simulation_config = build_simulation_env(base_dir=base_dir, target_simulator=target_simulator, tstop=tstop, dt=dt,
+                                             reports=reports)
+    # PopNet doesn't produce spike files so instead need to replace them with rates files
+    for output_key in simulation_config['output'].keys():
+        if output_key.startswith('spikes'):
+            del simulation_config['output'][output_key]
+    # simulation_config['output']['rates_file_csv'] = 'firing_rates.csv'
+    simulation_config['output']['rates_file'] = 'firing_rates.csv'
+
+    copy_config(base_dir, simulation_config, 'simulation_config.json')
+
 
 """
 def build_env_bionet(base_dir='.', run_time=0.0, with_config=True, network_dir=None, with_cell_types=True,
@@ -403,4 +436,8 @@ if __name__ == '__main__':
 
     elif target_sim == 'pointnet':
         build_env_pointnet(base_dir=options.base_dir, network_dir=options.network_dir, tstop=options.tstop,
+                           dt=options.dt, reports=reports)
+
+    elif target_sim == 'popnet':
+        build_env_popnet(base_dir=options.base_dir, network_dir=options.network_dir, tstop=options.tstop,
                            dt=options.dt, reports=reports)
