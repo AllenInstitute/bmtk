@@ -206,7 +206,7 @@ def build_env_bionet(base_dir='.', network_dir=None, reports=None, with_examples
     copy_config(base_dir, circuit_config, 'circuit_config.json')
     if compile_mechanisms:
         cwd = os.getcwd()
-        os.chdir(circuit_config['components']['mechanisms_dir'])
+        os.chdir(os.path.join(base_dir, components_dir, 'mechanisms'))  # circuit_config['components']['mechanisms_dir'])
         try:
             print(os.getcwd())
             call(['nrnivmodl', 'modfiles'])

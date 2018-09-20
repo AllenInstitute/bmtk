@@ -20,6 +20,8 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+
+'''
 import os
 import json
 import re
@@ -428,5 +430,5 @@ class ConfigDict(dict):
                 return cls.from_json(config_file, validate)
         else:
             raise Exception
-
+'''
 
