@@ -1,7 +1,8 @@
 from six import string_types
 
 from bmtk.simulator.core.io_tools import io
-from bmtk.simulator.core.config import ConfigDict
+#from bmtk.simulator.core.config import ConfigDict
+from bmtk.simulator.utils.config import ConfigDict
 from bmtk.simulator.core.node_sets import NodeSet, NodeSetAll
 from bmtk.simulator.core import sonata_reader
 
