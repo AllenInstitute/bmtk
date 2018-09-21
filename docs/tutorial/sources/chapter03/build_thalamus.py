@@ -20,16 +20,15 @@ thalamus.add_nodes(N=100,
 
 cortex = NetworkBuilder('mcortex')
 cortex.import_nodes(nodes_file_name='network/mcortex_nodes.h5', node_types_file_name='network/mcortex_node_types.csv')
-thalamus.add_edges(source=thalamus.nodes(), target=cortex.nodes(pop_name='Scnn1a'),
+thalamus.add_edges(source=thalamus.nodes(), target=cortex.nodes(),
                    connection_rule=connect_random,
                    connection_params={'nsyn_min': 0, 'nsyn_max': 12},
-                   weight_max=5e-05,
-                   weight_function='wmax',
+                   syn_weight=1.0e-04,
                    distance_range=[0.0, 150.0],
                    target_sections=['basal', 'apical'],
                    delay=2.0,
-                   params_file='AMPA_ExcToExc.json',
-                   set_params_function='exp2syn')
+                   dynamics_params='AMPA_ExcToExc.json',
+                   model_template='exp2syn')
 
 thalamus.build()
 thalamus.save_nodes(output_dir='network')

@@ -4,11 +4,14 @@ import numpy as np
 
 class CellVarsFile(object):
     VAR_UNKNOWN = 'Unknown'
+    UNITS_UNKNOWN = 'NA'
 
     def __init__(self, filename, mode='r', **params):
         self._h5_handle = h5py.File(filename, 'r')
         self._h5_root = self._h5_handle[params['h5_root']] if 'h5_root' in params else self._h5_handle['/']
         self._var_data = {}
+        self._var_units = {}
+
         self._mapping = None
 
         # Look for variabl and mapping groups
@@ -19,6 +22,7 @@ class CellVarsFile(object):
                 # According to the sonata format the /data table should be located at the root
                 var_name = self._h5_root['data'].attrs.get('variable_name', CellVarsFile.VAR_UNKNOWN)
                 self._var_data[var_name] = self._h5_root['data']
+                self._var_units[var_name] = self._find_units(self._h5_root['data'])
 
             if not isinstance(hf_grp, h5py.Group):
                 continue
@@ -33,6 +37,7 @@ class CellVarsFile(object):
                     print('Warning: could not find "data" dataset in {}. Skipping!'.format(var_name))
                 else:
                     self._var_data[var_name] = hf_grp['data']
+                    self._var_units[var_name] = self._find_units(hf_grp['data'])
 
         # create map between gids and tables
         self._gid2data_table = {}
@@ -77,6 +82,12 @@ class CellVarsFile(object):
     @property
     def h5(self):
         return self._h5_root
+
+    def _find_units(self, data_set):
+        return data_set.attrs.get('units', CellVarsFile.UNITS_UNKNOWN)
+
+    def units(self, var_name=VAR_UNKNOWN):
+        return self._var_units[var_name]
 
     def n_compartments(self, gid):
         bounds = self._gid2data_table[gid]

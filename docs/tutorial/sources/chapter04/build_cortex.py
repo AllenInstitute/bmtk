@@ -12,40 +12,42 @@ net.add_nodes(N=80, pop_name='Scnn1a',
               rotation_angle_yaxis=xiter_random(N=80, min_x=0.0, max_x=2*np.pi),
               rotation_angle_zaxis=xiter_random(N=80, min_x=0.0, max_x=2*np.pi),
               tuning_angle=np.linspace(start=0.0, stop=360.0, num=80, endpoint=False),
-              location='L4',
+              location='VisL4',
               ei='e',
-              level_of_detail='biophysical',
-              params_file='472363762_fit.json',
-              morphology_file='Scnn1a.swc',
-              set_params_function='Biophys1')
+              model_type='biophysical',
+              model_template='ctdb:Biophys1.hoc',
+              model_processing='aibs_perisomatic',
+              dynamics_params='472363762_fit.json',
+              morphology='Scnn1a.swc')
 
 net.add_nodes(N=20, pop_name='PV',
               positions=positions_columinar(N=20, center=[0, 50.0, 0], max_radius=30.0, height=100.0),
               rotation_angle_yaxis=xiter_random(N=20, min_x=0.0, max_x=2*np.pi),
               rotation_angle_zaxis=xiter_random(N=20, min_x=0.0, max_x=2*np.pi),
-              location='L4',
+              location='VisL4',
               ei='i',
-              level_of_detail='biophysical',
-              params_file='472912177_fit.json',
-              morphology_file='Pvalb.swc',
-              set_params_function='Biophys1')
+              model_type='biophysical',
+              model_template='ctdb:Biophys1.hoc',
+              model_processing='aibs_perisomatic',
+              dynamics_params='472912177_fit.json',
+              morphology='Pvalb.swc')
 
 net.add_nodes(N=200, pop_name='LIF_exc',
               positions=positions_columinar(N=200, center=[0, 50.0, 0], min_radius=30.0, max_radius=60.0, height=100.0),
               tuning_angle=np.linspace(start=0.0, stop=360.0, num=200, endpoint=False),
               location='VisL4',
               ei='e',
-              level_of_detail='intfire',
-              params_file='IntFire1_exc_1.json',
-              set_params_function='IntFire1')
+              model_type='point_process',
+              model_template='nrn:IntFire1',
+              dynamics_params='IntFire1_exc_1.json')
 
 net.add_nodes(N=100, pop_name='LIF_inh',
               positions=positions_columinar(N=100, center=[0, 50.0, 0], min_radius=30.0, max_radius=60.0, height=100.0),
               location='VisL4',
               ei='i',
-              level_of_detail='intfire',
-              params_file='IntFire1_inh_1.json',
-              set_params_function='IntFire1')
+              model_type='point_process',
+              model_template='nrn:IntFire1',
+              dynamics_params='IntFire1_inh_1.json')
 
 
 ## Generating E-to-E connections
@@ -97,89 +99,90 @@ net.add_edges(source={'ei': 'e'}, target={'pop_name': 'Scnn1a'},
               connection_rule=dist_tuning_connector,
               connection_params={'d_weight_min': 0.0, 'd_weight_max': 0.34, 'd_max': 300.0, 't_weight_min': 0.5,
                                  't_weight_max': 1.0, 'nsyn_min': 3, 'nsyn_max': 7},
-              weight_max=6.4e-05,
+              syn_weight=6.4e-05,
               weight_function='gaussianLL',
               weight_sigma=50.0,
               distance_range=[30.0, 150.0],
               target_sections=['basal', 'apical'],
               delay=2.0,
-              params_file='AMPA_ExcToExc.json',
-              set_params_function='exp2syn')
+              dynamics_params='AMPA_ExcToExc.json',
+              model_template='exp2syn')
 
 net.add_edges(source={'ei': 'e'}, target={'pop_name': 'LIF_exc'},
               connection_rule=dist_tuning_connector,
               connection_params={'d_weight_min': 0.0, 'd_weight_max': 0.34, 'd_max': 300.0, 't_weight_min': 0.5,
                                  't_weight_max': 1.0, 'nsyn_min': 3, 'nsyn_max': 7},
-              weight_max=0.0019,
+              syn_weight=0.0019,
               weight_function='gaussianLL',
               weight_sigma=50.0,
               delay=2.0,
-              params_file='instanteneousExc.json',
-              set_params_function='exp2syn')
+              dynamics_params='instanteneousExc.json',
+              model_template='exp2syn')
+
 
 ### Generating I-to-I connections
-net.add_edges(source={'ei': 'i'}, target={'ei': 'i', 'level_of_detail': 'biophysical'},
+net.add_edges(source={'ei': 'i'}, target={'ei': 'i', 'model_type': 'biophysical'},
               connection_rule=distance_connector,
               connection_params={'d_weight_min': 0.0, 'd_weight_max': 1.0, 'd_max': 160.0, 'nsyn_min': 3, 'nsyn_max': 7},
-              weight_max=0.0002,
+              syn_weight=0.0002,
               weight_function='wmax',
               distance_range=[0.0, 1e+20],
               target_sections=['somatic', 'basal'],
               delay=2.0,
-              params_file='GABA_InhToInh.json',
-              set_params_function='exp2syn')
+              dynamics_params='GABA_InhToInh.json',
+              model_template='exp2syn')
 
-net.add_edges(source={'ei': 'i'}, target={'ei': 'i', 'level_of_detail': 'intfire'},
+net.add_edges(source={'ei': 'i'}, target={'ei': 'i', 'model_type': 'point_process'},
               connection_rule=distance_connector,
               connection_params={'d_weight_min': 0.0, 'd_weight_max': 1.0, 'd_max': 160.0, 'nsyn_min': 3, 'nsyn_max': 7},
-              weight_max=0.00225,
+              syn_weight=0.00225,
               weight_function='wmax',
               delay=2.0,
-              params_file='instanteneousInh.json',
-              set_params_function='exp2syn')
+              dynamics_params='instanteneousInh.json',
+              model_template='exp2syn')
 
 ### Generating I-to-E connections
-net.add_edges(source={'ei': 'i'}, target={'ei': 'e', 'level_of_detail': 'biophysical'},
+net.add_edges(source={'ei': 'i'}, target={'ei': 'e', 'model_type': 'biophysical'},
               connection_rule=distance_connector,
               connection_params={'d_weight_min': 0.0, 'd_weight_max': 1.0, 'd_max': 160.0, 'nsyn_min': 3, 'nsyn_max': 7},
-              weight_max=0.00018,
+              syn_weight=0.00018,
               weight_function='wmax',
               distance_range=[0.0, 50.0],
               target_sections=['somatic', 'basal', 'apical'],
               delay=2.0,
-              params_file='GABA_InhToExc.json',
-              set_params_function='exp2syn')
+              dynamics_params='GABA_InhToExc.json',
+              model_template='exp2syn')
 
-net.add_edges(source={'ei': 'i'}, target={'ei': 'e', 'level_of_detail': 'intfire'},
+net.add_edges(source={'ei': 'i'}, target={'ei': 'e', 'model_type': 'point_process'},
               connection_rule=distance_connector,
               connection_params={'d_weight_min': 0.0, 'd_weight_max': 1.0, 'd_max': 160.0, 'nsyn_min': 3, 'nsyn_max': 7},
-              weight_max=0.009,
+              syn_weight=0.009,
               weight_function='wmax',
               delay=2.0,
-              params_file='instanteneousInh.json',
-              set_params_function='exp2syn')
+              dynamics_params='instanteneousInh.json',
+              model_template='exp2syn')
 
 ### Generating E-to-I connections
 net.add_edges(source={'ei': 'e'}, target={'pop_name': 'PV'},
               connection_rule=distance_connector,
               connection_params={'d_weight_min': 0.0, 'd_weight_max': 0.26, 'd_max': 300.0, 'nsyn_min': 3, 'nsyn_max': 7},
-              weight_max=0.00035,
+              syn_weight=0.00035,
               weight_function='wmax',
               distance_range=[0.0, 1e+20],
               target_sections=['somatic', 'basal'],
               delay=2.0,
-              params_file='AMPA_ExcToInh.json',
-              set_params_function='exp2syn')
+              dynamics_params='AMPA_ExcToInh.json',
+              model_template='exp2syn')
 
 
 net.add_edges(source={'ei': 'e'}, target={'pop_name': 'LIF_inh'},
               connection_rule=distance_connector,
               connection_params={'d_weight_min': 0.0, 'd_weight_max': 0.26, 'd_max': 300.0, 'nsyn_min': 3, 'nsyn_max': 7},
-              weight_max=0.0043,
+              syn_weight=0.0043,
               weight_function='wmax',
               delay=2.0,
-              params_file='instanteneousExc.json',
-              set_params_function='exp2syn')
+              dynamics_params='instanteneousExc.json',
+              model_template='exp2syn')
 
 net.build()
 net.save_nodes(output_dir='network')

@@ -206,7 +206,7 @@ def build_env_bionet(base_dir='.', network_dir=None, reports=None, with_examples
     copy_config(base_dir, circuit_config, 'circuit_config.json')
     if compile_mechanisms:
         cwd = os.getcwd()
-        os.chdir(circuit_config['components']['mechanisms_dir'])
+        os.chdir(os.path.join(base_dir, components_dir, 'mechanisms'))  # circuit_config['components']['mechanisms_dir'])
         try:
             print(os.getcwd())
             call(['nrnivmodl', 'modfiles'])
@@ -427,6 +427,7 @@ if __name__ == '__main__':
         }
 
     target_sim = args[0].lower() if len(args) == 1 else None
+    print target_sim
     if target_sim not in ['bionet', 'popnet', 'pointnet', 'mintnet']:
         raise Exception('Must specify one target simulator. options: "bionet", pointnet", "popnet" or "mintnet"')
 
