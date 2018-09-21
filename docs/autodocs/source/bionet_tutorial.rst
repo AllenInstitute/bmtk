@@ -1,10 +1,12 @@
+:orphan:
+
 Simulating example networks with BioNet
 =======================================
 
 To get started with running simulations with BioNet, we recommend to run network examples provided in the directory docs/examples/simulators/bionet:
 
- * /14cells : network of 14 cell receiving an external input.
- * /450cells : network of 450 cells receiving an external input
+* /14cells : network of 14 cell receiving an external input.
+* /450cells : network of 450 cells receiving an external input
 
 Working through the sections below, you will learn about contents of folders in each example and how to use them to run a simulation.
 
@@ -70,7 +72,7 @@ The paths to each of these files and directories are specified in the configurat
 
 
 Running simulation
------------------
+------------------
 
 Running simualtions requires the following Python scripts
 
@@ -84,14 +86,17 @@ Running simualtions requires the following Python scripts
 
 The example networks use biophysically-detailed models of individual cells, and require additional NEURON channel mechanisms describing dynamics of ionic channels. To compile these NEURON mechanims go to the subdirectory docs/examples/simulators/bionet/components/mechanisms and run the NEURON command:
 ::
+
    nrnivmodl modfiles/
 
 From the directory of the network example you can run a simulation on a single core by executing the main python script with configuration file as a command line argument, as follows:
 ::
+
   python run_bionet.py config.json
 
 Or to run in parallel with MPI on $NCORES CPUs:
 ::
+
   mpirun -np $NCORES nrniv -mpi -python run_bionet config.json
 
 In either case, the main script will load the configuration file containing paths to files describing the network and will load and simulate the network. 
@@ -107,14 +112,16 @@ Simulation output
 -----------------
 
 The output directory includes:
- * spikes.h5 : HDF5 file containg the spikes of the simulated cells.
- * cellvars/N.h5 : HDF5 file containing time series recordings of somatic variables  (e.g., somatic voltage, [Ca++]) for cell with node_id=N (there might be multiple such files, up to the number of cells in the model, or none at all, depending on the settings in the simulation config).
- * config.json : a copy of configuration for record keeping
- * log.txt : run log file including time-stamped information about the progress of a simulation.
+
+* spikes.h5 : HDF5 file containg the spikes of the simulated cells.
+* cellvars/N.h5 : HDF5 file containing time series recordings of somatic variables  (e.g., somatic voltage, [Ca++]) for cell with node_id=N (there might be multiple such files, up to the number of cells in the model, or none at all, depending on the settings in the simulation config).
+* config.json : a copy of configuration for record keeping
+* log.txt : run log file including time-stamped information about the progress of a simulation.
 
 
 Upon completion you may run the script plot_rasters.py to plot spike rasters of external (Figure 2) as well as simulated (Figure 3) cells:
 ::
+
   python plot_rasters.py
 
 

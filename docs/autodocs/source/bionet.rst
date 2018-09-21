@@ -16,11 +16,13 @@ BioNet requires the following additional python packages:
 
 To install BioNet either get the latest source-code from the github develop branch:
 ::
+
   git clone https://github.com/AllenInstitute/bmtk.git
 
 or `download <https://github.com/AllenInstitute/bmtk/archive/develop.zip>`_ and unzip, and install missing python
 dependencies by running from the bmtk/ base directory:
 ::
+
   python setup.py install
 
 Installing NEURON
@@ -56,11 +58,13 @@ Inside each example folder you will find:
 These examples use biophysically-detailed models of individual cells, and thus require additional NEURON channel
 mechanisms describing dynamics of ionic channels. To compile these NEURON mechanims go to the subdirectory docs/examples/simulators/bionet/components/mechanisms and run the NEURON command
 ::
+
    nrnivmodl modfiles/
 
 To run the examples in their respective subdirectories, you can run a full BioNet simulation on a single core by running
 the command:
 ::
+
   python run_bionet.py config.json
 
 When simulation is completed you will see a message “Simulation completed” and you should have an output directory ./output
