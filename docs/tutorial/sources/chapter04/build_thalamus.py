@@ -19,50 +19,49 @@ def select_source_cells(sources, target, nsources_min=10, nsources_max=30, nsyns
     syns = np.zeros(total_sources)
     syns[selected_sources] = np.random.randint(nsyns_min, nsyns_max, size=nsources)
     return syns
-
-lgn.add_edges(source=lgn.nodes(), target=v1.nodes(pop_name='Scnn1a'),
+lgn.add_edges(source=lgn.nodes(), target=net.nodes(pop_name='Scnn1a'),
               iterator='all_to_one',
               connection_rule=select_source_cells,
               connection_params={'nsources_min': 10, 'nsources_max': 25},
-              weight_max=4e-03,
+              syn_weight=4e-03,
               weight_function='wmax',
               distance_range=[0.0, 150.0],
               target_sections=['basal', 'apical'],
               delay=2.0,
-              params_file='AMPA_ExcToExc.json',
-              set_params_function = 'exp2syn')
+              dynamics_params='AMPA_ExcToExc.json',
+              model_template='exp2syn')
 
-lgn.add_edges(source=lgn.nodes(), target=v1.nodes(pop_name='PV1'),
+lgn.add_edges(source=lgn.nodes(), target=net.nodes(pop_name='PV1'),
               connection_rule=select_source_cells,
               connection_params={'nsources_min': 15, 'nsources_max': 30},
               iterator='all_to_one',
-              weight_max=0.001,
+              syn_weight=0.001,
               weight_function='wmax',
               distance_range=[0.0, 1.0e+20],
               target_sections=['somatic', 'basal'],
               delay=2.0,
-              params_file='AMPA_ExcToInh.json',
-              set_params_function = 'exp2syn')
+              dynamics_params='AMPA_ExcToInh.json',
+              model_template='exp2syn')
 
-lgn.add_edges(source=lgn.nodes(),  target=v1.nodes(pop_name='LIF_exc'),
+lgn.add_edges(source=lgn.nodes(),  target=net.nodes(pop_name='LIF_exc'),
               connection_rule=select_source_cells,
               connection_params={'nsources_min': 10, 'nsources_max': 25},
               iterator='all_to_one',
-              weight_max= 0.045,
+              syn_weight= 0.045,
               weight_function='wmax',
               delay=2.0,
-              params_file='instanteneousExc.json',
-              set_params_function = 'exp2syn')
+              dynamics_params='instanteneousExc.json',
+              model_template='exp2syn')
 
-lgn.add_edges(source=lgn.nodes(),  target=v1.nodes(pop_name='LIF_inh'),
+lgn.add_edges(source=lgn.nodes(),  target=net.nodes(pop_name='LIF_inh'),
               connection_rule=select_source_cells,
               connection_params={'nsources_min': 15, 'nsources_max': 30},
               iterator='all_to_one',
-              weight_max=0.02,
+              syn_weight=0.02,
               weight_function='wmax',
               delay=2.0,
-              params_file='instanteneousExc.json',
-              set_params_function='exp2syn')
+              dynamics_params='instanteneousExc.json',
+              model_template='exp2syn')
 
 
 lgn.build()

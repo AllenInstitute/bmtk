@@ -4,6 +4,7 @@ import h5py
 
 
 from bmtk.analyzer.visualization.spikes import plot_spikes as raster_plot
+from bmtk.analyzer.visualization.spikes import plot_rates as rates_plot
 from .io_tools import load_config
 from bmtk.utils.spike_trains import SpikesFile
 
