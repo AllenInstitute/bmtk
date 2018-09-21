@@ -9,11 +9,13 @@ Installation
 PointNet runs on Python 2.7 and will require addtional python packages numpy, h5py, pandas and jsonschema. To install
 either get the latest source-code from the github develop branch
 ::
+
   git clone https://github.com/AllenInstitute/bmtk.git
 
 or `download <https://github.com/AllenInstitute/bmtk/archive/develop.zip>`_ and unzip, and install missing python
 dependencies by running from the bmtk/ base directory
 ::
+
   python setup.py install
 
 Installing NEST
@@ -32,10 +34,12 @@ model files.
 
 To run a simulation in a single processor, open a command prompt and run
 ::
+
    python run_pointnet.py config.json
 
 Or to run a parallized simulation with MPI setup
 ::
+
    mpirun -np $NCORES python run_pointnet.py config.json
 
 **Output**
