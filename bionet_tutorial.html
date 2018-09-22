@@ -630,12 +630,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <div class="section" id="simulating-example-networks-with-bionet">
 <h1>Simulating example networks with BioNet<a class="headerlink" href="#simulating-example-networks-with-bionet" title="Permalink to this headline">¶</a></h1>
 <p>To get started with running simulations with BioNet, we recommend to run network examples provided in the directory docs/examples/simulators/bionet:</p>
-<blockquote>
-<div><ul class="simple">
+<ul class="simple">
 <li>/14cells : network of 14 cell receiving an external input.</li>
 <li>/450cells : network of 450 cells receiving an external input</li>
 </ul>
-</div></blockquote>
 <p>Working through the sections below, you will learn about contents of folders in each example and how to use them to run a simulation.</p>
 <div class="section" id="configuring-simulation">
 <h2>Configuring simulation<a class="headerlink" href="#configuring-simulation" title="Permalink to this headline">¶</a></h2>
@@ -737,16 +735,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div>
 <div class="section" id="simulation-output">
 <h2>Simulation output<a class="headerlink" href="#simulation-output" title="Permalink to this headline">¶</a></h2>
-<dl class="docutils">
-<dt>The output directory includes:</dt>
-<dd><ul class="first last simple">
+<p>The output directory includes:</p>
+<ul class="simple">
 <li>spikes.h5 : HDF5 file containg the spikes of the simulated cells.</li>
 <li>cellvars/N.h5 : HDF5 file containing time series recordings of somatic variables  (e.g., somatic voltage, [Ca++]) for cell with node_id=N (there might be multiple such files, up to the number of cells in the model, or none at all, depending on the settings in the simulation config).</li>
 <li>config.json : a copy of configuration for record keeping</li>
 <li>log.txt : run log file including time-stamped information about the progress of a simulation.</li>
 </ul>
-</dd>
-</dl>
 <p>Upon completion you may run the script plot_rasters.py to plot spike rasters of external (Figure 2) as well as simulated (Figure 3) cells:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">plot_rasters</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
@@ -776,18 +771,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="sphinxsidebarwrapper">
 <h3><a href="index.html">Contents</a></h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="builder.html">The Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="builder.html">Building Networks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="simulators.html">Simulation Engines</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filternet.html">FilterNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mintnet.html">MintNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>
 </ul>

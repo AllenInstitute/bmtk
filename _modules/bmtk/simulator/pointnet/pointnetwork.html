@@ -628,10 +628,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <h1>Source code for bmtk.simulator.pointnet.pointnetwork</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Allen Institute Software License - This software license is the 2-clause BSD license plus clause a third</span>
-<span class="c1"># clause that prohibits redistribution for commercial purposes without further permission.</span>
-<span class="c1">#</span>
-<span class="c1"># Copyright 2017. Allen Institute. All rights reserved.</span>
+<span></span><span class="c1"># Copyright 2017. Allen Institute. All rights reserved</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without modification, are permitted provided that the</span>
 <span class="c1"># following conditions are met:</span>
@@ -642,10 +639,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following</span>
 <span class="c1"># disclaimer in the documentation and/or other materials provided with the distribution.</span>
 <span class="c1">#</span>
-<span class="c1"># 3. Redistributions for commercial purposes are not permitted without the Allen Institute&#39;s written permission. For</span>
-<span class="c1"># purposes of this license, commercial purposes is the incorporation of the Allen Institute&#39;s software into anything for</span>
-<span class="c1"># which you will charge fees or other compensation. Contact terms@alleninstitute.org for commercial licensing</span>
-<span class="c1"># opportunities.</span>
+<span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
+<span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
 <span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
@@ -656,303 +651,159 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c1">#</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">glob</span>
-<span class="kn">import</span> <span class="nn">h5py</span>
-
-<span class="kn">import</span> <span class="nn">bmtk.simulator.pointnet.config</span> <span class="k">as</span> <span class="nn">cfg</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.pointnet.cell</span> <span class="k">import</span> <span class="n">NestCell</span><span class="p">,</span> <span class="n">VirtualCell</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.pointnet.property_schemas</span> <span class="k">import</span> <span class="n">CellTypes</span>
-<span class="kn">import</span> <span class="nn">bmtk.simulator.pointnet.io</span> <span class="k">as</span> <span class="nn">io</span>
-
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">nest</span>
 
+<span class="kn">from</span> <span class="nn">bmtk.simulator.core.simulator_network</span> <span class="k">import</span> <span class="n">SimNetwork</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.pointnet.sonata_adaptors</span> <span class="k">import</span> <span class="n">PointNodeAdaptor</span><span class="p">,</span> <span class="n">PointEdgeAdaptor</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.pointnet</span> <span class="k">import</span> <span class="n">pyfunction_cache</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.pointnet.io_tools</span> <span class="k">import</span> <span class="n">io</span>
 
-<div class="viewcode-block" id="PointNetwork"><a class="viewcode-back" href="../../../../bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointnetwork.PointNetwork">[docs]</a><span class="k">class</span> <span class="nc">PointNetwork</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Creates a network of NEST cells and connections from a graph, simulates and saves the output.</span>
 
-<span class="sd">    Takes in a built PointGraph to build the network. For best results use PointNetwork.from_json(config, graph) to</span>
-<span class="sd">    create the simulation input and parameters from a config file, the use the run() function to simulate.</span>
+<div class="viewcode-block" id="PointNetwork"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointnetwork.PointNetwork">[docs]</a><span class="k">class</span> <span class="nc">PointNetwork</span><span class="p">(</span><span class="n">SimNetwork</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">properties</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PointNetwork</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">properties</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_io</span> <span class="o">=</span> <span class="n">io</span>
 
-<span class="sd">    TODO:</span>
-<span class="sd">        * Save parameters like membrane voltage using a multimeter on individual nodes.</span>
-<span class="sd">        * Add ability to insert current and voltage clamps directly into internal nodes.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_duration</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># simulation time</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> <span class="o">=</span> <span class="n">dt</span>  <span class="c1"># time step</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_output_dir</span> <span class="o">=</span> <span class="s1">&#39;./output/&#39;</span>  <span class="c1"># directory where log and temporary output will be stored</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_overwrite</span> <span class="o">=</span> <span class="n">overwrite</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_block_run</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_block_size</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__weight_functions</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_params_cache</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cells_built</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_internal_connections_built</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_virtual_ids_map</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span> <span class="o">=</span> <span class="n">graph</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_external_cells</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># dict-of-dict of external pointnet cells with keys [network_name][cell_id]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_internal_cells</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># dictionary of internal pointnet cells with cell_id as key</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_nest_id_map</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># a map between NEST IDs and Node-IDs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_batch_nodes</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_spikedetector</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_spikes_file</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># File where all output spikes will be collected and saved</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_spikes_file</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># temporary gdf files of spike-trains</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_trains_ds</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># used to temporary store NWB datasets containing spike trains</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nest_id_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nestid2nodeid_map</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="c1"># Reset the NEST kernel for a new simualtion</span>
-        <span class="c1"># TODO: move this into it&#39;s own function and make sure it is called before network is built</span>
-        <span class="n">nest</span><span class="o">.</span><span class="n">ResetKernel</span><span class="p">()</span>
-        <span class="n">nest</span><span class="o">.</span><span class="n">SetKernelStatus</span><span class="p">({</span><span class="s2">&quot;resolution&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span><span class="p">,</span> <span class="s2">&quot;overwrite_files&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overwrite</span><span class="p">,</span> <span class="s2">&quot;print_time&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nestid2gid</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nodes_table</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gid2nestid</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">dt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># TODO: validated dt &gt; 0.0</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span>
+    <span class="k">def</span> <span class="nf">py_function_caches</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">pyfunction_cache</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">spikes_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spikes_file</span>
+    <span class="k">def</span> <span class="nf">__get_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_params</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">node_params</span><span class="o">.</span><span class="n">with_dynamics_params</span><span class="p">:</span>
+            <span class="c1"># TODO: use property, not name</span>
+            <span class="k">return</span> <span class="n">node_params</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">]</span>
 
-    <span class="nd">@spikes_file</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">spikes_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_spikes_file</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">output_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output_dir</span>
-
-    <span class="nd">@output_dir</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">output_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_output_dir</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">block_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_block_run</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">block_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_block_size</span>
-
-    <span class="nd">@block_size</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">block_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_block_run</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_block_size</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_duration</span>
-
-    <span class="nd">@duration</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="c1"># TODO: validate that it is a positive number</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_duration</span> <span class="o">=</span> <span class="n">value</span>
-
-<div class="viewcode-block" id="PointNetwork.build_cells"><a class="viewcode-back" href="../../../../bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointnetwork.PointNetwork.build_cells">[docs]</a>    <span class="k">def</span> <span class="nf">build_cells</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Build NEST-based cells from graph&quot;&quot;&quot;</span>
-        <span class="c1"># Create spike detector to attach to all internal nodes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_spikes_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spikes_file</span>  <span class="c1"># location where spikes will be written.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_spikes_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;tmp_spike_time&#39;</span><span class="p">)</span>  <span class="c1"># temporary gdf files</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_spikedetector</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="s2">&quot;spike_detector&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">nest</span><span class="o">.</span><span class="n">SetStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spikedetector</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;tmp_spike_times&#39;</span><span class="p">),</span>
-                                             <span class="s1">&#39;withtime&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;withgid&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;to_file&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
-
-        <span class="c1"># build internal nodes</span>
-        <span class="c1"># TODO: since networks can be mixed we should loop around entire network checking if nodes are virtual or not.</span>
-        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">get_internal_nodes</span><span class="p">():</span>
-            <span class="n">ncell</span> <span class="o">=</span> <span class="n">NestCell</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-            <span class="n">ncell</span><span class="o">.</span><span class="n">set_spike_detector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spikedetector</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_internal_cells</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">ncell</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_nest_id_map</span><span class="p">[</span><span class="n">ncell</span><span class="o">.</span><span class="n">nest_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">node_id</span>
-
-        <span class="c1"># build external nodes</span>
-        <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">external_networks</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_external_cells</span><span class="p">[</span><span class="n">network</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">(</span><span class="n">network</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">model_class</span> <span class="o">==</span> <span class="n">CellTypes</span><span class="o">.</span><span class="n">Virtual</span><span class="p">:</span>
-                    <span class="c1"># TODO: if dynamics_params are globally set then we can create all nodes at once.</span>
-                    <span class="c1"># TODO: Put nest_id param in PointGraph.Node and we can set vcell.nest_id =</span>
-                    <span class="n">vcell</span> <span class="o">=</span> <span class="n">VirtualCell</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_external_cells</span><span class="p">[</span><span class="n">network</span><span class="p">][</span><span class="n">vcell</span><span class="o">.</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">vcell</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cells_built</span> <span class="o">=</span> <span class="kc">True</span></div>
-
-<div class="viewcode-block" id="PointNetwork.set_recurrent_connections"><a class="viewcode-back" href="../../../../bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointnetwork.PointNetwork.set_recurrent_connections">[docs]</a>    <span class="k">def</span> <span class="nf">set_recurrent_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Creates recurrent (internal) connections&quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">src_network</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">internal_networks</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">trg_gid</span><span class="p">,</span> <span class="n">trg_cell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_internal_cells</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">src_prop</span><span class="p">,</span> <span class="n">edge_prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">edges_iterator</span><span class="p">(</span><span class="n">trg_gid</span><span class="p">,</span> <span class="n">src_network</span><span class="p">):</span>
-                    <span class="n">src_cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_internal_cells</span><span class="p">[</span><span class="n">src_prop</span><span class="o">.</span><span class="n">node_id</span><span class="p">]</span>
-                    <span class="n">trg_cell</span><span class="o">.</span><span class="n">set_synaptic_connection</span><span class="p">(</span><span class="n">src_cell</span><span class="p">,</span> <span class="n">trg_cell</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="PointNetwork.set_external_connections"><a class="viewcode-back" href="../../../../bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointnetwork.PointNetwork.set_external_connections">[docs]</a>    <span class="k">def</span> <span class="nf">set_external_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_network</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Connect virtual nodes of an external network onto the internal network.</span>
-
-<span class="sd">        :param source_network: Name of external network that targets internal nodes.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># for every internal target get source nodes and edges that connect to it create a NEST connection.</span>
-        <span class="k">for</span> <span class="n">trg_gid</span><span class="p">,</span> <span class="n">trg_cell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_internal_cells</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">src_prop</span><span class="p">,</span> <span class="n">edge_prop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">edges_iterator</span><span class="p">(</span><span class="n">trg_gid</span><span class="p">,</span> <span class="n">source_network</span><span class="p">):</span>
-                <span class="n">src_cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_external_cells</span><span class="p">[</span><span class="n">source_network</span><span class="p">][</span><span class="n">src_prop</span><span class="o">.</span><span class="n">node_id</span><span class="p">]</span>  <span class="c1"># NEST implementation of source</span>
-                <span class="n">trg_cell</span><span class="o">.</span><span class="n">set_synaptic_connection</span><span class="p">(</span><span class="n">src_cell</span><span class="p">,</span> <span class="n">trg_cell</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="PointNetwork.add_spikes_nwb"><a class="viewcode-back" href="../../../../bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointnetwork.PointNetwork.add_spikes_nwb">[docs]</a>    <span class="k">def</span> <span class="nf">add_spikes_nwb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">nwb_file</span><span class="p">,</span> <span class="n">trial</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Adds spike trains from nwb file</span>
-
-<span class="sd">        :param network: name of external network to add spike trains.</span>
-<span class="sd">        :param nwb_file: NWB file with spike trains for a subset of gids in network</span>
-<span class="sd">        :param trial: trail name in NWB file (processing/trial/spike_trains/...)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">h5_file</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">nwb_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_trains_ds</span><span class="p">[</span><span class="n">network</span><span class="p">]</span> <span class="o">=</span> <span class="n">h5_file</span><span class="p">[</span><span class="s1">&#39;processing&#39;</span><span class="p">][</span><span class="n">trial</span><span class="p">][</span><span class="s1">&#39;spike_train&#39;</span><span class="p">]</span></div>
-
-    <span class="k">def</span> <span class="nf">_get_spike_trains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_gid</span><span class="p">,</span> <span class="n">network</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">network</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spike_trains_ds</span><span class="p">:</span>
-            <span class="n">h5ds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spike_trains_ds</span><span class="p">[</span><span class="n">network</span><span class="p">]</span>
-            <span class="n">src_gid_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">src_gid</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">src_gid_str</span> <span class="ow">in</span> <span class="n">h5ds</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="k">return</span> <span class="n">h5ds</span><span class="p">[</span><span class="n">src_gid_str</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
-
-        <span class="k">return</span> <span class="kc">None</span>
-
-<div class="viewcode-block" id="PointNetwork.make_stims"><a class="viewcode-back" href="../../../../bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointnetwork.PointNetwork.make_stims">[docs]</a>    <span class="k">def</span> <span class="nf">make_stims</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize all stimulations (spikes, injections, etc)&quot;&quot;&quot;</span>
-        <span class="c1"># TODO: this is a hold-over from bionet, it may be better to set stimulations in their respective functions.</span>
-        <span class="c1"># TODO: it is very slow, investigate</span>
-        <span class="k">for</span> <span class="n">network</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">external_networks</span><span class="p">():</span>
-            <span class="c1"># For each external node in the graph grab the spike-trains</span>
-            <span class="c1"># TODO: skip if external network is not connected.</span>
-            <span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_external_cells</span><span class="p">[</span><span class="n">network</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">spikes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_spike_trains</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="n">network</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">spikes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">node</span><span class="o">.</span><span class="n">set_spike_train</span><span class="p">(</span><span class="n">spikes</span><span class="p">[:])</span></div>
-
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    def __save_spike_times(self):</span>
-<span class="sd">        # the spike detector will create many .gdf files based on nest-id and processor. Need to merge them.</span>
-<span class="sd">        print(&quot;Saving spikes to file...&quot;)</span>
-<span class="sd">        spikes_out = self._spikes_file</span>
-<span class="sd">        if os.path.exists(spikes_out) and not self._overwrite:</span>
-<span class="sd">            return</span>
-
-<span class="sd">        print spikes_out</span>
-<span class="sd">        #print spikes_file</span>
-
-<span class="sd">        exit()</span>
-
-<span class="sd">        gdf_files_globs = &#39;{}/*.gdf&#39;.format(os.path.dirname(spikes_out))</span>
-<span class="sd">        gdf_files = glob.glob(gdf_files_globs)</span>
-<span class="sd">        with open(spikes_out, &#39;w&#39;) as spikes_file:</span>
-<span class="sd">            csv_writer = csv.writer(spikes_file, delimiter=&#39; &#39;)</span>
-<span class="sd">            for gdffile in gdf_files:</span>
-<span class="sd">                spikes_df = pd.read_csv(gdffile, names=[&#39;gid&#39;, &#39;time&#39;, &#39;nan&#39;], sep=&#39;\t&#39;)</span>
-<span class="sd">                for _, row in spikes_df.iterrows():</span>
-<span class="sd">                    csv_writer.writerow([row[&#39;time&#39;], self._nest_id_map[int(row[&#39;gid&#39;])]])</span>
-<span class="sd">                os.remove(gdffile)</span>
-<span class="sd">        print(&quot;done.&quot;)</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-
-    <span class="k">def</span> <span class="nf">_get_block_trial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute necessary number of block trials, the length of block simulation and the simulation length of the last</span>
-<span class="sd">        block run, if necessary.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_block_run</span><span class="p">:</span>
-            <span class="n">data_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_block_size</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span>
-            <span class="n">fn</span> <span class="o">=</span> <span class="n">duration</span> <span class="o">/</span> <span class="n">data_res</span>
-            <span class="n">n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
-            <span class="n">res</span> <span class="o">=</span> <span class="n">fn</span> <span class="o">-</span> <span class="n">n</span>
+        <span class="n">params_file</span> <span class="o">=</span> <span class="n">node_params</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_params_column</span><span class="p">]</span>
+        <span class="c1"># params_file = self._MT.params_column(node_params) #node_params[&#39;dynamics_params&#39;]</span>
+        <span class="k">if</span> <span class="n">params_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params_cache</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params_cache</span><span class="p">[</span><span class="n">params_file</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">n</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-            <span class="n">res</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-            <span class="n">data_res</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="k">return</span> <span class="n">n</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">data_res</span>
+            <span class="n">params_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">&#39;models_dir&#39;</span><span class="p">)</span>
+            <span class="n">params_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">params_dir</span><span class="p">,</span> <span class="n">params_file</span><span class="p">)</span>
+            <span class="n">params_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">params_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_params_cache</span><span class="p">[</span><span class="n">params_file</span><span class="p">]</span> <span class="o">=</span> <span class="n">params_dict</span>
+            <span class="k">return</span> <span class="n">params_dict</span>
 
-<div class="viewcode-block" id="PointNetwork.run"><a class="viewcode-back" href="../../../../bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointnetwork.PointNetwork.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">duration</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">duration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span>
+    <span class="k">def</span> <span class="nf">_register_adaptors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PointNetwork</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_register_adaptors</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_adaptors</span><span class="p">[</span><span class="s1">&#39;sonata&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PointNodeAdaptor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_adaptors</span><span class="p">[</span><span class="s1">&#39;sonata&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PointEdgeAdaptor</span>
 
-        <span class="n">n</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">data_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_block_trial</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-                <span class="n">nest</span><span class="o">.</span><span class="n">Simulate</span><span class="p">(</span><span class="n">data_res</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">res</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">nest</span><span class="o">.</span><span class="n">Simulate</span><span class="p">(</span><span class="n">res</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">nest</span><span class="o">.</span><span class="n">Simulate</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+    <span class="c1"># TODO: reimplement with py_modules like in bionet</span>
+<div class="viewcode-block" id="PointNetwork.add_weight_function"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointnetwork.PointNetwork.add_weight_function">[docs]</a>    <span class="k">def</span> <span class="nf">add_weight_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">fnc_name</span> <span class="o">=</span> <span class="n">name</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">function</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__weight_functions</span><span class="p">[</span><span class="n">fnc_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">function</span><span class="p">)</span></div>
 
-        <span class="n">io</span><span class="o">.</span><span class="n">collect_gdf_files</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spikes_file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nest_id_map</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overwrite</span><span class="p">)</span></div>
-        <span class="c1">#self.__save_spike_times()</span>
+<div class="viewcode-block" id="PointNetwork.set_default_weight_function"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointnetwork.PointNetwork.set_default_weight_function">[docs]</a>    <span class="k">def</span> <span class="nf">set_default_weight_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_weight_function</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="s1">&#39;default_weight_fnc&#39;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PointNetwork.from_config"><a class="viewcode-back" href="../../../../bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointnetwork.PointNetwork.from_config">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">configure</span><span class="p">,</span> <span class="n">graph</span><span class="p">):</span>
-        <span class="c1"># load the json file or object</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">configure</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
-            <span class="n">config</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">configure</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">configure</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="n">config</span> <span class="o">=</span> <span class="n">configure</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Could not convert </span><span class="si">{}</span><span class="s1"> (type &quot;</span><span class="si">{}</span><span class="s1">&quot;) to json.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">configure</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">configure</span><span class="p">)))</span>
+<div class="viewcode-block" id="PointNetwork.get_weight_function"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointnetwork.PointNetwork.get_weight_function">[docs]</a>    <span class="k">def</span> <span class="nf">get_weight_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__weight_functions</span><span class="p">[</span><span class="n">name</span><span class="p">]</span></div>
 
-        <span class="k">if</span> <span class="s1">&#39;run&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Json file is missing &quot;run&quot; entry. Unable to build Bionetwork.&#39;</span><span class="p">)</span>
-        <span class="n">run_dict</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">]</span>
+<div class="viewcode-block" id="PointNetwork.build_nodes"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointnetwork.PointNetwork.build_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">build_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">node_pop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_populations</span><span class="p">:</span>
+            <span class="n">nid2nest_map</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">nest2nid_map</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">if</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">internal_nodes_only</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">():</span>
+                    <span class="n">node</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">nid</span><span class="p">,</span> <span class="n">gid</span><span class="p">,</span> <span class="n">nest_id</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">node_ids</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">gids</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">nest_ids</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_nestid2gid</span><span class="p">[</span><span class="n">nest_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">gid</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_gid2nestid</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span> <span class="o">=</span> <span class="n">nest_id</span>
+                        <span class="n">nid2nest_map</span><span class="p">[</span><span class="n">nid</span><span class="p">]</span> <span class="o">=</span> <span class="n">nest_id</span>
+                        <span class="n">nest2nid_map</span><span class="p">[</span><span class="n">nest_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">nid</span>
 
-        <span class="c1"># Get network parameters</span>
-        <span class="c1"># step time (dt) is set in the kernel and should be passed</span>
-        <span class="n">overwrite</span> <span class="o">=</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;overwrite_output_dir&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;overwrite_output_dir&#39;</span> <span class="ow">in</span> <span class="n">run_dict</span> <span class="k">else</span> <span class="kc">True</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;dt&#39;</span><span class="p">]</span>  <span class="c1"># TODO: make sure dt exists</span>
-        <span class="n">network</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">mixed_nodes</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">model_type</span> <span class="o">!=</span> <span class="s1">&#39;virtual&#39;</span><span class="p">:</span>
+                        <span class="n">node</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+                        <span class="k">for</span> <span class="n">nid</span><span class="p">,</span> <span class="n">gid</span><span class="p">,</span> <span class="n">nest_id</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">node_ids</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">gids</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">nest_ids</span><span class="p">):</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_nestid2gid</span><span class="p">[</span><span class="n">nest_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">gid</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_gid2nestid</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span> <span class="o">=</span> <span class="n">nest_id</span>
+                            <span class="n">nid2nest_map</span><span class="p">[</span><span class="n">nid</span><span class="p">]</span> <span class="o">=</span> <span class="n">nest_id</span>
+                            <span class="n">nest2nid_map</span><span class="p">[</span><span class="n">nest_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">nid</span>
 
-        <span class="k">if</span> <span class="s1">&#39;output_dir&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">]:</span>
-            <span class="n">network</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;output_dir&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_nest_id_map</span><span class="p">[</span><span class="n">node_pop</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">nid2nest_map</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_nestid2nodeid_map</span><span class="p">[</span><span class="n">node_pop</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">nest2nid_map</span></div>
 
-        <span class="n">network</span><span class="o">.</span><span class="n">spikes_file</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;spikes_ascii&#39;</span><span class="p">]</span>
+<div class="viewcode-block" id="PointNetwork.build_recurrent_edges"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointnetwork.PointNetwork.build_recurrent_edges">[docs]</a>    <span class="k">def</span> <span class="nf">build_recurrent_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">recurrent_edge_pops</span> <span class="o">=</span> <span class="p">[</span><span class="n">ep</span> <span class="k">for</span> <span class="n">ep</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_populations</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">ep</span><span class="o">.</span><span class="n">virtual_connections</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">recurrent_edge_pops</span><span class="p">:</span>
+            <span class="k">return</span>
 
-        <span class="k">if</span> <span class="s1">&#39;block_run&#39;</span> <span class="ow">in</span> <span class="n">run_dict</span> <span class="ow">and</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;block_run&#39;</span><span class="p">]:</span>
-            <span class="k">if</span> <span class="s1">&#39;block_size&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">run_dict</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;&quot;block_run&quot; is set to True but &quot;block_size&quot; not found.&#39;</span><span class="p">)</span>
-            <span class="n">network</span><span class="o">.</span><span class="n">_block_size</span> <span class="o">=</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;block_size&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">edge_pop</span> <span class="ow">in</span> <span class="n">recurrent_edge_pops</span><span class="p">:</span>
+            <span class="n">src_nest_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nest_id_map</span><span class="p">[</span><span class="n">edge_pop</span><span class="o">.</span><span class="n">source_nodes</span><span class="p">]</span>
+            <span class="n">trg_nest_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nest_id_map</span><span class="p">[</span><span class="n">edge_pop</span><span class="o">.</span><span class="n">target_nodes</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edge_pop</span><span class="o">.</span><span class="n">get_edges</span><span class="p">():</span>
+                <span class="n">nest_srcs</span> <span class="o">=</span> <span class="p">[</span><span class="n">src_nest_ids</span><span class="p">[</span><span class="n">nid</span><span class="p">]</span> <span class="k">for</span> <span class="n">nid</span> <span class="ow">in</span> <span class="n">edge</span><span class="o">.</span><span class="n">source_node_ids</span><span class="p">]</span>
+                <span class="n">nest_trgs</span> <span class="o">=</span> <span class="p">[</span><span class="n">trg_nest_ids</span><span class="p">[</span><span class="n">nid</span><span class="p">]</span> <span class="k">for</span> <span class="n">nid</span> <span class="ow">in</span> <span class="n">edge</span><span class="o">.</span><span class="n">target_node_ids</span><span class="p">]</span>
+                <span class="n">nest</span><span class="o">.</span><span class="n">Connect</span><span class="p">(</span><span class="n">nest_srcs</span><span class="p">,</span> <span class="n">nest_trgs</span><span class="p">,</span> <span class="n">conn_spec</span><span class="o">=</span><span class="s1">&#39;one_to_one&#39;</span><span class="p">,</span> <span class="n">syn_spec</span><span class="o">=</span><span class="n">edge</span><span class="o">.</span><span class="n">nest_params</span><span class="p">)</span></div>
 
-        <span class="k">if</span> <span class="s1">&#39;duration&#39;</span> <span class="ow">in</span> <span class="n">run_dict</span><span class="p">:</span>
-            <span class="n">network</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span>
+<div class="viewcode-block" id="PointNetwork.find_edges"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointnetwork.PointNetwork.find_edges">[docs]</a>    <span class="k">def</span> <span class="nf">find_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># TODO: Move to parent</span>
+        <span class="n">selected_edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_populations</span><span class="p">[:]</span>
 
-        <span class="c1"># Create the output-directory, or delete existing files if it already exists</span>
-        <span class="n">io</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;setting up output directory&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;output_dir&#39;</span><span class="p">]):</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;output_dir&#39;</span><span class="p">])</span>
-        <span class="k">elif</span> <span class="n">overwrite</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">gfile</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;output_dir&#39;</span><span class="p">],</span> <span class="s1">&#39;*&#39;</span><span class="p">)):</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">gfile</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">source_nodes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">selected_edges</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge_pop</span> <span class="k">for</span> <span class="n">edge_pop</span> <span class="ow">in</span> <span class="n">selected_edges</span> <span class="k">if</span> <span class="n">edge_pop</span><span class="o">.</span><span class="n">source_nodes</span> <span class="o">==</span> <span class="n">source_nodes</span><span class="p">]</span>
 
-        <span class="c1"># build the cells</span>
-        <span class="n">io</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;building cells&#39;</span><span class="p">)</span>
-        <span class="n">network</span><span class="o">.</span><span class="n">build_cells</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">target_nodes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">selected_edges</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge_pop</span> <span class="k">for</span> <span class="n">edge_pop</span> <span class="ow">in</span> <span class="n">selected_edges</span> <span class="k">if</span> <span class="n">edge_pop</span><span class="o">.</span><span class="n">target_nodes</span> <span class="o">==</span> <span class="n">target_nodes</span><span class="p">]</span>
 
-        <span class="c1"># Build internal connections</span>
-        <span class="k">if</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;connect_internal&#39;</span><span class="p">]:</span>
-            <span class="n">io</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;creating recurrent connections&#39;</span><span class="p">)</span>
-            <span class="n">network</span><span class="o">.</span><span class="n">set_recurrent_connections</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">selected_edges</span></div>
 
-        <span class="c1"># Build external connections. Set connection to default True and turn off only if explicitly stated.</span>
-        <span class="c1"># NOTE: It might be better to set to default off?!?! Need to dicuss what would be more intuitive for the users.</span>
-        <span class="c1"># TODO: ignore case of network name</span>
-        <span class="n">external_network_settings</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="kc">True</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">external_networks</span><span class="p">()}</span>
-        <span class="k">if</span> <span class="s1">&#39;connect_external&#39;</span> <span class="ow">in</span> <span class="n">run_dict</span><span class="p">:</span>
-            <span class="n">external_network_settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;connect_external&#39;</span><span class="p">])</span>
-        <span class="k">for</span> <span class="n">netname</span><span class="p">,</span> <span class="n">connect</span> <span class="ow">in</span> <span class="n">external_network_settings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">connect</span><span class="p">:</span>
-                <span class="n">io</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;Setting external connections for </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">netname</span><span class="p">))</span>
-                <span class="n">network</span><span class="o">.</span><span class="n">set_external_connections</span><span class="p">(</span><span class="n">netname</span><span class="p">)</span>
+<div class="viewcode-block" id="PointNetwork.add_spike_trains"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointnetwork.PointNetwork.add_spike_trains">[docs]</a>    <span class="k">def</span> <span class="nf">add_spike_trains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spike_trains</span><span class="p">,</span> <span class="n">node_set</span><span class="p">):</span>
+        <span class="c1"># Build the virtual nodes</span>
+        <span class="n">src_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_pop</span> <span class="k">for</span> <span class="n">node_pop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_populations</span> <span class="k">if</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">node_set</span><span class="o">.</span><span class="n">population_names</span><span class="p">()]</span>
+        <span class="k">for</span> <span class="n">node_pop</span> <span class="ow">in</span> <span class="n">src_nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_virtual_ids_map</span><span class="p">:</span>
+                 <span class="k">continue</span>
 
-        <span class="c1"># Build inputs</span>
-        <span class="k">if</span> <span class="s1">&#39;input&#39;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">netinput</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;input&#39;</span><span class="p">]:</span>
-                <span class="k">if</span> <span class="n">netinput</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;external_spikes&#39;</span> <span class="ow">and</span> <span class="n">netinput</span><span class="p">[</span><span class="s1">&#39;format&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;nwb&#39;</span> <span class="ow">and</span> <span class="n">netinput</span><span class="p">[</span><span class="s1">&#39;active&#39;</span><span class="p">]:</span>
-                    <span class="n">network</span><span class="o">.</span><span class="n">add_spikes_nwb</span><span class="p">(</span><span class="n">netinput</span><span class="p">[</span><span class="s1">&#39;source_nodes&#39;</span><span class="p">],</span> <span class="n">netinput</span><span class="p">[</span><span class="s1">&#39;file&#39;</span><span class="p">],</span> <span class="n">netinput</span><span class="p">[</span><span class="s1">&#39;trial&#39;</span><span class="p">])</span>
+            <span class="n">virt_node_map</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">if</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">virtual_nodes_only</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">():</span>
+                    <span class="n">nest_ids</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="s1">&#39;spike_generator&#39;</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">,</span> <span class="p">{})</span>
+                    <span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">nest_id</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">node_ids</span><span class="p">,</span> <span class="n">nest_ids</span><span class="p">):</span>
+                        <span class="n">virt_node_map</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">nest_id</span>
+                        <span class="n">nest</span><span class="o">.</span><span class="n">SetStatus</span><span class="p">([</span><span class="n">nest_id</span><span class="p">],</span> <span class="p">{</span><span class="s1">&#39;spike_times&#39;</span><span class="p">:</span> <span class="n">spike_trains</span><span class="o">.</span><span class="n">get_spikes</span><span class="p">(</span><span class="n">node_id</span><span class="p">)})</span>
 
-            <span class="n">io</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s1">&#39;Adding stimulations&#39;</span><span class="p">)</span>
-            <span class="n">network</span><span class="o">.</span><span class="n">make_stims</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">mixed_nodes</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">model_type</span> <span class="o">!=</span> <span class="s1">&#39;virtual&#39;</span><span class="p">:</span>
+                        <span class="k">continue</span>
 
-        <span class="k">return</span> <span class="n">network</span></div></div>
+                    <span class="n">nest_ids</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="s1">&#39;spike_generator&#39;</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">,</span> <span class="p">{})</span>
+                    <span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">nest_id</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">node_ids</span><span class="p">,</span> <span class="n">nest_ids</span><span class="p">):</span>
+                        <span class="n">virt_node_map</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">nest_id</span>
+                        <span class="n">nest</span><span class="o">.</span><span class="n">SetStatus</span><span class="p">([</span><span class="n">nest_id</span><span class="p">],</span> <span class="p">{</span><span class="s1">&#39;spike_times&#39;</span><span class="p">:</span> <span class="n">spike_trains</span><span class="o">.</span><span class="n">get_spikes</span><span class="p">(</span><span class="n">node_id</span><span class="p">)})</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_virtual_ids_map</span><span class="p">[</span><span class="n">node_pop</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">virt_node_map</span>
+
+        <span class="c1"># Create virtual synaptic connections</span>
+        <span class="k">for</span> <span class="n">source_reader</span> <span class="ow">in</span> <span class="n">src_nodes</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">edge_pop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_edges</span><span class="p">(</span><span class="n">source_nodes</span><span class="o">=</span><span class="n">source_reader</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+                <span class="n">src_nest_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_virtual_ids_map</span><span class="p">[</span><span class="n">edge_pop</span><span class="o">.</span><span class="n">source_nodes</span><span class="p">]</span>
+                <span class="n">trg_nest_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nest_id_map</span><span class="p">[</span><span class="n">edge_pop</span><span class="o">.</span><span class="n">target_nodes</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edge_pop</span><span class="o">.</span><span class="n">get_edges</span><span class="p">():</span>
+                    <span class="n">nest_srcs</span> <span class="o">=</span> <span class="p">[</span><span class="n">src_nest_ids</span><span class="p">[</span><span class="n">nid</span><span class="p">]</span> <span class="k">for</span> <span class="n">nid</span> <span class="ow">in</span> <span class="n">edge</span><span class="o">.</span><span class="n">source_node_ids</span><span class="p">]</span>
+                    <span class="n">nest_trgs</span> <span class="o">=</span> <span class="p">[</span><span class="n">trg_nest_ids</span><span class="p">[</span><span class="n">nid</span><span class="p">]</span> <span class="k">for</span> <span class="n">nid</span> <span class="ow">in</span> <span class="n">edge</span><span class="o">.</span><span class="n">target_node_ids</span><span class="p">]</span>
+                    <span class="n">nest</span><span class="o">.</span><span class="n">Connect</span><span class="p">(</span><span class="n">nest_srcs</span><span class="p">,</span> <span class="n">nest_trgs</span><span class="p">,</span> <span class="n">conn_spec</span><span class="o">=</span><span class="s1">&#39;one_to_one&#39;</span><span class="p">,</span> <span class="n">syn_spec</span><span class="o">=</span><span class="n">edge</span><span class="o">.</span><span class="n">nest_params</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
@@ -962,18 +813,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="sphinxsidebarwrapper">
 <h3><a href="../../../../index.html">Contents</a></h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../builder.html">The Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../builder.html">Building Networks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../simulators.html">Simulation Engines</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../filternet.html">FilterNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../mintnet.html">MintNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../bmtk.html">Source Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.analyzer.html">bmtk.analyzer package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.simulator.html">bmtk.simulator package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.utils.html">bmtk.utils package</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>
 </ul>

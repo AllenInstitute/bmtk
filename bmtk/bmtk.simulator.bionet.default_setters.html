@@ -1,0 +1,976 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>bmtk.simulator.bionet.default_setters package &#8212; Brain Modeling Toolkit 0.0.5 documentation</title>
+    <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="bmtk.simulator.bionet.modules package" href="bmtk.simulator.bionet.modules.html" />
+    <link rel="prev" title="bmtk.simulator.bionet package" href="bmtk.simulator.bionet.html" /> 
+  </head>
+  <body>
+<script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
+<style>
+
+	/* the icon font-family definition and helper classes */
+	@font-face {
+	  font-family: 'portal_icon_font';
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
+	  font-weight: normal;
+	  font-style: normal;
+	}
+	 
+	 [class^="icon-"]:before, [class*=" icon-"]:before {
+	  font-family: "portal_icon_font";
+	  font-style: normal;
+	  font-weight: normal;
+	  speak: none;
+	 
+	  display: inline-block;
+	  text-decoration: inherit;
+	  width: 1em;
+	  margin-right: .2em;
+	  text-align: center;
+	  /* opacity: .8; */
+	 
+	  /* For safety - reset parent styles, that can break glyph codes*/
+	  font-variant: normal;
+	  text-transform: none;
+	     
+	  /* fix buttons height, for twitter bootstrap */
+	  line-height: 1em;
+	 
+	  /* Animation center compensation - margins should be symmetric */
+	  /* remove if not needed */
+	  margin-left: .2em;
+	
+	}
+	 
+	.icon-spin5:before { content: '\e806'; } /* '' */
+	.icon-left-open-1:before { content: '\e81e'; } /* '' */
+	.icon-plus-1:before { content: '\e801'; } /* '' */
+	.icon-facebook:before { content: '\e816'; } /* '' */
+	.icon-gplus:before { content: '\e818'; } /* '' */
+	.icon-linkedin-3:before { content: '\e815'; } /* '' */
+	.icon-twitter:before { content: '\e817'; } /* '' */
+	.icon-youtube-play:before { content: '\e805'; } /* '' */
+	.icon-plus-2:before { content: '\e809'; } /* '' */
+	.icon-record-1:before { content: '\e81c'; } /* '' */
+	.icon-cancel:before { content: '\e80b'; } /* '' */
+	.icon-search:before { content: '\e804'; } /* '' */
+	.icon-cancel-2:before { content: '\e80c'; } /* '' */
+	.icon-plus-4:before { content: '\e80d'; } /* '' */
+	.icon-cancel-3:before { content: '\e80e'; } /* '' */
+	.icon-plus:before { content: '\e808'; } /* '' */
+	.icon-down-open:before { content: '\e800'; } /* '' */
+	.icon-right-open:before { content: '\e802'; } /* '' */
+	.icon-up-open:before { content: '\e803'; } /* '' */
+	.icon-stop:before { content: '\e813'; } /* '' */
+	.icon-cancel-1:before { content: '\e820'; } /* '' */
+	.icon-plus-3:before { content: '\e80a'; } /* '' */
+	/* end icon font helpers */
+
+	/* icon font spin animation */
+	.animate-spin {
+	  -moz-animation: spin 2s infinite linear;
+	  -o-animation: spin 2s infinite linear;
+	  -webkit-animation: spin 2s infinite linear;
+	  animation: spin 2s infinite linear;
+	  display: inline-block;
+	}
+	@-moz-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-webkit-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-o-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-ms-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	/*  end spin animation */	
+
+	@font-face {
+	    font-family: 'bebas_neueregular';
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
+	    font-weight: normal;
+	    font-style: normal;
+	}
+
+	/* top chrome styles */
+	#top_chrome {
+
+		width:100%;
+		height:28px;
+		background-color:#163E65;
+	}
+
+	.chrome_link_block {
+
+		color:#fff !important;	
+		display:inline-block;
+		height:100%;
+		max-height:28px;
+	}
+
+	.chrome_link_block:hover {
+
+		background-color:#eee;
+		color:#0779BE !important;	
+		cursor:pointer;
+	}
+
+	#top_chrome a {
+
+		color:inherit !important;	
+		text-decoration:none;
+	}
+
+	#top_chrome a:hover {
+
+		color:inherit !important;	
+	}
+
+	#top_chrome_buttons {
+
+		float:right;
+		margin-right:50px;
+	}
+
+	.chrome_button {
+
+		font-family:arial,sans-serif;
+		font-weight:bold;
+		display:inline-block;
+		font-size:9px;
+		text-align:left;
+		text-decoration:none;
+		margin:9px 20px 10px 20px;
+	}
+
+	.chrome_active {
+
+		background-color:#1b7abd;
+		color:#fff;
+	}
+
+
+	/* header element styles*/
+	#header_content {
+
+		font-family: bebas_neueregular, arial, sans-serif;
+		font-size:22px;
+		color:#0779be;		
+		letter-spacing:0.03em;
+
+		position:relative;
+		width:calc(100% - 112px);
+		min-width:800px;
+		height:76px;
+		border-bottom:2px solid #A5A8AB;
+		margin-left:50px;
+		margin-right:50px;
+        z-index:9999; /* IT-9508 */
+	}
+
+	#portal_logo {
+
+		position:absolute;
+		top:20px;
+		left:0px;
+		width:236px;
+	}
+
+	#portal_tabs {
+
+		position: absolute;
+		bottom: 12px;
+		left: 0px;
+		margin-bottom: -12px;
+		display: block;
+	}
+
+	.horizontal_list
+	{
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		display: inline; 		
+	}
+
+	.horizontal_list li { 
+
+		display: inline; 	
+	}	
+
+	#portal_tab_menu_container {
+
+		display:none;
+	}
+
+	#portal_search_input_group {
+
+		position:absolute;
+		margin: 0;
+		padding: 0;
+		bottom:12px;
+		right:0px;
+		border:1px solid #DAD9D3;
+		color:#DAD9D3;
+	}
+
+	#portal_search_input_group input {
+
+		margin: 0;
+		padding: 0;
+		border:none;
+		width:110px;
+		color:#DAD9D3;
+		font-family:Helvetica,sans-serif;
+		font-size:12px;
+		height:28px;
+		margin-left:10px;
+
+		outline:none;
+	}
+
+	input::-ms-clear {
+		display: none;
+	}
+
+	#portal_search_input_group i {
+
+		font-size:0.8em;
+		cursor:pointer;
+	}
+
+	#pSiteSearchTextInput:focus {
+
+		color:#000;
+	}
+
+	.icon_menu_down {
+
+		font-size: 12px;
+		margin-left: 4px;
+		vertical-align: text-top;
+		padding-top: 4px;
+		display: inline-block;
+	}
+
+	.portal_tab_item {
+
+		background-color: #fff;
+		padding: 12px;
+		padding-left:20px;
+		padding-right:20px;
+		display: inline-block !important;		
+	}
+
+	.portal_tab_item a:hover {
+
+		color:#fbe300;	
+	}
+
+	.portal_tab_item:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}	
+
+
+	.portal_menu_active {
+
+		background-color: #EEEEEE;
+	}	
+
+	.portal_menu_item_active {
+
+		color:#fbe300 !important;	
+	}
+
+	.portal_tab_active {
+
+		color:#a5a8ab !important;
+	}
+
+	#header_content a {		
+
+		color:inherit !important;
+	}
+
+	#header_content a:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}
+
+	#header_content ul {
+
+		list-style: none;
+		position: relative;
+		top: 58px;
+		display: inline-table;
+	}
+
+	#header_content ul ul {
+		
+		display:none;
+		opacity:0;
+	}
+
+	/* the fly out menus */
+	#header_content ul li:hover > ul,
+	#header_content ul li.hover > ul {
+
+		position: absolute;
+		top: 48px;
+		z-index:999;
+
+		display: block;
+		width: 152px;
+		padding:0px;
+		padding-top:20px;
+		padding-bottom:10px;
+		font-size: 12px;
+		font-family: Arial,Sans-Serif;
+		font-weight: bold;
+		text-transform: uppercase;
+
+		background-color: rgba(8,122,191,0.98);
+		color: #fff !important;
+		opacity: 1;
+
+		-webkit-animation: fade 0.25s;
+		animation: fade 0.25s;
+	}
+
+	@-webkit-keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}
+	@keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}	
+
+	#header_content ul li:hover > ul li {
+
+		padding: 10px;
+		padding-top: 0px;
+		padding-left: 20px;
+		display: block;
+		opacity:1;
+	}
+
+	#header_content ul li:hover > ul a {
+
+		display: block;
+		opacity:1;
+		white-space:nowrap;
+	}
+
+	#portal_menu_start_list {
+
+		left: 81px;
+
+		/* IE sauce */
+		left:85px\9;
+
+		/* Safari sauce */
+		(;left:79px;);
+	}
+
+	#portal_menu_atlases_list {
+
+		left: 290px;
+		width: 210px !important;
+        height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 303px\9;
+        height: 225px\9;
+
+		/* Safari sauce */
+		(;left:279px;);
+	}
+
+	#portal_menu_tools_list {
+
+		left: 500px;
+		width: 172px !important;
+		height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 513px\9;
+		height:225px\9;
+
+		/* Safari sauce */
+		(;left:489px;);
+		(;height:227px;);
+	}
+
+	/* mozilla sauce */
+	@-moz-document url-prefix() {
+
+		#header_content {
+
+			height:107px;
+		}
+
+		#portal_menu_start_list {
+
+			left:85px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 302px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 512px;
+			height:236px;
+		}
+	}
+
+
+	/* make it look OK on iPad also */
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:portrait) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}  
+	}
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:landscape) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}	  
+	}
+
+	.portal_menu_list_heading {
+
+		color:#9ccae5;
+		border-bottom:1px solid #9ccae5;
+		padding-bottom:5px !important;
+	}
+
+	.portal_menu_list_heading + li {
+
+		padding-top:10px !important;
+	}
+
+	.portal_menu_list_heading li {
+
+		padding-bottom:0px;
+	}	
+
+	#portal_menu_atlases_list li:last-of-type {
+
+		padding-bottom:15px !important;
+	}
+
+	.icon-spin5 {
+
+		color:#000;
+	}
+</style>
+<div id="pHeader">
+<div id="top_chrome">
+	<div id="top_chrome_buttons">
+		<div class="chrome_link_block"><a href="http://www.alleninstitute.org" target="_blank" class="chrome_button">ALLEN INSTITUTE</a></div>
+	</div>
+</div>
+
+<div id="header_content">
+
+	<a href="http://AllenInstitute.github.io">
+		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/AIBS_Logo.png"/>
+	</a>
+</div>
+</div>
+
+<script>
+
+jQuery('#portal_tab_menu').bind('touchstart', function() {
+
+	if(window.console)
+		console.log("touchstart");
+});
+</script>
+<link rel="stylesheet" type="text/css" href="_static/external_assets/stylesheets/common_layout.css" />
+
+
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="bmtk-simulator-bionet-default-setters-package">
+<h1>bmtk.simulator.bionet.default_setters package<a class="headerlink" href="#bmtk-simulator-bionet-default-setters-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-bmtk.simulator.bionet.default_setters.cell_models">
+<span id="bmtk-simulator-bionet-default-setters-cell-models-module"></span><h2>bmtk.simulator.bionet.default_setters.cell_models module<a class="headerlink" href="#module-bmtk.simulator.bionet.default_setters.cell_models" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.cell_models.Biophys1">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">Biophys1</code><span class="sig-paren">(</span><em>cell</em>, <em>template_name</em>, <em>dynamic_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#Biophys1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.Biophys1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a biophysical NEURON hoc object using Cell-Types database objects.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.cell_models.Biophys1_dict">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">Biophys1_dict</code><span class="sig-paren">(</span><em>cell</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#Biophys1_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.Biophys1_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set parameters for cells from the Allen Cell Types database Prior to setting parameters will replace the
+axon with the stub</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.cell_models.Biophys1_nml">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">Biophys1_nml</code><span class="sig-paren">(</span><em>json_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#Biophys1_nml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.Biophys1_nml" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.cell_models.IntFire1">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">IntFire1</code><span class="sig-paren">(</span><em>cell</em>, <em>template_name</em>, <em>dynamics_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#IntFire1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.IntFire1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a point integrate and fire neuron</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.cell_models.NMLLoad">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">NMLLoad</code><span class="sig-paren">(</span><em>cell</em>, <em>template_name</em>, <em>dynamic_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#NMLLoad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.NMLLoad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a NEUROML file to a NEURON hoc cell object.</p>
+<p>Current limitations:
+* Ignores nml morphology section. You must pass in a swc file
+* Only for biophysically detailed cell biophysical components. All properties must be assigned to a segment group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cell</strong> – </li>
+<li><strong>template_name</strong> – </li>
+<li><strong>dynamic_params</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.cell_models.aibs_allactive">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">aibs_allactive</code><span class="sig-paren">(</span><em>hobj</em>, <em>cell</em>, <em>dynamics_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#aibs_allactive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.aibs_allactive" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.cell_models.aibs_allactive_directed">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">aibs_allactive_directed</code><span class="sig-paren">(</span><em>hobj</em>, <em>cell</em>, <em>dynamics_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#aibs_allactive_directed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.aibs_allactive_directed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.cell_models.aibs_perisomatic">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">aibs_perisomatic</code><span class="sig-paren">(</span><em>hobj</em>, <em>cell</em>, <em>dynamics_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#aibs_perisomatic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.aibs_perisomatic" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.cell_models.aibs_perisomatic_directed">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">aibs_perisomatic_directed</code><span class="sig-paren">(</span><em>hobj</em>, <em>cell</em>, <em>dynamics_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#aibs_perisomatic_directed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.aibs_perisomatic_directed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.cell_models.fix_axon_allactive">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">fix_axon_allactive</code><span class="sig-paren">(</span><em>hobj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#fix_axon_allactive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.fix_axon_allactive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace reconstructed axon with a stub</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>hobj: instance of a Biophysical template</strong></p>
+<blockquote class="last">
+<div><p>NEURON’s cell object</p>
+</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.cell_models.fix_axon_allactive_directed">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">fix_axon_allactive_directed</code><span class="sig-paren">(</span><em>hobj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#fix_axon_allactive_directed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.fix_axon_allactive_directed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.cell_models.fix_axon_peri">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">fix_axon_peri</code><span class="sig-paren">(</span><em>hobj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#fix_axon_peri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.fix_axon_peri" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace reconstructed axon with a stub</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hobj</strong> – hoc object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.cell_models.fix_axon_perisomatic_directed">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">fix_axon_perisomatic_directed</code><span class="sig-paren">(</span><em>hobj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#fix_axon_perisomatic_directed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.fix_axon_perisomatic_directed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.cell_models.get_axon_direction">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">get_axon_direction</code><span class="sig-paren">(</span><em>hobj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#get_axon_direction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.get_axon_direction" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.cell_models.set_extracellular">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">set_extracellular</code><span class="sig-paren">(</span><em>hobj</em>, <em>cell</em>, <em>dynamics_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#set_extracellular"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.set_extracellular" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.cell_models.set_params_allactive">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">set_params_allactive</code><span class="sig-paren">(</span><em>hobj</em>, <em>params_dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#set_params_allactive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.set_params_allactive" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.cell_models.set_params_peri">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">set_params_peri</code><span class="sig-paren">(</span><em>hobj</em>, <em>biophys_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#set_params_peri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.set_params_peri" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set biophysical parameters for the cell</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>hobj</strong> – NEURON’s cell object</li>
+<li><strong>biophys_params</strong> – name of json file with biophys params for cell’s model which determine spiking behavior</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.simulator.bionet.default_setters.synapse_models">
+<span id="bmtk-simulator-bionet-default-setters-synapse-models-module"></span><h2>bmtk.simulator.bionet.default_setters.synapse_models module<a class="headerlink" href="#module-bmtk.simulator.bionet.default_setters.synapse_models" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.synapse_models.Exp2Syn">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="descname">Exp2Syn</code><span class="sig-paren">(</span><em>syn_params</em>, <em>sec_x</em>, <em>sec_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#Exp2Syn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.Exp2Syn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a list of exp2syn synapses</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>syn_params</strong> – parameters of a synapse</li>
+<li><strong>sec_x</strong> – normalized distance along the section</li>
+<li><strong>sec_id</strong> – target section</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">NEURON synapse object</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.synapse_models.exp1isyn">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="descname">exp1isyn</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#exp1isyn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.exp1isyn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.synapse_models.exp1syn">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="descname">exp1syn</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#exp1syn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.exp1syn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.synapse_models.exp2syn">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="descname">exp2syn</code><span class="sig-paren">(</span><em>syn_params</em>, <em>xs</em>, <em>secs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#exp2syn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.exp2syn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a list of exp2syn synapses</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>syn_params</strong> – parameters of a synapse</li>
+<li><strong>xs</strong> – list of normalized distances along the section</li>
+<li><strong>secs</strong> – target sections</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">list of NEURON synpase objects</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.synapse_models.expsyn">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="descname">expsyn</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#expsyn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.expsyn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a list of expsyn synapses</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>syn_params</strong> – parameters of a synapse (dict)</li>
+<li><strong>x</strong> – normalized distance along the section (float)</li>
+<li><strong>sec</strong> – target section (hoc object)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">synapse objects</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.synapse_models.stp1syn">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="descname">stp1syn</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#stp1syn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.stp1syn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.synapse_models.stp2syn">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="descname">stp2syn</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#stp2syn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.stp2syn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.synapse_models.stp3syn">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="descname">stp3syn</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#stp3syn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.stp3syn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.synapse_models.stp4syn">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="descname">stp4syn</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#stp4syn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.stp4syn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.synapse_models.stp5isyn">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="descname">stp5isyn</code><span class="sig-paren">(</span><em>syn_params</em>, <em>xs</em>, <em>secs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#stp5isyn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.stp5isyn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.synapse_models.stp5syn">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="descname">stp5syn</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#stp5syn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.stp5syn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.synapse_models.tmgsyn">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="descname">tmgsyn</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#tmgsyn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.tmgsyn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.simulator.bionet.default_setters.synaptic_weights">
+<span id="bmtk-simulator-bionet-default-setters-synaptic-weights-module"></span><h2>bmtk.simulator.bionet.default_setters.synaptic_weights module<a class="headerlink" href="#module-bmtk.simulator.bionet.default_setters.synaptic_weights" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.synaptic_weights.default_weight_fnc">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.synaptic_weights.</code><code class="descname">default_weight_fnc</code><span class="sig-paren">(</span><em>edge_props</em>, <em>src_props</em>, <em>trg_props</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synaptic_weights.html#default_weight_fnc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synaptic_weights.default_weight_fnc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.synaptic_weights.gaussianLL">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.synaptic_weights.</code><code class="descname">gaussianLL</code><span class="sig-paren">(</span><em>edge_props</em>, <em>src_props</em>, <em>trg_props</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synaptic_weights.html#gaussianLL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synaptic_weights.gaussianLL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.default_setters.synaptic_weights.wmax">
+<code class="descclassname">bmtk.simulator.bionet.default_setters.synaptic_weights.</code><code class="descname">wmax</code><span class="sig-paren">(</span><em>edge_props</em>, <em>src_props</em>, <em>trg_props</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synaptic_weights.html#wmax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synaptic_weights.wmax" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.simulator.bionet.default_setters">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.simulator.bionet.default_setters" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../index.html">Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../builder.html">Building Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../simulators.html">Simulation Engines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pointnet.html">PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../filternet.html">FilterNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mintnet.html">MintNet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Allen Institute for Brain Science.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+<script type="text/javascript" src="/external_assets/javascript/portalFooter.js"></script>
+
+  </body>
+</html>

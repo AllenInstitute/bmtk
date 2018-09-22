@@ -628,10 +628,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <h1>Source code for bmtk.simulator.bionet.utils</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Allen Institute Software License - This software license is the 2-clause BSD license plus clause a third</span>
-<span class="c1"># clause that prohibits redistribution for commercial purposes without further permission.</span>
-<span class="c1">#</span>
-<span class="c1"># Copyright 2017. Allen Institute. All rights reserved.</span>
+<span></span><span class="c1"># Copyright 2017. Allen Institute. All rights reserved</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without modification, are permitted provided that the</span>
 <span class="c1"># following conditions are met:</span>
@@ -642,10 +639,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following</span>
 <span class="c1"># disclaimer in the documentation and/or other materials provided with the distribution.</span>
 <span class="c1">#</span>
-<span class="c1"># 3. Redistributions for commercial purposes are not permitted without the Allen Institute&#39;s written permission. For</span>
-<span class="c1"># purposes of this license, commercial purposes is the incorporation of the Allen Institute&#39;s software into anything for</span>
-<span class="c1"># which you will charge fees or other compensation. Contact terms@alleninstitute.org for commercial licensing</span>
-<span class="c1"># opportunities.</span>
+<span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
+<span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
 <span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
@@ -655,14 +650,17 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</span>
 <span class="c1"># OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
 
 <span class="kn">from</span> <span class="nn">neuron</span> <span class="k">import</span> <span class="n">h</span>
 
 
-<div class="viewcode-block" id="rotation_matrix"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.utils.rotation_matrix">[docs]</a><span class="k">def</span> <span class="nf">rotation_matrix</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">theta</span><span class="p">):</span>
+<div class="viewcode-block" id="rotation_matrix"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.utils.rotation_matrix">[docs]</a><span class="k">def</span> <span class="nf">rotation_matrix</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">theta</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return the rotation matrix associated with counterclockwise rotation about the given axis by theta radians.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
@@ -678,148 +676,42 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                      <span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">bd</span><span class="o">+</span><span class="n">ac</span><span class="p">),</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">cd</span><span class="o">-</span><span class="n">ab</span><span class="p">),</span> <span class="n">aa</span><span class="o">+</span><span class="n">dd</span><span class="o">-</span><span class="n">bb</span><span class="o">-</span><span class="n">cc</span><span class="p">]])</span></div>
 
 
-<span class="c1">##################################################</span>
-<span class="c1"># TODO: Move these functions to default_setters</span>
-<span class="c1">##################################################</span>
-<div class="viewcode-block" id="set_morphology"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.utils.set_morphology">[docs]</a><span class="k">def</span> <span class="nf">set_morphology</span><span class="p">(</span><span class="n">hobj</span><span class="p">,</span> <span class="n">morph_file</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Set morphology for the cell from a swc</span>
+<div class="viewcode-block" id="edge_converter_csv"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.utils.edge_converter_csv">[docs]</a><span class="k">def</span> <span class="nf">edge_converter_csv</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">csv_file</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;urrently being used by BioNetwork.write_connections(), need to refactor</span>
 
-<span class="sd">    :param hobj: NEURON&#39;s cell object</span>
-<span class="sd">    :param morph_file: name of swc file containing 3d coordinates of morphology</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">swc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">Import3d_SWC_read</span><span class="p">()</span>
-    <span class="n">swc</span><span class="o">.</span><span class="n">quiet</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">swc</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">morph_file</span><span class="p">))</span>
-    <span class="n">imprt</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">Import3d_GUI</span><span class="p">(</span><span class="n">swc</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">imprt</span><span class="o">.</span><span class="n">quiet</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">imprt</span><span class="o">.</span><span class="n">instantiate</span><span class="p">(</span><span class="n">hobj</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="set_segs"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.utils.set_segs">[docs]</a><span class="k">def</span> <span class="nf">set_segs</span><span class="p">(</span><span class="n">hobj</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Define number of segments in a cell</span>
-
-<span class="sd">    :param hobj: NEURON&#39;s cell object</span>
+<span class="sd">    :param output_dir:</span>
+<span class="sd">    :param csv_file:</span>
 <span class="sd">    :return:</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
-        <span class="n">sec</span><span class="o">.</span><span class="n">nseg</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">L</span> <span class="o">/</span> <span class="mi">40</span><span class="p">)</span></div>
+    <span class="n">syns_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csv_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">syns_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;trg_network&#39;</span><span class="p">,</span> <span class="s1">&#39;src_network&#39;</span><span class="p">]):</span>
+        <span class="n">trg_net</span><span class="p">,</span> <span class="n">src_net</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="n">group_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">_edges.h5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">trg_net</span><span class="p">,</span> <span class="n">src_net</span><span class="p">)),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">conns_h5</span><span class="p">:</span>
+            <span class="n">conns_h5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;edges/target_gid&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">group</span><span class="p">[</span><span class="s1">&#39;trg_gid&#39;</span><span class="p">])</span>
+            <span class="n">conns_h5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;edges/source_gid&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">group</span><span class="p">[</span><span class="s1">&#39;src_gid&#39;</span><span class="p">])</span>
+            <span class="n">conns_h5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;edges/edge_type_id&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">group</span><span class="p">[</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">])</span>
+            <span class="n">conns_h5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;edges/edge_group&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">group</span><span class="p">[</span><span class="s1">&#39;connection_group&#39;</span><span class="p">])</span>
 
+            <span class="n">group_counters</span> <span class="o">=</span> <span class="p">{</span><span class="n">group_id</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">group_id</span> <span class="ow">in</span> <span class="n">group</span><span class="o">.</span><span class="n">connection_group</span><span class="o">.</span><span class="n">unique</span><span class="p">()}</span>
+            <span class="n">edge_group_indicies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">group_len</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">group_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="s1">&#39;connection_group&#39;</span><span class="p">]):</span>
+                <span class="n">edge_group_indicies</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">group_counters</span><span class="p">[</span><span class="n">group_id</span><span class="p">]</span>
+                <span class="n">group_counters</span><span class="p">[</span><span class="n">group_id</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">conns_h5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;edges/edge_group_indicies&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">edge_group_indicies</span><span class="p">)</span>
 
-<div class="viewcode-block" id="fix_axon"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.utils.fix_axon">[docs]</a><span class="k">def</span> <span class="nf">fix_axon</span><span class="p">(</span><span class="n">hobj</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Replace reconstructed axon with a stub</span>
-
-<span class="sd">    :param hobj: NEURON&#39;s cell object</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">:</span>
-        <span class="n">h</span><span class="o">.</span><span class="n">delete_section</span><span class="p">(</span><span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
-
-    <span class="n">h</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;create axon[2]&#39;</span><span class="p">,</span> <span class="n">hobj</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">:</span>
-        <span class="n">sec</span><span class="o">.</span><span class="n">L</span> <span class="o">=</span> <span class="mi">30</span>
-        <span class="n">sec</span><span class="o">.</span><span class="n">diam</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">hobj</span><span class="o">.</span><span class="n">axonal</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
-        <span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>    <span class="c1"># need to remove this comment</span>
-
-    <span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">hobj</span><span class="o">.</span><span class="n">soma</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">hobj</span><span class="o">.</span><span class="n">axon</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">h</span><span class="o">.</span><span class="n">define_shape</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="fix_axon_all_active"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.utils.fix_axon_all_active">[docs]</a><span class="k">def</span> <span class="nf">fix_axon_all_active</span><span class="p">(</span><span class="n">hobj</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;need temporary because axon is treated differently&quot;&quot;&quot;</span>
-    <span class="k">pass</span></div>
-
-
-<div class="viewcode-block" id="set_params_perisomatic"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.utils.set_params_perisomatic">[docs]</a><span class="k">def</span> <span class="nf">set_params_perisomatic</span><span class="p">(</span><span class="n">hobj</span><span class="p">,</span> <span class="n">params_file_name</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Set biophysical parameters for the cell</span>
-
-<span class="sd">    :param hobj: NEURON&#39;s cell object</span>
-<span class="sd">    :param params_file_name: name of json file containing biophysical parameters for cell&#39;s model which determine</span>
-<span class="sd">    spiking behavior</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">params_file_name</span><span class="p">)</span> <span class="k">as</span> <span class="n">biophys_params_file</span><span class="p">:</span>
-        <span class="n">biophys_params</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">biophys_params_file</span><span class="p">)</span>
-
-    <span class="n">passive</span> <span class="o">=</span> <span class="n">biophys_params</span><span class="p">[</span><span class="s1">&#39;passive&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">conditions</span> <span class="o">=</span> <span class="n">biophys_params</span><span class="p">[</span><span class="s1">&#39;conditions&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">genome</span> <span class="o">=</span> <span class="n">biophys_params</span><span class="p">[</span><span class="s1">&#39;genome&#39;</span><span class="p">]</span>
-
-    <span class="c1"># Set passive properties</span>
-    <span class="n">cm_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;section&#39;</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;cm&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">passive</span><span class="p">[</span><span class="s1">&#39;cm&#39;</span><span class="p">]])</span>
-    <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
-        <span class="n">sec</span><span class="o">.</span><span class="n">Ra</span> <span class="o">=</span> <span class="n">passive</span><span class="p">[</span><span class="s1">&#39;ra&#39;</span><span class="p">]</span>
-        <span class="n">sec</span><span class="o">.</span><span class="n">cm</span> <span class="o">=</span> <span class="n">cm_dict</span><span class="p">[</span><span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]]</span>
-        <span class="n">sec</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;pas&#39;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">sec</span><span class="p">:</span>
-            <span class="n">seg</span><span class="o">.</span><span class="n">pas</span><span class="o">.</span><span class="n">e</span> <span class="o">=</span> <span class="n">passive</span><span class="p">[</span><span class="s2">&quot;e_pas&quot;</span><span class="p">]</span>
-
-    <span class="c1"># Insert channels and set parameters</span>
-    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">genome</span><span class="p">:</span>
-        <span class="n">sections</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;section&quot;</span><span class="p">]]</span>
-
-        <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">sections</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;mechanism&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
-                <span class="n">sec</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s2">&quot;mechanism&quot;</span><span class="p">])</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="n">sec</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
-
-    <span class="c1"># Set reversal potentials</span>
-    <span class="k">for</span> <span class="n">erev</span> <span class="ow">in</span> <span class="n">conditions</span><span class="p">[</span><span class="s1">&#39;erev&#39;</span><span class="p">]:</span>
-        <span class="n">sections</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="n">erev</span><span class="p">[</span><span class="s2">&quot;section&quot;</span><span class="p">]]</span>
-        <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">sections</span><span class="p">:</span>
-            <span class="n">sec</span><span class="o">.</span><span class="n">ena</span> <span class="o">=</span> <span class="n">erev</span><span class="p">[</span><span class="s2">&quot;ena&quot;</span><span class="p">]</span>
-            <span class="n">sec</span><span class="o">.</span><span class="n">ek</span> <span class="o">=</span> <span class="n">erev</span><span class="p">[</span><span class="s2">&quot;ek&quot;</span><span class="p">]</span></div>
-
-
-<div class="viewcode-block" id="set_params_all_active"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.utils.set_params_all_active">[docs]</a><span class="k">def</span> <span class="nf">set_params_all_active</span><span class="p">(</span><span class="n">hobj</span><span class="p">,</span> <span class="n">params_file_name</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Configure a neuron after the cell morphology has been loaded&quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">params_file_name</span><span class="p">)</span> <span class="k">as</span> <span class="n">biophys_params_file</span><span class="p">:</span>
-        <span class="n">biophys_params</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">biophys_params_file</span><span class="p">)</span>
-
-    <span class="n">passive</span> <span class="o">=</span> <span class="n">biophys_params</span><span class="p">[</span><span class="s1">&#39;passive&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">genome</span> <span class="o">=</span> <span class="n">biophys_params</span><span class="p">[</span><span class="s1">&#39;genome&#39;</span><span class="p">]</span>
-    <span class="n">conditions</span> <span class="o">=</span> <span class="n">biophys_params</span><span class="p">[</span><span class="s1">&#39;conditions&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-
-    <span class="c1"># Set fixed passive properties</span>
-    <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
-        <span class="n">sec</span><span class="o">.</span><span class="n">Ra</span> <span class="o">=</span> <span class="n">passive</span><span class="p">[</span><span class="s1">&#39;ra&#39;</span><span class="p">]</span>
-        <span class="n">sec</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;pas&#39;</span><span class="p">)</span>
-
-    <span class="c1"># Insert channels and set parameters</span>
-    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">genome</span><span class="p">:</span>
-        <span class="n">section_array</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;section&quot;</span><span class="p">]</span>
-        <span class="n">mechanism</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;mechanism&quot;</span><span class="p">]</span>
-        <span class="n">param_name</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
-        <span class="n">param_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
-        <span class="k">if</span> <span class="n">section_array</span> <span class="o">==</span> <span class="s2">&quot;glob&quot;</span><span class="p">:</span>
-            <span class="n">h</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; = </span><span class="si">%g</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">hobj</span><span class="p">,</span> <span class="n">section_array</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">mechanism</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
-                    <span class="nb">print</span> <span class="s1">&#39;Adding mechanism </span><span class="si">%s</span><span class="s1"> to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">mechanism</span><span class="p">,</span> <span class="n">section_array</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">hobj</span><span class="p">,</span> <span class="n">section_array</span><span class="p">):</span>
-                        <span class="k">if</span> <span class="n">h</span><span class="o">.</span><span class="n">ismembrane</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">mechanism</span><span class="p">),</span> <span class="n">sec</span><span class="o">=</span><span class="n">section</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-                            <span class="n">section</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">mechanism</span><span class="p">)</span>
-
-                <span class="nb">print</span> <span class="s1">&#39;Setting </span><span class="si">%s</span><span class="s1"> to </span><span class="si">%.6g</span><span class="s1"> in </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">param_name</span><span class="p">,</span> <span class="n">param_value</span><span class="p">,</span> <span class="n">section_array</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">hobj</span><span class="p">,</span> <span class="n">section_array</span><span class="p">):</span>
-                    <span class="nb">setattr</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">param_value</span><span class="p">)</span>
-
-    <span class="c1"># Set reversal potentials</span>
-    <span class="k">for</span> <span class="n">erev</span> <span class="ow">in</span> <span class="n">conditions</span><span class="p">[</span><span class="s1">&#39;erev&#39;</span><span class="p">]:</span>
-        <span class="n">erev_section_array</span> <span class="o">=</span> <span class="n">erev</span><span class="p">[</span><span class="s2">&quot;section&quot;</span><span class="p">]</span>
-        <span class="n">ek</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">erev</span><span class="p">[</span><span class="s2">&quot;ek&quot;</span><span class="p">])</span>
-        <span class="n">ena</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">erev</span><span class="p">[</span><span class="s2">&quot;ena&quot;</span><span class="p">])</span>
-
-        <span class="nb">print</span> <span class="s1">&#39;Setting ek to </span><span class="si">%.6g</span><span class="s1"> and ena to </span><span class="si">%.6g</span><span class="s1"> in </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ek</span><span class="p">,</span> <span class="n">ena</span><span class="p">,</span> <span class="n">erev_section_array</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">hobj</span><span class="p">,</span> <span class="n">erev_section_array</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">hobj</span><span class="p">,</span> <span class="n">erev_section_array</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">h</span><span class="o">.</span><span class="n">ismembrane</span><span class="p">(</span><span class="s2">&quot;k_ion&quot;</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">section</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="nb">setattr</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="s1">&#39;ek&#39;</span><span class="p">,</span> <span class="n">ek</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">h</span><span class="o">.</span><span class="n">ismembrane</span><span class="p">(</span><span class="s2">&quot;na_ion&quot;</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">section</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="nb">setattr</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="s1">&#39;ena&#39;</span><span class="p">,</span> <span class="n">ena</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span> <span class="s2">&quot;Warning: can&#39;t set erev for </span><span class="si">%s</span><span class="s2">, section array doesn&#39;t exist&quot;</span> <span class="o">%</span> <span class="n">erev_section_array</span></div>
+            <span class="k">for</span> <span class="n">group_class</span><span class="p">,</span> <span class="n">sub_group</span> <span class="ow">in</span> <span class="n">group</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;connection_group&#39;</span><span class="p">):</span>
+                <span class="n">grp</span> <span class="o">=</span> <span class="n">conns_h5</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s1">&#39;edges/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">group_class</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">group_class</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;sec_id&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">sub_group</span><span class="p">[</span><span class="s1">&#39;segment&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int&#39;</span><span class="p">)</span>
+                    <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;sec_x&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">sub_group</span><span class="p">[</span><span class="s1">&#39;section&#39;</span><span class="p">])</span>
+                    <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">sub_group</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">])</span>
+                    <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;delay&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">sub_group</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="n">group_class</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">sub_group</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">])</span>
+                    <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;delay&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">sub_group</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Unknown cell group </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">group_class</span><span class="p">))</span></div>
 </pre></div>
 
           </div>
@@ -829,18 +721,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="sphinxsidebarwrapper">
 <h3><a href="../../../../index.html">Contents</a></h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../builder.html">The Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../builder.html">Building Networks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../simulators.html">Simulation Engines</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../filternet.html">FilterNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../mintnet.html">MintNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../bmtk.html">Source Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.analyzer.html">bmtk.analyzer package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.simulator.html">bmtk.simulator package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.utils.html">bmtk.utils package</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>
 </ul>

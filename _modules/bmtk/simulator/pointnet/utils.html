@@ -628,10 +628,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <h1>Source code for bmtk.simulator.pointnet.utils</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Allen Institute Software License - This software license is the 2-clause BSD license plus clause a third</span>
-<span class="c1"># clause that prohibits redistribution for commercial purposes without further permission.</span>
-<span class="c1">#</span>
-<span class="c1"># Copyright 2017. Allen Institute. All rights reserved.</span>
+<span></span><span class="c1"># Copyright 2017. Allen Institute. All rights reserved</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without modification, are permitted provided that the</span>
 <span class="c1"># following conditions are met:</span>
@@ -642,10 +639,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following</span>
 <span class="c1"># disclaimer in the documentation and/or other materials provided with the distribution.</span>
 <span class="c1">#</span>
-<span class="c1"># 3. Redistributions for commercial purposes are not permitted without the Allen Institute&#39;s written permission. For</span>
-<span class="c1"># purposes of this license, commercial purposes is the incorporation of the Allen Institute&#39;s software into anything for</span>
-<span class="c1"># which you will charge fees or other compensation. Contact terms@alleninstitute.org for commercial licensing</span>
-<span class="c1"># opportunities.</span>
+<span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
+<span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
 <span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
@@ -659,6 +654,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">six</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Most of these functions were collected from previous version of pointnet and are no longer tested and tested. However</span>
 <span class="sd">some functions may still be used by some people internally at AI for running their own simulations. I have marked all</span>
@@ -668,7 +664,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="read_LGN_activity"><a class="viewcode-back" href="../../../../bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.utils.read_LGN_activity">[docs]</a><span class="k">def</span> <span class="nf">read_LGN_activity</span><span class="p">(</span><span class="n">trial_num</span><span class="p">,</span> <span class="n">file_name</span><span class="p">):</span>
+<div class="viewcode-block" id="read_LGN_activity"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.utils.read_LGN_activity">[docs]</a><span class="k">def</span> <span class="nf">read_LGN_activity</span><span class="p">(</span><span class="n">trial_num</span><span class="p">,</span> <span class="n">file_name</span><span class="p">):</span>
     <span class="c1"># UNUSED.</span>
     <span class="n">spike_train_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">f5</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
@@ -679,21 +675,21 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="k">return</span> <span class="n">spike_train_dict</span></div>
 
 
-<div class="viewcode-block" id="read_conns"><a class="viewcode-back" href="../../../../bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.utils.read_conns">[docs]</a><span class="k">def</span> <span class="nf">read_conns</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
+<div class="viewcode-block" id="read_conns"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.utils.read_conns">[docs]</a><span class="k">def</span> <span class="nf">read_conns</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
     <span class="c1"># UNUSED.</span>
     <span class="n">fc</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
     <span class="n">indptr</span> <span class="o">=</span> <span class="n">fc</span><span class="p">[</span><span class="s1">&#39;indptr&#39;</span><span class="p">]</span>
     <span class="n">cell_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indptr</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
-    <span class="nb">print</span> <span class="n">cell_size</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">cell_size</span><span class="p">)</span>
     <span class="n">conns</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">source</span> <span class="o">=</span> <span class="n">fc</span><span class="p">[</span><span class="s1">&#39;src_gids&#39;</span><span class="p">]</span>
-    <span class="k">for</span> <span class="n">xin</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">cell_size</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">xin</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">moves</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="n">cell_size</span><span class="p">):</span>
         <span class="n">conns</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">xin</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="n">indptr</span><span class="p">[</span><span class="n">xin</span><span class="p">]:</span><span class="n">indptr</span><span class="p">[</span><span class="n">xin</span><span class="o">+</span><span class="mi">1</span><span class="p">]])</span>
 
     <span class="k">return</span> <span class="n">conns</span></div>
 
 
-<div class="viewcode-block" id="gen_recurrent_csv"><a class="viewcode-back" href="../../../../bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.utils.gen_recurrent_csv">[docs]</a><span class="k">def</span> <span class="nf">gen_recurrent_csv</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">csv_file</span><span class="p">):</span>
+<div class="viewcode-block" id="gen_recurrent_csv"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.utils.gen_recurrent_csv">[docs]</a><span class="k">def</span> <span class="nf">gen_recurrent_csv</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">csv_file</span><span class="p">):</span>
     <span class="c1"># UNUSED.</span>
     <span class="n">conn_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">csv_file</span><span class="p">)</span>
     <span class="n">target_ids</span> <span class="o">=</span> <span class="n">conn_data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
@@ -703,7 +699,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="n">pre</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">cell_num</span> <span class="o">=</span> <span class="n">num</span>
     <span class="n">params</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">xin</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">cell_num</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">xin</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">moves</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="n">cell_num</span><span class="p">):</span>
         <span class="n">pre</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xin</span><span class="o">+</span><span class="n">offset</span><span class="p">)</span>
         <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">source_ids</span> <span class="o">==</span> <span class="n">xin</span><span class="p">)</span>
 
@@ -721,7 +717,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="k">return</span> <span class="n">pre</span><span class="p">,</span> <span class="n">params</span></div>
 
 
-<div class="viewcode-block" id="gen_recurrent_h5"><a class="viewcode-back" href="../../../../bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.utils.gen_recurrent_h5">[docs]</a><span class="k">def</span> <span class="nf">gen_recurrent_h5</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">h5_file</span><span class="p">):</span>
+<div class="viewcode-block" id="gen_recurrent_h5"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.utils.gen_recurrent_h5">[docs]</a><span class="k">def</span> <span class="nf">gen_recurrent_h5</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">h5_file</span><span class="p">):</span>
     <span class="c1"># UNUSED.</span>
     <span class="n">fc</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">h5_file</span><span class="p">)</span>
     <span class="n">indptr</span> <span class="o">=</span> <span class="n">fc</span><span class="p">[</span><span class="s1">&#39;indptr&#39;</span><span class="p">]</span>
@@ -733,7 +729,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="n">target_ids</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">delay_v</span> <span class="o">=</span> <span class="mf">1.5</span>  <span class="c1"># arbitrary value</span>
 
-    <span class="k">for</span> <span class="n">xin</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="n">cell_size</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">xin</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">moves</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="n">cell_size</span><span class="p">):</span>
         <span class="n">target_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xin</span><span class="p">)</span>
         <span class="n">source_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">src_gids</span><span class="p">[</span><span class="n">indptr</span><span class="p">[</span><span class="n">xin</span><span class="p">]:</span><span class="n">indptr</span><span class="p">[</span><span class="n">xin</span><span class="o">+</span><span class="mi">1</span><span class="p">]]))</span>
         <span class="n">weight_scale</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">nsyns</span><span class="p">[</span><span class="n">indptr</span><span class="p">[</span><span class="n">xin</span><span class="p">]:</span><span class="n">indptr</span><span class="p">[</span><span class="n">xin</span><span class="o">+</span><span class="mi">1</span><span class="p">]]))</span>
@@ -766,7 +762,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="k">return</span> <span class="n">presynaptic</span><span class="p">,</span> <span class="n">params</span></div>
 
 
-<div class="viewcode-block" id="load_params"><a class="viewcode-back" href="../../../../bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.utils.load_params">[docs]</a><span class="k">def</span> <span class="nf">load_params</span><span class="p">(</span><span class="n">node_name</span><span class="p">,</span> <span class="n">model_name</span><span class="p">):</span>
+<div class="viewcode-block" id="load_params"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.utils.load_params">[docs]</a><span class="k">def</span> <span class="nf">load_params</span><span class="p">(</span><span class="n">node_name</span><span class="p">,</span> <span class="n">model_name</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    load information regarding nodes and cell_models from csv files</span>
 
@@ -790,12 +786,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="c1"># coordinates</span>
     <span class="n">dict_coordinates</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">xin</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">node_info</span><span class="p">)):</span>
+    <span class="k">for</span> <span class="n">xin</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">moves</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">node_info</span><span class="p">)):</span>
         <span class="n">dict_coordinates</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">node_info</span><span class="p">[</span><span class="n">xin</span><span class="p">,</span> <span class="mi">0</span><span class="p">])]</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_info</span><span class="p">[</span><span class="n">xin</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">node_info</span><span class="p">[</span><span class="n">xin</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">node_info</span><span class="p">[</span><span class="n">xin</span><span class="p">,</span> <span class="mi">4</span><span class="p">]]</span>
     <span class="k">return</span> <span class="n">node_info</span><span class="p">,</span> <span class="n">model_info</span><span class="p">,</span> <span class="n">dict_coordinates</span></div>
 
 
-<div class="viewcode-block" id="load_conns"><a class="viewcode-back" href="../../../../bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.utils.load_conns">[docs]</a><span class="k">def</span> <span class="nf">load_conns</span><span class="p">(</span><span class="n">cnn_fn</span><span class="p">):</span>
+<div class="viewcode-block" id="load_conns"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.utils.load_conns">[docs]</a><span class="k">def</span> <span class="nf">load_conns</span><span class="p">(</span><span class="n">cnn_fn</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    load information regarding connectivity from csv files</span>
 
@@ -815,7 +811,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="n">delays</span> <span class="o">=</span> <span class="n">conns</span><span class="o">.</span><span class="n">delay</span>
 
     <span class="n">conns_mapping</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">xin</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)):</span>
+    <span class="k">for</span> <span class="n">xin</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">moves</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)):</span>
         <span class="n">keys</span> <span class="o">=</span> <span class="n">sources</span><span class="p">[</span><span class="n">xin</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">targets</span><span class="p">[</span><span class="n">xin</span><span class="p">]</span>
         <span class="n">conns_mapping</span><span class="p">[</span><span class="n">keys</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">weights</span><span class="p">[</span><span class="n">xin</span><span class="p">],</span> <span class="n">delays</span><span class="p">[</span><span class="n">xin</span><span class="p">]]</span>
 
@@ -829,18 +825,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="sphinxsidebarwrapper">
 <h3><a href="../../../../index.html">Contents</a></h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../builder.html">The Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../builder.html">Building Networks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../simulators.html">Simulation Engines</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../filternet.html">FilterNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../mintnet.html">MintNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../bmtk.html">Source Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.analyzer.html">bmtk.analyzer package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.simulator.html">bmtk.simulator package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.utils.html">bmtk.utils package</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>
 </ul>

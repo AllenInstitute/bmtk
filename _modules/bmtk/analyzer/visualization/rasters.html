@@ -628,10 +628,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <h1>Source code for bmtk.analyzer.visualization.rasters</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Allen Institute Software License - This software license is the 2-clause BSD license plus clause a third</span>
-<span class="c1"># clause that prohibits redistribution for commercial purposes without further permission.</span>
-<span class="c1">#</span>
-<span class="c1"># Copyright 2017. Allen Institute. All rights reserved.</span>
+<span></span><span class="c1"># Copyright 2017. Allen Institute. All rights reserved</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without modification, are permitted provided that the</span>
 <span class="c1"># following conditions are met:</span>
@@ -642,10 +639,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following</span>
 <span class="c1"># disclaimer in the documentation and/or other materials provided with the distribution.</span>
 <span class="c1">#</span>
-<span class="c1"># 3. Redistributions for commercial purposes are not permitted without the Allen Institute&#39;s written permission. For</span>
-<span class="c1"># purposes of this license, commercial purposes is the incorporation of the Allen Institute&#39;s software into anything for</span>
-<span class="c1"># which you will charge fees or other compensation. Contact terms@alleninstitute.org for commercial licensing</span>
-<span class="c1"># opportunities.</span>
+<span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
+<span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
 <span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
@@ -658,7 +653,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
-<div class="viewcode-block" id="plot_raster_query"><a class="viewcode-back" href="../../../../bmtk.analyzer.visualization.html#bmtk.analyzer.visualization.rasters.plot_raster_query">[docs]</a><span class="k">def</span> <span class="nf">plot_raster_query</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">spikes</span><span class="p">,</span> <span class="n">nodes_df</span><span class="p">,</span> <span class="n">cmap</span><span class="p">,</span> <span class="n">twindow</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<div class="viewcode-block" id="plot_raster_query"><a class="viewcode-back" href="../../../../bmtk/bmtk.analyzer.visualization.html#bmtk.analyzer.visualization.rasters.plot_raster_query">[docs]</a><span class="k">def</span> <span class="nf">plot_raster_query</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">spikes</span><span class="p">,</span> <span class="n">nodes_df</span><span class="p">,</span> <span class="n">cmap</span><span class="p">,</span> <span class="n">twindow</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Plot raster colored according to a query.</span>
 
 <span class="sd">    Query&#39;s key defines node selection and the corresponding values defines color</span>
@@ -682,7 +677,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="k">for</span> <span class="n">query</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">cmap</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">query_df</span> <span class="o">=</span> <span class="n">nodes_df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="n">gids_query</span> <span class="o">=</span> <span class="n">query_df</span><span class="o">.</span><span class="n">index</span>
-        <span class="nb">print</span> <span class="n">query</span><span class="p">,</span>  <span class="s2">&quot;ncells:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">gids_query</span><span class="p">),</span> <span class="n">col</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> ncells: </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">gids_query</span><span class="p">),</span> <span class="n">col</span><span class="p">))</span>
 
         <span class="n">ix_g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">spike_gids</span><span class="p">,</span> <span class="n">gids_query</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">spike_times</span><span class="p">[</span><span class="n">ix_g</span><span class="p">],</span> <span class="n">spike_gids</span><span class="p">[</span><span class="n">ix_g</span><span class="p">],</span>
@@ -702,18 +697,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="sphinxsidebarwrapper">
 <h3><a href="../../../../index.html">Contents</a></h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../builder.html">The Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../builder.html">Building Networks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../simulators.html">Simulation Engines</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../filternet.html">FilterNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../mintnet.html">MintNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../bmtk.html">Source Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.analyzer.html">bmtk.analyzer package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.simulator.html">bmtk.simulator package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.utils.html">bmtk.utils package</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>
 </ul>

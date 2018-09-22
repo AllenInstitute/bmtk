@@ -628,10 +628,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <h1>Source code for bmtk.simulator.bionet.modules.record_cellvars</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Allen Institute Software License - This software license is the 2-clause BSD license plus clause a third</span>
-<span class="c1"># clause that prohibits redistribution for commercial purposes without further permission.</span>
-<span class="c1">#</span>
-<span class="c1"># Copyright 2017. Allen Institute. All rights reserved.</span>
+<span></span><span class="c1"># Copyright 2017. Allen Institute. All rights reserved</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without modification, are permitted provided that the</span>
 <span class="c1"># following conditions are met:</span>
@@ -642,10 +639,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following</span>
 <span class="c1"># disclaimer in the documentation and/or other materials provided with the distribution.</span>
 <span class="c1">#</span>
-<span class="c1"># 3. Redistributions for commercial purposes are not permitted without the Allen Institute&#39;s written permission. For</span>
-<span class="c1"># purposes of this license, commercial purposes is the incorporation of the Allen Institute&#39;s software into anything for</span>
-<span class="c1"># which you will charge fees or other compensation. Contact terms@alleninstitute.org for commercial licensing</span>
-<span class="c1"># opportunities.</span>
+<span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
+<span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
 <span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
@@ -656,71 +651,164 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c1">#</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">from</span> <span class="nn">neuron</span> <span class="k">import</span> <span class="n">h</span>
 
 <span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.modules.sim_module</span> <span class="k">import</span> <span class="n">SimulatorMod</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.io_tools</span> <span class="k">import</span> <span class="n">io</span>
+
+<span class="kn">from</span> <span class="nn">bmtk.utils.io</span> <span class="k">import</span> <span class="n">cell_vars</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># Check to see if h5py is built to run in parallel</span>
+    <span class="k">if</span> <span class="n">h5py</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span><span class="o">.</span><span class="n">mpi</span><span class="p">:</span>
+        <span class="n">MembraneRecorder</span> <span class="o">=</span> <span class="n">cell_vars</span><span class="o">.</span><span class="n">CellVarRecorderParallel</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">MembraneRecorder</span> <span class="o">=</span> <span class="n">cell_vars</span><span class="o">.</span><span class="n">CellVarRecorder</span>
+
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="n">MembraneRecorder</span> <span class="o">=</span> <span class="n">cell_vars</span><span class="o">.</span><span class="n">CellVarRecorder</span>
+
+<span class="n">MembraneRecorder</span><span class="o">.</span><span class="n">_io</span> <span class="o">=</span> <span class="n">io</span>
+
+<span class="n">pc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">ParallelContext</span><span class="p">()</span>
+<span class="n">MPI_RANK</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pc</span><span class="o">.</span><span class="n">id</span><span class="p">())</span>
+<span class="n">N_HOSTS</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pc</span><span class="o">.</span><span class="n">nhost</span><span class="p">())</span>
 
 
-<div class="viewcode-block" id="CellVarsMod"><a class="viewcode-back" href="../../../../../bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_cellvars.CellVarsMod">[docs]</a><span class="k">class</span> <span class="nc">CellVarsMod</span><span class="p">(</span><span class="n">SimulatorMod</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outputdir</span><span class="p">,</span> <span class="n">variables</span><span class="p">):</span>
+<div class="viewcode-block" id="first_element"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_cellvars.first_element">[docs]</a><span class="k">def</span> <span class="nf">first_element</span><span class="p">(</span><span class="n">lst</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">lst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<span class="n">transforms_table</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;first_element&#39;</span><span class="p">:</span> <span class="n">first_element</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="MembraneReport"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_cellvars.MembraneReport">[docs]</a><span class="k">class</span> <span class="nc">MembraneReport</span><span class="p">(</span><span class="n">SimulatorMod</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">,</span> <span class="n">cells</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">buffer_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="p">{}):</span>
         <span class="sd">&quot;&quot;&quot;Module used for saving NEURON cell properities at each given step of the simulation.</span>
 
-<span class="sd">        :param outputdir: directory where variables will be saved to.</span>
-<span class="sd">        :param variables: list of NEURON variables (strings) to collect and save each step</span>
+<span class="sd">        :param tmp_dir:</span>
+<span class="sd">        :param file_name: name of h5 file to save variable.</span>
+<span class="sd">        :param variables: list of cell variables to record</span>
+<span class="sd">        :param gids: list of gids to to record</span>
+<span class="sd">        :param sections:</span>
+<span class="sd">        :param buffer_data: Set to true then data will be saved to memory until written to disk during each block, reqs.</span>
+<span class="sd">        more memory but faster. Set to false and data will be written to disk on each step (default: True)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cell_vars</span> <span class="o">=</span> <span class="n">variables</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_outputdir</span> <span class="o">=</span> <span class="n">outputdir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_all_variables</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">variable_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">variable_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transforms</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># self._special_variables = []</span>
+        <span class="k">for</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">fnc_name</span> <span class="ow">in</span> <span class="n">transform</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">fnc_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">fnc_name</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transforms</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span>
+                <span class="k">continue</span>
+
+            <span class="n">fnc</span> <span class="o">=</span> <span class="n">transforms_table</span><span class="p">[</span><span class="n">fnc_name</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_transforms</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">fnc</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">var_name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_dir</span> <span class="o">=</span> <span class="n">tmp_dir</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_file_name</span> <span class="o">=</span> <span class="n">file_name</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span> <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_all_gids</span> <span class="o">=</span> <span class="n">cells</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_local_gids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span> <span class="o">=</span> <span class="n">sections</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span> <span class="o">=</span> <span class="n">MembraneRecorder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_variables</span><span class="p">,</span>
+                                              <span class="n">buffer_data</span><span class="o">=</span><span class="n">buffer_data</span><span class="p">,</span> <span class="n">mpi_rank</span><span class="o">=</span><span class="n">MPI_RANK</span><span class="p">,</span> <span class="n">mpi_size</span><span class="o">=</span><span class="n">N_HOSTS</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_gid_list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of all gids that will have their variables saved</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># table of variable data indexed by [gid][variable]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_block_step</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># time step within a given block</span>
 
-    <span class="k">def</span> <span class="nf">_get_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gid</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_outputdir</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.h5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gid</span><span class="p">))</span>
-
-<div class="viewcode-block" id="CellVarsMod.initialize"><a class="viewcode-back" href="../../../../../bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_cellvars.CellVarsMod.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_gids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
         <span class="c1"># get list of gids to save. Will only work for biophysical cells saved on the current MPI rank</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_gid_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">gids</span><span class="p">[</span><span class="s1">&#39;biophysical&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">gids</span><span class="p">[</span><span class="s1">&#39;save_cell_vars&#39;</span><span class="p">]))</span>
+        <span class="n">selected_gids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">get_node_set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_gids</span><span class="p">)</span><span class="o">.</span><span class="n">gids</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_local_gids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">biophysical_gids</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">selected_gids</span><span class="p">)</span>
 
-        <span class="c1"># preallocate block data for saving variables</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span> <span class="o">=</span> <span class="p">{</span><span class="n">gid</span><span class="p">:</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">nsteps_block</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cell_vars</span><span class="p">}</span> <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid_list</span><span class="p">}</span>
+    <span class="k">def</span> <span class="nf">_save_sim_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">tstart</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">tstop</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">tstop</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">dt</span>
 
-        <span class="c1"># Create files for saving variables</span>
-        <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid_list</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_filename</span><span class="p">(</span><span class="n">gid</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5</span><span class="p">:</span>
-                <span class="n">h5</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;dt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">dt</span>
-                <span class="n">h5</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;tstart&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-                <span class="n">h5</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;tstop&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">tstop</span>
+<div class="viewcode-block" id="MembraneReport.initialize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_cellvars.MembraneReport.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_gids</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_sim_data</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
 
-                <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cell_vars</span><span class="p">:</span>
-                    <span class="n">h5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">n_steps</span><span class="p">,),</span> <span class="n">chunks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="c1"># TODO: get section by name and/or list of section ids</span>
+        <span class="c1"># Build segment/section list</span>
+        <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_gids</span><span class="p">:</span>
+            <span class="n">sec_list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">seg_list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">cell</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">get_cell_gid</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span>
+            <span class="n">cell</span><span class="o">.</span><span class="n">store_segments</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">sec_id</span><span class="p">,</span> <span class="n">sec</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">get_sections</span><span class="p">()):</span>
+                <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">sec</span><span class="p">:</span>
+                    <span class="c1"># TODO: Make sure the seg has the recorded variable(s)</span>
+                    <span class="n">sec_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec_id</span><span class="p">)</span>
+                    <span class="n">seg_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
 
-<div class="viewcode-block" id="CellVarsMod.step"><a class="viewcode-back" href="../../../../../bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_cellvars.CellVarsMod.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">tstep</span><span class="p">,</span> <span class="n">rel_time</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">add_cell</span><span class="p">(</span><span class="n">gid</span><span class="p">,</span> <span class="n">sec_list</span><span class="p">,</span> <span class="n">seg_list</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">n_steps</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">nsteps_block</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MembraneReport.step"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_cellvars.MembraneReport.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">tstep</span><span class="p">):</span>
         <span class="c1"># save all necessary cells/variables at the current time-step into memory</span>
-        <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid_list</span><span class="p">:</span>
-            <span class="n">cell</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">cells</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">variable</span><span class="p">,</span> <span class="n">data_block</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">data_block</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_block_step</span><span class="p">]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">soma</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">variable</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_gids</span><span class="p">:</span>
+            <span class="n">cell</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">get_cell_gid</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span><span class="p">:</span>
+                <span class="n">seg_vals</span> <span class="o">=</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span> <span class="n">var_name</span><span class="p">)</span> <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_segments</span><span class="p">()]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">record_cell</span><span class="p">(</span><span class="n">gid</span><span class="p">,</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">seg_vals</span><span class="p">,</span> <span class="n">tstep</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">fnc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transforms</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">seg_vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">fnc</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span> <span class="n">var_name</span><span class="p">))</span> <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_segments</span><span class="p">()]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">record_cell</span><span class="p">(</span><span class="n">gid</span><span class="p">,</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">seg_vals</span><span class="p">,</span> <span class="n">tstep</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_block_step</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
-<div class="viewcode-block" id="CellVarsMod.block"><a class="viewcode-back" href="../../../../../bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_cellvars.CellVarsMod.block">[docs]</a>    <span class="k">def</span> <span class="nf">block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">block_interval</span><span class="p">):</span>
+<div class="viewcode-block" id="MembraneReport.block"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_cellvars.MembraneReport.block">[docs]</a>    <span class="k">def</span> <span class="nf">block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">block_interval</span><span class="p">):</span>
         <span class="c1"># write variables in memory to file</span>
-        <span class="n">itstart</span><span class="p">,</span> <span class="n">itend</span> <span class="o">=</span> <span class="n">block_interval</span>
-        <span class="c1"># TODO: keep a reference to the hdf5 file instead of opening it on every block</span>
-        <span class="k">for</span> <span class="n">gid</span><span class="p">,</span> <span class="n">var_table</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_filename</span><span class="p">(</span><span class="n">gid</span><span class="p">),</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">var_data</span> <span class="ow">in</span> <span class="n">var_table</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="n">h5</span><span class="p">[</span><span class="n">var_name</span><span class="p">][</span><span class="n">itstart</span><span class="p">:</span><span class="n">itend</span><span class="p">]</span> <span class="o">=</span> <span class="n">var_data</span><span class="p">[</span><span class="mi">0</span><span class="p">:(</span><span class="n">itend</span><span class="o">-</span><span class="n">itstart</span><span class="p">)]</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="p">[</span><span class="n">gid</span><span class="p">][</span><span class="n">var_name</span><span class="p">][:]</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># np.zeros(sim.nsteps_block)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_block_step</span> <span class="o">=</span> <span class="mi">0</span></div>
+<div class="viewcode-block" id="MembraneReport.finalize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_cellvars.MembraneReport.finalize">[docs]</a>    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+        <span class="c1"># TODO: Build in mpi signaling into var_recorder</span>
+        <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-<div class="viewcode-block" id="CellVarsMod.finalize"><a class="viewcode-back" href="../../../../../bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_cellvars.CellVarsMod.finalize">[docs]</a>    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_block_step</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="c1"># just in case the simulation doesn&#39;t end on a block step</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">block</span><span class="p">(</span><span class="n">sim</span><span class="p">,</span> <span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">n_steps</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_block_step</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">n_steps</span><span class="p">))</span></div></div>
+        <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">merge</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="SomaReport"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_cellvars.SomaReport">[docs]</a><span class="k">class</span> <span class="nc">SomaReport</span><span class="p">(</span><span class="n">MembraneReport</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Special case for when only needing to save the soma variable&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">,</span> <span class="n">cells</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="s1">&#39;soma&#39;</span><span class="p">,</span> <span class="n">buffer_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SomaReport</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">tmp_dir</span><span class="o">=</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="n">file_name</span><span class="p">,</span> <span class="n">variable_name</span><span class="o">=</span><span class="n">variable_name</span><span class="p">,</span> <span class="n">cells</span><span class="o">=</span><span class="n">cells</span><span class="p">,</span>
+                                         <span class="n">sections</span><span class="o">=</span><span class="n">sections</span><span class="p">,</span> <span class="n">buffer_data</span><span class="o">=</span><span class="n">buffer_data</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SomaReport.initialize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_cellvars.SomaReport.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_get_gids</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_sim_data</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_gids</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">add_cell</span><span class="p">(</span><span class="n">gid</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">n_steps</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">nsteps_block</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SomaReport.step"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_cellvars.SomaReport.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">tstep</span><span class="p">,</span> <span class="n">rel_time</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="c1"># save all necessary cells/variables at the current time-step into memory</span>
+        <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_gids</span><span class="p">:</span>
+            <span class="n">cell</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">get_cell_gid</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span><span class="p">:</span>
+                <span class="n">var_val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">soma</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">var_name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">record_cell</span><span class="p">(</span><span class="n">gid</span><span class="p">,</span> <span class="n">var_name</span><span class="p">,</span> <span class="p">[</span><span class="n">var_val</span><span class="p">],</span> <span class="n">tstep</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">fnc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transforms</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">var_val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">soma</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">var_name</span><span class="p">)</span>
+                <span class="n">new_val</span> <span class="o">=</span> <span class="n">fnc</span><span class="p">(</span><span class="n">var_val</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">record_cell</span><span class="p">(</span><span class="n">gid</span><span class="p">,</span> <span class="n">var_name</span><span class="p">,</span> <span class="p">[</span><span class="n">new_val</span><span class="p">],</span> <span class="n">tstep</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_block_step</span> <span class="o">+=</span> <span class="mi">1</span></div></div>
 </pre></div>
 
           </div>
@@ -730,18 +818,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="sphinxsidebarwrapper">
 <h3><a href="../../../../../index.html">Contents</a></h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../builder.html">The Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../builder.html">Building Networks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../simulators.html">Simulation Engines</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../filternet.html">FilterNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../mintnet.html">MintNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk.html">Source Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk.analyzer.html">bmtk.analyzer package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk.simulator.html">bmtk.simulator package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk.utils.html">bmtk.utils package</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>
 </ul>

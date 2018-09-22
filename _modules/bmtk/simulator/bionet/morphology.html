@@ -628,10 +628,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <h1>Source code for bmtk.simulator.bionet.morphology</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Allen Institute Software License - This software license is the 2-clause BSD license plus clause a third</span>
-<span class="c1"># clause that prohibits redistribution for commercial purposes without further permission.</span>
-<span class="c1">#</span>
-<span class="c1"># Copyright 2017. Allen Institute. All rights reserved.</span>
+<span></span><span class="c1"># Copyright 2017. Allen Institute. All rights reserved</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without modification, are permitted provided that the</span>
 <span class="c1"># following conditions are met:</span>
@@ -642,10 +639,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following</span>
 <span class="c1"># disclaimer in the documentation and/or other materials provided with the distribution.</span>
 <span class="c1">#</span>
-<span class="c1"># 3. Redistributions for commercial purposes are not permitted without the Allen Institute&#39;s written permission. For</span>
-<span class="c1"># purposes of this license, commercial purposes is the incorporation of the Allen Institute&#39;s software into anything for</span>
-<span class="c1"># which you will charge fees or other compensation. Contact terms@alleninstitute.org for commercial licensing</span>
-<span class="c1"># opportunities.</span>
+<span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
+<span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
 <span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
@@ -656,14 +651,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c1">#</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
 <span class="kn">from</span> <span class="nn">neuron</span> <span class="k">import</span> <span class="n">h</span>
 
 
 <span class="n">pc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">ParallelContext</span><span class="p">()</span>  <span class="c1"># object to access MPI methods</span>
 
 
-<div class="viewcode-block" id="Morphology"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology">[docs]</a><span class="k">class</span> <span class="nc">Morphology</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Morphology"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology">[docs]</a><span class="k">class</span> <span class="nc">Morphology</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Methods for processing morphological data&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hobj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;reuse hoc object from one of the cells which share the same morphology/model&quot;&quot;&quot;</span>
@@ -675,13 +669,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">nseg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nseg</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_segments</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="Morphology.get_nseg"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.get_nseg">[docs]</a>    <span class="k">def</span> <span class="nf">get_nseg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Morphology.get_nseg"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.get_nseg">[docs]</a>    <span class="k">def</span> <span class="nf">get_nseg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">nseg</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
             <span class="n">nseg</span> <span class="o">+=</span> <span class="n">sec</span><span class="o">.</span><span class="n">nseg</span>  <span class="c1"># get the total # of segments in the cell</span>
         <span class="k">return</span> <span class="n">nseg</span></div>
 
-<div class="viewcode-block" id="Morphology.get_soma_pos"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.get_soma_pos">[docs]</a>    <span class="k">def</span> <span class="nf">get_soma_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Morphology.get_soma_pos"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.get_soma_pos">[docs]</a>    <span class="k">def</span> <span class="nf">get_soma_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">n3dsoma</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">r3dsoma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">somatic</span><span class="p">:</span>
@@ -697,7 +691,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">r3dsoma</span> <span class="o">/=</span> <span class="n">n3dsoma</span>
         <span class="k">return</span> <span class="n">r3dsoma</span></div>
 
-<div class="viewcode-block" id="Morphology.calc_seg_coords"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.calc_seg_coords">[docs]</a>    <span class="k">def</span> <span class="nf">calc_seg_coords</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>   
+<div class="viewcode-block" id="Morphology.calc_seg_coords"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.calc_seg_coords">[docs]</a>    <span class="k">def</span> <span class="nf">calc_seg_coords</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Calculate segment coordinates from 3d point coordinates&quot;&quot;&quot;</span>
         <span class="n">ix</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># segment index</span>
 
@@ -706,7 +700,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         
         <span class="n">p0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nseg</span><span class="p">))</span>  <span class="c1"># hold the coordinates of segment starting points</span>
         <span class="n">p1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nseg</span><span class="p">))</span>  <span class="c1"># hold the coordinates of segment end points</span>
-        <span class="n">d0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nseg</span><span class="p">)</span> 
+        <span class="n">p05</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nseg</span><span class="p">))</span>
+        <span class="n">d0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nseg</span><span class="p">)</span>
         <span class="n">d1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nseg</span><span class="p">)</span> 
 
         <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
@@ -726,11 +721,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">nseg</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">nseg</span>
             
             <span class="n">l0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nseg</span><span class="p">)</span>     <span class="c1"># keep range of segment starting point </span>
-            <span class="n">l1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nseg</span><span class="p">)</span>     <span class="c1"># keep range of segment ending point </span>
+            <span class="n">l1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nseg</span><span class="p">)</span>     <span class="c1"># keep range of segment ending point</span>
+            <span class="n">l05</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nseg</span><span class="p">)</span>
             
             <span class="k">for</span> <span class="n">iseg</span><span class="p">,</span> <span class="n">seg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sec</span><span class="p">):</span>
                 <span class="n">l0</span><span class="p">[</span><span class="n">iseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="mf">0.5</span><span class="o">*</span><span class="mi">1</span><span class="o">/</span><span class="n">nseg</span>   <span class="c1"># x (normalized distance along the section) for the beginning of the segment</span>
                 <span class="n">l1</span><span class="p">[</span><span class="n">iseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="mi">1</span><span class="o">/</span><span class="n">nseg</span>   <span class="c1"># x for the end of the segment</span>
+                <span class="n">l05</span><span class="p">[</span><span class="n">iseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">x</span>
 
             <span class="n">p0</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l0</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])</span>
             <span class="n">p0</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l0</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:])</span>
@@ -741,20 +738,25 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">p1</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:])</span>
             <span class="n">p1</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:])</span>
             <span class="n">d1</span><span class="p">[</span><span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">diam3d</span><span class="p">[:])</span>
-            <span class="n">ix</span> <span class="o">+=</span> <span class="n">nseg</span>
 
+            <span class="n">p05</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l05</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])</span>
+            <span class="n">p05</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l05</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">1</span><span class="p">,:])</span>
+            <span class="n">p05</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l05</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">2</span><span class="p">,:])</span>
+
+            <span class="n">ix</span> <span class="o">+=</span> <span class="n">nseg</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">seg_coords</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">seg_coords</span><span class="p">[</span><span class="s1">&#39;p0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">seg_coords</span><span class="p">[</span><span class="s1">&#39;p1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seg_coords</span><span class="p">[</span><span class="s1">&#39;p05&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p05</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">seg_coords</span><span class="p">[</span><span class="s1">&#39;d0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">seg_coords</span><span class="p">[</span><span class="s1">&#39;d1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d1</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_coords</span></div>
 
-<div class="viewcode-block" id="Morphology.set_seg_props"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.set_seg_props">[docs]</a>    <span class="k">def</span> <span class="nf">set_seg_props</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Morphology.set_seg_props"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.set_seg_props">[docs]</a>    <span class="k">def</span> <span class="nf">set_seg_props</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Set segment properties which are invariant for all cell using this morphology&quot;&quot;&quot;</span>
         <span class="n">seg_type</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">seg_area</span> <span class="o">=</span> <span class="p">[]</span>
@@ -777,27 +779,63 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="n">seg_type</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec_type_swc</span><span class="p">)</span>           <span class="c1"># record section type in a list</span>
                 <span class="n">seg_dist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>  <span class="c1"># distance to the center of the segment</span>
 
-
         <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span> <span class="o">=</span> <span class="p">{}</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">seg_type</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;area&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">seg_area</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">seg_x</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;dist&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">seg_dist</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;length&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">seg_length</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;dist0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;dist&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;length&#39;</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;dist1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;dist&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;length&#39;</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span></div>
 
-<div class="viewcode-block" id="Morphology.get_target_segments"><a class="viewcode-back" href="../../../../bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.get_target_segments">[docs]</a>    <span class="k">def</span> <span class="nf">get_target_segments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">):</span>
+<div class="viewcode-block" id="Morphology.get_target_segments"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.get_target_segments">[docs]</a>    <span class="k">def</span> <span class="nf">get_target_segments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">):</span>
         <span class="c1"># Determine the target segments and their probabilities of connections for each new edge-type. Save the</span>
         <span class="c1"># information for each additional time a given edge-type is used on this morphology</span>
+        <span class="c1"># TODO: Don&#39;t rely on edge-type-table, just use the edge?</span>
         <span class="k">if</span> <span class="n">edge_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_segments</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_segments</span><span class="p">[</span><span class="n">edge_type</span><span class="p">]</span>
 
-        <span class="n">tar_sec_labels</span> <span class="o">=</span> <span class="n">edge_type</span><span class="o">.</span><span class="n">target_sections</span>
-        <span class="n">drange</span> <span class="o">=</span> <span class="n">edge_type</span><span class="o">.</span><span class="n">target_distance</span>
-        <span class="n">dmin</span><span class="p">,</span> <span class="n">dmax</span> <span class="o">=</span> <span class="n">drange</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">drange</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tar_seg_ix</span><span class="p">,</span> <span class="n">tar_seg_prob</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_sections</span><span class="p">(</span><span class="n">edge_type</span><span class="o">.</span><span class="n">target_sections</span><span class="p">,</span> <span class="n">edge_type</span><span class="o">.</span><span class="n">target_distance</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_segments</span><span class="p">[</span><span class="n">edge_type</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">tar_seg_ix</span><span class="p">,</span> <span class="n">tar_seg_prob</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">tar_seg_ix</span><span class="p">,</span> <span class="n">tar_seg_prob</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        tar_sec_labels = edge_type.target_sections</span>
+<span class="sd">        drange = edge_type.target_distance</span>
+<span class="sd">        dmin, dmax = drange[0], drange[1]</span>
+
+<span class="sd">        seg_d0 = self.seg_prop[&#39;dist0&#39;]  # use a more compact variables</span>
+<span class="sd">        seg_d1 = self.seg_prop[&#39;dist1&#39;]</span>
+<span class="sd">        seg_length = self.seg_prop[&#39;length&#39;]</span>
+<span class="sd">        seg_area = self.seg_prop[&#39;area&#39;]</span>
+<span class="sd">        seg_type = self.seg_prop[&#39;type&#39;]</span>
+
+<span class="sd">        # Find the fractional overlap between the segment and the distance range:</span>
+<span class="sd">        # this is done by finding the overlap between [d0,d1] and [dmin,dmax]</span>
+<span class="sd">        # np.minimum(seg_d1,dmax) find the smaller of the two end locations</span>
+<span class="sd">        # np.maximum(seg_d0,dmin) find the larger of the two start locations</span>
+<span class="sd">        # np.maximum(0,overlap) is used to return zero when segments do not overlap</span>
+<span class="sd">        # and then dividing by the segment length</span>
+<span class="sd">        frac_overlap = np.maximum(0, (np.minimum(seg_d1, dmax) - np.maximum(seg_d0, dmin))) / seg_length</span>
+<span class="sd">        ix_drange = np.where(frac_overlap &gt; 0)  # find indexes with non-zero overlap</span>
+<span class="sd">        ix_labels = np.array([], dtype=np.int)</span>
+
+<span class="sd">        for tar_sec_label in tar_sec_labels:  # find indexes within sec_labels</span>
+<span class="sd">            sec_type = self.sec_type_swc[tar_sec_label]  # get swc code for the section label</span>
+<span class="sd">            ix_label = np.where(seg_type == sec_type)</span>
+<span class="sd">            ix_labels = np.append(ix_labels, ix_label)  # target segment indexes</span>
+
+<span class="sd">        tar_seg_ix = np.intersect1d(ix_drange, ix_labels)  # find intersection between indexes for range and labels</span>
+<span class="sd">        tar_seg_length = seg_length[tar_seg_ix] * frac_overlap[tar_seg_ix]  # weighted length of targeted segments</span>
+<span class="sd">        tar_seg_prob = tar_seg_length / np.sum(tar_seg_length)  # probability of targeting segments</span>
+
+<span class="sd">        self._segments[edge_type] = (tar_seg_ix, tar_seg_prob)</span>
+<span class="sd">        return tar_seg_ix, tar_seg_prob</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="Morphology.find_sections"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.find_sections">[docs]</a>    <span class="k">def</span> <span class="nf">find_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_sections</span><span class="p">,</span> <span class="n">distance_range</span><span class="p">):</span>
+        <span class="n">dmin</span><span class="p">,</span> <span class="n">dmax</span> <span class="o">=</span> <span class="n">distance_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">distance_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
         <span class="n">seg_d0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;dist0&#39;</span><span class="p">]</span>  <span class="c1"># use a more compact variables</span>
         <span class="n">seg_d1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;dist1&#39;</span><span class="p">]</span>
@@ -815,7 +853,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">ix_drange</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">frac_overlap</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># find indexes with non-zero overlap</span>
         <span class="n">ix_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">tar_sec_label</span> <span class="ow">in</span> <span class="n">tar_sec_labels</span><span class="p">:</span>  <span class="c1"># find indexes within sec_labels</span>
+        <span class="k">for</span> <span class="n">tar_sec_label</span> <span class="ow">in</span> <span class="n">target_sections</span><span class="p">:</span>  <span class="c1"># find indexes within sec_labels</span>
             <span class="n">sec_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sec_type_swc</span><span class="p">[</span><span class="n">tar_sec_label</span><span class="p">]</span>  <span class="c1"># get swc code for the section label</span>
             <span class="n">ix_label</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">seg_type</span> <span class="o">==</span> <span class="n">sec_type</span><span class="p">)</span>
             <span class="n">ix_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ix_labels</span><span class="p">,</span> <span class="n">ix_label</span><span class="p">)</span>  <span class="c1"># target segment indexes</span>
@@ -823,73 +861,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">tar_seg_ix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">ix_drange</span><span class="p">,</span> <span class="n">ix_labels</span><span class="p">)</span>  <span class="c1"># find intersection between indexes for range and labels</span>
         <span class="n">tar_seg_length</span> <span class="o">=</span> <span class="n">seg_length</span><span class="p">[</span><span class="n">tar_seg_ix</span><span class="p">]</span> <span class="o">*</span> <span class="n">frac_overlap</span><span class="p">[</span><span class="n">tar_seg_ix</span><span class="p">]</span>  <span class="c1"># weighted length of targeted segments</span>
         <span class="n">tar_seg_prob</span> <span class="o">=</span> <span class="n">tar_seg_length</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">tar_seg_length</span><span class="p">)</span>  <span class="c1"># probability of targeting segments</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_segments</span><span class="p">[</span><span class="n">edge_type</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">tar_seg_ix</span><span class="p">,</span> <span class="n">tar_seg_prob</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">tar_seg_ix</span><span class="p">,</span> <span class="n">tar_seg_prob</span></div>
-
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    def find_tar_segs(self, con_types_model_df):</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-<span class="sd">        Find segment indexes which are targeted  and corresponding probabilities of placing synapse</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        con_types_model_df: pandas data frame</span>
-<span class="sd">            includes connection types for a given source type from connection_types table</span>
-<span class="sd">        </span>
-<span class="sd">        </span>
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        innerv: dict[key: string] = {&#39;ix&#39;: ndarray,&#39;p&#39;:ndarray}</span>
-<span class="sd">            dictionary of innervated segments indexes &#39;ix&#39; and their probabilities &#39;p&#39; </span>
-<span class="sd">            </span>
-<span class="sd">        &#39;&#39;&#39;</span>
-
-<span class="sd">        self.innerv = {}</span>
-<span class="sd">        </span>
-<span class="sd">        for con_key, con_prop in con_types_model_df.iterrows():</span>
-
-<span class="sd">            tar_sec_labels = json.loads(con_prop[&#39;target_sections&#39;])</span>
-<span class="sd">            drange = json.loads(con_prop[&#39;distance_range&#39;])</span>
-<span class="sd">            dmin = drange[0];     dmax = drange[1]</span>
-
-<span class="sd">            seg_d0 = self.seg_prop[&#39;dist0&#39;]    # use a more compact variables</span>
-<span class="sd">            seg_d1 = self.seg_prop[&#39;dist1&#39;]</span>
-<span class="sd">            seg_length = self.seg_prop[&#39;length&#39;]</span>
-<span class="sd">            seg_area = self.seg_prop[&#39;area&#39;]</span>
-<span class="sd">            seg_type = self.seg_prop[&#39;type&#39;]</span>
-
-<span class="sd">            # Find the fractional overlap between the segment and the distance range:            </span>
-<span class="sd">            # this is done by finding the overlap between [d0,d1] and [dmin,dmax]</span>
-<span class="sd">            # np.minimum(seg_d1,dmax) find the smaller of the two end locations</span>
-<span class="sd">            # np.maximum(seg_d0,dmin) find the larger of the two start locations</span>
-<span class="sd">            # np.maximum(0,overlap) is used to return zero when segments do not overlap</span>
-<span class="sd">            # and then dividing by the segment length</span>
-
-<span class="sd">            frac_overlap = np.maximum(0,(np.minimum(seg_d1,dmax) - np.maximum(seg_d0,dmin)))/seg_length    </span>
-<span class="sd">            ix_drange = np.where(frac_overlap&gt;0)    # find indexes with non-zero overlap</span>
-
-
-<span class="sd">            ix_labels = np.array([], dtype=np.int)</span>
-<span class="sd">            </span>
-<span class="sd">            for tar_sec_label in tar_sec_labels:    # find indexes within sec_labels</span>
-
-<span class="sd">                sec_type = self.sec_type_swc[tar_sec_label] # get swc code for the section label</span>
-<span class="sd">                ix_label = np.where(seg_type == sec_type)   </span>
-<span class="sd">                ix_labels = np.append(ix_labels, ix_label)  # target segment indexes</span>
-
-<span class="sd">                        </span>
-<span class="sd">            tar_seg_ix = np.intersect1d(ix_drange,ix_labels)    # find intersection between indexes for range and labels</span>
-
-<span class="sd">#            tar_seg_area = seg_area[tar_seg_ix]*frac_overlap[tar_seg_ix]    # weighted area of targeted segments</span>
-<span class="sd">            tar_seg_length = seg_length[tar_seg_ix]*frac_overlap[tar_seg_ix]    # weighted length of targeted segments</span>
-
-<span class="sd">            tar_seg_prob = tar_seg_length/np.sum(tar_seg_length)    # probability of targeting segments</span>
-<span class="sd">#            tar_seg_prob = tar_seg_area/np.sum(tar_seg_area)    # probability of targeting segments</span>
-
-<span class="sd">            </span>
-<span class="sd">            self.innerv[con_key] = (tar_seg_ix, tar_seg_prob)   # return indexes of targeted section and the corresponding probabilities</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
+        <span class="k">return</span> <span class="n">tar_seg_ix</span><span class="p">,</span> <span class="n">tar_seg_prob</span></div></div>
 </pre></div>
 
           </div>
@@ -899,18 +871,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="sphinxsidebarwrapper">
 <h3><a href="../../../../index.html">Contents</a></h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../builder.html">The Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../builder.html">Building Networks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../simulators.html">Simulation Engines</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../filternet.html">FilterNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../mintnet.html">MintNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../bmtk.html">Source Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.analyzer.html">bmtk.analyzer package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.simulator.html">bmtk.simulator package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.utils.html">bmtk.utils package</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>
 </ul>

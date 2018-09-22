@@ -628,10 +628,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <h1>Source code for bmtk.simulator.popnet.utils</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Allen Institute Software License - This software license is the 2-clause BSD license plus clause a third</span>
-<span class="c1"># clause that prohibits redistribution for commercial purposes without further permission.</span>
-<span class="c1">#</span>
-<span class="c1"># Copyright 2017. Allen Institute. All rights reserved.</span>
+<span></span><span class="c1"># Copyright 2017. Allen Institute. All rights reserved</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without modification, are permitted provided that the</span>
 <span class="c1"># following conditions are met:</span>
@@ -642,10 +639,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following</span>
 <span class="c1"># disclaimer in the documentation and/or other materials provided with the distribution.</span>
 <span class="c1">#</span>
-<span class="c1"># 3. Redistributions for commercial purposes are not permitted without the Allen Institute&#39;s written permission. For</span>
-<span class="c1"># purposes of this license, commercial purposes is the incorporation of the Allen Institute&#39;s software into anything for</span>
-<span class="c1"># which you will charge fees or other compensation. Contact terms@alleninstitute.org for commercial licensing</span>
-<span class="c1"># opportunities.</span>
+<span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
+<span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
 <span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
@@ -676,7 +671,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="get_firing_rate_from_nwb"><a class="viewcode-back" href="../../../../bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.get_firing_rate_from_nwb">[docs]</a><span class="k">def</span> <span class="nf">get_firing_rate_from_nwb</span><span class="p">(</span><span class="n">populations</span><span class="p">,</span> <span class="n">nwb_file</span><span class="p">,</span> <span class="n">trial</span><span class="p">):</span>
+<div class="viewcode-block" id="get_firing_rate_from_nwb"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.get_firing_rate_from_nwb">[docs]</a><span class="k">def</span> <span class="nf">get_firing_rate_from_nwb</span><span class="p">(</span><span class="n">populations</span><span class="p">,</span> <span class="n">nwb_file</span><span class="p">,</span> <span class="n">trial</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculates firing rates for an external population&quot;&quot;&quot;</span>
     <span class="n">h5_file</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">nwb_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
     <span class="n">spike_trains_ds</span> <span class="o">=</span> <span class="n">h5_file</span><span class="p">[</span><span class="s1">&#39;processing&#39;</span><span class="p">][</span><span class="n">trial</span><span class="p">][</span><span class="s1">&#39;spike_train&#39;</span><span class="p">]</span>
@@ -702,19 +697,43 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="k">return</span> <span class="n">firing_rates</span></div>
 
 
+<div class="viewcode-block" id="get_firing_rates"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.get_firing_rates">[docs]</a><span class="k">def</span> <span class="nf">get_firing_rates</span><span class="p">(</span><span class="n">populations</span><span class="p">,</span> <span class="n">spike_trains</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculates firing rates for an external population&quot;&quot;&quot;</span>
+    <span class="c1">#h5_file = h5py.File(nwb_file, &#39;r&#39;)</span>
+    <span class="c1">#spike_trains_ds = h5_file[&#39;processing&#39;][trial][&#39;spike_train&#39;]</span>
+
+    <span class="c1"># TODO: look into adding a time window rather than searching for min/max t.</span>
+    <span class="n">firing_rates</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">pop</span> <span class="ow">in</span> <span class="n">populations</span><span class="p">:</span>
+        <span class="n">spike_counts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">spike_min_t</span> <span class="o">=</span> <span class="mf">1.0e30</span>
+        <span class="n">spike_max_t</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="n">pop</span><span class="o">.</span><span class="n">get_gids</span><span class="p">():</span>
+            <span class="n">spike_times</span> <span class="o">=</span> <span class="n">spike_trains</span><span class="o">.</span><span class="n">get_spikes</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">spike_times</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">spike_times</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">tmp_min</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">spike_times</span><span class="p">)</span>
+                <span class="n">spike_min_t</span> <span class="o">=</span> <span class="n">tmp_min</span> <span class="k">if</span> <span class="n">tmp_min</span> <span class="o">&lt;</span> <span class="n">spike_min_t</span> <span class="k">else</span> <span class="n">spike_min_t</span>
+                <span class="n">tmp_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">spike_times</span><span class="p">)</span>
+                <span class="n">spike_max_t</span> <span class="o">=</span> <span class="n">tmp_max</span> <span class="k">if</span> <span class="n">tmp_max</span> <span class="o">&gt;</span> <span class="n">spike_max_t</span> <span class="k">else</span> <span class="n">spike_max_t</span>
+                <span class="n">spike_counts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">spike_times</span><span class="p">))</span>
+
+        <span class="c1"># TODO make sure t_diffs is not null and spike_counts has some values</span>
+        <span class="n">firing_rates</span><span class="p">[</span><span class="n">pop</span><span class="o">.</span><span class="n">pop_id</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0e03</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">spike_counts</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">spike_max_t</span> <span class="o">-</span> <span class="n">spike_min_t</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">firing_rates</span></div>
+
 <span class="c1">#############################################</span>
 <span class="c1"># Depreciated</span>
 <span class="c1">#############################################</span>
-<div class="viewcode-block" id="list_of_dicts_to_dict_of_lists"><a class="viewcode-back" href="../../../../bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.list_of_dicts_to_dict_of_lists">[docs]</a><span class="k">def</span> <span class="nf">list_of_dicts_to_dict_of_lists</span><span class="p">(</span><span class="n">list_of_dicts</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="list_of_dicts_to_dict_of_lists"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.list_of_dicts_to_dict_of_lists">[docs]</a><span class="k">def</span> <span class="nf">list_of_dicts_to_dict_of_lists</span><span class="p">(</span><span class="n">list_of_dicts</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">new_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">curr_dict</span> <span class="ow">in</span> <span class="n">list_of_dicts</span><span class="p">:</span>
-        <span class="nb">print</span> <span class="n">curr_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="n">curr_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
 
 <span class="c1">#############################################</span>
 <span class="c1"># Depreciated</span>
 <span class="c1">#############################################</span>
-<div class="viewcode-block" id="KeyDefaultDict"><a class="viewcode-back" href="../../../../bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.KeyDefaultDict">[docs]</a><span class="k">class</span> <span class="nc">KeyDefaultDict</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">):</span>
+<div class="viewcode-block" id="KeyDefaultDict"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.KeyDefaultDict">[docs]</a><span class="k">class</span> <span class="nc">KeyDefaultDict</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__missing__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_factory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">KeyError</span>
@@ -726,7 +745,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1">#############################################</span>
 <span class="c1"># Depreciated</span>
 <span class="c1">#############################################</span>
-<div class="viewcode-block" id="create_firing_rate_server"><a class="viewcode-back" href="../../../../bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.create_firing_rate_server">[docs]</a><span class="k">def</span> <span class="nf">create_firing_rate_server</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<div class="viewcode-block" id="create_firing_rate_server"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.create_firing_rate_server">[docs]</a><span class="k">def</span> <span class="nf">create_firing_rate_server</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
 
     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Hard coded bug fix for mindscope council 4/27/15&#39;</span><span class="p">)</span>
     <span class="n">t</span> <span class="o">=</span> <span class="n">t</span><span class="o">/.</span><span class="mi">001</span><span class="o">/</span><span class="mi">200</span>
@@ -737,7 +756,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1">#############################################</span>
 <span class="c1"># Depreciated</span>
 <span class="c1">#############################################</span>
-<div class="viewcode-block" id="create_nwb_server_file_path"><a class="viewcode-back" href="../../../../bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.create_nwb_server_file_path">[docs]</a><span class="k">def</span> <span class="nf">create_nwb_server_file_path</span><span class="p">(</span><span class="n">nwb_file_name</span><span class="p">,</span> <span class="n">nwb_path</span><span class="p">):</span>
+<div class="viewcode-block" id="create_nwb_server_file_path"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.create_nwb_server_file_path">[docs]</a><span class="k">def</span> <span class="nf">create_nwb_server_file_path</span><span class="p">(</span><span class="n">nwb_file_name</span><span class="p">,</span> <span class="n">nwb_path</span><span class="p">):</span>
     <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">nwb_file_name</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/data&#39;</span> <span class="o">%</span> <span class="n">nwb_path</span><span class="p">][:]</span>
     <span class="n">dt</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/data&#39;</span> <span class="o">%</span> <span class="n">nwb_path</span><span class="p">]</span><span class="o">.</span><span class="n">dims</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
@@ -749,7 +768,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1">#############################################</span>
 <span class="c1"># Depreciated</span>
 <span class="c1">#############################################</span>
-<div class="viewcode-block" id="get_mesoscale_connectivity_dict"><a class="viewcode-back" href="../../../../bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.get_mesoscale_connectivity_dict">[docs]</a><span class="k">def</span> <span class="nf">get_mesoscale_connectivity_dict</span><span class="p">():</span>
+<div class="viewcode-block" id="get_mesoscale_connectivity_dict"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.get_mesoscale_connectivity_dict">[docs]</a><span class="k">def</span> <span class="nf">get_mesoscale_connectivity_dict</span><span class="p">():</span>
 
     <span class="c1"># Extract data into a dictionary:</span>
     <span class="n">mesoscale_data_dir</span> <span class="o">=</span> <span class="s1">&#39;/data/mat/iSee_temp_shared/packages/mesoscale_connectivity&#39;</span>
@@ -767,7 +786,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1">#############################################</span>
 <span class="c1"># Depreciated</span>
 <span class="c1">#############################################</span>
-<div class="viewcode-block" id="reorder_columns_in_frame"><a class="viewcode-back" href="../../../../bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.reorder_columns_in_frame">[docs]</a><span class="k">def</span> <span class="nf">reorder_columns_in_frame</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">var</span><span class="p">):</span>
+<div class="viewcode-block" id="reorder_columns_in_frame"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.reorder_columns_in_frame">[docs]</a><span class="k">def</span> <span class="nf">reorder_columns_in_frame</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">var</span><span class="p">):</span>
     <span class="n">varlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">frame</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">w</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">var</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">frame</span><span class="p">[</span><span class="n">var</span><span class="o">+</span><span class="n">varlist</span><span class="p">]</span></div>
 
@@ -775,7 +794,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1">#############################################</span>
 <span class="c1"># Depreciated</span>
 <span class="c1">#############################################</span>
-<div class="viewcode-block" id="population_to_dict_for_dataframe"><a class="viewcode-back" href="../../../../bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.population_to_dict_for_dataframe">[docs]</a><span class="k">def</span> <span class="nf">population_to_dict_for_dataframe</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+<div class="viewcode-block" id="population_to_dict_for_dataframe"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.population_to_dict_for_dataframe">[docs]</a><span class="k">def</span> <span class="nf">population_to_dict_for_dataframe</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
     
     <span class="n">black_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;firing_rate_record&#39;</span><span class="p">,</span> 
                   <span class="s1">&#39;initial_firing_rate&#39;</span><span class="p">,</span> 
@@ -802,14 +821,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1">#############################################</span>
 <span class="c1"># Depreciated</span>
 <span class="c1">#############################################</span>
-<div class="viewcode-block" id="network_dict_to_target_adjacency_dict"><a class="viewcode-back" href="../../../../bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.network_dict_to_target_adjacency_dict">[docs]</a><span class="k">def</span> <span class="nf">network_dict_to_target_adjacency_dict</span><span class="p">(</span><span class="n">network_dict</span><span class="p">):</span>
-    <span class="nb">print</span> <span class="n">network_dict</span></div>
+<div class="viewcode-block" id="network_dict_to_target_adjacency_dict"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.network_dict_to_target_adjacency_dict">[docs]</a><span class="k">def</span> <span class="nf">network_dict_to_target_adjacency_dict</span><span class="p">(</span><span class="n">network_dict</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">network_dict</span><span class="p">)</span></div>
 
 
 <span class="c1">#############################################</span>
 <span class="c1"># Depreciated</span>
 <span class="c1">#############################################</span>
-<div class="viewcode-block" id="population_list_to_dataframe"><a class="viewcode-back" href="../../../../bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.population_list_to_dataframe">[docs]</a><span class="k">def</span> <span class="nf">population_list_to_dataframe</span><span class="p">(</span><span class="n">population_list</span><span class="p">):</span>
+<div class="viewcode-block" id="population_list_to_dataframe"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.population_list_to_dataframe">[docs]</a><span class="k">def</span> <span class="nf">population_list_to_dataframe</span><span class="p">(</span><span class="n">population_list</span><span class="p">):</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;_tmp&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">]})</span>
     <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">population_list</span><span class="p">:</span>
         <span class="n">model_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;_tmp&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">]}</span>
@@ -825,14 +844,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1">#############################################</span>
 <span class="c1"># Depreciated</span>
 <span class="c1">#############################################</span>
-<div class="viewcode-block" id="df_to_csv"><a class="viewcode-back" href="../../../../bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.df_to_csv">[docs]</a><span class="k">def</span> <span class="nf">df_to_csv</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">save_file_name</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="df_to_csv"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.df_to_csv">[docs]</a><span class="k">def</span> <span class="nf">df_to_csv</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">save_file_name</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">):</span>
     <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">save_file_name</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="n">na_rep</span><span class="p">)</span></div>
 
 
 <span class="c1">#############################################</span>
 <span class="c1"># Depreciated</span>
 <span class="c1">#############################################</span>
-<div class="viewcode-block" id="population_list_to_csv"><a class="viewcode-back" href="../../../../bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.population_list_to_csv">[docs]</a><span class="k">def</span> <span class="nf">population_list_to_csv</span><span class="p">(</span><span class="n">population_list</span><span class="p">,</span> <span class="n">save_file_name</span><span class="p">):</span>
+<div class="viewcode-block" id="population_list_to_csv"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.population_list_to_csv">[docs]</a><span class="k">def</span> <span class="nf">population_list_to_csv</span><span class="p">(</span><span class="n">population_list</span><span class="p">,</span> <span class="n">save_file_name</span><span class="p">):</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">population_list_to_dataframe</span><span class="p">(</span><span class="n">population_list</span><span class="p">)</span>
     <span class="n">df_to_csv</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">save_file_name</span><span class="p">)</span></div>
 
@@ -840,7 +859,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1">#############################################</span>
 <span class="c1"># Depreciated</span>
 <span class="c1">#############################################</span>
-<div class="viewcode-block" id="create_instance"><a class="viewcode-back" href="../../../../bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.create_instance">[docs]</a><span class="k">def</span> <span class="nf">create_instance</span><span class="p">(</span><span class="n">data_dict</span><span class="p">):</span>
+<div class="viewcode-block" id="create_instance"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.create_instance">[docs]</a><span class="k">def</span> <span class="nf">create_instance</span><span class="p">(</span><span class="n">data_dict</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Helper function to create an object from a dictionary containing:</span>
 
 <span class="sd">    &quot;module&quot;: The name of the module containing the class</span>
@@ -856,7 +875,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1">#############################################</span>
 <span class="c1"># Depreciated</span>
 <span class="c1">#############################################</span>
-<div class="viewcode-block" id="assert_model_known"><a class="viewcode-back" href="../../../../bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.assert_model_known">[docs]</a><span class="k">def</span> <span class="nf">assert_model_known</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">model_dict</span><span class="p">):</span>
+<div class="viewcode-block" id="assert_model_known"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.assert_model_known">[docs]</a><span class="k">def</span> <span class="nf">assert_model_known</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">model_dict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Test if a model in in the model_dict; if not, raise UnknownModelError&quot;&quot;&quot;</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -868,7 +887,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1">#############################################</span>
 <span class="c1"># Depreciated</span>
 <span class="c1">#############################################</span>
-<div class="viewcode-block" id="create_population_list"><a class="viewcode-back" href="../../../../bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.create_population_list">[docs]</a><span class="k">def</span> <span class="nf">create_population_list</span><span class="p">(</span><span class="n">node_table</span><span class="p">,</span> <span class="n">model_table</span><span class="p">):</span>
+<div class="viewcode-block" id="create_population_list"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.utils.create_population_list">[docs]</a><span class="k">def</span> <span class="nf">create_population_list</span><span class="p">(</span><span class="n">node_table</span><span class="p">,</span> <span class="n">model_table</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create a population list from the node and model pandas tables&quot;&quot;&quot;</span>
 
     <span class="n">model_dict</span> <span class="o">=</span> <span class="p">{}</span>
@@ -905,18 +924,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="sphinxsidebarwrapper">
 <h3><a href="../../../../index.html">Contents</a></h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../builder.html">The Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../builder.html">Building Networks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../simulators.html">Simulation Engines</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../filternet.html">FilterNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../mintnet.html">MintNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../bmtk.html">Source Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.analyzer.html">bmtk.analyzer package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.simulator.html">bmtk.simulator package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.utils.html">bmtk.utils package</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>
 </ul>

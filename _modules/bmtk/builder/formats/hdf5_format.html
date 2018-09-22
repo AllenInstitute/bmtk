@@ -628,10 +628,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <h1>Source code for bmtk.builder.formats.hdf5_format</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Allen Institute Software License - This software license is the 2-clause BSD license plus clause a third</span>
-<span class="c1"># clause that prohibits redistribution for commercial purposes without further permission.</span>
-<span class="c1">#</span>
-<span class="c1"># Copyright 2017. Allen Institute. All rights reserved.</span>
+<span></span><span class="c1"># Copyright 2017. Allen Institute. All rights reserved</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without modification, are permitted provided that the</span>
 <span class="c1"># following conditions are met:</span>
@@ -642,10 +639,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following</span>
 <span class="c1"># disclaimer in the documentation and/or other materials provided with the distribution.</span>
 <span class="c1">#</span>
-<span class="c1"># 3. Redistributions for commercial purposes are not permitted without the Allen Institute&#39;s written permission. For</span>
-<span class="c1"># purposes of this license, commercial purposes is the incorporation of the Allen Institute&#39;s software into anything for</span>
-<span class="c1"># which you will charge fees or other compensation. Contact terms@alleninstitute.org for commercial licensing</span>
-<span class="c1"># opportunities.</span>
+<span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
+<span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
 <span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
@@ -669,7 +664,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">from</span> <span class="nn">time</span> <span class="k">import</span> <span class="n">gmtime</span><span class="p">,</span> <span class="n">strftime</span>
 
 
-<div class="viewcode-block" id="HDF5Format"><a class="viewcode-back" href="../../../../bmtk.builder.formats.html#bmtk.builder.formats.hdf5_format.HDF5Format">[docs]</a><span class="k">class</span> <span class="nc">HDF5Format</span><span class="p">(</span><span class="n">IFormat</span><span class="p">):</span>
+<div class="viewcode-block" id="HDF5Format"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.formats.html#bmtk.builder.formats.hdf5_format.HDF5Format">[docs]</a><span class="k">class</span> <span class="nc">HDF5Format</span><span class="p">(</span><span class="n">IFormat</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Format prior to Blue-brain project collaboration.</span>
 <span class="sd">    Saves as:</span>
@@ -691,7 +686,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;msdk.HDF5Format&#39;</span>
 
-<div class="viewcode-block" id="HDF5Format.save"><a class="viewcode-back" href="../../../../bmtk.builder.formats.html#bmtk.builder.formats.hdf5_format.HDF5Format.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="HDF5Format.save"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.formats.html#bmtk.builder.formats.hdf5_format.HDF5Format.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; saves nodes.csv, node_types.csv, edges.h5, edge_types.csv and .metadata.json. Will overwrite existing files.</span>
 
 <span class="sd">        :param directory: Directory where all the files will be saved, creating dir if it doesn&#39;t exists.</span>
@@ -742,7 +737,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">metadata_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">mdfile</span><span class="p">:</span>
             <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">mdfile</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HDF5Format.save_node_types"><a class="viewcode-back" href="../../../../bmtk.builder.formats.html#bmtk.builder.formats.hdf5_format.HDF5Format.save_node_types">[docs]</a>    <span class="k">def</span> <span class="nf">save_node_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="HDF5Format.save_node_types"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.formats.html#bmtk.builder.formats.hdf5_format.HDF5Format.save_node_types">[docs]</a>    <span class="k">def</span> <span class="nf">save_node_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Write node_types to csv.</span>
 
 <span class="sd">        :param file_name: path to csv file. Will be overwritten if it exists</span>
@@ -781,7 +776,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                     <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">props</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cname</span><span class="p">,</span> <span class="s1">&#39;NA&#39;</span><span class="p">))</span> <span class="c1"># get column name or NA if it doesn&#39;t exists for this node</span>
                 <span class="n">csvw</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HDF5Format.save_nodes"><a class="viewcode-back" href="../../../../bmtk.builder.formats.html#bmtk.builder.formats.hdf5_format.HDF5Format.save_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">save_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="HDF5Format.save_nodes"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.formats.html#bmtk.builder.formats.hdf5_format.HDF5Format.save_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">save_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Write nodes to csv.</span>
 
 <span class="sd">        :param file_name: path to csv file. Will be overwritten if it exists</span>
@@ -816,7 +811,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                     <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cname</span><span class="p">,</span> <span class="s1">&#39;NA&#39;</span><span class="p">))</span>
                 <span class="n">csvw</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HDF5Format.save_edge_types"><a class="viewcode-back" href="../../../../bmtk.builder.formats.html#bmtk.builder.formats.hdf5_format.HDF5Format.save_edge_types">[docs]</a>    <span class="k">def</span> <span class="nf">save_edge_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="HDF5Format.save_edge_types"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.formats.html#bmtk.builder.formats.hdf5_format.HDF5Format.save_edge_types">[docs]</a>    <span class="k">def</span> <span class="nf">save_edge_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Write edge-types to csv.</span>
 
 <span class="sd">        :param file_name: path to csv file. Will be overwritten if it exists</span>
@@ -854,7 +849,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                     <span class="n">row_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="s1">&#39;NA&#39;</span><span class="p">))</span>
                 <span class="n">csvw</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row_array</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HDF5Format.save_edges"><a class="viewcode-back" href="../../../../bmtk.builder.formats.html#bmtk.builder.formats.hdf5_format.HDF5Format.save_edges">[docs]</a>    <span class="k">def</span> <span class="nf">save_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="HDF5Format.save_edges"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.formats.html#bmtk.builder.formats.hdf5_format.HDF5Format.save_edges">[docs]</a>    <span class="k">def</span> <span class="nf">save_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Saves edges to edges.h5</span>
 
 <span class="sd">        :param file_name: path to hdf5 file. Will be overwritten if it exists</span>
@@ -1037,7 +1032,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
             <span class="bp">self</span><span class="o">.</span><span class="n">edges_built</span> <span class="o">=</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="HDF5Format.load_dir"><a class="viewcode-back" href="../../../../bmtk.builder.formats.html#bmtk.builder.formats.hdf5_format.HDF5Format.load_dir">[docs]</a>    <span class="k">def</span> <span class="nf">load_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
+<div class="viewcode-block" id="HDF5Format.load_dir"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.formats.html#bmtk.builder.formats.hdf5_format.HDF5Format.load_dir">[docs]</a>    <span class="k">def</span> <span class="nf">load_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">get_path</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">f</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span>
@@ -1054,7 +1049,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">edges_file</span> <span class="o">=</span> <span class="n">get_path</span><span class="p">(</span><span class="s1">&#39;edges_file&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__load_edge_types</span><span class="p">(</span><span class="n">edges_file</span><span class="p">,</span> <span class="n">edge_types_file</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="HDF5Format.load"><a class="viewcode-back" href="../../../../bmtk.builder.formats.html#bmtk.builder.formats.hdf5_format.HDF5Format.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_types_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edges_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_types_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="HDF5Format.load"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.formats.html#bmtk.builder.formats.hdf5_format.HDF5Format.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_types_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edges_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_types_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__load_nodes</span><span class="p">(</span><span class="n">nodes_file</span><span class="p">,</span> <span class="n">node_types_file</span><span class="p">)</span></div></div>
 </pre></div>
 
@@ -1065,18 +1060,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="sphinxsidebarwrapper">
 <h3><a href="../../../../index.html">Contents</a></h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../builder.html">The Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../builder.html">Building Networks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../simulators.html">Simulation Engines</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../filternet.html">FilterNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../mintnet.html">MintNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../bmtk.html">Source Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.analyzer.html">bmtk.analyzer package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.simulator.html">bmtk.simulator package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.utils.html">bmtk.utils package</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>
 </ul>

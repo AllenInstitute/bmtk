@@ -628,10 +628,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <h1>Source code for bmtk.utils.io.tabular_network</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Allen Institute Software License - This software license is the 2-clause BSD license plus clause a third</span>
-<span class="c1"># clause that prohibits redistribution for commercial purposes without further permission.</span>
-<span class="c1">#</span>
-<span class="c1"># Copyright 2017. Allen Institute. All rights reserved.</span>
+<span></span><span class="c1"># Copyright 2017. Allen Institute. All rights reserved</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without modification, are permitted provided that the</span>
 <span class="c1"># following conditions are met:</span>
@@ -642,10 +639,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following</span>
 <span class="c1"># disclaimer in the documentation and/or other materials provided with the distribution.</span>
 <span class="c1">#</span>
-<span class="c1"># 3. Redistributions for commercial purposes are not permitted without the Allen Institute&#39;s written permission. For</span>
-<span class="c1"># purposes of this license, commercial purposes is the incorporation of the Allen Institute&#39;s software into anything for</span>
-<span class="c1"># which you will charge fees or other compensation. Contact terms@alleninstitute.org for commercial licensing</span>
-<span class="c1"># opportunities.</span>
+<span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
+<span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
 <span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
@@ -677,18 +672,18 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1">##########################################</span>
 <span class="c1"># Interface files</span>
 <span class="c1">##########################################</span>
-<div class="viewcode-block" id="TabularNetwork"><a class="viewcode-back" href="../../../../bmtk.utils.io.html#bmtk.utils.io.tabular_network.TabularNetwork">[docs]</a><span class="k">class</span> <span class="nc">TabularNetwork</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="TabularNetwork"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.tabular_network.TabularNetwork">[docs]</a><span class="k">class</span> <span class="nc">TabularNetwork</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Factory for loading nodes and edges files.&quot;&quot;&quot;</span>
-<div class="viewcode-block" id="TabularNetwork.load_nodes"><a class="viewcode-back" href="../../../../bmtk.utils.io.html#bmtk.utils.io.tabular_network.TabularNetwork.load_nodes">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="TabularNetwork.load_nodes"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.tabular_network.TabularNetwork.load_nodes">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">load_nodes</span><span class="p">(</span><span class="n">nodes_file</span><span class="p">,</span> <span class="n">node_types_file</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TabularNetwork.load_edges"><a class="viewcode-back" href="../../../../bmtk.utils.io.html#bmtk.utils.io.tabular_network.TabularNetwork.load_edges">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="TabularNetwork.load_edges"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.tabular_network.TabularNetwork.load_edges">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">load_edges</span><span class="p">(</span><span class="n">edges_file</span><span class="p">,</span> <span class="n">edge_types_files</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="NodeRow"><a class="viewcode-back" href="../../../../bmtk.utils.io.html#bmtk.utils.io.tabular_network.NodeRow">[docs]</a><span class="k">class</span> <span class="nc">NodeRow</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="NodeRow"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.tabular_network.NodeRow">[docs]</a><span class="k">class</span> <span class="nc">NodeRow</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Node file row.</span>
 
 <span class="sd">    Each row represents node/cell/population in a network and can include edge-type metadata and dynamics_params when</span>
@@ -725,7 +720,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="k">def</span> <span class="nf">node_type_props</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_type_props</span>
 
-<div class="viewcode-block" id="NodeRow.get"><a class="viewcode-back" href="../../../../bmtk.utils.io.html#bmtk.utils.io.tabular_network.NodeRow.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop_key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="NodeRow.get"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.tabular_network.NodeRow.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop_key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># First see if property existing in node file, then check node-types</span>
         <span class="k">if</span> <span class="n">prop_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_props</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_props</span><span class="p">[</span><span class="n">prop_key</span><span class="p">]</span>
@@ -747,7 +742,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="n">build_row_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="EdgeRow"><a class="viewcode-back" href="../../../../bmtk.utils.io.html#bmtk.utils.io.tabular_network.EdgeRow">[docs]</a><span class="k">class</span> <span class="nc">EdgeRow</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="EdgeRow"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.tabular_network.EdgeRow">[docs]</a><span class="k">class</span> <span class="nc">EdgeRow</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Representation of a edge.</span>
 
 <span class="sd">    Edges must include a source and target node gid. Other properties, from the edges or edge-types files, can be</span>
@@ -798,7 +793,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="n">build_row_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="NodesFile"><a class="viewcode-back" href="../../../../bmtk.utils.io.html#bmtk.utils.io.tabular_network.NodesFile">[docs]</a><span class="k">class</span> <span class="nc">NodesFile</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="NodesFile"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.tabular_network.NodesFile">[docs]</a><span class="k">class</span> <span class="nc">NodesFile</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Class for reading and iterating properties of each node in a nodes/node-types file.</span>
 
 <span class="sd">    Use the load method to load in the necessary node files. Nodes can be accessed using an interator:</span>
@@ -835,10 +830,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="k">def</span> <span class="nf">node_types_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_types_table</span>
 
-<div class="viewcode-block" id="NodesFile.load"><a class="viewcode-back" href="../../../../bmtk.utils.io.html#bmtk.utils.io.tabular_network.NodesFile.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes_file</span><span class="p">,</span> <span class="n">node_types_file</span><span class="p">):</span>
+<div class="viewcode-block" id="NodesFile.load"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.tabular_network.NodesFile.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes_file</span><span class="p">,</span> <span class="n">node_types_file</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="NodesFile.get_node"><a class="viewcode-back" href="../../../../bmtk.utils.io.html#bmtk.utils.io.tabular_network.NodesFile.get_node">[docs]</a>    <span class="k">def</span> <span class="nf">get_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gid</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="NodesFile.get_node"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.tabular_network.NodesFile.get_node">[docs]</a>    <span class="k">def</span> <span class="nf">get_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gid</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -848,14 +843,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_iter_index</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-<div class="viewcode-block" id="NodesFile.next"><a class="viewcode-back" href="../../../../bmtk.utils.io.html#bmtk.utils.io.tabular_network.NodesFile.next">[docs]</a>    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="NodesFile.next"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.tabular_network.NodesFile.next">[docs]</a>    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gid</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="EdgesFile"><a class="viewcode-back" href="../../../../bmtk.utils.io.html#bmtk.utils.io.tabular_network.EdgesFile">[docs]</a><span class="k">class</span> <span class="nc">EdgesFile</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="EdgesFile"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.tabular_network.EdgesFile">[docs]</a><span class="k">class</span> <span class="nc">EdgesFile</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Class for reading and iterating over edge files.</span>
 
 <span class="sd">    Use the load() method to instantiate from the file. Edges can be accessed for any given edge with a target-gid</span>
@@ -877,10 +872,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="sd">&quot;&quot;&quot;Name of network containing the target gids&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
 
-<div class="viewcode-block" id="EdgesFile.load"><a class="viewcode-back" href="../../../../bmtk.utils.io.html#bmtk.utils.io.tabular_network.EdgesFile.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edges_file</span><span class="p">,</span> <span class="n">edge_types_file</span><span class="p">):</span>
+<div class="viewcode-block" id="EdgesFile.load"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.tabular_network.EdgesFile.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edges_file</span><span class="p">,</span> <span class="n">edge_types_file</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="EdgesFile.edges_itr"><a class="viewcode-back" href="../../../../bmtk.utils.io.html#bmtk.utils.io.tabular_network.EdgesFile.edges_itr">[docs]</a>    <span class="k">def</span> <span class="nf">edges_itr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_gid</span><span class="p">):</span>
+<div class="viewcode-block" id="EdgesFile.edges_itr"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.tabular_network.EdgesFile.edges_itr">[docs]</a>    <span class="k">def</span> <span class="nf">edges_itr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_gid</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -890,7 +885,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1">##########################################</span>
 <span class="c1"># Helper functions</span>
 <span class="c1">##########################################</span>
-<div class="viewcode-block" id="ColumnProperty"><a class="viewcode-back" href="../../../../bmtk.utils.io.html#bmtk.utils.io.tabular_network.ColumnProperty">[docs]</a><span class="k">class</span> <span class="nc">ColumnProperty</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="ColumnProperty"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.tabular_network.ColumnProperty">[docs]</a><span class="k">class</span> <span class="nc">ColumnProperty</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Representation of a column name and metadata from a hdf5 dataset, csv column, etc.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -916,7 +911,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="k">def</span> <span class="nf">attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attrs</span>
 
-<div class="viewcode-block" id="ColumnProperty.from_h5"><a class="viewcode-back" href="../../../../bmtk.utils.io.html#bmtk.utils.io.tabular_network.ColumnProperty.from_h5">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="ColumnProperty.from_h5"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.tabular_network.ColumnProperty.from_h5">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_h5</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">hf_obj</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hf_obj</span><span class="p">,</span> <span class="n">h5py</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
             <span class="n">ds_name</span> <span class="o">=</span> <span class="n">name</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">hf_obj</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -937,7 +932,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Unable to convert hdf5 object </span><span class="si">{}</span><span class="s1"> to a property or list of properties.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hf_obj</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="ColumnProperty.from_csv"><a class="viewcode-back" href="../../../../bmtk.utils.io.html#bmtk.utils.io.tabular_network.ColumnProperty.from_csv">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="ColumnProperty.from_csv"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.tabular_network.ColumnProperty.from_csv">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_csv</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">pd_obj</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pd_obj</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
             <span class="n">c_name</span> <span class="o">=</span> <span class="n">name</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">pd_obj</span><span class="o">.</span><span class="n">name</span>
@@ -957,7 +952,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="TypesTable"><a class="viewcode-back" href="../../../../bmtk.utils.io.html#bmtk.utils.io.tabular_network.TypesTable">[docs]</a><span class="k">class</span> <span class="nc">TypesTable</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="TypesTable"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.tabular_network.TypesTable">[docs]</a><span class="k">class</span> <span class="nc">TypesTable</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">types_file</span><span class="p">,</span> <span class="n">index_column</span><span class="p">,</span> <span class="n">seperator</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s1">&#39;#&#39;</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TypesTable</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
@@ -974,7 +969,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_columns</span></div>
 
 
-<div class="viewcode-block" id="build_row_repr"><a class="viewcode-back" href="../../../../bmtk.utils.io.html#bmtk.utils.io.tabular_network.build_row_repr">[docs]</a><span class="k">def</span> <span class="nf">build_row_repr</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+<div class="viewcode-block" id="build_row_repr"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.tabular_network.build_row_repr">[docs]</a><span class="k">def</span> <span class="nf">build_row_repr</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
     <span class="n">columns</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">columns</span>
     <span class="k">if</span> <span class="n">columns</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">rstr</span> <span class="o">=</span> <span class="s2">&quot;{&quot;</span>
@@ -992,18 +987,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="sphinxsidebarwrapper">
 <h3><a href="../../../../index.html">Contents</a></h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../builder.html">The Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../builder.html">Building Networks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../simulators.html">Simulation Engines</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../filternet.html">FilterNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../mintnet.html">MintNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../bmtk.html">Source Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.analyzer.html">bmtk.analyzer package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.simulator.html">bmtk.simulator package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk.utils.html">bmtk.utils package</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>
 </ul>

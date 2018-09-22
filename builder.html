@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>The Builder &#8212; Brain Modeling Toolkit 0.0.5 documentation</title>
+    <title>The Network Builder &#8212; Brain Modeling Toolkit 0.0.5 documentation</title>
     <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -24,7 +24,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Simulation Engines" href="simulators.html" />
-    <link rel="prev" title="Welcome to the Brain Modeling Toolkit" href="index.html" /> 
+    <link rel="prev" title="Installing the BMTK" href="installation.html" /> 
   </head>
   <body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
@@ -629,33 +629,40 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="the-builder">
-<h1>The Builder<a class="headerlink" href="#the-builder" title="Permalink to this headline">¶</a></h1>
-<p>The Builder allows for the building and saving of brain-network models. It allows for the building of various types
-of networks, from biophysically detailed networks of neurons and synapses to networks of interconnected neuronal
-populations. Networks are saved into a standarized format that can be used by a variety of different simulators and
-visualization tools.</p>
-<div class="section" id="installation">
-<h2>Installation:<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>The Builder currently runs onf Python 2.7. To install the requirements using using python setup tools run from a
-command terminal</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
-</pre></div>
+  <div class="section" id="the-network-builder">
+<h1>The Network Builder<a class="headerlink" href="#the-network-builder" title="Permalink to this headline">¶</a></h1>
+<p>To run a simulation or visualizing a neural network the Brain Modeling Toolkit (bmtk) requires network files. This
+workflow of using intermediate files, rather than building and simulating an entire network in memory, is done to
+improve performance and memory, helps with iterative modeling, and allows for sharing and reproducibility. Before
+running a simulation you will first need to obtain existing network model files, or alternativly use the bmtk
+<strong>Builder</strong> submodule to create them from scratch.</p>
+<p>The Builder uses the same python inteface for creating networks of various varieties including multi-compartment neurons,
+point neuron, and population levels-of-resolution. It can support any model structure that is capable of being described
+by a directed graph of nodes (neurons, populations, regions) and edges (synapses, junctions, fibre tracts). It is also
+simulator agnostic, modelers can choose whatever attributes and properties they require to represent their model
+(<em>However to simulate a given network certain attributes will be required, depending on the underlying simulator</em>).</p>
+<p>The bmtk builder will build and save network files using <a class="reference external" href="https://github.com/AllenInstitute/sonata">SONATA</a>; a highly
+optimized data format for representing large-scale neural networks.</p>
+<div class="section" id="installing-the-builder">
+<h2>Installing the Builder<a class="headerlink" href="#installing-the-builder" title="Permalink to this headline">¶</a></h2>
+<p>The Builder sub-module is automatically included in the bmtk package. For instructions please refer to the <a class="reference external" href="installation">installation page</a>.</p>
 </div>
+<div class="section" id="tutorials-and-guides">
+<h2>Tutorials and Guides<a class="headerlink" href="#tutorials-and-guides" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>For a general overview of how to use the Builder please see the following tutorial:</dt>
+<dd><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/NetworkBuilder_Intro.ipynb">https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/NetworkBuilder_Intro.ipynb</a></dd>
+<dt>Similarly there are also a number of tutorials showing how to build (and simulate) networks of different levels:</dt>
+<dd><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb</a></dd>
+</dl>
 </div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<p>Examples of creating different types of networks can be found in the documentation under examples/builder/. To run one
-of the examples go into the subdirectory and run</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">build_network</span><span class="o">.</span><span class="n">py</span>
-</pre></div>
-</div>
-<p>The network(s) will be saved to the output/ folder</p>
-</div>
-<div class="section" id="tutorial">
-<h2>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h2>
-<p>Please see our tutorials for how to build and run networks using the bmtk:
-<a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb</a></p>
+<p>A good way of getting started with building networks is to start with an existing example. The AllenInstitute/bmtk github
+repo <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples">includes a number of examples</a>. Inside most
+examples you should find a <em>build_network.py</em> which shows how to build the network for that given simulation (and the
+output of the Builder will be saved in the <em>network/</em> directory).</p>
+<p>Many of the <a class="reference external" href="https://github.com/AllenInstitute/sonata/tree/master/examples">examples in the SONATA repo</a> were also built using bmtk and includes <em>build_network.py</em> scripts</p>
 </div>
 </div>
 
@@ -667,18 +674,23 @@ of the examples go into the subdirectory and run</p>
         <div class="sphinxsidebarwrapper">
 <h3><a href="index.html">Contents</a></h3>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">The Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Building Networks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="simulators.html">Simulation Engines</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filternet.html">FilterNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mintnet.html">MintNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>
 </ul>

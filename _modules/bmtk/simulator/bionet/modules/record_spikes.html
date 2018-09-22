@@ -628,10 +628,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <h1>Source code for bmtk.simulator.bionet.modules.record_spikes</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Allen Institute Software License - This software license is the 2-clause BSD license plus clause a third</span>
-<span class="c1"># clause that prohibits redistribution for commercial purposes without further permission.</span>
-<span class="c1">#</span>
-<span class="c1"># Copyright 2017. Allen Institute. All rights reserved.</span>
+<span></span><span class="c1"># Copyright 2017. Allen Institute. All rights reserved</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without modification, are permitted provided that the</span>
 <span class="c1"># following conditions are met:</span>
@@ -642,10 +639,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following</span>
 <span class="c1"># disclaimer in the documentation and/or other materials provided with the distribution.</span>
 <span class="c1">#</span>
-<span class="c1"># 3. Redistributions for commercial purposes are not permitted without the Allen Institute&#39;s written permission. For</span>
-<span class="c1"># purposes of this license, commercial purposes is the incorporation of the Allen Institute&#39;s software into anything for</span>
-<span class="c1"># which you will charge fees or other compensation. Contact terms@alleninstitute.org for commercial licensing</span>
-<span class="c1"># opportunities.</span>
+<span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
+<span class="c1"># products derived from this software without specific prior written permission.</span>
 <span class="c1">#</span>
 <span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
 <span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
@@ -660,14 +655,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">import</span> <span class="nn">h5py</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.modules.sim_module</span> <span class="k">import</span> <span class="n">SimulatorMod</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.io</span> <span class="k">import</span> <span class="n">print2log0</span>
+<span class="kn">from</span> <span class="nn">bmtk.utils.io.spike_trains</span> <span class="k">import</span> <span class="n">SpikeTrainWriter</span>
 
 <span class="kn">from</span> <span class="nn">neuron</span> <span class="k">import</span> <span class="n">h</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">mpi4py</span> <span class="k">import</span> <span class="n">MPI</span>
-    <span class="n">comm</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span>
-<span class="k">except</span><span class="p">:</span>
-    <span class="k">pass</span>
 
 
 <span class="n">pc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">ParallelContext</span><span class="p">()</span>
@@ -675,166 +665,63 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="n">N_HOSTS</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pc</span><span class="o">.</span><span class="n">nhost</span><span class="p">())</span>
 
 
-<div class="viewcode-block" id="SpikesMod"><a class="viewcode-back" href="../../../../../bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_spikes.SpikesMod">[docs]</a><span class="k">class</span> <span class="nc">SpikesMod</span><span class="p">(</span><span class="n">SimulatorMod</span><span class="p">):</span>
+<div class="viewcode-block" id="SpikesMod"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_spikes.SpikesMod">[docs]</a><span class="k">class</span> <span class="nc">SpikesMod</span><span class="p">(</span><span class="n">SimulatorMod</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Module use for saving spikes</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tmpdir</span><span class="p">,</span> <span class="n">csv_filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h5_filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_csv_fname</span> <span class="o">=</span> <span class="n">csv_filename</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_csv_fhandle</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_csv_writer</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_save_csv</span> <span class="o">=</span> <span class="n">csv_filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="p">,</span> <span class="n">spikes_file_csv</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spikes_file_nwb</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spikes_sort_order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># TODO: Have option to turn off caching spikes to csv.</span>
+        <span class="k">def</span> <span class="nf">_file_path</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="n">file_name</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span> <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_h5_fname</span> <span class="o">=</span> <span class="n">h5_filename</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_h5_fhandle</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_gids_dataset</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_times_dataset</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_save_h5</span> <span class="o">=</span> <span class="n">h5_filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_csv_fname</span> <span class="o">=</span> <span class="n">_file_path</span><span class="p">(</span><span class="n">spikes_file_csv</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_csv</span> <span class="o">=</span> <span class="n">spikes_file_csv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_tmpdir</span> <span class="o">=</span> <span class="n">tmpdir</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_tmp_filename</span><span class="p">(</span><span class="n">MPI_RANK</span><span class="p">)</span>  <span class="c1"># os.path.join(tmpdir, &#39;tmp_{}_spikes.csv&#39;.format(MPI_RANK))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_spikes_handles</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_n_spikes_rank</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_n_spikes_total</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_row_itr</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_h5_fname</span> <span class="o">=</span> <span class="n">_file_path</span><span class="p">(</span><span class="n">spikes_file</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_h5</span> <span class="o">=</span> <span class="n">spikes_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">_get_tmp_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rank</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmpdir</span><span class="p">,</span> <span class="s1">&#39;tmp_</span><span class="si">{}</span><span class="s1">_spikes.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rank</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nwb_fname</span> <span class="o">=</span> <span class="n">_file_path</span><span class="p">(</span><span class="n">spikes_file_nwb</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_nwb</span> <span class="o">=</span> <span class="n">spikes_file_nwb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">_save_unsorted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">MPI_RANK</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_HOSTS</span><span class="p">):</span>
-                <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_spikes_handles</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">rank</span><span class="p">)]:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_write_spike</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmpdir</span> <span class="o">=</span> <span class="n">tmp_dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sort_order</span> <span class="o">=</span> <span class="n">spikes_sort_order</span>
 
-        <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span> <span class="o">=</span> <span class="n">SpikeTrainWriter</span><span class="p">(</span><span class="n">tmp_dir</span><span class="o">=</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="n">mpi_rank</span><span class="o">=</span><span class="n">MPI_RANK</span><span class="p">,</span> <span class="n">mpi_size</span><span class="o">=</span><span class="n">N_HOSTS</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_save_sorted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">N_HOSTS</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="c1"># If there&#39;s one rank then the tmp file should already be sorted</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_save_unsorted</span><span class="p">()</span>
-
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">MPI_RANK</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="c1"># TODO: remove the conditional of running only on rank 0.</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="c1"># create a list of the first spike time for every rank</span>
-                    <span class="n">spikes</span> <span class="o">=</span> <span class="p">[]</span>
-                    <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_HOSTS</span><span class="p">):</span>
-                        <span class="n">spike</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_spike</span><span class="p">(</span><span class="n">rank</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="n">spike</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                            <span class="n">spikes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spike</span><span class="p">)</span>
-
-                    <span class="c1"># Iterate through all the ranks and find the first spike. Write that spike/gid to the output, then</span>
-                    <span class="c1"># replace that data point with the next spike on the selected rank</span>
-                    <span class="k">while</span> <span class="n">spikes</span><span class="p">:</span>
-                        <span class="c1"># find which rank has the first spike</span>
-                        <span class="n">selected_index</span> <span class="o">=</span> <span class="mi">0</span>
-                        <span class="n">selected_time</span> <span class="o">=</span> <span class="n">spikes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-                        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">spike</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">spikes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
-                            <span class="k">if</span> <span class="n">spike</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">selected_time</span><span class="p">:</span>
-                                <span class="n">selected_index</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
-                                <span class="n">selected_time</span> <span class="o">=</span> <span class="n">spike</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-
-                        <span class="c1"># write the spike to the file</span>
-                        <span class="n">t</span><span class="p">,</span> <span class="n">gid</span><span class="p">,</span> <span class="n">rank</span> <span class="o">=</span> <span class="n">spikes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">selected_index</span><span class="p">)</span>
-                        <span class="c1"># print2log0(&#39;{} {}&#39;.format(t, gid))</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_write_spike</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">gid</span><span class="p">)</span>
-
-                        <span class="c1"># get the next spike on that rank and replace in spikes table</span>
-                        <span class="n">another_spike</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_spike</span><span class="p">(</span><span class="n">rank</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="n">another_spike</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                            <span class="n">spikes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">another_spike</span><span class="p">)</span>
-
-                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="nb">print</span> <span class="n">e</span>
-
-            <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">_write_spike</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spike_time</span><span class="p">,</span> <span class="n">gid</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">MPI_RANK</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_csv</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_csv_writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">([</span><span class="n">spike_time</span><span class="p">,</span> <span class="n">gid</span><span class="p">])</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_h5</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_gids_dataset</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_row_itr</span><span class="p">]</span> <span class="o">=</span> <span class="n">gid</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_times_dataset</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_row_itr</span><span class="p">]</span> <span class="o">=</span> <span class="n">spike_time</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_row_itr</span> <span class="o">+=</span> <span class="mi">1</span>
-
-    <span class="k">def</span> <span class="nf">_close_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">MPI_RANK</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_csv</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_csv_handle</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">_gather_spike_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">N_HOSTS</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_spikes_rank</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">send_msg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_spikes_rank</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">)</span>
-            <span class="n">recv_buff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">N_HOSTS</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">)</span>
-            <span class="n">comm</span><span class="o">.</span><span class="n">Allgather</span><span class="p">([</span><span class="n">send_msg</span><span class="p">,</span> <span class="n">MPI</span><span class="o">.</span><span class="n">UNSIGNED_INT</span><span class="p">],</span> <span class="p">[</span><span class="n">recv_buff</span><span class="p">,</span> <span class="n">MPI</span><span class="o">.</span><span class="n">UNSIGNED_INT</span><span class="p">])</span>
-            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">recv_buff</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_open_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Creates and opens the files that will be used to display the spiking information&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">MPI_RANK</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_csv</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_csv_handle</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_csv_fname</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_csv_writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_csv_handle</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_n_spikes_total</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gather_spike_count</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">MPI_RANK</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_h5</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_h5_fhandle</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h5_fname</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_gids_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h5_fhandle</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;gid&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_spikes_total</span><span class="p">,),</span> <span class="n">chunks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                                                                 <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_times_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h5_fhandle</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_spikes_total</span><span class="p">,),</span> <span class="n">chunks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_delete_tmp_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Removes tempory file used to save spikes during the block&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmp_file</span><span class="p">):</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmp_file</span><span class="p">)</span>
-
-<div class="viewcode-block" id="SpikesMod.next_spike"><a class="viewcode-back" href="../../../../../bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_spikes.SpikesMod.next_spike">[docs]</a>    <span class="k">def</span> <span class="nf">next_spike</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rank</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Acts as an iterator of the spikes for a given mpi rank.</span>
-
-<span class="sd">        :param rank:</span>
-<span class="sd">        :return: tuple of</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_spikes_handles</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">rank</span><span class="p">)]</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
-            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">rank</span>
-        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span></div>
-
-<div class="viewcode-block" id="SpikesMod.initialize"><a class="viewcode-back" href="../../../../../bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_spikes.SpikesMod.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+<div class="viewcode-block" id="SpikesMod.initialize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_spikes.SpikesMod.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
         <span class="c1"># TODO: since it&#39;s possible that other modules may need to access spikes, set_spikes_recordings() should</span>
         <span class="c1"># probably be called in the simulator itself.</span>
         <span class="n">sim</span><span class="o">.</span><span class="n">set_spikes_recording</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="SpikesMod.block"><a class="viewcode-back" href="../../../../../bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_spikes.SpikesMod.block">[docs]</a>    <span class="k">def</span> <span class="nf">block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">block_interval</span><span class="p">):</span>
+<div class="viewcode-block" id="SpikesMod.block"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_spikes.SpikesMod.block">[docs]</a>    <span class="k">def</span> <span class="nf">block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">block_interval</span><span class="p">):</span>
         <span class="c1"># take spikes from Simulator spikes vector and save to the tmp file</span>
-        <span class="n">tspikes_handle</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmp_file</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">gid</span><span class="p">,</span> <span class="n">tVec</span> <span class="ow">in</span> <span class="n">sim</span><span class="o">.</span><span class="n">spikes_table</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tVec</span><span class="p">:</span>
-                <span class="n">tspikes_handle</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:.3f}</span><span class="s1"> </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">gid</span><span class="p">))</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_n_spikes_rank</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">add_spike</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">gid</span><span class="o">=</span><span class="n">gid</span><span class="p">)</span>
 
         <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>  <span class="c1"># wait until all ranks have been saved</span>
         <span class="n">sim</span><span class="o">.</span><span class="n">set_spikes_recording</span><span class="p">()</span>  <span class="c1"># reset recording vector</span></div>
 
-<div class="viewcode-block" id="SpikesMod.finalize"><a class="viewcode-back" href="../../../../../bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_spikes.SpikesMod.finalize">[docs]</a>    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
-        <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_spikes_handles</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">):</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_tmp_filename</span><span class="p">(</span><span class="n">r</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">),</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
-                                    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_HOSTS</span><span class="p">)}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_open_output</span><span class="p">()</span>  <span class="c1"># create csv and/or h5 files to write to</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_save_sorted</span><span class="p">()</span>  <span class="c1"># save</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_close_output</span><span class="p">()</span>  <span class="c1"># flush and close the output files</span>
+<div class="viewcode-block" id="SpikesMod.finalize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_spikes.SpikesMod.finalize">[docs]</a>    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
         <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_delete_tmp_file</span><span class="p">()</span>  <span class="c1"># remove the temporary files used to save spike data on each block</span></div></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_csv</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_csv_fname</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sort_order</span><span class="p">)</span>
+            <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_h5</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">to_hdf5</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h5_fname</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sort_order</span><span class="p">)</span>
+            <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_nwb</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">to_nwb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nwb_fname</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sort_order</span><span class="p">)</span>
+            <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
 </pre></div>
 
           </div>
@@ -844,18 +731,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="sphinxsidebarwrapper">
 <h3><a href="../../../../../index.html">Contents</a></h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../builder.html">The Builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../builder.html">Building Networks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../simulators.html">Simulation Engines</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../filternet.html">FilterNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../mintnet.html">MintNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk.html">Source Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk.analyzer.html">bmtk.analyzer package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk.simulator.html">bmtk.simulator package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk.utils.html">bmtk.utils package</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>
 </ul>

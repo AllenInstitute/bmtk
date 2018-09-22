@@ -1,0 +1,1311 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>bmtk.builder package &#8212; Brain Modeling Toolkit 0.0.5 documentation</title>
+    <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="bmtk.builder.aux package" href="bmtk.builder.aux.html" />
+    <link rel="prev" title="bmtk.analyzer.visualization package" href="bmtk.analyzer.visualization.html" /> 
+  </head>
+  <body>
+<script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
+<style>
+
+	/* the icon font-family definition and helper classes */
+	@font-face {
+	  font-family: 'portal_icon_font';
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
+	  font-weight: normal;
+	  font-style: normal;
+	}
+	 
+	 [class^="icon-"]:before, [class*=" icon-"]:before {
+	  font-family: "portal_icon_font";
+	  font-style: normal;
+	  font-weight: normal;
+	  speak: none;
+	 
+	  display: inline-block;
+	  text-decoration: inherit;
+	  width: 1em;
+	  margin-right: .2em;
+	  text-align: center;
+	  /* opacity: .8; */
+	 
+	  /* For safety - reset parent styles, that can break glyph codes*/
+	  font-variant: normal;
+	  text-transform: none;
+	     
+	  /* fix buttons height, for twitter bootstrap */
+	  line-height: 1em;
+	 
+	  /* Animation center compensation - margins should be symmetric */
+	  /* remove if not needed */
+	  margin-left: .2em;
+	
+	}
+	 
+	.icon-spin5:before { content: '\e806'; } /* '' */
+	.icon-left-open-1:before { content: '\e81e'; } /* '' */
+	.icon-plus-1:before { content: '\e801'; } /* '' */
+	.icon-facebook:before { content: '\e816'; } /* '' */
+	.icon-gplus:before { content: '\e818'; } /* '' */
+	.icon-linkedin-3:before { content: '\e815'; } /* '' */
+	.icon-twitter:before { content: '\e817'; } /* '' */
+	.icon-youtube-play:before { content: '\e805'; } /* '' */
+	.icon-plus-2:before { content: '\e809'; } /* '' */
+	.icon-record-1:before { content: '\e81c'; } /* '' */
+	.icon-cancel:before { content: '\e80b'; } /* '' */
+	.icon-search:before { content: '\e804'; } /* '' */
+	.icon-cancel-2:before { content: '\e80c'; } /* '' */
+	.icon-plus-4:before { content: '\e80d'; } /* '' */
+	.icon-cancel-3:before { content: '\e80e'; } /* '' */
+	.icon-plus:before { content: '\e808'; } /* '' */
+	.icon-down-open:before { content: '\e800'; } /* '' */
+	.icon-right-open:before { content: '\e802'; } /* '' */
+	.icon-up-open:before { content: '\e803'; } /* '' */
+	.icon-stop:before { content: '\e813'; } /* '' */
+	.icon-cancel-1:before { content: '\e820'; } /* '' */
+	.icon-plus-3:before { content: '\e80a'; } /* '' */
+	/* end icon font helpers */
+
+	/* icon font spin animation */
+	.animate-spin {
+	  -moz-animation: spin 2s infinite linear;
+	  -o-animation: spin 2s infinite linear;
+	  -webkit-animation: spin 2s infinite linear;
+	  animation: spin 2s infinite linear;
+	  display: inline-block;
+	}
+	@-moz-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-webkit-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-o-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-ms-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	/*  end spin animation */	
+
+	@font-face {
+	    font-family: 'bebas_neueregular';
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
+	    font-weight: normal;
+	    font-style: normal;
+	}
+
+	/* top chrome styles */
+	#top_chrome {
+
+		width:100%;
+		height:28px;
+		background-color:#163E65;
+	}
+
+	.chrome_link_block {
+
+		color:#fff !important;	
+		display:inline-block;
+		height:100%;
+		max-height:28px;
+	}
+
+	.chrome_link_block:hover {
+
+		background-color:#eee;
+		color:#0779BE !important;	
+		cursor:pointer;
+	}
+
+	#top_chrome a {
+
+		color:inherit !important;	
+		text-decoration:none;
+	}
+
+	#top_chrome a:hover {
+
+		color:inherit !important;	
+	}
+
+	#top_chrome_buttons {
+
+		float:right;
+		margin-right:50px;
+	}
+
+	.chrome_button {
+
+		font-family:arial,sans-serif;
+		font-weight:bold;
+		display:inline-block;
+		font-size:9px;
+		text-align:left;
+		text-decoration:none;
+		margin:9px 20px 10px 20px;
+	}
+
+	.chrome_active {
+
+		background-color:#1b7abd;
+		color:#fff;
+	}
+
+
+	/* header element styles*/
+	#header_content {
+
+		font-family: bebas_neueregular, arial, sans-serif;
+		font-size:22px;
+		color:#0779be;		
+		letter-spacing:0.03em;
+
+		position:relative;
+		width:calc(100% - 112px);
+		min-width:800px;
+		height:76px;
+		border-bottom:2px solid #A5A8AB;
+		margin-left:50px;
+		margin-right:50px;
+        z-index:9999; /* IT-9508 */
+	}
+
+	#portal_logo {
+
+		position:absolute;
+		top:20px;
+		left:0px;
+		width:236px;
+	}
+
+	#portal_tabs {
+
+		position: absolute;
+		bottom: 12px;
+		left: 0px;
+		margin-bottom: -12px;
+		display: block;
+	}
+
+	.horizontal_list
+	{
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		display: inline; 		
+	}
+
+	.horizontal_list li { 
+
+		display: inline; 	
+	}	
+
+	#portal_tab_menu_container {
+
+		display:none;
+	}
+
+	#portal_search_input_group {
+
+		position:absolute;
+		margin: 0;
+		padding: 0;
+		bottom:12px;
+		right:0px;
+		border:1px solid #DAD9D3;
+		color:#DAD9D3;
+	}
+
+	#portal_search_input_group input {
+
+		margin: 0;
+		padding: 0;
+		border:none;
+		width:110px;
+		color:#DAD9D3;
+		font-family:Helvetica,sans-serif;
+		font-size:12px;
+		height:28px;
+		margin-left:10px;
+
+		outline:none;
+	}
+
+	input::-ms-clear {
+		display: none;
+	}
+
+	#portal_search_input_group i {
+
+		font-size:0.8em;
+		cursor:pointer;
+	}
+
+	#pSiteSearchTextInput:focus {
+
+		color:#000;
+	}
+
+	.icon_menu_down {
+
+		font-size: 12px;
+		margin-left: 4px;
+		vertical-align: text-top;
+		padding-top: 4px;
+		display: inline-block;
+	}
+
+	.portal_tab_item {
+
+		background-color: #fff;
+		padding: 12px;
+		padding-left:20px;
+		padding-right:20px;
+		display: inline-block !important;		
+	}
+
+	.portal_tab_item a:hover {
+
+		color:#fbe300;	
+	}
+
+	.portal_tab_item:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}	
+
+
+	.portal_menu_active {
+
+		background-color: #EEEEEE;
+	}	
+
+	.portal_menu_item_active {
+
+		color:#fbe300 !important;	
+	}
+
+	.portal_tab_active {
+
+		color:#a5a8ab !important;
+	}
+
+	#header_content a {		
+
+		color:inherit !important;
+	}
+
+	#header_content a:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}
+
+	#header_content ul {
+
+		list-style: none;
+		position: relative;
+		top: 58px;
+		display: inline-table;
+	}
+
+	#header_content ul ul {
+		
+		display:none;
+		opacity:0;
+	}
+
+	/* the fly out menus */
+	#header_content ul li:hover > ul,
+	#header_content ul li.hover > ul {
+
+		position: absolute;
+		top: 48px;
+		z-index:999;
+
+		display: block;
+		width: 152px;
+		padding:0px;
+		padding-top:20px;
+		padding-bottom:10px;
+		font-size: 12px;
+		font-family: Arial,Sans-Serif;
+		font-weight: bold;
+		text-transform: uppercase;
+
+		background-color: rgba(8,122,191,0.98);
+		color: #fff !important;
+		opacity: 1;
+
+		-webkit-animation: fade 0.25s;
+		animation: fade 0.25s;
+	}
+
+	@-webkit-keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}
+	@keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}	
+
+	#header_content ul li:hover > ul li {
+
+		padding: 10px;
+		padding-top: 0px;
+		padding-left: 20px;
+		display: block;
+		opacity:1;
+	}
+
+	#header_content ul li:hover > ul a {
+
+		display: block;
+		opacity:1;
+		white-space:nowrap;
+	}
+
+	#portal_menu_start_list {
+
+		left: 81px;
+
+		/* IE sauce */
+		left:85px\9;
+
+		/* Safari sauce */
+		(;left:79px;);
+	}
+
+	#portal_menu_atlases_list {
+
+		left: 290px;
+		width: 210px !important;
+        height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 303px\9;
+        height: 225px\9;
+
+		/* Safari sauce */
+		(;left:279px;);
+	}
+
+	#portal_menu_tools_list {
+
+		left: 500px;
+		width: 172px !important;
+		height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 513px\9;
+		height:225px\9;
+
+		/* Safari sauce */
+		(;left:489px;);
+		(;height:227px;);
+	}
+
+	/* mozilla sauce */
+	@-moz-document url-prefix() {
+
+		#header_content {
+
+			height:107px;
+		}
+
+		#portal_menu_start_list {
+
+			left:85px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 302px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 512px;
+			height:236px;
+		}
+	}
+
+
+	/* make it look OK on iPad also */
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:portrait) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}  
+	}
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:landscape) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}	  
+	}
+
+	.portal_menu_list_heading {
+
+		color:#9ccae5;
+		border-bottom:1px solid #9ccae5;
+		padding-bottom:5px !important;
+	}
+
+	.portal_menu_list_heading + li {
+
+		padding-top:10px !important;
+	}
+
+	.portal_menu_list_heading li {
+
+		padding-bottom:0px;
+	}	
+
+	#portal_menu_atlases_list li:last-of-type {
+
+		padding-bottom:15px !important;
+	}
+
+	.icon-spin5 {
+
+		color:#000;
+	}
+</style>
+<div id="pHeader">
+<div id="top_chrome">
+	<div id="top_chrome_buttons">
+		<div class="chrome_link_block"><a href="http://www.alleninstitute.org" target="_blank" class="chrome_button">ALLEN INSTITUTE</a></div>
+	</div>
+</div>
+
+<div id="header_content">
+
+	<a href="http://AllenInstitute.github.io">
+		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/AIBS_Logo.png"/>
+	</a>
+</div>
+</div>
+
+<script>
+
+jQuery('#portal_tab_menu').bind('touchstart', function() {
+
+	if(window.console)
+		console.log("touchstart");
+});
+</script>
+<link rel="stylesheet" type="text/css" href="_static/external_assets/stylesheets/common_layout.css" />
+
+
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="bmtk-builder-package">
+<h1>bmtk.builder package<a class="headerlink" href="#bmtk-builder-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="bmtk.builder.aux.html">bmtk.builder.aux package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.aux.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.aux.html#module-bmtk.builder.aux.edge_connectors">bmtk.builder.aux.edge_connectors module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.aux.html#module-bmtk.builder.aux.node_params">bmtk.builder.aux.node_params module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.aux.html#module-bmtk.builder.aux">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bmtk.builder.bionet.html">bmtk.builder.bionet package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.bionet.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.bionet.html#module-bmtk.builder.bionet.swc_reader">bmtk.builder.bionet.swc_reader module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.bionet.html#module-bmtk.builder.bionet">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bmtk.builder.formats.html">bmtk.builder.formats package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.formats.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.formats.html#module-bmtk.builder.formats.hdf5_format">bmtk.builder.formats.hdf5_format module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.formats.html#module-bmtk.builder.formats.iformats">bmtk.builder.formats.iformats module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.formats.html#module-bmtk.builder.formats">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bmtk.builder.io.html">bmtk.builder.io package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.io.html#module-bmtk.builder.io">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bmtk.builder.networks.html">bmtk.builder.networks package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.networks.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.networks.html#module-bmtk.builder.networks.dm_network">bmtk.builder.networks.dm_network module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.networks.html#module-bmtk.builder.networks.input_network">bmtk.builder.networks.input_network module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.networks.html#module-bmtk.builder.networks.mpi_network">bmtk.builder.networks.mpi_network module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.networks.html#module-bmtk.builder.networks.nxnetwork">bmtk.builder.networks.nxnetwork module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.networks.html#module-bmtk.builder.networks.sparse_network">bmtk.builder.networks.sparse_network module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.networks.html#module-bmtk.builder.networks">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-bmtk.builder.connection_map">
+<span id="bmtk-builder-connection-map-module"></span><h2>bmtk.builder.connection_map module<a class="headerlink" href="#module-bmtk.builder.connection_map" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.builder.connection_map.ConnectionMap">
+<em class="property">class </em><code class="descclassname">bmtk.builder.connection_map.</code><code class="descname">ConnectionMap</code><span class="sig-paren">(</span><em>sources=None</em>, <em>targets=None</em>, <em>connector=None</em>, <em>connector_params=None</em>, <em>iterator='one_to_one'</em>, <em>edge_type_properties=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/connection_map.html#ConnectionMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Class for keeping track of connection rules.</p>
+<dl class="docutils">
+<dt>For every connection from source –&gt; target this keeps track of rules (functions, literals, lists) for</dt>
+<dd><ol class="first last arabic simple">
+<li>the number of synapses between source and target</li>
+<li>Used defined parameters (syn-weight, synaptic-location) for every synapse.</li>
+</ol>
+</dd>
+</dl>
+<p>The number of synapses rule (1) is stored as a connector. Individual synaptic parameters, if they exists, are stored
+as ParamsRules.</p>
+<dl class="class">
+<dt id="bmtk.builder.connection_map.ConnectionMap.ParamsRules">
+<em class="property">class </em><code class="descname">ParamsRules</code><span class="sig-paren">(</span><em>names</em>, <em>rule</em>, <em>rule_params</em>, <em>dtypes</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/connection_map.html#ConnectionMap.ParamsRules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.ParamsRules" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>A subclass to store indvidiual synpatic parameter rules</p>
+<dl class="attribute">
+<dt id="bmtk.builder.connection_map.ConnectionMap.ParamsRules.dtypes">
+<code class="descname">dtypes</code><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.ParamsRules.dtypes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.connection_map.ConnectionMap.ParamsRules.get_prop_dtype">
+<code class="descname">get_prop_dtype</code><span class="sig-paren">(</span><em>prop_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/connection_map.html#ConnectionMap.ParamsRules.get_prop_dtype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.ParamsRules.get_prop_dtype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.connection_map.ConnectionMap.ParamsRules.names">
+<code class="descname">names</code><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.ParamsRules.names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.connection_map.ConnectionMap.ParamsRules.rule">
+<code class="descname">rule</code><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.ParamsRules.rule" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.connection_map.ConnectionMap.add_properties">
+<code class="descname">add_properties</code><span class="sig-paren">(</span><em>names</em>, <em>rule</em>, <em>rule_params=None</em>, <em>dtypes=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/connection_map.html#ConnectionMap.add_properties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.add_properties" title="Permalink to this definition">¶</a></dt>
+<dd><p>A a synaptic property</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>names</strong> – list, or single string, of the property</li>
+<li><strong>rule</strong> – function, list or value of property</li>
+<li><strong>rule_params</strong> – when rule is a function, rule_params will be passed into function when called.</li>
+<li><strong>dtypes</strong> – expected property type</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.connection_map.ConnectionMap.connection_itr">
+<code class="descname">connection_itr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/connection_map.html#ConnectionMap.connection_itr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.connection_itr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a generator that will iterate through the source/target pairs (as specified by the iterator function,
+and create a connection rule based on the connector.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.connection_map.ConnectionMap.connector">
+<code class="descname">connector</code><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.connector" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.connection_map.ConnectionMap.connector_params">
+<code class="descname">connector_params</code><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.connector_params" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.connection_map.ConnectionMap.edge_type_id">
+<code class="descname">edge_type_id</code><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.edge_type_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.connection_map.ConnectionMap.edge_type_properties">
+<code class="descname">edge_type_properties</code><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.edge_type_properties" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.connection_map.ConnectionMap.iterator">
+<code class="descname">iterator</code><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.iterator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.connection_map.ConnectionMap.max_connections">
+<code class="descname">max_connections</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/connection_map.html#ConnectionMap.max_connections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.max_connections" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.connection_map.ConnectionMap.params">
+<code class="descname">params</code><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.params" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.connection_map.ConnectionMap.properties_keys">
+<code class="descname">properties_keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/connection_map.html#ConnectionMap.properties_keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.properties_keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.connection_map.ConnectionMap.property_names">
+<code class="descname">property_names</code><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.property_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.connection_map.ConnectionMap.source_network_name">
+<code class="descname">source_network_name</code><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.source_network_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.connection_map.ConnectionMap.source_nodes">
+<code class="descname">source_nodes</code><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.source_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.connection_map.ConnectionMap.target_network_name">
+<code class="descname">target_network_name</code><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.target_network_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.connection_map.ConnectionMap.target_nodes">
+<code class="descname">target_nodes</code><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.target_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.builder.connector">
+<span id="bmtk-builder-connector-module"></span><h2>bmtk.builder.connector module<a class="headerlink" href="#module-bmtk.builder.connector" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="bmtk.builder.connector.create">
+<code class="descclassname">bmtk.builder.connector.</code><code class="descname">create</code><span class="sig-paren">(</span><em>connector</em>, <em>**params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/connector.html#create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.connector.create" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.builder.connector.register">
+<code class="descclassname">bmtk.builder.connector.</code><code class="descname">register</code><span class="sig-paren">(</span><em>name</em>, <em>func</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/connector.html#register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.connector.register" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.builder.edge">
+<span id="bmtk-builder-edge-module"></span><h2>bmtk.builder.edge module<a class="headerlink" href="#module-bmtk.builder.edge" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.builder.edge.Edge">
+<em class="property">class </em><code class="descclassname">bmtk.builder.edge.</code><code class="descname">Edge</code><span class="sig-paren">(</span><em>src_gid</em>, <em>trg_gid</em>, <em>edge_type_props</em>, <em>syn_props</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/edge.html#Edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.edge.Edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="bmtk.builder.edge.Edge.edge_type_id">
+<code class="descname">edge_type_id</code><a class="headerlink" href="#bmtk.builder.edge.Edge.edge_type_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.edge.Edge.edge_type_properties">
+<code class="descname">edge_type_properties</code><a class="headerlink" href="#bmtk.builder.edge.Edge.edge_type_properties" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.edge.Edge.source_gid">
+<code class="descname">source_gid</code><a class="headerlink" href="#bmtk.builder.edge.Edge.source_gid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.edge.Edge.synaptic_properties">
+<code class="descname">synaptic_properties</code><a class="headerlink" href="#bmtk.builder.edge.Edge.synaptic_properties" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.edge.Edge.target_gid">
+<code class="descname">target_gid</code><a class="headerlink" href="#bmtk.builder.edge.Edge.target_gid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.builder.functor_cache">
+<span id="bmtk-builder-functor-cache-module"></span><h2>bmtk.builder.functor_cache module<a class="headerlink" href="#module-bmtk.builder.functor_cache" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.builder.functor_cache.FunctorCache">
+<em class="property">class </em><code class="descclassname">bmtk.builder.functor_cache.</code><code class="descname">FunctorCache</code><a class="reference internal" href="../_modules/bmtk/builder/functor_cache.html#FunctorCache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.functor_cache.FunctorCache" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.builder.functor_cache.FunctorCache.create">
+<code class="descname">create</code><span class="sig-paren">(</span><em>connector</em>, <em>**params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/functor_cache.html#FunctorCache.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.functor_cache.FunctorCache.create" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.functor_cache.FunctorCache.register">
+<code class="descname">register</code><span class="sig-paren">(</span><em>name</em>, <em>func</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/functor_cache.html#FunctorCache.register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.functor_cache.FunctorCache.register" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.builder.id_generator">
+<span id="bmtk-builder-id-generator-module"></span><h2>bmtk.builder.id_generator module<a class="headerlink" href="#module-bmtk.builder.id_generator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.builder.id_generator.IDGenerator">
+<em class="property">class </em><code class="descclassname">bmtk.builder.id_generator.</code><code class="descname">IDGenerator</code><span class="sig-paren">(</span><em>init_val=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/id_generator.html#IDGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.id_generator.IDGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>A simple class for fetching global ids. To get a unqiue global ID class next(), which should be thread-safe. It
+Also has a remove_id(gid) in which case next() will never return the gid. The remove_id function is used for cases
+when using imported networks and we want to elimnate previously created id.</p>
+<dl class="docutils">
+<dt>TODO:</dt>
+<dd><ul class="first last simple">
+<li>Implement a bit array to keep track of already existing gids</li>
+<li>It might be necessary to implement with MPI support?</li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="bmtk.builder.id_generator.IDGenerator.next">
+<code class="descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/id_generator.html#IDGenerator.next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.id_generator.IDGenerator.next" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.id_generator.IDGenerator.remove_id">
+<code class="descname">remove_id</code><span class="sig-paren">(</span><em>gid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/id_generator.html#IDGenerator.remove_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.id_generator.IDGenerator.remove_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.builder.iterator">
+<span id="bmtk-builder-iterator-module"></span><h2>bmtk.builder.iterator module<a class="headerlink" href="#module-bmtk.builder.iterator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.builder.iterator.IteratorCache">
+<em class="property">class </em><code class="descclassname">bmtk.builder.iterator.</code><code class="descname">IteratorCache</code><a class="reference internal" href="../_modules/bmtk/builder/iterator.html#IteratorCache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.iterator.IteratorCache" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.builder.iterator.IteratorCache.create">
+<code class="descname">create</code><span class="sig-paren">(</span><em>itr_name</em>, <em>itr_type</em>, <em>**params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/iterator.html#IteratorCache.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.iterator.IteratorCache.create" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.iterator.IteratorCache.register">
+<code class="descname">register</code><span class="sig-paren">(</span><em>name</em>, <em>itr_type</em>, <em>func</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/iterator.html#IteratorCache.register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.iterator.IteratorCache.register" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.builder.iterator.all_to_one_iterator">
+<code class="descclassname">bmtk.builder.iterator.</code><code class="descname">all_to_one_iterator</code><span class="sig-paren">(</span><em>source_nodes</em>, <em>target_nodes</em>, <em>connector</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/iterator.html#all_to_one_iterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.iterator.all_to_one_iterator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate through all the target nodes and return target node + list of all sources</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.builder.iterator.all_to_one_list_iterator">
+<code class="descclassname">bmtk.builder.iterator.</code><code class="descname">all_to_one_list_iterator</code><span class="sig-paren">(</span><em>source_nodes</em>, <em>target_nodes</em>, <em>vals</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/iterator.html#all_to_one_list_iterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.iterator.all_to_one_list_iterator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.builder.iterator.create">
+<code class="descclassname">bmtk.builder.iterator.</code><code class="descname">create</code><span class="sig-paren">(</span><em>iterator</em>, <em>connector</em>, <em>**params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/iterator.html#create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.iterator.create" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.builder.iterator.lambda_iterator">
+<code class="descclassname">bmtk.builder.iterator.</code><code class="descname">lambda_iterator</code><span class="sig-paren">(</span><em>source_nodes</em>, <em>target_nodes</em>, <em>lambda_val</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/iterator.html#lambda_iterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.iterator.lambda_iterator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.builder.iterator.one_to_all_iterator">
+<code class="descclassname">bmtk.builder.iterator.</code><code class="descname">one_to_all_iterator</code><span class="sig-paren">(</span><em>source_nodes</em>, <em>target_nodes</em>, <em>connector</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/iterator.html#one_to_all_iterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.iterator.one_to_all_iterator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls the connector function with (1 source, all targets), iterated for each source</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.builder.iterator.one_to_all_list_iterator">
+<code class="descclassname">bmtk.builder.iterator.</code><code class="descname">one_to_all_list_iterator</code><span class="sig-paren">(</span><em>source_nodes</em>, <em>target_nodes</em>, <em>vals</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/iterator.html#one_to_all_list_iterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.iterator.one_to_all_list_iterator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.builder.iterator.one_to_one_iterator">
+<code class="descclassname">bmtk.builder.iterator.</code><code class="descname">one_to_one_iterator</code><span class="sig-paren">(</span><em>source_nodes</em>, <em>target_nodes</em>, <em>connector</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/iterator.html#one_to_one_iterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.iterator.one_to_one_iterator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.builder.iterator.one_to_one_list_iterator">
+<code class="descclassname">bmtk.builder.iterator.</code><code class="descname">one_to_one_list_iterator</code><span class="sig-paren">(</span><em>source_nodes</em>, <em>target_nodes</em>, <em>vals</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/iterator.html#one_to_one_list_iterator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.iterator.one_to_one_list_iterator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.builder.iterator.register">
+<code class="descclassname">bmtk.builder.iterator.</code><code class="descname">register</code><span class="sig-paren">(</span><em>name</em>, <em>dtype</em>, <em>func</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/iterator.html#register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.iterator.register" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.builder.network">
+<span id="bmtk-builder-network-module"></span><h2>bmtk.builder.network module<a class="headerlink" href="#module-bmtk.builder.network" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.builder.network.Network">
+<em class="property">class </em><code class="descclassname">bmtk.builder.network.</code><code class="descname">Network</code><span class="sig-paren">(</span><em>name</em>, <em>**network_props</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.builder.network.Network.add_edges">
+<code class="descname">add_edges</code><span class="sig-paren">(</span><em>source=None</em>, <em>target=None</em>, <em>connection_rule=1</em>, <em>connection_params=None</em>, <em>iterator='one_to_one'</em>, <em>**edge_type_properties</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.add_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.add_edges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.network.Network.add_nodes">
+<code class="descname">add_nodes</code><span class="sig-paren">(</span><em>N=1</em>, <em>**properties</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.add_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.add_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.network.Network.build">
+<code class="descname">build</code><span class="sig-paren">(</span><em>force=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds nodes (assigns gids) and edges.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>force (bool): set true to force complete rebuilding of nodes and edges, if nodes() or save_nodes() has been</dt>
+<dd>called before then forcing a rebuild may change gids of each node.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.network.Network.clear">
+<code class="descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.clear" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.network.Network.edges">
+<code class="descname">edges</code><span class="sig-paren">(</span><em>target_nodes=None</em>, <em>source_nodes=None</em>, <em>target_network=None</em>, <em>source_network=None</em>, <em>**properties</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of dictionary-like Edge objects, given filter parameters.</p>
+<dl class="docutils">
+<dt>To get all edges from a network</dt>
+<dd>edges = net.edges()</dd>
+<dt>To specify the target and/or source node-set</dt>
+<dd>edges = net.edges(target_nodes=net.nodes(type=’biophysical’), source_nodes=net.nodes(ei=’i’))</dd>
+<dt>To only get edges with a given edge_property</dt>
+<dd>edges = net.edges(weight=100, syn_type=’AMPA_Exc2Exc’)</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>target_nodes</strong> – gid, list of gid, dict or node-pool. Set of target nodes for a given edge.</li>
+<li><strong>source_nodes</strong> – gid, list of gid, dict or node-pool. Set of source nodes for a given edge.</li>
+<li><strong>target_network</strong> – name of network containing target nodes.</li>
+<li><strong>source_network</strong> – name of network containing source nodes.</li>
+<li><strong>properties</strong> – edge-properties used to filter out only certain edges.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">list of bmtk.builder.edge.Edge properties.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.network.Network.edges_built">
+<code class="descname">edges_built</code><a class="headerlink" href="#bmtk.builder.network.Network.edges_built" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.network.Network.edges_iter">
+<code class="descname">edges_iter</code><span class="sig-paren">(</span><em>trg_gids</em>, <em>src_network=None</em>, <em>trg_network=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.edges_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.edges_iter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a list of target gids, returns a generator for iteratoring over all possible edges.</p>
+<p>It is preferable to use edges() method instead, it allows more flexibibility in the input and can better
+indicate if their is a problem.</p>
+<p>The order of the edges returned will be in the same order as the trg_gids list, but does not guarentee any
+secondary ordering by source-nodes and/or edge-type. If their isn’t a edge with a matching target-id then
+it will skip that gid in the list, the size of the generator can 0 to arbitrarly large.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>trg_gids</strong> – list of gids to match with an edge’s target.</li>
+<li><strong>src_network</strong> – str, only returns edges coming from the specified source network.</li>
+<li><strong>trg_network</strong> – str, only returns edges coming from the specified target network.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">iteration of bmtk.build.edge.Edge objects representing given edge.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.network.Network.get_connections">
+<code class="descname">get_connections</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.get_connections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.get_connections" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.network.Network.import_nodes">
+<code class="descname">import_nodes</code><span class="sig-paren">(</span><em>nodes_file_name</em>, <em>node_types_file_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.import_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.import_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.network.Network.name">
+<code class="descname">name</code><a class="headerlink" href="#bmtk.builder.network.Network.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.network.Network.nedges">
+<code class="descname">nedges</code><a class="headerlink" href="#bmtk.builder.network.Network.nedges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.network.Network.nnodes">
+<code class="descname">nnodes</code><a class="headerlink" href="#bmtk.builder.network.Network.nnodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.network.Network.nodes">
+<code class="descname">nodes</code><span class="sig-paren">(</span><em>**properties</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.network.Network.nodes_built">
+<code class="descname">nodes_built</code><a class="headerlink" href="#bmtk.builder.network.Network.nodes_built" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.network.Network.nodes_iter">
+<code class="descname">nodes_iter</code><span class="sig-paren">(</span><em>nids=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.nodes_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.nodes_iter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.network.Network.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>output_dir='.'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.save" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.network.Network.save_edges">
+<code class="descname">save_edges</code><span class="sig-paren">(</span><em>edges_file_name=None</em>, <em>edge_types_file_name=None</em>, <em>output_dir='.'</em>, <em>src_network=None</em>, <em>trg_network=None</em>, <em>name=None</em>, <em>force_build=True</em>, <em>force_overwrite=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.save_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.save_edges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.network.Network.save_nodes">
+<code class="descname">save_nodes</code><span class="sig-paren">(</span><em>nodes_file_name=None</em>, <em>node_types_file_name=None</em>, <em>output_dir='.'</em>, <em>force_overwrite=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.save_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.save_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.builder.node">
+<span id="bmtk-builder-node-module"></span><h2>bmtk.builder.node module<a class="headerlink" href="#module-bmtk.builder.node" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.builder.node.Node">
+<em class="property">class </em><code class="descclassname">bmtk.builder.node.</code><code class="descname">Node</code><span class="sig-paren">(</span><em>node_id</em>, <em>node_params</em>, <em>node_type_properties</em>, <em>params_hash=-1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/node.html#Node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.node.Node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">dict</span></code></p>
+<dl class="method">
+<dt id="bmtk.builder.node.Node.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>key</em>, <em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/node.html#Node.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.node.Node.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.node.Node.node_id">
+<code class="descname">node_id</code><a class="headerlink" href="#bmtk.builder.node.Node.node_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.node.Node.node_type_id">
+<code class="descname">node_type_id</code><a class="headerlink" href="#bmtk.builder.node.Node.node_type_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.node.Node.node_type_properties">
+<code class="descname">node_type_properties</code><a class="headerlink" href="#bmtk.builder.node.Node.node_type_properties" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.node.Node.params">
+<code class="descname">params</code><a class="headerlink" href="#bmtk.builder.node.Node.params" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.node.Node.params_hash">
+<code class="descname">params_hash</code><a class="headerlink" href="#bmtk.builder.node.Node.params_hash" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.builder.node_pool">
+<span id="bmtk-builder-node-pool-module"></span><h2>bmtk.builder.node_pool module<a class="headerlink" href="#module-bmtk.builder.node_pool" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.builder.node_pool.NodePool">
+<em class="property">class </em><code class="descclassname">bmtk.builder.node_pool.</code><code class="descname">NodePool</code><span class="sig-paren">(</span><em>network</em>, <em>**properties</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/node_pool.html#NodePool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.node_pool.NodePool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Stores a collection of nodes based off some query of the network.</p>
+<p>Returns the results of a query of nodes from a network using the nodes() method. Nodes are still generated and
+saved by the network, this just stores the query information and provides iterator methods for accessing different
+nodes.</p>
+<p>TODO:
+* Implement a collection-set algebra including | and not operators. ie.</p>
+<blockquote>
+<div>nodes = net.nodes(type=1) | net.nodes(type=2)</div></blockquote>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt>Implement operators on properties</dt>
+<dd>nodes = net.nodes(val) &gt; 100
+nodes = 100 in net.nodes(val)</dd>
+</dl>
+</li>
+</ul>
+<dl class="attribute">
+<dt id="bmtk.builder.node_pool.NodePool.filter_str">
+<code class="descname">filter_str</code><a class="headerlink" href="#bmtk.builder.node_pool.NodePool.filter_str" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.builder.node_pool.NodePool.from_filter">
+<em class="property">classmethod </em><code class="descname">from_filter</code><span class="sig-paren">(</span><em>network</em>, <em>filter_str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/node_pool.html#NodePool.from_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.node_pool.NodePool.from_filter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.node_pool.NodePool.network">
+<code class="descname">network</code><a class="headerlink" href="#bmtk.builder.node_pool.NodePool.network" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.node_pool.NodePool.network_name">
+<code class="descname">network_name</code><a class="headerlink" href="#bmtk.builder.node_pool.NodePool.network_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.builder.node_set">
+<span id="bmtk-builder-node-set-module"></span><h2>bmtk.builder.node_set module<a class="headerlink" href="#module-bmtk.builder.node_set" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.builder.node_set.NodeSet">
+<em class="property">class </em><code class="descclassname">bmtk.builder.node_set.</code><code class="descname">NodeSet</code><span class="sig-paren">(</span><em>N</em>, <em>node_params</em>, <em>node_type_properties</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/node_set.html#NodeSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.node_set.NodeSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="bmtk.builder.node_set.NodeSet.N">
+<code class="descname">N</code><a class="headerlink" href="#bmtk.builder.node_set.NodeSet.N" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.builder.node_set.NodeSet.build">
+<code class="descname">build</code><span class="sig-paren">(</span><em>nid_generator</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/node_set.html#NodeSet.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.node_set.NodeSet.build" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.node_set.NodeSet.node_type_id">
+<code class="descname">node_type_id</code><a class="headerlink" href="#bmtk.builder.node_set.NodeSet.node_type_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.node_set.NodeSet.params_hash">
+<code class="descname">params_hash</code><a class="headerlink" href="#bmtk.builder.node_set.NodeSet.params_hash" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.builder.node_set.NodeSet.params_keys">
+<code class="descname">params_keys</code><a class="headerlink" href="#bmtk.builder.node_set.NodeSet.params_keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.builder">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.builder" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../index.html">Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../builder.html">Building Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../simulators.html">Simulation Engines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pointnet.html">PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../filternet.html">FilterNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mintnet.html">MintNet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Allen Institute for Brain Science.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+<script type="text/javascript" src="/external_assets/javascript/portalFooter.js"></script>
+
+  </body>
+</html>
