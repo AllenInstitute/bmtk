@@ -4,45 +4,48 @@ PointNet
 Pointnet is a simulation engine that utilizes `NEST <http://www.nest-simulator.org/>`_ to run large-scale point
 neuron network models.
 
+Features
+--------
+* Run the same simulation on a single core or in parallel on an HPC cluster with no extra programming required.
+* Supports any spiking neuron models (rates models in development) available in NEST or with user contributed modules.
+* Records neuron spiking, multi-meter recorded variables into the optimized SONATA data format.
+
+
 Installation
 ------------
-PointNet runs on Python 2.7 and will require addtional python packages numpy, h5py, pandas and jsonschema. To install
-either get the latest source-code from the github develop branch
-::
+PointNet supports both Python 2.7 or Python 3.6+, and also requires NEST 2.11+ to be installed. See our
+`Installation instructions <installation>`_ for help on installing NEST and the bmtk.
 
-  git clone https://github.com/AllenInstitute/bmtk.git
 
-or `download <https://github.com/AllenInstitute/bmtk/archive/develop.zip>`_ and unzip, and install missing python
-dependencies by running from the bmtk/ base directory
-::
 
-  python setup.py install
+Documentation and Tutorials
+---------------------------
+Our `github page <https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial>`__ contains a number of jupyter-notebook
+tutorials for using the bmtk in general and PointNet specific examples for:
+* `Building and simulating a multi-population, heterogeneous point networks <https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/05_pointnet_modeling.ipynb>`_.
 
-Installing NEST
----------------
-In addition PointNet requires NEST 2.12.0 python API to run a network simulation. Please see the `NEST installation documentation <http://www.nest-simulator.org/installation/>`_
-for further instructions. PointNet does not require MPI to run a simulation, however if it is enabled in NEST then
-PointNet can utilized MPI to run simulation on a cluster.
+
+
+Previous Materials
+++++++++++++++++++
+The following are from previous tutorials, workshops, and presentations; and may not work with the latest version of the bmtk.
+* CNS 2018 Workshop: `notebooks <https://github.com/AllenInstitute/CNS_2018_Tutorial/tree/master/bmtk>`__
+* Summer Workshop on the Dynamic Brain 2018: `notebooks <https://github.com/AllenInstitute/SWDB_2018/tree/master/DynamicBrain/Modeling>`__.
+
 
 Examples
 --------
-There is an example simulation of a small 120 cell network located in the source directory docs/examples/pointnet/120cells/.
+The AllenInstitute/bmtk repo contains a number of PointNet examples, many with pre-built networks and can be immediately ran. These
+tutorials will have the folder prefix *point_* and to run them in the command-line simply call::
 
-The network/ directory contains a small example network with nodes and edges files, and was built using the network
-builder. The config.json file contains run-time and network setup parameters, including location of cell and synaptic
-model files.
+  $ python run_pointnet.py config.json
 
-To run a simulation in a single processor, open a command prompt and run
-::
+or to run them on multiple-cores::
 
-   python run_pointnet.py config.json
+  $ mpirun -n $NCORES python run_pointnet.py config.json
 
-Or to run a parallized simulation with MPI setup
-::
-
-   mpirun -np $NCORES python run_pointnet.py config.json
-
-**Output**
-
-Spike-trains of the simulation are saved in the output/spikes.txt file, with two columns time, cell-gid.
+Current examples
+++++++++++++++++
+* `point_120cells <https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/point_120cells>`_ - A small network of 120 recurrently connected point neurons receiving synaptic input from an external network of "virtual" cells (i.e. spike-generators).
+* `point_450cells <https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/point_450cells>`_ - A modest heterogeneous network of 450 cells (sampled from a much large network of a mouse cortex L4).
 

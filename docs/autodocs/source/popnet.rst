@@ -2,49 +2,48 @@ PopNet
 ======
 
 The PopNet simulation engine uses the `DiPDE simulator <http://alleninstitute.github.io/dipde/>`_ to simulate firing
-rate dynamics of connected population of cells.
+rate dynamics of connected population of cells. You can use networks of populations "nodes", or take an existing
+network of individual cell models and PopNet will cluster them into populations.
+
 
 Installation
 ------------
-PopNet runs on Python 2.7 and will require addtional python packages numpy, h5py, pandas and jsonschema. To install
-either get the latest source-code from the github develop branch
-::
-
-  git clone https://github.com/AllenInstitute/bmtk.git
-
-or `download <https://github.com/AllenInstitute/bmtk/archive/develop.zip>`_ and unzip, and install missing python
-dependencies by running from the bmtk/ base directory
+PopNet supports both Python 2.7 or Python 3.6+, and also requires DiPDE to be installed. See our
+`Installation instructions <installation>`_ for help on installing DiPDE and the bmtk.
 
 
-Installing DiPDE
-----------------
-PopNet will require DiPDE to run a simulation. To install DiPDE you can use pip
-::
 
-   pip install git+https://github.com/AllenInstitute/dipde.git --user
+Documentation and Tutorials
+---------------------------
+Our `github page <https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial>`__ contains a number of jupyter-notebook
+tutorials for using the bmtk in general and PopNet specific examples for:
+* `Building a simple two population model <https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/06_population_modeling.ipynb>`_.
 
-Alteratively using Anaconda
-::
+About DiPDE
+++++++++++++
+DiPDE was developed at the Allen Institute for Brain Science for population level modeling of the mammallian cortex. For
+a list of the available features please see the `DiPDE documentation <http://alleninstitute.github.io/dipde/index.html>`_.
 
-   conda install -c nicholasc dipde
+For further questions about DiPDE please contact Nicholas Cain (nicholasc at alleninstitute dot org)
+
+
+Previous Materials
+++++++++++++++++++
+The following are from previous tutorials, workshops, and presentations; and may not work with the latest version of the bmtk.
+* CNS 2018 Workshop: `notebooks <https://github.com/AllenInstitute/CNS_2018_Tutorial/tree/master/bmtk>`__
+* Summer Workshop on the Dynamic Brain 2018: `notebooks <https://github.com/AllenInstitute/SWDB_2018/tree/master/DynamicBrain/Modeling>`__.
+
 
 Examples
 --------
-Examples for running PopNet are located in the source directory docs/examples/simulator/popnet/. Each subdirectory contains
-a different example with the following structure:
+The AllenInstitute/bmtk repo contains a number of PopNet examples, many with pre-built networks and can be immediately ran. These
+tutorials will have the folder prefix *pop_* and to run them in the command-line simply call::
 
-* network/ - files used to describe the networks being simulated
-* models/pop_models/ - configuration files that setup different populations in the network.
-* models/synaptic_models/ - configuration files that specify the connection between different populations.
+  $ python run_popnet.py config.json
 
-To run a simulation
-::
 
-   python run_popnet.py config.json
+Current examples
+++++++++++++++++
+* `pop_2pop <https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/pop_2pops>`_ - A simple recurrently connected network with one excitatory and one inhibitory population.
+* `pop_7pops_converted <https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/pop_7pops_converted>`_ - A conversion our a mouse cortex L4 spiking network into a population rates network.
 
-**Output**
-
-After the simulation is finished, firing rates are saved into output/spike_rates.txt. The file follows the structure of
-space seperated:
-
-   population-id  time  firing-rate
