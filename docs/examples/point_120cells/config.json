@@ -17,17 +17,9 @@
   "inputs": {
     "LGN_spikes": {
       "input_type": "spikes",
-      "module": "nwb",
-      "input_file": "$INPUT_DIR/lgn_spikes.nwb",
-      "node_set": "lgn",
-      "trial": "trial_0"
-    },
-    "TW_spikes": {
-      "input_type": "spikes",
-      "module": "nwb",
-      "input_file": "$INPUT_DIR/tw_spikes.nwb",
-      "node_set": "tw",
-      "trial": "trial_0"
+      "module": "csv",
+      "input_file": "thalamus_spikes.csv",
+      "node_set": "thalamus"
     }
   },
 
@@ -61,30 +53,22 @@
   "networks": {
     "nodes": [
       {
-        "nodes_file": "$NETWORK_DIR/v1_nodes.h5",
-        "node_types_file": "$NETWORK_DIR/v1_node_types.csv"
+        "nodes_file": "$NETWORK_DIR/cortex_nodes.h5",
+        "node_types_file": "$NETWORK_DIR/cortex_node_types.csv"
       },
       {
-        "nodes_file": "$NETWORK_DIR/lgn_nodes.h5",
-        "node_types_file": "$NETWORK_DIR/lgn_node_types.csv"
-      },
-      {
-        "nodes_file": "$NETWORK_DIR/tw_nodes.h5",
-        "node_types_file":  "$NETWORK_DIR/tw_node_types.csv"
+        "nodes_file": "$NETWORK_DIR/thalamus_nodes.h5",
+        "node_types_file": "$NETWORK_DIR/thalamus_node_types.csv"
       }
     ],
     "edges": [
       {
-        "edges_file": "$NETWORK_DIR/v1_v1_edges.h5",
-        "edge_types_file": "$NETWORK_DIR/v1_v1_edge_types.csv"
+        "edges_file": "$NETWORK_DIR/cortex_cortex_edges.h5",
+        "edge_types_file": "$NETWORK_DIR/cortex_cortex_edge_types.csv"
       },
       {
-        "edges_file": "$NETWORK_DIR/lgn_v1_edges.h5",
-        "edge_types_file": "$NETWORK_DIR/lgn_v1_edge_types.csv"
-      },
-      {
-        "edges_file": "$NETWORK_DIR/tw_v1_edges.h5",
-        "edge_types_file": "$NETWORK_DIR/tw_v1_edge_types.csv"
+        "edges_file": "$NETWORK_DIR/thalamus_cortex_edges.h5",
+        "edge_types_file": "$NETWORK_DIR/thalamus_cortex_edge_types.csv"
       }
     ]
   }
