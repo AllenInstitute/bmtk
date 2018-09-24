@@ -157,13 +157,28 @@ class PointNodeAdaptor(NodeAdaptor):
             node_adaptor.batch_process = False
 
         if node_adaptor.batch_process:
-            io.log_info('Batch processing nodes for {}.'.format(node_group.parent.name))
+            io.log_info('Batch processing nodes for {}/{}.'.format(node_group.parent.name, node_group.group_id))
 
         return node_adaptor
 
 
 class PointEdge(SonataBaseEdge):
-    pass
+    @property
+    def source_node_ids(self):
+        return [self._edge.source_node_id]
+
+    @property
+    def target_node_ids(self):
+        return [self._edge.target_node_id]
+
+    @property
+    def nest_params(self):
+        if self.model_template in py_modules.synapse_models:
+            syn_model_fnc = py_modules.synapse_model(self.model_template)
+        else:
+            syn_model_fnc = py_modules.synapse_models('default')
+
+        return syn_model_fnc(self)
 
 
 class PointEdgeBatched(object):
@@ -199,9 +214,14 @@ class PointEdgeAdaptor(EdgeAdaptor):
         self._can_batch = flag
 
     def synaptic_params(self, edge):
+        # TODO: THIS NEEDS to be replaced with call to synapse_models
         params_dict = {'weight': self.syn_weight(edge, None, None), 'delay': edge.delay}
         params_dict.update(edge.dynamics_params)
         return params_dict
+
+    def get_edge(self, sonata_node):
+        return PointEdge(sonata_node, self)
+
 
     def get_batches(self, edge_group):
         src_ids = {}
