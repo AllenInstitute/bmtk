@@ -50,8 +50,52 @@ Installing with conda
 
 Using the Docker Image
 ----------------------
+The bmtk docker container lets you build and simulate networks without requiring installing all the bmtk prerequisits on
+your computer. All you need is the `docker client <https://docs.docker.com/install/>`__ installed on your machine.
 
-More Info to come!
+::
+
+  $ docker pull alleninstitute/bmtk
+
+There are two main ways of using the bmtk-docker image, either like a command-line application or as a Jupyter Notebook
+server
+
+Through the command line
+++++++++++++++++++++++++
+
+Go to the directory where your bmtk network-builder and/or network-simualtion scripts and supporting files are located
+(*local/path*) and run the following in a command-line terminal
+
+::
+
+  $ docker run alleninstitute/bmtk -v local/path:/home/shared/workspace python <my_script>.py <opts>
+
+Due to the way docker works, all files to build/run the network must be within *local/path*, including network files,
+simulator components, output directories, etc. If your config.json files references anything outside the working
+directory branch things will not work as expected.
+
+**NEURON mechanisms:**
+If you are running BioNet and have special mechanims/mod files that need to be compiled, you can do so by running
+
+::
+
+  $ cd /path/to/mechanims
+  $ docker run -v $(pwd):/home/shared/workspace/mechanisms alleninstitute/bmtk nrnivmodl modfiles/
+
+
+Through Jupyter Notebooks
++++++++++++++++++++++++++
+The bmtk-docker image can be run as a jupyter notebook server. Not only will it contain the examples and notebook tutorials
+for you to run, but you can use it to create new bmtk notebooks. In a command line run
+
+::
+
+  $ docker run -v $(pwd):/home/shared/workspace -p 8888:8888 alleninstitute/bmtk jupyter
+
+
+Then open a browser to 127.0.0.1:8888/. Any new files/notebooks should be saved to *workspace* directory, otherwise they
+will be lost once the container is closed.
+
 
 
 Running Simulations
