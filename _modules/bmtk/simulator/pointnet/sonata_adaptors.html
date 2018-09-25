@@ -787,13 +787,28 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">node_adaptor</span><span class="o">.</span><span class="n">batch_process</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="k">if</span> <span class="n">node_adaptor</span><span class="o">.</span><span class="n">batch_process</span><span class="p">:</span>
-            <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Batch processing nodes for </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node_group</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Batch processing nodes for </span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node_group</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">node_group</span><span class="o">.</span><span class="n">group_id</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">node_adaptor</span></div></div>
 
 
 <div class="viewcode-block" id="PointEdge"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.sonata_adaptors.PointEdge">[docs]</a><span class="k">class</span> <span class="nc">PointEdge</span><span class="p">(</span><span class="n">SonataBaseEdge</span><span class="p">):</span>
-    <span class="k">pass</span></div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">source_node_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge</span><span class="o">.</span><span class="n">source_node_id</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">target_node_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge</span><span class="o">.</span><span class="n">target_node_id</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">nest_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_template</span> <span class="ow">in</span> <span class="n">py_modules</span><span class="o">.</span><span class="n">synapse_models</span><span class="p">:</span>
+            <span class="n">syn_model_fnc</span> <span class="o">=</span> <span class="n">py_modules</span><span class="o">.</span><span class="n">synapse_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_template</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">syn_model_fnc</span> <span class="o">=</span> <span class="n">py_modules</span><span class="o">.</span><span class="n">synapse_models</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">syn_model_fnc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PointEdgeBatched"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeBatched">[docs]</a><span class="k">class</span> <span class="nc">PointEdgeBatched</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -829,9 +844,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_can_batch</span> <span class="o">=</span> <span class="n">flag</span>
 
 <div class="viewcode-block" id="PointEdgeAdaptor.synaptic_params"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.synaptic_params">[docs]</a>    <span class="k">def</span> <span class="nf">synaptic_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+        <span class="c1"># TODO: THIS NEEDS to be replaced with call to synapse_models</span>
         <span class="n">params_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">syn_weight</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="s1">&#39;delay&#39;</span><span class="p">:</span> <span class="n">edge</span><span class="o">.</span><span class="n">delay</span><span class="p">}</span>
         <span class="n">params_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">dynamics_params</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">params_dict</span></div>
+
+<div class="viewcode-block" id="PointEdgeAdaptor.get_edge"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.get_edge">[docs]</a>    <span class="k">def</span> <span class="nf">get_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sonata_node</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">PointEdge</span><span class="p">(</span><span class="n">sonata_node</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="PointEdgeAdaptor.get_batches"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.get_batches">[docs]</a>    <span class="k">def</span> <span class="nf">get_batches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_group</span><span class="p">):</span>
         <span class="n">src_ids</span> <span class="o">=</span> <span class="p">{}</span>
