@@ -70,6 +70,7 @@ BREAKPOINT {
 DERIVATIVE state {
 	n' = (1-n)/tau_r
 	g' = -g/tau_1
+    p' = 0
 }
 
 NET_RECEIVE(weight (umho)) {
