@@ -88,7 +88,7 @@ DERIVATIVE state {
 	n' = (1-n)/tau_r
 	g' = -g/tau_1
 	tau_r' = (tau_r0-tau_r)/tau_FDR
-	D = (1-D)/tau_D
+	D' = (1-D)/tau_D
 }
 
 NET_RECEIVE(weight (umho)) {
