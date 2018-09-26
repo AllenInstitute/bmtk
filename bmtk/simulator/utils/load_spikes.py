@@ -31,14 +31,14 @@ def load_spikes_ascii(file_name):
     Load ascii spike file
     '''
     t = os.path.getmtime(file_name)
-    print file_name, "modified on:", datetime.datetime.fromtimestamp(t)
+    print(file_name, "modified on:", datetime.datetime.fromtimestamp(t))
     spk_ts,spk_gids = np.loadtxt(file_name, 
                                  dtype='float32,int',
                                  unpack=True)
 
     spk_ts=spk_ts*1E-3
 
-    print 'loaded spikes from ascii'
+    print('loaded spikes from ascii')
 
     return [spk_ts,spk_gids]
 
@@ -49,7 +49,7 @@ def load_spikes_h5(file_name):
     '''
 
     t = os.path.getmtime(file_name)
-    print file_name, "modified on:", datetime.datetime.fromtimestamp(t)
+    print(file_name, "modified on:", datetime.datetime.fromtimestamp(t))
 
     with h5py.File(file_name,'r') as h5:
 

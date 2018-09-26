@@ -1,9 +1,11 @@
 import os
+import sys
 import csv
 
 import h5py
 import pandas as pd
 import numpy as np
+from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
 
 
 class SpikeTrainWriter(object):
@@ -62,13 +64,17 @@ class SpikeTrainWriter(object):
 
     def _next_spike(self, rank):
         try:
-            val = self._tmp_spikes_handles[rank].next()
+            val = next(self._tmp_spikes_handles[rank])
             return val[0], val[1], rank
         except StopIteration:
             return None
 
     def add_spike(self, time, gid):
         self._tmp_file_handle.write('{:.6f} {}\n'.format(time, gid))
+
+    def add_spikes(self, times, gid):
+        for t in times:
+            self.add_spike(t, gid)
 
     def add_spikes_file(self, file_name, sort_order=None):
         self._all_tmp_files.append(self.TmpFileMetadata(file_name, sort_order))
@@ -165,6 +171,9 @@ class SpikeTrainWriter(object):
     def to_hdf5(self, hdf5_file, sort_order=None, gid_map=None):
         if self._mpi_rank == 0:
             with h5py.File(hdf5_file, 'w') as h5:
+                add_hdf5_magic(h5)
+                add_hdf5_version(h5)
+
                 self._count_spikes()
                 spikes_grp = h5.create_group('/spikes')
                 spikes_grp.attrs['sorting'] = 'none' if sort_order is None else sort_order
@@ -263,6 +272,10 @@ class SpikesInputH5(SpikesInput):
         self._input_file = params['input_file']
         self._h5_handle = h5py.File(self._input_file, 'r')
         self._sort_order = self._h5_handle['/spikes'].attrs.get('sorting', None)
+        if sys.version_info[0] >= 3 and isinstance(self._sort_order, bytes):
+            # h5py attributes return str in py 2, bytes in py 3
+            self._sort_order = self._sort_order.decode()
+
         self._gid_ds = self._h5_handle['/spikes/gids']
         self._timestamps_ds = self._h5_handle['/spikes/timestamps']
 

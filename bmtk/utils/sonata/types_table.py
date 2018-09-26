@@ -21,6 +21,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import numpy as np
+import pandas as pd
 import numbers
 import math
 
@@ -125,7 +126,24 @@ class TypesTable(object):
             # merge all dataframes together
             merged_table = self._dataframes[0].reset_index()  # TODO: just merge on the indicies rather than reset
             for df in self._dataframes[1:]:
-                merged_table = merged_table.merge(df.reset_index(), how='outer')
+                try:
+                    merged_table = merged_table.merge(df.reset_index(), how='outer')
+                except ValueError as ve:
+                    # There is a potential issue if merging where one dtype is different from another (ex, if all
+                    # model_template's are NONE pandas will load column as float64). First solution is to find columns
+                    # that differ and upcast columns as object's (TODO: look for better solution)
+                    right_df = df.reset_index()
+                    for col in set(merged_table.columns) & set(right_df.columns):
+                        # find all shared columns whose dtype differs
+                        if merged_table[col].dtype != right_df[col].dtype:
+                            # change column(s) dtype to object
+                            merged_table[col] = merged_table[col] if merged_table[col].dtype == object \
+                                else merged_table[col].astype(object)
+                            right_df[col] = right_df[col] if right_df[col].dtype == object \
+                                else right_df[col].astype(object)
+
+                    merged_table = merged_table.merge(right_df, how='outer')
+
             merged_table.set_index(self.index_column_name, inplace=True)
 
         if cache:

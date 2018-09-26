@@ -202,14 +202,14 @@ class SimGraph(object):
 
         # TODO: Convert model_type to a enum
         morph_dir = self.get_component('morphologies_dir')
-        if morph_dir is not None and 'morphology_file' in node_types_table.columns:
+        if morph_dir is not None and 'morphology' in node_types_table.columns:
             for nt_id in node_type_ids:
                 node_type = node_types_table[nt_id]
-                if node_type['morphology_file'] is None:
+                if node_type['morphology'] is None:
                     continue
                 # TODO: Check the file exits
                 # TODO: See if absolute path is stored in csv
-                node_type['morphology_file'] = os.path.join(morph_dir, node_type['morphology_file'])
+                node_type['morphology'] = os.path.join(morph_dir, node_type['morphology'])
 
         if 'dynamics_params' in node_types_table.columns and 'model_type' in node_types_table.columns:
             for nt_id in node_type_ids:

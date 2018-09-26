@@ -115,6 +115,10 @@ class Node(object):
             return self._group_props[prop_key]
         elif prop_key in self._node_type_props:
             return self._node_type_props[prop_key]
+        elif prop_key == 'node_id':
+            return self.node_id
+        elif property == 'node_type_id':
+            return self.node_type_id
         else:
             raise KeyError('Unknown property {}'.format(prop_key))
 

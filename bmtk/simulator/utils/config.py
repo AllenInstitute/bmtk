@@ -22,10 +22,13 @@
 #
 import os
 import json
-import shutil
 import re
 import copy
 import datetime
+from six import string_types
+
+
+from bmtk.simulator.core.io_tools import io
 
 
 def from_json(config_file, validator=None):
@@ -35,16 +38,21 @@ def from_json(config_file, validator=None):
     :param validator: A SimConfigValidator object to validate json file. Won't validate if set to None
     :return: A dictionary, verified against json validator and with manifest variables resolved.
     """
-    if isinstance(config_file, file):
-        conf = json.load(config_file)
-    elif isinstance(config_file, basestring):
+    #print(config_file)
+    #if os.path.isfile(config_file):
+    #if isinstance(config_file, file):
+    #    conf = json.load(config_file)
+    if isinstance(config_file, string_types):
         conf = json.load(open(config_file, 'r'))
+    elif isinstance(config_file, dict):
+        conf = config_file.copy()
     else:
         raise Exception('{} is not a file or file path.'.format(config_file))
 
     # insert file path into dictionary
     if 'config_path' not in conf:
         conf['config_path'] = os.path.abspath(config_file)
+        conf['config_dir'] = os.path.dirname(conf['config_path'])
 
     # Will resolve manifest variables and validate
     return from_dict(conf, validator)
@@ -58,10 +66,11 @@ def from_dict(config_dict, validator=None):
     :return: A dictionary, verified against json validator and with manifest variables resolved.
     """
     assert(isinstance(config_dict, dict))
-    conf = copy.deepcopy(config_dict) # Since the functions will mutate the dictionary we will copy just-in-case.
+    conf = copy.deepcopy(config_dict)  # Since the functions will mutate the dictionary we will copy just-in-case.
 
     if 'config_path' not in conf:
-        conf['config_path'] = os.path.abspath(__file__)
+        conf['config_path'] = os.path.join(os.getcwd(), 'tmp_cfg.dict')
+        conf['config_dir'] = os.path.dirname(conf['config_path'])
 
     # Build the manifest and resolve variables.
     # TODO: Check that manifest exists
@@ -72,15 +81,15 @@ def from_dict(config_dict, validator=None):
     # In our work with Blue-Brain it was agreed that 'network' and 'simulator' parts of config may be split up into
     # separate files. If this is the case we build each sub-file separately and merge into this one
     for childconfig in ['network', 'simulation']:
-        if childconfig in conf and isinstance(conf[childconfig], basestring):
+        if childconfig in conf and isinstance(conf[childconfig], string_types):
             # Try to resolve the path of the network/simulation config files. If an absolute path isn't used find
             # the file relative to the current config file. TODO: test if this will work on windows?
             conf_str = conf[childconfig]
-            conf_path = conf_str if conf_str.startswith('/') else os.path.join(conf['config_path'], conf_str)
+            conf_path = conf_str if conf_str.startswith('/') else os.path.join(conf['config_dir'], conf_str)
 
             # Build individual json file and merge into parent.
             child_json = from_json(conf_path)
-            del child_json['config_path'] # we don't want 'config_path' of parent being overwritten.
+            del child_json['config_path']  # we don't want 'config_path' of parent being overwritten.
             conf.update(child_json)
 
     # Run the validator
@@ -95,11 +104,14 @@ def copy_config(conf):
 
     :param conf: configuration dictionary
     """
-    output_dir = conf["output"]["output_dir"]
+    output_dir = conf.output_dir
     config_name = os.path.basename(conf['config_path'])
     output_path = os.path.join(output_dir, config_name)
     with open(output_path, 'w') as fp:
-        json.dump(conf, fp, indent=2)
+        out_cfg = conf.copy()
+        if 'manifest' in out_cfg:
+            del out_cfg['manifest']
+        json.dump(out_cfg, fp, indent=2)
 
 
 def __special_variables(conf):
@@ -160,7 +172,7 @@ def __recursive_insert(json_obj, manifest):
     :param manifest: A dictionary of variable values
     :return: A new json dictionar config file with variables resolved
     """
-    if isinstance(json_obj, basestring):
+    if isinstance(json_obj, string_types):
         return __find_variables(json_obj, manifest)
 
     elif isinstance(json_obj, list):
@@ -200,4 +212,223 @@ def __find_variables(json_str, manifest):
     return json_str
 
 
+class ConfigDict(dict):
+    def __init__(self, *args, **kwargs):
+        self.update(*args, **kwargs)
+        self._env_built = False
+        self._io = None
 
+        self._node_set = {}
+        self._load_node_set()
+
+    @property
+    def io(self):
+        if self._io is None:
+            self._io = io
+        return self._io
+
+    @io.setter
+    def io(self, io):
+        self._io = io
+
+    @property
+    def run(self):
+        return self['run']
+
+    @property
+    def tstart(self):
+        return self.run.get('tstart', 0.0)
+
+    @property
+    def tstop(self):
+        return self.run['tstop']
+
+    @property
+    def dt(self):
+        return self.run.get('dt', 0.1)
+
+    @property
+    def spike_threshold(self):
+        return self.run.get('spike_threshold', -15.0)
+
+    @property
+    def dL(self):
+        return self.run.get('dL', 20.0)
+
+    @property
+    def gid_mappings(self):
+        return self.get('gid_mapping_file', None)
+
+    @property
+    def block_step(self):
+        return self.run.get('nsteps_block', 5000)
+
+    @property
+    def conditions(self):
+        return self['conditions']
+
+    @property
+    def celsius(self):
+        return self.conditions['celsius']
+
+    @property
+    def v_init(self):
+        return self.conditions['v_init']
+
+    @property
+    def path(self):
+        return self['config_path']
+
+    @property
+    def output(self):
+        return self['output']
+
+    @property
+    def output_dir(self):
+        return self.output['output_dir']
+
+    @property
+    def overwrite_output(self):
+        return self.output.get('overwrite_output_dir', False)
+
+    @property
+    def log_file(self):
+        return self.output['log_file']
+
+    @property
+    def components(self):
+        return self.get('components', {})
+
+    @property
+    def morphologies_dir(self):
+        return self.components['morphologies_dir']
+
+    @property
+    def synaptic_models_dir(self):
+        return self.components['synaptic_models_dir']
+
+    @property
+    def point_neuron_models_dir(self):
+        return self.components['point_neuron_models_dir']
+
+    @property
+    def mechanisms_dir(self):
+        return self.components['mechanisms_dir']
+
+    @property
+    def biophysical_neuron_models_dir(self):
+        return self.components['biophysical_neuron_models_dir']
+
+    @property
+    def templates_dir(self):
+        return self.components.get('templates_dir', None)
+
+    @property
+    def with_networks(self):
+        return 'networks' in self and len(self.nodes) > 0
+
+    @property
+    def networks(self):
+        return self['networks']
+
+    @property
+    def nodes(self):
+        return self.networks.get('nodes', [])
+
+    @property
+    def edges(self):
+        return self.networks.get('edges', [])
+
+    @property
+    def reports(self):
+        return self.get('reports', {})
+
+    @property
+    def inputs(self):
+        return self.get('inputs', {})
+
+    @property
+    def node_sets(self):
+        return self._node_set
+
+    @property
+    def spikes_file(self):
+        return os.path.join(self.output_dir, self.output['spikes_file'])
+
+    def _load_node_set(self):
+        if 'node_sets_file' in self.keys():
+            node_set_val = self['node_sets_file']
+        elif 'node_sets' in self.keys():
+            node_set_val = self['node_sets']
+        else:
+            self._node_set = {}
+            return
+
+        if isinstance(node_set_val, dict):
+            self._node_set = node_set_val
+        else:
+            try:
+                self._node_set = json.load(open(node_set_val, 'r'))
+            except Exception as e:
+                io.log_exception('Unable to load node_sets_file {}'.format(node_set_val))
+
+    def copy_to_output(self):
+        copy_config(self)
+
+    def get_modules(self, module_name):
+        return [report for report in self.reports.values() if report['module'] == module_name]
+
+    def _set_logging(self):
+        """Check if log-level and/or log-format string is being changed through the config"""
+        output_sec = self.output
+        if 'log_format' in output_sec:
+            self._io.set_log_format(output_sec['log_format'])
+
+        if 'log_level' in output_sec:
+            self._io.set_log_level(output_sec['log_level'])
+
+        if 'log_to_console' in output_sec:
+            self._io.log_to_console = output_sec['log_to_console']
+
+        if 'quiet_simulator' in output_sec and output_sec['quiet_simulator']:
+            self._io.quiet_simulator()
+
+    def build_env(self):
+        if self._env_built:
+            return
+
+        self._set_logging()
+        self.io.setup_output_dir(self.output_dir, self.log_file, self.overwrite_output)
+        self.copy_to_output()
+        self._env_built = True
+
+    @staticmethod
+    def get_validator():
+        raise NotImplementedError
+
+    @classmethod
+    def from_json(cls, config_file, validate=False):
+        validator = cls.get_validator() if validate else None
+        return cls(from_json(config_file, validator))
+
+    @classmethod
+    def from_dict(cls, config_dict, validate=False):
+        validator = cls.get_validator() if validate else None
+        return cls(from_dict(config_dict, validator))
+
+    @classmethod
+    def from_yaml(cls, config_file, validate=False):
+        raise NotImplementedError
+
+    @classmethod
+    def load(cls, config_file, validate=False):
+        # Implement factory method that can resolve the format/type of input configuration.
+        if isinstance(config_file, dict):
+            return cls.from_dict(config_file, validate)
+        elif isinstance(config_file, string_types):
+            if config_file.endswith('yml') or config_file.endswith('yaml'):
+                return cls.from_yaml(config_file, validate)
+            else:
+                return cls.from_json(config_file, validate)
+        else:
+            raise Exception

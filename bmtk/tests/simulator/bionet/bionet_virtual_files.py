@@ -28,7 +28,7 @@ class NodesFile(object):
         self._node_types_table = {
             101: {
                 'pop_name': 'bio_exc', 'node_type_id': 101, 'model_type': 'biophysical',
-                'morphology_file': 'be_morphology.swc',
+                'morphology': 'be_morphology.swc',
                 'dynamics_params': 'be_dynamics.json',
                 'ei': 'e'
             },
@@ -39,7 +39,7 @@ class NodesFile(object):
             },
             103: {
                 'pop_name': 'bio_inh', 'node_type_id': 103, 'model_type': 'biophysical',
-                'morphology_file': 'bi_morphology.swc',
+                'morphology': 'bi_morphology.swc',
                 'dynamics_params': 'bi_dynamics.json',
                 'ei': 'i'
             },

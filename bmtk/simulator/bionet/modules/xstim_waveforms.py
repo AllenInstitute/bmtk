@@ -2,6 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 import json
+from six import string_types
 
 from bmtk.simulator.bionet.io_tools import io
 
@@ -87,7 +88,7 @@ def stimx_waveform_factory(waveform):
     Supports json config in conf as well as string pointer to a file.
     :rtype: BaseWaveformType
     """
-    if isinstance(waveform, (str, unicode)):
+    if isinstance(waveform, string_types):
         # if waveform_conf is str or unicode assume to be name of file in stim_dir
         # waveform_conf = str(waveform_conf)   # make consistent
         file_ext = os.path.splitext(waveform)
@@ -98,7 +99,7 @@ def stimx_waveform_factory(waveform):
             with open(waveform, 'r') as f:
                 waveform = json.load(f)
         else:
-            print "Warning: unknwon filetype for waveform"
+            io.log_warning('Unknwon filetype for waveform')
 
     shape_key = waveform["shape"].lower()
 
@@ -120,7 +121,7 @@ def iclamp_waveform_factory(conf):
     shape_key = iclamp_waveform_conf["shape"].lower()
 
     if shape_key not in shape_classes:
-        print "Warning: iclamp waveform shape not known"  # throw error?
+        io.log_warning('iclamp waveform shape not known')  # throw error?
 
     Constructor = shape_classes[shape_key]
     return Constructor(iclamp_waveform_conf)

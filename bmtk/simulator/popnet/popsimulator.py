@@ -22,6 +22,7 @@
 #
 import os
 import logging
+from six import string_types
 
 from dipde.internals.internalpopulation import InternalPopulation
 from dipde.internals.externalpopulation import ExternalPopulation
@@ -29,8 +30,8 @@ from dipde.internals.connection import Connection
 import dipde
 
 from bmtk.simulator.core.simulator import Simulator
-import config as cfg
-import utils as poputils
+from . import config as cfg
+from . import utils as poputils
 import bmtk.simulator.utils.simulation_inputs as inputs
 from bmtk.utils.io import spike_trains, firing_rates
 
@@ -238,11 +239,11 @@ class PopSimulator(Simulator):
         #print tstop, self.dt
         #print self._graph.populations
         #exit()
-        print "running simulation..."
+        print("running simulation...")
         self._dipde_network.run(t0=0.0, tf=tstop, dt=self.dt)
         # TODO: make record_rates optional?
         self.__record_rates()
-        print "done simulation."
+        print("done simulation.")
 
     def __create_internal_pop(self, params):
         # TODO: use getter methods directly in case arguments are not stored in dynamics params
@@ -343,7 +344,7 @@ class PopSimulator(Simulator):
     @classmethod
     def from_config(cls, configure, graph):
         # load the json file or object
-        if isinstance(configure, basestring):
+        if isinstance(configure, string_types):
             config = cfg.from_json(configure, validate=True)
         elif isinstance(configure, dict):
             config = configure
@@ -359,7 +360,8 @@ class PopSimulator(Simulator):
         overwrite = run_dict['overwrite_output_dir'] if 'overwrite_output_dir' in run_dict else True
         print_time = run_dict['print_time'] if 'print_time' in run_dict else False
         dt = run_dict['dt']  # TODO: make sure dt exists
-        network = cls(graph, dt=config.dt, tstop=config.tstop, overwrite=overwrite)
+        tstop = float(config.tstop) / 1000.0
+        network = cls(graph, dt=config.dt, tstop=tstop, overwrite=overwrite)
 
         if 'output_dir' in config['output']:
             network.output_dir = config['output']['output_dir']
@@ -398,6 +400,7 @@ class PopSimulator(Simulator):
 
             rates_file = out_dict.get('rates_file', None)
             if rates_file is not None:
+                rates_file = rates_file if os.path.isabs(rates_file) else os.path.join(config.output_dir, rates_file)
                 # create directory if required
                 network.rates_file = rates_file
                 parent_dir = os.path.dirname(rates_file)

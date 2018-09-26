@@ -210,7 +210,7 @@ class S_Layer (object):
 
     def train(self,image_dir,batch_size=100,image_shape=(256,256)):  #,save_file='weights.pkl'):
 
-        print "Training"
+        print("Training")
 
         im_lib = Image_Library(image_dir,new_size=image_shape)
 
@@ -220,7 +220,7 @@ class S_Layer (object):
         for k in range(self.K):
 
             if k%10==0:
-                print "Imprinting feature ", k
+                print("Imprinting feature ", k)
             # how to handle the randomly picked neuron; rejection sampling?
             imprinting_unit_index = np.random.randint(self.get_total_pixels_in_C_Layer_input())
 
@@ -264,8 +264,8 @@ class S_Layer (object):
         #     num_batches = num_batches+1
 
         self.tf_sess.run(self.weights.assign(new_weights))
-        print
-        print "Saving weights to file in ", self.weight_file
+        print()
+        print("Saving weights to file in ", self.weight_file)
 
         weight_h5 = h5py.File(self.weight_file,'a')
         #for band in new_weights:

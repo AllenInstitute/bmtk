@@ -119,7 +119,7 @@ class Readout_Layer (object):
 
     def train(self,image_dir,batch_size=10,image_shape=(256,256),max_iter=200):
 
-        print "Training"
+        print("Training")
 
         im_lib = Image_Library_Supervised(image_dir,new_size=image_shape)
 
@@ -130,7 +130,7 @@ class Readout_Layer (object):
         y_vals = y_vals.T[0].T
         y_vals = 2*y_vals - 1.0
 
-        print y_vals
+        print(y_vals)
         # print y_vals
         # print image_data.shape
 
@@ -146,7 +146,7 @@ class Readout_Layer (object):
         num_batches = int(np.ceil(2*training_lib_size/float(batch_size)))
         rep_list = []
         for i in range(num_batches):
-            print i
+            print(i)
             # if i==num_batches-1:
             #     rep = self.input_layer.tf_sess.run(self.input_layer.output,feed_dict={self.input:image_data[i*batch_size:i*batch_size + training_lib_size%batch_size]})
             # else:    
@@ -163,11 +163,11 @@ class Readout_Layer (object):
 
         train_result = self.tf_sess.run(self.output,feed_dict={self.input_placeholder:rep})
 
-        print W
-        print train_result.flatten()
-        print y_vals.flatten()
+        print(W)
+        print(train_result.flatten())
+        print(y_vals.flatten())
         #print (train_result.flatten() - y_vals.flatten())
-        print "train error = ", np.mean((train_result.flatten() != y_vals.flatten()))
+        print("train error = ", np.mean((train_result.flatten() != y_vals.flatten())))
 
         from scipy.stats import norm
         target_mask = y_vals==1
@@ -175,7 +175,7 @@ class Readout_Layer (object):
         hit_rate = np.mean(train_result.flatten()[target_mask] == y_vals.flatten()[target_mask])
         false_alarm = np.mean(train_result.flatten()[dist_mask] != y_vals.flatten()[dist_mask])
         dprime = norm.ppf(hit_rate) - norm.ppf(false_alarm)
-        print "dprime = ", dprime
+        print("dprime = ", dprime)
 
         # Test error
         im_lib = Image_Library_Supervised('/Users/michaelbu/Data/SerreOlivaPoggioPNAS07/Train_Test_Set/Test',new_size=image_shape)
@@ -189,7 +189,7 @@ class Readout_Layer (object):
         num_batches = int(np.ceil(2*testing_lib_size/float(batch_size)))
         rep_list = []
         for i in range(num_batches):
-            print i
+            print(i)
             # if i==num_batches-1:
             #     rep = self.input_layer.tf_sess.run(self.input_layer.output,feed_dict={self.input:image_data[i*batch_size:i*batch_size + training_lib_size%batch_size]})
             # else:    
@@ -201,15 +201,15 @@ class Readout_Layer (object):
         test_result = self.tf_sess.run(self.output,feed_dict={self.input_placeholder:rep_test})
 
         #print test_result
-        print "test error = ", np.mean((test_result.flatten() != y_vals_test.flatten()))
+        print("test error = ", np.mean((test_result.flatten() != y_vals_test.flatten())))
         target_mask = y_vals_test==1
         dist_mask = np.logical_not(target_mask)
         hit_rate = np.mean(test_result.flatten()[target_mask] == y_vals_test.flatten()[target_mask])
         false_alarm = np.mean(test_result.flatten()[dist_mask] != y_vals_test.flatten()[dist_mask])
         dprime = norm.ppf(hit_rate) - norm.ppf(false_alarm)
-        print "dprime = ", dprime
+        print("dprime = ", dprime)
 
-        print rep_test.shape
+        print(rep_test.shape)
 
 
         # logistic regression unit

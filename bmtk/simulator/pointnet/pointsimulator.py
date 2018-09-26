@@ -23,6 +23,8 @@
 import os
 import glob
 import nest
+from six import string_types
+from six import moves
 
 from bmtk.simulator.core.simulator import Simulator
 from bmtk.simulator.pointnet.config import Config
@@ -31,12 +33,13 @@ from bmtk.simulator.pointnet.io_tools import io
 import bmtk.simulator.utils.simulation_reports as reports
 import bmtk.simulator.utils.simulation_inputs as inputs
 from bmtk.utils.io import spike_trains
-import modules as mods
+from . import modules as mods
+from bmtk.simulator.core.node_sets import NodeSet
 
 
 class PointSimulator(Simulator):
     def __init__(self, graph, dt=0.001, overwrite=True, print_time=False):
-        self._duration = 0.0  # simulation time
+        self._tstop = 0.0  # simulation time
         self._dt = dt  # time step
         self._output_dir = './output/'  # directory where log and temporary output will be stored
         self._overwrite = overwrite
@@ -60,10 +63,40 @@ class PointSimulator(Simulator):
 
         self._mods = []
 
+        self._inputs = {}  # Used to hold references to nest input objects (current_generators, etc)
+
         # Reset the NEST kernel for a new simualtion
         # TODO: move this into it's own function and make sure it is called before network is built
         nest.ResetKernel()
         nest.SetKernelStatus({"resolution": self._dt, "overwrite_files": self._overwrite, "print_time": print_time})
+
+    @property
+    def tstart(self):
+        return 0.0
+
+    @property
+    def dt(self):
+        return self._dt
+
+    @property
+    def tstop(self):
+        return self._tstop
+
+    @tstop.setter
+    def tstop(self, val):
+        self._tstop = val
+
+    @property
+    def n_steps(self):
+        return long((self.tstop-self.tstart)/self.dt)
+
+    @property
+    def net(self):
+        return self._graph
+
+    @property
+    def gid_map(self):
+        return self._graph._nestid2gid
 
     def _get_block_trial(self, duration):
         """
@@ -96,9 +129,24 @@ class PointSimulator(Simulator):
         # exit()
     '''
 
-    def run(self, duration=None):
-        if duration is None:
-            duration = self.duration
+    def add_step_currents(self, amp_times, amp_values, node_set, input_name):
+        scg = nest.Create("step_current_generator",
+                          params={'amplitude_times': amp_times, 'amplitude_values': amp_values})
+
+        if not isinstance(node_set, NodeSet):
+            node_set = self.net.get_node_set(node_set)
+
+        # Convert node set into list of gids and then look-up the nest-ids
+        nest_ids = [self.net._gid2nestid[gid] for gid in node_set.gids()]
+
+        # Attach current clamp to nodes
+        nest.Connect(scg, nest_ids, syn_spec={'delay': self.dt})
+
+        self._inputs[input_name] = nest_ids
+
+    def run(self, tstop=None):
+        if tstop is None:
+            tstop = self._tstop
 
         for mod in self._mods:
             mod.initialize(self)
@@ -106,14 +154,14 @@ class PointSimulator(Simulator):
         io.barrier()
 
         io.log_info('Starting Simulation')
-        n, res, data_res = self._get_block_trial(duration)
+        n, res, data_res = self._get_block_trial(tstop)
         if n > 0:
-            for r in xrange(n):
+            for r in moves.range(n):
                 nest.Simulate(data_res)
         if res > 0:
             nest.Simulate(res * self.dt)
         if n < 0:
-            nest.Simulate(duration)
+            nest.Simulate(tstop)
 
         io.barrier()
         io.log_info('Simulation finished, finalizing results.')
@@ -128,7 +176,7 @@ class PointSimulator(Simulator):
     @classmethod
     def from_config(cls, configure, graph):
         # load the json file or object
-        if isinstance(configure, basestring):
+        if isinstance(configure, string_types):
             config = Config.from_json(configure, validate=True)
         elif isinstance(configure, dict):
             config = configure
@@ -155,9 +203,9 @@ class PointSimulator(Simulator):
             network._block_size = run_dict['block_size']
 
         if 'duration' in run_dict:
-            network.duration = run_dict['duration']
+            network.tstop = run_dict['duration']
         elif 'tstop' in run_dict:
-            network.duration = run_dict['tstop']
+            network.tstop = run_dict['tstop']
 
         # Create the output-directory, or delete existing files if it already exists
         graph.io.log_info('Setting up output directory')
@@ -181,10 +229,33 @@ class PointSimulator(Simulator):
                 io.log_info('Build virtual cell stimulations for {}'.format(sim_input.name))
                 graph.add_spike_trains(spikes, node_set)
 
+            elif sim_input.input_type == 'current_clamp':
+                # TODO: Need to make this more robust
+                amp_times = sim_input.params.get('amplitude_times', [])
+                amp_values = sim_input.params.get('amplitude_values', [])
+
+                if 'delay' in sim_input.params:
+                    amp_times.append(sim_input.params['delay'])
+                    amp_values.append(sim_input.params['amp'])
+
+                    if 'duration' in sim_input.params:
+                        amp_times.append(sim_input.params['delay'] + sim_input.params['duration'])
+                        amp_values.append(0.0)
+
+                network.add_step_currents(amp_times, amp_values, node_set, sim_input.name)
+
+            else:
+                graph.io.log_warning('Unknown input type {}'.format(sim_input.input_type))
+
         sim_reports = reports.from_config(config)
         for report in sim_reports:
             if report.module == 'spikes_report':
                 mod = mods.SpikesMod(**report.params)
+
+            elif isinstance(report, reports.MembraneReport):
+                # For convience and for compliance with SONATA format. "membrane_report" and "multimeter_report is the
+                # same in pointnet.
+                mod = mods.MultimeterMod(**report.params)
 
             else:
                 graph.io.log_exception('Unknown report type {}'.format(report.module))

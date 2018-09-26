@@ -2,12 +2,13 @@ from bmtk.builder.networks import NetworkBuilder
 
 
 cortex = NetworkBuilder('mcortex')
-cortex.add_nodes(cell_name='Scnn1a',
-              potental='exc',
-              level_of_detail='biophysical',
-              params_file='472363762_fit.json',
-              morphology_file='Scnn1a.swc',
-              set_params_function='Biophys1')
+cortex.add_nodes(cell_name='Scnn1a_473845048',
+                 potental='exc',
+                 model_type='biophysical',
+                 model_template='ctdb:Biophys1.hoc',
+                 model_processing='aibs_perisomatic',
+                 dynamics_params='472363762_fit.json',
+                 morphology='Scnn1a_473845048_m.swc')
 
 cortex.build()
 cortex.save_nodes(output_dir='network')
@@ -20,16 +21,15 @@ thalamus.add_nodes(N=10,
                    level_of_detail='filter')
 
 thalamus.add_edges(source={'pop_name': 'tON'}, target=cortex.nodes(),
-              connection_rule=5,
-              weight_max=5e-05,
-              weight_function='wmax',
-              distance_range=[0.0, 150.0],
-              target_sections=['basal', 'apical'],
-              delay=2.0,
-              params_file='AMPA_ExcToExc.json',
-              set_params_function='exp2syn')
+                   connection_rule=5,
+                   syn_weight=0.001,
+                   delay=2.0,
+                   weight_function='wmax',
+                   target_sections=['basal', 'apical'],
+                   distance_range=[0.0, 150.0],
+                   dynamics_params='AMPA_ExcToExc.json',
+                   model_template='exp2syn')
 
 thalamus.build()
 thalamus.save_nodes(output_dir='network')
 thalamus.save_edges(output_dir='network')
-#thalamus.save_edges(edges_file_name='thalamus_cortex_edges.h5', edge_types_file_name='thalamus_cortex_edge_types.h5')

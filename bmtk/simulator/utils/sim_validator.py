@@ -115,7 +115,7 @@ class SimConfigValidator(Draft4Validator):
     class _CSVFormat(object):
         def __init__(self, schema):
             self._properties = schema['file_properties']
-            self._required_columns = [header for header, props in schema['columns'].iteritems() if props['required']]
+            self._required_columns = [header for header, props in schema['columns'].items() if props['required']]
 
         def check(self, file_name):
             csv_headers = set(pd.read_csv(file_name, nrows=0, **self._properties).columns)

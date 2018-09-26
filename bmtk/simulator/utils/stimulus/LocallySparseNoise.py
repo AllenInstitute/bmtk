@@ -60,8 +60,8 @@ class LocallySparseNoise (object):
             return data_new_size
 
     @staticmethod
-    def exclude(av,(y,x),exclusion=0):
-
+    def exclude(av,y_x,exclusion=0):
+        y, x = y_x
         X,Y = np.meshgrid(np.arange(av.shape[1]), np.arange(av.shape[0]))
 
         mask = ((X-x)**2 + (Y-y)**2) <= exclusion**2

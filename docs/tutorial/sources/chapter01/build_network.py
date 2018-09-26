@@ -3,13 +3,13 @@ from bmtk.builder.networks import NetworkBuilder
 
 # First thing is to create a network builder object
 net = NetworkBuilder('mcortex')
-net.add_nodes(cell_name='Scnn1a',
-              # positions=[(0.0, 0.0, 0.0)],
+net.add_nodes(cell_name='Scnn1a_473845048',
               potental='exc',
-              level_of_detail='biophysical',
-              params_file='472363762_fit.json',
-              morphology_file='Scnn1a.swc',
-              set_params_function='Biophys1')
+              model_type='biophysical',
+              model_template='ctdb:Biophys1.hoc',
+              model_processing='aibs_perisomatic',
+              dynamics_params='472363762_fit.json',
+              morphology='Scnn1a_473845048_m.swc')
 
 net.build()
 net.save_nodes(output_dir='network')

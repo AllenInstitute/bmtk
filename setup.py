@@ -47,12 +47,19 @@ class PyTest(TestCommand):
         sys.exit(errcode)
 
 
+with open('README.md', 'r') as fhandle:
+    long_description = fhandle.read()
+
+
 setup(
     name=package_name,
     version=package_version,
     description='Brain Modeling Toolkit',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    url='https://github.com/AllenInstitute/bmtk',
     author='Kael Dai',
-    author_email='kaeld at alleninstitute dot org',
+    author_email='kaeld@alleninstitute.org',
     package_data={'': ['*.md', '*.txt', '*.cfg', '**/*.json', '**/*.hoc']},
     tests_require=['pytest'],
     install_requires=[
@@ -60,7 +67,8 @@ setup(
         'pandas',
         'numpy',
         'six',
-        'h5py'
+        'h5py',
+        'matplotlib'
     ],
     extras_require={
         'bionet': ['NEURON'],
@@ -74,13 +82,14 @@ setup(
     platforms='any',
     keywords=['neuroscience', 'scientific', 'modeling', 'simulation'],
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Science/Research',
-        'License :: Apache Software License :: 2.0',
+        'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2.7',
-        'Topic :: Scientific/Engineering :: Medical Science Apps.'
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Topic :: Scientific/Engineering :: Bio-Informatics'
     ]
 )

@@ -15,7 +15,7 @@ help:
 .PHONY: help Makefile
 
 html:
-	sphinx-apidoc -f -o source/ ../../bmtk
+	sphinx-apidoc -f -o source/bmtk/ ../../bmtk
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 

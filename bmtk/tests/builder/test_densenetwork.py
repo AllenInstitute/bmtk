@@ -4,6 +4,7 @@ import pytest
 import numpy as np
 import pandas as pd
 import h5py
+import tempfile
 
 from bmtk.builder import NetworkBuilder
 
@@ -112,24 +113,29 @@ def test_save_nsyn_table():
     net.add_edges(source=net.nodes(cell_type='Scnna1'), target=net.nodes(cell_type='PV1'),
                   connection_rule=lambda s, t: 2, p1='s2p')  # 100*100*2 = 20000
     net.build()
-    net.save_nodes('tmp_nodes.h5', 'tmp_node_types.csv')
-    net.save_edges('tmp_edges.h5', 'tmp_edge_types.csv')
+    nodes_h5 = tempfile.NamedTemporaryFile(suffix='.h5')
+    nodes_csv = tempfile.NamedTemporaryFile(suffix='.csv')
+    edges_h5 = tempfile.NamedTemporaryFile(suffix='.h5')
+    edges_csv = tempfile.NamedTemporaryFile(suffix='.csv')
 
-    assert(os.path.exists('tmp_nodes.h5') and os.path.exists('tmp_node_types.csv'))
-    node_types_df = pd.read_csv('tmp_node_types.csv', sep=' ')
+    net.save_nodes(nodes_h5.name, nodes_csv.name)
+    net.save_edges(edges_h5.name, edges_csv.name)
+
+    assert(os.path.exists(nodes_h5.name) and os.path.exists(nodes_csv.name))
+    node_types_df = pd.read_csv(nodes_csv.name, sep=' ')
     assert(len(node_types_df) == 3)
     assert('cell_type' in node_types_df.columns)
     assert('ei' in node_types_df.columns)
     assert('positions' not in node_types_df.columns)
 
-    nodes_h5 = h5py.File('tmp_nodes.h5', 'r')
-    assert ('node_gid' in nodes_h5['/nodes'])
-    assert (len(nodes_h5['/nodes/node_gid']) == 300)
-    assert (len(nodes_h5['/nodes/node_type_id']) == 300)
-    assert (len(nodes_h5['/nodes/node_group']) == 300)
-    assert (len(nodes_h5['/nodes/node_group_index']) == 300)
+    nodes_h5 = h5py.File(nodes_h5.name, 'r')
+    assert ('node_id' in nodes_h5['/nodes/NET1'])
+    assert (len(nodes_h5['/nodes/NET1/node_id']) == 300)
+    assert (len(nodes_h5['/nodes/NET1/node_type_id']) == 300)
+    assert (len(nodes_h5['/nodes/NET1/node_group_id']) == 300)
+    assert (len(nodes_h5['/nodes/NET1/node_group_index']) == 300)
 
-    node_groups = {id: grp for id, grp in nodes_h5['/nodes'].items() if isinstance(grp, h5py.Group)}
+    node_groups = {nid: grp for nid, grp in nodes_h5['/nodes/NET1'].items() if isinstance(grp, h5py.Group)}
     for grp in node_groups.values():
         if len(grp) == 1:
             assert ('position' in grp and len(grp['position']) == 200)
@@ -141,36 +147,37 @@ def test_save_nsyn_table():
         else:
             assert False
 
-    assert(os.path.exists('tmp_edges.h5') and os.path.exists('tmp_edge_types.csv'))
-    edge_types_df = pd.read_csv('tmp_edge_types.csv', sep=' ')
+    assert(os.path.exists(edges_h5.name) and os.path.exists(edges_csv.name))
+    edge_types_df = pd.read_csv(edges_csv.name, sep=' ')
     assert (len(edge_types_df) == 2)
     assert ('p1' in edge_types_df.columns)
     assert ('p2' in edge_types_df.columns)
 
-    edges_h5 = h5py.File('tmp_edges.h5', 'r')
-    assert (len(edges_h5['/edges/index_pointer']) == 301)
-    assert (len(edges_h5['/edges/target_gid']) == 30000)
-    assert (len(edges_h5['/edges/source_gid']) == 30000)
+    edges_h5 = h5py.File(edges_h5.name, 'r')
+    assert('source_to_target' in edges_h5['/edges/NET1_to_NET1/indicies'])
+    assert ('target_to_source' in edges_h5['/edges/NET1_to_NET1/indicies'])
+    assert (len(edges_h5['/edges/NET1_to_NET1/target_node_id']) == 30000)
+    assert (len(edges_h5['/edges/NET1_to_NET1/source_node_id']) == 30000)
 
-    assert (edges_h5['/edges/target_gid'][0] == 0)
-    assert (edges_h5['/edges/source_gid'][0] == 100)
-    assert (edges_h5['/edges/edge_group'][0] == 0)
-    assert (edges_h5['/edges/edge_type_id'][0] == 100)
-    assert (edges_h5['/edges/0/nsyns'][0] == 1)
+    assert (edges_h5['/edges/NET1_to_NET1/target_node_id'][0] == 0)
+    assert (edges_h5['/edges/NET1_to_NET1/source_node_id'][0] == 100)
+    assert (edges_h5['/edges/NET1_to_NET1/edge_group_index'][0] == 0)
+    assert (edges_h5['/edges/NET1_to_NET1/edge_type_id'][0] == 100)
+    assert (edges_h5['/edges/NET1_to_NET1/0/nsyns'][0] == 1)
 
-    assert (edges_h5['/edges/target_gid'][29999] == 199)
-    assert (edges_h5['/edges/source_gid'][29999] == 99)
-    assert (edges_h5['/edges/edge_group'][29999] == 0)
-    assert (edges_h5['/edges/edge_type_id'][29999] == 101)
-    assert (edges_h5['/edges/0/nsyns'][29999] == 2)
+    assert (edges_h5['/edges/NET1_to_NET1/target_node_id'][29999] == 199)
+    assert (edges_h5['/edges/NET1_to_NET1/source_node_id'][29999] == 99)
+    assert (edges_h5['/edges/NET1_to_NET1/edge_group_id'][29999] == 0)
+    assert (edges_h5['/edges/NET1_to_NET1/edge_type_id'][29999] == 101)
+    assert (edges_h5['/edges/NET1_to_NET1/0/nsyns'][29999] == 2)
 
-    try:
-        os.remove('tmp_nodes.h5')
-        os.remove('tmp_node_types.csv')
-        os.remove('tmp_edges.h5')
-        os.remove('tmp_edge_types.csv')
-    except:
-        pass
+    #try:
+    #    os.remove('tmp_nodes.h5')
+    #    os.remove('tmp_node_types.csv')
+    #    os.remove('tmp_edges.h5')
+    #    os.remove('tmp_edge_types.csv')
+    #except:
+    #    pass
 
 
 def test_save_weights():
@@ -185,27 +192,27 @@ def test_save_weights():
     net.add_edges(source=net.nodes(cell_type='Scnna1'), target=net.nodes(cell_type='PV1'),
                   connection_rule=lambda s, t: 2, p1='s2p')  # 100*100 = 20000'
 
-    #os.remove('tmp_edges.h5')
     net.build()
-    net.save_nodes('tmp_nodes.h5', 'tmp_node_types.csv')
-    net.save_edges('tmp_edges.h5', 'tmp_edge_types.csv')
+    net_dir = tempfile.mkdtemp()
+    net.save_nodes('tmp_nodes.h5', 'tmp_node_types.csv', output_dir=net_dir)
+    net.save_edges('tmp_edges.h5', 'tmp_edge_types.csv', output_dir=net_dir)
 
-    edges_h5 = h5py.File('tmp_edges.h5', 'r')
+    edges_h5 = h5py.File('{}/tmp_edges.h5'.format(net_dir), 'r')
     assert(net.nedges == 80000)
-    assert(len(edges_h5['/edges/0/distance']) == 60000)
-    assert(len(edges_h5['/edges/0/segment']) == 60000)
-    assert(len(edges_h5['/edges/1/nsyns']) == 10000)
-    assert(edges_h5['/edges/0/distance'][0] == 0.5)
-    assert(edges_h5['/edges/0/segment'][0] == 1)
-    assert(edges_h5['/edges/1/nsyns'][0] == 2)
+    assert(len(edges_h5['/edges/NET1_to_NET1/0/distance']) == 60000)
+    assert(len(edges_h5['/edges/NET1_to_NET1/0/segment']) == 60000)
+    assert(len(edges_h5['/edges/NET1_to_NET1/1/nsyns']) == 10000)
+    assert(edges_h5['/edges/NET1_to_NET1/0/distance'][0] == 0.5)
+    assert(edges_h5['/edges/NET1_to_NET1/0/segment'][0] == 1)
+    assert(edges_h5['/edges/NET1_to_NET1/1/nsyns'][0] == 2)
 
-    try:
-        os.remove('tmp_nodes.h5')
-        os.remove('tmp_node_types.csv')
-        os.remove('tmp_edges.h5')
-        os.remove('tmp_edge_types.csv')
-    except:
-        pass
+    #try:
+    #    os.remove('tmp_nodes.h5')
+    #    os.remove('tmp_node_types.csv')
+    #    os.remove('tmp_edges.h5')
+    #    os.remove('tmp_edge_types.csv')
+    #except:
+    #    pass
 
 
 def test_save_multinetwork():
@@ -222,53 +229,49 @@ def test_save_multinetwork():
                    ctype_2='n2_n1')
     net2.build()
 
-    net1.save_edges(output_dir='tmp_output')
-    net2.save_edges(output_dir='tmp_output')
+    net_dir = tempfile.mkdtemp()
+    net1.save_edges(output_dir=net_dir)
+    net2.save_edges(output_dir=net_dir)
 
-    n1_n1_fname = 'tmp_output/{}_{}'.format('NET1', 'NET1')
+    n1_n1_fname = '{}/{}_{}'.format(net_dir, 'NET1', 'NET1')
     edges_h5 = h5py.File(n1_n1_fname + '_edges.h5', 'r')
-    assert(len(edges_h5['/edges/target_gid']) == 100*100)
-    assert(len(edges_h5['/edges/0/nsyns']) == 100*100)
-    assert(edges_h5['/edges/0/nsyns'][0] == 5)
+    assert(len(edges_h5['/edges/NET1_to_NET1/target_node_id']) == 100*100)
+    assert(len(edges_h5['/edges/NET1_to_NET1/0/nsyns']) == 100*100)
+    assert(edges_h5['/edges/NET1_to_NET1/0/nsyns'][0] == 5)
     edge_types_csv = pd.read_csv(n1_n1_fname + '_edge_types.csv', sep=' ')
     assert(len(edge_types_csv) == 1)
     assert('ctype_2' not in edge_types_csv.columns.values)
     assert(edge_types_csv['ctype_1'].iloc[0] == 'n1_rec')
 
-    n1_n2_fname = 'tmp_output/{}_{}'.format('NET1', 'NET2')
+    n1_n2_fname = '{}/{}_{}'.format(net_dir, 'NET1', 'NET2')
     edges_h5 = h5py.File(n1_n2_fname + '_edges.h5', 'r')
-    assert(len(edges_h5['/edges/target_gid']) == 100*10)
-    assert(len(edges_h5['/edges/0/nsyns']) == 100*10)
-    assert(edges_h5['/edges/0/nsyns'][0] == 1)
+    assert(len(edges_h5['/edges/NET1_to_NET2/target_node_id']) == 100*10)
+    assert(len(edges_h5['/edges/NET1_to_NET2/0/nsyns']) == 100*10)
+    assert(edges_h5['/edges/NET1_to_NET2/0/nsyns'][0] == 1)
     edge_types_csv = pd.read_csv(n1_n2_fname + '_edge_types.csv', sep=' ')
     assert(len(edge_types_csv) == 1)
     assert('ctype_1' not in edge_types_csv.columns.values)
     assert(edge_types_csv['ctype_2'].iloc[0] == 'n1_n2')
 
-    n2_n1_fname = 'tmp_output/{}_{}'.format('NET2', 'NET1')
+    n2_n1_fname = '{}/{}_{}'.format(net_dir, 'NET2', 'NET1')
     edges_h5 = h5py.File(n2_n1_fname + '_edges.h5', 'r')
-    assert(len(edges_h5['/edges/target_gid']) == 100*10)
-    assert(len(edges_h5['/edges/0/nsyns']) == 100*10)
-    assert(edges_h5['/edges/0/nsyns'][0] == 2)
+    assert(len(edges_h5['/edges/NET2_to_NET1/target_node_id']) == 100*10)
+    assert(len(edges_h5['/edges/NET2_to_NET1/0/nsyns']) == 100*10)
+    assert(edges_h5['/edges/NET2_to_NET1/0/nsyns'][0] == 2)
     edge_types_csv = pd.read_csv(n2_n1_fname + '_edge_types.csv', sep=' ')
     assert(len(edge_types_csv) == 1)
     assert('ctype_1' not in edge_types_csv.columns.values)
     assert(edge_types_csv['ctype_2'].iloc[0] == 'n2_n1')
 
-    n2_n2_fname = 'tmp_output/{}_{}'.format('NET2', 'NET2')
+    n2_n2_fname = '{}/{}_{}'.format(net_dir, 'NET2', 'NET2')
     edges_h5 = h5py.File(n2_n2_fname + '_edges.h5', 'r')
-    assert(len(edges_h5['/edges/target_gid']) == 10*10)
-    assert(len(edges_h5['/edges/0/nsyns']) == 10*10)
-    assert(edges_h5['/edges/0/nsyns'][0] == 10)
+    assert(len(edges_h5['/edges/NET2_to_NET2/target_node_id']) == 10*10)
+    assert(len(edges_h5['/edges/NET2_to_NET2/0/nsyns']) == 10*10)
+    assert(edges_h5['/edges/NET2_to_NET2/0/nsyns'][0] == 10)
     edge_types_csv = pd.read_csv(n2_n2_fname + '_edge_types.csv', sep=' ')
     assert(len(edge_types_csv) == 1)
     assert('ctype_2' not in edge_types_csv.columns.values)
     assert(edge_types_csv['ctype_1'].iloc[0] == 'n2_rec')
-
-    try:
-        shutil.rmtree('tmp_output')
-    except:
-        pass
 
 
 def test_save_multinetwork_1():
@@ -284,18 +287,21 @@ def test_save_multinetwork_1():
     net2.add_edges(target=net1.nodes(cell_type='Scnna1'), source={'cell_type': 'PV1'}, connection_rule=2,
                    ctype_2='n2_n1')
     net2.build()
+    net_dir = tempfile.mkdtemp()
     net2.save_edges(edges_file_name='NET2_NET1_edges.h5', edge_types_file_name='NET2_NET1_edge_types.csv',
-                    output_dir='tmp_output', src_network='NET2')
+                    output_dir=net_dir, src_network='NET2')
 
-    n1_n2_fname = 'tmp_output/{}_{}'.format('NET2', 'NET1')
+    n1_n2_fname = '{}/{}_{}'.format(net_dir, 'NET2', 'NET1')
     edges_h5 = h5py.File(n1_n2_fname + '_edges.h5', 'r')
-    assert(len(edges_h5['/edges/target_gid']) == 100*10)
-    assert(len(edges_h5['/edges/0/nsyns']) == 100*10)
-    assert(edges_h5['/edges/0/nsyns'][0] == 2)
+    assert(len(edges_h5['/edges/NET2_to_NET1/target_node_id']) == 100*10)
+    assert(len(edges_h5['/edges/NET2_to_NET1/0/nsyns']) == 100*10)
+    assert(edges_h5['/edges/NET2_to_NET1/0/nsyns'][0] == 2)
     edge_types_csv = pd.read_csv(n1_n2_fname + '_edge_types.csv', sep=' ')
     assert(len(edge_types_csv) == 1)
     assert('ctype_1' not in edge_types_csv.columns.values)
     assert(edge_types_csv['ctype_2'].iloc[0] == 'n2_n1')
 
 
-# test_save_multinetwork_1()
+if __name__ == '__main__':
+    test_save_weights()
+    # test_save_multinetwork_1()

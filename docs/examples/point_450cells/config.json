@@ -19,22 +19,15 @@
       "input_type": "spikes",
       "module": "nwb",
       "input_file": "$INPUT_DIR/lgn_spikes.nwb",
-      "node_set": "lgn",
-      "trial": "trial_0"
-    },
-    "TW_spikes": {
-      "input_type": "spikes",
-      "module": "nwb",
-      "input_file": "$INPUT_DIR/tw_spikes.nwb",
-      "node_set": "tw",
+      "node_set": "external",
       "trial": "trial_0"
     }
   },
 
   "output": {
-	"log_file": "$OUTPUT_DIR/log.txt",
-	"spikes_file": "$OUTPUT_DIR/spikes.h5",
-    "spikes_file_csv": "$OUTPUT_DIR/spikes.csv",
+	"log_file": "log.txt",
+	"spikes_file": "spikes.h5",
+    "spikes_file_csv": "spikes.csv",
 	"output_dir": "$OUTPUT_DIR",
     "overwrite_output_dir": true
   },
@@ -51,30 +44,23 @@
   "networks": {
     "nodes": [
       {
-        "nodes_file": "$NETWORK_DIR/v1_nodes.h5",
-        "node_types_file": "$NETWORK_DIR/v1_node_types.csv"
+        "nodes_file": "$NETWORK_DIR/internal_nodes.h5",
+        "node_types_file": "$NETWORK_DIR/internal_node_types.csv"
       },
       {
-        "nodes_file": "$NETWORK_DIR/lgn_nodes.h5",
-        "node_types_file": "$NETWORK_DIR/lgn_node_types.csv"
-      },
-      {
-        "nodes_file": "$NETWORK_DIR/tw_nodes.h5",
-        "node_types_file":  "$NETWORK_DIR/tw_node_types.csv"
+        "nodes_file": "$NETWORK_DIR/external_nodes.h5",
+        "node_types_file": "$NETWORK_DIR/external_node_types.csv"
       }
     ],
     "edges": [
       {
-        "edges_file": "$NETWORK_DIR/v1_v1_edges.h5",
-        "edge_types_file": "$NETWORK_DIR/v1_v1_edge_types.csv"
+        "edges_file": "$NETWORK_DIR/internal_internal_edges.h5",
+        "edge_types_file": "$NETWORK_DIR/internal_internal_edge_types.csv",
+        "enabled": true
       },
       {
-        "edges_file": "$NETWORK_DIR/lgn_v1_edges.h5",
-        "edge_types_file": "$NETWORK_DIR/lgn_v1_edge_types.csv"
-      },
-      {
-        "edges_file": "$NETWORK_DIR/tw_v1_edges.h5",
-        "edge_types_file": "$NETWORK_DIR/tw_v1_edge_types.csv"
+        "edges_file": "$NETWORK_DIR/external_internal_edges.h5",
+        "edge_types_file": "$NETWORK_DIR/external_internal_edge_types.csv"
       }
     ]
   }
