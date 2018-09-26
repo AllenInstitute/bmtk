@@ -8,16 +8,16 @@ def test_node_set():
     node_set = NodeSet(N=100,
                        node_params={'p1': range(100), 'p2': range(0, 1000, 100)},
                        node_type_properties={'prop1': 'prop1', 'node_type_id': 1})
-    print node_set.N
-    print node_set.node_type_id
-    print node_set.params_keys
+    print(node_set.N)
+    print(node_set.node_type_id)
+    print(node_set.params_keys)
 
     nodes = node_set.build(generator)
-    print len(nodes) == 100
-    print nodes[1]['p1'] == 1
-    print nodes[1]['p2'] == 100
-    print nodes[1]['prop1'] == 'prop1'
-    print nodes[1]['node_type_id'] == 1
+    print(len(nodes) == 100)
+    print(nodes[1]['p1'] == 1)
+    print(nodes[1]['p2'] == 100)
+    print(nodes[1]['prop1'] == 'prop1')
+    print(nodes[1]['node_type_id'] == 1)
 
 
 def test_set_hash():
