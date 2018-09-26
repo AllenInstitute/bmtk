@@ -427,7 +427,6 @@ if __name__ == '__main__':
         }
 
     target_sim = args[0].lower() if len(args) == 1 else None
-    print target_sim
     if target_sim not in ['bionet', 'popnet', 'pointnet', 'mintnet']:
         raise Exception('Must specify one target simulator. options: "bionet", pointnet", "popnet" or "mintnet"')
 
