@@ -1,7 +1,11 @@
+from six import string_types
+
 from bmtk.simulator.core.io_tools import io
-from bmtk.simulator.core.config import ConfigDict
+#from bmtk.simulator.core.config import ConfigDict
+from bmtk.simulator.utils.config import ConfigDict
 from bmtk.simulator.core.node_sets import NodeSet, NodeSetAll
 from bmtk.simulator.core import sonata_reader
+
 
 class SimNetwork(object):
     def __init__(self):
@@ -65,7 +69,7 @@ class SimNetwork(object):
         self._node_sets[name] = node_set
 
     def get_node_set(self, node_set):
-        if node_set in self._node_sets.keys():
+        if isinstance(node_set, string_types) and node_set in self._node_sets:
             return self._node_sets[node_set]
 
         elif isinstance(node_set, (dict, list)):
@@ -90,8 +94,6 @@ class SimNetwork(object):
 
         # Used in inputs/reports when needed to get all gids belonging to a node population
         self._node_sets[pop_name] = NodeSet({'population': pop_name}, self)
-
-
 
     def add_edges(self, edge_population):
         edge_population.initialize(self)
@@ -171,6 +173,9 @@ class SimNetwork(object):
         # load edges
         edge_adaptor = network.get_edge_adaptor('sonata')
         for edge_dict in config.edges:
+            if not edge_dict.get('enabled', True):
+                continue
+
             edges = sonata_reader.load_edges(edge_dict['edges_file'], edge_dict['edge_types_file'],
                                              adaptor=edge_adaptor)
             for edge_pop in edges:
@@ -178,7 +183,7 @@ class SimNetwork(object):
 
         # Add nodeset section
         network.add_node_set('all', NodeSetAll(network))
-        for ns_name, ns_filter in conf.node_sets.items():
+        for ns_name, ns_filter in config.node_sets.items():
             network.add_node_set(ns_name, NodeSet(ns_filter, network))
 
         return network

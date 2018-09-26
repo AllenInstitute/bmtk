@@ -42,13 +42,18 @@ class SpikesMod(SimulatorMod):
 
     def __init__(self, tmp_dir, spikes_file_csv=None, spikes_file=None, spikes_file_nwb=None, spikes_sort_order=None):
         # TODO: Have option to turn off caching spikes to csv.
-        self._csv_fname = spikes_file_csv
+        def _file_path(file_name):
+            if file_name is None:
+                return None
+            return file_name if os.path.isabs(file_name) else os.path.join(tmp_dir, file_name)
+
+        self._csv_fname = _file_path(spikes_file_csv)
         self._save_csv = spikes_file_csv is not None
 
-        self._h5_fname = spikes_file
+        self._h5_fname = _file_path(spikes_file)
         self._save_h5 = spikes_file is not None
 
-        self._nwb_fname = spikes_file_nwb
+        self._nwb_fname = _file_path(spikes_file_nwb)
         self._save_nwb = spikes_file_nwb is not None
 
         self._tmpdir = tmp_dir

@@ -3,25 +3,41 @@ import numpy as np
 
 
 class CellVarsFile(object):
+    VAR_UNKNOWN = 'Unknown'
+    UNITS_UNKNOWN = 'NA'
+
     def __init__(self, filename, mode='r', **params):
         self._h5_handle = h5py.File(filename, 'r')
         self._h5_root = self._h5_handle[params['h5_root']] if 'h5_root' in params else self._h5_handle['/']
         self._var_data = {}
+        self._var_units = {}
+
         self._mapping = None
 
         # Look for variabl and mapping groups
         for var_name in self._h5_root.keys():
             hf_grp = self._h5_root[var_name]
+
+            if var_name == 'data':
+                # According to the sonata format the /data table should be located at the root
+                var_name = self._h5_root['data'].attrs.get('variable_name', CellVarsFile.VAR_UNKNOWN)
+                self._var_data[var_name] = self._h5_root['data']
+                self._var_units[var_name] = self._find_units(self._h5_root['data'])
+
             if not isinstance(hf_grp, h5py.Group):
                 continue
 
             if var_name == 'mapping':
+                # Check for /mapping group
                 self._mapping = hf_grp
             else:
+                # In the bmtk we can support multiple variables in the same file (not sonata compliant but should be)
+                # where each variable table is separated into its own group /<var_name>/data
                 if 'data' not in hf_grp:
                     print('Warning: could not find "data" dataset in {}. Skipping!'.format(var_name))
                 else:
                     self._var_data[var_name] = hf_grp['data']
+                    self._var_units[var_name] = self._find_units(hf_grp['data'])
 
         # create map between gids and tables
         self._gid2data_table = {}
@@ -67,6 +83,12 @@ class CellVarsFile(object):
     def h5(self):
         return self._h5_root
 
+    def _find_units(self, data_set):
+        return data_set.attrs.get('units', CellVarsFile.UNITS_UNKNOWN)
+
+    def units(self, var_name=VAR_UNKNOWN):
+        return self._var_units[var_name]
+
     def n_compartments(self, gid):
         bounds = self._gid2data_table[gid]
         return bounds[1] - bounds[0]
@@ -79,7 +101,7 @@ class CellVarsFile(object):
         bounds = self._gid2data_table[gid]
         return self._mapping['element_pos'][bounds[0]:bounds[1]]
 
-    def data(self, var_name, gid, time_window=None, compartments='origin'):
+    def data(self, gid, var_name=VAR_UNKNOWN,time_window=None, compartments='origin'):
         if var_name not in self.variables:
             raise Exception('Unknown variable {}'.format(var_name))
 

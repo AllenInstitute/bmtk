@@ -22,6 +22,7 @@
 #
 import threading
 import numpy as np
+import six
 
 
 
@@ -40,7 +41,7 @@ class IDGenerator(object):
         self.__lock = threading.Lock()
 
     def remove_id(self, gid):
-        assert isinstance(gid, np.integer)
+        assert(np.issubdtype(type(gid), np.integer))
         if gid >= self.__counter:
             self.__taken.add(gid)
 
@@ -66,5 +67,5 @@ class IDGenerator(object):
             N = args['N']
 
         assert(isinstance(N, (int, long)))
-        return [self.next() for _ in xrange(N)]
+        return [self.next() for _ in six.moves.range(N)]
 

@@ -223,11 +223,11 @@ class PopNetwork (object):
         if duration is None:
             duration = self.duration
 
-        print "running simulation..."
+        print("running simulation...")
         self._dipde_network.run(t0=0.0, tf=duration, dt=self.dt)
         # TODO: make record_rates optional?
         self.__record_rates()
-        print "done simulation."
+        print("done simulation.")
 
     def __create_internal_pop(self, params):
         # TODO: use getter methods directly in case arguments are not stored in dynamics params

@@ -86,6 +86,7 @@ def test_synapse_model_decorator():
     py_modules.clear()
 
 
+@pytest.mark.skip()
 def test_cell_model():
     def hoc1():
         return "hoc"
@@ -107,6 +108,7 @@ def test_cell_model():
     assert(hoc_fnc(1.0) == 1.0)
 
 
+@pytest.mark.skip()
 def test_cell_model_decorator():
     @cell_model
     def hoc1():
@@ -127,6 +129,7 @@ def test_cell_model_decorator():
     assert(hoc_fnc(1.0) == 1.0)
 
 
+@pytest.mark.skip()
 def test_load_py_modules():
     import set_weights
     import set_syn_params

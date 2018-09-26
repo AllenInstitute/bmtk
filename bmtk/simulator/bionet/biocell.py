@@ -23,6 +23,7 @@
 import numpy as np
 from bmtk.simulator.bionet import utils, nrn
 from bmtk.simulator.bionet.cell import Cell
+import six
 
 from neuron import h
 
@@ -80,18 +81,23 @@ class BioCell(Cell):
             self._nseg += sec.nseg # get the total number of segments in the cell
 
     def calc_seg_coords(self, morph_seg_coords):
-        """Calculate segment coordinates for individual cells"""
+        """Update the segment coordinates (after rotations) for individual cells"""
         phi_y = self._node.rotation_angle_yaxis
         phi_z = self._node.rotation_angle_zaxis
+        phi_x = self._node.rotation_angle_xaxis
 
+        # Rotate cell
+        # TODO: Rotations should follow as described in sonata (https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md).
+        #  Need someone with graphics experience to check they are being done correctly (I'm not sure atm).
+        RotX = utils.rotation_matrix([1, 0, 0], phi_x)
         RotY = utils.rotation_matrix([0, 1, 0], phi_y)  # rotate segments around yaxis normal to pia
-        RotZ = utils.rotation_matrix([0, 0, 1], -phi_z) # rotate segments around zaxis to get a proper orientation
-        RotYZ = RotY.dot(RotZ)
+        RotZ = utils.rotation_matrix([0, 0, 1], -phi_z)  # rotate segments around zaxis to get a proper orientation
+        RotXYZ = np.dot(RotX, RotY.dot(RotZ))
 
         # rotated coordinates around z axis first then shift relative to the soma
-        self._seg_coords['p0'] = self._pos_soma + np.dot(RotYZ, morph_seg_coords['p0'])
-        self._seg_coords['p1'] = self._pos_soma + np.dot(RotYZ, morph_seg_coords['p1'])
-        self._seg_coords['p05'] = self._pos_soma + np.dot(RotYZ, morph_seg_coords['p05'])
+        self._seg_coords['p0'] = self._pos_soma + np.dot(RotXYZ, morph_seg_coords['p0'])
+        self._seg_coords['p1'] = self._pos_soma + np.dot(RotXYZ, morph_seg_coords['p1'])
+        self._seg_coords['p05'] = self._pos_soma + np.dot(RotXYZ, morph_seg_coords['p05'])
 
     def get_seg_coords(self):
         return self._seg_coords
@@ -135,7 +141,6 @@ class BioCell(Cell):
         """Arrange sections in an array to be access by index"""
         secs = []  # build ref to sections
         self._secs_by_id = []
-        # TODO: We should calculate and save sections in the morphology object since they should be the same.
         for sec in self.hobj.all:
             self._secs_by_id.append(sec)
             for _ in sec:
@@ -156,7 +161,7 @@ class BioCell(Cell):
         sec_x = edge_prop['sec_x']
         sec_id = edge_prop['sec_id']
         section = self._secs_by_id[sec_id]
-        #section = self._secs[sec_id]
+        # section = self._secs[sec_id]
         delay = edge_prop['delay']
         synapse_fnc = nrn.py_modules.synapse_model(edge_prop['model_template'])
         syn = synapse_fnc(edge_prop['dynamics_params'], sec_x, section)
@@ -265,7 +270,9 @@ class BioCell(Cell):
     def get_im(self):
         """Gather membrane currents from PtrVector into imVec (does not need a loop!)"""
         self.im_ptr.gather(self.imVec)
-        return self.imVec.as_numpy()  # (nA)
+        # Warning: as_numpy() seems to fail with in neuron 7.4 for python 3
+        # return self.imVec.as_numpy()  # (nA)
+        return np.array(self.imVec)
 
     def set_ptr2e_extracellular(self):
         jseg = 0
@@ -279,7 +286,7 @@ class BioCell(Cell):
 
     def print_synapses(self):
         rstr = ''
-        for i in xrange(len(self._syn_src_gid)):
+        for i in six.moves.range(len(self._syn_src_gid)):
             rstr += '{}> <-- {} ({}, {}, {}, {})\n'.format(i, self._syn_src_gid[i], self.netcons[i].weight[0],
                                                            self.netcons[i].delay, self._syn_seg_ix[i],
                                                            self._syn_sec_x[i])

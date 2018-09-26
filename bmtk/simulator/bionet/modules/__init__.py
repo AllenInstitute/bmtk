@@ -20,8 +20,8 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-from ecp import EcpMod
-from record_cellvars import MembraneReport, SomaReport
-from record_spikes import SpikesMod
-from xstim import XStimMod
-from save_synapses import SaveSynapses
+from .ecp import EcpMod
+from .record_cellvars import MembraneReport, SomaReport
+from .record_spikes import SpikesMod
+from .xstim import XStimMod
+from .save_synapses import SaveSynapses

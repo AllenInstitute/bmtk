@@ -88,11 +88,19 @@ class MembraneReport(SimReport, object):
         if self.params['transform'] and not isinstance(self.params['transform'], dict):
             self.params['transform'] = {var_name: self.params['transform'] for var_name in self.variables}
 
-
     def _get_defaults(self):
-        tmp_dir = os.path.dirname(os.path.realpath(self.params['file_name'])) if 'file_name' in self.params else \
-            self.default_dir
-        file_name = os.path.join(tmp_dir, 'cell_vars.h5')
+        # directory for saving temporary files created during simulation
+        tmp_dir = self.default_dir
+
+        # Find the report file name. Either look for "file_name" parameter, or else it is <report-name>.h5
+        if 'file_name' in self.params:
+            file_name = self.params['file_name']
+        elif self.report_name.endswith('.h5') or self.report_name.endswith('.hdf') \
+                or self.report_name.endswith('.hdf5'):
+            file_name = self.report_name  # Check for case report.h5.h5
+        else:
+            file_name = '{}.h5'.format(self.report_name)
+
         return [('cells', 'biophysical'), ('sections', 'all'), ('tmp_dir', tmp_dir), ('file_name', file_name),
                 ('buffer', True), ('transform', {})]
 
@@ -105,8 +113,6 @@ class MembraneReport(SimReport, object):
             return self.params.get(key, None) == other.params.get(key, None)
 
         return param_eq('cells') and param_eq('sections') and param_eq('file_name') and param_eq('buffer')
-        #return self.cells == other.cells and self.sections == other.sections and self.file_name == other.file_name and \
-        #       self.buffer == other.buffer
 
     @staticmethod
     def avail_modules():
@@ -186,10 +192,16 @@ class ECPReport(SimReport):
         return 'extracellular'
 
     def _get_defaults(self):
-        tmp_dir = os.path.dirname(os.path.realpath(self.params['ecp_file'])) if 'ecp_file' in self.params else \
-            self.default_dir
-        file_name = os.path.join(tmp_dir, 'ecp.h5')
-        return [('tmp_dir', tmp_dir), ('ecp_file', file_name)]
+        if 'file_name' in self.params:
+            file_name = self.params['file_name']
+        elif self.report_name.endswith('.h5') or self.report_name.endswith('.hdf') \
+                or self.report_name.endswith('.hdf5'):
+            file_name = self.report_name  # Check for case report.h5.h5
+        else:
+            file_name = '{}.h5'.format(self.report_name)
+
+        return [('tmp_dir', self.default_dir), ('file_name', file_name),
+                ('contributions_dir', os.path.join(self.default_dir, 'ecp_contributions'))]
 
     @classmethod
     def build(cls, name, params):
@@ -217,6 +229,15 @@ class SaveSynapses(SimReport):
         return 'SaveSynapses'
 
 
+@SimReport.register_module
+class MultimeterReport(MembraneReport):
+
+    @staticmethod
+    def avail_modules():
+        return ['multimeter', 'multimeter_report']
+
+
+
 def from_config(cfg):
     SimReport.default_dir = cfg.output_dir
 
@@ -230,21 +251,6 @@ def from_config(cfg):
             continue
 
         report = SimReport.build(report_name, report_params)
-
-        '''
-        print report_params
-        if 'module' not in report_params:
-            raise Exception('module not specified in report {}.'.format(report_name))
-
-        module = report_params['module']
-        report = module_lookup.get(module, SimReport).build(report_name, report_params)
-        if report is None:
-            print('Warning. Report module {} not implemented yet. Skipping'.format(module))
-            continue
-
-        # keep track of an explicitly defined Spike Report
-        has_spikes_report = has_spikes_report or isinstance(report, SpikesReport)
-        '''
 
         if isinstance(report, MembraneReport):
             # When possible for membrane reports combine multiple reports into one module if all the parameters

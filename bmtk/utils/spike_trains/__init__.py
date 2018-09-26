@@ -20,6 +20,5 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-from spikes_csv import SpikesGenerator
-
+from .spikes_csv import SpikesGenerator
 from .spikes_file import SpikesFile

@@ -21,6 +21,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import os
+from six import string_types
 import h5py
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -30,7 +31,7 @@ import bmtk.simulator.utils.config as cfg
 
 
 def _get_config(config):
-    if isinstance(config, basestring):
+    if isinstance(config, string_types):
         return cfg.from_json(config)
     elif isinstance(config, dict):
         return config
@@ -47,7 +48,7 @@ def plot_potential(cell_vars_h5=None, config_file=None, gids=None, show_plot=Tru
 
     else:
         # load the json file or object
-        if isinstance(config_file, basestring):
+        if isinstance(config_file, string_types):
             config = cfg.from_json(config_file)
         elif isinstance(config_file, dict):
             config = config_file
@@ -64,7 +65,7 @@ def plot_potential(cell_vars_h5=None, config_file=None, gids=None, show_plot=Tru
 
 def plot_potential_hdf5(cell_vars_h5, gids, title='membrane potential', show_plot=True, save_as=None):
     data_h5 = h5py.File(cell_vars_h5, 'r')
-    membrane_trace = data_h5['v/data']
+    membrane_trace = data_h5['data']
 
     time_ds = data_h5['/mapping/time']
     tstart = time_ds[0]
@@ -100,7 +101,7 @@ def plot_calcium(cell_vars_h5=None, config_file=None, gids=None, show_plot=True,
 
     else:
         # load the json file or object
-        if isinstance(config_file, basestring):
+        if isinstance(config_file, string_types):
             config = cfg.from_json(config_file)
         elif isinstance(config_file, dict):
             config = config_file

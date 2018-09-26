@@ -26,7 +26,7 @@ column_renames = {
     'model_id': 'node_type_id',
     'electrophysiology': 'dynamics_params',
     'level_of_detail': 'model_type',
-    'morphology': 'morphology_file',
+    'morphology': 'morphology',
     'params_file': 'dynamics_params',
     'x_soma': 'x',
     'y_soma': 'y',
@@ -36,7 +36,7 @@ column_renames = {
 
 def update_h5_nodes(nodes_file, node_types_file, network_name, output_dir='output',
                     column_order=('node_type_id', 'model_type', 'model_template', 'model_processing', 'dynamics_params',
-                                  'morphology_file')):
+                                  'morphology')):
     # open nodes and node-types into a single table
     input_h5 = h5py.File(nodes_file, 'r')
 
@@ -228,7 +228,7 @@ def update_h5_nodes(nodes_file, node_types_file, network_name, output_dir='outpu
 
 def update_csv_nodes(nodes_file, node_types_file, network_name, output_dir='network',
                      column_order=('node_type_id', 'model_type', 'model_template', 'model_processing',
-                                   'dynamics_params', 'morphology_file')):
+                                   'dynamics_params', 'morphology')):
     # open nodes and node-types into a single table
     print('loading csv files')
     nodes_tmp = pd.read_csv(nodes_file, sep=' ')

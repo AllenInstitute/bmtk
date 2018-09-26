@@ -73,7 +73,7 @@ class NaturalScenes (object):
 
             image_dir = '/Users/michaelbu/Data/Images/CAM_Images.icns'
             if not os.path.exists(image_dir):
-                print "Detected platform:  OS X.  I'm assuming you've mounted \\\\aibsdata\\mat at /Volumes/mat/"
+                print("Detected platform:  OS X.  I'm assuming you've mounted \\\\aibsdata\\mat at /Volumes/mat/")
                 image_dir = '/Volumes/mat/iSee_temp_shared/CAM_Images.icns'
 
 
@@ -114,7 +114,7 @@ class NaturalScenes (object):
             try:
                 im_data = Image.open(os.path.join(new_ns.image_dir,im))
             except IOError:
-                print "Skipping file:  ", im
+                print("Skipping file:  ", im)
                 new_ns.im_list.remove(im)
 
             im_data = im_data.convert(new_ns.mode)
@@ -160,7 +160,7 @@ class NaturalScenes (object):
             try:
                 im_data = Image.open(os.path.join(image_path,im))
             except IOError:
-                print "Skipping file:  ", im
+                print("Skipping file:  ", im)
                 new_ns.im_list.remove(im)
 
             im_data = im_data.convert(new_ns.mode)
@@ -204,7 +204,7 @@ class NaturalScenes (object):
                 try:
                     im_data = Image.open(os.path.join(path,f))
                 except IOError:
-                    print "Skipping file:  ", f
+                    print("Skipping file:  ", f)
                     im_data = None
 
                 if im_data is not None:
@@ -321,7 +321,7 @@ class NaturalScenes (object):
             try:
                 im = np.load(os.path.join(folder,im_file))
             except IOError:
-                print "skipping file:  ", im_file
+                print("skipping file:  ", im_file)
                 im = None
 
             if im is not None:

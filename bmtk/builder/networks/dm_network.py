@@ -23,6 +23,7 @@
 import os
 import numpy as np
 import h5py
+import six
 import csv
 
 from ..network import Network
@@ -103,7 +104,11 @@ class DenseNetwork(Network):
             for key, prop_ds in group_dict.items():
                 prop_ds.append(node.params[key])
 
+        # TODO: open in append mode
         with h5py.File(nodes_file_name, 'w') as hf:
+            # Add magic and version attribute
+            add_hdf5_attrs(hf)
+
             pop_grp = hf.create_group('/nodes/{}'.format(self.name))
             pop_grp.create_dataset('node_id', data=node_gid_table, dtype='uint64')
             pop_grp.create_dataset('node_type_id', data=node_type_id_table, dtype='uint64')
@@ -307,6 +312,7 @@ class DenseNetwork(Network):
 
         index_ptrs[index_ptr_itr] = gid_indx
         with h5py.File(edges_file_name, 'w') as hf:
+            add_hdf5_attrs(hf)
             pop_grp = hf.create_group('/edges/{}'.format(pop_name))
             pop_grp.create_dataset('target_node_id', data=trg_gids, dtype='uint64')
             pop_grp['target_node_id'].attrs['node_population'] = trg_network
@@ -341,7 +347,7 @@ class DenseNetwork(Network):
 
         edge_nodes = np.append(edge_nodes, [-1])
         n_targets = np.max(edge_nodes)
-        ranges_list = [[] for _ in xrange(n_targets + 1)]
+        ranges_list = [[] for _ in six.moves.range(n_targets + 1)]
 
         n_ranges = 0
         begin_index = 0
@@ -475,3 +481,7 @@ class DenseNetwork(Network):
             return self._prop_array[indicies]
 
 
+def add_hdf5_attrs(hdf5_handle):
+    # TODO: move this as a utility function
+    hdf5_handle['/'].attrs['magic'] = np.uint32(0x0A7A)
+    hdf5_handle['/'].attrs['version'] = [np.uint32(0), np.uint32(1)]

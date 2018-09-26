@@ -38,9 +38,15 @@ class SpikesMod(object):
     """
 
     def __init__(self, tmp_dir, spikes_file_csv=None, spikes_file=None, spikes_file_nwb=None, spikes_sort_order=None):
-        self._csv_fname = spikes_file_csv
-        self._h5_fname = spikes_file
-        self._nwb_fname = spikes_file_nwb
+        def _get_path(file_name):
+            # Unless file-name is an absolute path then it should be placed in the $OUTPUT_DIR
+            if file_name is None:
+                return None
+            return file_name if os.path.isabs(file_name) else os.path.join(tmp_dir, file_name)
+
+        self._csv_fname = _get_path(spikes_file_csv)
+        self._h5_fname = _get_path(spikes_file)
+        self._nwb_fname = _get_path(spikes_file_nwb)
 
         self._tmp_dir = tmp_dir
         self._tmp_file_base = 'tmp_spike_times'
@@ -59,7 +65,7 @@ class SpikesMod(object):
                                                                  'withgid': True, 'to_file': True})
 
         for pop_name, pop in sim._graph._nestid2nodeid_map.items():
-            nest.Connect(pop.keys(), self._spike_detector)
+            nest.Connect(list(pop.keys()), self._spike_detector)
 
     def finalize(self, sim):
         if MPI_RANK == 0:

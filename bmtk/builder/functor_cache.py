@@ -20,6 +20,7 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+from six import string_types
 import functools
 
 
@@ -31,7 +32,7 @@ class FunctorCache(object):
         if params is None:
             params = {}
 
-        if isinstance(connector, basestring):
+        if isinstance(connector, string_types):
             # TODO: don't do this, a user may want to return a string in connection_map params
             func = self.cache[connector]
             return functools.partial(func, **params)

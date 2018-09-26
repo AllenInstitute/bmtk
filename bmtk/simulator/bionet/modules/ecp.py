@@ -28,6 +28,7 @@ from neuron import h
 import numpy as np
 
 from bmtk.simulator.bionet.modules.sim_module import SimulatorMod
+from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
 
 
 pc = h.ParallelContext()
@@ -36,12 +37,12 @@ N_HOSTS = int(pc.nhost())
 
 
 class EcpMod(SimulatorMod):
-    def __init__(self, tmp_dir, ecp_file, electrode_positions, contributions_dir, cells=[], variable_name='v',
+    def __init__(self, tmp_dir, file_name, electrode_positions, contributions_dir, cells=[], variable_name='v',
                  electrode_channels=None):
-        self._ecp_output = ecp_file
+        self._ecp_output = file_name if os.path.isabs(file_name) else os.path.join(tmp_dir, file_name)
         self._positions_file = electrode_positions
         self._tmp_outputdir = tmp_dir
-        self._contributions_dir = contributions_dir
+        self._contributions_dir = contributions_dir if os.path.isabs(contributions_dir) else os.path.join(tmp_dir, contributions_dir)
         self._cells = cells
         self._rel = None
         self._fih1 = None
@@ -80,6 +81,8 @@ class EcpMod(SimulatorMod):
         # only the primary node will need to save the final ecp
         if MPI_RANK == 0:
             with h5py.File(self._ecp_output, 'w') as f5:
+                add_hdf5_magic(f5)
+                add_hdf5_version(f5)
                 f5.create_dataset('data', (self._nsteps, self._rel_nsites), maxshape=(None, self._rel_nsites),
                                   chunks=True)
                 f5.attrs['dt'] = dt
@@ -131,7 +134,7 @@ class EcpMod(SimulatorMod):
         if remain != 0:
             ivals.append(self._nsteps)
 
-        for rank in xrange(N_HOSTS):  # iterate over the ranks
+        for rank in range(N_HOSTS):  # iterate over the ranks
             if rank == MPI_RANK:  # wait until finished with a particular rank
                 with h5py.File(self._ecp_output, 'a') as ecp_f5:
                     for i in range(len(ivals)-1):
@@ -225,7 +228,8 @@ class RecXElectrode(object):
 
         # convert coordinates to ndarray, The first index is xyz and the second is the channel number
         el_df = pd.read_csv(electrode_file, sep=' ')
-        self.pos = el_df.as_matrix(columns=['x_pos', 'y_pos', 'z_pos']).T
+        self.pos = el_df[['x_pos', 'y_pos', 'z_pos']].T.values
+        #self.pos = el_df.as_matrix(columns=['x_pos', 'y_pos', 'z_pos']).T
         self.nsites = self.pos.shape[1]
         # self.conf['run']['nsites'] = self.nsites  # add to the config
         self.transfer_resistances = {}  # V_e = transfer_resistance*Im
@@ -248,7 +252,7 @@ class RecXElectrode(object):
 
         tr = np.zeros((self.nsites, nseg))
 
-        for j in xrange(self.nsites):  # calculate mapping for each site on the electrode
+        for j in range(self.nsites):  # calculate mapping for each site on the electrode
             rel = np.expand_dims(self.pos[:, j], axis=1)  # coordinates of a j-th site on the electrode
             rel_05 = rel - r05  # distance between electrode and segment centers
 
