@@ -1,0 +1,94 @@
+dist: trusty
+sudo: false  
+
+
+addons:
+  apt:
+    packages:
+    - python-numpy 
+    - python-h5py
+    - python-pandas
+    - python-jsonschema
+    - python-mpi4py
+    - python-matplotlib
+    - python-tk
+    
+language: python
+
+python: 
+  - "2.7"
+  #- "3.2"
+
+virtualenv:
+    system_site_packages: true
+
+install:
+    
+  # Install BMTK
+  - python setup.py install 
+  
+  # Get latest Pandas
+  - pip install pandas --upgrade 
+  
+  # Install OMV: framework for running automated tests on OSB using Travis-CI, see https://github.com/OpenSourceBrain/osb-model-validation
+  - pip install git+https://github.com/OpenSourceBrain/osb-model-validation
+
+script:  
+  
+  
+  ######  Test running builder examples
+  
+  - cd docs/examples/bio_14cells
+  - python build_network.py
+  
+  
+  
+  ######  Install NEURON using OMV & compile mod files
+  
+  - pwd
+  - omv install NEURON
+  - pwd
+  - cd ../biophys_components/mechanisms/
+  - /home/travis/neuron/nrn/x86_64/bin/nrnivmodl modfiles
+  
+  
+  
+  ######  Test running simulator examples
+  
+  - cd ../../bio_14cells/
+  #- sed -i -e 's/: 3000.0,/: 600,/g'  config.json  # Run shorter simulation
+  - python run_bionet.py config.json 
+  
+  #- cd ../14cells_multinode
+  #- sed -i -e 's/: 3000.0,/: 600,/g'  config.json  # Run shorter simulation
+  #- python run_bionet.py config.json 
+  
+  #- cd ../14cells_ecp
+  #- sed -i -e 's/: 3000.0,/: 600,/g'  config.json  # Run shorter simulation
+  #- python run_bionet.py config.json 
+  
+  #- cd ../14cells_nsyns
+  #- sed -i -e 's/: 3000.0,/: 600,/g'  config.json  # Run shorter simulation
+  #- python run_bionet.py config.json 
+  
+  #- cd ../1cell_all_active
+  #- sed -i -e 's/: 3000.0,/: 600,/g'  config.json  # Run shorter simulation
+  #- python run_bionet.py config.json   #  Throws an error...
+  
+  #- cd ../450cells
+  #- sed -i -e 's/: 3000.0,/: 600,/g'  config.json  # Run shorter simulation
+  #- python run_bionet.py config.json   # Works locally, but will probably take too long on Travis
+  
+  
+  ######   Try NEST...
+  
+  #- omv install NEST
+  
+  ######  Test running tutorial sources
+  
+  - cd ../../tutorial/sources/chapter01/
+  - python build_network.py
+  
+  
+  
+  
