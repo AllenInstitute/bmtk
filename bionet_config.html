@@ -4,27 +4,19 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Configuration file &#8212; Brain Modeling Toolkit 0.0.5 documentation</title>
     <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.0.5',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
-  </head>
-  <body>
+  </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
 <style>
 
@@ -635,7 +627,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <blockquote>
 <div><blockquote>
 <div>Includes custom path variables that may be used to build full paths to files. The special variable “${configdir}” in the “$BASE_DIR” stands for the directory where configuration file is located. Users may specify any valid directory for “$BASE_DIR” as well.</div></blockquote>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="s2">&quot;manifest&quot;</span><span class="p">:</span> <span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;manifest&quot;</span><span class="p">:</span> <span class="p">{</span>
       <span class="s2">&quot;$BASE_DIR&quot;</span><span class="p">:</span>    <span class="s2">&quot;$</span><span class="si">{configdir}</span><span class="s2">&quot;</span><span class="p">,</span>
       <span class="s2">&quot;$OUTPUT_DIR&quot;</span><span class="p">:</span>  <span class="s2">&quot;$BASE_DIR/output&quot;</span><span class="p">,</span>
       <span class="s2">&quot;$INPUT_DIR&quot;</span><span class="p">:</span>   <span class="s2">&quot;$BASE_DIR/../../NWB_files&quot;</span><span class="p">,</span>
@@ -651,7 +643,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <blockquote>
 <div><blockquote>
 <div>Includes run time parameters</div></blockquote>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="s2">&quot;run&quot;</span><span class="p">:</span> <span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;run&quot;</span><span class="p">:</span> <span class="p">{</span>
       <span class="s2">&quot;tstop&quot;</span><span class="p">:</span><span class="mf">3000.0</span><span class="p">,</span>                 <span class="c1"># run time (ms)</span>
       <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>                      <span class="c1"># time step (ms)</span>
       <span class="s2">&quot;dL&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>                       <span class="c1"># length of compartments (i.e., segments) (um)</span>
@@ -670,7 +662,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <blockquote>
 <div><blockquote>
 <div>Includes information about the initial conditions:</div></blockquote>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="p">{</span>
       <span class="s2">&quot;celsius&quot;</span><span class="p">:</span> <span class="mf">34.0</span><span class="p">,</span>        <span class="c1"># temperature (C)</span>
       <span class="s2">&quot;v_init&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">80</span>           <span class="c1"># initial membrane voltage (mV)</span>
 <span class="p">},</span>
@@ -683,7 +675,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <blockquote>
 <div><blockquote>
 <div>Defines selections of cells. For example, this way can specify the cells (node_ids) for which variables will be saved</div></blockquote>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="s2">&quot;node_id_selections&quot;</span><span class="p">:</span> <span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;node_id_selections&quot;</span><span class="p">:</span> <span class="p">{</span>
       <span class="s2">&quot;save_cell_vars&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">100</span><span class="p">]</span>
 <span class="p">},</span>
 </pre></div>
@@ -695,7 +687,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <blockquote>
 <div><blockquote>
 <div>Defines spike_trains for the the external inputs</div></blockquote>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="p">[</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="p">[</span>
       <span class="p">{</span>
         <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;external_spikes&quot;</span><span class="p">,</span>
         <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;nwb&quot;</span><span class="p">,</span>
@@ -714,7 +706,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <blockquote>
 <div><blockquote>
 <div>Defines file names for the output</div></blockquote>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="p">{</span>
       <span class="s2">&quot;log_file&quot;</span><span class="p">:</span>             <span class="s2">&quot;$OUTPUT_DIR/log.txt&quot;</span><span class="p">,</span>          <span class="c1"># log file</span>
       <span class="s2">&quot;spikes_ascii_file&quot;</span><span class="p">:</span>    <span class="s2">&quot;$OUTPUT_DIR/spikes.txt&quot;</span><span class="p">,</span>       <span class="c1"># file for spikes in ascii format</span>
       <span class="s2">&quot;spikes_hdf5_file&quot;</span><span class="p">:</span>     <span class="s2">&quot;$OUTPUT_DIR/spikes.h5&quot;</span><span class="p">,</span>        <span class="c1"># file for spikes in HDF5 format</span>
@@ -730,7 +722,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <h2>Components<a class="headerlink" href="#components" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>The “components” grouping includes paths to directories containing building blocks of a network model</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="s2">&quot;components&quot;</span><span class="p">:</span> <span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;components&quot;</span><span class="p">:</span> <span class="p">{</span>
       <span class="s2">&quot;morphologies_dir&quot;</span><span class="p">:</span>             <span class="s2">&quot;$COMPONENT_DIR/biophysical/morphology&quot;</span><span class="p">,</span>        <span class="c1"># morphologies</span>
       <span class="s2">&quot;synaptic_models_dir&quot;</span><span class="p">:</span>          <span class="s2">&quot;$COMPONENT_DIR/synaptic_models&quot;</span><span class="p">,</span>               <span class="c1"># synaptic models</span>
       <span class="s2">&quot;mechanisms_dir&quot;</span><span class="p">:</span>               <span class="s2">&quot;$COMPONENT_DIR/mechanisms&quot;</span><span class="p">,</span>                    <span class="c1"># NEURON mechanisms</span>
@@ -746,7 +738,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <h2>Recording Extracelullar Electrode<a class="headerlink" href="#recording-extracelullar-electrode" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>Includes parameters defining extracellular electrodes</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="s2">&quot;recXelectrode&quot;</span><span class="p">:</span> <span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;recXelectrode&quot;</span><span class="p">:</span> <span class="p">{</span>
       <span class="s2">&quot;positions&quot;</span><span class="p">:</span> <span class="s2">&quot;$COMPONENT_DIR/recXelectrodes/linear_electrode.csv&quot;</span>
       <span class="p">},</span>
 </pre></div>
@@ -757,7 +749,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <h2>Networks<a class="headerlink" href="#networks" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div>Includes files defining nodes and edges:</div></blockquote>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="s2">&quot;networks&quot;</span><span class="p">:</span> <span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;networks&quot;</span><span class="p">:</span> <span class="p">{</span>
       <span class="s2">&quot;nodes&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="p">{</span>
           <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;V1&quot;</span><span class="p">,</span>
@@ -813,12 +805,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -829,7 +823,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Allen Institute for Brain Science.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
     </div>
 <script type="text/javascript" src="/external_assets/javascript/portalFooter.js"></script>
 

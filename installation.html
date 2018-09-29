@@ -4,29 +4,21 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Installing the BMTK &#8212; Brain Modeling Toolkit 0.0.5 documentation</title>
     <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.0.5',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="The Network Builder" href="builder.html" />
     <link rel="prev" title="Welcome to the Brain Modeling Toolkit" href="index.html" /> 
-  </head>
-  <body>
+  </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
 <style>
 
@@ -653,7 +645,7 @@ HPC clusters, and requires the following to be installed:</p>
 to run. Individual instructions are done for the various requirements of the different simulation engines.</p>
 <div class="section" id="installing-latest-from-source">
 <h2>Installing latest from source<a class="headerlink" href="#installing-latest-from-source" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ git clone https://github.com/AllenInstitute/bmtk.git
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/AllenInstitute/bmtk.git
 $ cd bmtk
 $ python setup.py install
 </pre></div>
@@ -661,13 +653,13 @@ $ python setup.py install
 </div>
 <div class="section" id="installing-with-pip">
 <h2>Installing with pip<a class="headerlink" href="#installing-with-pip" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ pip install bmtk
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install bmtk
 </pre></div>
 </div>
 </div>
 <div class="section" id="installing-with-conda">
 <h2>Installing with conda<a class="headerlink" href="#installing-with-conda" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ conda install -c kaeldai bmtk
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ conda install -c kaeldai bmtk
 </pre></div>
 </div>
 </div>
@@ -675,7 +667,7 @@ $ python setup.py install
 <h2>Using the Docker Image<a class="headerlink" href="#using-the-docker-image" title="Permalink to this headline">¶</a></h2>
 <p>The bmtk docker container lets you build and simulate networks without requiring installing all the bmtk prerequisits on
 your computer. All you need is the <a class="reference external" href="https://docs.docker.com/install/">docker client</a> installed on your machine.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ docker pull alleninstitute/bmtk
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker pull alleninstitute/bmtk
 </pre></div>
 </div>
 <p>There are two main ways of using the bmtk-docker image, either like a command-line application or as a Jupyter Notebook
@@ -684,7 +676,7 @@ server</p>
 <h3>Through the command line<a class="headerlink" href="#through-the-command-line" title="Permalink to this headline">¶</a></h3>
 <p>Go to the directory where your bmtk network-builder and/or network-simualtion scripts and supporting files are located
 (<em>local/path</em>) and run the following in a command-line terminal</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ docker run alleninstitute/bmtk -v local/path:/home/shared/workspace python &lt;my_script&gt;.py &lt;opts&gt;
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker run alleninstitute/bmtk -v local/path:/home/shared/workspace python &lt;my_script&gt;.py &lt;opts&gt;
 </pre></div>
 </div>
 <p>Due to the way docker works, all files to build/run the network must be within <em>local/path</em>, including network files,
@@ -692,7 +684,7 @@ simulator components, output directories, etc. If your config.json files referen
 directory branch things will not work as expected.</p>
 <p><strong>NEURON mechanisms:</strong>
 If you are running BioNet and have special mechanims/mod files that need to be compiled, you can do so by running</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ cd /path/to/mechanims
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd /path/to/mechanims
 $ docker run -v $(pwd):/home/shared/workspace/mechanisms alleninstitute/bmtk nrnivmodl modfiles/
 </pre></div>
 </div>
@@ -701,7 +693,7 @@ $ docker run -v $(pwd):/home/shared/workspace/mechanisms alleninstitute/bmtk nrn
 <h3>Through Jupyter Notebooks<a class="headerlink" href="#through-jupyter-notebooks" title="Permalink to this headline">¶</a></h3>
 <p>The bmtk-docker image can be run as a jupyter notebook server. Not only will it contain the examples and notebook tutorials
 for you to run, but you can use it to create new bmtk notebooks. In a command line run</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ docker run -v $(pwd):/home/shared/workspace -p 8888:8888 alleninstitute/bmtk jupyter
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker run -v $(pwd):/home/shared/workspace -p 8888:8888 alleninstitute/bmtk jupyter
 </pre></div>
 </div>
 <p>Then open a browser to 127.0.0.1:8888/. Any new files/notebooks should be saved to <em>workspace</em> directory, otherwise they
@@ -740,7 +732,7 @@ is already built into the bmtk and no extra installation instructions are requir
 <p>PopNet will simulate population level firing rate dynamics using <a class="reference external" href="https://github.com/AllenInstitute/dipde">DiPDE</a>. Instructions
 for installing DiPDE can be found <a class="reference external" href="http://alleninstitute.github.io/dipde/user.html#quick-start-install-using-pip">here</a>.
 However we recommend installing DiPDE using anaconda:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ conda install -c nicholasc dipde
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ conda install -c nicholasc dipde
 </pre></div>
 </div>
 </div>
@@ -778,12 +770,14 @@ However we recommend installing DiPDE using anaconda:</p>
 
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -794,7 +788,7 @@ However we recommend installing DiPDE using anaconda:</p>
 
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Allen Institute for Brain Science.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
     </div>
 <script type="text/javascript" src="/external_assets/javascript/portalFooter.js"></script>
 

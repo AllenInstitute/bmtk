@@ -4,29 +4,21 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>bmtk.builder package &#8212; Brain Modeling Toolkit 0.0.5 documentation</title>
     <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.0.5',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="bmtk.builder.aux package" href="bmtk.builder.aux.html" />
     <link rel="prev" title="bmtk.analyzer.visualization package" href="bmtk.analyzer.visualization.html" /> 
-  </head>
-  <body>
+  </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
 <style>
 
@@ -664,7 +656,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.networks.html#module-bmtk.builder.networks.dm_network">bmtk.builder.networks.dm_network module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.networks.html#module-bmtk.builder.networks.input_network">bmtk.builder.networks.input_network module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.networks.html#module-bmtk.builder.networks.mpi_network">bmtk.builder.networks.mpi_network module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.networks.html#module-bmtk.builder.networks.nxnetwork">bmtk.builder.networks.nxnetwork module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.networks.html#bmtk-builder-networks-nxnetwork-module">bmtk.builder.networks.nxnetwork module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.networks.html#module-bmtk.builder.networks.sparse_network">bmtk.builder.networks.sparse_network module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.networks.html#module-bmtk.builder.networks">Module contents</a></li>
 </ul>
@@ -680,7 +672,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dl class="class">
 <dt id="bmtk.builder.connection_map.ConnectionMap">
 <em class="property">class </em><code class="descclassname">bmtk.builder.connection_map.</code><code class="descname">ConnectionMap</code><span class="sig-paren">(</span><em>sources=None</em>, <em>targets=None</em>, <em>connector=None</em>, <em>connector_params=None</em>, <em>iterator='one_to_one'</em>, <em>edge_type_properties=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/connection_map.html#ConnectionMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class for keeping track of connection rules.</p>
 <dl class="docutils">
 <dt>For every connection from source –&gt; target this keeps track of rules (functions, literals, lists) for</dt>
@@ -695,7 +687,7 @@ as ParamsRules.</p>
 <dl class="class">
 <dt id="bmtk.builder.connection_map.ConnectionMap.ParamsRules">
 <em class="property">class </em><code class="descname">ParamsRules</code><span class="sig-paren">(</span><em>names</em>, <em>rule</em>, <em>rule_params</em>, <em>dtypes</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/connection_map.html#ConnectionMap.ParamsRules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.ParamsRules" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A subclass to store indvidiual synpatic parameter rules</p>
 <dl class="attribute">
 <dt id="bmtk.builder.connection_map.ConnectionMap.ParamsRules.dtypes">
@@ -832,7 +824,7 @@ and create a connection rule based on the connector.</p>
 <dl class="class">
 <dt id="bmtk.builder.edge.Edge">
 <em class="property">class </em><code class="descclassname">bmtk.builder.edge.</code><code class="descname">Edge</code><span class="sig-paren">(</span><em>src_gid</em>, <em>trg_gid</em>, <em>edge_type_props</em>, <em>syn_props</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/edge.html#Edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.edge.Edge" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="attribute">
 <dt id="bmtk.builder.edge.Edge.edge_type_id">
 <code class="descname">edge_type_id</code><a class="headerlink" href="#bmtk.builder.edge.Edge.edge_type_id" title="Permalink to this definition">¶</a></dt>
@@ -866,7 +858,7 @@ and create a connection rule based on the connector.</p>
 <dl class="class">
 <dt id="bmtk.builder.functor_cache.FunctorCache">
 <em class="property">class </em><code class="descclassname">bmtk.builder.functor_cache.</code><code class="descname">FunctorCache</code><a class="reference internal" href="../_modules/bmtk/builder/functor_cache.html#FunctorCache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.functor_cache.FunctorCache" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="bmtk.builder.functor_cache.FunctorCache.create">
 <code class="descname">create</code><span class="sig-paren">(</span><em>connector</em>, <em>**params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/functor_cache.html#FunctorCache.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.functor_cache.FunctorCache.create" title="Permalink to this definition">¶</a></dt>
@@ -885,7 +877,7 @@ and create a connection rule based on the connector.</p>
 <dl class="class">
 <dt id="bmtk.builder.id_generator.IDGenerator">
 <em class="property">class </em><code class="descclassname">bmtk.builder.id_generator.</code><code class="descname">IDGenerator</code><span class="sig-paren">(</span><em>init_val=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/id_generator.html#IDGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.id_generator.IDGenerator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A simple class for fetching global ids. To get a unqiue global ID class next(), which should be thread-safe. It
 Also has a remove_id(gid) in which case next() will never return the gid. The remove_id function is used for cases
 when using imported networks and we want to elimnate previously created id.</p>
@@ -915,7 +907,7 @@ when using imported networks and we want to elimnate previously created id.</p>
 <dl class="class">
 <dt id="bmtk.builder.iterator.IteratorCache">
 <em class="property">class </em><code class="descclassname">bmtk.builder.iterator.</code><code class="descname">IteratorCache</code><a class="reference internal" href="../_modules/bmtk/builder/iterator.html#IteratorCache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.iterator.IteratorCache" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="bmtk.builder.iterator.IteratorCache.create">
 <code class="descname">create</code><span class="sig-paren">(</span><em>itr_name</em>, <em>itr_type</em>, <em>**params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/iterator.html#IteratorCache.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.iterator.IteratorCache.create" title="Permalink to this definition">¶</a></dt>
@@ -981,7 +973,7 @@ when using imported networks and we want to elimnate previously created id.</p>
 <dl class="class">
 <dt id="bmtk.builder.network.Network">
 <em class="property">class </em><code class="descclassname">bmtk.builder.network.</code><code class="descname">Network</code><span class="sig-paren">(</span><em>name</em>, <em>**network_props</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="bmtk.builder.network.Network.add_edges">
 <code class="descname">add_edges</code><span class="sig-paren">(</span><em>source=None</em>, <em>target=None</em>, <em>connection_rule=1</em>, <em>connection_params=None</em>, <em>iterator='one_to_one'</em>, <em>**edge_type_properties</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.add_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.add_edges" title="Permalink to this definition">¶</a></dt>
@@ -1138,10 +1130,10 @@ it will skip that gid in the list, the size of the generator can 0 to arbitrarly
 <dl class="class">
 <dt id="bmtk.builder.node.Node">
 <em class="property">class </em><code class="descclassname">bmtk.builder.node.</code><code class="descname">Node</code><span class="sig-paren">(</span><em>node_id</em>, <em>node_params</em>, <em>node_type_properties</em>, <em>params_hash=-1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/node.html#Node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.node.Node" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">dict</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
 <dl class="method">
 <dt id="bmtk.builder.node.Node.get">
-<code class="descname">get</code><span class="sig-paren">(</span><em>key</em>, <em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/node.html#Node.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.node.Node.get" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get</code><span class="sig-paren">(</span><em>k</em><span class="optional">[</span>, <em>d</em><span class="optional">]</span><span class="sig-paren">)</span> &#x2192; D[k] if k in D, else d.  d defaults to None.<a class="reference internal" href="../_modules/bmtk/builder/node.html#Node.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.node.Node.get" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1177,7 +1169,7 @@ it will skip that gid in the list, the size of the generator can 0 to arbitrarly
 <dl class="class">
 <dt id="bmtk.builder.node_pool.NodePool">
 <em class="property">class </em><code class="descclassname">bmtk.builder.node_pool.</code><code class="descname">NodePool</code><span class="sig-paren">(</span><em>network</em>, <em>**properties</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/node_pool.html#NodePool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.node_pool.NodePool" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Stores a collection of nodes based off some query of the network.</p>
 <p>Returns the results of a query of nodes from a network using the nodes() method. Nodes are still generated and
 saved by the network, this just stores the query information and provides iterator methods for accessing different
@@ -1222,7 +1214,7 @@ nodes = 100 in net.nodes(val)</dd>
 <dl class="class">
 <dt id="bmtk.builder.node_set.NodeSet">
 <em class="property">class </em><code class="descclassname">bmtk.builder.node_set.</code><code class="descname">NodeSet</code><span class="sig-paren">(</span><em>N</em>, <em>node_params</em>, <em>node_type_properties</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/node_set.html#NodeSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.node_set.NodeSet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="attribute">
 <dt id="bmtk.builder.node_set.NodeSet.N">
 <code class="descname">N</code><a class="headerlink" href="#bmtk.builder.node_set.NodeSet.N" title="Permalink to this definition">¶</a></dt>
@@ -1287,12 +1279,14 @@ nodes = 100 in net.nodes(val)</dd>
 
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -1303,7 +1297,7 @@ nodes = 100 in net.nodes(val)</dd>
 
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Allen Institute for Brain Science.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
     </div>
 <script type="text/javascript" src="/external_assets/javascript/portalFooter.js"></script>
 

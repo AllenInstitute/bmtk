@@ -4,29 +4,21 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>bmtk.simulator.bionet package &#8212; Brain Modeling Toolkit 0.0.5 documentation</title>
     <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.0.5',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="bmtk.simulator.bionet.default_setters package" href="bmtk.simulator.bionet.default_setters.html" />
     <link rel="prev" title="bmtk.simulator package" href="bmtk.simulator.html" /> 
-  </head>
-  <body>
+  </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
 <style>
 
@@ -666,7 +658,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dl class="class">
 <dt id="bmtk.simulator.bionet.biocell.BioCell">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.biocell.</code><code class="descname">BioCell</code><span class="sig-paren">(</span><em>node</em>, <em>bionetwork</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/biocell.html#BioCell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.biocell.BioCell" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.cell.Cell" title="bmtk.simulator.bionet.cell.Cell"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.cell.Cell</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.cell.Cell" title="bmtk.simulator.bionet.cell.Cell"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.bionet.cell.Cell</span></code></a></p>
 <p>Implemntation of a morphologically and biophysically detailed type cell.</p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.biocell.BioCell.calc_seg_coords">
@@ -796,7 +788,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dl class="class">
 <dt id="bmtk.simulator.bionet.bionetwork.BioNetwork">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.bionetwork.</code><code class="descname">BioNetwork</code><a class="reference internal" href="../_modules/bmtk/simulator/bionet/bionetwork.html#BioNetwork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.bionetwork.BioNetwork" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.simulator_network.SimNetwork" title="bmtk.simulator.core.simulator_network.SimNetwork"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.core.simulator_network.SimNetwork</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.simulator_network.SimNetwork" title="bmtk.simulator.core.simulator_network.SimNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.simulator_network.SimNetwork</span></code></a></p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.bionetwork.BioNetwork.add_spike_trains">
 <code class="descname">add_spike_trains</code><span class="sig-paren">(</span><em>spike_trains</em>, <em>node_set</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/bionetwork.html#BioNetwork.add_spike_trains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.add_spike_trains" title="Permalink to this definition">¶</a></dt>
@@ -888,7 +880,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dl class="class">
 <dt id="bmtk.simulator.bionet.biosimulator.BioSimulator">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.biosimulator.</code><code class="descname">BioSimulator</code><span class="sig-paren">(</span><em>network</em>, <em>dt</em>, <em>tstop</em>, <em>v_init</em>, <em>celsius</em>, <em>nsteps_block</em>, <em>start_from_state=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/biosimulator.html#BioSimulator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.biosimulator.BioSimulator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.simulator.Simulator" title="bmtk.simulator.core.simulator.Simulator"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.core.simulator.Simulator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.simulator.Simulator" title="bmtk.simulator.core.simulator.Simulator"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.simulator.Simulator</span></code></a></p>
 <p>Includes methods to run and control the simulation</p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.biosimulator.BioSimulator.add_mod">
@@ -999,7 +991,7 @@ if continuing from the saved state, then will use h.continuerun()</p>
 <dl class="class">
 <dt id="bmtk.simulator.bionet.cell.Cell">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.cell.</code><code class="descname">Cell</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/cell.html#Cell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.cell.Cell" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A abstract base class for any cell object.</p>
 <p>A base class for implementation of a cell-type objects like biophysical cells, LIF cells, etc. Do not instantiate
 a Cell object directly. Cell classes act as wrapper around HOC cell object with extra functionality for setting
@@ -1077,7 +1069,7 @@ positions, synapses, and other parameters depending on the desired cell class.</
 <dl class="class">
 <dt id="bmtk.simulator.bionet.config.Config">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.config.</code><code class="descname">Config</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/config.html#Config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.config.Config" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.utils.html#bmtk.simulator.utils.config.ConfigDict" title="bmtk.simulator.utils.config.ConfigDict"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.utils.config.ConfigDict</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.utils.html#bmtk.simulator.utils.config.ConfigDict" title="bmtk.simulator.utils.config.ConfigDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.utils.config.ConfigDict</span></code></a></p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.config.Config.build_env">
 <code class="descname">build_env</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/config.html#Config.build_env"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.config.Config.build_env" title="Permalink to this definition">¶</a></dt>
@@ -1106,7 +1098,7 @@ positions, synapses, and other parameters depending on the desired cell class.</
 <dl class="class">
 <dt id="bmtk.simulator.bionet.iclamp.IClamp">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.iclamp.</code><code class="descname">IClamp</code><span class="sig-paren">(</span><em>amplitude</em>, <em>delay</em>, <em>duration</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/iclamp.html#IClamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.iclamp.IClamp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.iclamp.IClamp.attach_current">
 <code class="descname">attach_current</code><span class="sig-paren">(</span><em>cell</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/iclamp.html#IClamp.attach_current"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.iclamp.IClamp.attach_current" title="Permalink to this definition">¶</a></dt>
@@ -1120,7 +1112,7 @@ positions, synapses, and other parameters depending on the desired cell class.</
 <dl class="class">
 <dt id="bmtk.simulator.bionet.io_tools.NEURONIOUtils">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.io_tools.</code><code class="descname">NEURONIOUtils</code><a class="reference internal" href="../_modules/bmtk/simulator/bionet/io_tools.html#NEURONIOUtils"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.io_tools.NEURONIOUtils" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.io_tools.IOUtils" title="bmtk.simulator.core.io_tools.IOUtils"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.core.io_tools.IOUtils</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.io_tools.IOUtils" title="bmtk.simulator.core.io_tools.IOUtils"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.io_tools.IOUtils</span></code></a></p>
 </dd></dl>
 
 </div>
@@ -1129,7 +1121,7 @@ positions, synapses, and other parameters depending on the desired cell class.</
 <dl class="class">
 <dt id="bmtk.simulator.bionet.morphology.Morphology">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.morphology.</code><code class="descname">Morphology</code><span class="sig-paren">(</span><em>hobj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/morphology.html#Morphology"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Methods for processing morphological data</p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.morphology.Morphology.calc_seg_coords">
@@ -1171,7 +1163,7 @@ positions, synapses, and other parameters depending on the desired cell class.</
 <dl class="class">
 <dt id="bmtk.simulator.bionet.nml_reader.ChannelDensity">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.nml_reader.</code><code class="descname">ChannelDensity</code><span class="sig-paren">(</span><em>nml_element</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/nml_reader.html#ChannelDensity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.nml_reader.ChannelDensity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.nml_reader.NMLElement" title="bmtk.simulator.bionet.nml_reader.NMLElement"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.nml_reader.NMLElement</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.nml_reader.NMLElement" title="bmtk.simulator.bionet.nml_reader.NMLElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.bionet.nml_reader.NMLElement</span></code></a></p>
 <dl class="staticmethod">
 <dt id="bmtk.simulator.bionet.nml_reader.ChannelDensity.element_tag">
 <em class="property">static </em><code class="descname">element_tag</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/nml_reader.html#ChannelDensity.element_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.nml_reader.ChannelDensity.element_tag" title="Permalink to this definition">¶</a></dt>
@@ -1182,7 +1174,7 @@ positions, synapses, and other parameters depending on the desired cell class.</
 <dl class="class">
 <dt id="bmtk.simulator.bionet.nml_reader.ChannelDensityNernst">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.nml_reader.</code><code class="descname">ChannelDensityNernst</code><span class="sig-paren">(</span><em>nml_element</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/nml_reader.html#ChannelDensityNernst"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.nml_reader.ChannelDensityNernst" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.nml_reader.ChannelDensity" title="bmtk.simulator.bionet.nml_reader.ChannelDensity"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.nml_reader.ChannelDensity</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.nml_reader.ChannelDensity" title="bmtk.simulator.bionet.nml_reader.ChannelDensity"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.bionet.nml_reader.ChannelDensity</span></code></a></p>
 <dl class="staticmethod">
 <dt id="bmtk.simulator.bionet.nml_reader.ChannelDensityNernst.element_tag">
 <em class="property">static </em><code class="descname">element_tag</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/nml_reader.html#ChannelDensityNernst.element_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.nml_reader.ChannelDensityNernst.element_tag" title="Permalink to this definition">¶</a></dt>
@@ -1193,7 +1185,7 @@ positions, synapses, and other parameters depending on the desired cell class.</
 <dl class="class">
 <dt id="bmtk.simulator.bionet.nml_reader.ConcentrationModel">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.nml_reader.</code><code class="descname">ConcentrationModel</code><span class="sig-paren">(</span><em>nml_element</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/nml_reader.html#ConcentrationModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.nml_reader.ConcentrationModel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.nml_reader.NMLElement" title="bmtk.simulator.bionet.nml_reader.NMLElement"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.nml_reader.NMLElement</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.nml_reader.NMLElement" title="bmtk.simulator.bionet.nml_reader.NMLElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.bionet.nml_reader.NMLElement</span></code></a></p>
 <dl class="staticmethod">
 <dt id="bmtk.simulator.bionet.nml_reader.ConcentrationModel.element_tag">
 <em class="property">static </em><code class="descname">element_tag</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/nml_reader.html#ConcentrationModel.element_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.nml_reader.ConcentrationModel.element_tag" title="Permalink to this definition">¶</a></dt>
@@ -1204,7 +1196,7 @@ positions, synapses, and other parameters depending on the desired cell class.</
 <dl class="class">
 <dt id="bmtk.simulator.bionet.nml_reader.NMLElement">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.nml_reader.</code><code class="descname">NMLElement</code><span class="sig-paren">(</span><em>nml_element</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/nml_reader.html#NMLElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.nml_reader.NMLElement" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="staticmethod">
 <dt id="bmtk.simulator.bionet.nml_reader.NMLElement.element_tag">
 <em class="property">static </em><code class="descname">element_tag</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/nml_reader.html#NMLElement.element_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.nml_reader.NMLElement.element_tag" title="Permalink to this definition">¶</a></dt>
@@ -1215,7 +1207,7 @@ positions, synapses, and other parameters depending on the desired cell class.</
 <dl class="class">
 <dt id="bmtk.simulator.bionet.nml_reader.NMLTree">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.nml_reader.</code><code class="descname">NMLTree</code><span class="sig-paren">(</span><em>nml_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/nml_reader.html#NMLTree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.nml_reader.NMLTree" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="staticmethod">
 <dt id="bmtk.simulator.bionet.nml_reader.NMLTree.common_name">
 <em class="property">static </em><code class="descname">common_name</code><span class="sig-paren">(</span><em>elem</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/nml_reader.html#NMLTree.common_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.nml_reader.NMLTree.common_name" title="Permalink to this definition">¶</a></dt>
@@ -1223,7 +1215,7 @@ positions, synapses, and other parameters depending on the desired cell class.</
 
 <dl class="attribute">
 <dt id="bmtk.simulator.bionet.nml_reader.NMLTree.element_registry">
-<code class="descname">element_registry</code><em class="property"> = {'{http://www.neuroml.org/schema/neuroml2}channelDensity': &lt;class 'bmtk.simulator.bionet.nml_reader.ChannelDensity'&gt;, '{http://www.neuroml.org/schema/neuroml2}resistivity': &lt;class 'bmtk.simulator.bionet.nml_reader.Resistivity'&gt;, '{http://www.neuroml.org/schema/neuroml2}concentrationModel': &lt;class 'bmtk.simulator.bionet.nml_reader.ConcentrationModel'&gt;, '{http://www.neuroml.org/schema/neuroml2}channelDensityNernst': &lt;class 'bmtk.simulator.bionet.nml_reader.ChannelDensityNernst'&gt;, '{http://www.neuroml.org/schema/neuroml2}specificCapacitance': &lt;class 'bmtk.simulator.bionet.nml_reader.SpecificCapacitance'&gt;}</em><a class="headerlink" href="#bmtk.simulator.bionet.nml_reader.NMLTree.element_registry" title="Permalink to this definition">¶</a></dt>
+<code class="descname">element_registry</code><em class="property"> = {'{http://www.neuroml.org/schema/neuroml2}channelDensity': &lt;class 'bmtk.simulator.bionet.nml_reader.ChannelDensity'&gt;, '{http://www.neuroml.org/schema/neuroml2}channelDensityNernst': &lt;class 'bmtk.simulator.bionet.nml_reader.ChannelDensityNernst'&gt;, '{http://www.neuroml.org/schema/neuroml2}concentrationModel': &lt;class 'bmtk.simulator.bionet.nml_reader.ConcentrationModel'&gt;, '{http://www.neuroml.org/schema/neuroml2}resistivity': &lt;class 'bmtk.simulator.bionet.nml_reader.Resistivity'&gt;, '{http://www.neuroml.org/schema/neuroml2}specificCapacitance': &lt;class 'bmtk.simulator.bionet.nml_reader.SpecificCapacitance'&gt;}</em><a class="headerlink" href="#bmtk.simulator.bionet.nml_reader.NMLTree.element_registry" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1251,7 +1243,7 @@ positions, synapses, and other parameters depending on the desired cell class.</
 <dl class="class">
 <dt id="bmtk.simulator.bionet.nml_reader.Resistivity">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.nml_reader.</code><code class="descname">Resistivity</code><span class="sig-paren">(</span><em>nml_element</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/nml_reader.html#Resistivity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.nml_reader.Resistivity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.nml_reader.NMLElement" title="bmtk.simulator.bionet.nml_reader.NMLElement"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.nml_reader.NMLElement</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.nml_reader.NMLElement" title="bmtk.simulator.bionet.nml_reader.NMLElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.bionet.nml_reader.NMLElement</span></code></a></p>
 <dl class="staticmethod">
 <dt id="bmtk.simulator.bionet.nml_reader.Resistivity.element_tag">
 <em class="property">static </em><code class="descname">element_tag</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/nml_reader.html#Resistivity.element_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.nml_reader.Resistivity.element_tag" title="Permalink to this definition">¶</a></dt>
@@ -1262,7 +1254,7 @@ positions, synapses, and other parameters depending on the desired cell class.</
 <dl class="class">
 <dt id="bmtk.simulator.bionet.nml_reader.SpecificCapacitance">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.nml_reader.</code><code class="descname">SpecificCapacitance</code><span class="sig-paren">(</span><em>nml_element</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/nml_reader.html#SpecificCapacitance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.nml_reader.SpecificCapacitance" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.nml_reader.NMLElement" title="bmtk.simulator.bionet.nml_reader.NMLElement"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.nml_reader.NMLElement</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.nml_reader.NMLElement" title="bmtk.simulator.bionet.nml_reader.NMLElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.bionet.nml_reader.NMLElement</span></code></a></p>
 <dl class="staticmethod">
 <dt id="bmtk.simulator.bionet.nml_reader.SpecificCapacitance.element_tag">
 <em class="property">static </em><code class="descname">element_tag</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/nml_reader.html#SpecificCapacitance.element_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.nml_reader.SpecificCapacitance.element_tag" title="Permalink to this definition">¶</a></dt>
@@ -1313,7 +1305,7 @@ positions, synapses, and other parameters depending on the desired cell class.</
 <dl class="class">
 <dt id="bmtk.simulator.bionet.pointprocesscell.PointProcessCell">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.pointprocesscell.</code><code class="descname">PointProcessCell</code><span class="sig-paren">(</span><em>node</em>, <em>bionetwork</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/pointprocesscell.html#PointProcessCell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.pointprocesscell.PointProcessCell" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.cell.Cell" title="bmtk.simulator.bionet.cell.Cell"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.cell.Cell</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.cell.Cell" title="bmtk.simulator.bionet.cell.Cell"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.bionet.cell.Cell</span></code></a></p>
 <p>Implimentation of a Leaky Integrate-and-file neuron type cell.</p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.pointprocesscell.PointProcessCell.get_connection_info">
@@ -1348,7 +1340,7 @@ positions, synapses, and other parameters depending on the desired cell class.</
 <dl class="class">
 <dt id="bmtk.simulator.bionet.pointsomacell.PointSomaCell">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.pointsomacell.</code><code class="descname">PointSomaCell</code><a class="reference internal" href="../_modules/bmtk/simulator/bionet/pointsomacell.html#PointSomaCell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.pointsomacell.PointSomaCell" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.cell.Cell" title="bmtk.simulator.bionet.cell.Cell"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.cell.Cell</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.cell.Cell" title="bmtk.simulator.bionet.cell.Cell"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.bionet.cell.Cell</span></code></a></p>
 <p>Used to represent single compartment cells with neural mechanisms</p>
 </dd></dl>
 
@@ -1414,7 +1406,7 @@ def weight_function(): …</dd>
 <dl class="class">
 <dt id="bmtk.simulator.bionet.sonata_adaptors.BioEdge">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.sonata_adaptors.</code><code class="descname">BioEdge</code><span class="sig-paren">(</span><em>sonata_edge</em>, <em>edge_adaptor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/sonata_adaptors.html#BioEdge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.sonata_adaptors.BioEdge" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge" title="bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge" title="bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge</span></code></a></p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.sonata_adaptors.BioEdge.load_synapses">
 <code class="descname">load_synapses</code><span class="sig-paren">(</span><em>section_x</em>, <em>section_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/sonata_adaptors.html#BioEdge.load_synapses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.sonata_adaptors.BioEdge.load_synapses" title="Permalink to this definition">¶</a></dt>
@@ -1425,7 +1417,7 @@ def weight_function(): …</dd>
 <dl class="class">
 <dt id="bmtk.simulator.bionet.sonata_adaptors.BioEdgeAdaptor">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.sonata_adaptors.</code><code class="descname">BioEdgeAdaptor</code><span class="sig-paren">(</span><em>network</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/sonata_adaptors.html#BioEdgeAdaptor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.sonata_adaptors.BioEdgeAdaptor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor" title="bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor" title="bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor</span></code></a></p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.sonata_adaptors.BioEdgeAdaptor.get_edge">
 <code class="descname">get_edge</code><span class="sig-paren">(</span><em>sonata_edge</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/sonata_adaptors.html#BioEdgeAdaptor.get_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.sonata_adaptors.BioEdgeAdaptor.get_edge" title="Permalink to this definition">¶</a></dt>
@@ -1436,7 +1428,7 @@ def weight_function(): …</dd>
 <dl class="class">
 <dt id="bmtk.simulator.bionet.sonata_adaptors.BioNode">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.sonata_adaptors.</code><code class="descname">BioNode</code><span class="sig-paren">(</span><em>node</em>, <em>prop_adaptor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/sonata_adaptors.html#BioNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.sonata_adaptors.BioNode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode" title="bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode" title="bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode</span></code></a></p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.sonata_adaptors.BioNode.load_cell">
 <code class="descname">load_cell</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/sonata_adaptors.html#BioNode.load_cell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.sonata_adaptors.BioNode.load_cell" title="Permalink to this definition">¶</a></dt>
@@ -1472,7 +1464,7 @@ def weight_function(): …</dd>
 <dl class="class">
 <dt id="bmtk.simulator.bionet.sonata_adaptors.BioNodeAdaptor">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.sonata_adaptors.</code><code class="descname">BioNodeAdaptor</code><span class="sig-paren">(</span><em>network</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/sonata_adaptors.html#BioNodeAdaptor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.sonata_adaptors.BioNodeAdaptor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor" title="bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor" title="bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor</span></code></a></p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.sonata_adaptors.BioNodeAdaptor.get_node">
 <code class="descname">get_node</code><span class="sig-paren">(</span><em>sonata_node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/sonata_adaptors.html#BioNodeAdaptor.get_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.sonata_adaptors.BioNodeAdaptor.get_node" title="Permalink to this definition">¶</a></dt>
@@ -1556,7 +1548,7 @@ def weight_function(): …</dd>
 <dl class="class">
 <dt id="bmtk.simulator.bionet.virtualcell.VirtualCell">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.virtualcell.</code><code class="descname">VirtualCell</code><span class="sig-paren">(</span><em>node</em>, <em>spike_train_dataset</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/virtualcell.html#VirtualCell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.virtualcell.VirtualCell" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Representation of a Virtual/External node</p>
 <dl class="attribute">
 <dt id="bmtk.simulator.bionet.virtualcell.VirtualCell.hobj">
@@ -1613,12 +1605,14 @@ def weight_function(): …</dd>
 
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -1629,7 +1623,7 @@ def weight_function(): …</dd>
 
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Allen Institute for Brain Science.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
     </div>
 <script type="text/javascript" src="/external_assets/javascript/portalFooter.js"></script>
 

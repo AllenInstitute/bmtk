@@ -4,29 +4,21 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>bmtk.utils.io package &#8212; Brain Modeling Toolkit 0.0.5 documentation</title>
     <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.0.5',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="bmtk.utils.sonata package" href="bmtk.utils.sonata.html" />
     <link rel="prev" title="bmtk.utils.converters.sonata package" href="bmtk.utils.converters.sonata.html" /> 
-  </head>
-  <body>
+  </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
 <style>
 
@@ -639,7 +631,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dl class="class">
 <dt id="bmtk.utils.io.cell_vars.CellVarRecorder">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.cell_vars.</code><code class="descname">CellVarRecorder</code><span class="sig-paren">(</span><em>file_name</em>, <em>tmp_dir</em>, <em>variables</em>, <em>buffer_data=True</em>, <em>mpi_rank=0</em>, <em>mpi_size=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Used to save cell membrane variables (V, Ca2+, etc) to the described hdf5 format.</p>
 <p>For parallel simulations this class will write to a seperate tmp file on each rank, then use the merge method to
 combine the results. This is less efficent, but doesn’t require the user to install mpi4py and build h5py in
@@ -647,7 +639,7 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 <dl class="class">
 <dt id="bmtk.utils.io.cell_vars.CellVarRecorder.DataTable">
 <em class="property">class </em><code class="descname">DataTable</code><span class="sig-paren">(</span><em>var_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorder.DataTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.DataTable" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A small struct to keep track of different <a href="#id1"><span class="problematic" id="id2">*</span></a>/data (and buffer) tables</p>
 </dd></dl>
 
@@ -741,7 +733,7 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 <dl class="class">
 <dt id="bmtk.utils.io.cell_vars.CellVarRecorderParallel">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.cell_vars.</code><code class="descname">CellVarRecorderParallel</code><span class="sig-paren">(</span><em>file_name</em>, <em>tmp_dir</em>, <em>variables</em>, <em>buffer_data=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorderParallel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorderParallel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.cell_vars.CellVarRecorder" title="bmtk.utils.io.cell_vars.CellVarRecorder"><code class="xref py py-class docutils literal"><span class="pre">bmtk.utils.io.cell_vars.CellVarRecorder</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.cell_vars.CellVarRecorder" title="bmtk.utils.io.cell_vars.CellVarRecorder"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.cell_vars.CellVarRecorder</span></code></a></p>
 <p>Unlike the parent, this take advantage of parallel h5py to writting to the results file across different ranks.</p>
 <dl class="method">
 <dt id="bmtk.utils.io.cell_vars.CellVarRecorderParallel.merge">
@@ -756,7 +748,7 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 <dl class="class">
 <dt id="bmtk.utils.io.firing_rates.RatesInput">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.firing_rates.</code><code class="descname">RatesInput</code><span class="sig-paren">(</span><em>params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/firing_rates.html#RatesInput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.firing_rates.RatesInput" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="bmtk.utils.io.firing_rates.RatesInput.get_rate">
 <code class="descname">get_rate</code><span class="sig-paren">(</span><em>gid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/firing_rates.html#RatesInput.get_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.firing_rates.RatesInput.get_rate" title="Permalink to this definition">¶</a></dt>
@@ -772,7 +764,7 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 <dl class="class">
 <dt id="bmtk.utils.io.firing_rates.RatesWriter">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.firing_rates.</code><code class="descname">RatesWriter</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/firing_rates.html#RatesWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.firing_rates.RatesWriter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="bmtk.utils.io.firing_rates.RatesWriter.add_rates">
 <code class="descname">add_rates</code><span class="sig-paren">(</span><em>gid</em>, <em>times</em>, <em>rates</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/firing_rates.html#RatesWriter.add_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.firing_rates.RatesWriter.add_rates" title="Permalink to this definition">¶</a></dt>
@@ -796,7 +788,7 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 <dl class="class">
 <dt id="bmtk.utils.io.spike_trains.PoissonSpikesGenerator">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.spike_trains.</code><code class="descname">PoissonSpikesGenerator</code><span class="sig-paren">(</span><em>gids</em>, <em>firing_rate</em>, <em>tstart=0.0</em>, <em>tstop=1000.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#PoissonSpikesGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.PoissonSpikesGenerator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="bmtk.utils.io.spike_trains.PoissonSpikesGenerator.to_hdf5">
 <code class="descname">to_hdf5</code><span class="sig-paren">(</span><em>file_name</em>, <em>sort_order='gid'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#PoissonSpikesGenerator.to_hdf5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.PoissonSpikesGenerator.to_hdf5" title="Permalink to this definition">¶</a></dt>
@@ -807,11 +799,11 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 <dl class="class">
 <dt id="bmtk.utils.io.spike_trains.SpikeTrainWriter">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.spike_trains.</code><code class="descname">SpikeTrainWriter</code><span class="sig-paren">(</span><em>tmp_dir</em>, <em>mpi_rank=0</em>, <em>mpi_size=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="class">
 <dt id="bmtk.utils.io.spike_trains.SpikeTrainWriter.TmpFileMetadata">
 <em class="property">class </em><code class="descname">TmpFileMetadata</code><span class="sig-paren">(</span><em>file_name</em>, <em>sort_order=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter.TmpFileMetadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter.TmpFileMetadata" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 </dd></dl>
 
 <dl class="method">
@@ -859,7 +851,7 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 <dl class="class">
 <dt id="bmtk.utils.io.spike_trains.SpikesInput">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.spike_trains.</code><code class="descname">SpikesInput</code><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInput" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="bmtk.utils.io.spike_trains.SpikesInput.get_spikes">
 <code class="descname">get_spikes</code><span class="sig-paren">(</span><em>gid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInput.get_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInput.get_spikes" title="Permalink to this definition">¶</a></dt>
@@ -875,7 +867,7 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 <dl class="class">
 <dt id="bmtk.utils.io.spike_trains.SpikesInputCSV">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.spike_trains.</code><code class="descname">SpikesInputCSV</code><span class="sig-paren">(</span><em>name</em>, <em>module</em>, <em>input_type</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInputCSV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputCSV" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.spike_trains.SpikesInput" title="bmtk.utils.io.spike_trains.SpikesInput"><code class="xref py py-class docutils literal"><span class="pre">bmtk.utils.io.spike_trains.SpikesInput</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.spike_trains.SpikesInput" title="bmtk.utils.io.spike_trains.SpikesInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.spike_trains.SpikesInput</span></code></a></p>
 <dl class="method">
 <dt id="bmtk.utils.io.spike_trains.SpikesInputCSV.get_spikes">
 <code class="descname">get_spikes</code><span class="sig-paren">(</span><em>gid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInputCSV.get_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputCSV.get_spikes" title="Permalink to this definition">¶</a></dt>
@@ -886,7 +878,7 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 <dl class="class">
 <dt id="bmtk.utils.io.spike_trains.SpikesInputH5">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.spike_trains.</code><code class="descname">SpikesInputH5</code><span class="sig-paren">(</span><em>name</em>, <em>module</em>, <em>input_type</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInputH5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputH5" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.spike_trains.SpikesInput" title="bmtk.utils.io.spike_trains.SpikesInput"><code class="xref py py-class docutils literal"><span class="pre">bmtk.utils.io.spike_trains.SpikesInput</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.spike_trains.SpikesInput" title="bmtk.utils.io.spike_trains.SpikesInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.spike_trains.SpikesInput</span></code></a></p>
 <dl class="method">
 <dt id="bmtk.utils.io.spike_trains.SpikesInputH5.get_spikes">
 <code class="descname">get_spikes</code><span class="sig-paren">(</span><em>gid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInputH5.get_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputH5.get_spikes" title="Permalink to this definition">¶</a></dt>
@@ -897,7 +889,7 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 <dl class="class">
 <dt id="bmtk.utils.io.spike_trains.SpikesInputNWBv1">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.spike_trains.</code><code class="descname">SpikesInputNWBv1</code><span class="sig-paren">(</span><em>name</em>, <em>module</em>, <em>input_type</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInputNWBv1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputNWBv1" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.spike_trains.SpikesInput" title="bmtk.utils.io.spike_trains.SpikesInput"><code class="xref py py-class docutils literal"><span class="pre">bmtk.utils.io.spike_trains.SpikesInput</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.spike_trains.SpikesInput" title="bmtk.utils.io.spike_trains.SpikesInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.spike_trains.SpikesInput</span></code></a></p>
 <dl class="method">
 <dt id="bmtk.utils.io.spike_trains.SpikesInputNWBv1.get_spikes">
 <code class="descname">get_spikes</code><span class="sig-paren">(</span><em>gid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInputNWBv1.get_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputNWBv1.get_spikes" title="Permalink to this definition">¶</a></dt>
@@ -911,7 +903,7 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network.ColumnProperty">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network.</code><code class="descname">ColumnProperty</code><span class="sig-paren">(</span><em>name</em>, <em>dtype</em>, <em>dimension</em>, <em>attrs={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#ColumnProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.ColumnProperty" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Representation of a column name and metadata from a hdf5 dataset, csv column, etc.</p>
 <dl class="attribute">
 <dt id="bmtk.utils.io.tabular_network.ColumnProperty.attributes">
@@ -948,7 +940,7 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network.EdgeRow">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network.</code><code class="descname">EdgeRow</code><span class="sig-paren">(</span><em>trg_gid</em>, <em>src_gid</em>, <em>edge_props={}</em>, <em>edge_type_props={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#EdgeRow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.EdgeRow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Representation of a edge.</p>
 <p>Edges must include a source and target node gid. Other properties, from the edges or edge-types files, can be
 directly accessed like a dictionary.</p>
@@ -987,7 +979,7 @@ directly accessed like a dictionary.</p>
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network.EdgesFile">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network.</code><code class="descname">EdgesFile</code><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#EdgesFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.EdgesFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class for reading and iterating over edge files.</p>
 <p>Use the load() method to instantiate from the file. Edges can be accessed for any given edge with a target-gid
 using the edges_itr() method:</p>
@@ -1027,7 +1019,7 @@ print edge_prop[‘prop_name’]</div></blockquote>
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network.NodeRow">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network.</code><code class="descname">NodeRow</code><span class="sig-paren">(</span><em>gid</em>, <em>node_props</em>, <em>types_props</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#NodeRow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.NodeRow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Node file row.</p>
 <p>Each row represents node/cell/population in a network and can include edge-type metadata and dynamics_params when
 applicable. The only mandatory for a NodeRow is a unique gid (i.e cell_id, node_id). Properties can be accessed
@@ -1073,7 +1065,7 @@ like a dictionary.</p>
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network.NodesFile">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network.</code><code class="descname">NodesFile</code><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#NodesFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.NodesFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class for reading and iterating properties of each node in a nodes/node-types file.</p>
 <dl class="docutils">
 <dt>Use the load method to load in the necessary node files. Nodes can be accessed using an interator:</dt>
@@ -1129,7 +1121,7 @@ print node[‘prop’]</dd>
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network.TabularNetwork">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network.</code><code class="descname">TabularNetwork</code><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#TabularNetwork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.TabularNetwork" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Factory for loading nodes and edges files.</p>
 <dl class="staticmethod">
 <dt id="bmtk.utils.io.tabular_network.TabularNetwork.load_edges">
@@ -1146,7 +1138,7 @@ print node[‘prop’]</dd>
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network.TypesTable">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network.</code><code class="descname">TypesTable</code><span class="sig-paren">(</span><em>types_file</em>, <em>index_column</em>, <em>seperator=' '</em>, <em>comment='#'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network.html#TypesTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network.TypesTable" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">dict</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
 <dl class="attribute">
 <dt id="bmtk.utils.io.tabular_network.TypesTable.columns">
 <code class="descname">columns</code><a class="headerlink" href="#bmtk.utils.io.tabular_network.TypesTable.columns" title="Permalink to this definition">¶</a></dt>
@@ -1165,7 +1157,7 @@ print node[‘prop’]</dd>
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network_v0.EdgeRow">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v0.</code><code class="descname">EdgeRow</code><span class="sig-paren">(</span><em>trg_gid</em>, <em>src_gid</em>, <em>nsyns</em>, <em>edge_type_props</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v0.html#EdgeRow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.EdgeRow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.EdgeRow" title="bmtk.utils.io.tabular_network.EdgeRow"><code class="xref py py-class docutils literal"><span class="pre">bmtk.utils.io.tabular_network.EdgeRow</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.EdgeRow" title="bmtk.utils.io.tabular_network.EdgeRow"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.tabular_network.EdgeRow</span></code></a></p>
 <dl class="attribute">
 <dt id="bmtk.utils.io.tabular_network_v0.EdgeRow.dynamics_params">
 <code class="descname">dynamics_params</code><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.EdgeRow.dynamics_params" title="Permalink to this definition">¶</a></dt>
@@ -1181,7 +1173,7 @@ print node[‘prop’]</dd>
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network_v0.EdgesFile">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v0.</code><code class="descname">EdgesFile</code><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v0.html#EdgesFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.EdgesFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.EdgesFile" title="bmtk.utils.io.tabular_network.EdgesFile"><code class="xref py py-class docutils literal"><span class="pre">bmtk.utils.io.tabular_network.EdgesFile</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.EdgesFile" title="bmtk.utils.io.tabular_network.EdgesFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.tabular_network.EdgesFile</span></code></a></p>
 <dl class="method">
 <dt id="bmtk.utils.io.tabular_network_v0.EdgesFile.edges_itr">
 <code class="descname">edges_itr</code><span class="sig-paren">(</span><em>target_gid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v0.html#EdgesFile.edges_itr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.EdgesFile.edges_itr" title="Permalink to this definition">¶</a></dt>
@@ -1207,7 +1199,7 @@ print node[‘prop’]</dd>
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network_v0.NodeRow">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v0.</code><code class="descname">NodeRow</code><span class="sig-paren">(</span><em>gid</em>, <em>node_props</em>, <em>types_props</em>, <em>columns</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v0.html#NodeRow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.NodeRow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.NodeRow" title="bmtk.utils.io.tabular_network.NodeRow"><code class="xref py py-class docutils literal"><span class="pre">bmtk.utils.io.tabular_network.NodeRow</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.NodeRow" title="bmtk.utils.io.tabular_network.NodeRow"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.tabular_network.NodeRow</span></code></a></p>
 <dl class="attribute">
 <dt id="bmtk.utils.io.tabular_network_v0.NodeRow.dynamics_params">
 <code class="descname">dynamics_params</code><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.NodeRow.dynamics_params" title="Permalink to this definition">¶</a></dt>
@@ -1223,7 +1215,7 @@ print node[‘prop’]</dd>
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network_v0.NodesFile">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v0.</code><code class="descname">NodesFile</code><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v0.html#NodesFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.NodesFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.NodesFile" title="bmtk.utils.io.tabular_network.NodesFile"><code class="xref py py-class docutils literal"><span class="pre">bmtk.utils.io.tabular_network.NodesFile</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.NodesFile" title="bmtk.utils.io.tabular_network.NodesFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.tabular_network.NodesFile</span></code></a></p>
 <dl class="method">
 <dt id="bmtk.utils.io.tabular_network_v0.NodesFile.get_node">
 <code class="descname">get_node</code><span class="sig-paren">(</span><em>gid</em>, <em>cache=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v0.html#NodesFile.get_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.NodesFile.get_node" title="Permalink to this definition">¶</a></dt>
@@ -1249,7 +1241,7 @@ print node[‘prop’]</dd>
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network_v0.TabularNetwork">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v0.</code><code class="descname">TabularNetwork</code><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v0.html#TabularNetwork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.TabularNetwork" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.TabularNetwork" title="bmtk.utils.io.tabular_network.TabularNetwork"><code class="xref py py-class docutils literal"><span class="pre">bmtk.utils.io.tabular_network.TabularNetwork</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.TabularNetwork" title="bmtk.utils.io.tabular_network.TabularNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.tabular_network.TabularNetwork</span></code></a></p>
 <dl class="staticmethod">
 <dt id="bmtk.utils.io.tabular_network_v0.TabularNetwork.load_edges">
 <em class="property">static </em><code class="descname">load_edges</code><span class="sig-paren">(</span><em>edges_file</em>, <em>edge_types_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v0.html#TabularNetwork.load_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v0.TabularNetwork.load_edges" title="Permalink to this definition">¶</a></dt>
@@ -1268,7 +1260,7 @@ print node[‘prop’]</dd>
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network_v1.EdgeRow">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v1.</code><code class="descname">EdgeRow</code><span class="sig-paren">(</span><em>trg_gid</em>, <em>src_gid</em>, <em>syn_group</em>, <em>edge_props={}</em>, <em>edge_type_props={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v1.html#EdgeRow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.EdgeRow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.EdgeRow" title="bmtk.utils.io.tabular_network.EdgeRow"><code class="xref py py-class docutils literal"><span class="pre">bmtk.utils.io.tabular_network.EdgeRow</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.EdgeRow" title="bmtk.utils.io.tabular_network.EdgeRow"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.tabular_network.EdgeRow</span></code></a></p>
 <dl class="attribute">
 <dt id="bmtk.utils.io.tabular_network_v1.EdgeRow.dynamics_params">
 <code class="descname">dynamics_params</code><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.EdgeRow.dynamics_params" title="Permalink to this definition">¶</a></dt>
@@ -1284,7 +1276,7 @@ print node[‘prop’]</dd>
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network_v1.EdgesFile">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v1.</code><code class="descname">EdgesFile</code><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v1.html#EdgesFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.EdgesFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.EdgesFile" title="bmtk.utils.io.tabular_network.EdgesFile"><code class="xref py py-class docutils literal"><span class="pre">bmtk.utils.io.tabular_network.EdgesFile</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.EdgesFile" title="bmtk.utils.io.tabular_network.EdgesFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.tabular_network.EdgesFile</span></code></a></p>
 <dl class="method">
 <dt id="bmtk.utils.io.tabular_network_v1.EdgesFile.edges_itr">
 <code class="descname">edges_itr</code><span class="sig-paren">(</span><em>target_gid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v1.html#EdgesFile.edges_itr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.EdgesFile.edges_itr" title="Permalink to this definition">¶</a></dt>
@@ -1310,7 +1302,7 @@ print node[‘prop’]</dd>
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network_v1.Group">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v1.</code><code class="descname">Group</code><span class="sig-paren">(</span><em>group_id</em>, <em>h5_group</em>, <em>types_table</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v1.html#Group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.Group" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="attribute">
 <dt id="bmtk.utils.io.tabular_network_v1.Group.columns">
 <code class="descname">columns</code><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.Group.columns" title="Permalink to this definition">¶</a></dt>
@@ -1321,7 +1313,7 @@ print node[‘prop’]</dd>
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network_v1.NodeRow">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v1.</code><code class="descname">NodeRow</code><span class="sig-paren">(</span><em>gid</em>, <em>group</em>, <em>group_props</em>, <em>types_props</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v1.html#NodeRow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.NodeRow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.NodeRow" title="bmtk.utils.io.tabular_network.NodeRow"><code class="xref py py-class docutils literal"><span class="pre">bmtk.utils.io.tabular_network.NodeRow</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.NodeRow" title="bmtk.utils.io.tabular_network.NodeRow"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.tabular_network.NodeRow</span></code></a></p>
 <dl class="attribute">
 <dt id="bmtk.utils.io.tabular_network_v1.NodeRow.dynamics_params">
 <code class="descname">dynamics_params</code><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.NodeRow.dynamics_params" title="Permalink to this definition">¶</a></dt>
@@ -1337,7 +1329,7 @@ print node[‘prop’]</dd>
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network_v1.NodesFile">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v1.</code><code class="descname">NodesFile</code><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v1.html#NodesFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.NodesFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.NodesFile" title="bmtk.utils.io.tabular_network.NodesFile"><code class="xref py py-class docutils literal"><span class="pre">bmtk.utils.io.tabular_network.NodesFile</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.NodesFile" title="bmtk.utils.io.tabular_network.NodesFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.tabular_network.NodesFile</span></code></a></p>
 <dl class="method">
 <dt id="bmtk.utils.io.tabular_network_v1.NodesFile.get_node">
 <code class="descname">get_node</code><span class="sig-paren">(</span><em>gid</em>, <em>cache=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v1.html#NodesFile.get_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.NodesFile.get_node" title="Permalink to this definition">¶</a></dt>
@@ -1363,7 +1355,7 @@ print node[‘prop’]</dd>
 <dl class="class">
 <dt id="bmtk.utils.io.tabular_network_v1.TabularNetwork">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.tabular_network_v1.</code><code class="descname">TabularNetwork</code><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v1.html#TabularNetwork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.TabularNetwork" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.TabularNetwork" title="bmtk.utils.io.tabular_network.TabularNetwork"><code class="xref py py-class docutils literal"><span class="pre">bmtk.utils.io.tabular_network.TabularNetwork</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.tabular_network.TabularNetwork" title="bmtk.utils.io.tabular_network.TabularNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.tabular_network.TabularNetwork</span></code></a></p>
 <dl class="staticmethod">
 <dt id="bmtk.utils.io.tabular_network_v1.TabularNetwork.load_edges">
 <em class="property">static </em><code class="descname">load_edges</code><span class="sig-paren">(</span><em>edges_file</em>, <em>edge_types_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/tabular_network_v1.html#TabularNetwork.load_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.tabular_network_v1.TabularNetwork.load_edges" title="Permalink to this definition">¶</a></dt>
@@ -1418,12 +1410,14 @@ print node[‘prop’]</dd>
 
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -1434,7 +1428,7 @@ print node[‘prop’]</dd>
 
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Allen Institute for Brain Science.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
     </div>
 <script type="text/javascript" src="/external_assets/javascript/portalFooter.js"></script>
 

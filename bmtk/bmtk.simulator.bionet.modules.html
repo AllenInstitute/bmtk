@@ -4,29 +4,21 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>bmtk.simulator.bionet.modules package &#8212; Brain Modeling Toolkit 0.0.5 documentation</title>
     <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.0.5',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="bmtk.simulator.core package" href="bmtk.simulator.core.html" />
     <link rel="prev" title="bmtk.simulator.bionet.default_setters package" href="bmtk.simulator.bionet.default_setters.html" /> 
-  </head>
-  <body>
+  </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
 <style>
 
@@ -639,33 +631,83 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dl class="class">
 <dt id="bmtk.simulator.bionet.modules.ecp.EcpMod">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.modules.ecp.</code><code class="descname">EcpMod</code><span class="sig-paren">(</span><em>tmp_dir</em>, <em>file_name</em>, <em>electrode_positions</em>, <em>contributions_dir</em>, <em>cells=[]</em>, <em>variable_name='v'</em>, <em>electrode_channels=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/ecp.html#EcpMod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.ecp.EcpMod" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.modules.sim_module.SimulatorMod" title="bmtk.simulator.bionet.modules.sim_module.SimulatorMod"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.modules.sim_module.SimulatorMod</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.modules.sim_module.SimulatorMod" title="bmtk.simulator.bionet.modules.sim_module.SimulatorMod"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.bionet.modules.sim_module.SimulatorMod</span></code></a></p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.ecp.EcpMod.block">
 <code class="descname">block</code><span class="sig-paren">(</span><em>sim</em>, <em>block_interval</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/ecp.html#EcpMod.block"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.ecp.EcpMod.block" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This method is called once after every block of time, as specified by the configuration.</p>
+<p>Unlike the step method which is called during every time-step, the block method will typically be called only a
+few times over the entire simulation. The block method is preferable for accessing and saving to the disk,
+summing up existing data, or simular functionality</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sim</strong> – Simulation object</li>
+<li><strong>block_interval</strong> – The time interval (tstep_start, tstep_end) for which the block is being called on.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.ecp.EcpMod.finalize">
 <code class="descname">finalize</code><span class="sig-paren">(</span><em>sim</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/ecp.html#EcpMod.finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.ecp.EcpMod.finalize" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Call once at the very end of the simulation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sim</strong> – Simulation object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.ecp.EcpMod.initialize">
 <code class="descname">initialize</code><span class="sig-paren">(</span><em>sim</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/ecp.html#EcpMod.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.ecp.EcpMod.initialize" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Will be called once at the beginning of the simulation run, after the network and simulation parameters have
+all been finalized.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sim</strong> – Simulation object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.ecp.EcpMod.step">
 <code class="descname">step</code><span class="sig-paren">(</span><em>sim</em>, <em>tstep</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/ecp.html#EcpMod.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.ecp.EcpMod.step" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Called on every single time step (dt).</p>
+<p>The step method is used for anything that should be recorded or changed continously. dt is determined during
+the setup, and the sim parameter can be used to access simulation, network and individual cell properties</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sim</strong> – Simulation object.</li>
+<li><strong>tstep</strong> – The decrete time-step</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="bmtk.simulator.bionet.modules.ecp.RecXElectrode">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.modules.ecp.</code><code class="descname">RecXElectrode</code><span class="sig-paren">(</span><em>positions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/ecp.html#RecXElectrode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.ecp.RecXElectrode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Extracellular electrode</p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.ecp.RecXElectrode.calc_transfer_resistance">
@@ -691,43 +733,118 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dl class="class">
 <dt id="bmtk.simulator.bionet.modules.record_cellvars.MembraneReport">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.modules.record_cellvars.</code><code class="descname">MembraneReport</code><span class="sig-paren">(</span><em>tmp_dir</em>, <em>file_name</em>, <em>variable_name</em>, <em>cells</em>, <em>sections='all'</em>, <em>buffer_data=True</em>, <em>transform={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/record_cellvars.html#MembraneReport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.record_cellvars.MembraneReport" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.modules.sim_module.SimulatorMod" title="bmtk.simulator.bionet.modules.sim_module.SimulatorMod"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.modules.sim_module.SimulatorMod</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.modules.sim_module.SimulatorMod" title="bmtk.simulator.bionet.modules.sim_module.SimulatorMod"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.bionet.modules.sim_module.SimulatorMod</span></code></a></p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.record_cellvars.MembraneReport.block">
 <code class="descname">block</code><span class="sig-paren">(</span><em>sim</em>, <em>block_interval</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/record_cellvars.html#MembraneReport.block"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.record_cellvars.MembraneReport.block" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This method is called once after every block of time, as specified by the configuration.</p>
+<p>Unlike the step method which is called during every time-step, the block method will typically be called only a
+few times over the entire simulation. The block method is preferable for accessing and saving to the disk,
+summing up existing data, or simular functionality</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sim</strong> – Simulation object</li>
+<li><strong>block_interval</strong> – The time interval (tstep_start, tstep_end) for which the block is being called on.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.record_cellvars.MembraneReport.finalize">
 <code class="descname">finalize</code><span class="sig-paren">(</span><em>sim</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/record_cellvars.html#MembraneReport.finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.record_cellvars.MembraneReport.finalize" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Call once at the very end of the simulation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sim</strong> – Simulation object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.record_cellvars.MembraneReport.initialize">
 <code class="descname">initialize</code><span class="sig-paren">(</span><em>sim</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/record_cellvars.html#MembraneReport.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.record_cellvars.MembraneReport.initialize" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Will be called once at the beginning of the simulation run, after the network and simulation parameters have
+all been finalized.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sim</strong> – Simulation object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.record_cellvars.MembraneReport.step">
 <code class="descname">step</code><span class="sig-paren">(</span><em>sim</em>, <em>tstep</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/record_cellvars.html#MembraneReport.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.record_cellvars.MembraneReport.step" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Called on every single time step (dt).</p>
+<p>The step method is used for anything that should be recorded or changed continously. dt is determined during
+the setup, and the sim parameter can be used to access simulation, network and individual cell properties</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sim</strong> – Simulation object.</li>
+<li><strong>tstep</strong> – The decrete time-step</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="bmtk.simulator.bionet.modules.record_cellvars.SomaReport">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.modules.record_cellvars.</code><code class="descname">SomaReport</code><span class="sig-paren">(</span><em>tmp_dir</em>, <em>file_name</em>, <em>variable_name</em>, <em>cells</em>, <em>sections='soma'</em>, <em>buffer_data=True</em>, <em>transform={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/record_cellvars.html#SomaReport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.record_cellvars.SomaReport" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.modules.record_cellvars.MembraneReport" title="bmtk.simulator.bionet.modules.record_cellvars.MembraneReport"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.modules.record_cellvars.MembraneReport</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.modules.record_cellvars.MembraneReport" title="bmtk.simulator.bionet.modules.record_cellvars.MembraneReport"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.bionet.modules.record_cellvars.MembraneReport</span></code></a></p>
 <p>Special case for when only needing to save the soma variable</p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.record_cellvars.SomaReport.initialize">
 <code class="descname">initialize</code><span class="sig-paren">(</span><em>sim</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/record_cellvars.html#SomaReport.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.record_cellvars.SomaReport.initialize" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Will be called once at the beginning of the simulation run, after the network and simulation parameters have
+all been finalized.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sim</strong> – Simulation object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.record_cellvars.SomaReport.step">
 <code class="descname">step</code><span class="sig-paren">(</span><em>sim</em>, <em>tstep</em>, <em>rel_time=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/record_cellvars.html#SomaReport.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.record_cellvars.SomaReport.step" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Called on every single time step (dt).</p>
+<p>The step method is used for anything that should be recorded or changed continously. dt is determined during
+the setup, and the sim parameter can be used to access simulation, network and individual cell properties</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sim</strong> – Simulation object.</li>
+<li><strong>tstep</strong> – The decrete time-step</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 
@@ -742,22 +859,57 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dl class="class">
 <dt id="bmtk.simulator.bionet.modules.record_spikes.SpikesMod">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.modules.record_spikes.</code><code class="descname">SpikesMod</code><span class="sig-paren">(</span><em>tmp_dir</em>, <em>spikes_file_csv=None</em>, <em>spikes_file=None</em>, <em>spikes_file_nwb=None</em>, <em>spikes_sort_order=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/record_spikes.html#SpikesMod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.record_spikes.SpikesMod" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.modules.sim_module.SimulatorMod" title="bmtk.simulator.bionet.modules.sim_module.SimulatorMod"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.modules.sim_module.SimulatorMod</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.modules.sim_module.SimulatorMod" title="bmtk.simulator.bionet.modules.sim_module.SimulatorMod"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.bionet.modules.sim_module.SimulatorMod</span></code></a></p>
 <p>Module use for saving spikes</p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.record_spikes.SpikesMod.block">
 <code class="descname">block</code><span class="sig-paren">(</span><em>sim</em>, <em>block_interval</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/record_spikes.html#SpikesMod.block"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.record_spikes.SpikesMod.block" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This method is called once after every block of time, as specified by the configuration.</p>
+<p>Unlike the step method which is called during every time-step, the block method will typically be called only a
+few times over the entire simulation. The block method is preferable for accessing and saving to the disk,
+summing up existing data, or simular functionality</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sim</strong> – Simulation object</li>
+<li><strong>block_interval</strong> – The time interval (tstep_start, tstep_end) for which the block is being called on.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.record_spikes.SpikesMod.finalize">
 <code class="descname">finalize</code><span class="sig-paren">(</span><em>sim</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/record_spikes.html#SpikesMod.finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.record_spikes.SpikesMod.finalize" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Call once at the very end of the simulation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sim</strong> – Simulation object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.record_spikes.SpikesMod.initialize">
 <code class="descname">initialize</code><span class="sig-paren">(</span><em>sim</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/record_spikes.html#SpikesMod.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.record_spikes.SpikesMod.initialize" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Will be called once at the beginning of the simulation run, after the network and simulation parameters have
+all been finalized.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sim</strong> – Simulation object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 
@@ -767,11 +919,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dl class="class">
 <dt id="bmtk.simulator.bionet.modules.save_synapses.ConnectionWriter">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.modules.save_synapses.</code><code class="descname">ConnectionWriter</code><span class="sig-paren">(</span><em>network_dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/save_synapses.html#ConnectionWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.save_synapses.ConnectionWriter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="class">
 <dt id="bmtk.simulator.bionet.modules.save_synapses.ConnectionWriter.H5Index">
 <em class="property">class </em><code class="descname">H5Index</code><span class="sig-paren">(</span><em>network_dir</em>, <em>src_pop</em>, <em>trg_pop</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/save_synapses.html#ConnectionWriter.H5Index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.save_synapses.ConnectionWriter.H5Index" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.save_synapses.ConnectionWriter.H5Index.add_bio_conn">
 <code class="descname">add_bio_conn</code><span class="sig-paren">(</span><em>edge_type_id</em>, <em>src_id</em>, <em>trg_id</em>, <em>syn_weight</em>, <em>sec_id</em>, <em>sec_x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/save_synapses.html#ConnectionWriter.H5Index.add_bio_conn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.save_synapses.ConnectionWriter.H5Index.add_bio_conn" title="Permalink to this definition">¶</a></dt>
@@ -809,11 +961,21 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dl class="class">
 <dt id="bmtk.simulator.bionet.modules.save_synapses.SaveSynapses">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.modules.save_synapses.</code><code class="descname">SaveSynapses</code><span class="sig-paren">(</span><em>network_dir</em>, <em>single_file=False</em>, <em>**params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/save_synapses.html#SaveSynapses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.save_synapses.SaveSynapses" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.modules.sim_module.SimulatorMod" title="bmtk.simulator.bionet.modules.sim_module.SimulatorMod"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.modules.sim_module.SimulatorMod</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.modules.sim_module.SimulatorMod" title="bmtk.simulator.bionet.modules.sim_module.SimulatorMod"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.bionet.modules.sim_module.SimulatorMod</span></code></a></p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.save_synapses.SaveSynapses.initialize">
 <code class="descname">initialize</code><span class="sig-paren">(</span><em>sim</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/save_synapses.html#SaveSynapses.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.save_synapses.SaveSynapses.initialize" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Will be called once at the beginning of the simulation run, after the network and simulation parameters have
+all been finalized.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sim</strong> – Simulation object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 
@@ -823,7 +985,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dl class="class">
 <dt id="bmtk.simulator.bionet.modules.sim_module.SimulatorMod">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.modules.sim_module.</code><code class="descname">SimulatorMod</code><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/sim_module.html#SimulatorMod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.sim_module.SimulatorMod" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class for writing custom bionet functions that will be called during the simulation. To use overwrite one or
 more of the following methods in a subclass, and bionet will call the function at the appropiate time.</p>
 <dl class="docutils">
@@ -912,7 +1074,7 @@ the setup, and the sim parameter can be used to access simulation, network and i
 <dl class="class">
 <dt id="bmtk.simulator.bionet.modules.xstim.StimXElectrode">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.modules.xstim.</code><code class="descname">StimXElectrode</code><span class="sig-paren">(</span><em>positions_file</em>, <em>waveform</em>, <em>mesh_files_dir</em>, <em>dt</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/xstim.html#StimXElectrode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.xstim.StimXElectrode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Extracellular Stimulating electrode</p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.xstim.StimXElectrode.calculate_waveforms">
@@ -949,16 +1111,41 @@ the setup, and the sim parameter can be used to access simulation, network and i
 <dl class="class">
 <dt id="bmtk.simulator.bionet.modules.xstim.XStimMod">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.modules.xstim.</code><code class="descname">XStimMod</code><span class="sig-paren">(</span><em>positions_file</em>, <em>waveform</em>, <em>mesh_files_dir=None</em>, <em>cells=None</em>, <em>set_nrn_mechanisms=True</em>, <em>node_set=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/xstim.html#XStimMod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.xstim.XStimMod" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.modules.sim_module.SimulatorMod" title="bmtk.simulator.bionet.modules.sim_module.SimulatorMod"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.modules.sim_module.SimulatorMod</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.modules.sim_module.SimulatorMod" title="bmtk.simulator.bionet.modules.sim_module.SimulatorMod"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.bionet.modules.sim_module.SimulatorMod</span></code></a></p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.xstim.XStimMod.initialize">
 <code class="descname">initialize</code><span class="sig-paren">(</span><em>sim</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/xstim.html#XStimMod.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.xstim.XStimMod.initialize" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Will be called once at the beginning of the simulation run, after the network and simulation parameters have
+all been finalized.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sim</strong> – Simulation object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.xstim.XStimMod.step">
 <code class="descname">step</code><span class="sig-paren">(</span><em>sim</em>, <em>tstep</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/xstim.html#XStimMod.step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.xstim.XStimMod.step" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Called on every single time step (dt).</p>
+<p>The step method is used for anything that should be recorded or changed continously. dt is determined during
+the setup, and the sim parameter can be used to access simulation, network and individual cell properties</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sim</strong> – Simulation object.</li>
+<li><strong>tstep</strong> – The decrete time-step</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 
@@ -968,7 +1155,7 @@ the setup, and the sim parameter can be used to access simulation, network and i
 <dl class="class">
 <dt id="bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.modules.xstim_waveforms.</code><code class="descname">BaseWaveform</code><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/xstim_waveforms.html#BaseWaveform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Abstraction of waveform class to ensure calculate method is implemented</p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform.calculate">
@@ -980,7 +1167,7 @@ the setup, and the sim parameter can be used to access simulation, network and i
 <dl class="class">
 <dt id="bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveformType">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.modules.xstim_waveforms.</code><code class="descname">BaseWaveformType</code><span class="sig-paren">(</span><em>waveform_config</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/xstim_waveforms.html#BaseWaveformType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveformType" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Specific waveform type</p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveformType.is_active">
@@ -992,7 +1179,7 @@ the setup, and the sim parameter can be used to access simulation, network and i
 <dl class="class">
 <dt id="bmtk.simulator.bionet.modules.xstim_waveforms.ComplexWaveform">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.modules.xstim_waveforms.</code><code class="descname">ComplexWaveform</code><span class="sig-paren">(</span><em>el_collection</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/xstim_waveforms.html#ComplexWaveform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.xstim_waveforms.ComplexWaveform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform" title="bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform" title="bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform</span></code></a></p>
 <p>Superposition of simple waveforms</p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.xstim_waveforms.ComplexWaveform.calculate">
@@ -1004,7 +1191,7 @@ the setup, and the sim parameter can be used to access simulation, network and i
 <dl class="class">
 <dt id="bmtk.simulator.bionet.modules.xstim_waveforms.WaveformCustom">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.modules.xstim_waveforms.</code><code class="descname">WaveformCustom</code><span class="sig-paren">(</span><em>waveform_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/xstim_waveforms.html#WaveformCustom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.xstim_waveforms.WaveformCustom" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform" title="bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform" title="bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform</span></code></a></p>
 <p>Custom waveform defined by csv file</p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.xstim_waveforms.WaveformCustom.calculate">
@@ -1016,7 +1203,7 @@ the setup, and the sim parameter can be used to access simulation, network and i
 <dl class="class">
 <dt id="bmtk.simulator.bionet.modules.xstim_waveforms.WaveformTypeDC">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.modules.xstim_waveforms.</code><code class="descname">WaveformTypeDC</code><span class="sig-paren">(</span><em>waveform_config</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/xstim_waveforms.html#WaveformTypeDC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.xstim_waveforms.WaveformTypeDC" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveformType" title="bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveformType"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveformType</span></code></a>, <a class="reference internal" href="#bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform" title="bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveformType" title="bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveformType"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveformType</span></code></a>, <a class="reference internal" href="#bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform" title="bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform</span></code></a></p>
 <p>DC (step) waveform</p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.xstim_waveforms.WaveformTypeDC.calculate">
@@ -1028,7 +1215,7 @@ the setup, and the sim parameter can be used to access simulation, network and i
 <dl class="class">
 <dt id="bmtk.simulator.bionet.modules.xstim_waveforms.WaveformTypeSin">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.modules.xstim_waveforms.</code><code class="descname">WaveformTypeSin</code><span class="sig-paren">(</span><em>waveform_config</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/xstim_waveforms.html#WaveformTypeSin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.xstim_waveforms.WaveformTypeSin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveformType" title="bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveformType"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveformType</span></code></a>, <a class="reference internal" href="#bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform" title="bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform"><code class="xref py py-class docutils literal"><span class="pre">bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveformType" title="bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveformType"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveformType</span></code></a>, <a class="reference internal" href="#bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform" title="bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.bionet.modules.xstim_waveforms.BaseWaveform</span></code></a></p>
 <p>Sinusoidal waveform</p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.xstim_waveforms.WaveformTypeSin.calculate">
@@ -1090,12 +1277,14 @@ Supports json config in conf as well as string pointer to a file.
 
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -1106,7 +1295,7 @@ Supports json config in conf as well as string pointer to a file.
 
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Allen Institute for Brain Science.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
     </div>
 <script type="text/javascript" src="/external_assets/javascript/portalFooter.js"></script>
 

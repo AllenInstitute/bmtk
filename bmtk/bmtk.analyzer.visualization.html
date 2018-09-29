@@ -4,29 +4,21 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>bmtk.analyzer.visualization package &#8212; Brain Modeling Toolkit 0.0.5 documentation</title>
     <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.0.5',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="bmtk.builder package" href="bmtk.builder.html" />
     <link rel="prev" title="bmtk.analyzer package" href="bmtk.analyzer.html" /> 
-  </head>
-  <body>
+  </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
 <style>
 
@@ -709,55 +701,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dd></dd></dl>
 
 </div>
-<div class="section" id="module-bmtk.analyzer.visualization.widgets">
-<span id="bmtk-analyzer-visualization-widgets-module"></span><h2>bmtk.analyzer.visualization.widgets module<a class="headerlink" href="#module-bmtk.analyzer.visualization.widgets" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="bmtk.analyzer.visualization.widgets.MovieWidget">
-<em class="property">class </em><code class="descclassname">bmtk.analyzer.visualization.widgets.</code><code class="descname">MovieWidget</code><span class="sig-paren">(</span><em>t_range</em>, <em>data</em>, <em>ax=None</em>, <em>metadata={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/visualization/widgets.html#MovieWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.visualization.widgets.MovieWidget" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<dl class="method">
-<dt id="bmtk.analyzer.visualization.widgets.MovieWidget.initialize">
-<code class="descname">initialize</code><span class="sig-paren">(</span><em>t0</em>, <em>vmin=-1</em>, <em>vmax=1</em>, <em>cmap=&lt;matplotlib.colors.LinearSegmentedColormap object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/visualization/widgets.html#MovieWidget.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.visualization.widgets.MovieWidget.initialize" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="bmtk.analyzer.visualization.widgets.MovieWidget.ti">
-<code class="descname">ti</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/visualization/widgets.html#MovieWidget.ti"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.visualization.widgets.MovieWidget.ti" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="bmtk.analyzer.visualization.widgets.MovieWidget.update">
-<code class="descname">update</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/visualization/widgets.html#MovieWidget.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.visualization.widgets.MovieWidget.update" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="bmtk.analyzer.visualization.widgets.PlotWidget">
-<em class="property">class </em><code class="descclassname">bmtk.analyzer.visualization.widgets.</code><code class="descname">PlotWidget</code><span class="sig-paren">(</span><em>t_range</em>, <em>y_range</em>, <em>rate_ax=None</em>, <em>position_ax=None</em>, <em>metadata={}</em>, <em>location_markersize=5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/visualization/widgets.html#PlotWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.visualization.widgets.PlotWidget" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<dl class="method">
-<dt id="bmtk.analyzer.visualization.widgets.PlotWidget.initialize">
-<code class="descname">initialize</code><span class="sig-paren">(</span><em>t0</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/visualization/widgets.html#PlotWidget.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.visualization.widgets.PlotWidget.initialize" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="bmtk.analyzer.visualization.widgets.PlotWidget.set_visible">
-<code class="descname">set_visible</code><span class="sig-paren">(</span><em>visible_or_not</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/visualization/widgets.html#PlotWidget.set_visible"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.visualization.widgets.PlotWidget.set_visible" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="bmtk.analyzer.visualization.widgets.PlotWidget.update">
-<code class="descname">update</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/visualization/widgets.html#PlotWidget.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.visualization.widgets.PlotWidget.update" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.analyzer.visualization.widgets.PlotWidget.y">
-<code class="descname">y</code><a class="headerlink" href="#bmtk.analyzer.visualization.widgets.PlotWidget.y" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<div class="section" id="bmtk-analyzer-visualization-widgets-module">
+<h2>bmtk.analyzer.visualization.widgets module<a class="headerlink" href="#bmtk-analyzer-visualization-widgets-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-bmtk.analyzer.visualization">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.analyzer.visualization" title="Permalink to this headline">¶</a></h2>
@@ -795,12 +740,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -811,7 +758,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
     <div class="footer" role="contentinfo">
         &#169; Copyright 2017, Allen Institute for Brain Science.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
     </div>
 <script type="text/javascript" src="/external_assets/javascript/portalFooter.js"></script>
 
