@@ -40,7 +40,7 @@ def test_itr_advanced_search():
         assert(e['syn_type'] == 'i2i')
 
     edges = net.edges(syn_type='i2i')
-    print len(edges) == 100 * 100 * 2
+    print(len(edges) == 100 * 100 * 2)
     for e in edges:
         assert(e['nm'] != 'A')
 
