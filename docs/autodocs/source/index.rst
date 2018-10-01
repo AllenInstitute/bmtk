@@ -20,7 +20,7 @@ Welcome to the Brain Modeling Toolkit
    Source Documentation <bmtk/bmtk>
 
 
-The Brain Modeling Toolkit (bmtk) is a  python-base software package for creating and simulating large-scale brain
+The Brain Modeling Toolkit (bmtk) is a  python-base software package for creating and simulating large-scale neural network
 models. It supports building, simulation and analysis of models of different levels of resolution including:
 
 * Biophysically detailed networks.
@@ -56,8 +56,10 @@ not already:
 * `jsonschema <https://pypi.python.org/pypi/jsonschema>`_
 
 Optional dependencies:
+
 * `mpi4py <https://mpi4py.readthedocs.io/en/stable/>`_
 * `pytest <https://docs.pytest.org/en/latest/>`_
+* `lxml <https://lxml.de/>`_
 
 For running network simulations bmtk uses existing software, which will differ depending on the type of simulation. As such
 there may be additional requirements.
