@@ -22,17 +22,18 @@ div.document {
 }
 
 div.documentwrapper {
-    float: left;
-    width: 100%;
+    float: right;
+//    position: absolute;
+    width: calc(100% - 300px);
 }
 
 div.bodywrapper {
-    margin: 0 0 0 300px;
+//    margin: 0 0 0 300px;
 }
 
 div.body {
     background-color: white;
-    padding: 20px 50px 30px 0px;
+    padding: 3px 50px 30px 0px;
     font-family: Verdana, sans-serif;
 }
 
@@ -43,7 +44,8 @@ div.sphinxsidebarwrapper {
 }
 
 div.sphinxsidebar {
-    position: absolute;
+    //position: absolute;
+    float: left;
     top: 0;
     left: 0;
     margin-left: 0;
@@ -127,7 +129,7 @@ div.sphinxsidebar ul {
 
 div.sphinxsidebar li {
     margin-top: 11px;
-}                         
+}
 
 li.toctree-l2 {
     font-size: 12px;
@@ -777,7 +779,7 @@ div.figure p.caption span.caption-text {
 img.align-right {
     float: right;
     padding: 10px;
-}               
+}
 
 hr.docutils {
   border: none;
@@ -785,8 +787,8 @@ hr.docutils {
 }
 
 a.current {
-  
-}         
+
+}
 
 div.sphinxsidebar p.questions {
   margin-right: 15px;
@@ -815,7 +817,7 @@ dl.function > dt, dl.exception > dt {
 table.docutils tr.field th.field-name {
    background-color: #eaeaea;
    border-bottom: 4px solid white;
-}        
+}
 */
 
 table.docutils th, table.docutils td {
@@ -830,4 +832,28 @@ td.field-body > p > strong {
    background-color: #eaeaea;
    padding: 3px;
    border-left: 2px solid #d0d0d0;
+}
+
+div.document {
+  position:relative !important;
+}
+
+//  img#portal_logo{
+//  display:none;
+//  }
+
+#header_content{
+  height:75px !important;
+}
+
+#header_content > a:hover {
+  background-color: transparent !important;
+}
+
+#portal_tabs {
+  display:none !important;;
+}
+
+#portal_search_input_group {
+  display:none !important;
 }
