@@ -1,0 +1,1112 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>bmtk.simulator.core.graph &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+<script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
+<style>
+
+	/* the icon font-family definition and helper classes */
+	@font-face {
+	  font-family: 'portal_icon_font';
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
+	  font-weight: normal;
+	  font-style: normal;
+	}
+	 
+	 [class^="icon-"]:before, [class*=" icon-"]:before {
+	  font-family: "portal_icon_font";
+	  font-style: normal;
+	  font-weight: normal;
+	  speak: none;
+	 
+	  display: inline-block;
+	  text-decoration: inherit;
+	  width: 1em;
+	  margin-right: .2em;
+	  text-align: center;
+	  /* opacity: .8; */
+	 
+	  /* For safety - reset parent styles, that can break glyph codes*/
+	  font-variant: normal;
+	  text-transform: none;
+	     
+	  /* fix buttons height, for twitter bootstrap */
+	  line-height: 1em;
+	 
+	  /* Animation center compensation - margins should be symmetric */
+	  /* remove if not needed */
+	  margin-left: .2em;
+	
+	}
+	 
+	.icon-spin5:before { content: '\e806'; } /* '' */
+	.icon-left-open-1:before { content: '\e81e'; } /* '' */
+	.icon-plus-1:before { content: '\e801'; } /* '' */
+	.icon-facebook:before { content: '\e816'; } /* '' */
+	.icon-gplus:before { content: '\e818'; } /* '' */
+	.icon-linkedin-3:before { content: '\e815'; } /* '' */
+	.icon-twitter:before { content: '\e817'; } /* '' */
+	.icon-youtube-play:before { content: '\e805'; } /* '' */
+	.icon-plus-2:before { content: '\e809'; } /* '' */
+	.icon-record-1:before { content: '\e81c'; } /* '' */
+	.icon-cancel:before { content: '\e80b'; } /* '' */
+	.icon-search:before { content: '\e804'; } /* '' */
+	.icon-cancel-2:before { content: '\e80c'; } /* '' */
+	.icon-plus-4:before { content: '\e80d'; } /* '' */
+	.icon-cancel-3:before { content: '\e80e'; } /* '' */
+	.icon-plus:before { content: '\e808'; } /* '' */
+	.icon-down-open:before { content: '\e800'; } /* '' */
+	.icon-right-open:before { content: '\e802'; } /* '' */
+	.icon-up-open:before { content: '\e803'; } /* '' */
+	.icon-stop:before { content: '\e813'; } /* '' */
+	.icon-cancel-1:before { content: '\e820'; } /* '' */
+	.icon-plus-3:before { content: '\e80a'; } /* '' */
+	/* end icon font helpers */
+
+	/* icon font spin animation */
+	.animate-spin {
+	  -moz-animation: spin 2s infinite linear;
+	  -o-animation: spin 2s infinite linear;
+	  -webkit-animation: spin 2s infinite linear;
+	  animation: spin 2s infinite linear;
+	  display: inline-block;
+	}
+	@-moz-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-webkit-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-o-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-ms-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	/*  end spin animation */	
+
+	@font-face {
+	    font-family: 'bebas_neueregular';
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
+	    font-weight: normal;
+	    font-style: normal;
+	}
+
+	/* top chrome styles */
+	#top_chrome {
+
+		width:100%;
+		height:28px;
+		background-color:#163E65;
+	}
+
+	.chrome_link_block {
+
+		color:#fff !important;	
+		display:inline-block;
+		height:100%;
+		max-height:28px;
+	}
+
+	.chrome_link_block:hover {
+
+		background-color:#eee;
+		color:#0779BE !important;	
+		cursor:pointer;
+	}
+
+	#top_chrome a {
+
+		color:inherit !important;	
+		text-decoration:none;
+	}
+
+	#top_chrome a:hover {
+
+		color:inherit !important;	
+	}
+
+	#top_chrome_buttons {
+
+		float:right;
+		margin-right:50px;
+	}
+
+	.chrome_button {
+
+		font-family:arial,sans-serif;
+		font-weight:bold;
+		display:inline-block;
+		font-size:9px;
+		text-align:left;
+		text-decoration:none;
+		margin:9px 20px 10px 20px;
+	}
+
+	.chrome_active {
+
+		background-color:#1b7abd;
+		color:#fff;
+	}
+
+
+	/* header element styles*/
+	#header_content {
+
+		font-family: bebas_neueregular, arial, sans-serif;
+		font-size:22px;
+		color:#0779be;		
+		letter-spacing:0.03em;
+
+		position:relative;
+		width:calc(100% - 112px);
+		min-width:800px;
+		height:76px;
+		border-bottom:2px solid #A5A8AB;
+		margin-left:50px;
+		margin-right:50px;
+        z-index:9999; /* IT-9508 */
+	}
+
+	#portal_logo {
+
+		position:absolute;
+		top:20px;
+		left:0px;
+		width:236px;
+	}
+
+	#portal_tabs {
+
+		position: absolute;
+		bottom: 12px;
+		left: 0px;
+		margin-bottom: -12px;
+		display: block;
+	}
+
+	.horizontal_list
+	{
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		display: inline; 		
+	}
+
+	.horizontal_list li { 
+
+		display: inline; 	
+	}	
+
+	#portal_tab_menu_container {
+
+		display:none;
+	}
+
+	#portal_search_input_group {
+
+		position:absolute;
+		margin: 0;
+		padding: 0;
+		bottom:12px;
+		right:0px;
+		border:1px solid #DAD9D3;
+		color:#DAD9D3;
+	}
+
+	#portal_search_input_group input {
+
+		margin: 0;
+		padding: 0;
+		border:none;
+		width:110px;
+		color:#DAD9D3;
+		font-family:Helvetica,sans-serif;
+		font-size:12px;
+		height:28px;
+		margin-left:10px;
+
+		outline:none;
+	}
+
+	input::-ms-clear {
+		display: none;
+	}
+
+	#portal_search_input_group i {
+
+		font-size:0.8em;
+		cursor:pointer;
+	}
+
+	#pSiteSearchTextInput:focus {
+
+		color:#000;
+	}
+
+	.icon_menu_down {
+
+		font-size: 12px;
+		margin-left: 4px;
+		vertical-align: text-top;
+		padding-top: 4px;
+		display: inline-block;
+	}
+
+	.portal_tab_item {
+
+		background-color: #fff;
+		padding: 12px;
+		padding-left:20px;
+		padding-right:20px;
+		display: inline-block !important;		
+	}
+
+	.portal_tab_item a:hover {
+
+		color:#fbe300;	
+	}
+
+	.portal_tab_item:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}	
+
+
+	.portal_menu_active {
+
+		background-color: #EEEEEE;
+	}	
+
+	.portal_menu_item_active {
+
+		color:#fbe300 !important;	
+	}
+
+	.portal_tab_active {
+
+		color:#a5a8ab !important;
+	}
+
+	#header_content a {		
+
+		color:inherit !important;
+	}
+
+	#header_content a:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}
+
+	#header_content ul {
+
+		list-style: none;
+		position: relative;
+		top: 58px;
+		display: inline-table;
+	}
+
+	#header_content ul ul {
+		
+		display:none;
+		opacity:0;
+	}
+
+	/* the fly out menus */
+	#header_content ul li:hover > ul,
+	#header_content ul li.hover > ul {
+
+		position: absolute;
+		top: 48px;
+		z-index:999;
+
+		display: block;
+		width: 152px;
+		padding:0px;
+		padding-top:20px;
+		padding-bottom:10px;
+		font-size: 12px;
+		font-family: Arial,Sans-Serif;
+		font-weight: bold;
+		text-transform: uppercase;
+
+		background-color: rgba(8,122,191,0.98);
+		color: #fff !important;
+		opacity: 1;
+
+		-webkit-animation: fade 0.25s;
+		animation: fade 0.25s;
+	}
+
+	@-webkit-keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}
+	@keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}	
+
+	#header_content ul li:hover > ul li {
+
+		padding: 10px;
+		padding-top: 0px;
+		padding-left: 20px;
+		display: block;
+		opacity:1;
+	}
+
+	#header_content ul li:hover > ul a {
+
+		display: block;
+		opacity:1;
+		white-space:nowrap;
+	}
+
+	#portal_menu_start_list {
+
+		left: 81px;
+
+		/* IE sauce */
+		left:85px\9;
+
+		/* Safari sauce */
+		(;left:79px;);
+	}
+
+	#portal_menu_atlases_list {
+
+		left: 290px;
+		width: 210px !important;
+        height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 303px\9;
+        height: 225px\9;
+
+		/* Safari sauce */
+		(;left:279px;);
+	}
+
+	#portal_menu_tools_list {
+
+		left: 500px;
+		width: 172px !important;
+		height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 513px\9;
+		height:225px\9;
+
+		/* Safari sauce */
+		(;left:489px;);
+		(;height:227px;);
+	}
+
+	/* mozilla sauce */
+	@-moz-document url-prefix() {
+
+		#header_content {
+
+			height:107px;
+		}
+
+		#portal_menu_start_list {
+
+			left:85px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 302px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 512px;
+			height:236px;
+		}
+	}
+
+
+	/* make it look OK on iPad also */
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:portrait) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}  
+	}
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:landscape) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}	  
+	}
+
+	.portal_menu_list_heading {
+
+		color:#9ccae5;
+		border-bottom:1px solid #9ccae5;
+		padding-bottom:5px !important;
+	}
+
+	.portal_menu_list_heading + li {
+
+		padding-top:10px !important;
+	}
+
+	.portal_menu_list_heading li {
+
+		padding-bottom:0px;
+	}	
+
+	#portal_menu_atlases_list li:last-of-type {
+
+		padding-bottom:15px !important;
+	}
+
+	.icon-spin5 {
+
+		color:#000;
+	}
+</style>
+<div id="pHeader">
+<div id="top_chrome">
+	<div id="top_chrome_buttons">
+		<div class="chrome_link_block"><a href="http://www.alleninstitute.org" target="_blank" class="chrome_button">ALLEN INSTITUTE</a></div>
+	</div>
+</div>
+
+<div id="header_content">
+
+	<a href="http://AllenInstitute.github.io">
+		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/AIBS_Logo.png"/>
+	</a>
+</div>
+</div>
+
+<script>
+
+jQuery('#portal_tab_menu').bind('touchstart', function() {
+
+	if(window.console)
+		console.log("touchstart");
+});
+</script>
+<link rel="stylesheet" type="text/css" href="_static/external_assets/stylesheets/common_layout.css" />
+
+
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for bmtk.simulator.core.graph</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright 2017. Allen Institute. All rights reserved</span>
+<span class="c1">#</span>
+<span class="c1"># Redistribution and use in source and binary forms, with or without modification, are permitted provided that the</span>
+<span class="c1"># following conditions are met:</span>
+<span class="c1">#</span>
+<span class="c1"># 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following</span>
+<span class="c1"># disclaimer.</span>
+<span class="c1">#</span>
+<span class="c1"># 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following</span>
+<span class="c1"># disclaimer in the documentation and/or other materials provided with the distribution.</span>
+<span class="c1">#</span>
+<span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
+<span class="c1"># products derived from this software without specific prior written permission.</span>
+<span class="c1">#</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
+<span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="c1"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
+<span class="c1"># SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</span>
+<span class="c1"># SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,</span>
+<span class="c1"># WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</span>
+<span class="c1"># OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">ast</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">bmtk.simulator.core.config</span> <span class="k">import</span> <span class="n">ConfigDict</span>
+<span class="c1">#import config as cfg</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.utils.property_maps</span> <span class="k">import</span> <span class="n">NodePropertyMap</span><span class="p">,</span> <span class="n">EdgePropertyMap</span>
+<span class="kn">from</span> <span class="nn">bmtk.utils</span> <span class="k">import</span> <span class="n">sonata</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.core.io_tools</span> <span class="k">import</span> <span class="n">io</span>
+
+<span class="kn">from</span> <span class="nn">bmtk.simulator.core.node_sets</span> <span class="k">import</span> <span class="n">NodeSet</span><span class="p">,</span> <span class="n">NodeSetAll</span>
+
+
+<span class="sd">&quot;&quot;&quot;Creates a graph of nodes and edges from multiple network files for all simulators.</span>
+
+<span class="sd">Consists of edges and nodes. All classes are abstract and should be reimplemented by a specific simulator. Also</span>
+<span class="sd">contains base factor methods for building a network from a config file (or other).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="SimEdge"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.graph.SimEdge">[docs]</a><span class="k">class</span> <span class="nc">SimEdge</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">original_params</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_orig_params</span> <span class="o">=</span> <span class="n">original_params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dynamics_params</span> <span class="o">=</span> <span class="n">dynamics_params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_updated_params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dynamics_params</span><span class="p">}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">edge_type_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orig_params</span><span class="p">[</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_updated_params</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_updated_params</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orig_params</span><span class="p">[</span><span class="n">item</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="SimNode"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.graph.SimNode">[docs]</a><span class="k">class</span> <span class="nc">SimNode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_id</span> <span class="o">=</span> <span class="n">node_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span> <span class="o">=</span> <span class="n">graph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_graph_params</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_type_id</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_network</span> <span class="o">=</span> <span class="n">network</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_updated_params</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_params</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">node_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">node_type_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_type_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">network</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Name of network node belongs too.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">model_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Parameters (json file, nml, dictionary) that describe a specific node&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_params</span>
+
+    <span class="nd">@model_params</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">model_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_params</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_updated_params</span> <span class="ow">or</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph_params</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_updated_params</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_updated_params</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph_params</span><span class="p">[</span><span class="n">item</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="SimGraph"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.graph.SimGraph">[docs]</a><span class="k">class</span> <span class="nc">SimGraph</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">model_type_col</span> <span class="o">=</span> <span class="s1">&#39;model_type&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_components</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># components table, i.e. paths to model files.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_io</span> <span class="o">=</span> <span class="n">io</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_property_maps</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_property_maps</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_populations</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_internal_populations_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_virtual_populations_map</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_virtual_cells_nid</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_recurrent_edges</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_external_edges</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_sets</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_using_gids</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">io</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_io</span>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    @property</span>
+<span class="sd">    def internal_pop_names(self):</span>
+<span class="sd">        return self</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">node_populations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_node_populations</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+<div class="viewcode-block" id="SimGraph.get_node_set"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.graph.SimGraph.get_node_set">[docs]</a>    <span class="k">def</span> <span class="nf">get_node_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_set</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">node_set</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_sets</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_sets</span><span class="p">[</span><span class="n">node_set</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node_set</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">NodeSet</span><span class="p">(</span><span class="n">node_set</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;Unable to load or find node_set &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node_set</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="SimGraph.get_node_populations"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.graph.SimGraph.get_node_populations">[docs]</a>    <span class="k">def</span> <span class="nf">get_node_populations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_populations</span><span class="o">.</span><span class="n">values</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SimGraph.get_node_population"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.graph.SimGraph.get_node_population">[docs]</a>    <span class="k">def</span> <span class="nf">get_node_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population_name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_populations</span><span class="p">[</span><span class="n">population_name</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="SimGraph.get_component"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.graph.SimGraph.get_component">[docs]</a>    <span class="k">def</span> <span class="nf">get_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the value of item in the components dictionary.</span>
+
+<span class="sd">        :param key: name of component</span>
+<span class="sd">        :return: value assigned to component</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="SimGraph.add_component"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.graph.SimGraph.add_component">[docs]</a>    <span class="k">def</span> <span class="nf">add_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a component key-value pair</span>
+
+<span class="sd">        :param key: name of component</span>
+<span class="sd">        :param value: value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    def _from_json(self, file_name):</span>
+<span class="sd">        return cfg.from_json(file_name)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">_validate_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Make sure various components (i.e. paths) exists before attempting to build the graph.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_create_nodes_prop_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grp</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">NodePropertyMap</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_create_edges_prop_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grp</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">EdgePropertyMap</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__avail_model_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">):</span>
+        <span class="n">model_types</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">grp</span> <span class="ow">in</span> <span class="n">population</span><span class="o">.</span><span class="n">groups</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_type_col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">grp</span><span class="o">.</span><span class="n">all_columns</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;model_type is missing from nodes.&#39;</span><span class="p">)</span>
+
+            <span class="n">model_types</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">grp</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_type_col</span><span class="p">))))</span>
+        <span class="k">return</span> <span class="n">model_types</span>
+
+    <span class="k">def</span> <span class="nf">_preprocess_node_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_population</span><span class="p">):</span>
+        <span class="c1"># TODO: The following figures out the actually used node-type-ids. For mem and speed may be better to just</span>
+        <span class="c1"># process them all</span>
+        <span class="n">node_type_ids</span> <span class="o">=</span> <span class="n">node_population</span><span class="o">.</span><span class="n">type_ids</span>
+        <span class="c1"># TODO: Verify all the node_type_ids are in the table</span>
+        <span class="n">node_types_table</span> <span class="o">=</span> <span class="n">node_population</span><span class="o">.</span><span class="n">types_table</span>
+
+        <span class="c1"># TODO: Convert model_type to a enum</span>
+        <span class="n">morph_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">&#39;morphologies_dir&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">morph_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s1">&#39;morphology&#39;</span> <span class="ow">in</span> <span class="n">node_types_table</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">nt_id</span> <span class="ow">in</span> <span class="n">node_type_ids</span><span class="p">:</span>
+                <span class="n">node_type</span> <span class="o">=</span> <span class="n">node_types_table</span><span class="p">[</span><span class="n">nt_id</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">node_type</span><span class="p">[</span><span class="s1">&#39;morphology&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="c1"># TODO: Check the file exits</span>
+                <span class="c1"># TODO: See if absolute path is stored in csv</span>
+                <span class="n">node_type</span><span class="p">[</span><span class="s1">&#39;morphology&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">morph_dir</span><span class="p">,</span> <span class="n">node_type</span><span class="p">[</span><span class="s1">&#39;morphology&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="s1">&#39;dynamics_params&#39;</span> <span class="ow">in</span> <span class="n">node_types_table</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="s1">&#39;model_type&#39;</span> <span class="ow">in</span> <span class="n">node_types_table</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">nt_id</span> <span class="ow">in</span> <span class="n">node_type_ids</span><span class="p">:</span>
+                <span class="n">node_type</span> <span class="o">=</span> <span class="n">node_types_table</span><span class="p">[</span><span class="n">nt_id</span><span class="p">]</span>
+                <span class="n">dynamics_params</span> <span class="o">=</span> <span class="n">node_type</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dynamics_params</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                    <span class="k">continue</span>
+
+                <span class="n">model_type</span> <span class="o">=</span> <span class="n">node_type</span><span class="p">[</span><span class="s1">&#39;model_type&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;biophysical&#39;</span><span class="p">:</span>
+                    <span class="n">params_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">&#39;biophysical_neuron_models_dir&#39;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;point_process&#39;</span><span class="p">:</span>
+                    <span class="n">params_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">&#39;point_neuron_models_dir&#39;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;point_soma&#39;</span><span class="p">:</span>
+                    <span class="n">params_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">&#39;point_neuron_models_dir&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Not sure what to do in this case, throw Exception?</span>
+                    <span class="n">params_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">&#39;custom_neuron_models&#39;</span><span class="p">)</span>
+
+                <span class="n">params_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">params_dir</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">)</span>
+
+                <span class="c1"># see if we can load the dynamics_params as a dictionary. Otherwise just save the file path and let the</span>
+                <span class="c1"># cell_model loader function handle the extension.</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">params_val</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">params_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">))</span>
+                    <span class="n">node_type</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">params_val</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="c1"># TODO: Check dynamics_params before</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;Could not find node dynamics_params file </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">params_path</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_preprocess_edge_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_pop</span><span class="p">):</span>
+        <span class="n">edge_types_table</span> <span class="o">=</span> <span class="n">edge_pop</span><span class="o">.</span><span class="n">types_table</span>
+        <span class="n">edge_type_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">edge_pop</span><span class="o">.</span><span class="n">type_ids</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">et_id</span> <span class="ow">in</span> <span class="n">edge_type_ids</span><span class="p">:</span>
+            <span class="n">edge_type</span> <span class="o">=</span> <span class="n">edge_types_table</span><span class="p">[</span><span class="n">et_id</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s1">&#39;dynamics_params&#39;</span> <span class="ow">in</span> <span class="n">edge_types_table</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">dynamics_params</span> <span class="o">=</span> <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">]</span>
+                <span class="n">params_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">&#39;synaptic_models_dir&#39;</span><span class="p">)</span>
+
+                <span class="n">params_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">params_dir</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">)</span>
+
+                <span class="c1"># see if we can load the dynamics_params as a dictionary. Otherwise just save the file path and let the</span>
+                <span class="c1"># cell_model loader function handle the extension.</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">params_val</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">params_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">))</span>
+                    <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">params_val</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="c1"># TODO: Check dynamics_params before</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;Could not find edge dynamics_params file </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">params_path</span><span class="p">))</span>
+
+            <span class="c1"># Split target_sections</span>
+            <span class="k">if</span> <span class="s1">&#39;target_sections&#39;</span> <span class="ow">in</span> <span class="n">edge_type</span><span class="p">:</span>
+                <span class="n">trg_sec</span> <span class="o">=</span> <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;target_sections&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">trg_sec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;target_sections&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">trg_sec</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="s1">&#39;Unable to split target_sections list </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">trg_sec</span><span class="p">))</span>
+                        <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;target_sections&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="c1"># Split target distances</span>
+            <span class="k">if</span> <span class="s1">&#39;distance_range&#39;</span> <span class="ow">in</span> <span class="n">edge_type</span><span class="p">:</span>
+                <span class="n">dist_range</span> <span class="o">=</span> <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;distance_range&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">dist_range</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="c1"># TODO: Make the distance range has at most two values</span>
+                        <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;distance_range&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">dist_range</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;distance_range&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">dist_range</span><span class="p">)]</span>
+                        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="s1">&#39;Unable to parse distance_range </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dist_range</span><span class="p">))</span>
+                            <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;distance_range&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="SimGraph.external_edge_populations"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.graph.SimGraph.external_edge_populations">[docs]</a>    <span class="k">def</span> <span class="nf">external_edge_populations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_pop</span><span class="p">,</span> <span class="n">trg_pop</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_external_edges</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">src_pop</span><span class="p">,</span> <span class="n">trg_pop</span><span class="p">),</span> <span class="p">[])</span></div>
+
+<div class="viewcode-block" id="SimGraph.add_nodes"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.graph.SimGraph.add_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">add_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sonata_file</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add nodes from a network to the graph.</span>
+
+<span class="sd">        :param sonata_file: A NodesFormat type object containing list of nodes.</span>
+<span class="sd">        :param populations: name/identifier of network. If none will attempt to retrieve from nodes object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="n">sonata_file</span><span class="o">.</span><span class="n">nodes</span>
+
+        <span class="n">selected_populations</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="n">population_names</span> <span class="k">if</span> <span class="n">populations</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">populations</span>
+        <span class="k">for</span> <span class="n">pop_name</span> <span class="ow">in</span> <span class="n">selected_populations</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">pop_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+                <span class="c1"># when user wants to simulation only a few populations in the file</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">pop_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_populations</span><span class="p">:</span>
+                <span class="c1"># Make sure their aren&#39;t any collisions</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;There are multiple node populations with name </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pop_name</span><span class="p">))</span>
+
+            <span class="n">node_pop</span> <span class="o">=</span> <span class="n">nodes</span><span class="p">[</span><span class="n">pop_name</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess_node_types</span><span class="p">(</span><span class="n">node_pop</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_node_populations</span><span class="p">[</span><span class="n">pop_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_pop</span>
+
+            <span class="c1"># Segregate into virtual populations and non-virtual populations</span>
+            <span class="n">model_types</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__avail_model_types</span><span class="p">(</span><span class="n">node_pop</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s1">&#39;virtual&#39;</span> <span class="ow">in</span> <span class="n">model_types</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_virtual_populations_map</span><span class="p">[</span><span class="n">pop_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_pop</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_virtual_cells_nid</span><span class="p">[</span><span class="n">pop_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="n">model_types</span> <span class="o">-=</span> <span class="nb">set</span><span class="p">([</span><span class="s1">&#39;virtual&#39;</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">model_types</span><span class="p">:</span>
+                    <span class="c1"># We&#39;ll allow a population to have virtual and non-virtual nodes but it is not ideal</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="s1">&#39;Node population </span><span class="si">{}</span><span class="s1"> contains both virtual and non-virtual nodes which can &#39;</span> <span class="o">+</span>
+                                        <span class="s1">&#39;cause memory and build-time inefficency. Consider separating virtual nodes &#39;</span> <span class="o">+</span>
+                                        <span class="s1">&#39;into their own population&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pop_name</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">model_types</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_internal_populations_map</span><span class="p">[</span><span class="n">pop_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_pop</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_node_sets</span><span class="p">[</span><span class="n">pop_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">NodeSet</span><span class="p">({</span><span class="s1">&#39;population&#39;</span><span class="p">:</span> <span class="n">pop_name</span><span class="p">},</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_node_property_maps</span><span class="p">[</span><span class="n">pop_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">grp</span><span class="o">.</span><span class="n">group_id</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_nodes_prop_map</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+                                                  <span class="k">for</span> <span class="n">grp</span> <span class="ow">in</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">groups</span><span class="p">}</span></div>
+
+<div class="viewcode-block" id="SimGraph.build_nodes"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.graph.SimGraph.build_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">build_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="SimGraph.build_recurrent_edges"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.graph.SimGraph.build_recurrent_edges">[docs]</a>    <span class="k">def</span> <span class="nf">build_recurrent_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="SimGraph.add_edges"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.graph.SimGraph.add_edges">[docs]</a>    <span class="k">def</span> <span class="nf">add_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sonata_file</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source_pop</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target_pop</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param sonata_file:</span>
+<span class="sd">        :param populations:</span>
+<span class="sd">        :param source_pop:</span>
+<span class="sd">        :param target_pop:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="n">sonata_file</span><span class="o">.</span><span class="n">edges</span>
+        <span class="n">selected_populations</span> <span class="o">=</span> <span class="n">edges</span><span class="o">.</span><span class="n">population_names</span> <span class="k">if</span> <span class="n">populations</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">populations</span>
+
+        <span class="k">for</span> <span class="n">pop_name</span> <span class="ow">in</span> <span class="n">selected_populations</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">pop_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">edge_pop</span> <span class="o">=</span> <span class="n">edges</span><span class="p">[</span><span class="n">pop_name</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess_edge_types</span><span class="p">(</span><span class="n">edge_pop</span><span class="p">)</span>
+
+            <span class="c1"># Check the source nodes exists</span>
+            <span class="n">src_pop</span> <span class="o">=</span> <span class="n">source_pop</span> <span class="k">if</span> <span class="n">source_pop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">edge_pop</span><span class="o">.</span><span class="n">source_population</span>
+            <span class="n">is_internal_src</span> <span class="o">=</span> <span class="n">src_pop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_internal_populations_map</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="n">is_external_src</span> <span class="o">=</span> <span class="n">src_pop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_virtual_populations_map</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+            <span class="n">trg_pop</span> <span class="o">=</span> <span class="n">target_pop</span> <span class="k">if</span> <span class="n">target_pop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">edge_pop</span><span class="o">.</span><span class="n">target_population</span>
+            <span class="n">is_internal_trg</span> <span class="o">=</span> <span class="n">trg_pop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_internal_populations_map</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_internal_trg</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">((</span><span class="s1">&#39;Node population </span><span class="si">{}</span><span class="s1"> does not exists (or consists of only virtual nodes). &#39;</span> <span class="o">+</span>
+                                      <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> edges cannot create connections.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">trg_pop</span><span class="p">,</span> <span class="n">pop_name</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">is_internal_src</span> <span class="ow">or</span> <span class="n">is_external_src</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;Source node population </span><span class="si">{}</span><span class="s1"> not found. Please update </span><span class="si">{}</span><span class="s1"> edges&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">src_pop</span><span class="p">,</span>
+                                                                                                           <span class="n">pop_name</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">is_internal_src</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">trg_pop</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recurrent_edges</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_recurrent_edges</span><span class="p">[</span><span class="n">trg_pop</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_recurrent_edges</span><span class="p">[</span><span class="n">trg_pop</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge_pop</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">is_external_src</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">trg_pop</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_external_edges</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_external_edges</span><span class="p">[(</span><span class="n">src_pop</span><span class="p">,</span> <span class="n">trg_pop</span><span class="p">)]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_external_edges</span><span class="p">[(</span><span class="n">src_pop</span><span class="p">,</span> <span class="n">trg_pop</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge_pop</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_edge_property_maps</span><span class="p">[</span><span class="n">pop_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">grp</span><span class="o">.</span><span class="n">group_id</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_edges_prop_map</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+                                                  <span class="k">for</span> <span class="n">grp</span> <span class="ow">in</span> <span class="n">edge_pop</span><span class="o">.</span><span class="n">groups</span><span class="p">}</span></div>
+
+<div class="viewcode-block" id="SimGraph.from_config"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.graph.SimGraph.from_config">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">conf</span><span class="p">,</span> <span class="o">**</span><span class="n">properties</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generates a graph structure from a json config file or dictionary.</span>
+
+<span class="sd">        :param conf: name of json config file, or a dictionary with config parameters</span>
+<span class="sd">        :param properties: optional properties.</span>
+<span class="sd">        :return: A graph object of type cls</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">properties</span><span class="p">)</span>
+
+        <span class="c1"># The simulation run script should create a config-dict since it&#39;s likely to vary based on the simulator engine,</span>
+        <span class="c1"># however in the case the user doesn&#39;t we will try a generic conversion from dict/json to ConfigDict</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">):</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">conf</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;Could not convert </span><span class="si">{}</span><span class="s1"> (type &quot;</span><span class="si">{}</span><span class="s1">&quot;) to json.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">conf</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">with_networks</span><span class="p">:</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;Could not find any network files. Unable to build network.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># TODO: These are simulator specific</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">spike_threshold</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">spike_threshold</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">dL</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dL</span>
+
+        <span class="c1"># load components</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">_validate_components</span><span class="p">()</span>
+
+        <span class="c1"># load nodes</span>
+        <span class="n">gid_map</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">gid_mappings</span>
+        <span class="k">for</span> <span class="n">node_dict</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="n">nodes_net</span> <span class="o">=</span> <span class="n">sonata</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">data_files</span><span class="o">=</span><span class="n">node_dict</span><span class="p">[</span><span class="s1">&#39;nodes_file&#39;</span><span class="p">],</span> <span class="n">data_type_files</span><span class="o">=</span><span class="n">node_dict</span><span class="p">[</span><span class="s1">&#39;node_types_file&#39;</span><span class="p">],</span>
+                                    <span class="n">gid_table</span><span class="o">=</span><span class="n">gid_map</span><span class="p">)</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">nodes_net</span><span class="p">)</span>
+
+        <span class="c1"># load edges</span>
+        <span class="k">for</span> <span class="n">edge_dict</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+            <span class="n">target_network</span> <span class="o">=</span> <span class="n">edge_dict</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;target&#39;</span> <span class="ow">in</span> <span class="n">edge_dict</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">source_network</span> <span class="o">=</span> <span class="n">edge_dict</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;source&#39;</span> <span class="ow">in</span> <span class="n">edge_dict</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">edge_net</span> <span class="o">=</span> <span class="n">sonata</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">data_files</span><span class="o">=</span><span class="n">edge_dict</span><span class="p">[</span><span class="s1">&#39;edges_file&#39;</span><span class="p">],</span> <span class="n">data_type_files</span><span class="o">=</span><span class="n">edge_dict</span><span class="p">[</span><span class="s1">&#39;edge_types_file&#39;</span><span class="p">])</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">edge_net</span><span class="p">,</span> <span class="n">source_pop</span><span class="o">=</span><span class="n">target_network</span><span class="p">,</span> <span class="n">target_pop</span><span class="o">=</span><span class="n">source_network</span><span class="p">)</span>
+
+        <span class="n">graph</span><span class="o">.</span><span class="n">_node_sets</span><span class="p">[</span><span class="s1">&#39;all&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">NodeSetAll</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ns_name</span><span class="p">,</span> <span class="n">ns_filter</span> <span class="ow">in</span> <span class="n">conf</span><span class="o">.</span><span class="n">node_sets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">_node_sets</span><span class="p">[</span><span class="n">ns_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">NodeSet</span><span class="p">(</span><span class="n">ns_filter</span><span class="p">,</span> <span class="n">graph</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">graph</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../../../../index.html">Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../builder.html">Building Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../simulators.html">Simulation Engines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../pointnet.html">PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../filternet.html">FilterNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../mintnet.html">MintNet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+    </div>
+<script type="text/javascript" src="_static/external_assets/javascript/portalFooter.js"></script>
+
+  </body>
+</html>

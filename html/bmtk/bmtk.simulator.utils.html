@@ -1,0 +1,1676 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>bmtk.simulator.utils package &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="bmtk.simulator.utils.stimulus package" href="bmtk.simulator.utils.stimulus.html" />
+    <link rel="prev" title="bmtk.simulator.popnet.property_schemas package" href="bmtk.simulator.popnet.property_schemas.html" /> 
+  </head><body>
+<script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
+<style>
+
+	/* the icon font-family definition and helper classes */
+	@font-face {
+	  font-family: 'portal_icon_font';
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
+	  font-weight: normal;
+	  font-style: normal;
+	}
+	 
+	 [class^="icon-"]:before, [class*=" icon-"]:before {
+	  font-family: "portal_icon_font";
+	  font-style: normal;
+	  font-weight: normal;
+	  speak: none;
+	 
+	  display: inline-block;
+	  text-decoration: inherit;
+	  width: 1em;
+	  margin-right: .2em;
+	  text-align: center;
+	  /* opacity: .8; */
+	 
+	  /* For safety - reset parent styles, that can break glyph codes*/
+	  font-variant: normal;
+	  text-transform: none;
+	     
+	  /* fix buttons height, for twitter bootstrap */
+	  line-height: 1em;
+	 
+	  /* Animation center compensation - margins should be symmetric */
+	  /* remove if not needed */
+	  margin-left: .2em;
+	
+	}
+	 
+	.icon-spin5:before { content: '\e806'; } /* '' */
+	.icon-left-open-1:before { content: '\e81e'; } /* '' */
+	.icon-plus-1:before { content: '\e801'; } /* '' */
+	.icon-facebook:before { content: '\e816'; } /* '' */
+	.icon-gplus:before { content: '\e818'; } /* '' */
+	.icon-linkedin-3:before { content: '\e815'; } /* '' */
+	.icon-twitter:before { content: '\e817'; } /* '' */
+	.icon-youtube-play:before { content: '\e805'; } /* '' */
+	.icon-plus-2:before { content: '\e809'; } /* '' */
+	.icon-record-1:before { content: '\e81c'; } /* '' */
+	.icon-cancel:before { content: '\e80b'; } /* '' */
+	.icon-search:before { content: '\e804'; } /* '' */
+	.icon-cancel-2:before { content: '\e80c'; } /* '' */
+	.icon-plus-4:before { content: '\e80d'; } /* '' */
+	.icon-cancel-3:before { content: '\e80e'; } /* '' */
+	.icon-plus:before { content: '\e808'; } /* '' */
+	.icon-down-open:before { content: '\e800'; } /* '' */
+	.icon-right-open:before { content: '\e802'; } /* '' */
+	.icon-up-open:before { content: '\e803'; } /* '' */
+	.icon-stop:before { content: '\e813'; } /* '' */
+	.icon-cancel-1:before { content: '\e820'; } /* '' */
+	.icon-plus-3:before { content: '\e80a'; } /* '' */
+	/* end icon font helpers */
+
+	/* icon font spin animation */
+	.animate-spin {
+	  -moz-animation: spin 2s infinite linear;
+	  -o-animation: spin 2s infinite linear;
+	  -webkit-animation: spin 2s infinite linear;
+	  animation: spin 2s infinite linear;
+	  display: inline-block;
+	}
+	@-moz-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-webkit-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-o-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-ms-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	/*  end spin animation */	
+
+	@font-face {
+	    font-family: 'bebas_neueregular';
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
+	    font-weight: normal;
+	    font-style: normal;
+	}
+
+	/* top chrome styles */
+	#top_chrome {
+
+		width:100%;
+		height:28px;
+		background-color:#163E65;
+	}
+
+	.chrome_link_block {
+
+		color:#fff !important;	
+		display:inline-block;
+		height:100%;
+		max-height:28px;
+	}
+
+	.chrome_link_block:hover {
+
+		background-color:#eee;
+		color:#0779BE !important;	
+		cursor:pointer;
+	}
+
+	#top_chrome a {
+
+		color:inherit !important;	
+		text-decoration:none;
+	}
+
+	#top_chrome a:hover {
+
+		color:inherit !important;	
+	}
+
+	#top_chrome_buttons {
+
+		float:right;
+		margin-right:50px;
+	}
+
+	.chrome_button {
+
+		font-family:arial,sans-serif;
+		font-weight:bold;
+		display:inline-block;
+		font-size:9px;
+		text-align:left;
+		text-decoration:none;
+		margin:9px 20px 10px 20px;
+	}
+
+	.chrome_active {
+
+		background-color:#1b7abd;
+		color:#fff;
+	}
+
+
+	/* header element styles*/
+	#header_content {
+
+		font-family: bebas_neueregular, arial, sans-serif;
+		font-size:22px;
+		color:#0779be;		
+		letter-spacing:0.03em;
+
+		position:relative;
+		width:calc(100% - 112px);
+		min-width:800px;
+		height:76px;
+		border-bottom:2px solid #A5A8AB;
+		margin-left:50px;
+		margin-right:50px;
+        z-index:9999; /* IT-9508 */
+	}
+
+	#portal_logo {
+
+		position:absolute;
+		top:20px;
+		left:0px;
+		width:236px;
+	}
+
+	#portal_tabs {
+
+		position: absolute;
+		bottom: 12px;
+		left: 0px;
+		margin-bottom: -12px;
+		display: block;
+	}
+
+	.horizontal_list
+	{
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		display: inline; 		
+	}
+
+	.horizontal_list li { 
+
+		display: inline; 	
+	}	
+
+	#portal_tab_menu_container {
+
+		display:none;
+	}
+
+	#portal_search_input_group {
+
+		position:absolute;
+		margin: 0;
+		padding: 0;
+		bottom:12px;
+		right:0px;
+		border:1px solid #DAD9D3;
+		color:#DAD9D3;
+	}
+
+	#portal_search_input_group input {
+
+		margin: 0;
+		padding: 0;
+		border:none;
+		width:110px;
+		color:#DAD9D3;
+		font-family:Helvetica,sans-serif;
+		font-size:12px;
+		height:28px;
+		margin-left:10px;
+
+		outline:none;
+	}
+
+	input::-ms-clear {
+		display: none;
+	}
+
+	#portal_search_input_group i {
+
+		font-size:0.8em;
+		cursor:pointer;
+	}
+
+	#pSiteSearchTextInput:focus {
+
+		color:#000;
+	}
+
+	.icon_menu_down {
+
+		font-size: 12px;
+		margin-left: 4px;
+		vertical-align: text-top;
+		padding-top: 4px;
+		display: inline-block;
+	}
+
+	.portal_tab_item {
+
+		background-color: #fff;
+		padding: 12px;
+		padding-left:20px;
+		padding-right:20px;
+		display: inline-block !important;		
+	}
+
+	.portal_tab_item a:hover {
+
+		color:#fbe300;	
+	}
+
+	.portal_tab_item:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}	
+
+
+	.portal_menu_active {
+
+		background-color: #EEEEEE;
+	}	
+
+	.portal_menu_item_active {
+
+		color:#fbe300 !important;	
+	}
+
+	.portal_tab_active {
+
+		color:#a5a8ab !important;
+	}
+
+	#header_content a {		
+
+		color:inherit !important;
+	}
+
+	#header_content a:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}
+
+	#header_content ul {
+
+		list-style: none;
+		position: relative;
+		top: 58px;
+		display: inline-table;
+	}
+
+	#header_content ul ul {
+		
+		display:none;
+		opacity:0;
+	}
+
+	/* the fly out menus */
+	#header_content ul li:hover > ul,
+	#header_content ul li.hover > ul {
+
+		position: absolute;
+		top: 48px;
+		z-index:999;
+
+		display: block;
+		width: 152px;
+		padding:0px;
+		padding-top:20px;
+		padding-bottom:10px;
+		font-size: 12px;
+		font-family: Arial,Sans-Serif;
+		font-weight: bold;
+		text-transform: uppercase;
+
+		background-color: rgba(8,122,191,0.98);
+		color: #fff !important;
+		opacity: 1;
+
+		-webkit-animation: fade 0.25s;
+		animation: fade 0.25s;
+	}
+
+	@-webkit-keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}
+	@keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}	
+
+	#header_content ul li:hover > ul li {
+
+		padding: 10px;
+		padding-top: 0px;
+		padding-left: 20px;
+		display: block;
+		opacity:1;
+	}
+
+	#header_content ul li:hover > ul a {
+
+		display: block;
+		opacity:1;
+		white-space:nowrap;
+	}
+
+	#portal_menu_start_list {
+
+		left: 81px;
+
+		/* IE sauce */
+		left:85px\9;
+
+		/* Safari sauce */
+		(;left:79px;);
+	}
+
+	#portal_menu_atlases_list {
+
+		left: 290px;
+		width: 210px !important;
+        height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 303px\9;
+        height: 225px\9;
+
+		/* Safari sauce */
+		(;left:279px;);
+	}
+
+	#portal_menu_tools_list {
+
+		left: 500px;
+		width: 172px !important;
+		height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 513px\9;
+		height:225px\9;
+
+		/* Safari sauce */
+		(;left:489px;);
+		(;height:227px;);
+	}
+
+	/* mozilla sauce */
+	@-moz-document url-prefix() {
+
+		#header_content {
+
+			height:107px;
+		}
+
+		#portal_menu_start_list {
+
+			left:85px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 302px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 512px;
+			height:236px;
+		}
+	}
+
+
+	/* make it look OK on iPad also */
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:portrait) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}  
+	}
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:landscape) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}	  
+	}
+
+	.portal_menu_list_heading {
+
+		color:#9ccae5;
+		border-bottom:1px solid #9ccae5;
+		padding-bottom:5px !important;
+	}
+
+	.portal_menu_list_heading + li {
+
+		padding-top:10px !important;
+	}
+
+	.portal_menu_list_heading li {
+
+		padding-bottom:0px;
+	}	
+
+	#portal_menu_atlases_list li:last-of-type {
+
+		padding-bottom:15px !important;
+	}
+
+	.icon-spin5 {
+
+		color:#000;
+	}
+</style>
+<div id="pHeader">
+<div id="top_chrome">
+	<div id="top_chrome_buttons">
+		<div class="chrome_link_block"><a href="http://www.alleninstitute.org" target="_blank" class="chrome_button">ALLEN INSTITUTE</a></div>
+	</div>
+</div>
+
+<div id="header_content">
+
+	<a href="http://AllenInstitute.github.io">
+		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/AIBS_Logo.png"/>
+	</a>
+</div>
+</div>
+
+<script>
+
+jQuery('#portal_tab_menu').bind('touchstart', function() {
+
+	if(window.console)
+		console.log("touchstart");
+});
+</script>
+<link rel="stylesheet" type="text/css" href="_static/external_assets/stylesheets/common_layout.css" />
+
+
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="bmtk-simulator-utils-package">
+<h1>bmtk.simulator.utils package<a class="headerlink" href="#bmtk-simulator-utils-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html">bmtk.simulator.utils.stimulus package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#module-bmtk.simulator.utils.stimulus.LocallySparseNoise">bmtk.simulator.utils.stimulus.LocallySparseNoise module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#module-bmtk.simulator.utils.stimulus.NaturalScenes">bmtk.simulator.utils.stimulus.NaturalScenes module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#module-bmtk.simulator.utils.stimulus.StaticGratings">bmtk.simulator.utils.stimulus.StaticGratings module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#module-bmtk.simulator.utils.stimulus">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bmtk.simulator.utils.tools.html">bmtk.simulator.utils.tools package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.tools.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.tools.html#module-bmtk.simulator.utils.tools.process_spikes">bmtk.simulator.utils.tools.process_spikes module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.tools.html#module-bmtk.simulator.utils.tools.spatial">bmtk.simulator.utils.tools.spatial module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.tools.html#module-bmtk.simulator.utils.tools">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-bmtk.simulator.utils.config">
+<span id="bmtk-simulator-utils-config-module"></span><h2>bmtk.simulator.utils.config module<a class="headerlink" href="#module-bmtk.simulator.utils.config" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.utils.config.ConfigDict">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.config.</code><code class="descname">ConfigDict</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/config.html#ConfigDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.biophysical_neuron_models_dir">
+<code class="descname">biophysical_neuron_models_dir</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.biophysical_neuron_models_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.block_step">
+<code class="descname">block_step</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.block_step" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.config.ConfigDict.build_env">
+<code class="descname">build_env</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/config.html#ConfigDict.build_env"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.build_env" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.celsius">
+<code class="descname">celsius</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.celsius" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.components">
+<code class="descname">components</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.components" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.conditions">
+<code class="descname">conditions</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.conditions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.config.ConfigDict.copy_to_output">
+<code class="descname">copy_to_output</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/config.html#ConfigDict.copy_to_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.copy_to_output" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.dL">
+<code class="descname">dL</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.dL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.dt">
+<code class="descname">dt</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.dt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.edges">
+<code class="descname">edges</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.edges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.config.ConfigDict.from_dict">
+<em class="property">classmethod </em><code class="descname">from_dict</code><span class="sig-paren">(</span><em>config_dict</em>, <em>validate=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/config.html#ConfigDict.from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.from_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.config.ConfigDict.from_json">
+<em class="property">classmethod </em><code class="descname">from_json</code><span class="sig-paren">(</span><em>config_file</em>, <em>validate=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/config.html#ConfigDict.from_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.from_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.config.ConfigDict.from_yaml">
+<em class="property">classmethod </em><code class="descname">from_yaml</code><span class="sig-paren">(</span><em>config_file</em>, <em>validate=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/config.html#ConfigDict.from_yaml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.from_yaml" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.config.ConfigDict.get_modules">
+<code class="descname">get_modules</code><span class="sig-paren">(</span><em>module_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/config.html#ConfigDict.get_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.get_modules" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="bmtk.simulator.utils.config.ConfigDict.get_validator">
+<em class="property">static </em><code class="descname">get_validator</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/config.html#ConfigDict.get_validator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.get_validator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.gid_mappings">
+<code class="descname">gid_mappings</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.gid_mappings" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.inputs">
+<code class="descname">inputs</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.inputs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.io">
+<code class="descname">io</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.io" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.config.ConfigDict.load">
+<em class="property">classmethod </em><code class="descname">load</code><span class="sig-paren">(</span><em>config_file</em>, <em>validate=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/config.html#ConfigDict.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.log_file">
+<code class="descname">log_file</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.log_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.mechanisms_dir">
+<code class="descname">mechanisms_dir</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.mechanisms_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.morphologies_dir">
+<code class="descname">morphologies_dir</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.morphologies_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.networks">
+<code class="descname">networks</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.networks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.node_sets">
+<code class="descname">node_sets</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.node_sets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.nodes">
+<code class="descname">nodes</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.output">
+<code class="descname">output</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.output" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.output_dir">
+<code class="descname">output_dir</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.output_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.overwrite_output">
+<code class="descname">overwrite_output</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.overwrite_output" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.path">
+<code class="descname">path</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.point_neuron_models_dir">
+<code class="descname">point_neuron_models_dir</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.point_neuron_models_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.reports">
+<code class="descname">reports</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.reports" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.run">
+<code class="descname">run</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.spike_threshold">
+<code class="descname">spike_threshold</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.spike_threshold" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.spikes_file">
+<code class="descname">spikes_file</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.spikes_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.synaptic_models_dir">
+<code class="descname">synaptic_models_dir</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.synaptic_models_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.templates_dir">
+<code class="descname">templates_dir</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.templates_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.tstart">
+<code class="descname">tstart</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.tstart" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.tstop">
+<code class="descname">tstop</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.tstop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.v_init">
+<code class="descname">v_init</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.v_init" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.config.ConfigDict.with_networks">
+<code class="descname">with_networks</code><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict.with_networks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.utils.config.copy_config">
+<code class="descclassname">bmtk.simulator.utils.config.</code><code class="descname">copy_config</code><span class="sig-paren">(</span><em>conf</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/config.html#copy_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.config.copy_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy configuration file to different directory, with manifest variables resolved.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>conf</strong> – configuration dictionary</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.utils.config.from_dict">
+<code class="descclassname">bmtk.simulator.utils.config.</code><code class="descname">from_dict</code><span class="sig-paren">(</span><em>config_dict</em>, <em>validator=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/config.html#from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.config.from_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds and validates a configuration json dictionary object. Best to directly use from_json when possible.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>config_dict</strong> – Dictionary object</li>
+<li><strong>validator</strong> – A SimConfigValidator object to validate json file. Won’t validate if set to None</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A dictionary, verified against json validator and with manifest variables resolved.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.utils.config.from_json">
+<code class="descclassname">bmtk.simulator.utils.config.</code><code class="descname">from_json</code><span class="sig-paren">(</span><em>config_file</em>, <em>validator=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/config.html#from_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.config.from_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds and validates a configuration json file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>config_file</strong> – File object or path to a json file.</li>
+<li><strong>validator</strong> – A SimConfigValidator object to validate json file. Won’t validate if set to None</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A dictionary, verified against json validator and with manifest variables resolved.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.simulator.utils.graph">
+<span id="bmtk-simulator-utils-graph-module"></span><h2>bmtk.simulator.utils.graph module<a class="headerlink" href="#module-bmtk.simulator.utils.graph" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.utils.graph.SimEdge">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.graph.</code><code class="descname">SimEdge</code><span class="sig-paren">(</span><em>original_params</em>, <em>dynamics_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/graph.html#SimEdge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.graph.SimEdge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.graph.SimEdge.edge_type_id">
+<code class="descname">edge_type_id</code><a class="headerlink" href="#bmtk.simulator.utils.graph.SimEdge.edge_type_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.graph.SimGraph">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.graph.</code><code class="descname">SimGraph</code><a class="reference internal" href="../_modules/bmtk/simulator/utils/graph.html#SimGraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.simulator.utils.graph.SimGraph.add_component">
+<code class="descname">add_component</code><span class="sig-paren">(</span><em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/graph.html#SimGraph.add_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.add_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a component key-value pair</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> – name of component</li>
+<li><strong>value</strong> – value</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.graph.SimGraph.add_edges">
+<code class="descname">add_edges</code><span class="sig-paren">(</span><em>sonata_file</em>, <em>populations=None</em>, <em>source_pop=None</em>, <em>target_pop=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/graph.html#SimGraph.add_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.add_edges" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sonata_file</strong> – </li>
+<li><strong>populations</strong> – </li>
+<li><strong>source_pop</strong> – </li>
+<li><strong>target_pop</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.graph.SimGraph.add_nodes">
+<code class="descname">add_nodes</code><span class="sig-paren">(</span><em>sonata_file</em>, <em>populations=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/graph.html#SimGraph.add_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.add_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add nodes from a network to the graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sonata_file</strong> – A NodesFormat type object containing list of nodes.</li>
+<li><strong>populations</strong> – name/identifier of network. If none will attempt to retrieve from nodes object</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.graph.SimGraph.build_nodes">
+<code class="descname">build_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/graph.html#SimGraph.build_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.build_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.graph.SimGraph.build_recurrent_edges">
+<code class="descname">build_recurrent_edges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/graph.html#SimGraph.build_recurrent_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.build_recurrent_edges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.graph.SimGraph.external_edge_populations">
+<code class="descname">external_edge_populations</code><span class="sig-paren">(</span><em>src_pop</em>, <em>trg_pop</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/graph.html#SimGraph.external_edge_populations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.external_edge_populations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.graph.SimGraph.from_config">
+<em class="property">classmethod </em><code class="descname">from_config</code><span class="sig-paren">(</span><em>conf</em>, <em>**properties</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/graph.html#SimGraph.from_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.from_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a graph structure from a json config file or dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>conf</strong> – name of json config file, or a dictionary with config parameters</li>
+<li><strong>properties</strong> – optional properties.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A graph object of type cls</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.graph.SimGraph.get_component">
+<code class="descname">get_component</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/graph.html#SimGraph.get_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.get_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of item in the components dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> – name of component</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">value assigned to component</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.graph.SimGraph.internal_pop_names">
+<code class="descname">internal_pop_names</code><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.internal_pop_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.graph.SimGraph.io">
+<code class="descname">io</code><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.io" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.graph.SimGraph.model_type_col">
+<code class="descname">model_type_col</code><em class="property"> = 'model_type'</em><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.model_type_col" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.graph.SimGraph.node_populations">
+<code class="descname">node_populations</code><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.node_populations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.graph.SimNode">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.graph.</code><code class="descname">SimNode</code><span class="sig-paren">(</span><em>node_id</em>, <em>graph</em>, <em>network</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/graph.html#SimNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.graph.SimNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.graph.SimNode.model_params">
+<code class="descname">model_params</code><a class="headerlink" href="#bmtk.simulator.utils.graph.SimNode.model_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parameters (json file, nml, dictionary) that describe a specific node</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.graph.SimNode.network">
+<code class="descname">network</code><a class="headerlink" href="#bmtk.simulator.utils.graph.SimNode.network" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of network node belongs too.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.graph.SimNode.node_id">
+<code class="descname">node_id</code><a class="headerlink" href="#bmtk.simulator.utils.graph.SimNode.node_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.graph.SimNode.node_type_id">
+<code class="descname">node_type_id</code><a class="headerlink" href="#bmtk.simulator.utils.graph.SimNode.node_type_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.simulator.utils.io">
+<span id="bmtk-simulator-utils-io-module"></span><h2>bmtk.simulator.utils.io module<a class="headerlink" href="#module-bmtk.simulator.utils.io" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.utils.io.IOUtils">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.io.</code><code class="descname">IOUtils</code><a class="reference internal" href="../_modules/bmtk/simulator/utils/io.html#IOUtils"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.io.IOUtils" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.simulator.utils.io.IOUtils.barrier">
+<code class="descname">barrier</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/io.html#IOUtils.barrier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.io.IOUtils.barrier" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.io.IOUtils.log_exception">
+<code class="descname">log_exception</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/io.html#IOUtils.log_exception"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.io.IOUtils.log_exception" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.io.IOUtils.log_info">
+<code class="descname">log_info</code><span class="sig-paren">(</span><em>message</em>, <em>all_ranks=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/io.html#IOUtils.log_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.io.IOUtils.log_info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.io.IOUtils.log_warning">
+<code class="descname">log_warning</code><span class="sig-paren">(</span><em>message</em>, <em>all_ranks=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/io.html#IOUtils.log_warning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.io.IOUtils.log_warning" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.io.IOUtils.logger">
+<code class="descname">logger</code><a class="headerlink" href="#bmtk.simulator.utils.io.IOUtils.logger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.io.IOUtils.quit">
+<code class="descname">quit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/io.html#IOUtils.quit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.io.IOUtils.quit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.io.IOUtils.set_console_logging">
+<code class="descname">set_console_logging</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/io.html#IOUtils.set_console_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.io.IOUtils.set_console_logging" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.io.IOUtils.setup_output_dir">
+<code class="descname">setup_output_dir</code><span class="sig-paren">(</span><em>config_dir</em>, <em>log_file</em>, <em>overwrite=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/io.html#IOUtils.setup_output_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.io.IOUtils.setup_output_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.simulator.utils.load_spikes">
+<span id="bmtk-simulator-utils-load-spikes-module"></span><h2>bmtk.simulator.utils.load_spikes module<a class="headerlink" href="#module-bmtk.simulator.utils.load_spikes" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="bmtk.simulator.utils.load_spikes.load_spikes_ascii">
+<code class="descclassname">bmtk.simulator.utils.load_spikes.</code><code class="descname">load_spikes_ascii</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/load_spikes.html#load_spikes_ascii"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.load_spikes.load_spikes_ascii" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load ascii spike file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.utils.load_spikes.load_spikes_h5">
+<code class="descclassname">bmtk.simulator.utils.load_spikes.</code><code class="descname">load_spikes_h5</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/load_spikes.html#load_spikes_h5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.load_spikes.load_spikes_h5" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load ascii spike file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.utils.load_spikes.load_spikes_nwb">
+<code class="descclassname">bmtk.simulator.utils.load_spikes.</code><code class="descname">load_spikes_nwb</code><span class="sig-paren">(</span><em>file_name</em>, <em>trial_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/load_spikes.html#load_spikes_nwb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.load_spikes.load_spikes_nwb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load spikes from the nwb file</p>
+<p>spike_times: list
+spike_gids: list</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.simulator.utils.nwb">
+<span id="bmtk-simulator-utils-nwb-module"></span><h2>bmtk.simulator.utils.nwb module<a class="headerlink" href="#module-bmtk.simulator.utils.nwb" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.utils.nwb.Data">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">Data</code><span class="sig-paren">(</span><em>data</em>, <em>dimension</em>, <em>unit</em>, <em>scales</em>, <em>metadata</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#Data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.Data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.simulator.utils.nwb.Data.add_to_acquisition">
+<code class="descname">add_to_acquisition</code><span class="sig-paren">(</span><em>f</em>, <em>compression='gzip'</em>, <em>compression_opts=4</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#Data.add_to_acquisition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.Data.add_to_acquisition" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.nwb.Data.add_to_analysis">
+<code class="descname">add_to_analysis</code><span class="sig-paren">(</span><em>f</em>, <em>analysis_submodule_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#Data.add_to_analysis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.Data.add_to_analysis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.nwb.Data.add_to_processing">
+<code class="descname">add_to_processing</code><span class="sig-paren">(</span><em>f</em>, <em>processing_submodule_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#Data.add_to_processing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.Data.add_to_processing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.nwb.Data.add_to_stimulus">
+<code class="descname">add_to_stimulus</code><span class="sig-paren">(</span><em>f</em>, <em>compression='gzip'</em>, <em>compression_opts=4</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#Data.add_to_stimulus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.Data.add_to_stimulus" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.nwb.Data.get_acquisition">
+<em class="property">classmethod </em><code class="descname">get_acquisition</code><span class="sig-paren">(</span><em>f</em>, <em>ii=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#Data.get_acquisition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.Data.get_acquisition" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.nwb.Data.get_analysis">
+<em class="property">classmethod </em><code class="descname">get_analysis</code><span class="sig-paren">(</span><em>f</em>, <em>subgroup_name</em>, <em>ii=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#Data.get_analysis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.Data.get_analysis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.nwb.Data.get_processing">
+<em class="property">classmethod </em><code class="descname">get_processing</code><span class="sig-paren">(</span><em>f</em>, <em>subgroup_name</em>, <em>ii=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#Data.get_processing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.Data.get_processing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.nwb.Data.get_stimulus">
+<em class="property">classmethod </em><code class="descname">get_stimulus</code><span class="sig-paren">(</span><em>f</em>, <em>ii=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#Data.get_stimulus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.Data.get_stimulus" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.nwb.Dev">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">Dev</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#Dev"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.Dev" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.utils.nwb.Data" title="bmtk.simulator.utils.nwb.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.utils.nwb.Data</span></code></a></p>
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.nwb.Dev.group">
+<code class="descname">group</code><em class="property"> = 'dev'</em><a class="headerlink" href="#bmtk.simulator.utils.nwb.Dev.group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.nwb.DtScale">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">DtScale</code><span class="sig-paren">(</span><em>dt</em>, <em>dimension</em>, <em>unit</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#DtScale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.DtScale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.nwb.DtScale.data">
+<code class="descname">data</code><a class="headerlink" href="#bmtk.simulator.utils.nwb.DtScale.data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.nwb.FiringRate">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">FiringRate</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#FiringRate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.FiringRate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.utils.nwb.Data" title="bmtk.simulator.utils.nwb.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.utils.nwb.Data</span></code></a></p>
+<dl class="method">
+<dt id="bmtk.simulator.utils.nwb.FiringRate.get_widget">
+<code class="descname">get_widget</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#FiringRate.get_widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.FiringRate.get_widget" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.nwb.FiringRate.group">
+<code class="descname">group</code><em class="property"> = 'firing_rate'</em><a class="headerlink" href="#bmtk.simulator.utils.nwb.FiringRate.group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.nwb.GrayScaleMovie">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">GrayScaleMovie</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#GrayScaleMovie"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.GrayScaleMovie" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.utils.nwb.Data" title="bmtk.simulator.utils.nwb.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.utils.nwb.Data</span></code></a></p>
+<dl class="method">
+<dt id="bmtk.simulator.utils.nwb.GrayScaleMovie.get_widget">
+<code class="descname">get_widget</code><span class="sig-paren">(</span><em>ax=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#GrayScaleMovie.get_widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.GrayScaleMovie.get_widget" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.nwb.GrayScaleMovie.group">
+<code class="descname">group</code><em class="property"> = 'grayscale_movie'</em><a class="headerlink" href="#bmtk.simulator.utils.nwb.GrayScaleMovie.group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.nwb.NullScale">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">NullScale</code><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#NullScale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.NullScale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.nwb.Scale">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">Scale</code><span class="sig-paren">(</span><em>scale_range</em>, <em>dimension</em>, <em>unit</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#Scale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.Scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.nwb.Scale.data">
+<code class="descname">data</code><a class="headerlink" href="#bmtk.simulator.utils.nwb.Scale.data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.nwb.SpikeTrain">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">SpikeTrain</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#SpikeTrain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.SpikeTrain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.utils.nwb.Data" title="bmtk.simulator.utils.nwb.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.utils.nwb.Data</span></code></a></p>
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.nwb.SpikeTrain.group">
+<code class="descname">group</code><em class="property"> = 'spike_train'</em><a class="headerlink" href="#bmtk.simulator.utils.nwb.SpikeTrain.group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.nwb.TimeSeries">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">TimeSeries</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#TimeSeries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.TimeSeries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.utils.nwb.Data" title="bmtk.simulator.utils.nwb.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.utils.nwb.Data</span></code></a></p>
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.nwb.TimeSeries.group">
+<code class="descname">group</code><em class="property"> = 'time_series'</em><a class="headerlink" href="#bmtk.simulator.utils.nwb.TimeSeries.group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.utils.nwb.add_external_links">
+<code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">add_external_links</code><span class="sig-paren">(</span><em>parent_group, external_file_name, external_group_name_list=['file_create_date', 'stimulus', 'acquisition', 'analysis', 'processing', 'epochs', 'general', 'session_description', 'nwb_version', 'identifier']</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#add_external_links"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.add_external_links" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.utils.nwb.assert_subgroup_exists">
+<code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">assert_subgroup_exists</code><span class="sig-paren">(</span><em>child_name</em>, <em>parent</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#assert_subgroup_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.assert_subgroup_exists" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.utils.nwb.create_blank_file">
+<code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">create_blank_file</code><span class="sig-paren">(</span><em>save_file_name=None</em>, <em>force=False</em>, <em>session_description=''</em>, <em>close=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#create_blank_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.create_blank_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.utils.nwb.get_stimulus">
+<code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">get_stimulus</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#get_stimulus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.get_stimulus" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.utils.nwb.get_temp_file_name">
+<code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">get_temp_file_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#get_temp_file_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.get_temp_file_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.utils.nwb.open_file">
+<code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">open_file</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#open_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.open_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.simulator.utils.property_maps">
+<span id="bmtk-simulator-utils-property-maps-module"></span><h2>bmtk.simulator.utils.property_maps module<a class="headerlink" href="#module-bmtk.simulator.utils.property_maps" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.utils.property_maps.EdgePropertyMap">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.property_maps.</code><code class="descname">EdgePropertyMap</code><a class="reference internal" href="../_modules/bmtk/simulator/utils/property_maps.html#EdgePropertyMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.property_maps.EdgePropertyMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.property_maps.NodePropertyMap">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.property_maps.</code><code class="descname">NodePropertyMap</code><a class="reference internal" href="../_modules/bmtk/simulator/utils/property_maps.html#NodePropertyMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.property_maps.NodePropertyMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.simulator.utils.sim_validator">
+<span id="bmtk-simulator-utils-sim-validator-module"></span><h2>bmtk.simulator.utils.sim_validator module<a class="headerlink" href="#module-bmtk.simulator.utils.sim_validator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.utils.sim_validator.SimConfigValidator">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.sim_validator.</code><code class="descname">SimConfigValidator</code><span class="sig-paren">(</span><em>schema</em>, <em>types=()</em>, <em>resolver=None</em>, <em>format_checker=None</em>, <em>file_formats=()</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/sim_validator.html#SimConfigValidator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.sim_validator.SimConfigValidator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">jsonschema.validators.Draft4Validator</span></code></p>
+<dl class="docutils">
+<dt>A JSON Schema validator class that will store a schema (passed into the constructor) and validate a json file.</dt>
+<dd><p class="first">It has all the functionality of the JSONSchema format, plus includes special types and parameters like making
+sure a value is a file or directory type, checking csv files, etc.</p>
+<p class="last">To Use:
+validator = SimConfigValidator(json_schema.json)
+validator.validate(file.json)</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="bmtk.simulator.utils.sim_validator.SimConfigValidator.is_type">
+<code class="descname">is_type</code><span class="sig-paren">(</span><em>instance</em>, <em>dtype</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/sim_validator.html#SimConfigValidator.is_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.sim_validator.SimConfigValidator.is_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.simulator.utils.simulation_inputs">
+<span id="bmtk-simulator-utils-simulation-inputs-module"></span><h2>bmtk.simulator.utils.simulation_inputs module<a class="headerlink" href="#module-bmtk.simulator.utils.simulation_inputs" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.utils.simulation_inputs.SimInput">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.simulation_inputs.</code><code class="descname">SimInput</code><span class="sig-paren">(</span><em>input_name</em>, <em>input_type</em>, <em>module</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_inputs.html#SimInput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_inputs.SimInput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.simulation_inputs.SimInput.build">
+<em class="property">classmethod </em><code class="descname">build</code><span class="sig-paren">(</span><em>input_name</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_inputs.html#SimInput.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_inputs.SimInput.build" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.simulation_inputs.SimInput.node_set">
+<code class="descname">node_set</code><a class="headerlink" href="#bmtk.simulator.utils.simulation_inputs.SimInput.node_set" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.simulation_inputs.SimInput.register_module">
+<em class="property">classmethod </em><code class="descname">register_module</code><span class="sig-paren">(</span><em>subclass</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_inputs.html#SimInput.register_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_inputs.SimInput.register_module" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.simulation_inputs.SimInput.registry">
+<code class="descname">registry</code><em class="property"> = {}</em><a class="headerlink" href="#bmtk.simulator.utils.simulation_inputs.SimInput.registry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.utils.simulation_inputs.from_config">
+<code class="descclassname">bmtk.simulator.utils.simulation_inputs.</code><code class="descname">from_config</code><span class="sig-paren">(</span><em>cfg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_inputs.html#from_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_inputs.from_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.simulator.utils.simulation_reports">
+<span id="bmtk-simulator-utils-simulation-reports-module"></span><h2>bmtk.simulator.utils.simulation_reports module<a class="headerlink" href="#module-bmtk.simulator.utils.simulation_reports" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.utils.simulation_reports.ECPReport">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.simulation_reports.</code><code class="descname">ECPReport</code><span class="sig-paren">(</span><em>report_name</em>, <em>module</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_reports.html#ECPReport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.ECPReport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.utils.simulation_reports.SimReport" title="bmtk.simulator.utils.simulation_reports.SimReport"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.utils.simulation_reports.SimReport</span></code></a></p>
+<dl class="staticmethod">
+<dt id="bmtk.simulator.utils.simulation_reports.ECPReport.avail_modules">
+<em class="property">static </em><code class="descname">avail_modules</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_reports.html#ECPReport.avail_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.ECPReport.avail_modules" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.simulation_reports.ECPReport.build">
+<em class="property">classmethod </em><code class="descname">build</code><span class="sig-paren">(</span><em>name</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_reports.html#ECPReport.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.ECPReport.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory method to get the module subclass, using the params (particularlly the ‘module’ value, which is
+required). If there is no registered subclass a generic SimReport object will be returned</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>report_name</strong> – name of report</li>
+<li><strong>params</strong> – parameters of report</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A SimReport (or subclass) object with report parameters parsed out.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.simulation_reports.MembraneReport">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.simulation_reports.</code><code class="descname">MembraneReport</code><span class="sig-paren">(</span><em>report_name</em>, <em>module</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_reports.html#MembraneReport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.MembraneReport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.utils.simulation_reports.SimReport" title="bmtk.simulator.utils.simulation_reports.SimReport"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.utils.simulation_reports.SimReport</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.simulator.utils.simulation_reports.MembraneReport.add_variables">
+<code class="descname">add_variables</code><span class="sig-paren">(</span><em>var_name</em>, <em>transform</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_reports.html#MembraneReport.add_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.MembraneReport.add_variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="bmtk.simulator.utils.simulation_reports.MembraneReport.avail_modules">
+<em class="property">static </em><code class="descname">avail_modules</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_reports.html#MembraneReport.avail_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.MembraneReport.avail_modules" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.simulation_reports.MembraneReport.build">
+<em class="property">classmethod </em><code class="descname">build</code><span class="sig-paren">(</span><em>name</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_reports.html#MembraneReport.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.MembraneReport.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory method to get the module subclass, using the params (particularlly the ‘module’ value, which is
+required). If there is no registered subclass a generic SimReport object will be returned</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>report_name</strong> – name of report</li>
+<li><strong>params</strong> – parameters of report</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A SimReport (or subclass) object with report parameters parsed out.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.simulation_reports.MembraneReport.can_combine">
+<code class="descname">can_combine</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_reports.html#MembraneReport.can_combine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.MembraneReport.can_combine" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.simulation_reports.MultimeterReport">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.simulation_reports.</code><code class="descname">MultimeterReport</code><span class="sig-paren">(</span><em>report_name</em>, <em>module</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_reports.html#MultimeterReport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.MultimeterReport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.utils.simulation_reports.MembraneReport" title="bmtk.simulator.utils.simulation_reports.MembraneReport"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.utils.simulation_reports.MembraneReport</span></code></a></p>
+<dl class="staticmethod">
+<dt id="bmtk.simulator.utils.simulation_reports.MultimeterReport.avail_modules">
+<em class="property">static </em><code class="descname">avail_modules</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_reports.html#MultimeterReport.avail_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.MultimeterReport.avail_modules" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.simulation_reports.SEClampReport">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.simulation_reports.</code><code class="descname">SEClampReport</code><span class="sig-paren">(</span><em>report_name</em>, <em>module</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_reports.html#SEClampReport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.SEClampReport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.utils.simulation_reports.SimReport" title="bmtk.simulator.utils.simulation_reports.SimReport"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.utils.simulation_reports.SimReport</span></code></a></p>
+<dl class="staticmethod">
+<dt id="bmtk.simulator.utils.simulation_reports.SEClampReport.avail_modules">
+<em class="property">static </em><code class="descname">avail_modules</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_reports.html#SEClampReport.avail_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.SEClampReport.avail_modules" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.simulation_reports.SaveSynapses">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.simulation_reports.</code><code class="descname">SaveSynapses</code><span class="sig-paren">(</span><em>report_name</em>, <em>module</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_reports.html#SaveSynapses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.SaveSynapses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.utils.simulation_reports.SimReport" title="bmtk.simulator.utils.simulation_reports.SimReport"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.utils.simulation_reports.SimReport</span></code></a></p>
+<dl class="staticmethod">
+<dt id="bmtk.simulator.utils.simulation_reports.SaveSynapses.avail_modules">
+<em class="property">static </em><code class="descname">avail_modules</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_reports.html#SaveSynapses.avail_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.SaveSynapses.avail_modules" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.simulation_reports.SimReport">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.simulation_reports.</code><code class="descname">SimReport</code><span class="sig-paren">(</span><em>name</em>, <em>module</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_reports.html#SimReport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.SimReport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="staticmethod">
+<dt id="bmtk.simulator.utils.simulation_reports.SimReport.avail_modules">
+<em class="property">static </em><code class="descname">avail_modules</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_reports.html#SimReport.avail_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.SimReport.avail_modules" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.simulation_reports.SimReport.build">
+<em class="property">classmethod </em><code class="descname">build</code><span class="sig-paren">(</span><em>report_name</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_reports.html#SimReport.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.SimReport.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory method to get the module subclass, using the params (particularlly the ‘module’ value, which is
+required). If there is no registered subclass a generic SimReport object will be returned</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>report_name</strong> – name of report</li>
+<li><strong>params</strong> – parameters of report</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A SimReport (or subclass) object with report parameters parsed out.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.simulation_reports.SimReport.default_dir">
+<code class="descname">default_dir</code><em class="property"> = '.'</em><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.SimReport.default_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.simulation_reports.SimReport.node_set">
+<code class="descname">node_set</code><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.SimReport.node_set" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.simulation_reports.SimReport.register_module">
+<em class="property">classmethod </em><code class="descname">register_module</code><span class="sig-paren">(</span><em>subclass</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_reports.html#SimReport.register_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.SimReport.register_module" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.simulation_reports.SimReport.registry">
+<code class="descname">registry</code><em class="property"> = {'SEClamp': &lt;class 'bmtk.simulator.utils.simulation_reports.SEClampReport'&gt;, 'SaveSynapses': &lt;class 'bmtk.simulator.utils.simulation_reports.SaveSynapses'&gt;, 'extracellular': &lt;class 'bmtk.simulator.utils.simulation_reports.ECPReport'&gt;, 'membrane_report': &lt;class 'bmtk.simulator.utils.simulation_reports.MembraneReport'&gt;, 'multimeter': &lt;class 'bmtk.simulator.utils.simulation_reports.MultimeterReport'&gt;, 'multimeter_report': &lt;class 'bmtk.simulator.utils.simulation_reports.MultimeterReport'&gt;, 'spikes_report': &lt;class 'bmtk.simulator.utils.simulation_reports.SpikesReport'&gt;}</em><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.SimReport.registry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.simulation_reports.SpikesReport">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.simulation_reports.</code><code class="descname">SpikesReport</code><span class="sig-paren">(</span><em>report_name</em>, <em>module</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_reports.html#SpikesReport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.SpikesReport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.utils.simulation_reports.SimReport" title="bmtk.simulator.utils.simulation_reports.SimReport"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.utils.simulation_reports.SimReport</span></code></a></p>
+<dl class="staticmethod">
+<dt id="bmtk.simulator.utils.simulation_reports.SpikesReport.avail_modules">
+<em class="property">static </em><code class="descname">avail_modules</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_reports.html#SpikesReport.avail_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.SpikesReport.avail_modules" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.simulation_reports.SpikesReport.build">
+<em class="property">classmethod </em><code class="descname">build</code><span class="sig-paren">(</span><em>name</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_reports.html#SpikesReport.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.SpikesReport.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory method to get the module subclass, using the params (particularlly the ‘module’ value, which is
+required). If there is no registered subclass a generic SimReport object will be returned</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>report_name</strong> – name of report</li>
+<li><strong>params</strong> – parameters of report</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A SimReport (or subclass) object with report parameters parsed out.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.simulation_reports.SpikesReport.from_output_dict">
+<em class="property">classmethod </em><code class="descname">from_output_dict</code><span class="sig-paren">(</span><em>output_dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_reports.html#SpikesReport.from_output_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.SpikesReport.from_output_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.utils.simulation_reports.from_config">
+<code class="descclassname">bmtk.simulator.utils.simulation_reports.</code><code class="descname">from_config</code><span class="sig-paren">(</span><em>cfg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/simulation_reports.html#from_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.simulation_reports.from_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.simulator.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.simulator.utils" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../index.html">Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../builder.html">Building Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../simulators.html">Simulation Engines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pointnet.html">PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../filternet.html">FilterNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mintnet.html">MintNet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+    </div>
+<script type="text/javascript" src="_static/external_assets/javascript/portalFooter.js"></script>
+
+  </body>
+</html>

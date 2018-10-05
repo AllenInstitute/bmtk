@@ -1,0 +1,883 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>bmtk.simulator.core.sonata_reader.edge_adaptor &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+<script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
+<style>
+
+	/* the icon font-family definition and helper classes */
+	@font-face {
+	  font-family: 'portal_icon_font';
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
+	  font-weight: normal;
+	  font-style: normal;
+	}
+	 
+	 [class^="icon-"]:before, [class*=" icon-"]:before {
+	  font-family: "portal_icon_font";
+	  font-style: normal;
+	  font-weight: normal;
+	  speak: none;
+	 
+	  display: inline-block;
+	  text-decoration: inherit;
+	  width: 1em;
+	  margin-right: .2em;
+	  text-align: center;
+	  /* opacity: .8; */
+	 
+	  /* For safety - reset parent styles, that can break glyph codes*/
+	  font-variant: normal;
+	  text-transform: none;
+	     
+	  /* fix buttons height, for twitter bootstrap */
+	  line-height: 1em;
+	 
+	  /* Animation center compensation - margins should be symmetric */
+	  /* remove if not needed */
+	  margin-left: .2em;
+	
+	}
+	 
+	.icon-spin5:before { content: '\e806'; } /* '' */
+	.icon-left-open-1:before { content: '\e81e'; } /* '' */
+	.icon-plus-1:before { content: '\e801'; } /* '' */
+	.icon-facebook:before { content: '\e816'; } /* '' */
+	.icon-gplus:before { content: '\e818'; } /* '' */
+	.icon-linkedin-3:before { content: '\e815'; } /* '' */
+	.icon-twitter:before { content: '\e817'; } /* '' */
+	.icon-youtube-play:before { content: '\e805'; } /* '' */
+	.icon-plus-2:before { content: '\e809'; } /* '' */
+	.icon-record-1:before { content: '\e81c'; } /* '' */
+	.icon-cancel:before { content: '\e80b'; } /* '' */
+	.icon-search:before { content: '\e804'; } /* '' */
+	.icon-cancel-2:before { content: '\e80c'; } /* '' */
+	.icon-plus-4:before { content: '\e80d'; } /* '' */
+	.icon-cancel-3:before { content: '\e80e'; } /* '' */
+	.icon-plus:before { content: '\e808'; } /* '' */
+	.icon-down-open:before { content: '\e800'; } /* '' */
+	.icon-right-open:before { content: '\e802'; } /* '' */
+	.icon-up-open:before { content: '\e803'; } /* '' */
+	.icon-stop:before { content: '\e813'; } /* '' */
+	.icon-cancel-1:before { content: '\e820'; } /* '' */
+	.icon-plus-3:before { content: '\e80a'; } /* '' */
+	/* end icon font helpers */
+
+	/* icon font spin animation */
+	.animate-spin {
+	  -moz-animation: spin 2s infinite linear;
+	  -o-animation: spin 2s infinite linear;
+	  -webkit-animation: spin 2s infinite linear;
+	  animation: spin 2s infinite linear;
+	  display: inline-block;
+	}
+	@-moz-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-webkit-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-o-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-ms-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	/*  end spin animation */	
+
+	@font-face {
+	    font-family: 'bebas_neueregular';
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
+	    font-weight: normal;
+	    font-style: normal;
+	}
+
+	/* top chrome styles */
+	#top_chrome {
+
+		width:100%;
+		height:28px;
+		background-color:#163E65;
+	}
+
+	.chrome_link_block {
+
+		color:#fff !important;	
+		display:inline-block;
+		height:100%;
+		max-height:28px;
+	}
+
+	.chrome_link_block:hover {
+
+		background-color:#eee;
+		color:#0779BE !important;	
+		cursor:pointer;
+	}
+
+	#top_chrome a {
+
+		color:inherit !important;	
+		text-decoration:none;
+	}
+
+	#top_chrome a:hover {
+
+		color:inherit !important;	
+	}
+
+	#top_chrome_buttons {
+
+		float:right;
+		margin-right:50px;
+	}
+
+	.chrome_button {
+
+		font-family:arial,sans-serif;
+		font-weight:bold;
+		display:inline-block;
+		font-size:9px;
+		text-align:left;
+		text-decoration:none;
+		margin:9px 20px 10px 20px;
+	}
+
+	.chrome_active {
+
+		background-color:#1b7abd;
+		color:#fff;
+	}
+
+
+	/* header element styles*/
+	#header_content {
+
+		font-family: bebas_neueregular, arial, sans-serif;
+		font-size:22px;
+		color:#0779be;		
+		letter-spacing:0.03em;
+
+		position:relative;
+		width:calc(100% - 112px);
+		min-width:800px;
+		height:76px;
+		border-bottom:2px solid #A5A8AB;
+		margin-left:50px;
+		margin-right:50px;
+        z-index:9999; /* IT-9508 */
+	}
+
+	#portal_logo {
+
+		position:absolute;
+		top:20px;
+		left:0px;
+		width:236px;
+	}
+
+	#portal_tabs {
+
+		position: absolute;
+		bottom: 12px;
+		left: 0px;
+		margin-bottom: -12px;
+		display: block;
+	}
+
+	.horizontal_list
+	{
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		display: inline; 		
+	}
+
+	.horizontal_list li { 
+
+		display: inline; 	
+	}	
+
+	#portal_tab_menu_container {
+
+		display:none;
+	}
+
+	#portal_search_input_group {
+
+		position:absolute;
+		margin: 0;
+		padding: 0;
+		bottom:12px;
+		right:0px;
+		border:1px solid #DAD9D3;
+		color:#DAD9D3;
+	}
+
+	#portal_search_input_group input {
+
+		margin: 0;
+		padding: 0;
+		border:none;
+		width:110px;
+		color:#DAD9D3;
+		font-family:Helvetica,sans-serif;
+		font-size:12px;
+		height:28px;
+		margin-left:10px;
+
+		outline:none;
+	}
+
+	input::-ms-clear {
+		display: none;
+	}
+
+	#portal_search_input_group i {
+
+		font-size:0.8em;
+		cursor:pointer;
+	}
+
+	#pSiteSearchTextInput:focus {
+
+		color:#000;
+	}
+
+	.icon_menu_down {
+
+		font-size: 12px;
+		margin-left: 4px;
+		vertical-align: text-top;
+		padding-top: 4px;
+		display: inline-block;
+	}
+
+	.portal_tab_item {
+
+		background-color: #fff;
+		padding: 12px;
+		padding-left:20px;
+		padding-right:20px;
+		display: inline-block !important;		
+	}
+
+	.portal_tab_item a:hover {
+
+		color:#fbe300;	
+	}
+
+	.portal_tab_item:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}	
+
+
+	.portal_menu_active {
+
+		background-color: #EEEEEE;
+	}	
+
+	.portal_menu_item_active {
+
+		color:#fbe300 !important;	
+	}
+
+	.portal_tab_active {
+
+		color:#a5a8ab !important;
+	}
+
+	#header_content a {		
+
+		color:inherit !important;
+	}
+
+	#header_content a:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}
+
+	#header_content ul {
+
+		list-style: none;
+		position: relative;
+		top: 58px;
+		display: inline-table;
+	}
+
+	#header_content ul ul {
+		
+		display:none;
+		opacity:0;
+	}
+
+	/* the fly out menus */
+	#header_content ul li:hover > ul,
+	#header_content ul li.hover > ul {
+
+		position: absolute;
+		top: 48px;
+		z-index:999;
+
+		display: block;
+		width: 152px;
+		padding:0px;
+		padding-top:20px;
+		padding-bottom:10px;
+		font-size: 12px;
+		font-family: Arial,Sans-Serif;
+		font-weight: bold;
+		text-transform: uppercase;
+
+		background-color: rgba(8,122,191,0.98);
+		color: #fff !important;
+		opacity: 1;
+
+		-webkit-animation: fade 0.25s;
+		animation: fade 0.25s;
+	}
+
+	@-webkit-keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}
+	@keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}	
+
+	#header_content ul li:hover > ul li {
+
+		padding: 10px;
+		padding-top: 0px;
+		padding-left: 20px;
+		display: block;
+		opacity:1;
+	}
+
+	#header_content ul li:hover > ul a {
+
+		display: block;
+		opacity:1;
+		white-space:nowrap;
+	}
+
+	#portal_menu_start_list {
+
+		left: 81px;
+
+		/* IE sauce */
+		left:85px\9;
+
+		/* Safari sauce */
+		(;left:79px;);
+	}
+
+	#portal_menu_atlases_list {
+
+		left: 290px;
+		width: 210px !important;
+        height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 303px\9;
+        height: 225px\9;
+
+		/* Safari sauce */
+		(;left:279px;);
+	}
+
+	#portal_menu_tools_list {
+
+		left: 500px;
+		width: 172px !important;
+		height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 513px\9;
+		height:225px\9;
+
+		/* Safari sauce */
+		(;left:489px;);
+		(;height:227px;);
+	}
+
+	/* mozilla sauce */
+	@-moz-document url-prefix() {
+
+		#header_content {
+
+			height:107px;
+		}
+
+		#portal_menu_start_list {
+
+			left:85px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 302px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 512px;
+			height:236px;
+		}
+	}
+
+
+	/* make it look OK on iPad also */
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:portrait) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}  
+	}
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:landscape) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}	  
+	}
+
+	.portal_menu_list_heading {
+
+		color:#9ccae5;
+		border-bottom:1px solid #9ccae5;
+		padding-bottom:5px !important;
+	}
+
+	.portal_menu_list_heading + li {
+
+		padding-top:10px !important;
+	}
+
+	.portal_menu_list_heading li {
+
+		padding-bottom:0px;
+	}	
+
+	#portal_menu_atlases_list li:last-of-type {
+
+		padding-bottom:15px !important;
+	}
+
+	.icon-spin5 {
+
+		color:#000;
+	}
+</style>
+<div id="pHeader">
+<div id="top_chrome">
+	<div id="top_chrome_buttons">
+		<div class="chrome_link_block"><a href="http://www.alleninstitute.org" target="_blank" class="chrome_button">ALLEN INSTITUTE</a></div>
+	</div>
+</div>
+
+<div id="header_content">
+
+	<a href="http://AllenInstitute.github.io">
+		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/AIBS_Logo.png"/>
+	</a>
+</div>
+</div>
+
+<script>
+
+jQuery('#portal_tab_menu').bind('touchstart', function() {
+
+	if(window.console)
+		console.log("touchstart");
+});
+</script>
+<link rel="stylesheet" type="text/css" href="_static/external_assets/stylesheets/common_layout.css" />
+
+
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for bmtk.simulator.core.sonata_reader.edge_adaptor</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">ast</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">types</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="SonataBaseEdge"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge">[docs]</a><span class="k">class</span> <span class="nc">SonataBaseEdge</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sonata_edge</span><span class="p">,</span> <span class="n">edge_adaptor</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge</span> <span class="o">=</span> <span class="n">sonata_edge</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prop_adaptor</span> <span class="o">=</span> <span class="n">edge_adaptor</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">source_node_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge</span><span class="o">.</span><span class="n">source_node_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">target_node_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge</span><span class="o">.</span><span class="n">target_node_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dynamics_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prop_adaptor</span><span class="o">.</span><span class="n">dynamics_params</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">delay</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">weight_function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prop_adaptor</span><span class="o">.</span><span class="n">weight_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">preselected_targets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prop_adaptor</span><span class="o">.</span><span class="n">preselected_targets</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">target_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge</span><span class="p">[</span><span class="s1">&#39;target_sections&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">target_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge</span><span class="p">[</span><span class="s1">&#39;distance_range&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">edge_type_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge</span><span class="o">.</span><span class="n">edge_type_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">nsyns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prop_adaptor</span><span class="o">.</span><span class="n">nsyns</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">model_template</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge</span><span class="p">[</span><span class="s1">&#39;model_template&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="SonataBaseEdge.syn_weight"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge.syn_weight">[docs]</a>    <span class="k">def</span> <span class="nf">syn_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">trg_node</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prop_adaptor</span><span class="o">.</span><span class="n">syn_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_node</span><span class="o">=</span><span class="n">src_node</span><span class="p">,</span> <span class="n">trg_node</span><span class="o">=</span><span class="n">trg_node</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge</span><span class="p">[</span><span class="n">item</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="EdgeAdaptor"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor">[docs]</a><span class="k">class</span> <span class="nc">EdgeAdaptor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">network</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_network</span> <span class="o">=</span> <span class="n">network</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_func_caches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network</span><span class="o">.</span><span class="n">py_function_caches</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">batch_process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="nd">@batch_process</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">batch_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flag</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="EdgeAdaptor.get_edge"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.get_edge">[docs]</a>    <span class="k">def</span> <span class="nf">get_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sonata_node</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">SonataBaseEdge</span><span class="p">(</span><span class="n">sonata_node</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EdgeAdaptor.preprocess_edge_types"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.preprocess_edge_types">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">preprocess_edge_types</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">edge_population</span><span class="p">):</span>
+        <span class="n">edge_types_table</span> <span class="o">=</span> <span class="n">edge_population</span><span class="o">.</span><span class="n">types_table</span>
+        <span class="n">edge_type_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">edge_population</span><span class="o">.</span><span class="n">type_ids</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">et_id</span> <span class="ow">in</span> <span class="n">edge_type_ids</span><span class="p">:</span>
+            <span class="n">edge_type</span> <span class="o">=</span> <span class="n">edge_types_table</span><span class="p">[</span><span class="n">et_id</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s1">&#39;dynamics_params&#39;</span> <span class="ow">in</span> <span class="n">edge_types_table</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">dynamics_params</span> <span class="o">=</span> <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">]</span>
+                <span class="n">params_dir</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">&#39;synaptic_models_dir&#39;</span><span class="p">)</span>
+
+                <span class="n">params_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">params_dir</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">)</span>
+
+                <span class="c1"># see if we can load the dynamics_params as a dictionary. Otherwise just save the file path and let the</span>
+                <span class="c1"># cell_model loader function handle the extension.</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">params_val</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">params_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">))</span>
+                    <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">params_val</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="c1"># TODO: Check dynamics_params before</span>
+                    <span class="n">network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;Could not find edge dynamics_params file </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">params_path</span><span class="p">))</span>
+
+            <span class="c1"># Split target_sections</span>
+            <span class="k">if</span> <span class="s1">&#39;target_sections&#39;</span> <span class="ow">in</span> <span class="n">edge_type</span><span class="p">:</span>
+                <span class="n">trg_sec</span> <span class="o">=</span> <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;target_sections&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">trg_sec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;target_sections&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">trg_sec</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                        <span class="n">network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="s1">&#39;Unable to split target_sections list </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">trg_sec</span><span class="p">))</span>
+                        <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;target_sections&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="c1"># Split target distances</span>
+            <span class="k">if</span> <span class="s1">&#39;distance_range&#39;</span> <span class="ow">in</span> <span class="n">edge_type</span><span class="p">:</span>
+                <span class="n">dist_range</span> <span class="o">=</span> <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;distance_range&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">dist_range</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="c1"># TODO: Make the distance range has at most two values</span>
+                        <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;distance_range&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">dist_range</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;distance_range&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">dist_range</span><span class="p">)]</span>
+                        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                            <span class="n">network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="s1">&#39;Unable to parse distance_range </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dist_range</span><span class="p">))</span>
+                            <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;distance_range&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="EdgeAdaptor.create_adaptor"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.create_adaptor">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">create_adaptor</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">edge_group</span><span class="p">,</span> <span class="n">network</span><span class="p">):</span>
+        <span class="n">prop_map</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">network</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">patch_adaptor</span><span class="p">(</span><span class="n">prop_map</span><span class="p">,</span> <span class="n">edge_group</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EdgeAdaptor.patch_adaptor"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor.patch_adaptor">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">patch_adaptor</span><span class="p">(</span><span class="n">adaptor</span><span class="p">,</span> <span class="n">edge_group</span><span class="p">):</span>
+        <span class="c1"># dynamics_params</span>
+        <span class="k">if</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">has_dynamics_params</span><span class="p">:</span>
+            <span class="n">adaptor</span><span class="o">.</span><span class="n">dynamics_params</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">group_dynamics_params</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># &#39;dynamics_params&#39; in node_group.all_columns:</span>
+            <span class="n">adaptor</span><span class="o">.</span><span class="n">dynamics_params</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">types_dynamics_params</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span>
+
+        <span class="c1"># For fetching/calculating synaptic weights</span>
+        <span class="k">if</span> <span class="s1">&#39;weight_function&#39;</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">all_columns</span><span class="p">:</span>
+            <span class="c1"># Customized function for user to calculate the synaptic weight</span>
+            <span class="n">adaptor</span><span class="o">.</span><span class="n">weight_function</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">weight_function</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span>
+            <span class="n">adaptor</span><span class="o">.</span><span class="n">syn_weight</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">syn_weight_function</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="s1">&#39;syn_weight&#39;</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">all_columns</span><span class="p">:</span>
+            <span class="c1"># Just return the synaptic weight</span>
+            <span class="n">adaptor</span><span class="o">.</span><span class="n">weight_function</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">ret_none_function</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span>
+            <span class="n">adaptor</span><span class="o">.</span><span class="n">syn_weight</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">syn_weight</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Could not find syn_weight or weight_function properties. Cannot create connections.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># For determining the synapse placement</span>
+        <span class="k">if</span> <span class="s1">&#39;sec_id&#39;</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">all_columns</span><span class="p">:</span>
+            <span class="n">adaptor</span><span class="o">.</span><span class="n">preselected_targets</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">adaptor</span><span class="o">.</span><span class="n">nsyns</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">no_nsyns</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="s1">&#39;nsyns&#39;</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">all_columns</span><span class="p">:</span>
+            <span class="n">adaptor</span><span class="o">.</span><span class="n">preselected_targets</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">adaptor</span><span class="o">.</span><span class="n">nsyns</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">nsyns</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># It will get here for connections onto point neurons</span>
+            <span class="n">adaptor</span><span class="o">.</span><span class="n">preselected_targets</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">adaptor</span><span class="o">.</span><span class="n">nsyns</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">no_nsyns</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">adaptor</span></div></div>
+
+
+<div class="viewcode-block" id="ret_none_function"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.ret_none_function">[docs]</a><span class="k">def</span> <span class="nf">ret_none_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="weight_function"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.weight_function">[docs]</a><span class="k">def</span> <span class="nf">weight_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;weight_function&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="syn_weight"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.syn_weight">[docs]</a><span class="k">def</span> <span class="nf">syn_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">trg_node</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="syn_weight_function"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.syn_weight_function">[docs]</a><span class="k">def</span> <span class="nf">syn_weight_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">trg_node</span><span class="p">):</span>
+    <span class="n">weight_fnc_name</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">weight_function</span>
+    <span class="k">if</span> <span class="n">weight_fnc_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">weight_fnc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_func_caches</span><span class="o">.</span><span class="n">py_modules</span><span class="o">.</span><span class="n">synaptic_weight</span><span class="p">(</span><span class="s1">&#39;default_weight_fnc&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">weight_fnc</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">trg_node</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_func_caches</span><span class="o">.</span><span class="n">py_modules</span><span class="o">.</span><span class="n">has_synaptic_weight</span><span class="p">(</span><span class="n">weight_fnc_name</span><span class="p">):</span>
+        <span class="n">weight_fnc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_func_caches</span><span class="o">.</span><span class="n">py_modules</span><span class="o">.</span><span class="n">synaptic_weight</span><span class="p">(</span><span class="n">weight_fnc_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">weight_fnc</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">trg_node</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;weight_function </span><span class="si">{}</span><span class="s1"> is not defined.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">weight_fnc_name</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="nsyns"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.nsyns">[docs]</a><span class="k">def</span> <span class="nf">nsyns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;nsyns&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="no_nsyns"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.no_nsyns">[docs]</a><span class="k">def</span> <span class="nf">no_nsyns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="types_dynamics_params"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.types_dynamics_params">[docs]</a><span class="k">def</span> <span class="nf">types_dynamics_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="group_dynamics_params"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.group_dynamics_params">[docs]</a><span class="k">def</span> <span class="nf">group_dynamics_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">dynamics_params</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../../../../../index.html">Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../builder.html">Building Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../simulators.html">Simulation Engines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../pointnet.html">PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../filternet.html">FilterNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../mintnet.html">MintNet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+    </div>
+<script type="text/javascript" src="_static/external_assets/javascript/portalFooter.js"></script>
+
+  </body>
+</html>

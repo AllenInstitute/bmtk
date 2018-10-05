@@ -1,0 +1,1035 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>bmtk.simulator.filternet.lgnmodel.cellmodel &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+<script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
+<style>
+
+	/* the icon font-family definition and helper classes */
+	@font-face {
+	  font-family: 'portal_icon_font';
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
+	  font-weight: normal;
+	  font-style: normal;
+	}
+	 
+	 [class^="icon-"]:before, [class*=" icon-"]:before {
+	  font-family: "portal_icon_font";
+	  font-style: normal;
+	  font-weight: normal;
+	  speak: none;
+	 
+	  display: inline-block;
+	  text-decoration: inherit;
+	  width: 1em;
+	  margin-right: .2em;
+	  text-align: center;
+	  /* opacity: .8; */
+	 
+	  /* For safety - reset parent styles, that can break glyph codes*/
+	  font-variant: normal;
+	  text-transform: none;
+	     
+	  /* fix buttons height, for twitter bootstrap */
+	  line-height: 1em;
+	 
+	  /* Animation center compensation - margins should be symmetric */
+	  /* remove if not needed */
+	  margin-left: .2em;
+	
+	}
+	 
+	.icon-spin5:before { content: '\e806'; } /* '' */
+	.icon-left-open-1:before { content: '\e81e'; } /* '' */
+	.icon-plus-1:before { content: '\e801'; } /* '' */
+	.icon-facebook:before { content: '\e816'; } /* '' */
+	.icon-gplus:before { content: '\e818'; } /* '' */
+	.icon-linkedin-3:before { content: '\e815'; } /* '' */
+	.icon-twitter:before { content: '\e817'; } /* '' */
+	.icon-youtube-play:before { content: '\e805'; } /* '' */
+	.icon-plus-2:before { content: '\e809'; } /* '' */
+	.icon-record-1:before { content: '\e81c'; } /* '' */
+	.icon-cancel:before { content: '\e80b'; } /* '' */
+	.icon-search:before { content: '\e804'; } /* '' */
+	.icon-cancel-2:before { content: '\e80c'; } /* '' */
+	.icon-plus-4:before { content: '\e80d'; } /* '' */
+	.icon-cancel-3:before { content: '\e80e'; } /* '' */
+	.icon-plus:before { content: '\e808'; } /* '' */
+	.icon-down-open:before { content: '\e800'; } /* '' */
+	.icon-right-open:before { content: '\e802'; } /* '' */
+	.icon-up-open:before { content: '\e803'; } /* '' */
+	.icon-stop:before { content: '\e813'; } /* '' */
+	.icon-cancel-1:before { content: '\e820'; } /* '' */
+	.icon-plus-3:before { content: '\e80a'; } /* '' */
+	/* end icon font helpers */
+
+	/* icon font spin animation */
+	.animate-spin {
+	  -moz-animation: spin 2s infinite linear;
+	  -o-animation: spin 2s infinite linear;
+	  -webkit-animation: spin 2s infinite linear;
+	  animation: spin 2s infinite linear;
+	  display: inline-block;
+	}
+	@-moz-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-webkit-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-o-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-ms-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	/*  end spin animation */	
+
+	@font-face {
+	    font-family: 'bebas_neueregular';
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
+	    font-weight: normal;
+	    font-style: normal;
+	}
+
+	/* top chrome styles */
+	#top_chrome {
+
+		width:100%;
+		height:28px;
+		background-color:#163E65;
+	}
+
+	.chrome_link_block {
+
+		color:#fff !important;	
+		display:inline-block;
+		height:100%;
+		max-height:28px;
+	}
+
+	.chrome_link_block:hover {
+
+		background-color:#eee;
+		color:#0779BE !important;	
+		cursor:pointer;
+	}
+
+	#top_chrome a {
+
+		color:inherit !important;	
+		text-decoration:none;
+	}
+
+	#top_chrome a:hover {
+
+		color:inherit !important;	
+	}
+
+	#top_chrome_buttons {
+
+		float:right;
+		margin-right:50px;
+	}
+
+	.chrome_button {
+
+		font-family:arial,sans-serif;
+		font-weight:bold;
+		display:inline-block;
+		font-size:9px;
+		text-align:left;
+		text-decoration:none;
+		margin:9px 20px 10px 20px;
+	}
+
+	.chrome_active {
+
+		background-color:#1b7abd;
+		color:#fff;
+	}
+
+
+	/* header element styles*/
+	#header_content {
+
+		font-family: bebas_neueregular, arial, sans-serif;
+		font-size:22px;
+		color:#0779be;		
+		letter-spacing:0.03em;
+
+		position:relative;
+		width:calc(100% - 112px);
+		min-width:800px;
+		height:76px;
+		border-bottom:2px solid #A5A8AB;
+		margin-left:50px;
+		margin-right:50px;
+        z-index:9999; /* IT-9508 */
+	}
+
+	#portal_logo {
+
+		position:absolute;
+		top:20px;
+		left:0px;
+		width:236px;
+	}
+
+	#portal_tabs {
+
+		position: absolute;
+		bottom: 12px;
+		left: 0px;
+		margin-bottom: -12px;
+		display: block;
+	}
+
+	.horizontal_list
+	{
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		display: inline; 		
+	}
+
+	.horizontal_list li { 
+
+		display: inline; 	
+	}	
+
+	#portal_tab_menu_container {
+
+		display:none;
+	}
+
+	#portal_search_input_group {
+
+		position:absolute;
+		margin: 0;
+		padding: 0;
+		bottom:12px;
+		right:0px;
+		border:1px solid #DAD9D3;
+		color:#DAD9D3;
+	}
+
+	#portal_search_input_group input {
+
+		margin: 0;
+		padding: 0;
+		border:none;
+		width:110px;
+		color:#DAD9D3;
+		font-family:Helvetica,sans-serif;
+		font-size:12px;
+		height:28px;
+		margin-left:10px;
+
+		outline:none;
+	}
+
+	input::-ms-clear {
+		display: none;
+	}
+
+	#portal_search_input_group i {
+
+		font-size:0.8em;
+		cursor:pointer;
+	}
+
+	#pSiteSearchTextInput:focus {
+
+		color:#000;
+	}
+
+	.icon_menu_down {
+
+		font-size: 12px;
+		margin-left: 4px;
+		vertical-align: text-top;
+		padding-top: 4px;
+		display: inline-block;
+	}
+
+	.portal_tab_item {
+
+		background-color: #fff;
+		padding: 12px;
+		padding-left:20px;
+		padding-right:20px;
+		display: inline-block !important;		
+	}
+
+	.portal_tab_item a:hover {
+
+		color:#fbe300;	
+	}
+
+	.portal_tab_item:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}	
+
+
+	.portal_menu_active {
+
+		background-color: #EEEEEE;
+	}	
+
+	.portal_menu_item_active {
+
+		color:#fbe300 !important;	
+	}
+
+	.portal_tab_active {
+
+		color:#a5a8ab !important;
+	}
+
+	#header_content a {		
+
+		color:inherit !important;
+	}
+
+	#header_content a:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}
+
+	#header_content ul {
+
+		list-style: none;
+		position: relative;
+		top: 58px;
+		display: inline-table;
+	}
+
+	#header_content ul ul {
+		
+		display:none;
+		opacity:0;
+	}
+
+	/* the fly out menus */
+	#header_content ul li:hover > ul,
+	#header_content ul li.hover > ul {
+
+		position: absolute;
+		top: 48px;
+		z-index:999;
+
+		display: block;
+		width: 152px;
+		padding:0px;
+		padding-top:20px;
+		padding-bottom:10px;
+		font-size: 12px;
+		font-family: Arial,Sans-Serif;
+		font-weight: bold;
+		text-transform: uppercase;
+
+		background-color: rgba(8,122,191,0.98);
+		color: #fff !important;
+		opacity: 1;
+
+		-webkit-animation: fade 0.25s;
+		animation: fade 0.25s;
+	}
+
+	@-webkit-keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}
+	@keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}	
+
+	#header_content ul li:hover > ul li {
+
+		padding: 10px;
+		padding-top: 0px;
+		padding-left: 20px;
+		display: block;
+		opacity:1;
+	}
+
+	#header_content ul li:hover > ul a {
+
+		display: block;
+		opacity:1;
+		white-space:nowrap;
+	}
+
+	#portal_menu_start_list {
+
+		left: 81px;
+
+		/* IE sauce */
+		left:85px\9;
+
+		/* Safari sauce */
+		(;left:79px;);
+	}
+
+	#portal_menu_atlases_list {
+
+		left: 290px;
+		width: 210px !important;
+        height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 303px\9;
+        height: 225px\9;
+
+		/* Safari sauce */
+		(;left:279px;);
+	}
+
+	#portal_menu_tools_list {
+
+		left: 500px;
+		width: 172px !important;
+		height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 513px\9;
+		height:225px\9;
+
+		/* Safari sauce */
+		(;left:489px;);
+		(;height:227px;);
+	}
+
+	/* mozilla sauce */
+	@-moz-document url-prefix() {
+
+		#header_content {
+
+			height:107px;
+		}
+
+		#portal_menu_start_list {
+
+			left:85px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 302px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 512px;
+			height:236px;
+		}
+	}
+
+
+	/* make it look OK on iPad also */
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:portrait) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}  
+	}
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:landscape) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}	  
+	}
+
+	.portal_menu_list_heading {
+
+		color:#9ccae5;
+		border-bottom:1px solid #9ccae5;
+		padding-bottom:5px !important;
+	}
+
+	.portal_menu_list_heading + li {
+
+		padding-top:10px !important;
+	}
+
+	.portal_menu_list_heading li {
+
+		padding-bottom:0px;
+	}	
+
+	#portal_menu_atlases_list li:last-of-type {
+
+		padding-bottom:15px !important;
+	}
+
+	.icon-spin5 {
+
+		color:#000;
+	}
+</style>
+<div id="pHeader">
+<div id="top_chrome">
+	<div id="top_chrome_buttons">
+		<div class="chrome_link_block"><a href="http://www.alleninstitute.org" target="_blank" class="chrome_button">ALLEN INSTITUTE</a></div>
+	</div>
+</div>
+
+<div id="header_content">
+
+	<a href="http://AllenInstitute.github.io">
+		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/AIBS_Logo.png"/>
+	</a>
+</div>
+</div>
+
+<script>
+
+jQuery('#portal_tab_menu').bind('touchstart', function() {
+
+	if(window.console)
+		console.log("touchstart");
+});
+</script>
+<link rel="stylesheet" type="text/css" href="_static/external_assets/stylesheets/common_layout.css" />
+
+
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for bmtk.simulator.filternet.lgnmodel.cellmodel</h1><div class="highlight"><pre>
+<span></span><span class="c1">#import isee_engine</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">utilities</span> <span class="k">as</span> <span class="n">util</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">from</span> <span class="nn">.kernel</span> <span class="k">import</span> <span class="n">Kernel2D</span><span class="p">,</span> <span class="n">Kernel3D</span>
+<span class="kn">from</span> <span class="nn">.linearfilter</span> <span class="k">import</span> <span class="n">SpatioTemporalFilter</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">.spatialfilter</span> <span class="k">import</span> <span class="n">GaussianSpatialFilter</span>
+<span class="kn">from</span> <span class="nn">.transferfunction</span> <span class="k">import</span> <span class="n">ScalarTransferFunction</span>
+<span class="kn">from</span> <span class="nn">.temporalfilter</span> <span class="k">import</span> <span class="n">TemporalFilterCosineBump</span>
+<span class="kn">from</span> <span class="nn">.cursor</span> <span class="k">import</span> <span class="n">LNUnitCursor</span><span class="p">,</span> <span class="n">MultiLNUnitCursor</span>
+<span class="kn">from</span> <span class="nn">.movie</span> <span class="k">import</span> <span class="n">Movie</span>
+<span class="kn">from</span> <span class="nn">.lgnmodel1</span> <span class="k">import</span> <span class="n">LGNModel</span><span class="p">,</span> <span class="n">heat_plot</span>
+<span class="kn">from</span> <span class="nn">.transferfunction</span> <span class="k">import</span> <span class="n">MultiTransferFunction</span><span class="p">,</span> <span class="n">ScalarTransferFunction</span>
+<span class="kn">from</span> <span class="nn">.lnunit</span> <span class="k">import</span> <span class="n">LNUnit</span><span class="p">,</span> <span class="n">MultiLNUnit</span>
+<span class="kn">from</span> <span class="nn">sympy.abc</span> <span class="k">import</span> <span class="n">x</span> <span class="k">as</span> <span class="n">symbolic_x</span>
+<span class="kn">from</span> <span class="nn">sympy.abc</span> <span class="k">import</span> <span class="n">y</span> <span class="k">as</span> <span class="n">symbolic_y</span>
+
+
+
+<div class="viewcode-block" id="OnUnit"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cellmodel.OnUnit">[docs]</a><span class="k">class</span> <span class="nc">OnUnit</span><span class="p">(</span><span class="n">LNUnit</span><span class="p">):</span>
+      
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">linear_filter</span><span class="p">,</span> <span class="n">transfer_function</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">linear_filter</span><span class="o">.</span><span class="n">amplitude</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">OnUnit</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">linear_filter</span><span class="p">,</span> <span class="n">transfer_function</span><span class="p">)</span></div>
+        
+<div class="viewcode-block" id="OffUnit"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cellmodel.OffUnit">[docs]</a><span class="k">class</span> <span class="nc">OffUnit</span><span class="p">(</span><span class="n">LNUnit</span><span class="p">):</span>
+      
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">linear_filter</span><span class="p">,</span> <span class="n">transfer_function</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">linear_filter</span><span class="o">.</span><span class="n">amplitude</span> <span class="o">&lt;</span> <span class="mi">0</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">OffUnit</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">linear_filter</span><span class="p">,</span> <span class="n">transfer_function</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LGNOnOffCell"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cellmodel.LGNOnOffCell">[docs]</a><span class="k">class</span> <span class="nc">LGNOnOffCell</span><span class="p">(</span><span class="n">MultiLNUnit</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A cell model for a OnOff cell&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">on_filter</span><span class="p">,</span> <span class="n">off_filter</span><span class="p">,</span> <span class="n">transfer_function</span><span class="o">=</span><span class="n">MultiTransferFunction</span><span class="p">((</span><span class="n">symbolic_x</span><span class="p">,</span> <span class="n">symbolic_y</span><span class="p">),</span> <span class="s1">&#39;Heaviside(x)*(x)+Heaviside(y)*(y)&#39;</span><span class="p">)):</span>
+        <span class="sd">&quot;&quot;&quot;Summary</span>
+
+<span class="sd">        :param on_filter:</span>
+<span class="sd">        :param off_filter:</span>
+<span class="sd">        :param transfer_function:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">on_filter</span> <span class="o">=</span> <span class="n">on_filter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">off_filter</span> <span class="o">=</span> <span class="n">off_filter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">on_unit</span> <span class="o">=</span> <span class="n">OnUnit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_filter</span><span class="p">,</span> <span class="n">ScalarTransferFunction</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">off_unit</span> <span class="o">=</span> <span class="n">OffUnit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">off_filter</span><span class="p">,</span> <span class="n">ScalarTransferFunction</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">))</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LGNOnOffCell</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">on_unit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">off_unit</span><span class="p">],</span> <span class="n">transfer_function</span><span class="p">)</span></div>
+        
+<div class="viewcode-block" id="TwoSubfieldLinearCell"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cellmodel.TwoSubfieldLinearCell">[docs]</a><span class="k">class</span> <span class="nc">TwoSubfieldLinearCell</span><span class="p">(</span><span class="n">MultiLNUnit</span><span class="p">):</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dominant_filter</span><span class="p">,</span> <span class="n">nondominant_filter</span><span class="p">,</span><span class="n">subfield_separation</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">onoff_axis_angle</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">dominant_subfield_location</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">40</span><span class="p">),</span>
+                 <span class="n">transfer_function</span> <span class="o">=</span> <span class="n">MultiTransferFunction</span><span class="p">((</span><span class="n">symbolic_x</span><span class="p">,</span> <span class="n">symbolic_y</span><span class="p">),</span> <span class="s1">&#39;Heaviside(x)*(x)+Heaviside(y)*(y)&#39;</span><span class="p">)):</span>
+         
+        <span class="bp">self</span><span class="o">.</span><span class="n">subfield_separation</span> <span class="o">=</span> <span class="n">subfield_separation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">onoff_axis_angle</span> <span class="o">=</span> <span class="n">onoff_axis_angle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dominant_subfield_location</span> <span class="o">=</span> <span class="n">dominant_subfield_location</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dominant_filter</span> <span class="o">=</span> <span class="n">dominant_filter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nondominant_filter</span> <span class="o">=</span> <span class="n">nondominant_filter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transfer_function</span><span class="o">=</span> <span class="n">transfer_function</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dominant_unit</span> <span class="o">=</span> <span class="n">LNUnit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dominant_filter</span><span class="p">,</span> <span class="n">ScalarTransferFunction</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">),</span> <span class="n">amplitude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dominant_filter</span><span class="o">.</span><span class="n">amplitude</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nondominant_unit</span> <span class="o">=</span> <span class="n">LNUnit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nondominant_filter</span><span class="p">,</span> <span class="n">ScalarTransferFunction</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">),</span> <span class="n">amplitude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dominant_filter</span><span class="o">.</span><span class="n">amplitude</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">TwoSubfieldLinearCell</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">dominant_unit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nondominant_unit</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">transfer_function</span><span class="p">)</span>
+              
+        <span class="bp">self</span><span class="o">.</span><span class="n">dominant_filter</span><span class="o">.</span><span class="n">spatial_filter</span><span class="o">.</span><span class="n">translate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dominant_subfield_location</span>
+        <span class="n">hor_offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onoff_axis_angle</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">180.</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">subfield_separation</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dominant_subfield_location</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">vert_offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onoff_axis_angle</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mf">180.</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">subfield_separation</span><span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dominant_subfield_location</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">rel_translation</span> <span class="o">=</span> <span class="p">(</span><span class="n">hor_offset</span><span class="p">,</span><span class="n">vert_offset</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nondominant_filter</span><span class="o">.</span><span class="n">spatial_filter</span><span class="o">.</span><span class="n">translate</span> <span class="o">=</span> <span class="n">rel_translation</span></div>
+        
+        
+<div class="viewcode-block" id="LGNOnCell"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cellmodel.LGNOnCell">[docs]</a><span class="k">class</span> <span class="nc">LGNOnCell</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;position&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;weights&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kpeaks</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;kpeaks&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;amplitude&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;sigma&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transfer_function_str</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;transfer_function_str&#39;</span><span class="p">,</span> <span class="s1">&#39;s&#39;</span><span class="p">)</span> <span class="c1"># &#39;Heaviside(s)*s&#39;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;metadata&#39;</span><span class="p">,</span> <span class="p">{})</span>
+
+        <span class="n">temporal_filter</span> <span class="o">=</span> <span class="n">TemporalFilterCosineBump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kpeaks</span><span class="p">)</span>
+        <span class="n">spatial_filter</span> <span class="o">=</span> <span class="n">GaussianSpatialFilter</span><span class="p">(</span><span class="n">translate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">,</span>  <span class="n">origin</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span> <span class="c1"># all distances measured from BOTTOM LEFT</span>
+        <span class="n">spatiotemporal_filter</span> <span class="o">=</span> <span class="n">SpatioTemporalFilter</span><span class="p">(</span><span class="n">spatial_filter</span><span class="p">,</span> <span class="n">temporal_filter</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span><span class="p">)</span>
+        <span class="n">transfer_function</span> <span class="o">=</span> <span class="n">ScalarTransferFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transfer_function_str</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">OnUnit</span><span class="p">(</span><span class="n">spatiotemporal_filter</span><span class="p">,</span> <span class="n">transfer_function</span><span class="p">)</span></div>
+        
+<div class="viewcode-block" id="LGNOffCell"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.cellmodel.LGNOffCell">[docs]</a><span class="k">class</span> <span class="nc">LGNOffCell</span><span class="p">(</span><span class="n">OffUnit</span><span class="p">):</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        
+        <span class="n">lattice_unit_center</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;lattice_unit_center&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;weights&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">kpeaks</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;kpeaks&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">amplitude</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;amplitude&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;sigma&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;width&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">transfer_function_str</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;transfer_function_str&#39;</span><span class="p">,</span> <span class="s1">&#39;Heaviside(s)*s&#39;</span><span class="p">)</span>
+
+        <span class="n">dxi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="n">width</span><span class="o">*</span><span class="mf">1.</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="n">width</span><span class="o">*</span><span class="mf">1.</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">dyi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="n">width</span><span class="o">*</span><span class="mf">1.</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="n">width</span><span class="o">*</span><span class="mf">1.</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">temporal_filter</span> <span class="o">=</span> <span class="n">TemporalFilterCosineBump</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">kpeaks</span><span class="p">)</span>
+        <span class="n">spatial_filter</span> <span class="o">=</span> <span class="n">GaussianSpatialFilter</span><span class="p">(</span><span class="n">translate</span><span class="o">=</span><span class="p">(</span><span class="n">dxi</span><span class="p">,</span><span class="n">dyi</span><span class="p">),</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span>  <span class="n">origin</span><span class="o">=</span><span class="n">lattice_unit_center</span><span class="p">)</span> <span class="c1"># all distances measured from BOTTOM LEFT</span>
+        <span class="n">spatiotemporal_filter</span> <span class="o">=</span> <span class="n">SpatioTemporalFilter</span><span class="p">(</span><span class="n">spatial_filter</span><span class="p">,</span> <span class="n">temporal_filter</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="n">amplitude</span><span class="p">)</span>
+        <span class="n">transfer_function</span> <span class="o">=</span> <span class="n">ScalarTransferFunction</span><span class="p">(</span><span class="n">transfer_function_str</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LGNOnCell</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">spatiotemporal_filter</span><span class="p">,</span> <span class="n">transfer_function</span><span class="p">)</span></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">movie_file</span> <span class="o">=</span> <span class="s1">&#39;/data/mat/iSee_temp_shared/movies/TouchOfEvil.npy&#39;</span>
+    <span class="n">m_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">movie_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">Movie</span><span class="p">(</span><span class="n">m_data</span><span class="p">[</span><span class="mi">1000</span><span class="p">:],</span> <span class="n">frame_rate</span><span class="o">=</span><span class="mf">30.</span><span class="p">)</span>
+    
+    <span class="c1"># Create second cell:</span>
+    <span class="n">transfer_function</span> <span class="o">=</span> <span class="n">ScalarTransferFunction</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">)</span>
+    <span class="n">temporal_filter</span> <span class="o">=</span> <span class="n">TemporalFilterCosineBump</span><span class="p">((</span><span class="o">.</span><span class="mi">4</span><span class="p">,</span><span class="o">-.</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">60</span><span class="p">))</span>
+    <span class="n">cell_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">xi</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">m</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mi">5</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">yi</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">m</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">5</span><span class="p">):</span>
+            <span class="n">spatial_filter_on</span> <span class="o">=</span> <span class="n">GaussianSpatialFilter</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">origin</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">translate</span><span class="o">=</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">))</span>
+            <span class="n">on_linear_filter</span> <span class="o">=</span> <span class="n">SpatioTemporalFilter</span><span class="p">(</span><span class="n">spatial_filter_on</span><span class="p">,</span> <span class="n">temporal_filter</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+            <span class="n">spatial_filter_off</span> <span class="o">=</span> <span class="n">GaussianSpatialFilter</span><span class="p">(</span><span class="n">sigma</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="n">origin</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">translate</span><span class="o">=</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">))</span>
+            <span class="n">off_linear_filter</span> <span class="o">=</span> <span class="n">SpatioTemporalFilter</span><span class="p">(</span><span class="n">spatial_filter_off</span><span class="p">,</span> <span class="n">temporal_filter</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=-</span><span class="mi">20</span><span class="p">)</span> 
+            <span class="n">on_off_cell</span> <span class="o">=</span> <span class="n">LGNOnOffCell</span><span class="p">(</span><span class="n">on_linear_filter</span><span class="p">,</span> <span class="n">off_linear_filter</span><span class="p">)</span>
+            <span class="n">cell_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">on_off_cell</span><span class="p">)</span>
+    
+    <span class="n">lgn</span> <span class="o">=</span> <span class="n">LGNModel</span><span class="p">(</span><span class="n">cell_list</span><span class="p">)</span> <span class="c1">#Here include a list of all cells</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">lgn</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">downsample</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span> <span class="c1">#Does the filtering + non-linearity on movie object m</span>
+    <span class="n">heat_plot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+      
+
+
+
+ 
+<span class="c1"># </span>
+<span class="c1">#     def imshow(self, ii, image_shape, fps, ax=None, show=True, relative_spatial_location=(0,0)):</span>
+<span class="c1">#         </span>
+<span class="c1">#         if ax is None:</span>
+<span class="c1">#             _, ax = plt.subplots(1,1)</span>
+<span class="c1">#         </span>
+<span class="c1">#         curr_kernel = self.get_spatio_temporal_kernel(image_shape, fps, relative_spatial_location=relative_spatial_location)</span>
+<span class="c1">#         </span>
+<span class="c1">#         cax = curr_kernel.imshow(ii, ax=ax, show=False)</span>
+<span class="c1">#         </span>
+<span class="c1">#         if show == True:</span>
+<span class="c1">#             plt.show()</span>
+<span class="c1">#         </span>
+<span class="c1">#         return ax</span>
+<span class="c1"># </span>
+<span class="c1"># </span>
+<span class="c1"># class OnOffCellModel(CellModel):</span>
+<span class="c1">#      </span>
+<span class="c1">#     def __init__(self, dc_offset=0, on_subfield=None, off_subfield=None, on_weight = 1, off_weight = -1, t_max=None):</span>
+<span class="c1">#  </span>
+<span class="c1">#         super(self.__class__, self).__init__(dc_offset, t_max)</span>
+<span class="c1">#  </span>
+<span class="c1">#         if isinstance(on_subfield, dict):</span>
+<span class="c1">#             curr_module, curr_class = on_subfield.pop(&#39;class&#39;)</span>
+<span class="c1">#             self.on_subfield = getattr(importlib.import_module(curr_module), curr_class)(**on_subfield)</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             self.on_subfield = on_subfield</span>
+<span class="c1">#             </span>
+<span class="c1">#         super(self.__class__, self).add_subfield(on_subfield, on_weight)</span>
+<span class="c1">#             </span>
+<span class="c1">#         if isinstance(off_subfield, dict):</span>
+<span class="c1">#             curr_module, curr_class = off_subfield.pop(&#39;class&#39;)</span>
+<span class="c1">#             self.off_subfield = getattr(importlib.import_module(curr_module), curr_class)(**off_subfield)</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             self.off_subfield = off_subfield</span>
+<span class="c1">#  </span>
+<span class="c1">#         super(self.__class__, self).add_subfield(off_subfield, off_weight)</span>
+<span class="c1">#  </span>
+<span class="c1">#  </span>
+<span class="c1">#     def to_dict(self):</span>
+<span class="c1">#         </span>
+<span class="c1">#         return {&#39;dc_offset&#39;:self.dc_offset,</span>
+<span class="c1">#                 &#39;on_subfield&#39;:self.on_subfield.to_dict(),</span>
+<span class="c1">#                 &#39;off_subfield&#39;:self.off_subfield.to_dict(),</span>
+<span class="c1">#                 &#39;t_max&#39;:self.t_max,</span>
+<span class="c1">#                 &#39;class&#39;:(__name__, self.__class__.__name__)}</span>
+<span class="c1">#         </span>
+<span class="c1"># class SingleSubfieldCellModel(CellModel):</span>
+<span class="c1">#      </span>
+<span class="c1">#     def __init__(self, subfield, weight = 1, dc_offset=0, t_max=None):</span>
+<span class="c1">#  </span>
+<span class="c1">#         super(SingleSubfieldCellModel, self).__init__(dc_offset, t_max)</span>
+<span class="c1">#  </span>
+<span class="c1">#         if isinstance(subfield, dict):</span>
+<span class="c1">#             curr_module, curr_class = subfield.pop(&#39;class&#39;)</span>
+<span class="c1">#             subfield = getattr(importlib.import_module(curr_module), curr_class)(**subfield)</span>
+<span class="c1">#             </span>
+<span class="c1">#         super(self.__class__, self).add_subfield(subfield, weight)</span>
+<span class="c1">#  </span>
+<span class="c1">#     def to_dict(self):</span>
+<span class="c1">#         </span>
+<span class="c1">#         assert len(self.subfield_list) == 1</span>
+<span class="c1">#         subfield = self.subfield_list[0]</span>
+<span class="c1">#         weight = self.subfield_weight_dict[subfield]</span>
+<span class="c1">#         </span>
+<span class="c1">#         return {&#39;dc_offset&#39;:self.dc_offset,</span>
+<span class="c1">#                 &#39;subfield&#39;:subfield.to_dict(),</span>
+<span class="c1">#                 &#39;weight&#39;:weight,</span>
+<span class="c1">#                 &#39;t_max&#39;:self.t_max,</span>
+<span class="c1">#                 &#39;class&#39;:(__name__, self.__class__.__name__)}</span>
+<span class="c1">#         </span>
+<span class="c1"># class OnCellModel(SingleSubfieldCellModel):</span>
+<span class="c1">#     </span>
+<span class="c1">#     def __init__(self, on_subfield, weight = 1, dc_offset=0 , t_max=None):</span>
+<span class="c1">#         assert weight &gt; 0</span>
+<span class="c1">#         super(OnCellModel, self).__init__(on_subfield, weight, dc_offset, t_max)</span>
+<span class="c1">#         </span>
+<span class="c1">#     def to_dict(self):</span>
+<span class="c1">#         data_dict = super(OnCellModel, self).to_dict()</span>
+<span class="c1">#         data_dict[&#39;on_subfield&#39;] = data_dict.pop(&#39;subfield&#39;)</span>
+<span class="c1">#         return data_dict</span>
+<span class="c1">#         </span>
+<span class="c1"># class OffCellModel(SingleSubfieldCellModel):</span>
+<span class="c1">#     </span>
+<span class="c1">#     def __init__(self, on_subfield, weight = -1, dc_offset=0 , t_max=None):</span>
+<span class="c1">#         assert weight &lt; 0</span>
+<span class="c1">#         super(OffCellModel, self).__init__(on_subfield, weight, dc_offset, t_max)</span>
+<span class="c1">#         </span>
+<span class="c1">#     def to_dict(self):</span>
+<span class="c1">#         data_dict = super(OffCellModel, self).to_dict()</span>
+<span class="c1">#         data_dict[&#39;off_subfield&#39;] = data_dict.pop(&#39;subfield&#39;)</span>
+<span class="c1">#         return data_dict</span>
+        
+        
+<span class="c1"># class OffCellModel(CellModel):</span>
+<span class="c1">#      </span>
+<span class="c1">#     def __init__(self, off_subfield, dc_offset=0, off_weight = 1, t_max=None):</span>
+<span class="c1">#         </span>
+<span class="c1">#         assert off_weight &lt; 0.</span>
+<span class="c1">#         self.weight = off_weight</span>
+<span class="c1">#         </span>
+<span class="c1"># </span>
+<span class="c1">#         </span>
+<span class="c1">#  </span>
+<span class="c1">#         super(self.__class__, self).__init__(dc_offset, t_max)</span>
+<span class="c1">#  </span>
+<span class="c1">#         if isinstance(on_subfield, dict):</span>
+<span class="c1">#             curr_module, curr_class = on_subfield.pop(&#39;class&#39;)</span>
+<span class="c1">#             self.subfield = getattr(importlib.import_module(curr_module), curr_class)(**on_subfield)</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             self.subfield = on_subfield</span>
+<span class="c1">#             </span>
+<span class="c1">#         super(self.__class__, self).add_subfield(self.subfield, self.weight)</span>
+<span class="c1">#  </span>
+<span class="c1">#     def to_dict(self):</span>
+<span class="c1">#         </span>
+<span class="c1">#         return {&#39;dc_offset&#39;:self.dc_offset,</span>
+<span class="c1">#                 &#39;on_subfield&#39;:self.subfield.to_dict(),</span>
+<span class="c1">#                 &#39;on_weight&#39;:self.weight,</span>
+<span class="c1">#                 &#39;t_max&#39;:self.t_max,</span>
+<span class="c1">#                 &#39;class&#39;:(__name__, self.__class__.__name__)}</span>
+
+
+ 
+
+
+        
+<span class="c1"># if __name__ == &quot;__main__&quot;:</span>
+<span class="c1">#     </span>
+<span class="c1">#     t = np.arange(0,.5,.001)</span>
+<span class="c1">#     example_movie = movie.Movie(file_name=os.path.join(isee_engine.movie_directory, &#39;TouchOfEvil.npy&#39;), frame_rate=30.1, memmap=True)</span>
+<span class="c1">#     </span>
+<span class="c1">#     temporal_filter_on = TemporalFilterExponential(weight=1, tau=.05)</span>
+<span class="c1">#     on_subfield = Subfield(scale=(5,15), weight=.5, rotation=30, temporal_filter=temporal_filter_on, translation=(0,0))</span>
+<span class="c1">#     </span>
+<span class="c1">#     temporal_filter_off = TemporalFilterExponential(weight=2, tau=.01)</span>
+<span class="c1">#     off_subfield = Subfield(scale=(5,15), weight=.5, rotation=-30, temporal_filter=temporal_filter_off)</span>
+<span class="c1"># </span>
+<span class="c1">#     cell = OnOffCellModel(on_subfield=on_subfield, off_subfield=off_subfield, dc_offset=0., t_max=.5)</span>
+<span class="c1">#     curr_kernel = cell.get_spatio_temporal_kernel((100,150), 30.1)</span>
+<span class="c1">#     curr_kernel.imshow(0)</span>
+<span class="c1">#     </span>
+<span class="c1">#     print cell.to_dict()</span>
+ 
+
+
+<span class="c1">#     f = cell.get_spatio_temporal_filter(example_movie.movie_data.shape[1:], t,threshold=.5)</span>
+<span class="c1">#     print len(f.t_ind_list)</span>
+<span class="c1">#     </span>
+<span class="c1">#     </span>
+    
+<span class="c1">#     for ii in range(example_movie.number_of_frames-curr_filter.t_max):</span>
+<span class="c1">#         print ii, example_movie.number_of_frames, curr_filter.map(example_movie, ii)</span>
+
+
+<span class="c1">#     off_subfield = Subfield(scale=(15,15), weight=.2, translation=(30,30))</span>
+
+
+<span class="c1">#     </span>
+<span class="c1">#     curr_filter = cell.get_spatio_temporal_filter((100,150))</span>
+<span class="c1">#     </span>
+
+<span class="c1">#     </span>
+<span class="c1"># #     print touch_of_evil(40.41, mask=m)</span>
+<span class="c1">#     print curr_filter.t_max</span>
+<span class="c1">#     for ii in range(example_movie.number_of_frames-curr_filter.t_max):</span>
+<span class="c1">#         print ii, example_movie.number_of_frames, curr_filter.map(example_movie, ii)</span>
+    
+<span class="c1">#     cell.visualize_spatial_filter((100,150))</span>
+<span class="c1">#         show_volume(spatio_temporal_filter, vmin=spatio_temporal_filter.min(), vmax=spatio_temporal_filter.max())</span>
+    
+
+
+<span class="c1">#     def get_spatial_filter(self, image_shape, relative_spatial_location=(0,0), relative_threshold=default_relative_threshold):</span>
+<span class="c1">#         </span>
+<span class="c1">#         # Initialize:</span>
+<span class="c1">#         translation_matrix = util.get_translation_matrix(relative_spatial_location)</span>
+<span class="c1">#         </span>
+<span class="c1">#         # On-subunit:</span>
+<span class="c1">#         on_filter_pre_spatial = self.on_subfield.get_spatial_filter(image_shape)</span>
+<span class="c1">#         on_filter_spatial = util.apply_transformation_matrix(on_filter_pre_spatial, translation_matrix)</span>
+<span class="c1">#         </span>
+<span class="c1">#         # Off-subunit:</span>
+<span class="c1">#         off_filter_pre_spatial = self.off_subfield.get_spatial_filter(image_shape)</span>
+<span class="c1">#         off_filter_spatial = util.apply_transformation_matrix(off_filter_pre_spatial, translation_matrix)</span>
+<span class="c1"># </span>
+<span class="c1">#         spatial_filter = on_filter_spatial - off_filter_spatial</span>
+<span class="c1"># </span>
+<span class="c1">#         tmp = np.abs(spatial_filter)</span>
+<span class="c1">#         spatial_filter[np.where(tmp/tmp.max() &lt; relative_threshold )] = 0</span>
+<span class="c1"># </span>
+<span class="c1">#         return spatial_filter</span>
+
+<span class="c1"># kernel = float(self.dc_offset)/len(nonzero_ind_tuple[0])+spatio_temporal_filter[nonzero_ind_tuple]</span>
+
+<span class="c1"># def rectifying_filter_factory(kernel, movie, dc_offset=0):</span>
+<span class="c1">#     </span>
+<span class="c1">#     def rectifying_filter(t):</span>
+<span class="c1">#         </span>
+<span class="c1">#         fi = movie.frame_rate*float(t)</span>
+<span class="c1">#         fim, fiM = np.floor(fi), np.ceil(fi)</span>
+<span class="c1">#         </span>
+<span class="c1">#         print t, fim, fiM</span>
+<span class="c1">#         </span>
+<span class="c1">#         try:</span>
+<span class="c1">#             s1 = (movie.movie_data[int(fim)+kernel.t_ind_list, kernel.row_ind_list, kernel.col_ind_list]*kernel.kernel).sum()</span>
+<span class="c1">#             s2 = (movie.movie_data[int(fiM)+kernel.t_ind_list, kernel.row_ind_list, kernel.col_ind_list]*kernel.kernel).sum()</span>
+<span class="c1">#         except IndexError:</span>
+<span class="c1">#             return None</span>
+<span class="c1">#         </span>
+<span class="c1">#         # Linear interpolation:</span>
+<span class="c1">#         s_pre = dc_offset + s1*((1-(fi-fim))*.5) + s2*((fi-fim)*.5)</span>
+<span class="c1">#         </span>
+<span class="c1">#         if s_pre &lt; 0:</span>
+<span class="c1">#             return 0</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             return float(s_pre)</span>
+<span class="c1">#     </span>
+<span class="c1">#     return rectifying_filter</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../../../../../index.html">Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../builder.html">Building Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../simulators.html">Simulation Engines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../pointnet.html">PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../filternet.html">FilterNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../mintnet.html">MintNet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+    </div>
+<script type="text/javascript" src="_static/external_assets/javascript/portalFooter.js"></script>
+
+  </body>
+</html>
