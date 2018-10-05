@@ -626,11 +626,128 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="bmtk-simulator-utils-stimulus-locallysparsenoise-module">
-<h2>bmtk.simulator.utils.stimulus.LocallySparseNoise module<a class="headerlink" href="#bmtk-simulator-utils-stimulus-locallysparsenoise-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-bmtk.simulator.utils.stimulus.LocallySparseNoise">
+<span id="bmtk-simulator-utils-stimulus-locallysparsenoise-module"></span><h2>bmtk.simulator.utils.stimulus.LocallySparseNoise module<a class="headerlink" href="#module-bmtk.simulator.utils.stimulus.LocallySparseNoise" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.utils.stimulus.LocallySparseNoise.LocallySparseNoise">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.stimulus.LocallySparseNoise.</code><code class="descname">LocallySparseNoise</code><span class="sig-paren">(</span><em>stim_template=None</em>, <em>stim_table=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/stimulus/LocallySparseNoise.html#LocallySparseNoise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.stimulus.LocallySparseNoise.LocallySparseNoise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.stimulus.LocallySparseNoise.LocallySparseNoise.create_sparse_noise_matrix">
+<em class="property">classmethod </em><code class="descname">create_sparse_noise_matrix</code><span class="sig-paren">(</span><em>Y=16</em>, <em>X=28</em>, <em>exclusion=5</em>, <em>T=9000</em>, <em>buffer_x=6</em>, <em>buffer_y=6</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/stimulus/LocallySparseNoise.html#LocallySparseNoise.create_sparse_noise_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.stimulus.LocallySparseNoise.LocallySparseNoise.create_sparse_noise_matrix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="bmtk.simulator.utils.stimulus.LocallySparseNoise.LocallySparseNoise.exclude">
+<em class="property">static </em><code class="descname">exclude</code><span class="sig-paren">(</span><em>av</em>, <em>y_x</em>, <em>exclusion=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/stimulus/LocallySparseNoise.html#LocallySparseNoise.exclude"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.stimulus.LocallySparseNoise.LocallySparseNoise.exclude" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="bmtk.simulator.utils.stimulus.LocallySparseNoise.LocallySparseNoise.generate_stim_table">
+<em class="property">static </em><code class="descname">generate_stim_table</code><span class="sig-paren">(</span><em>T</em>, <em>start_time=0</em>, <em>trial_length=250</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/stimulus/LocallySparseNoise.html#LocallySparseNoise.generate_stim_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.stimulus.LocallySparseNoise.LocallySparseNoise.generate_stim_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>frame_length is in milliseconds</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.stimulus.LocallySparseNoise.LocallySparseNoise.get_image_input">
+<code class="descname">get_image_input</code><span class="sig-paren">(</span><em>new_size=None</em>, <em>add_channels=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/stimulus/LocallySparseNoise.html#LocallySparseNoise.get_image_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.stimulus.LocallySparseNoise.LocallySparseNoise.get_image_input" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.stimulus.LocallySparseNoise.LocallySparseNoise.save_to_hdf">
+<code class="descname">save_to_hdf</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/stimulus/LocallySparseNoise.html#LocallySparseNoise.save_to_hdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.stimulus.LocallySparseNoise.LocallySparseNoise.save_to_hdf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.stimulus.LocallySparseNoise.LocallySparseNoise.with_brain_observatory_stimulus">
+<em class="property">classmethod </em><code class="descname">with_brain_observatory_stimulus</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/stimulus/LocallySparseNoise.html#LocallySparseNoise.with_brain_observatory_stimulus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.stimulus.LocallySparseNoise.LocallySparseNoise.with_brain_observatory_stimulus" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.stimulus.LocallySparseNoise.LocallySparseNoise.with_new_stimulus">
+<em class="property">classmethod </em><code class="descname">with_new_stimulus</code><span class="sig-paren">(</span><em>Y=16</em>, <em>X=28</em>, <em>exclusion=5</em>, <em>T=9000</em>, <em>buffer_x=6</em>, <em>buffer_y=6</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/stimulus/LocallySparseNoise.html#LocallySparseNoise.with_new_stimulus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.stimulus.LocallySparseNoise.LocallySparseNoise.with_new_stimulus" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="bmtk-simulator-utils-stimulus-naturalscenes-module">
-<h2>bmtk.simulator.utils.stimulus.NaturalScenes module<a class="headerlink" href="#bmtk-simulator-utils-stimulus-naturalscenes-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-bmtk.simulator.utils.stimulus.NaturalScenes">
+<span id="bmtk-simulator-utils-stimulus-naturalscenes-module"></span><h2>bmtk.simulator.utils.stimulus.NaturalScenes module<a class="headerlink" href="#module-bmtk.simulator.utils.stimulus.NaturalScenes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.stimulus.NaturalScenes.</code><code class="descname">NaturalScenes</code><span class="sig-paren">(</span><em>new_size=(64</em>, <em>112)</em>, <em>mode='L'</em>, <em>dtype=&lt;type 'numpy.float32'&gt;</em>, <em>start_time=0</em>, <em>trial_length=250</em>, <em>add_channels=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/stimulus/NaturalScenes.html#NaturalScenes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.add_gray_screen">
+<code class="descname">add_gray_screen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/stimulus/NaturalScenes.html#NaturalScenes.add_gray_screen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.add_gray_screen" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.add_object_to_template">
+<em class="property">static </em><code class="descname">add_object_to_template</code><span class="sig-paren">(</span><em>template</em>, <em>object_image</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/stimulus/NaturalScenes.html#NaturalScenes.add_object_to_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.add_object_to_template" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.add_objects_to_foreground">
+<code class="descname">add_objects_to_foreground</code><span class="sig-paren">(</span><em>object_dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/stimulus/NaturalScenes.html#NaturalScenes.add_objects_to_foreground"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.add_objects_to_foreground" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.create_image_dir_from_hierarchy">
+<em class="property">static </em><code class="descname">create_image_dir_from_hierarchy</code><span class="sig-paren">(</span><em>folder</em>, <em>new_path</em>, <em>label_names=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/stimulus/NaturalScenes.html#NaturalScenes.create_image_dir_from_hierarchy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.create_image_dir_from_hierarchy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.create_object_dict">
+<em class="property">static </em><code class="descname">create_object_dict</code><span class="sig-paren">(</span><em>folder</em>, <em>background_shape=(64</em>, <em>112)</em>, <em>dtype=&lt;type 'numpy.float32'&gt;</em>, <em>rotations=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/stimulus/NaturalScenes.html#NaturalScenes.create_object_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.create_object_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.generate_stim_table">
+<em class="property">static </em><code class="descname">generate_stim_table</code><span class="sig-paren">(</span><em>T</em>, <em>start_time=0</em>, <em>trial_length=250</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/stimulus/NaturalScenes.html#NaturalScenes.generate_stim_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.generate_stim_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>frame_length is in milliseconds</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.get_image_input">
+<code class="descname">get_image_input</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/stimulus/NaturalScenes.html#NaturalScenes.get_image_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.get_image_input" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.random_sample">
+<code class="descname">random_sample</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/stimulus/NaturalScenes.html#NaturalScenes.random_sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.random_sample" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.random_sample_with_labels">
+<code class="descname">random_sample_with_labels</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/stimulus/NaturalScenes.html#NaturalScenes.random_sample_with_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.random_sample_with_labels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.to_h5">
+<code class="descname">to_h5</code><span class="sig-paren">(</span><em>sample_indices=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/stimulus/NaturalScenes.html#NaturalScenes.to_h5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.to_h5" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.with_brain_observatory_stimulus">
+<em class="property">classmethod </em><code class="descname">with_brain_observatory_stimulus</code><span class="sig-paren">(</span><em>new_size=(64</em>, <em>112)</em>, <em>mode='L'</em>, <em>dtype=&lt;type 'numpy.float32'&gt;</em>, <em>start_time=0</em>, <em>trial_length=250</em>, <em>add_channels=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/stimulus/NaturalScenes.html#NaturalScenes.with_brain_observatory_stimulus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.with_brain_observatory_stimulus" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.with_new_stimulus_from_dataframe">
+<em class="property">classmethod </em><code class="descname">with_new_stimulus_from_dataframe</code><span class="sig-paren">(</span><em>image_dir</em>, <em>new_size=(64</em>, <em>112)</em>, <em>mode='L'</em>, <em>dtype=&lt;type 'numpy.float32'&gt;</em>, <em>start_time=0</em>, <em>trial_length=250</em>, <em>add_channels=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/stimulus/NaturalScenes.html#NaturalScenes.with_new_stimulus_from_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.with_new_stimulus_from_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>image_dir should contain a folder of images called ‘images’ and an hdf5 file with a
+dataframe called ‘label_dataframe.h5’ with the frame stored in the key ‘labels’.
+dataframe should have columns [‘relative_image_path’,’label_1’, ‘label_2’, …]</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.with_new_stimulus_from_folder">
+<em class="property">classmethod </em><code class="descname">with_new_stimulus_from_folder</code><span class="sig-paren">(</span><em>image_dir</em>, <em>new_size=(64</em>, <em>112)</em>, <em>mode='L'</em>, <em>dtype=&lt;type 'numpy.float32'&gt;</em>, <em>start_time=0</em>, <em>trial_length=250</em>, <em>add_channels=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/stimulus/NaturalScenes.html#NaturalScenes.with_new_stimulus_from_folder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.stimulus.NaturalScenes.NaturalScenes.with_new_stimulus_from_folder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-bmtk.simulator.utils.stimulus.StaticGratings">
 <span id="bmtk-simulator-utils-stimulus-staticgratings-module"></span><h2>bmtk.simulator.utils.stimulus.StaticGratings module<a class="headerlink" href="#module-bmtk.simulator.utils.stimulus.StaticGratings" title="Permalink to this headline">¶</a></h2>
@@ -681,6 +798,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>

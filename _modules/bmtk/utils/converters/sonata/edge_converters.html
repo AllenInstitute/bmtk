@@ -660,7 +660,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">edges_csv2h5</span><span class="p">(</span><span class="n">edges_file</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+        <span class="n">edges_csv2h5</span><span class="p">(</span><span class="n">edges_file</span><span class="p">,</span> <span class="n">edge_types_file</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
         <span class="k">return</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">exc</span>
@@ -766,7 +766,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="s1">&#39;weight_function&#39;</span><span class="p">:</span> <span class="s1">&#39;weight_func&#39;</span><span class="p">,</span>
     <span class="p">}</span>
 
-    <span class="n">columns_order</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">,</span> <span class="s1">&#39;target_query&#39;</span><span class="p">,</span> <span class="s1">&#39;source_query&#39;</span><span class="p">]</span>
+    <span class="n">columns_order</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">,</span> <span class="s1">&#39;model_type&#39;</span><span class="p">,</span> <span class="s1">&#39;model_template&#39;</span><span class="p">,</span> <span class="s1">&#39;model_processing&#39;</span><span class="p">,</span> <span class="s1">&#39;dynamics_params&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;target_query&#39;</span><span class="p">,</span> <span class="s1">&#39;source_query&#39;</span><span class="p">]</span>
 
     <span class="n">edges_h5</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">edges_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
     <span class="n">edge_types_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">edge_types_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
@@ -816,6 +817,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="c1"># find each source_label, use value to find edge_type_id</span>
             <span class="c1"># TODO: may be faster to filter by model_id, trg_label_val before iterating through the sources</span>
             <span class="n">src_label_val</span> <span class="o">=</span> <span class="n">src_nodes_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">src_gid</span><span class="p">][</span><span class="n">src_label</span><span class="p">]</span>
+            <span class="c1"># print trg_label_val, src_label_val</span>
             <span class="n">edge_type_id</span> <span class="o">=</span> <span class="n">edge_types_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">model_id</span><span class="p">,</span> <span class="n">trg_label_val</span><span class="p">,</span> <span class="n">src_label_val</span><span class="p">][</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">]</span>
             <span class="n">edge_types_ids</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_type_id</span>
             <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -919,6 +921,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>

@@ -20,7 +20,7 @@ as custom hoc and NeuroML2 cell and synapse models.
 Installation
 ------------
 BioNet supports both Python 2.7 or Python 3.6+, and also requires NEURON 7.4+ to be installed. See our
-`Installation instructions <installation>`_ for help on installing NEURON and the bmtk.
+`Installation instructions <installation>`_ for help on installing NEURON and the BMTK.
 
 
 

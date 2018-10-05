@@ -629,8 +629,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html">bmtk.simulator.utils.stimulus package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#bmtk-simulator-utils-stimulus-locallysparsenoise-module">bmtk.simulator.utils.stimulus.LocallySparseNoise module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#bmtk-simulator-utils-stimulus-naturalscenes-module">bmtk.simulator.utils.stimulus.NaturalScenes module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#module-bmtk.simulator.utils.stimulus.LocallySparseNoise">bmtk.simulator.utils.stimulus.LocallySparseNoise module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#module-bmtk.simulator.utils.stimulus.NaturalScenes">bmtk.simulator.utils.stimulus.NaturalScenes module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#module-bmtk.simulator.utils.stimulus.StaticGratings">bmtk.simulator.utils.stimulus.StaticGratings module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#module-bmtk.simulator.utils.stimulus">Module contents</a></li>
 </ul>
@@ -1163,8 +1163,177 @@ spike_gids: list</p>
 </dd></dl>
 
 </div>
-<div class="section" id="bmtk-simulator-utils-nwb-module">
-<h2>bmtk.simulator.utils.nwb module<a class="headerlink" href="#bmtk-simulator-utils-nwb-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-bmtk.simulator.utils.nwb">
+<span id="bmtk-simulator-utils-nwb-module"></span><h2>bmtk.simulator.utils.nwb module<a class="headerlink" href="#module-bmtk.simulator.utils.nwb" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.utils.nwb.Data">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">Data</code><span class="sig-paren">(</span><em>data</em>, <em>dimension</em>, <em>unit</em>, <em>scales</em>, <em>metadata</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#Data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.Data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.simulator.utils.nwb.Data.add_to_acquisition">
+<code class="descname">add_to_acquisition</code><span class="sig-paren">(</span><em>f</em>, <em>compression='gzip'</em>, <em>compression_opts=4</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#Data.add_to_acquisition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.Data.add_to_acquisition" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.nwb.Data.add_to_analysis">
+<code class="descname">add_to_analysis</code><span class="sig-paren">(</span><em>f</em>, <em>analysis_submodule_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#Data.add_to_analysis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.Data.add_to_analysis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.nwb.Data.add_to_processing">
+<code class="descname">add_to_processing</code><span class="sig-paren">(</span><em>f</em>, <em>processing_submodule_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#Data.add_to_processing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.Data.add_to_processing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.utils.nwb.Data.add_to_stimulus">
+<code class="descname">add_to_stimulus</code><span class="sig-paren">(</span><em>f</em>, <em>compression='gzip'</em>, <em>compression_opts=4</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#Data.add_to_stimulus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.Data.add_to_stimulus" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.nwb.Data.get_acquisition">
+<em class="property">classmethod </em><code class="descname">get_acquisition</code><span class="sig-paren">(</span><em>f</em>, <em>ii=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#Data.get_acquisition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.Data.get_acquisition" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.nwb.Data.get_analysis">
+<em class="property">classmethod </em><code class="descname">get_analysis</code><span class="sig-paren">(</span><em>f</em>, <em>subgroup_name</em>, <em>ii=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#Data.get_analysis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.Data.get_analysis" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.nwb.Data.get_processing">
+<em class="property">classmethod </em><code class="descname">get_processing</code><span class="sig-paren">(</span><em>f</em>, <em>subgroup_name</em>, <em>ii=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#Data.get_processing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.Data.get_processing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.utils.nwb.Data.get_stimulus">
+<em class="property">classmethod </em><code class="descname">get_stimulus</code><span class="sig-paren">(</span><em>f</em>, <em>ii=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#Data.get_stimulus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.Data.get_stimulus" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.nwb.Dev">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">Dev</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#Dev"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.Dev" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.utils.nwb.Data" title="bmtk.simulator.utils.nwb.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.utils.nwb.Data</span></code></a></p>
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.nwb.Dev.group">
+<code class="descname">group</code><em class="property"> = 'dev'</em><a class="headerlink" href="#bmtk.simulator.utils.nwb.Dev.group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.nwb.DtScale">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">DtScale</code><span class="sig-paren">(</span><em>dt</em>, <em>dimension</em>, <em>unit</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#DtScale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.DtScale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.nwb.DtScale.data">
+<code class="descname">data</code><a class="headerlink" href="#bmtk.simulator.utils.nwb.DtScale.data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.nwb.FiringRate">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">FiringRate</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#FiringRate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.FiringRate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.utils.nwb.Data" title="bmtk.simulator.utils.nwb.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.utils.nwb.Data</span></code></a></p>
+<dl class="method">
+<dt id="bmtk.simulator.utils.nwb.FiringRate.get_widget">
+<code class="descname">get_widget</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#FiringRate.get_widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.FiringRate.get_widget" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.nwb.FiringRate.group">
+<code class="descname">group</code><em class="property"> = 'firing_rate'</em><a class="headerlink" href="#bmtk.simulator.utils.nwb.FiringRate.group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.nwb.GrayScaleMovie">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">GrayScaleMovie</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#GrayScaleMovie"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.GrayScaleMovie" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.utils.nwb.Data" title="bmtk.simulator.utils.nwb.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.utils.nwb.Data</span></code></a></p>
+<dl class="method">
+<dt id="bmtk.simulator.utils.nwb.GrayScaleMovie.get_widget">
+<code class="descname">get_widget</code><span class="sig-paren">(</span><em>ax=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#GrayScaleMovie.get_widget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.GrayScaleMovie.get_widget" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.nwb.GrayScaleMovie.group">
+<code class="descname">group</code><em class="property"> = 'grayscale_movie'</em><a class="headerlink" href="#bmtk.simulator.utils.nwb.GrayScaleMovie.group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.nwb.NullScale">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">NullScale</code><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#NullScale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.NullScale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.nwb.Scale">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">Scale</code><span class="sig-paren">(</span><em>scale_range</em>, <em>dimension</em>, <em>unit</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#Scale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.Scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.nwb.Scale.data">
+<code class="descname">data</code><a class="headerlink" href="#bmtk.simulator.utils.nwb.Scale.data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.nwb.SpikeTrain">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">SpikeTrain</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#SpikeTrain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.SpikeTrain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.utils.nwb.Data" title="bmtk.simulator.utils.nwb.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.utils.nwb.Data</span></code></a></p>
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.nwb.SpikeTrain.group">
+<code class="descname">group</code><em class="property"> = 'spike_train'</em><a class="headerlink" href="#bmtk.simulator.utils.nwb.SpikeTrain.group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.utils.nwb.TimeSeries">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">TimeSeries</code><span class="sig-paren">(</span><em>data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#TimeSeries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.TimeSeries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.utils.nwb.Data" title="bmtk.simulator.utils.nwb.Data"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.utils.nwb.Data</span></code></a></p>
+<dl class="attribute">
+<dt id="bmtk.simulator.utils.nwb.TimeSeries.group">
+<code class="descname">group</code><em class="property"> = 'time_series'</em><a class="headerlink" href="#bmtk.simulator.utils.nwb.TimeSeries.group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.utils.nwb.add_external_links">
+<code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">add_external_links</code><span class="sig-paren">(</span><em>parent_group, external_file_name, external_group_name_list=['file_create_date', 'stimulus', 'acquisition', 'analysis', 'processing', 'epochs', 'general', 'session_description', 'nwb_version', 'identifier']</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#add_external_links"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.add_external_links" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.utils.nwb.assert_subgroup_exists">
+<code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">assert_subgroup_exists</code><span class="sig-paren">(</span><em>child_name</em>, <em>parent</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#assert_subgroup_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.assert_subgroup_exists" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.utils.nwb.create_blank_file">
+<code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">create_blank_file</code><span class="sig-paren">(</span><em>save_file_name=None</em>, <em>force=False</em>, <em>session_description=''</em>, <em>close=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#create_blank_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.create_blank_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.utils.nwb.get_stimulus">
+<code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">get_stimulus</code><span class="sig-paren">(</span><em>f</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#get_stimulus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.get_stimulus" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.utils.nwb.get_temp_file_name">
+<code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">get_temp_file_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#get_temp_file_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.get_temp_file_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.utils.nwb.open_file">
+<code class="descclassname">bmtk.simulator.utils.nwb.</code><code class="descname">open_file</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/nwb.html#open_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.nwb.open_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 <div class="section" id="module-bmtk.simulator.utils.property_maps">
 <span id="bmtk-simulator-utils-property-maps-module"></span><h2>bmtk.simulator.utils.property_maps module<a class="headerlink" href="#module-bmtk.simulator.utils.property_maps" title="Permalink to this headline">¶</a></h2>
@@ -1471,6 +1640,7 @@ required). If there is no registered subclass a generic SimReport object will be
 </li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>

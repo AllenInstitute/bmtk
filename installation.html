@@ -623,7 +623,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             
   <div class="section" id="installing-the-bmtk">
 <h1>Installing the BMTK<a class="headerlink" href="#installing-the-bmtk" title="Permalink to this headline">¶</a></h1>
-<p>The bmtk was developed for use for Python 2.7+ and Python 3.6+. Previous releases can be downloaded from
+<p>The BMTK was developed for use for Python 2.7+ and Python 3.6+. Previous releases can be downloaded from
 <a class="reference external" href="https://github.com/AllenInstitute/bmtk/releases">here</a>. The latest code including newest features and bug fixes
 can be found on the <a class="reference external" href="https://github.com/AllenInstitute/bmtk">develop branch of our github repo</a>.</p>
 <p>The base installation, which will let you build networks, parse and analyze simulation reports, require the following
@@ -636,12 +636,12 @@ dependencies:</p>
 <li><a class="reference external" href="https://pypi.python.org/pypi/jsonschema">jsonschema</a></li>
 <li><a class="reference external" href="https://docs.pytest.org/en/latest/">pytest</a> [optional for running unit tests]</li>
 </ul>
-<p>All components of the bmtk will work on a single machine, but some parts can take advantage of parallelism againsts
+<p>All components of the BMTK will work on a single machine, but some parts can take advantage of parallelism againsts
 HPC clusters, and requires the following to be installed:</p>
 <ul class="simple">
 <li><a class="reference external" href="https://mpi4py.readthedocs.io/en/stable/">mpi4py</a></li>
 </ul>
-<p>For running network simulations bmtk uses existing software which varies depending on the type of simulation you want
+<p>For running network simulations BMTK uses existing software which varies depending on the type of simulation you want
 to run. Individual instructions are done for the various requirements of the different simulation engines.</p>
 <div class="section" id="installing-latest-from-source">
 <h2>Installing latest from source<a class="headerlink" href="#installing-latest-from-source" title="Permalink to this headline">¶</a></h2>
@@ -665,7 +665,7 @@ $ python setup.py install
 </div>
 <div class="section" id="using-the-docker-image">
 <h2>Using the Docker Image<a class="headerlink" href="#using-the-docker-image" title="Permalink to this headline">¶</a></h2>
-<p>The bmtk docker container lets you build and simulate networks without requiring installing all the bmtk prerequisits on
+<p>The BMTK docker container lets you build and simulate networks without requiring installing all the BMTK prerequisites on
 your computer. All you need is the <a class="reference external" href="https://docs.docker.com/install/">docker client</a> installed on your machine.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker pull alleninstitute/bmtk
 </pre></div>
@@ -674,7 +674,7 @@ your computer. All you need is the <a class="reference external" href="https://d
 server</p>
 <div class="section" id="through-the-command-line">
 <h3>Through the command line<a class="headerlink" href="#through-the-command-line" title="Permalink to this headline">¶</a></h3>
-<p>Go to the directory where your bmtk network-builder and/or network-simualtion scripts and supporting files are located
+<p>Go to the directory where your BMTK network-builder and/or network-simualtion scripts and supporting files are located
 (<em>local/path</em>) and run the following in a command-line terminal</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker run alleninstitute/bmtk -v local/path:/home/shared/workspace python &lt;my_script&gt;.py &lt;opts&gt;
 </pre></div>
@@ -725,7 +725,7 @@ version 2.11 and above. Instructions for installing NEST can be found <a class="
 <h3>Filter Models<a class="headerlink" href="#filter-models" title="Permalink to this headline">¶</a></h3>
 <p>FilterNet is the simulation engine responsible for simulating firing rate responses to stimuli onto the visual fields. It
 uses a piece of simulation software called LGNModel developed at the Allen Institute for Brain Science. Luckily, LGNModel
-is already built into the bmtk and no extra installation instructions are required.</p>
+is already built into the BMTK and no extra installation instructions are required.</p>
 </div>
 <div class="section" id="population-level-models">
 <h3>Population Level Models<a class="headerlink" href="#population-level-models" title="Permalink to this headline">¶</a></h3>
@@ -759,6 +759,7 @@ However we recommend installing DiPDE using anaconda:</p>
 </li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.builder.html">bmtk.builder package</a></li>

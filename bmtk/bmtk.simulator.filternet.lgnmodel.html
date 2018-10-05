@@ -626,59 +626,800 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="bmtk-simulator-filternet-lgnmodel-cellmodel-module">
-<h2>bmtk.simulator.filternet.lgnmodel.cellmodel module<a class="headerlink" href="#bmtk-simulator-filternet-lgnmodel-cellmodel-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-bmtk.simulator.filternet.lgnmodel.cellmodel">
+<span id="bmtk-simulator-filternet-lgnmodel-cellmodel-module"></span><h2>bmtk.simulator.filternet.lgnmodel.cellmodel module<a class="headerlink" href="#module-bmtk.simulator.filternet.lgnmodel.cellmodel" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.cellmodel.LGNOffCell">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.cellmodel.</code><code class="descname">LGNOffCell</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/cellmodel.html#LGNOffCell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cellmodel.LGNOffCell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.filternet.lgnmodel.cellmodel.OffUnit" title="bmtk.simulator.filternet.lgnmodel.cellmodel.OffUnit"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.filternet.lgnmodel.cellmodel.OffUnit</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.cellmodel.LGNOnCell">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.cellmodel.</code><code class="descname">LGNOnCell</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/cellmodel.html#LGNOnCell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cellmodel.LGNOnCell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.cellmodel.LGNOnOffCell">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.cellmodel.</code><code class="descname">LGNOnOffCell</code><span class="sig-paren">(</span><em>on_filter</em>, <em>off_filter</em>, <em>transfer_function=&lt;bmtk.simulator.filternet.lgnmodel.transferfunction.MultiTransferFunction object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/cellmodel.html#LGNOnOffCell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cellmodel.LGNOnOffCell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.filternet.lgnmodel.lnunit.MultiLNUnit" title="bmtk.simulator.filternet.lgnmodel.lnunit.MultiLNUnit"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.filternet.lgnmodel.lnunit.MultiLNUnit</span></code></a></p>
+<p>A cell model for a OnOff cell</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.cellmodel.OffUnit">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.cellmodel.</code><code class="descname">OffUnit</code><span class="sig-paren">(</span><em>linear_filter</em>, <em>transfer_function</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/cellmodel.html#OffUnit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cellmodel.OffUnit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit" title="bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.cellmodel.OnUnit">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.cellmodel.</code><code class="descname">OnUnit</code><span class="sig-paren">(</span><em>linear_filter</em>, <em>transfer_function</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/cellmodel.html#OnUnit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cellmodel.OnUnit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit" title="bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.cellmodel.TwoSubfieldLinearCell">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.cellmodel.</code><code class="descname">TwoSubfieldLinearCell</code><span class="sig-paren">(</span><em>dominant_filter</em>, <em>nondominant_filter</em>, <em>subfield_separation=10</em>, <em>onoff_axis_angle=45</em>, <em>dominant_subfield_location=(30</em>, <em>40)</em>, <em>transfer_function=&lt;bmtk.simulator.filternet.lgnmodel.transferfunction.MultiTransferFunction object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/cellmodel.html#TwoSubfieldLinearCell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cellmodel.TwoSubfieldLinearCell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.filternet.lgnmodel.lnunit.MultiLNUnit" title="bmtk.simulator.filternet.lgnmodel.lnunit.MultiLNUnit"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.filternet.lgnmodel.lnunit.MultiLNUnit</span></code></a></p>
+</dd></dl>
+
 </div>
-<div class="section" id="bmtk-simulator-filternet-lgnmodel-cursor-module">
-<h2>bmtk.simulator.filternet.lgnmodel.cursor module<a class="headerlink" href="#bmtk-simulator-filternet-lgnmodel-cursor-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-bmtk.simulator.filternet.lgnmodel.cursor">
+<span id="bmtk-simulator-filternet-lgnmodel-cursor-module"></span><h2>bmtk.simulator.filternet.lgnmodel.cursor module<a class="headerlink" href="#module-bmtk.simulator.filternet.lgnmodel.cursor" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.cursor.FilterCursor">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.cursor.</code><code class="descname">FilterCursor</code><span class="sig-paren">(</span><em>spatiotemporal_filter</em>, <em>movie</em>, <em>threshold=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/cursor.html#FilterCursor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cursor.FilterCursor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor" title="bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.cursor.</code><code class="descname">KernelCursor</code><span class="sig-paren">(</span><em>kernel</em>, <em>movie</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/cursor.html#KernelCursor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor.apply_dot_product">
+<code class="descname">apply_dot_product</code><span class="sig-paren">(</span><em>ti_offset</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/cursor.html#KernelCursor.apply_dot_product"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor.apply_dot_product" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor.col_range">
+<code class="descname">col_range</code><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor.col_range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor.evaluate">
+<code class="descname">evaluate</code><span class="sig-paren">(</span><em>t_min=None</em>, <em>t_max=None</em>, <em>downsample=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/cursor.html#KernelCursor.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor.frame_rate">
+<code class="descname">frame_rate</code><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor.frame_rate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor.row_range">
+<code class="descname">row_range</code><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor.row_range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor.t_range">
+<code class="descname">t_range</code><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor.t_range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.cursor.LNUnitCursor">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.cursor.</code><code class="descname">LNUnitCursor</code><span class="sig-paren">(</span><em>lnunit</em>, <em>movie</em>, <em>threshold=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/cursor.html#LNUnitCursor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cursor.LNUnitCursor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor" title="bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.filternet.lgnmodel.cursor.KernelCursor</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.cursor.MultiLNUnitCursor">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.cursor.</code><code class="descname">MultiLNUnitCursor</code><span class="sig-paren">(</span><em>multi_lnunit</em>, <em>movie</em>, <em>threshold=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/cursor.html#MultiLNUnitCursor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cursor.MultiLNUnitCursor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.cursor.MultiLNUnitCursor.evaluate">
+<code class="descname">evaluate</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/cursor.html#MultiLNUnitCursor.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cursor.MultiLNUnitCursor.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.cursor.MultiLNUnitMultiMovieCursor">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.cursor.</code><code class="descname">MultiLNUnitMultiMovieCursor</code><span class="sig-paren">(</span><em>multi_lnunit</em>, <em>movie_list</em>, <em>threshold=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/cursor.html#MultiLNUnitMultiMovieCursor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cursor.MultiLNUnitMultiMovieCursor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.filternet.lgnmodel.cursor.MultiLNUnitCursor" title="bmtk.simulator.filternet.lgnmodel.cursor.MultiLNUnitCursor"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.filternet.lgnmodel.cursor.MultiLNUnitCursor</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.cursor.SeparableKernelCursor">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.cursor.</code><code class="descname">SeparableKernelCursor</code><span class="sig-paren">(</span><em>spatial_kernel</em>, <em>temporal_kernel</em>, <em>movie</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/cursor.html#SeparableKernelCursor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cursor.SeparableKernelCursor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.cursor.SeparableKernelCursor.evaluate">
+<code class="descname">evaluate</code><span class="sig-paren">(</span><em>threshold=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/cursor.html#SeparableKernelCursor.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cursor.SeparableKernelCursor.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.cursor.SeparableLNUnitCursor">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.cursor.</code><code class="descname">SeparableLNUnitCursor</code><span class="sig-paren">(</span><em>lnunit</em>, <em>movie</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/cursor.html#SeparableLNUnitCursor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cursor.SeparableLNUnitCursor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.filternet.lgnmodel.cursor.SeparableSpatioTemporalFilterCursor" title="bmtk.simulator.filternet.lgnmodel.cursor.SeparableSpatioTemporalFilterCursor"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.filternet.lgnmodel.cursor.SeparableSpatioTemporalFilterCursor</span></code></a></p>
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.cursor.SeparableLNUnitCursor.evaluate">
+<code class="descname">evaluate</code><span class="sig-paren">(</span><em>downsample=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/cursor.html#SeparableLNUnitCursor.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cursor.SeparableLNUnitCursor.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.cursor.SeparableMultiLNUnitCursor">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.cursor.</code><code class="descname">SeparableMultiLNUnitCursor</code><span class="sig-paren">(</span><em>multilnunit</em>, <em>movie</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/cursor.html#SeparableMultiLNUnitCursor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cursor.SeparableMultiLNUnitCursor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.cursor.SeparableMultiLNUnitCursor.evaluate">
+<code class="descname">evaluate</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/cursor.html#SeparableMultiLNUnitCursor.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cursor.SeparableMultiLNUnitCursor.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.cursor.SeparableSpatioTemporalFilterCursor">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.cursor.</code><code class="descname">SeparableSpatioTemporalFilterCursor</code><span class="sig-paren">(</span><em>spatiotemporal_filter</em>, <em>movie</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/cursor.html#SeparableSpatioTemporalFilterCursor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.cursor.SeparableSpatioTemporalFilterCursor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.filternet.lgnmodel.cursor.SeparableKernelCursor" title="bmtk.simulator.filternet.lgnmodel.cursor.SeparableKernelCursor"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.filternet.lgnmodel.cursor.SeparableKernelCursor</span></code></a></p>
+</dd></dl>
+
 </div>
-<div class="section" id="bmtk-simulator-filternet-lgnmodel-fitfuns-module">
-<h2>bmtk.simulator.filternet.lgnmodel.fitfuns module<a class="headerlink" href="#bmtk-simulator-filternet-lgnmodel-fitfuns-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-bmtk.simulator.filternet.lgnmodel.fitfuns">
+<span id="bmtk-simulator-filternet-lgnmodel-fitfuns-module"></span><h2>bmtk.simulator.filternet.lgnmodel.fitfuns module<a class="headerlink" href="#module-bmtk.simulator.filternet.lgnmodel.fitfuns" title="Permalink to this headline">¶</a></h2>
+<p>Created on Thu Nov 13 17:07:50 2014</p>
+<p>&#64;author: rami</p>
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.fitfuns.ff">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.fitfuns.</code><code class="descname">ff</code><span class="sig-paren">(</span><em>x</em>, <em>c</em>, <em>dc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/fitfuns.html#ff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.fitfuns.ff" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.fitfuns.getrandbits">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.fitfuns.</code><code class="descname">getrandbits</code><span class="sig-paren">(</span><em>k</em><span class="sig-paren">)</span> &#x2192; x.  Generates a long int with k random bits.<a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.fitfuns.getrandbits" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.fitfuns.invnl">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.fitfuns.</code><code class="descname">invnl</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/fitfuns.html#invnl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.fitfuns.invnl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.fitfuns.makeBasis_StimKernel">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.fitfuns.</code><code class="descname">makeBasis_StimKernel</code><span class="sig-paren">(</span><em>kbasprs</em>, <em>nkt</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/fitfuns.html#makeBasis_StimKernel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.fitfuns.makeBasis_StimKernel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.fitfuns.makeBasis_StimKernel_exp">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.fitfuns.</code><code class="descname">makeBasis_StimKernel_exp</code><span class="sig-paren">(</span><em>kbasprs</em>, <em>nkt</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/fitfuns.html#makeBasis_StimKernel_exp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.fitfuns.makeBasis_StimKernel_exp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.fitfuns.makeFitStruct_GLM">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.fitfuns.</code><code class="descname">makeFitStruct_GLM</code><span class="sig-paren">(</span><em>dtsim</em>, <em>kbasprs</em>, <em>nkt</em>, <em>flag_exp</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/fitfuns.html#makeFitStruct_GLM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.fitfuns.makeFitStruct_GLM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.fitfuns.nlin">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.fitfuns.</code><code class="descname">nlin</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/fitfuns.html#nlin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.fitfuns.nlin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.fitfuns.normalizecols">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.fitfuns.</code><code class="descname">normalizecols</code><span class="sig-paren">(</span><em>A</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/fitfuns.html#normalizecols"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.fitfuns.normalizecols" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.fitfuns.random">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.fitfuns.</code><code class="descname">random</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; x in the interval [0, 1).<a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.fitfuns.random" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.fitfuns.sameconv">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.fitfuns.</code><code class="descname">sameconv</code><span class="sig-paren">(</span><em>A</em>, <em>B</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/fitfuns.html#sameconv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.fitfuns.sameconv" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
-<div class="section" id="bmtk-simulator-filternet-lgnmodel-kernel-module">
-<h2>bmtk.simulator.filternet.lgnmodel.kernel module<a class="headerlink" href="#bmtk-simulator-filternet-lgnmodel-kernel-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-bmtk.simulator.filternet.lgnmodel.kernel">
+<span id="bmtk-simulator-filternet-lgnmodel-kernel-module"></span><h2>bmtk.simulator.filternet.lgnmodel.kernel module<a class="headerlink" href="#module-bmtk.simulator.filternet.lgnmodel.kernel" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.Kernel1D">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.kernel.</code><code class="descname">Kernel1D</code><span class="sig-paren">(</span><em>t_range</em>, <em>kernel_array</em>, <em>threshold=0.0</em>, <em>reverse=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#Kernel1D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.Kernel1D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.Kernel1D.full">
+<code class="descname">full</code><span class="sig-paren">(</span><em>truncate_t=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#Kernel1D.full"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.Kernel1D.full" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.Kernel1D.imshow">
+<code class="descname">imshow</code><span class="sig-paren">(</span><em>ax=None</em>, <em>show=True</em>, <em>save_file_name=None</em>, <em>ylim=None</em>, <em>xlim=None</em>, <em>color='b'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#Kernel1D.imshow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.Kernel1D.imshow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.Kernel1D.normalize">
+<code class="descname">normalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#Kernel1D.normalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.Kernel1D.normalize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.Kernel1D.rescale">
+<code class="descname">rescale</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#Kernel1D.rescale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.Kernel1D.rescale" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.kernel.</code><code class="descname">Kernel2D</code><span class="sig-paren">(</span><em>row_range</em>, <em>col_range</em>, <em>row_inds</em>, <em>col_inds</em>, <em>kernel</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#Kernel2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.apply_threshold">
+<code class="descname">apply_threshold</code><span class="sig-paren">(</span><em>threshold</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#Kernel2D.apply_threshold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.apply_threshold" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.copy">
+<em class="property">classmethod </em><code class="descname">copy</code><span class="sig-paren">(</span><em>instance</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#Kernel2D.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.copy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.from_dense">
+<em class="property">classmethod </em><code class="descname">from_dense</code><span class="sig-paren">(</span><em>row_range</em>, <em>col_range</em>, <em>kernel_array</em>, <em>threshold=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#Kernel2D.from_dense"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.from_dense" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.full">
+<code class="descname">full</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#Kernel2D.full"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.full" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.imshow">
+<code class="descname">imshow</code><span class="sig-paren">(</span><em>ax=None</em>, <em>show=True</em>, <em>save_file_name=None</em>, <em>clim=None</em>, <em>colorbar=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#Kernel2D.imshow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.imshow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.normalize">
+<code class="descname">normalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#Kernel2D.normalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.normalize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.rescale">
+<code class="descname">rescale</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#Kernel2D.rescale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.rescale" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.kernel.</code><code class="descname">Kernel3D</code><span class="sig-paren">(</span><em>row_range</em>, <em>col_range</em>, <em>t_range</em>, <em>row_inds</em>, <em>col_inds</em>, <em>t_inds</em>, <em>kernel</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#Kernel3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.apply_threshold">
+<code class="descname">apply_threshold</code><span class="sig-paren">(</span><em>threshold</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#Kernel3D.apply_threshold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.apply_threshold" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.copy">
+<em class="property">classmethod </em><code class="descname">copy</code><span class="sig-paren">(</span><em>instance</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#Kernel3D.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.copy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.full">
+<code class="descname">full</code><span class="sig-paren">(</span><em>truncate_t=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#Kernel3D.full"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.full" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.imshow">
+<code class="descname">imshow</code><span class="sig-paren">(</span><em>ax=None</em>, <em>t_range=None</em>, <em>cmap=&lt;matplotlib.colors.LinearSegmentedColormap object&gt;</em>, <em>N=10</em>, <em>show=True</em>, <em>save_file_name=None</em>, <em>kvals=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#Kernel3D.imshow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.imshow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.normalize">
+<code class="descname">normalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#Kernel3D.normalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.normalize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.rescale">
+<code class="descname">rescale</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#Kernel3D.rescale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.rescale" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.t_slice">
+<code class="descname">t_slice</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#Kernel3D.t_slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.t_slice" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.find_l_r_in_t_range">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.kernel.</code><code class="descname">find_l_r_in_t_range</code><span class="sig-paren">(</span><em>t_range</em>, <em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#find_l_r_in_t_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.find_l_r_in_t_range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.get_contour">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.kernel.</code><code class="descname">get_contour</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>Z</em>, <em>c</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#get_contour"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.get_contour" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.merge_spatial_temporal">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.kernel.</code><code class="descname">merge_spatial_temporal</code><span class="sig-paren">(</span><em>spatial_kernel</em>, <em>temporal_kernel</em>, <em>threshold=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#merge_spatial_temporal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.merge_spatial_temporal" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.kernel.plot_single_contour">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.kernel.</code><code class="descname">plot_single_contour</code><span class="sig-paren">(</span><em>ax</em>, <em>x_contour</em>, <em>y_contour</em>, <em>t</em>, <em>color</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/kernel.html#plot_single_contour"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.kernel.plot_single_contour" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 <div class="section" id="bmtk-simulator-filternet-lgnmodel-lattice-unit-constructor-module">
 <h2>bmtk.simulator.filternet.lgnmodel.lattice_unit_constructor module<a class="headerlink" href="#bmtk-simulator-filternet-lgnmodel-lattice-unit-constructor-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="bmtk-simulator-filternet-lgnmodel-lgnmodel1-module">
-<h2>bmtk.simulator.filternet.lgnmodel.lgnmodel1 module<a class="headerlink" href="#bmtk-simulator-filternet-lgnmodel-lgnmodel1-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-bmtk.simulator.filternet.lgnmodel.lgnmodel1">
+<span id="bmtk-simulator-filternet-lgnmodel-lgnmodel1-module"></span><h2>bmtk.simulator.filternet.lgnmodel.lgnmodel1 module<a class="headerlink" href="#module-bmtk.simulator.filternet.lgnmodel.lgnmodel1" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.lgnmodel1.LGNModel">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.lgnmodel1.</code><code class="descname">LGNModel</code><span class="sig-paren">(</span><em>cell_list</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/lgnmodel1.html#LGNModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.lgnmodel1.LGNModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.lgnmodel1.LGNModel.evaluate">
+<code class="descname">evaluate</code><span class="sig-paren">(</span><em>movie</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/lgnmodel1.html#LGNModel.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.lgnmodel1.LGNModel.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.lgnmodel1.heat_plot">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.lgnmodel1.</code><code class="descname">heat_plot</code><span class="sig-paren">(</span><em>evaluate_result</em>, <em>ax=None</em>, <em>show=True</em>, <em>save_file_name=None</em>, <em>colorbar=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/lgnmodel1.html#heat_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.lgnmodel1.heat_plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.lgnmodel1.line_plot">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.lgnmodel1.</code><code class="descname">line_plot</code><span class="sig-paren">(</span><em>evaluate_result</em>, <em>ax=None</em>, <em>show=True</em>, <em>save_file_name=None</em>, <em>xlabel=None</em>, <em>plotstyle=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/lgnmodel1.html#line_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.lgnmodel1.line_plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
-<div class="section" id="bmtk-simulator-filternet-lgnmodel-linearfilter-module">
-<h2>bmtk.simulator.filternet.lgnmodel.linearfilter module<a class="headerlink" href="#bmtk-simulator-filternet-lgnmodel-linearfilter-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-bmtk.simulator.filternet.lgnmodel.linearfilter">
+<span id="bmtk-simulator-filternet-lgnmodel-linearfilter-module"></span><h2>bmtk.simulator.filternet.lgnmodel.linearfilter module<a class="headerlink" href="#module-bmtk.simulator.filternet.lgnmodel.linearfilter" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.linearfilter.SpatioTemporalFilter">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.linearfilter.</code><code class="descname">SpatioTemporalFilter</code><span class="sig-paren">(</span><em>spatial_filter</em>, <em>temporal_filter</em>, <em>amplitude=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/linearfilter.html#SpatioTemporalFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.linearfilter.SpatioTemporalFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.linearfilter.SpatioTemporalFilter.get_spatiotemporal_kernel">
+<code class="descname">get_spatiotemporal_kernel</code><span class="sig-paren">(</span><em>row_range</em>, <em>col_range</em>, <em>t_range=None</em>, <em>threshold=0</em>, <em>reverse=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/linearfilter.html#SpatioTemporalFilter.get_spatiotemporal_kernel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.linearfilter.SpatioTemporalFilter.get_spatiotemporal_kernel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.linearfilter.SpatioTemporalFilter.show_spatial_filter">
+<code class="descname">show_spatial_filter</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/linearfilter.html#SpatioTemporalFilter.show_spatial_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.linearfilter.SpatioTemporalFilter.show_spatial_filter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.linearfilter.SpatioTemporalFilter.show_temporal_filter">
+<code class="descname">show_temporal_filter</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/linearfilter.html#SpatioTemporalFilter.show_temporal_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.linearfilter.SpatioTemporalFilter.show_temporal_filter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.linearfilter.SpatioTemporalFilter.t_slice">
+<code class="descname">t_slice</code><span class="sig-paren">(</span><em>t</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/linearfilter.html#SpatioTemporalFilter.t_slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.linearfilter.SpatioTemporalFilter.t_slice" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.linearfilter.SpatioTemporalFilter.to_dict">
+<code class="descname">to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/linearfilter.html#SpatioTemporalFilter.to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.linearfilter.SpatioTemporalFilter.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="bmtk-simulator-filternet-lgnmodel-lnunit-module">
-<h2>bmtk.simulator.filternet.lgnmodel.lnunit module<a class="headerlink" href="#bmtk-simulator-filternet-lgnmodel-lnunit-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-bmtk.simulator.filternet.lgnmodel.lnunit">
+<span id="bmtk-simulator-filternet-lgnmodel-lnunit-module"></span><h2>bmtk.simulator.filternet.lgnmodel.lnunit module<a class="headerlink" href="#module-bmtk.simulator.filternet.lgnmodel.lnunit" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.lnunit.</code><code class="descname">LNUnit</code><span class="sig-paren">(</span><em>linear_filter</em>, <em>transfer_function</em>, <em>amplitude=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/lnunit.html#LNUnit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit.evaluate">
+<code class="descname">evaluate</code><span class="sig-paren">(</span><em>movie</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/lnunit.html#LNUnit.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit.get_cursor">
+<code class="descname">get_cursor</code><span class="sig-paren">(</span><em>movie</em>, <em>threshold=0</em>, <em>separable=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/lnunit.html#LNUnit.get_cursor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit.get_cursor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit.get_spatiotemporal_kernel">
+<code class="descname">get_spatiotemporal_kernel</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/lnunit.html#LNUnit.get_spatiotemporal_kernel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit.get_spatiotemporal_kernel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit.show_spatial_filter">
+<code class="descname">show_spatial_filter</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/lnunit.html#LNUnit.show_spatial_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit.show_spatial_filter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit.show_temporal_filter">
+<code class="descname">show_temporal_filter</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/lnunit.html#LNUnit.show_temporal_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit.show_temporal_filter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit.to_dict">
+<code class="descname">to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/lnunit.html#LNUnit.to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.lnunit.LNUnit.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.lnunit.MultiLNUnit">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.lnunit.</code><code class="descname">MultiLNUnit</code><span class="sig-paren">(</span><em>lnunit_list</em>, <em>transfer_function</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/lnunit.html#MultiLNUnit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.lnunit.MultiLNUnit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.lnunit.MultiLNUnit.evaluate">
+<code class="descname">evaluate</code><span class="sig-paren">(</span><em>movie</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/lnunit.html#MultiLNUnit.evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.lnunit.MultiLNUnit.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.lnunit.MultiLNUnit.get_cursor">
+<code class="descname">get_cursor</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/lnunit.html#MultiLNUnit.get_cursor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.lnunit.MultiLNUnit.get_cursor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.lnunit.MultiLNUnit.get_spatiotemporal_kernel">
+<code class="descname">get_spatiotemporal_kernel</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/lnunit.html#MultiLNUnit.get_spatiotemporal_kernel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.lnunit.MultiLNUnit.get_spatiotemporal_kernel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.lnunit.MultiLNUnit.show_spatial_filter">
+<code class="descname">show_spatial_filter</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/lnunit.html#MultiLNUnit.show_spatial_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.lnunit.MultiLNUnit.show_spatial_filter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.lnunit.MultiLNUnit.show_temporal_filter">
+<code class="descname">show_temporal_filter</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/lnunit.html#MultiLNUnit.show_temporal_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.lnunit.MultiLNUnit.show_temporal_filter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="bmtk-simulator-filternet-lgnmodel-make-cell-list-module">
 <h2>bmtk.simulator.filternet.lgnmodel.make_cell_list module<a class="headerlink" href="#bmtk-simulator-filternet-lgnmodel-make-cell-list-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="bmtk-simulator-filternet-lgnmodel-movie-module">
-<h2>bmtk.simulator.filternet.lgnmodel.movie module<a class="headerlink" href="#bmtk-simulator-filternet-lgnmodel-movie-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-bmtk.simulator.filternet.lgnmodel.movie">
+<span id="bmtk-simulator-filternet-lgnmodel-movie-module"></span><h2>bmtk.simulator.filternet.lgnmodel.movie module<a class="headerlink" href="#module-bmtk.simulator.filternet.lgnmodel.movie" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.movie.FullFieldFlashMovie">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.movie.</code><code class="descname">FullFieldFlashMovie</code><span class="sig-paren">(</span><em>row_range</em>, <em>col_range</em>, <em>t_on</em>, <em>t_off</em>, <em>max_intensity=1</em>, <em>frame_rate=24</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/movie.html#FullFieldFlashMovie"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.movie.FullFieldFlashMovie" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.filternet.lgnmodel.movie.FullFieldMovie" title="bmtk.simulator.filternet.lgnmodel.movie.FullFieldMovie"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.filternet.lgnmodel.movie.FullFieldMovie</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.movie.FullFieldMovie">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.movie.</code><code class="descname">FullFieldMovie</code><span class="sig-paren">(</span><em>f</em>, <em>row_range</em>, <em>col_range</em>, <em>frame_rate=24</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/movie.html#FullFieldMovie"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.movie.FullFieldMovie" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.filternet.lgnmodel.movie.Movie" title="bmtk.simulator.filternet.lgnmodel.movie.Movie"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.filternet.lgnmodel.movie.Movie</span></code></a></p>
+<dl class="attribute">
+<dt id="bmtk.simulator.filternet.lgnmodel.movie.FullFieldMovie.data">
+<code class="descname">data</code><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.movie.FullFieldMovie.data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.filternet.lgnmodel.movie.FullFieldMovie.frame_rate">
+<code class="descname">frame_rate</code><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.movie.FullFieldMovie.frame_rate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.movie.FullFieldMovie.full">
+<code class="descname">full</code><span class="sig-paren">(</span><em>t_min=0</em>, <em>t_max=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/movie.html#FullFieldMovie.full"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.movie.FullFieldMovie.full" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.movie.GratingMovie">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.movie.</code><code class="descname">GratingMovie</code><span class="sig-paren">(</span><em>row_size</em>, <em>col_size</em>, <em>frame_rate=1000.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/movie.html#GratingMovie"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.movie.GratingMovie" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.filternet.lgnmodel.movie.Movie" title="bmtk.simulator.filternet.lgnmodel.movie.Movie"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.filternet.lgnmodel.movie.Movie</span></code></a></p>
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.movie.GratingMovie.create_movie">
+<code class="descname">create_movie</code><span class="sig-paren">(</span><em>t_min=0</em>, <em>t_max=1</em>, <em>gray_screen_dur=0</em>, <em>cpd=0.05</em>, <em>temporal_f=4</em>, <em>theta=45</em>, <em>phase=0.0</em>, <em>contrast=1.0</em>, <em>row_size_new=None</em>, <em>col_size_new=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/movie.html#GratingMovie.create_movie"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.movie.GratingMovie.create_movie" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the grating movie with the desired parameters
+:param t_min: start time in seconds
+:param t_max: end time in seconds
+:param gray_screen_dur: Duration of gray screen before grating stimulus starts
+:param cpd: cycles per degree
+:param temporal_f: in Hz
+:param theta: orientation angle
+:return: Movie object of grating with desired parameters</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.movie.Movie">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.movie.</code><code class="descname">Movie</code><span class="sig-paren">(</span><em>data</em>, <em>row_range=None</em>, <em>col_range=None</em>, <em>labels=('time'</em>, <em>'y'</em>, <em>'x')</em>, <em>units=('second'</em>, <em>'pixel'</em>, <em>'pixel')</em>, <em>frame_rate=None</em>, <em>t_range=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/movie.html#Movie"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.movie.Movie" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.movie.Movie.get_nwb_GrayScaleMovie">
+<code class="descname">get_nwb_GrayScaleMovie</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/movie.html#Movie.get_nwb_GrayScaleMovie"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.movie.Movie.get_nwb_GrayScaleMovie" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.movie.Movie.imshow">
+<code class="descname">imshow</code><span class="sig-paren">(</span><em>t</em>, <em>show=True</em>, <em>vmin=-1</em>, <em>vmax=1</em>, <em>cmap=&lt;matplotlib.colors.LinearSegmentedColormap object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/movie.html#Movie.imshow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.movie.Movie.imshow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.movie.Movie.imshow_summary">
+<code class="descname">imshow_summary</code><span class="sig-paren">(</span><em>ax=None</em>, <em>show=True</em>, <em>xlabel=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/movie.html#Movie.imshow_summary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.movie.Movie.imshow_summary" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.filternet.lgnmodel.movie.Movie.ranges">
+<code class="descname">ranges</code><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.movie.Movie.ranges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="bmtk-simulator-filternet-lgnmodel-poissongeneration-module">
-<h2>bmtk.simulator.filternet.lgnmodel.poissongeneration module<a class="headerlink" href="#bmtk-simulator-filternet-lgnmodel-poissongeneration-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-bmtk.simulator.filternet.lgnmodel.poissongeneration">
+<span id="bmtk-simulator-filternet-lgnmodel-poissongeneration-module"></span><h2>bmtk.simulator.filternet.lgnmodel.poissongeneration module<a class="headerlink" href="#module-bmtk.simulator.filternet.lgnmodel.poissongeneration" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_inhomogenous_poisson">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.poissongeneration.</code><code class="descname">generate_inhomogenous_poisson</code><span class="sig-paren">(</span><em>t_range</em>, <em>y_range</em>, <em>seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/poissongeneration.html#generate_inhomogenous_poisson"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_inhomogenous_poisson" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_poisson_process">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.poissongeneration.</code><code class="descname">generate_poisson_process</code><span class="sig-paren">(</span><em>t0</em>, <em>t1</em>, <em>rate</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/poissongeneration.html#generate_poisson_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_poisson_process" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_poisson_rescaling">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.poissongeneration.</code><code class="descname">generate_poisson_rescaling</code><span class="sig-paren">(</span><em>t</em>, <em>y</em>, <em>seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/poissongeneration.html#generate_poisson_rescaling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_poisson_rescaling" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_poisson_rescaling_function">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.poissongeneration.</code><code class="descname">generate_poisson_rescaling_function</code><span class="sig-paren">(</span><em>f</em>, <em>t_min</em>, <em>t_max</em>, <em>seed=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/poissongeneration.html#generate_poisson_rescaling_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_poisson_rescaling_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_renewal_process">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.poissongeneration.</code><code class="descname">generate_renewal_process</code><span class="sig-paren">(</span><em>t0</em>, <em>t1</em>, <em>renewal_distribution</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/poissongeneration.html#generate_renewal_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_renewal_process" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.poissongeneration.test_generate_poisson_function">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.poissongeneration.</code><code class="descname">test_generate_poisson_function</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/poissongeneration.html#test_generate_poisson_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.poissongeneration.test_generate_poisson_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
-<div class="section" id="bmtk-simulator-filternet-lgnmodel-singleunitcell-module">
-<h2>bmtk.simulator.filternet.lgnmodel.singleunitcell module<a class="headerlink" href="#bmtk-simulator-filternet-lgnmodel-singleunitcell-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-bmtk.simulator.filternet.lgnmodel.singleunitcell">
+<span id="bmtk-simulator-filternet-lgnmodel-singleunitcell-module"></span><h2>bmtk.simulator.filternet.lgnmodel.singleunitcell module<a class="headerlink" href="#module-bmtk.simulator.filternet.lgnmodel.singleunitcell" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="bmtk-simulator-filternet-lgnmodel-spatialfilter-module">
-<h2>bmtk.simulator.filternet.lgnmodel.spatialfilter module<a class="headerlink" href="#bmtk-simulator-filternet-lgnmodel-spatialfilter-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-bmtk.simulator.filternet.lgnmodel.spatialfilter">
+<span id="bmtk-simulator-filternet-lgnmodel-spatialfilter-module"></span><h2>bmtk.simulator.filternet.lgnmodel.spatialfilter module<a class="headerlink" href="#module-bmtk.simulator.filternet.lgnmodel.spatialfilter" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.spatialfilter.ArrayFilter">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.spatialfilter.</code><code class="descname">ArrayFilter</code><span class="sig-paren">(</span><em>mask</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/spatialfilter.html#ArrayFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.spatialfilter.ArrayFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="bmtk.simulator.filternet.lgnmodel.spatialfilter.ArrayFilter.default_threshold">
+<code class="descname">default_threshold</code><em class="property"> = 0.01</em><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.spatialfilter.ArrayFilter.default_threshold" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.spatialfilter.ArrayFilter.get_kernel">
+<code class="descname">get_kernel</code><span class="sig-paren">(</span><em>row_range</em>, <em>col_range</em>, <em>threshold=0</em>, <em>amplitude=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/spatialfilter.html#ArrayFilter.get_kernel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.spatialfilter.ArrayFilter.get_kernel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.spatialfilter.ArrayFilter.imshow">
+<code class="descname">imshow</code><span class="sig-paren">(</span><em>row_range</em>, <em>col_range</em>, <em>threshold=0</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/spatialfilter.html#ArrayFilter.imshow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.spatialfilter.ArrayFilter.imshow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.spatialfilter.GaussianSpatialFilter">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.spatialfilter.</code><code class="descname">GaussianSpatialFilter</code><span class="sig-paren">(</span><em>translate=(0</em>, <em>0)</em>, <em>sigma=(1.0</em>, <em>1.0)</em>, <em>rotation=0</em>, <em>origin='center'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/spatialfilter.html#GaussianSpatialFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.spatialfilter.GaussianSpatialFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="bmtk.simulator.filternet.lgnmodel.spatialfilter.GaussianSpatialFilter.default_threshold">
+<code class="descname">default_threshold</code><em class="property"> = 0.01</em><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.spatialfilter.GaussianSpatialFilter.default_threshold" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.spatialfilter.GaussianSpatialFilter.get_kernel">
+<code class="descname">get_kernel</code><span class="sig-paren">(</span><em>row_range</em>, <em>col_range</em>, <em>threshold=0</em>, <em>amplitude=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/spatialfilter.html#GaussianSpatialFilter.get_kernel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.spatialfilter.GaussianSpatialFilter.get_kernel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.spatialfilter.GaussianSpatialFilter.imshow">
+<code class="descname">imshow</code><span class="sig-paren">(</span><em>row_range</em>, <em>col_range</em>, <em>threshold=0</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/spatialfilter.html#GaussianSpatialFilter.imshow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.spatialfilter.GaussianSpatialFilter.imshow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.spatialfilter.GaussianSpatialFilter.to_dict">
+<code class="descname">to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/spatialfilter.html#GaussianSpatialFilter.to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.spatialfilter.GaussianSpatialFilter.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="bmtk-simulator-filternet-lgnmodel-temporalfilter-module">
-<h2>bmtk.simulator.filternet.lgnmodel.temporalfilter module<a class="headerlink" href="#bmtk-simulator-filternet-lgnmodel-temporalfilter-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-bmtk.simulator.filternet.lgnmodel.temporalfilter">
+<span id="bmtk-simulator-filternet-lgnmodel-temporalfilter-module"></span><h2>bmtk.simulator.filternet.lgnmodel.temporalfilter module<a class="headerlink" href="#module-bmtk.simulator.filternet.lgnmodel.temporalfilter" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.temporalfilter.ArrayTemporalFilter">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.temporalfilter.</code><code class="descname">ArrayTemporalFilter</code><span class="sig-paren">(</span><em>mask</em>, <em>t_support</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/temporalfilter.html#ArrayTemporalFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.temporalfilter.ArrayTemporalFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter" title="bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter</span></code></a></p>
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.temporalfilter.ArrayTemporalFilter.get_default_t_grid">
+<code class="descname">get_default_t_grid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/temporalfilter.html#ArrayTemporalFilter.get_default_t_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.temporalfilter.ArrayTemporalFilter.get_default_t_grid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.temporalfilter.</code><code class="descname">TemporalFilter</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/temporalfilter.html#TemporalFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter.get_kernel">
+<code class="descname">get_kernel</code><span class="sig-paren">(</span><em>t_range=None</em>, <em>threshold=0</em>, <em>reverse=False</em>, <em>rescale=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/temporalfilter.html#TemporalFilter.get_kernel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter.get_kernel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter.imshow">
+<code class="descname">imshow</code><span class="sig-paren">(</span><em>t_range=None</em>, <em>threshold=0</em>, <em>reverse=False</em>, <em>rescale=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/temporalfilter.html#TemporalFilter.imshow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter.imshow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter.to_dict">
+<code class="descname">to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/temporalfilter.html#TemporalFilter.to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilterCosineBump">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.temporalfilter.</code><code class="descname">TemporalFilterCosineBump</code><span class="sig-paren">(</span><em>weights</em>, <em>kpeaks</em>, <em>delays</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/temporalfilter.html#TemporalFilterCosineBump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilterCosineBump" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter" title="bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter</span></code></a></p>
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilterCosineBump.get_default_t_grid">
+<code class="descname">get_default_t_grid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/temporalfilter.html#TemporalFilterCosineBump.get_default_t_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilterCosineBump.get_default_t_grid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilterCosineBump.to_dict">
+<code class="descname">to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/temporalfilter.html#TemporalFilterCosineBump.to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilterCosineBump.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="bmtk-simulator-filternet-lgnmodel-transferfunction-module">
-<h2>bmtk.simulator.filternet.lgnmodel.transferfunction module<a class="headerlink" href="#bmtk-simulator-filternet-lgnmodel-transferfunction-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-bmtk.simulator.filternet.lgnmodel.transferfunction">
+<span id="bmtk-simulator-filternet-lgnmodel-transferfunction-module"></span><h2>bmtk.simulator.filternet.lgnmodel.transferfunction module<a class="headerlink" href="#module-bmtk.simulator.filternet.lgnmodel.transferfunction" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.transferfunction.MultiTransferFunction">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.transferfunction.</code><code class="descname">MultiTransferFunction</code><span class="sig-paren">(</span><em>symbol_tuple</em>, <em>transfer_function_string</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/transferfunction.html#MultiTransferFunction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.transferfunction.MultiTransferFunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.transferfunction.MultiTransferFunction.to_dict">
+<code class="descname">to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/transferfunction.html#MultiTransferFunction.to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.transferfunction.MultiTransferFunction.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.filternet.lgnmodel.transferfunction.ScalarTransferFunction">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.filternet.lgnmodel.transferfunction.</code><code class="descname">ScalarTransferFunction</code><span class="sig-paren">(</span><em>transfer_function_string</em>, <em>symbol=s</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/transferfunction.html#ScalarTransferFunction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.transferfunction.ScalarTransferFunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.transferfunction.ScalarTransferFunction.imshow">
+<code class="descname">imshow</code><span class="sig-paren">(</span><em>xlim</em>, <em>ax=None</em>, <em>show=True</em>, <em>save_file_name=None</em>, <em>ylim=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/transferfunction.html#ScalarTransferFunction.imshow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.transferfunction.ScalarTransferFunction.imshow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.filternet.lgnmodel.transferfunction.ScalarTransferFunction.to_dict">
+<code class="descname">to_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/transferfunction.html#ScalarTransferFunction.to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.transferfunction.ScalarTransferFunction.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="bmtk-simulator-filternet-lgnmodel-util-fns-module">
-<h2>bmtk.simulator.filternet.lgnmodel.util_fns module<a class="headerlink" href="#bmtk-simulator-filternet-lgnmodel-util-fns-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-bmtk.simulator.filternet.lgnmodel.util_fns">
+<span id="bmtk-simulator-filternet-lgnmodel-util-fns-module"></span><h2>bmtk.simulator.filternet.lgnmodel.util_fns module<a class="headerlink" href="#module-bmtk.simulator.filternet.lgnmodel.util_fns" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.util_fns.check_optim_results_against_bounds">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.util_fns.</code><code class="descname">check_optim_results_against_bounds</code><span class="sig-paren">(</span><em>bounds</em>, <em>opt_wts</em>, <em>opt_kpeaks</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/util_fns.html#check_optim_results_against_bounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.util_fns.check_optim_results_against_bounds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.util_fns.chunks">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.util_fns.</code><code class="descname">chunks</code><span class="sig-paren">(</span><em>l</em>, <em>n</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/util_fns.html#chunks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.util_fns.chunks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Yield successive n-sized chunks from l.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.util_fns.compute_FFT_OneCycle">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.util_fns.</code><code class="descname">compute_FFT_OneCycle</code><span class="sig-paren">(</span><em>FR</em>, <em>TF</em>, <em>downsample</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/util_fns.html#compute_FFT_OneCycle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.util_fns.compute_FFT_OneCycle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.util_fns.create_ff_mov">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.util_fns.</code><code class="descname">create_ff_mov</code><span class="sig-paren">(</span><em>frame_rate</em>, <em>tst</em>, <em>tend</em>, <em>xrng</em>, <em>yrng</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/util_fns.html#create_ff_mov"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.util_fns.create_ff_mov" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.util_fns.create_grating_movie_list">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.util_fns.</code><code class="descname">create_grating_movie_list</code><span class="sig-paren">(</span><em>gr_dir_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/util_fns.html#create_grating_movie_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.util_fns.create_grating_movie_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.util_fns.get_data_metrics_for_each_subclass">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.util_fns.</code><code class="descname">get_data_metrics_for_each_subclass</code><span class="sig-paren">(</span><em>ctype</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/util_fns.html#get_data_metrics_for_each_subclass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.util_fns.get_data_metrics_for_each_subclass" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.util_fns.get_tcross_from_temporal_kernel">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.util_fns.</code><code class="descname">get_tcross_from_temporal_kernel</code><span class="sig-paren">(</span><em>temporal_kernel</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/util_fns.html#get_tcross_from_temporal_kernel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.util_fns.get_tcross_from_temporal_kernel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
-<div class="section" id="bmtk-simulator-filternet-lgnmodel-utilities-module">
-<h2>bmtk.simulator.filternet.lgnmodel.utilities module<a class="headerlink" href="#bmtk-simulator-filternet-lgnmodel-utilities-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-bmtk.simulator.filternet.lgnmodel.utilities">
+<span id="bmtk-simulator-filternet-lgnmodel-utilities-module"></span><h2>bmtk.simulator.filternet.lgnmodel.utilities module<a class="headerlink" href="#module-bmtk.simulator.filternet.lgnmodel.utilities" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.utilities.apply_transformation_matrix">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.utilities.</code><code class="descname">apply_transformation_matrix</code><span class="sig-paren">(</span><em>image</em>, <em>matrix</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/utilities.html#apply_transformation_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.utilities.apply_transformation_matrix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.utilities.convert_tmin_tmax_framerate_to_trange">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.utilities.</code><code class="descname">convert_tmin_tmax_framerate_to_trange</code><span class="sig-paren">(</span><em>t_min</em>, <em>t_max</em>, <em>frame_rate</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/utilities.html#convert_tmin_tmax_framerate_to_trange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.utilities.convert_tmin_tmax_framerate_to_trange" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.utilities.get_convolution">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.utilities.</code><code class="descname">get_convolution</code><span class="sig-paren">(</span><em>t</em>, <em>frame_rate</em>, <em>flipped_t_inds</em>, <em>kernel</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/utilities.html#get_convolution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.utilities.get_convolution" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.utilities.get_convolution_ind">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.utilities.</code><code class="descname">get_convolution_ind</code><span class="sig-paren">(</span><em>curr_fi</em>, <em>flipped_t_inds</em>, <em>kernel</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/utilities.html#get_convolution_ind"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.utilities.get_convolution_ind" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.utilities.get_rotation_matrix">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.utilities.</code><code class="descname">get_rotation_matrix</code><span class="sig-paren">(</span><em>rotation</em>, <em>shape</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/utilities.html#get_rotation_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.utilities.get_rotation_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Angle in degrees</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.utilities.get_scale_matrix">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.utilities.</code><code class="descname">get_scale_matrix</code><span class="sig-paren">(</span><em>scale</em>, <em>shape</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/utilities.html#get_scale_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.utilities.get_scale_matrix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.utilities.get_translation_matrix">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.utilities.</code><code class="descname">get_translation_matrix</code><span class="sig-paren">(</span><em>translation</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/utilities.html#get_translation_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.utilities.get_translation_matrix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.filternet.lgnmodel.utilities.get_vanhateren">
+<code class="descclassname">bmtk.simulator.filternet.lgnmodel.utilities.</code><code class="descname">get_vanhateren</code><span class="sig-paren">(</span><em>filename</em>, <em>src_dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/filternet/lgnmodel/utilities.html#get_vanhateren"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.filternet.lgnmodel.utilities.get_vanhateren" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
-<div class="section" id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-bmtk.simulator.filternet.lgnmodel">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.simulator.filternet.lgnmodel" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -702,6 +1443,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
