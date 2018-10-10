@@ -14,21 +14,21 @@ Features
 Installation
 ------------
 PointNet supports both Python 2.7 or Python 3.6+, and also requires NEST 2.11+ to be installed. See our
-`Installation instructions <installation>`_ for help on installing NEST and the bmtk.
+`Installation instructions <installation>`_ for help on installing NEST and the BMTK.
 
 
 
 Documentation and Tutorials
 ---------------------------
 Our `github page <https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial>`__ contains a number of jupyter-notebook
-tutorials for using the bmtk in general and PointNet specific examples for:
+tutorials for using the BMTK in general and PointNet specific examples for:
 * `Building and simulating a multi-population, heterogeneous point networks <https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/05_pointnet_modeling.ipynb>`_.
 
 
 
 Previous Materials
 ++++++++++++++++++
-The following are from previous tutorials, workshops, and presentations; and may not work with the latest version of the bmtk.
+The following are from previous tutorials, workshops, and presentations; and may not work with the latest version of the BMTK.
 * CNS 2018 Workshop: `notebooks <https://github.com/AllenInstitute/CNS_2018_Tutorial/tree/master/bmtk>`__
 * Summer Workshop on the Dynamic Brain 2018: `notebooks <https://github.com/AllenInstitute/SWDB_2018/tree/master/DynamicBrain/Modeling>`__.
 
