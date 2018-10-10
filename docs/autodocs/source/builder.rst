@@ -1,10 +1,10 @@
 The Network Builder
 ===================
 
-To run a simulation or visualizing a neural network the Brain Modeling Toolkit (bmtk) requires network files. This
+To run a simulation or visualizing a neural network the Brain Modeling Toolkit (BMTK) requires network files. This
 workflow of using intermediate files, rather than building and simulating an entire network in memory, is done to
 improve performance and memory, helps with iterative modeling, and allows for sharing and reproducibility. Before
-running a simulation you will first need to obtain existing network model files, or alternativly use the bmtk
+running a simulation you will first need to obtain existing network model files, or alternativly use the BMTK
 **Builder** submodule to create them from scratch.
 
 The Builder uses the same python inteface for creating networks of various varieties including multi-compartment neurons,
@@ -13,7 +13,7 @@ by a directed graph of nodes (neurons, populations, regions) and edges (synapses
 simulator agnostic, modelers can choose whatever attributes and properties they require to represent their model
 (*However to simulate a given network certain attributes will be required, depending on the underlying simulator*).
 
-The bmtk builder will build and save network files using `SONATA <https://github.com/AllenInstitute/sonata>`_; a highly
+The BMTK builder will build and save network files using `SONATA <https://github.com/AllenInstitute/sonata>`_; a highly
 optimized data format for representing large-scale neural networks.
 
 
@@ -21,7 +21,7 @@ optimized data format for representing large-scale neural networks.
 Installing the Builder
 -----------------------
 
-The Builder sub-module is automatically included in the bmtk package. For instructions please refer to the `installation page <installation>`__.
+The Builder sub-module is automatically included in the BMTK package. For instructions please refer to the `installation page <installation>`__.
 
 
 

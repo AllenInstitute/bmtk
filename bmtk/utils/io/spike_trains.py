@@ -58,7 +58,7 @@ class SpikeTrainWriter(object):
 
         file_name = filedata.file_name
         tmp_spikes_ds = pd.read_csv(file_name, sep=' ', names=['time', 'gid'])
-        tmp_spikes_ds = tmp_spikes_ds.sort_values(by=sort_order)
+        tmp_spikes_ds = tmp_spikes_ds.sort_values(by=[sort_order, 'time'])
         tmp_spikes_ds.to_csv(file_name, sep=' ', index=False, header=False)
         filedata.sort_order = sort_order
 
@@ -70,10 +70,12 @@ class SpikeTrainWriter(object):
             return None
 
     def add_spike(self, time, gid):
+        # print time, gid
         self._tmp_file_handle.write('{:.6f} {}\n'.format(time, gid))
 
     def add_spikes(self, times, gid):
         for t in times:
+            # print t
             self.add_spike(t, gid)
 
     def add_spikes_file(self, file_name, sort_order=None):
@@ -253,54 +255,120 @@ class SpikesInputNWBv1(SpikesInput):
     def __init__(self, name, module, input_type, params):
         self.input_file = params['input_file']
         self._h5_handle = h5py.File(self.input_file, 'r')
-
-        if 'trial' in params:
-            self.trial = params['trial']
-            self._spike_trains_handles = {}
-            for node_id, h5grp in self._h5_handle['processing'][self.trial]['spike_train'].items():
-                self._spike_trains_handles[int(node_id)] = h5grp['data']
-
-        elif '/spikes' in self._h5_handle:
-            raise Exception
+        self.trial = params['trial']
+        self._trial_grp = self._h5_handle['processing'][self.trial]['spike_train']
 
     def get_spikes(self, gid):
-        return np.array(self._spike_trains_handles[gid])
+        return np.array(self._trial_grp[str(gid)]['data'])
 
 
-class SpikesInputH5(SpikesInput):
-    def __init__(self, name, module, input_type, params):
-        self._input_file = params['input_file']
-        self._h5_handle = h5py.File(self._input_file, 'r')
-        self._sort_order = self._h5_handle['/spikes'].attrs.get('sorting', None)
-        if sys.version_info[0] >= 3 and isinstance(self._sort_order, bytes):
-            # h5py attributes return str in py 2, bytes in py 3
-            self._sort_order = self._sort_order.decode()
+class LookupTree(object):
+    def __init__(self):
+        self.right = None
+        self.left = None
+        self.threshold = -1
 
-        self._gid_ds = self._h5_handle['/spikes/gids']
-        self._timestamps_ds = self._h5_handle['/spikes/timestamps']
+        self.is_leaf = False
+        self._gid_index_range = []
 
+
+
+class SONATAIndexer(object):
+    def get_spikes(self, gid):
+        raise NotImplementedError()
+
+
+class DictIndexedGIDs(SONATAIndexer):
+    def __init__(self, spikes_input_h5):
         self._gid_indicies = {}
-        self._build_indicies()
+        self._parent = spikes_input_h5
 
-    def _build_indicies(self):
-        if self._sort_order == 'by_gid':
-            indx_beg = 0
-            c_gid = self._gid_ds[0]
-            for indx, gid in enumerate(self._gid_ds):
-                if gid != c_gid:
-                    self._gid_indicies[c_gid] = slice(indx_beg, indx)
-                    c_gid = gid
-                    indx_beg = indx
-            self._gid_indicies[c_gid] = slice(indx_beg, indx+1)
-
-        else:
-            raise NotImplementedError
+        indx_beg = 0
+        c_gid = self._parent.gids[0]
+        for indx, gid in enumerate(self._parent.gids):
+            # go through the gids dataset, determine slices for each gid
+            if gid != c_gid:
+                self._gid_indicies[c_gid] = slice(indx_beg, indx)
+                c_gid = gid
+                indx_beg = indx
+        self._gid_indicies[c_gid] = slice(indx_beg, indx+1)  # saves the last entry
 
     def get_spikes(self, gid):
         if gid in self._gid_indicies:
-            return self._timestamps_ds[self._gid_indicies[gid]]
+            return self._parent.timestamps[self._gid_indicies[gid]]
         else:
             return []
+
+
+class DFIndexedGIDs(SONATAIndexer):
+    def __init__(self, spikes_input_h5):
+        self._parent = spikes_input_h5
+
+        index_df = pd.DataFrame(data={'gids': self._parent.gids}, )
+        index_df.drop_duplicates(inplace=True)
+        index_df = index_df.stack().reset_index()
+        index_df.columns = ['indx_beg', 'tmp', 'gid']
+        index_df.set_index('gid', inplace=True)
+        index_df = index_df.drop('tmp', axis=1)
+        index_df['indx_end'] = index_df['indx_beg'].shift(-1).fillna(len(self._parent.gids)).astype(np.int64)
+        self._gid_indicies = index_df  # index_df.to_dict(orient='index')
+
+    def get_spikes(self, gid):
+        if gid in self._gid_indicies.index:
+            indx_beg = self._gid_indicies.loc[gid]['indx_beg']
+            indx_end = self._gid_indicies.loc[gid]['indx_end']
+            return self._parent.timestamps[indx_beg:indx_end]
+        else:
+            return []
+
+
+class HDF5IndexedGIDs(SONATAIndexer):
+    def __init__(self, spikes_input_h5):
+        raise NotImplementedError()
+
+
+class UnindexedGIDs(SONATAIndexer):
+    def __init__(self, spikes_input_h5):
+        raise NotImplementedError()
+
+
+class SpikesInputH5(SpikesInput):
+
+    # @profile
+    def __init__(self, name, module, input_type, params):
+        self._input_file = params['input_file']
+        self._h5_handle = h5py.File(self._input_file, 'r')
+        self._gid_ds = self._h5_handle['/spikes/gids']
+        self._timestamps_ds = self._h5_handle['/spikes/timestamps']
+        self._sort_order = self._h5_handle['/spikes'].attrs.get('sorting', None)
+        if sys.version_info[0] >= 3 and isinstance(self._sort_order, bytes) and self._sort_order is not None:
+            # h5py attributes return str in py 2, bytes in py 3
+            self._sort_order = self._sort_order.decode()
+
+        # Create an index for fetching spike-trains based on gid
+        if 'index' in self._h5_handle['/spikes'] and isinstance(self._h5_handle['/spikes/index'], h5py.Dataset):
+            # In the case the index is built into the hdf5 file
+            self._gid_index = HDF5IndexedGIDs(self)
+
+        elif self._sort_order in ['gid', 'gids', 'by_gid']:
+            # In the case when the sort_order == 'gid'
+            # self._gid_index = DictIndexedGIDs(self)
+            self._gid_index = DFIndexedGIDs(self)
+
+        else:
+            # In the case where the spike-trains are sorted by time or unsorted
+            self._gid_index = UnindexedGIDs(self)
+
+    @property
+    def gids(self):
+        return self._gid_ds
+
+    @property
+    def timestamps(self):
+        return self._timestamps_ds
+
+    def get_spikes(self, gid):
+        return self._gid_index.get_spikes(gid)
 
 
 class SpikesInputCSV(SpikesInput):

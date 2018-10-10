@@ -63,30 +63,31 @@ class IOUtils(object):
             raise Exception('Error: cannot set logging levels to {}'.format(loglevel))
 
     def barrier(self):
-        pass
+        """MPI Barrier call"""
+        pass  # By default this does nothing, if a simulator is to implement mpi support it should overwrite.
 
     def quiet_simulator(self):
-        pass
+        """Turns off logging/messages of the native simulator"""
+        pass  # Simulators should implement their own versions
 
     def setup_output_dir(self, output_dir, log_file, overwrite=True):
         if self.mpi_rank == 0:
-            # Create output directory
+            # Create output directory, do it only on one rank to prevent overwrite errors
             if os.path.exists(output_dir):
                 if overwrite:
                     shutil.rmtree(output_dir)
                 else:
                     self.log_exception('Directory already exists (remove or set to overwrite).')
             os.makedirs(output_dir)
+        self.barrier()  # other ranks wait for output directory to be created.
 
-            # Create log file
-            if log_file is not None:
-                log_path = log_file if os.path.isabs(log_file) else os.path.join(output_dir, log_file)
-                file_logger = logging.FileHandler(log_path)
-                file_logger.setFormatter(self._log_format)
-                self.logger.addHandler(file_logger)
-                self.log_info('Created log file')
-
-        self.barrier()
+        # Create logger handle for writing to log.txt file
+        if log_file is not None:
+            log_path = log_file if os.path.isabs(log_file) else os.path.join(output_dir, log_file)
+            file_logger = logging.FileHandler(log_path)
+            file_logger.setFormatter(self._log_format)
+            self.logger.addHandler(file_logger)
+            self.log_info('Created log file', all_ranks=False)  # write first message only on rank 0
 
     def log_info(self, message, all_ranks=False):
         if all_ranks is False and self.mpi_rank != 0:
