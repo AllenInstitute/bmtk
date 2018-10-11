@@ -156,6 +156,7 @@ class BioNetwork(SimNetwork):
         self.set_seg_props()  # set segment properties by creating Morphologies
         self.calc_seg_coords()  # use for computing the ECP
         self._cells_built = True
+        self.io.barrier()
 
     def set_seg_props(self):
         """Set morphological properties for biophysically (morphologically) detailed cells"""
@@ -234,6 +235,8 @@ class BioNetwork(SimNetwork):
                             continue
                         trg_cell.set_syn_connection(edge, src_node)
 
+        self.io.barrier()
+
     def find_edges(self, source_nodes=None, target_nodes=None):
         selected_edges = self._edge_populations[:]
 
@@ -260,3 +263,5 @@ class BioNetwork(SimNetwork):
 
                 elif edge_pop.mixed_connections:
                     raise NotImplementedError()
+
+        self.io.barrier()

@@ -9,14 +9,14 @@ network of individual cell models and PopNet will cluster them into populations.
 Installation
 ------------
 PopNet supports both Python 2.7 or Python 3.6+, and also requires DiPDE to be installed. See our
-`Installation instructions <installation>`_ for help on installing DiPDE and the bmtk.
+`Installation instructions <installation>`_ for help on installing DiPDE and the BMTK.
 
 
 
 Documentation and Tutorials
 ---------------------------
 Our `github page <https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial>`__ contains a number of jupyter-notebook
-tutorials for using the bmtk in general and PopNet specific examples for:
+tutorials for using the BMTK in general and PopNet specific examples for:
 * `Building a simple two population model <https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/06_population_modeling.ipynb>`_.
 
 About DiPDE
@@ -29,7 +29,7 @@ For further questions about DiPDE please contact Nicholas Cain (nicholasc at all
 
 Previous Materials
 ++++++++++++++++++
-The following are from previous tutorials, workshops, and presentations; and may not work with the latest version of the bmtk.
+The following are from previous tutorials, workshops, and presentations; and may not work with the latest version of the BMTK.
 * CNS 2018 Workshop: `notebooks <https://github.com/AllenInstitute/CNS_2018_Tutorial/tree/master/bmtk>`__
 * Summer Workshop on the Dynamic Brain 2018: `notebooks <https://github.com/AllenInstitute/SWDB_2018/tree/master/DynamicBrain/Modeling>`__.
 
