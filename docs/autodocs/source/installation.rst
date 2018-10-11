@@ -1,7 +1,7 @@
 Installing the BMTK
 ===================
 
-The bmtk was developed for use for Python 2.7+ and Python 3.6+. Previous releases can be downloaded from
+The BMTK was developed for use for Python 2.7+ and Python 3.6+. Previous releases can be downloaded from
 `here <https://github.com/AllenInstitute/bmtk/releases>`__. The latest code including newest features and bug fixes
 can be found on the `develop branch of our github repo <https://github.com/AllenInstitute/bmtk>`_.
 
@@ -15,13 +15,13 @@ dependencies:
 * `jsonschema <https://pypi.python.org/pypi/jsonschema>`_
 * `pytest <https://docs.pytest.org/en/latest/>`_ [optional for running unit tests]
 
-All components of the bmtk will work on a single machine, but some parts can take advantage of parallelism againsts
+All components of the BMTK will work on a single machine, but some parts can take advantage of parallelism againsts
 HPC clusters, and requires the following to be installed:
 
 * `mpi4py <https://mpi4py.readthedocs.io/en/stable/>`_
 
 
-For running network simulations bmtk uses existing software which varies depending on the type of simulation you want
+For running network simulations BMTK uses existing software which varies depending on the type of simulation you want
 to run. Individual instructions are done for the various requirements of the different simulation engines.
 
 
@@ -50,7 +50,7 @@ Installing with conda
 
 Using the Docker Image
 ----------------------
-The bmtk docker container lets you build and simulate networks without requiring installing all the bmtk prerequisits on
+The BMTK docker container lets you build and simulate networks without requiring installing all the BMTK prerequisites on
 your computer. All you need is the `docker client <https://docs.docker.com/install/>`__ installed on your machine.
 
 ::
@@ -63,7 +63,7 @@ server
 Through the command line
 ++++++++++++++++++++++++
 
-Go to the directory where your bmtk network-builder and/or network-simualtion scripts and supporting files are located
+Go to the directory where your BMTK network-builder and/or network-simualtion scripts and supporting files are located
 (*local/path*) and run the following in a command-line terminal
 
 ::
@@ -129,7 +129,7 @@ Filter Models
 
 FilterNet is the simulation engine responsible for simulating firing rate responses to stimuli onto the visual fields. It
 uses a piece of simulation software called LGNModel developed at the Allen Institute for Brain Science. Luckily, LGNModel
-is already built into the bmtk and no extra installation instructions are required.
+is already built into the BMTK and no extra installation instructions are required.
 
 
 Population Level Models
