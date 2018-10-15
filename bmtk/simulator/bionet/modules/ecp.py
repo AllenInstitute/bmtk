@@ -37,18 +37,25 @@ N_HOSTS = int(pc.nhost())
 
 
 class EcpMod(SimulatorMod):
-    def __init__(self, tmp_dir, file_name, electrode_positions, contributions_dir, cells=[], variable_name='v',
+    def __init__(self, tmp_dir, file_name, electrode_positions, contributions_dir=None, cells=[], variable_name='v',
                  electrode_channels=None):
         self._ecp_output = file_name if os.path.isabs(file_name) else os.path.join(tmp_dir, file_name)
         self._positions_file = electrode_positions
         self._tmp_outputdir = tmp_dir
-        self._contributions_dir = contributions_dir if os.path.isabs(contributions_dir) else os.path.join(tmp_dir, contributions_dir)
+
+
+        if contributions_dir is not None:
+            self._save_individ_cells = True
+            self._contributions_dir = contributions_dir if os.path.isabs(contributions_dir) else os.path.join(tmp_dir, contributions_dir)
+        else:
+            self._save_individ_cells = False
+            self._contributions_dir = None
+
         self._cells = cells
         self._rel = None
         self._fih1 = None
         self._rel_nsites = 0
         self._block_size = 0
-        # self._biophys_gids = []
         self._saved_gids = {}
         self._nsteps = 0
 
@@ -95,6 +102,9 @@ class EcpMod(SimulatorMod):
         pc.barrier()
 
     def _create_cell_file(self, gid):
+        if not self._save_individ_cells:
+            return
+
         file_name = os.path.join(self._contributions_dir, '{}.h5'.format(int(gid)))
         file_h5 = h5py.File(file_name, 'a')
         self._cell_var_files[gid] = file_h5
@@ -183,8 +193,6 @@ class EcpMod(SimulatorMod):
     def step(self, sim, tstep):
         for gid in self._local_gids:  # compute ecp only from the biophysical cells
             cell = sim.net.get_cell_gid(gid)
-            #cell = sim.net.get_local_cell(gid)
-            # cell = sim.net.cells[gid]
             im = cell.get_im()
             tr = self._rel.get_transfer_resistance(gid)
             ecp = np.dot(tr, im)
@@ -200,8 +208,8 @@ class EcpMod(SimulatorMod):
 
     def block(self, sim, block_interval):
         self._save_block(block_interval)
-        # self._save_ecp(block_interval)
-        self._save_cell_vars(block_interval)
+        if self._save_individ_cells:
+            self._save_cell_vars(block_interval)
 
         self._block_step = 0
         self._tstep_start_block = self._tstep
