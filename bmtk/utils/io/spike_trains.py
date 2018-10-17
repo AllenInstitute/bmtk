@@ -40,9 +40,9 @@ class SpikeTrainWriter(object):
     def _get_tmp_filename(self, rank):
         return os.path.join(self._tmp_dir, '_bmtk_tmp_spikes_{}.csv'.format(rank))
 
-    def _count_spikes(self):
+    def _count_spikes(self, recount=False):
         if self._mpi_rank == 0:
-            if self._spike_count > -1:
+            if self._spike_count > -1 and not recount:
                 return self._spike_count
 
             self._spike_count = 0
@@ -70,12 +70,10 @@ class SpikeTrainWriter(object):
             return None
 
     def add_spike(self, time, gid):
-        # print time, gid
         self._tmp_file_handle.write('{:.6f} {}\n'.format(time, gid))
 
     def add_spikes(self, times, gid):
         for t in times:
-            # print t
             self.add_spike(t, gid)
 
     def add_spikes_file(self, file_name, sort_order=None):
@@ -176,17 +174,28 @@ class SpikeTrainWriter(object):
                 add_hdf5_magic(h5)
                 add_hdf5_version(h5)
 
-                self._count_spikes()
+                self._count_spikes(recount=True)
                 spikes_grp = h5.create_group('/spikes')
                 spikes_grp.attrs['sorting'] = 'none' if sort_order is None else sort_order
-                time_ds = spikes_grp.create_dataset('timestamps', shape=(self._spike_count,), dtype=np.float)
-                gid_ds = spikes_grp.create_dataset('gids', shape=(self._spike_count,), dtype=np.uint64)
+                time_ds = spikes_grp.create_dataset('timestamps', shape=(self._spike_count,), maxshape=(None,), dtype=np.float64)
+                gid_ds = spikes_grp.create_dataset('gids', shape=(self._spike_count,), maxshape=(None,), dtype=np.uint64)
+
+                def resize_data():
+                    # There have been (unreproducable) mpi conditons where _count_spikes() is not correct, even with
+                    # proper barriers and file flushing. Add a quick fix in case when converting csv to hdf5.
+                    self._count_spikes(recount=True)
+                    time_ds.resize((self._spike_count, ))
+                    gid_ds.resize((self._spike_count, ))
 
                 def file_write_fnc_identity(time, gid, indx):
+                    if indx >= self._spike_count:
+                        resize_data()
                     time_ds[indx] = time
                     gid_ds[indx] = gid
 
                 def file_write_fnc_transform(time, gid, indx):
+                    if indx >= self._spike_count:
+                        resize_data()
                     time_ds[indx] = time
                     gid_ds[indx] = gid_map[gid]
 
@@ -197,6 +206,9 @@ class SpikeTrainWriter(object):
 
     def flush(self):
         self._tmp_file_handle.flush()
+
+    def close_tmp_file(self):
+        self._tmp_file_handle.close()
 
     def close(self):
         if self._mpi_rank == 0:
@@ -259,18 +271,7 @@ class SpikesInputNWBv1(SpikesInput):
         self._trial_grp = self._h5_handle['processing'][self.trial]['spike_train']
 
     def get_spikes(self, gid):
-        return np.array(self._trial_grp[str(gid)]['data'])
-
-
-class LookupTree(object):
-    def __init__(self):
-        self.right = None
-        self.left = None
-        self.threshold = -1
-
-        self.is_leaf = False
-        self._gid_index_range = []
-
+        return self._trial_grp[str(gid)]['data']
 
 
 class SONATAIndexer(object):
@@ -333,8 +334,6 @@ class UnindexedGIDs(SONATAIndexer):
 
 
 class SpikesInputH5(SpikesInput):
-
-    # @profile
     def __init__(self, name, module, input_type, params):
         self._input_file = params['input_file']
         self._h5_handle = h5py.File(self._input_file, 'r')
