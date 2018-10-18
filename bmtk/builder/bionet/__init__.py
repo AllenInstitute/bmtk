@@ -1,1 +1,1 @@
-from swc_reader import SWCReader
+from .swc_reader import SWCReader
