@@ -59,8 +59,8 @@ class Group(object):
         self._dynamics_params_columns = []
 
         # An index of all the rows in parent population that map onto a member of this group
-        self._parent_indicies = None  # A list of parent rows indicies
-        self._parent_indicies_built = False
+        self._parent_indices = None  # A list of parent rows indices
+        self._parent_indices_built = False
 
         self.check_format()
 
@@ -112,7 +112,7 @@ class Group(object):
         elif len(set(col_counts)) == 1:
             self._nrows = col_counts[0]
 
-    def build_indicies(self, force=False):
+    def build_indices(self, force=False):
         raise NotImplementedError
 
     def to_dataframe(self):
@@ -149,65 +149,65 @@ class Group(object):
 class NodeGroup(Group):
     def __init__(self, group_id, h5_group, parent):
         super(NodeGroup, self).__init__(group_id, h5_group, parent)
-        # Note: Don't call build_indicies right away so uses can call __getitem__ without having to load all the
+        # Note: Don't call build_indices right away so uses can call __getitem__ without having to load all the
         # node_ids
 
     @property
     def node_ids(self):
-        self.build_indicies()
-        # print self._parent_indicies
-        return self._parent.inode_ids(self._parent_indicies)
+        self.build_indices()
+        # print self._parent_indices
+        return self._parent.inode_ids(self._parent_indices)
 
     @property
     def node_type_ids(self):
-        self.build_indicies()
-        return self._parent.inode_type_ids(self._parent_indicies)
+        self.build_indices()
+        return self._parent.inode_type_ids(self._parent_indices)
 
     @property
     def gids(self):
-        self.build_indicies()
-        return self._parent.igids(self._parent_indicies)
+        self.build_indices()
+        return self._parent.igids(self._parent_indices)
 
-    def build_indicies(self, force=False):
-        if self._parent_indicies_built and not force:
+    def build_indices(self, force=False):
+        if self._parent_indices_built and not force:
             return
 
         # TODO: Check for the special case where there is only one group
         # TODO: If memory becomes an issue on very larget nodes (10's of millions) consider using a generator
-        # I've pushed the actual building of the population->group indicies onto the parent population
-        self._parent_indicies = self._parent.group_indicies(self.group_id, build_cache=True)
-        self._parent_indicies_built = True
+        # I've pushed the actual building of the population->group indices onto the parent population
+        self._parent_indices = self._parent.group_indices(self.group_id, build_cache=True)
+        self._parent_indices_built = True
 
-    def get_values(self, property_name, filtered_indicies=True):
-        self.build_indicies()
+    def get_values(self, property_name, filtered_indices=True):
+        self.build_indices()
         # TODO: Check if property_name is node_id, node_type, or gid
 
         if property_name in self._group_columns:
-            if not filtered_indicies:
+            if not filtered_indices:
                 # Just return all values in dataset
                 return np.array(self._group_table[property_name])
             else:
-                # Return only those values for group indicies with associated nodes
-                grp_indicies = self._parent.igroup_indicies(self._parent_indicies)
+                # Return only those values for group indices with associated nodes
+                grp_indices = self._parent.igroup_indices(self._parent_indices)
                 # It is possible that the group_index is unorderd or contains duplicates which will cause h5py slicing
                 # to fail. Thus convert to a numpy array
                 # TODO: loading the entire table is not good if the filtered nodes is small, consider building.
                 tmp_array = np.array(self._group_table[property_name])
-                return tmp_array[grp_indicies]
+                return tmp_array[grp_indices]
 
         elif property_name in self._parent.node_types_table.columns:
             # For properties that come from node-types table we need to build the results from scratch
             # TODO: Need to performance test, I think this code could be optimized.
             node_types_table = self._parent.node_types_table
             nt_col = node_types_table.column(property_name)
-            tmp_array = np.empty(shape=len(self._parent_indicies), dtype=nt_col.dtype)
+            tmp_array = np.empty(shape=len(self._parent_indices), dtype=nt_col.dtype)
             for i, ntid in enumerate(self.node_type_ids):
                 tmp_array[i] = node_types_table[ntid][property_name]
 
             return tmp_array
 
     def to_dataframe(self):
-        self.build_indicies()
+        self.build_indices()
 
         # Build a dataframe of group properties
         # TODO: Include dynamics_params?
@@ -225,7 +225,7 @@ class NodeGroup(Group):
         root_df = pd.DataFrame()
         root_df['node_type_id'] = pd.Series(self.node_type_ids)
         root_df['node_id'] = pd.Series(self.node_ids)
-        root_df['node_group_index'] = pd.Series(self._parent.igroup_indicies(self._parent_indicies))  # used as pivot
+        root_df['node_group_index'] = pd.Series(self._parent.igroup_indices(self._parent_indices))  # used as pivot
         if self._parent.has_gids:
             root_df['gid'] = self.gids
 
@@ -256,7 +256,7 @@ class NodeGroup(Group):
         :return: A generator that produces all valid nodes within the group with matching key==value pairs.
         """
         # TODO: Integrate this with NodeSet.
-        self.build_indicies()
+        self.build_indices()
         node_types_table = self._parent.node_types_table
         node_type_filter = set(node_types_table.node_type_ids)  # list of valid node_type_ids
         type_filter = False
@@ -282,7 +282,7 @@ class NodeGroup(Group):
                 print('Could not find property {} in either group or types table. Ignoring.'.format(filter_key))
 
         # iterate through all nodes, skipping ones that don't have matching key==value pairs
-        for indx in self._parent_indicies:
+        for indx in self._parent_indices:
             # TODO: Don't build the node until you filter out node_type_id
             node = self._parent.get_row(indx)
             if type_filter and node.node_type_id not in node_type_filter:
@@ -305,39 +305,39 @@ class NodeGroup(Group):
             yield node
 
     def __iter__(self):
-        self.build_indicies()
-        # Pass a list of indicies into the NodeSet, the NodeSet will take care of the iteration
-        return NodeSet(self._parent_indicies, self._parent).__iter__()
+        self.build_indices()
+        # Pass a list of indices into the NodeSet, the NodeSet will take care of the iteration
+        return NodeSet(self._parent_indices, self._parent).__iter__()
 
 
 class EdgeGroup(Group):
     def __init__(self, group_id, h5_group, parent):
         super(EdgeGroup, self).__init__(group_id, h5_group, parent)
-        self._indicies_count = 0  # Used to keep track of number of indicies (since it contains multple ranges)
+        self._indices_count = 0  # Used to keep track of number of indices (since it contains multple ranges)
 
         self.__itr_index = 0
         self.__itr_range = []
         self.__itr_range_idx = 0
         self.__itr_range_max = 0
 
-    def build_indicies(self, force=False):
-        if self._parent_indicies_built and not force:
+    def build_indices(self, force=False):
+        if self._parent_indices_built and not force:
             return
 
-        # Saves indicies as a (potentially empty) list of ranges
+        # Saves indices as a (potentially empty) list of ranges
         # TODO: Turn index into generator, allows for cheaper iteration over the group
-        self._indicies_count, self._parent_indicies = self._parent.group_indicies(self.group_id, build_cache=False)
-        self._parent_indicies_built = True
+        self._indices_count, self._parent_indices = self._parent.group_indices(self.group_id, build_cache=False)
+        self._parent_indices_built = True
 
     def to_dataframe(self):
         raise NotImplementedError
 
 
     def _get_parent_ds(self, parent_ds):
-        self.build_indicies()
-        ds_vals = np.zeros(self._indicies_count, dtype=parent_ds.dtype)
+        self.build_indices()
+        ds_vals = np.zeros(self._indices_count, dtype=parent_ds.dtype)
         c_indx = 0
-        for indx_range in self._parent_indicies:
+        for indx_range in self._parent_indices:
             indx_beg, indx_end = indx_range[0], indx_range[1]
             n_indx = c_indx + (indx_end - indx_beg)
             ds_vals[c_indx:n_indx] = parent_ds[indx_beg:indx_end]
@@ -362,12 +362,12 @@ class EdgeGroup(Group):
         if all_rows:
             return np.array(self._h5_group[property_name])
         else:
-            self.build_indicies()
+            self.build_indices()
             # Go through all ranges and build the return list
             dataset = self._h5_group[property_name]
-            return_list = np.empty(self._indicies_count, self._h5_group[property_name].dtype)
+            return_list = np.empty(self._indices_count, self._h5_group[property_name].dtype)
             i = 0
-            for r_beg, r_end in self._parent_indicies:
+            for r_beg, r_end in self._parent_indices:
                 r_len = r_end - r_beg
                 return_list[i:(i+r_len)] = dataset[r_beg:r_end]
                 i += r_len
@@ -378,18 +378,18 @@ class EdgeGroup(Group):
         raise NotImplementedError
 
     def __iter__(self):
-        self.build_indicies()
+        self.build_indices()
         # TODO: Implement using an EdgeSet
-        if len(self._parent_indicies) == 0:
+        if len(self._parent_indices) == 0:
             self.__itr_max_range = 0
             self.__itr_range = []
             self.__itr_index = 0
         else:
-            # Stop at the largest range end (I'm not sure if the indicies are ordered, if we can make it ordered then
-            # in the future just use self_parent_indicies[-1][1]
-            self.__itr_range_max = len(self._parent_indicies)
+            # Stop at the largest range end (I'm not sure if the indices are ordered, if we can make it ordered then
+            # in the future just use self_parent_indices[-1][1]
+            self.__itr_range_max = len(self._parent_indices)
             self.__itr_range_idx = 0
-            self.__itr_range = self._parent_indicies[0]
+            self.__itr_range = self._parent_indices[0]
             self.__itr_index = self.__itr_range[0]
 
         return self
@@ -408,7 +408,7 @@ class EdgeGroup(Group):
             self.__itr_range_idx += 1
             if self.__itr_range_idx < self.__itr_range_max:
                 # move the iterator onto next range
-                self.__itr_range = self._parent_indicies[self.__itr_range_idx]  # update range
+                self.__itr_range = self._parent_indices[self.__itr_range_idx]  # update range
                 self.__itr_index = self.__itr_range[0]  # update iterator to start and the beginning of new range
             else:
                 self.__itr_range = []

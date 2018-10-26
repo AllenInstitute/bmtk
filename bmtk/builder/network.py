@@ -462,14 +462,14 @@ class ConnectionTable(object):
 
     def get(self, source_network=None, target_network=None):
         # TODO: Add warning if source/target network is not found
-        cm_indicies = set(range(len(self.__connections)))
+        cm_indices = set(range(len(self.__connections)))
         if source_network is not None:
-            cm_indicies &= set(self.__sources.get(source_network, []))
+            cm_indices &= set(self.__sources.get(source_network, []))
 
         if target_network is not None:
-            cm_indicies &= set(self.__targets.get(target_network, []))
+            cm_indices &= set(self.__targets.get(target_network, []))
 
-        return self.__connections[cm_indicies]
+        return self.__connections[cm_indices]
 """
 
 

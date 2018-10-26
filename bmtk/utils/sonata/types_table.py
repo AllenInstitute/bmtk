@@ -105,12 +105,12 @@ class TypesTable(object):
             # columns we need to check dtype otherwise we'll get an invalid comparisson.
             if df[column_key].dtype == column_dtype:
                 if is_list:
-                    indicies = df[df[column_key].isin(column_val)].index
+                    indices = df[df[column_key].isin(column_val)].index
                 else:
-                    indicies = df[df[column_key] == column_val].index
+                    indices = df[df[column_key] == column_val].index
 
-                if len(indicies) > 0:
-                    selected_ids.extend(list(indicies))
+                if len(indices) > 0:
+                    selected_ids.extend(list(indices))
 
         return selected_ids
 
@@ -124,7 +124,7 @@ class TypesTable(object):
             merged_table = self._dataframes[0]
         else:
             # merge all dataframes together
-            merged_table = self._dataframes[0].reset_index()  # TODO: just merge on the indicies rather than reset
+            merged_table = self._dataframes[0].reset_index()  # TODO: just merge on the indices rather than reset
             for df in self._dataframes[1:]:
                 try:
                     merged_table = merged_table.merge(df.reset_index(), how='outer')

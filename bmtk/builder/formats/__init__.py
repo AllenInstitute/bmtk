@@ -170,12 +170,12 @@ class ISeeFormat(IFormat):
         indptr_new.append(counter)
         print "Building database"
         for i in range(n_nodes):
-            indicies = np.where(temp[:, 1] == i)
+            indices = np.where(temp[:, 1] == i)
 
-            src_gids_new = np.concatenate([src_gids_new, np.array(temp[indicies[0], 0])])
-            nsyns_new = np.concatenate([nsyns_new, np.array(temp[indicies[0], 2])])
+            src_gids_new = np.concatenate([src_gids_new, np.array(temp[indices[0], 0])])
+            nsyns_new = np.concatenate([nsyns_new, np.array(temp[indices[0], 2])])
 
-            counter += np.size(indicies[0])
+            counter += np.size(indices[0])
             indptr_new.append(counter)
 
         print "Writing to h5"

@@ -281,7 +281,7 @@ class SONATAIndexer(object):
 
 class DictIndexedGIDs(SONATAIndexer):
     def __init__(self, spikes_input_h5):
-        self._gid_indicies = {}
+        self._gid_indices = {}
         self._parent = spikes_input_h5
 
         indx_beg = 0
@@ -289,14 +289,14 @@ class DictIndexedGIDs(SONATAIndexer):
         for indx, gid in enumerate(self._parent.gids):
             # go through the gids dataset, determine slices for each gid
             if gid != c_gid:
-                self._gid_indicies[c_gid] = slice(indx_beg, indx)
+                self._gid_indices[c_gid] = slice(indx_beg, indx)
                 c_gid = gid
                 indx_beg = indx
-        self._gid_indicies[c_gid] = slice(indx_beg, indx+1)  # saves the last entry
+        self._gid_indices[c_gid] = slice(indx_beg, indx+1)  # saves the last entry
 
     def get_spikes(self, gid):
-        if gid in self._gid_indicies:
-            return self._parent.timestamps[self._gid_indicies[gid]]
+        if gid in self._gid_indices:
+            return self._parent.timestamps[self._gid_indices[gid]]
         else:
             return []
 
@@ -312,12 +312,12 @@ class DFIndexedGIDs(SONATAIndexer):
         index_df.set_index('gid', inplace=True)
         index_df = index_df.drop('tmp', axis=1)
         index_df['indx_end'] = index_df['indx_beg'].shift(-1).fillna(len(self._parent.gids)).astype(np.int64)
-        self._gid_indicies = index_df  # index_df.to_dict(orient='index')
+        self._gid_indices = index_df  # index_df.to_dict(orient='index')
 
     def get_spikes(self, gid):
-        if gid in self._gid_indicies.index:
-            indx_beg = self._gid_indicies.loc[gid]['indx_beg']
-            indx_end = self._gid_indicies.loc[gid]['indx_end']
+        if gid in self._gid_indices.index:
+            indx_beg = self._gid_indices.loc[gid]['indx_beg']
+            indx_end = self._gid_indices.loc[gid]['indx_end']
             return self._parent.timestamps[indx_beg:indx_end]
         else:
             return []

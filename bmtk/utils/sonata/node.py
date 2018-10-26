@@ -24,24 +24,24 @@
 
 class NodeSet(object):
     # TODO: Merge NodeSet and NodePopulation
-    def __init__(self, node_indicies, population, **parameters):
-        self._indicies = node_indicies
-        self._n_nodes = len(self._indicies)
+    def __init__(self, node_indices, population, **parameters):
+        self._indices = node_indices
+        self._n_nodes = len(self._indices)
         self._population = population
 
         self.__itr_index = 0
 
     @property
     def node_ids(self):
-        return self._population.inode_ids(self._indicies)
+        return self._population.inode_ids(self._indices)
 
     @property
     def gids(self):
-        return self._population.igids(self._indicies)
+        return self._population.igids(self._indices)
 
     @property
     def node_type_ids(self):
-        return self._population.inode_type_ids(self._indicies)
+        return self._population.inode_type_ids(self._indices)
 
     '''
     @property
@@ -66,7 +66,7 @@ class NodeSet(object):
         if self.__itr_index >= self._n_nodes:
             raise StopIteration
 
-        node = self._population.get_row(self._indicies[self.__itr_index])
+        node = self._population.get_row(self._indices[self.__itr_index])
         self.__itr_index += 1
         return node
 

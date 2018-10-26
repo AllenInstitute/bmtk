@@ -104,35 +104,35 @@ class SpikesFileH5(SpikesFileAdaptor):
         self._timestamps_ds = self._h5_handle['/spikes/timestamps']
 
         self._indexed = False
-        self._gid_indicies = {}
-        self._build_indicies()
+        self._gid_indices = {}
+        self._build_indices()
 
-    def _build_indicies(self):
+    def _build_indices(self):
         if self._sort_order == 'by_gid':
             indx_beg = 0
             c_gid = self._gid_ds[0]
             for indx, gid in enumerate(self._gid_ds):
                 if gid != c_gid:
-                    self._gid_indicies[c_gid] = slice(indx_beg, indx)
+                    self._gid_indices[c_gid] = slice(indx_beg, indx)
                     c_gid = gid
                     indx_beg = indx
-            self._gid_indicies[c_gid] = slice(indx_beg, indx+1)
+            self._gid_indices[c_gid] = slice(indx_beg, indx+1)
             self._indexed = True
         else:
-            self._gid_indicies = {int(gid): [] for gid in np.unique(self._gid_ds)}
+            self._gid_indices = {int(gid): [] for gid in np.unique(self._gid_ds)}
             for indx, gid in enumerate(self._gid_ds):
-                self._gid_indicies[gid].append(indx)
+                self._gid_indices[gid].append(indx)
             self._indexed = True
 
     @property
     def gids(self):
-        return list(self._gid_indicies.keys())
+        return list(self._gid_indices.keys())
 
     def to_dataframe(self):
         return pd.DataFrame({'timestamps': self._timestamps_ds, 'gids': self._gid_ds})
 
     def get_spikes(self, gid, time_window=None):
-        return self._timestamps_ds[self._gid_indicies[gid]]
+        return self._timestamps_ds[self._gid_indices[gid]]
 
     @staticmethod
     def is_type(filename):

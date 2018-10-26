@@ -76,14 +76,14 @@ class DenseNetwork(Network):
         # TODO: how do we add attributes to the h5
         group_indx = 0
         groups_lookup = {}
-        group_indicies = {}
+        group_indices = {}
         group_props = {}
         for ns in self._node_sets:
             if ns.params_hash in groups_lookup:
                 continue
             else:
                 groups_lookup[ns.params_hash] = group_indx
-                group_indicies[group_indx] = 0
+                group_indices[group_indx] = 0
                 group_props[group_indx] = {k: [] for k in ns.params_keys if k != 'node_id'}
                 group_indx += 1
 
@@ -97,8 +97,8 @@ class DenseNetwork(Network):
             node_type_id_table[i] = node.node_type_id
             group_id = groups_lookup[node.params_hash]
             node_group_table[i] = group_id
-            node_group_index_tables[i] = group_indicies[group_id]
-            group_indicies[group_id] += 1
+            node_group_index_tables[i] = group_indices[group_id]
+            group_indices[group_id] += 1
 
             group_dict = group_props[group_id]
             for key, prop_ds in group_dict.items():
@@ -340,10 +340,10 @@ class DenseNetwork(Network):
     def _create_index(self, node_ids_ds, output_grp, index_type='target'):
         if index_type == 'target':
             edge_nodes = np.array(node_ids_ds, dtype=np.int64)
-            output_grp = output_grp.create_group('indicies/target_to_source')
+            output_grp = output_grp.create_group('indices/target_to_source')
         elif index_type == 'source':
             edge_nodes = np.array(node_ids_ds, dtype=np.int64)
-            output_grp = output_grp.create_group('indicies/source_to_target')
+            output_grp = output_grp.create_group('indices/source_to_target')
 
         edge_nodes = np.append(edge_nodes, [-1])
         n_targets = np.max(edge_nodes)
@@ -466,8 +466,8 @@ class DenseNetwork(Network):
             self._itr_index = 0
 
         def itr_vals(self, src_id, trg_id):
-            indicies = np.where((self._index[:, 0] == src_id) & (self._index[:, 1] == trg_id))
-            for val in self._prop_array[indicies]:
+            indices = np.where((self._index[:, 0] == src_id) & (self._index[:, 1] == trg_id))
+            for val in self._prop_array[indices]:
                 yield val
 
         def __setitem__(self, key, value):
@@ -477,8 +477,8 @@ class DenseNetwork(Network):
             self._itr_index += 1
 
         def __getitem__(self, item):
-            indicies = np.where((self._index[:, 0] == item[0]) & (self._index[:, 1] == item[1]))
-            return self._prop_array[indicies]
+            indices = np.where((self._index[:, 0] == item[0]) & (self._index[:, 1] == item[1]))
+            return self._prop_array[indices]
 
 
 def add_hdf5_attrs(hdf5_handle):

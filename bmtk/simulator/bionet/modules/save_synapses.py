@@ -175,10 +175,10 @@ class ConnectionWriter(object):
         def _create_index(self, index_type='target'):
             if index_type == 'target':
                 edge_nodes = np.array(self._pop_root['target_node_id'], dtype=np.int64)
-                output_grp = self._pop_root.create_group('indicies/target_to_source')
+                output_grp = self._pop_root.create_group('indices/target_to_source')
             elif index_type == 'source':
                 edge_nodes = np.array(self._pop_root['source_node_id'], dtype=np.int64)
-                output_grp = self._pop_root.create_group('indicies/source_to_target')
+                output_grp = self._pop_root.create_group('indices/source_to_target')
 
             edge_nodes = np.append(edge_nodes, [-1])
             n_targets = np.max(edge_nodes)

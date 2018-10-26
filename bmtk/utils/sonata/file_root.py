@@ -54,7 +54,7 @@ class FileRoot(object):
         self._store_groups()
 
         # A map between population_name -> Population object. Population objects aren't created until called, in the
-        # case user wants to split populations among MPI nodes (instantiation will create node/edge indicies and other
+        # case user wants to split populations among MPI nodes (instantiation will create node/edge indices and other
         # overhead).
         self._populations_cache = {}
 

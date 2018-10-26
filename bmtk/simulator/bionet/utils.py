@@ -64,11 +64,11 @@ def edge_converter_csv(output_dir, csv_file):
             conns_h5.create_dataset('edges/edge_group', data=group['connection_group'])
 
             group_counters = {group_id: 0 for group_id in group.connection_group.unique()}
-            edge_group_indicies = np.zeros(group_len, dtype=np.uint)
+            edge_group_indices = np.zeros(group_len, dtype=np.uint)
             for i, group_id in enumerate(group['connection_group']):
-                edge_group_indicies[i] = group_counters[group_id]
+                edge_group_indices[i] = group_counters[group_id]
                 group_counters[group_id] += 1
-            conns_h5.create_dataset('edges/edge_group_indicies', data=edge_group_indicies)
+            conns_h5.create_dataset('edges/edge_group_indices', data=edge_group_indicesgi)
 
             for group_class, sub_group in group.groupby('connection_group'):
                 grp = conns_h5.create_group('edges/{}'.format(group_class))

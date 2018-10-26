@@ -47,8 +47,8 @@ class Population(object):
         self._group_id_ds = pop_group[self.group_id_column]
         self._group_index_ds = pop_group[self.group_index_column]
 
-        self._group_indicies = {}  # grp-id --> list of rows indicies
-        self._group_indicies_cache_built = False
+        self._group_indices = {}  # grp-id --> list of rows indices
+        self._group_indices_cache_built = False
 
     @property
     def name(self):
@@ -106,18 +106,18 @@ class Population(object):
             self._group_cache[group_id] = grp_obj
             return grp_obj
 
-    def group_indicies(self, group_id, build_cache=False):
+    def group_indices(self, group_id, build_cache=False):
         """Returns a list of all the population row index that maps onto the given group.
 
         Used for iterating or searching within a Group
 
         :param group_id: id of a given group
-        :param build_cache: Will cache indicies for all groups. Will be faster if making multiple calls but requires
+        :param build_cache: Will cache indices for all groups. Will be faster if making multiple calls but requires
          more memory (default False)
-        :return: A (possibly empty) list of row indicies (non-contiguous, but unique)
+        :return: A (possibly empty) list of row indices (non-contiguous, but unique)
         """
-        if self._group_indicies_cache_built:
-            return self._group_indicies.get(group_id, [])
+        if self._group_indices_cache_built:
+            return self._group_indices.get(group_id, [])
 
         else:
             tmp_index = pd.DataFrame()
@@ -125,21 +125,21 @@ class Population(object):
             tmp_index['grp_id'] = pd.Series(self._group_id_ds, dtype=self._group_id_ds.dtype)
             tmp_index['row_indx'] = pd.Series(range_itr(self._nrows), dtype=np.uint32)
             if build_cache:
-                # save all indicies as arrays
-                self._group_indicies = {grp_id: np.array(subset['row_indx'])
+                # save all indices as arrays
+                self._group_indices = {grp_id: np.array(subset['row_indx'])
                                         for grp_id, subset in tmp_index.groupby(by='grp_id')}
-                self._group_indicies_cache_built = True
-                return self._group_indicies.get(group_id, [])
+                self._group_indices_cache_built = True
+                return self._group_indices.get(group_id, [])
             else:
                 # TODO: Manually del tmp_index to clear out the memory?
                 tmp_index = tmp_index[tmp_index['grp_id'] == group_id]
                 return np.array(tmp_index['row_indx'])
 
-    def igroup_ids(self, row_indicies):
-        return self._group_id_ds[list(row_indicies)]
+    def igroup_ids(self, row_indices):
+        return self._group_id_ds[list(row_indices)]
 
-    def igroup_indicies(self, row_indicies):
-        return self._group_index_ds[list(row_indicies)]
+    def igroup_indices(self, row_indices):
+        return self._group_index_ds[list(row_indices)]
 
     def _find_groups(self):
         """Create a map between group-id and h5py.Group reference"""
@@ -171,7 +171,7 @@ class NodePopulation(Population):
         self._node_id_index_built = False
         self._build_node_id_index()
 
-        # indicies for gid <--> node_id map
+        # indices for gid <--> node_id map
         self._has_gids = False
         self._index_gid2row = None  # gid --> row (for searching by gid)
         self._index_row2gid = None  # row --> gid (for iterator or searching by node-id)
@@ -253,32 +253,32 @@ class NodePopulation(Population):
 
         return Node(node_id, node_type_id, node_type_props, node_group_id, node_group_props, None, gid=node_gid)
 
-    def get_rows(self, row_indicies):
-        """Returns a set of all nodes based on list of row indicies.
+    def get_rows(self, row_indices):
+        """Returns a set of all nodes based on list of row indices.
 
         Warning: currently due to the use of h5py, the list must be ordered and cannot contain duplicates.
 
-        :param row_indicies: A list of row indicies
-        :return: An iterable NodeSet of nodes in the specified indicies
+        :param row_indices: A list of row indices
+        :return: An iterable NodeSet of nodes in the specified indices
         """
-        # TODO: Check that row_indicies is unsigned and the max (which will be the last value) < n_rows
+        # TODO: Check that row_indices is unsigned and the max (which will be the last value) < n_rows
         # TODO: Check order and check for duplicates in list
-        return NodeSet(row_indicies, self)
+        return NodeSet(row_indices, self)
 
-    def inode_ids(self, row_indicies):
-        # You get errors if row_indicies is a numpy array or panda series so convert to python list
+    def inode_ids(self, row_indices):
+        # You get errors if row_indices is a numpy array or panda series so convert to python list
         # TODO: list conversion can be expensive, see if h5py will work with np arrays natively.
-        return self._node_id_ds[list(row_indicies)]
+        return self._node_id_ds[list(row_indices)]
 
-    def igids(self, row_indicies):
-        gids = self._gid_lookup_fnc(row_indicies)
+    def igids(self, row_indices):
+        gids = self._gid_lookup_fnc(row_indices)
         if gids is not None:
             gids = np.array(gids)
         return gids
 
-    def inode_type_ids(self, row_indicies):
+    def inode_type_ids(self, row_indices):
         # self._node_type_id_ds
-        return self._type_id_ds[list(row_indicies)]
+        return self._type_id_ds[list(row_indices)]
 
     def get_node_id(self, node_id):
         row_indx = self._index_nid2row.loc[node_id]
@@ -324,8 +324,8 @@ class NodePopulation(Population):
             # TODO: Check
             start = item.start if item.start is not None else 0
             stop = item.stop if item.stop is not None else self._nrows
-            row_indicies = range_itr(start, stop, item.step)
-            return NodeSet(row_indicies, self)
+            row_indices = range_itr(start, stop, item.step)
+            return NodeSet(row_indices, self)
 
         elif isinstance(item, int):
             return self.get_row(item)
@@ -338,7 +338,7 @@ class NodePopulation(Population):
 
 class EdgePopulation(Population):
     class __IndexStruct(object):
-        """Class sto store indicies subgroup"""
+        """Class sto store indices subgroup"""
         # TODO: Use collections.namedtuple
         def __init__(self, lookup_table, edge_table):
             self.lookup_table = lookup_table
@@ -360,12 +360,12 @@ class EdgePopulation(Population):
         self.__itr_index = 0
 
         # TODO: use a function pointer for get_index so it doesn't have to run a conditional every time
-        # TODO: add property and/or property so user can determine what indicies exists.
+        # TODO: add property and/or property so user can determine what indices exists.
         self._targets_index = None
         self._has_target_index = False
         self._sources_index = None
         self._has_source_index = False
-        self.build_indicies()
+        self.build_indices()
 
     @property
     def group_id_column(self):
@@ -402,11 +402,11 @@ class EdgePopulation(Population):
     def to_dataframe(self):
         raise NotImplementedError
 
-    def build_indicies(self):
-        if 'indicies' in self._pop_group:
-            indicies_grp = self._pop_group['indicies']
-            for index_name, index_grp in indicies_grp.items():
-                # TODO: Let __IndexStruct build the indicies
+    def build_indices(self):
+        if 'indices' in self._pop_group:
+            indices_grp = self._pop_group['indices']
+            for index_name, index_grp in indices_grp.items():
+                # TODO: Let __IndexStruct build the indices
                 # Make sure subgroup has the correct datasets
                 if not isinstance(index_grp, h5py.Group):
                     continue
@@ -439,26 +439,26 @@ class EdgePopulation(Population):
     def _build_group(self, group_id, group_h5):
         return EdgeGroup(group_id, group_h5, self)
 
-    def group_indicies(self, group_id, build_cache=False):
-        # For nodes it's safe to just keep a list of all indicies that map onto a given group. For edges bc there are
+    def group_indices(self, group_id, build_cache=False):
+        # For nodes it's safe to just keep a list of all indices that map onto a given group. For edges bc there are
         # many more rows (and typically a lot less groups), We want to build an index like for source/target ids
         if len(self._group_map) == 1:
             return len(self), [[0, len(self)]]
 
-        grp_indicies = super(EdgePopulation, self).group_indicies(group_id, build_cache=False)
-        if len(grp_indicies) == 0:
+        grp_indices = super(EdgePopulation, self).group_indices(group_id, build_cache=False)
+        if len(grp_indices) == 0:
             # Return an index with no ranges
             return 0, []
 
         # cluster into ranges. Naively implement, there is probably a faster way to cluster an ordered array!
-        range_beg = grp_indicies[0]
+        range_beg = grp_indices[0]
         ranges = []
-        for i in range_itr(1, len(grp_indicies)):
-            if (grp_indicies[i-1]+1) != grp_indicies[i]:
-                ranges.append([range_beg, grp_indicies[i-1]+1])
-                range_beg = grp_indicies[i]
-        ranges.append([range_beg, grp_indicies[-1]+1])
-        return len(grp_indicies), np.array(ranges, dtype=np.uint32)
+        for i in range_itr(1, len(grp_indices)):
+            if (grp_indices[i-1]+1) != grp_indices[i]:
+                ranges.append([range_beg, grp_indices[i-1]+1])
+                range_beg = grp_indices[i]
+        ranges.append([range_beg, grp_indices[-1]+1])
+        return len(grp_indices), np.array(ranges, dtype=np.uint32)
 
     '''
     def _get_target_index(self):
