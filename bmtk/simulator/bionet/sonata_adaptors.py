@@ -81,6 +81,13 @@ class BioNodeAdaptor(NodeAdaptor):
             node_adaptor.position = types.MethodType(positions, adaptor)
         elif 'position' in node_group.all_columns:
             node_adaptor.position = types.MethodType(position, adaptor)
+        elif 'x' in node_group.all_columns:
+            if 'z' in node_group.all_columns and 'y' in node_group.all_columns:
+                node_adaptor.position = types.MethodType(position_xyz, adaptor)
+            elif 'y' in node_group.all_columns:
+                node_adaptor.position = types.MethodType(position_xy, adaptor)
+            else:
+                node_adaptor.position = types.MethodType(position_x, adaptor)
         else:
             node_adaptor.position = types.MethodType(positions_default, adaptor)
 
@@ -130,6 +137,15 @@ def rotation_angle_y(self, node):
 def rotation_angle_z(self, node):
     return node['rotation_angle_zaxis']
 
+
+def position_xyz(self, node):
+    return np.array([node['x'], node['y'], node['z']])
+
+def position_xy(self, node):
+    return np.array([node['x'], node['y'], 0.0])
+
+def position_x(self, node):
+    return np.array([node['x'], 0.0, 0.0])
 
 class BioEdge(SonataBaseEdge):
     def load_synapses(self, section_x, section_id):

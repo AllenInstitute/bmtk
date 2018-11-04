@@ -1,9 +1,11 @@
 import os
 from functools import partial
-
 import numpy as np
 import pandas as pd
 import h5py
+
+from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
+
 
 column_renames = {
     'params_file': 'dynamics_params',
@@ -104,6 +106,8 @@ def update_aibs_edges(edges_file, edge_types_file, trg_network, src_network, pop
         os.mkdir(output_dir)
 
     with h5py.File(edges_output_fn, 'w') as hf:
+        add_hdf5_magic(hf)
+        add_hdf5_version(hf)
         grp = hf.create_group('/edges/{}'.format(population_name))
 
         grp.create_dataset('target_node_id', data=trg_gids, dtype='uint64')
