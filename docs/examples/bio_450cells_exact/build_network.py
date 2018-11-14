@@ -4,7 +4,7 @@ import numpy as np
 from bmtk.builder import NetworkBuilder
 from bmtk.builder.bionet import SWCReader
 from bmtk.utils.io.spike_trains import PoissonSpikesGenerator
-from bmtk.builder.aux.node_params import positions_columinar, xiter_random
+from bmtk.builder.auxi.node_params import positions_columinar, xiter_random
 
 build_recurrent_edges = True
 
