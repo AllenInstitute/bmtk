@@ -2,7 +2,7 @@ import os
 import numpy as np
 
 from bmtk.builder import NetworkBuilder
-from bmtk.builder.aux.node_params import positions_columinar, xiter_random
+from bmtk.builder.auxi.node_params import positions_columinar, xiter_random
 
 #build_recurrent_edges = True
 
