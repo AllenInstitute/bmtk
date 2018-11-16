@@ -313,7 +313,7 @@ class ConfigDict(dict):
 
     @property
     def mechanisms_dir(self):
-        return self.components['mechanisms_dir']
+        return self.components.get('mechanisms_dir', None)
 
     @property
     def biophysical_neuron_models_dir(self):
