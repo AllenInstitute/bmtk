@@ -24,6 +24,7 @@ import os
 import json
 import functools
 import nest
+import numpy as np
 
 from bmtk.simulator.core.simulator_network import SimNetwork
 from bmtk.simulator.pointnet.sonata_adaptors import PointNodeAdaptor, PointEdgeAdaptor
@@ -151,7 +152,7 @@ class PointNetwork(SimNetwork):
                     nest_ids = nest.Create('spike_generator', node.n_nodes, {})
                     for node_id, nest_id in zip(node.node_ids, nest_ids):
                         virt_node_map[node_id] = nest_id
-                        nest.SetStatus([nest_id], {'spike_times': spike_trains.get_spikes(node_id)})
+                        nest.SetStatus([nest_id], {'spike_times': np.array(spike_trains.get_spikes(node_id))})
 
             elif node_pop.mixed_nodes:
                 for node in node_pop.get_nodes():
@@ -161,7 +162,7 @@ class PointNetwork(SimNetwork):
                     nest_ids = nest.Create('spike_generator', node.n_nodes, {})
                     for node_id, nest_id in zip(node.node_ids, nest_ids):
                         virt_node_map[node_id] = nest_id
-                        nest.SetStatus([nest_id], {'spike_times': spike_trains.get_spikes(node_id)})
+                        nest.SetStatus([nest_id], {'spike_times': np.array(spike_trains.get_spikes(node_id))})
 
             self._virtual_ids_map[node_pop.name] = virt_node_map
 

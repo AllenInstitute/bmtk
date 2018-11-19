@@ -35,4 +35,8 @@ class NEURONIOUtils(IOUtils):
         self.mpi_rank = MPI_Rank
         self.mpi_size = MPI_Size
 
+    def barrier(self):
+        pc.barrier()
+
+
 io = NEURONIOUtils()

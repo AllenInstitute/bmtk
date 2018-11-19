@@ -1,6 +1,6 @@
 from bmtk.builder.networks import NetworkBuilder
-from bmtk.builder.aux.node_params import positions_columinar, xiter_random
-from bmtk.builder.aux.edge_connectors import distance_connector
+from bmtk.builder.auxi.node_params import positions_columinar, xiter_random
+from bmtk.builder.auxi.edge_connectors import distance_connector
 
 import math
 import numpy as np
