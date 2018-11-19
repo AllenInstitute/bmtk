@@ -1,7 +1,7 @@
 import numpy as np
 
 from bmtk.builder.networks import NetworkBuilder
-from bmtk.builder.aux.edge_connectors import connect_random
+from bmtk.builder.auxi.edge_connectors import connect_random
 
 #print np.random.geometric(p=0.5)
 #print np.sqrt(1-0.005)/0.005

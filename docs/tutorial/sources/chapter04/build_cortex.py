@@ -3,8 +3,8 @@ import math
 import random
 
 from bmtk.builder.networks import NetworkBuilder
-from bmtk.builder.aux.node_params import positions_columinar, xiter_random
-from bmtk.builder.aux.edge_connectors import distance_connector
+from bmtk.builder.auxi.node_params import positions_columinar, xiter_random
+from bmtk.builder.auxi.edge_connectors import distance_connector
 
 net = NetworkBuilder("V1")
 net.add_nodes(N=80, pop_name='Scnn1a',

@@ -285,9 +285,9 @@ class BioSimulator(Simulator):
         for sim_input in inputs.from_config(config):
             node_set = network.get_node_set(sim_input.node_set)
             if sim_input.input_type == 'spikes':
+                io.log_info('Building virtual cell stimulations for {}'.format(sim_input.name))
                 spikes = spike_trains.SpikesInput.load(name=sim_input.name, module=sim_input.module,
                                                        input_type=sim_input.input_type, params=sim_input.params)
-                io.log_info('Build virtual cell stimulations for {}'.format(sim_input.name))
                 network.add_spike_trains(spikes, node_set)
 
             elif sim_input.module == 'IClamp':

@@ -200,8 +200,7 @@ class ECPReport(SimReport):
         else:
             file_name = '{}.h5'.format(self.report_name)
 
-        return [('tmp_dir', self.default_dir), ('file_name', file_name),
-                ('contributions_dir', os.path.join(self.default_dir, 'ecp_contributions'))]
+        return [('tmp_dir', self.default_dir), ('file_name', file_name)]
 
     @classmethod
     def build(cls, name, params):
@@ -214,7 +213,7 @@ class ECPReport(SimReport):
             report.file_name = os.path.join(cls.default_dir, 'ecp.h5')
             report.tmp_dir = cls.default_dir
 
-        report.contributions_dir = params.get('contributions_dir', cls.default_dir)
+        report.contributions_dir = params.get('contributions_dir', None)
         report.positions_file = params['electrode_positions']
         return report
 

@@ -77,6 +77,7 @@ class SpikesMod(SimulatorMod):
 
     def finalize(self, sim):
         self._spike_writer.flush()
+        self._spike_writer.close_tmp_file()
         pc.barrier()
 
         if self._save_csv:

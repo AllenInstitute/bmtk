@@ -1,7 +1,7 @@
 import numpy as np
 
 from bmtk.builder import NetworkBuilder
-from bmtk.builder.aux.node_params import positions_columinar
+from bmtk.builder.auxi.node_params import positions_columinar
 
 
 def random_connections(source, target, p=0.1):

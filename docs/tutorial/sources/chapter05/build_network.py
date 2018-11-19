@@ -1,8 +1,8 @@
 import numpy as np
 
 from bmtk.builder.networks import NetworkBuilder
-from bmtk.builder.aux.node_params import positions_columinar
-from bmtk.builder.aux.edge_connectors import distance_connector
+from bmtk.builder.auxi.node_params import positions_columinar
+from bmtk.builder.auxi.edge_connectors import distance_connector
 
 """Create Nodes"""
 net = NetworkBuilder("V1")
