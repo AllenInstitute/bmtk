@@ -32,12 +32,36 @@ from bmtk.simulator.bionet.pyfunction_cache import add_cell_model, add_cell_proc
 from bmtk.simulator.bionet.io_tools import io
 from bmtk.simulator.bionet.nml_reader import NMLTree
 
+
 """
 Functions for loading NEURON cell objects.
 
 Functions will be loaded by bionetwork and called when a new cell object is created. These are for standard models
 loaded with Cell-Types json files or their NeuroML equivelent, but may be overridden by the users.
 """
+
+def loadHOC(cell, template_name, dynamics_params):
+    # Get template to instantiate
+    template_call = getattr(h, template_name)
+    print 'HERE'
+    exit()
+
+    if dynamics_params is not None and 'params' in dynamics_params:
+        template_params = dynamics_params['params']
+        if isinstance(template_params, list):
+            # pass in a list of parameters
+            hobj = template_call(*template_params)
+        else:
+            # only a single parameter
+            hobj = template_call(template_params)
+    else:
+        # instantiate template with no parameters
+        hobj = template_call()
+
+    # TODO: All "all" section if it doesn't exist
+    # hobj.all = h.SectionList()
+    # hobj.all.wholetree(sec=hobj.soma[0])
+    return hobj
 
 
 def IntFire1(cell, template_name, dynamics_params):
@@ -446,6 +470,7 @@ def set_extracellular(hobj, cell, dynamics_params):
     return hobj
 
 
+add_cell_model(NMLLoad, directive='hoc', model_type='biophysical')
 add_cell_model(NMLLoad, directive='nml', model_type='biophysical')
 add_cell_model(Biophys1, directive='ctdb:Biophys1', model_type='biophysical', overwrite=False)
 add_cell_model(Biophys1, directive='ctdb:Biophys1.hoc', model_type='biophysical', overwrite=False)

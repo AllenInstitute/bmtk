@@ -58,7 +58,11 @@ def load_neuron_modules(mechanisms_dir, templates_dir, default_templates=True):
     h.load_file(os.path.join(bionet_dir, 'import3d.hoc'))  # customized import3d.hoc to supress warnings
     h.load_file(os.path.join(bionet_dir,'default_templates',  'advance.hoc'))
 
-    if mechanisms_dir is not None:
+    if isinstance(mechanisms_dir, list):
+        for mdir in mechanisms_dir:
+            neuron.load_mechanisms(str(mdir))
+
+    elif mechanisms_dir is not None:
         neuron.load_mechanisms(str(mechanisms_dir))
 
     if default_templates:
