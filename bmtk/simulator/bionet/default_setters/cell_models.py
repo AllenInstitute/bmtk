@@ -43,9 +43,6 @@ loaded with Cell-Types json files or their NeuroML equivelent, but may be overri
 def loadHOC(cell, template_name, dynamics_params):
     # Get template to instantiate
     template_call = getattr(h, template_name)
-    print 'HERE'
-    exit()
-
     if dynamics_params is not None and 'params' in dynamics_params:
         template_params = dynamics_params['params']
         if isinstance(template_params, list):
