@@ -48,15 +48,15 @@ class Morphology(object):
     def get_soma_pos(self):
         n3dsoma = 0
         r3dsoma = np.zeros(3)
-        for sec in self.hobj.somatic:
+        for sec in self.hobj.soma:
             n3d = int(h.n3d())  # get number of n3d points in each section
             r3d = np.zeros((3, n3d))  # to hold locations of 3D morphology for the current section
             n3dsoma += n3d
 
             for i in range(n3d):
-                r3dsoma[0] += h.x3d(i)
-                r3dsoma[1] += h.y3d(i)
-                r3dsoma[2] += h.z3d(i)
+                r3dsoma[0] += h.x3d(i, sec=sec)
+                r3dsoma[1] += h.y3d(i, sec=sec)
+                r3dsoma[2] += h.z3d(i, sec=sec)
 
         r3dsoma /= n3dsoma
         return r3dsoma
@@ -72,7 +72,7 @@ class Morphology(object):
         p1 = np.zeros((3, self.nseg))  # hold the coordinates of segment end points
         p05 = np.zeros((3, self.nseg))
         d0 = np.zeros(self.nseg)
-        d1 = np.zeros(self.nseg) 
+        d1 = np.zeros(self.nseg)
 
         for sec in self.hobj.all:
             n3d = int(h.n3d())  # get number of n3d points in each section
