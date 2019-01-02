@@ -281,12 +281,12 @@ class NodePopulation(Population):
         return self._type_id_ds[list(row_indicies)]
 
     def get_node_id(self, node_id):
-        row_indx = self._index_nid2row.iloc[node_id]
+        row_indx = self._index_nid2row.loc[node_id]
         return self.get_row(row_indx)
 
     def get_gid(self, gid):
         # assert(self.has_gids)
-        row_indx = self._index_gid2row.iloc[gid]['row_id']
+        row_indx = self._index_gid2row.loc[gid]['row_id']
         return self.get_row(row_indx)
 
     def filter(self, **filter_props):
