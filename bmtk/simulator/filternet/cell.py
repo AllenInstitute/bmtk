@@ -25,4 +25,9 @@ class Cell(object):
         else:
             model_processing_fnc = py_modules.cell_processor('default')
 
-        self._lgn_cell_obj = model_processing_fnc(self._node)
+        #print self._node.dynamics_params
+        #model_template =
+        #print self._node.model_template
+        #exit()
+
+        self._lgn_cell_obj = model_processing_fnc(self._node, self._node.model_template, self._node.dynamics_params)
