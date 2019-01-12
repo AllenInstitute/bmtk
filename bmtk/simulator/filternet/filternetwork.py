@@ -1,13 +1,17 @@
 from bmtk.simulator.core.simulator_network import SimNetwork
 from bmtk.simulator.filternet.cell import Cell
 from bmtk.simulator.filternet.pyfunction_cache import py_modules
-
+from bmtk.simulator.filternet.sonata_adaptors import FilterNodeAdaptor
 
 class FilterNetwork(SimNetwork):
     def __init__(self):
         super(FilterNetwork, self).__init__()
 
         self._local_cells = []
+
+    def _register_adaptors(self):
+        super(FilterNetwork, self)._register_adaptors()
+        self._node_adaptors['sonata'] = FilterNodeAdaptor
 
     def cells(self):
         return self._local_cells
