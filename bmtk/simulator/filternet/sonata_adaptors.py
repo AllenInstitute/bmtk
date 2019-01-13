@@ -7,9 +7,28 @@ from bmtk.simulator.core.sonata_reader import NodeAdaptor, SonataBaseNode, EdgeA
 
 
 class FilterNode(SonataBaseNode):
+    def __init__(self, node, prop_adaptor):
+        super(FilterNode, self).__init__(node, prop_adaptor)
+        self._jitter = (0.0, 0.0)
+
     @property
     def non_dom_params(self):
         return self._prop_adaptor.non_dom_params(self._node)
+
+    @property
+    def predefined_jitter(self):
+        return self._prop_adaptor.predefined_jitter
+
+    @property
+    def jitter(self):
+        if self.predefined_jitter:
+            return (self._node['jitter_lower'], self._node['jitter_upper'])
+        else:
+            return self._jitter
+
+    @jitter.setter
+    def jitter(self, val):
+        self._jitter = val
 
 
 class FilterNodeAdaptor(NodeAdaptor):
@@ -41,7 +60,6 @@ class FilterNodeAdaptor(NodeAdaptor):
                     # TODO: Check dynamics_params before
                     network.io.log_exception('Could not find node dynamics_params file {}.'.format(params_path))
 
-
     @classmethod
     def patch_adaptor(cls, adaptor, node_group, network):
         node_adaptor = NodeAdaptor.patch_adaptor(adaptor, node_group, network)
@@ -50,6 +68,15 @@ class FilterNodeAdaptor(NodeAdaptor):
             node_adaptor.non_dom_params = types.MethodType(non_dom_params, node_adaptor)
         else:
             node_adaptor.non_dom_params = types.MethodType(return_none, node_adaptor)
+
+        jitter_lower = 'jitter_lower' in node_group.all_columns
+        jitter_upper = 'jitter_upper' in node_group.all_columns
+        if jitter_lower and jitter_upper:
+            node_adaptor.predefined_jitter = True
+        elif jitter_upper ^ jitter_lower:
+            raise Exception('Need to define both jitter_lower and jitter_upper (or leave both empty)')
+        else:
+            node_adaptor.predefined_jitter = False
 
         return node_adaptor
 

@@ -116,6 +116,9 @@ class FilterSimulator(Simulator):
 
         sim = cls(network=network, dt=config.dt, tstop=config.tstop)
 
+        if config.jitter is not None:
+            network.jitter = config.jitter
+
         network.io.log_info('Building cells.')
         network.build_nodes()
 

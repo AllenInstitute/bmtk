@@ -8,6 +8,17 @@ class FilterNetwork(SimNetwork):
         super(FilterNetwork, self).__init__()
 
         self._local_cells = []
+        self._network_jitter = (0.0, 0.0)
+
+    @property
+    def jitter(self):
+        return self._network_jitter
+
+    @jitter.setter
+    def jitter(self, val):
+        assert(len(val) == 2)
+        assert(val[0] <= val[1])
+        self._network_jitter = val
 
     def _register_adaptors(self):
         super(FilterNetwork, self)._register_adaptors()
@@ -26,7 +37,6 @@ class FilterNetwork(SimNetwork):
         for node_pop in self.node_populations:
             for node in node_pop.get_nodes():
                 cell = Cell(node)
+                cell.default_jitter = self.jitter
                 cell.build()
                 self._local_cells.append(cell)
-
-
