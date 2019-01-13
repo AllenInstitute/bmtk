@@ -51,7 +51,6 @@ def createOneUnitOfTwoSubunitFilter(prs, ttp_exp):
 def load_cell(node, template_name, dynamics_params):
     # TODO: Make tuning_angle a default parameter that will randomly calculate a new value if not defined in file
     # TODO: Make sf_sep a default value
-
     origin = (0.0, 0.0)
     translate = (node['x'], node['y'])
     sigma = node['spatial_size'] / 3.0  # convert from degree to SD
@@ -63,9 +62,9 @@ def load_cell(node, template_name, dynamics_params):
     else:
         model_name = node['pop_name']
 
-    print model_name
-    node_params = setup_params(dynamics_params, 0.75, 1.25)
-    non_dom_params = setup_params(node.non_dom_params, 0.75, 1.25)
+    jitter_lower, jitter_upper = node.jitter
+    node_params = setup_params(dynamics_params, jitter_lower, jitter_upper)
+    non_dom_params = setup_params(node.non_dom_params, jitter_lower, jitter_upper)
 
     if model_name == 'sONsOFF_001':
 
@@ -102,7 +101,7 @@ def load_cell(node, template_name, dynamics_params):
         linear_filter_soff = SpatioTemporalFilter(spatial_filter, sOFF_filt_new, amplitude=amp_off)
         scell_off = OffUnit(linear_filter_soff, xfer_fn_soff)
 
-        sf_sep = calc_sf_sep(node['sf_sep'], 0.75, 1.25)
+        sf_sep = calc_sf_sep(node['sf_sep'], jitter_lower, jitter_upper)
         sep_ss_onoff_cell = create_two_sub_cell(linear_filter_soff, linear_filter_son, 0.5 * spont, 0.5 * spont,
                                                 node['tuning_angle'], sf_sep, translate)
         cell = sep_ss_onoff_cell
@@ -144,7 +143,7 @@ def load_cell(node, template_name, dynamics_params):
         tcell_off = OffUnit(linear_filter_toff, xfer_fn_toff)
         # linear_filter_toff.spatial_filter.get_kernel(np.arange(120), np.arange(240)).kernel
 
-        sf_sep = calc_sf_sep(node['sf_sep'], 0.75, 1.25)
+        sf_sep = calc_sf_sep(node['sf_sep'], jitter_lower, jitter_upper)
         sep_ts_onoff_cell = create_two_sub_cell(linear_filter_toff, linear_filter_son, 0.5 * spont, 0.5 * spont,
                                                 node['tuning_angle'], sf_sep, translate)
 

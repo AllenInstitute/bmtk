@@ -40,11 +40,11 @@ def get_filter_spatial_size(N, X_grids, Y_grids, size_range):
                 sizes = np.random.triangular(size_range[0], size_range[0] + 1, size_range[1], N)
             spatial_sizes[counter * N:(counter + 1) * N] = sizes
             counter += 1
-    # print spatial_sizes
-    # exit()
+
     return spatial_sizes
 
 
+'''
 def get_filter_temporal_params(N, X_grids, Y_grids, model):
 
     # Total number of cells
@@ -168,7 +168,7 @@ def get_filter_temporal_params(N, X_grids, Y_grids, model):
     return np.column_stack((kpeaks_dom_0, kpeaks_dom_1, wts_dom_0, wts_dom_1, delays_dom_0, delays_dom_1,
                             kpeaks_non_dom_0, kpeaks_non_dom_1, wts_non_dom_0, wts_non_dom_1,
                             delays_non_dom_0, delays_non_dom_1, tuning_angles, sf_sep))
-
+'''
 
 '''
 import glob
@@ -265,9 +265,18 @@ for params in lgn_models:
                   x=positions[:, 0],
                   y=positions[:, 1],
                   dynamics_params=params['dynamics_params'],
+
+                  # TODO: Come up with better name than non-dominate parameters (spatial-params?)
                   non_dom_params=params.get('non_dom_params', None),
+
+                  # TODO: See if it's possible to calculate spatial sizes during simulation.
                   spatial_size=filter_sizes,
+
+                  # NOTE: If tuning angle is not defined, then it will be randomly generated during the simulation. But
+                  #  when evaluating a large network many times it will be more efficent to store it in the nodes file.
                   tuning_angle=np.random.uniform(0.0, 360.0, total_N),
+
+                  # TODO: Can sf-sperator be stored in the params json file.
                   sf_sep=params.get('sf_sep', None)
                   # kpeaks_dom_0=filter_params[:, 0],
                   # kpeaks_dom_1=filter_params[:, 1],
