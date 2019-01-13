@@ -101,9 +101,9 @@ def load_cell(node, template_name, dynamics_params):
         linear_filter_soff = SpatioTemporalFilter(spatial_filter, sOFF_filt_new, amplitude=amp_off)
         scell_off = OffUnit(linear_filter_soff, xfer_fn_soff)
 
-        sf_sep = calc_sf_sep(node['sf_sep'], jitter_lower, jitter_upper)
+        sf_sep = calc_sf_sep(node.sf_sep, jitter_lower, jitter_upper)
         sep_ss_onoff_cell = create_two_sub_cell(linear_filter_soff, linear_filter_son, 0.5 * spont, 0.5 * spont,
-                                                node['tuning_angle'], sf_sep, translate)
+                                                node.tuning_angle, sf_sep, translate)
         cell = sep_ss_onoff_cell
 
     elif model_name == 'sONtOFF_001':
@@ -143,9 +143,9 @@ def load_cell(node, template_name, dynamics_params):
         tcell_off = OffUnit(linear_filter_toff, xfer_fn_toff)
         # linear_filter_toff.spatial_filter.get_kernel(np.arange(120), np.arange(240)).kernel
 
-        sf_sep = calc_sf_sep(node['sf_sep'], jitter_lower, jitter_upper)
+        sf_sep = calc_sf_sep(node.sf_sep, jitter_lower, jitter_upper)
         sep_ts_onoff_cell = create_two_sub_cell(linear_filter_toff, linear_filter_son, 0.5 * spont, 0.5 * spont,
-                                                node['tuning_angle'], sf_sep, translate)
+                                                node.tuning_angle, sf_sep, translate)
 
         cell = sep_ts_onoff_cell
     else:
