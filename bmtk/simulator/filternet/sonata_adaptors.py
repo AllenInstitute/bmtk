@@ -16,6 +16,10 @@ class FilterNode(SonataBaseNode):
         return self._prop_adaptor.non_dom_params(self._node)
 
     @property
+    def tuning_angle(self):
+        return self._prop_adaptor.tuning_angle(self._node)
+
+    @property
     def predefined_jitter(self):
         return self._prop_adaptor.predefined_jitter
 
@@ -29,6 +33,10 @@ class FilterNode(SonataBaseNode):
     @jitter.setter
     def jitter(self, val):
         self._jitter = val
+
+    @property
+    def sf_sep(self):
+        return self._node['sf_sep']
 
 
 class FilterNodeAdaptor(NodeAdaptor):
@@ -78,6 +86,11 @@ class FilterNodeAdaptor(NodeAdaptor):
         else:
             node_adaptor.predefined_jitter = False
 
+        if 'tuning_angle' in node_group.all_columns:
+            node_adaptor.tuning_angle = types.MethodType(tuning_angle_preset, node_adaptor)
+        else:
+            node_adaptor.tuning_angle = types.MethodType(tuning_angle_rand, node_adaptor)
+
         return node_adaptor
 
 
@@ -87,3 +100,11 @@ def non_dom_params(self, node):
 
 def return_none(self, node):
     return None
+
+
+def tuning_angle_preset(self, node):
+    return node['tuning_angle']
+
+
+def tuning_angle_rand(self, node):
+    return np.random.uniform(0.0, 360.0)
