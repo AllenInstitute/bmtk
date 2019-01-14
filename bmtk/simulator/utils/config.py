@@ -233,7 +233,7 @@ class ConfigDict(dict):
 
     @property
     def run(self):
-        return self['run']
+        return self.get('run', {})
 
     @property
     def tstart(self):
@@ -265,7 +265,7 @@ class ConfigDict(dict):
 
     @property
     def conditions(self):
-        return self['conditions']
+        return self.get('conditions', {})
 
     @property
     def celsius(self):
