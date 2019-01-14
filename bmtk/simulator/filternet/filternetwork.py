@@ -8,7 +8,7 @@ class FilterNetwork(SimNetwork):
         super(FilterNetwork, self).__init__()
 
         self._local_cells = []
-        self._network_jitter = (0.0, 0.0)
+        self._network_jitter = (1.0, 1.0)
 
     @property
     def jitter(self):

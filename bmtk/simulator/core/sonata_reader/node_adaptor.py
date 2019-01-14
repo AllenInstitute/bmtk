@@ -44,6 +44,9 @@ class SonataBaseNode(object):
     def __getitem__(self, prop_key):
         return self._node[prop_key]
 
+    def __contains__(self, item):
+        return item in self._node
+
 
 class NodeAdaptor(object):
     COL_MODEL_TYPE = 'model_type'
