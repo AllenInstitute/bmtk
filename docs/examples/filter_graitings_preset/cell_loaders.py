@@ -1,4 +1,3 @@
-import numpy as np
 from sympy.abc import x as symbolic_x
 from sympy.abc import y as symbolic_y
 
@@ -48,38 +47,27 @@ def createOneUnitOfTwoSubunitFilter(prs, ttp_exp):
     return filt_new, filt_sum
 
 
-def load_cell(node, template_name, dynamics_params):
-    # TODO: Make tuning_angle a default parameter that will randomly calculate a new value if not defined in file
-    # TODO: Make sf_sep a default value
+def load_cell(node):
     origin = (0.0, 0.0)
     translate = (node['x'], node['y'])
     sigma = node['spatial_size'] / 3.0  # convert from degree to SD
     sigma = (sigma, sigma)
     spatial_filter = GaussianSpatialFilter(translate=translate, sigma=sigma, origin=origin)
 
-    if template_name:
-        model_name = template_name[1]
-    else:
-        model_name = node['pop_name']
-
-    jitter_lower, jitter_upper = node.jitter
-    node_params = setup_params(dynamics_params, jitter_lower, jitter_upper)
-    non_dom_params = setup_params(node.non_dom_params, jitter_lower, jitter_upper)
-
-    if model_name == 'sONsOFF_001':
+    if node['pop_name'] == 'sONsOFF_001':
 
         # sON temporal filter
-        sON_prs = {'opt_wts': [non_dom_params['weight_dom_0'], non_dom_params['weight_dom_1']],
-                   'opt_kpeaks': [non_dom_params['kpeaks_dom_0'], non_dom_params['kpeaks_dom_1']],
-                   'opt_delays': [non_dom_params['delay_dom_0'], non_dom_params['delay_dom_1']]}
+        sON_prs = {'opt_wts': [node['weight_non_dom_0'], node['weight_non_dom_1']],
+                   'opt_kpeaks': [node['kpeaks_non_dom_0'], node['kpeaks_non_dom_1']],
+                   'opt_delays': [node['delay_non_dom_0'], node['delay_non_dom_1']]}
         sON_filt_new = createOneUnitOfTwoSubunitFilter(sON_prs, 121.0)
         sON_sum = sON_filt_new[1]
         sON_filt_new = sON_filt_new[0]
 
         # tOFF temporal filter
-        sOFF_prs = {'opt_wts': [node_params['weight_dom_0'], node_params['weight_dom_1']],
-                    'opt_kpeaks': [node_params['kpeaks_dom_0'], node_params['kpeaks_dom_1']],
-                    'opt_delays': [node_params['delay_dom_0'], node_params['delay_dom_1']]}
+        sOFF_prs = {'opt_wts': [node['weight_dom_0'], node['weight_dom_1']],
+                    'opt_kpeaks': [node['kpeaks_dom_0'], node['kpeaks_dom_1']],
+                    'opt_delays': [node['delay_dom_0'], node['delay_dom_1']]}
         sOFF_filt_new = createOneUnitOfTwoSubunitFilter(sOFF_prs, 115.0)
         sOFF_sum = sOFF_filt_new[1]
         sOFF_filt_new = sOFF_filt_new[0]
@@ -101,25 +89,24 @@ def load_cell(node, template_name, dynamics_params):
         linear_filter_soff = SpatioTemporalFilter(spatial_filter, sOFF_filt_new, amplitude=amp_off)
         scell_off = OffUnit(linear_filter_soff, xfer_fn_soff)
 
-        sf_sep = calc_sf_sep(node.sf_sep, jitter_lower, jitter_upper)
         sep_ss_onoff_cell = create_two_sub_cell(linear_filter_soff, linear_filter_son, 0.5 * spont, 0.5 * spont,
-                                                node.tuning_angle, sf_sep, translate)
+                                                node['tuning_angle'], node['sf_sep'], translate)
         cell = sep_ss_onoff_cell
 
-    elif model_name == 'sONtOFF_001':
+    elif node['pop_name'] == 'sONtOFF_001':
         # spatial_filter.get_kernel(np.arange(120), np.arange(240)).imshow()
         # sON temporal filter
-        sON_prs = {'opt_wts': [non_dom_params['weight_dom_0'], non_dom_params['weight_dom_1']],
-                   'opt_kpeaks': [non_dom_params['kpeaks_dom_0'], non_dom_params['kpeaks_dom_1']],
-                   'opt_delays': [non_dom_params['delay_dom_0'], non_dom_params['delay_dom_1']]}
+        sON_prs = {'opt_wts': [node['weight_non_dom_0'], node['weight_non_dom_1']],
+                   'opt_kpeaks': [node['kpeaks_non_dom_0'], node['kpeaks_non_dom_1']],
+                   'opt_delays': [node['delay_non_dom_0'], node['delay_non_dom_1']]}
         sON_filt_new = createOneUnitOfTwoSubunitFilter(sON_prs, 93.5)
         sON_sum = sON_filt_new[1]
         sON_filt_new = sON_filt_new[0]
 
         # tOFF temporal filter
-        tOFF_prs = {'opt_wts': [node_params['weight_dom_0'], node_params['weight_dom_1']],
-                    'opt_kpeaks': [node_params['kpeaks_dom_0'], node_params['kpeaks_dom_1']],
-                    'opt_delays': [node_params['delay_dom_0'], node_params['delay_dom_1']]}
+        tOFF_prs = {'opt_wts': [node['weight_dom_0'], node['weight_dom_1']],
+                    'opt_kpeaks': [node['kpeaks_dom_0'], node['kpeaks_dom_1']],
+                    'opt_delays': [node['delay_dom_0'], node['delay_dom_1']]}
         tOFF_filt_new = createOneUnitOfTwoSubunitFilter(tOFF_prs, 64.8)  # 64.8
         tOFF_sum = tOFF_filt_new[1]
         tOFF_filt_new = tOFF_filt_new[0]
@@ -143,19 +130,18 @@ def load_cell(node, template_name, dynamics_params):
         tcell_off = OffUnit(linear_filter_toff, xfer_fn_toff)
         # linear_filter_toff.spatial_filter.get_kernel(np.arange(120), np.arange(240)).kernel
 
-        sf_sep = calc_sf_sep(node.sf_sep, jitter_lower, jitter_upper)
         sep_ts_onoff_cell = create_two_sub_cell(linear_filter_toff, linear_filter_son, 0.5 * spont, 0.5 * spont,
-                                                node.tuning_angle, sf_sep, translate)
+                                                node['tuning_angle'], node['sf_sep'], translate)
 
         cell = sep_ts_onoff_cell
     else:
-        type_split = model_name.split('_')
+        type_split = node['pop_name'].split('_')
         cell_type, tf_str = type_split[0], type_split[1]
 
         # For temporal filter
-        wts = [node_params['weight_dom_0'], node_params['weight_dom_1']]
-        kpeaks = [node_params['kpeaks_dom_0'], node_params['kpeaks_dom_1']]
-        delays = [node_params['delay_dom_0'], node_params['delay_dom_1']]
+        wts = [node['weight_dom_0'], node['weight_dom_1']]
+        kpeaks = [node['kpeaks_dom_0'], node['kpeaks_dom_1']]
+        delays = [node['delay_dom_0'], node['delay_dom_1']]
 
         ################# End of extract cell parameters needed   #################
 
@@ -179,28 +165,3 @@ def load_cell(node, template_name, dynamics_params):
             cell = OffUnit(linear_filter, transfer_function)
 
     return cell
-
-
-
-def setup_params(dynamics_params, upper_jitter, lower_jitter):
-    if dynamics_params is None:
-        return {}
-
-    wts = dynamics_params['opt_wts']
-    kpeaks = dynamics_params['opt_kpeaks']
-    delays = dynamics_params['opt_delays']
-
-    node_params = {
-        'weight_dom_0': np.random.uniform(lower_jitter * wts[0], upper_jitter * wts[0]),
-        'weight_dom_1': np.random.uniform(lower_jitter * wts[1], upper_jitter * wts[1]),
-        'kpeaks_dom_0': np.random.uniform(lower_jitter * kpeaks[0], upper_jitter * kpeaks[0]),
-        'kpeaks_dom_1': np.random.uniform(lower_jitter * kpeaks[1], upper_jitter * kpeaks[1]),
-        'delay_dom_0': np.random.uniform(lower_jitter * delays[0], upper_jitter * delays[0]),
-        'delay_dom_1': np.random.uniform(lower_jitter * delays[1], upper_jitter * delays[1])
-    }
-
-    return node_params
-
-
-def calc_sf_sep(sf_sep_base, upper_jitter, lower_jitter):
-    return np.random.uniform(lower_jitter * sf_sep_base, upper_jitter * sf_sep_base)
