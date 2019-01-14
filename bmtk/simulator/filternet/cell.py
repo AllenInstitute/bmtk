@@ -27,7 +27,7 @@ class Cell(object):
 
     def build(self):
         cell_loaders = self._node.model_processing
-        if len(cell_loaders) > 0:
+        if len(cell_loaders) > 1:
             raise Exception('Cannot use more than one model_processing method per cell. Exiting.')
         elif len(cell_loaders) == 1:
             model_processing_fnc = py_modules.cell_processor(cell_loaders[0])

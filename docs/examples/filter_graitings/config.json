@@ -4,23 +4,20 @@
     "$OUTPUT_DIR": "$BASE_DIR/output",
     "$INPUT_DIR": "$BASE_DIR/../NWB_files",
     "$NETWORK_DIR": "$BASE_DIR/network",
-    "$COMPONENT_DIR": "$BASE_DIR/../biophys_components"
+    "$COMPONENT_DIR": "$BASE_DIR/../filter_components"
   },
 
   "run": {
-    "tstop": 2050.0,
+    "tstop": 2000.0,
     "dt": 0.1,
-    "dL": 20.0,
-    "spike_threshold": -15,
-    "nsteps_block": 5000,
     "overwrite_output_dir": true
   },
 
-  "target_simulator":"NEURON",
+  "target_simulator":"LGNModel",
 
   "conditions": {
-    "celsius": 34.0,
-    "v_init": -80
+    "jitter_lower": 0.75,
+    "jitter_upper": 1.25
   },
 
   "inputs": {
@@ -46,42 +43,7 @@
   },
 
   "components": {
-    "morphologies_dir": "$COMPONENT_DIR/morphologies",
-    "synaptic_models_dir": "$COMPONENT_DIR/synaptic_models",
-    "mechanisms_dir":"$COMPONENT_DIR/mechanisms",
-    "biophysical_neuron_models_dir": "$COMPONENT_DIR/biophysical_neuron_templates",
-    "point_neuron_models_dir": "$COMPONENT_DIR/point_neuron_templates"
-  },
-
-
-  "reports": {
-    "calcium_concentration": {
-      "cells": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-      "variable_name": "cai",
-      "module": "membrane_report",
-      "file_name": "cell_vars.h5",
-      "sections": "soma",
-      "enabled": true
-    },
-
-    "membrane_potential": {
-      "cells": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-      "variable_name": "v",
-      "module": "membrane_report",
-      "file_name": "cell_vars.h5",
-      "sections": "soma",
-      "enabled": true
-    },
-
-    "ecp": {
-      "cells": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-      "variable_name": "v",
-      "module": "extracellular",
-      "electrode_positions": "$COMPONENT_DIR/recXelectrodes/linear_electrode.csv",
-      "ecp_file": "ecp.h5",
-      "electrode_channels": "all",
-      "contributions_dir": "ecp_contributions"
-    }
+    "filter_models_dir": "$COMPONENT_DIR/model_templates"
   },
 
   "networks": {
