@@ -1,4 +1,5 @@
 import csv
+import numpy as np
 
 from bmtk.simulator.core.simulator import Simulator
 import bmtk.simulator.utils.simulation_inputs as inputs
@@ -18,12 +19,24 @@ class FilterSimulator(Simulator):
 
         self.rates_csv = None
         self._movies = []
+        self._eval_options = []
 
     def add_movie(self, movie_type, params):
         # TODO: Move this into its own factory
         movie_type = movie_type.lower() if isinstance(movie_type, string_types) else 'movie'
         if movie_type == 'movie' or not movie_type:
-            raise NotImplementedError
+            if 'data_file' in params:
+                m_data = None
+                if 'data_file' in params:
+                    m_data = np.load(params['data_file'])
+                elif 'data' in params:
+                    m_data = params['data']
+                else:
+                    raise Exception('Could not find movie "data_file" in config to use as input.')
+
+                init_params = FilterSimulator.find_params(['row_range', 'col_range', 'labels', 'units', 'frame_rate',
+                                                           't_range'], **params)
+                self._movies.append(Movie(m_data, **init_params))
 
         elif movie_type == 'full_field':
             raise NotImplementedError
@@ -42,57 +55,26 @@ class FilterSimulator(Simulator):
         else:
             raise Exception('Unknown movie type {}'.format(movie_type))
 
+        if 'evaluation_options' in params:
+            self._eval_options.append(params['evaluation_options'])
+        else:
+            self._eval_options.append({})
+
     def run(self):
         for mod in self._sim_mods:
             mod.initialize(self)
 
         io.log_info('Evaluating rates.')
         for cell in self._network.cells():
-            for movie in self._movies:
-                ts, f_rates = cell.lgn_cell_obj.evaluate(movie, downsample=1, separable=True)
+            for movie, options in zip(self._movies, self._eval_options):
+                ts, f_rates = cell.lgn_cell_obj.evaluate(movie, **options)
 
                 for mod in self._sim_mods:
                     mod.save(self, cell.gid, ts, f_rates)
 
-                """
-                if self.rates_csv is not None:
-                    print 'saving {}'.format(cell.gid)
-                    for t, f in zip(t, f_tot):
-                        csv_writer.writerow([t, f, cell.gid])
-                    csv_fhandle.flush()
-                """
         io.log_info('Done.')
         for mod in self._sim_mods:
             mod.finalize(self)
-
-    """
-    def generate_spikes(LGN, trials, duration, output_file_name):
-        # f_tot = np.loadtxt(output_file_name + "_f_tot.csv", delimiter=" ")
-        # t = f_tot[0, :]
-
-        f = h5.File(output_file_name + "_f_tot.h5", 'r')
-        f_tot = np.array(f.get('firing_rates_Hz'))
-
-        t = np.array(f.get('time'))
-        # For h5 files that don't have time explicitly saved
-        t = np.linspace(0, duration, f_tot.shape[1])
-
-
-        #create output file
-        f = nwb.create_blank_file(output_file_name + '_spikes.nwb', force=True)
-
-        for trial in range(trials):
-            for counter in range(len(LGN.nodes())):
-                try:
-                    spike_train = np.array(f_rate_to_spike_train(t*1000., f_tot[counter, :], np.random.randint(10000), 1000.*min(t), 1000.*max(t), 0.1))
-                except:
-                    spike_train = 1000.*np.array(pg.generate_inhomogenous_poisson(t, f_tot[counter, :], seed=np.random.randint(10000))) #convert to milliseconds and hence the multiplication by 1000
-
-                nwb.SpikeTrain(spike_train, unit='millisecond').add_to_processing(f, 'trial_%s' % trial)
-        f.close()
-
-    """
-
 
     @staticmethod
     def find_params(param_names, **kwargs):
@@ -128,31 +110,6 @@ class FilterSimulator(Simulator):
                 sim.add_movie(sim_input.module, sim_input.params)
             else:
                 raise Exception('Unable to load input type {}'.format(sim_input.input_type))
-
-
-            """
-            node_set = network.get_node_set(sim_input.node_set)
-            if sim_input.input_type == 'spikes':
-                spikes = spike_trains.SpikesInput.load(name=sim_input.name, module=sim_input.module,
-                                                       input_type=sim_input.input_type, params=sim_input.params)
-                io.log_info('Build virtual cell stimulations for {}'.format(sim_input.name))
-                network.add_spike_trains(spikes, node_set)
-
-            elif sim_input.module == 'IClamp':
-                # TODO: Parse from csv file
-                amplitude = sim_input.params['amp']
-                delay = sim_input.params['delay']
-                duration = sim_input.params['duration']
-                gids = sim_input.params['node_set']
-                sim.attach_current_clamp(amplitude, delay, duration, node_set)
-
-            elif sim_input.module == 'xstim':
-                sim.add_mod(mods.XStimMod(**sim_input.params))
-
-            else:
-                io.log_exception('Can not parse input format {}'.format(sim_input.name))
-            """
-
 
         rates_csv = config.output.get('rates_csv', None)
         rates_h5 = config.output.get('rates_h5', None)

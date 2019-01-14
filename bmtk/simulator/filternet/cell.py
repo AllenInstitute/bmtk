@@ -39,6 +39,12 @@ class Cell(object):
 
         self._lgn_cell_obj = model_processing_fnc(self, self._node.model_template, self._node.dynamics_params)
 
+    def get(self, item, default):
+        if item in self._node:
+            return self._node[item]
+        else:
+            return default
+
     def __getitem__(self, item):
         return self._node[item]
 

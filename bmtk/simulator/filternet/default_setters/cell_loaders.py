@@ -3,7 +3,7 @@ from sympy.abc import x as symbolic_x
 from sympy.abc import y as symbolic_y
 
 from bmtk.simulator.filternet.filters import TemporalFilterCosineBump, GaussianSpatialFilter, SpatioTemporalFilter
-from bmtk.simulator.filternet.cell_models import TwoSubfieldLinearCell, OnUnit, OffUnit
+from bmtk.simulator.filternet.cell_models import TwoSubfieldLinearCell, OnUnit, OffUnit, LGNOnOffCell
 from bmtk.simulator.filternet.transfer_functions import ScalarTransferFunction, MultiTransferFunction
 from bmtk.simulator.filternet.utils import get_data_metrics_for_each_subclass, get_tcross_from_temporal_kernel
 from bmtk.simulator.filternet.pyfunction_cache import py_modules
@@ -53,7 +53,7 @@ def default_cell_loader(node, template_name, dynamics_params):
     # TODO: Make sf_sep a default value
     origin = (0.0, 0.0)
     translate = (node['x'], node['y'])
-    sigma = node['spatial_size'] / 3.0  # convert from degree to SD
+    sigma = node.get('spatial_size', 0.0) / 3.0  # convert from degree to SD
     sigma = (sigma, sigma)
     spatial_filter = GaussianSpatialFilter(translate=translate, sigma=sigma, origin=origin)
 
@@ -67,7 +67,6 @@ def default_cell_loader(node, template_name, dynamics_params):
     non_dom_params = setup_params(node.non_dom_params, jitter_lower, jitter_upper)
 
     if model_name == 'sONsOFF_001':
-
         # sON temporal filter
         sON_prs = {'opt_wts': [non_dom_params['weight_dom_0'], non_dom_params['weight_dom_1']],
                    'opt_kpeaks': [non_dom_params['kpeaks_dom_0'], non_dom_params['kpeaks_dom_1']],
@@ -148,6 +147,21 @@ def default_cell_loader(node, template_name, dynamics_params):
                                                 node.tuning_angle, sf_sep, translate)
 
         cell = sep_ts_onoff_cell
+
+    elif model_name == 'LGNOnOFFCell':
+        wts = [node_params['weight_dom_0'], node_params['weight_dom_1']]
+        kpeaks = [node_params['kpeaks_dom_0'], node_params['kpeaks_dom_1']]
+        delays = [node_params['delay_dom_0'], node_params['delay_dom_1']]
+        transfer_function = ScalarTransferFunction('s')
+        temporal_filter = TemporalFilterCosineBump(wts, kpeaks, delays)
+
+        spatial_filter_on = GaussianSpatialFilter(sigma=node['sigma_on'], origin=origin, translate=translate)
+        on_linear_filter = SpatioTemporalFilter(spatial_filter_on, temporal_filter, amplitude=20)
+
+        spatial_filter_off = GaussianSpatialFilter(sigma=node['sigma_off'], origin=origin, translate=translate)
+        off_linear_filter = SpatioTemporalFilter(spatial_filter_off, temporal_filter, amplitude=-20)
+        cell = LGNOnOffCell(on_linear_filter, off_linear_filter)
+
     else:
         type_split = model_name.split('_')
         cell_type, tf_str = type_split[0], type_split[1]
@@ -298,6 +312,21 @@ def preset_params(node, template_name, dynamics_params):
                                                 node['tuning_angle'], node['sf_sep'], translate)
 
         cell = sep_ts_onoff_cell
+
+    elif model_name == 'LGNOnOFFCell':
+        wts = [node['weight_dom_0'], node['weight_dom_1']]
+        kpeaks = [node['kpeaks_dom_0'], node['kpeaks_dom_1']]
+        delays = [node['delay_dom_0'], node['delay_dom_1']]
+        transfer_function = ScalarTransferFunction('s')
+        temporal_filter = TemporalFilterCosineBump(wts, kpeaks, delays)
+
+        spatial_filter_on = GaussianSpatialFilter(sigma=node['sigma_on'], origin=origin, translate=translate)
+        on_linear_filter = SpatioTemporalFilter(spatial_filter_on, temporal_filter, amplitude=20)
+
+        spatial_filter_off = GaussianSpatialFilter(sigma=node['sigma_off'], origin=origin, translate=translate)
+        off_linear_filter = SpatioTemporalFilter(spatial_filter_off, temporal_filter, amplitude=-20)
+        cell = LGNOnOffCell(on_linear_filter, off_linear_filter)
+
     else:
         type_split = model_name.split('_')
         cell_type, tf_str = type_split[0], type_split[1]
