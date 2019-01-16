@@ -49,6 +49,14 @@ class BioNode(SonataBaseNode):
     def rotation_angle_zaxis(self):
         return self._prop_adaptor.rotation_angle_zaxis(self._node)
 
+    @property
+    def rotations(self):
+        return self._prop_adaptor.rotations(self._node)
+
+    @property
+    def rotations_quaternion(self):
+        return self._prop_adaptor.rotations(self._node)
+
     def load_cell(self):
         model_template = self.model_template
         template_name = model_template[1]
@@ -107,8 +115,19 @@ class BioNodeAdaptor(NodeAdaptor):
         else:
             node_adaptor.rotation_angle_zaxis = types.MethodType(rotation_angle_default, node_adaptor)
 
+        if 'rotations' in node_group.all_columns:
+            node_adaptor.rotations = types.MethodType(rotations, node_adaptor)
+        else:
+            node_adaptor.rotations = types.MethodType(value_none, node_adaptor)
+
         return node_adaptor
 
+
+def rotations(self, node):
+    return node['rotations']
+
+def value_none(self, node):
+    return None
 
 def positions_default(self, node):
     return np.array([0.0, 0.0, 0.0])
