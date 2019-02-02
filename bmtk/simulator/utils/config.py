@@ -31,7 +31,177 @@ from six import string_types
 from bmtk.simulator.core.io_tools import io
 
 
-def from_json(config_file, validator=None):
+class ConfigParser(object):
+    def __init__(self, validator=None, **opts):
+        self._validator = validator
+        self._usr_vars = opts  # dictionary of attributes passed in by the user, ie. not in MANIFEST
+
+    @property
+    def validator(self):
+        return self._validator
+
+    @property
+    def usr_vars(self):
+        return self._usr_vars
+
+    def parse(self, config_dict):
+        """Builds and validates a configuration json dictionary object. Best to directly use from_json when possible.
+
+        :param config_dict: Dictionary object
+        :param validator: A SimConfigValidator object to validate json file. Won't validate if set to None
+        :return: A dictionary, verified against json validator and with manifest variables resolved.
+        """
+        assert (isinstance(config_dict, dict))
+        conf = copy.deepcopy(config_dict)  # Since the functions will mutate the dictionary we will copy just-in-case.
+
+        if 'config_path' not in conf:
+            conf['config_path'] = os.path.join(os.getcwd(), 'tmp_cfg.dict')
+            conf['config_dir'] = os.path.dirname(conf['config_path'])
+
+        # Build the manifest and resolve variables.
+        # TODO: Check that manifest exists
+        manifest = self._build_manifest(conf)
+        conf['manifest'] = manifest
+        self._recursive_insert(conf, manifest)
+
+        # In our work with Blue-Brain it was agreed that 'network' and 'simulator' parts of config may be split up into
+        # separate files. If this is the case we build each sub-file separately and merge into this one
+        for childconfig in ['network', 'simulation']:
+            if childconfig in conf and isinstance(conf[childconfig], string_types):
+                # Try to resolve the path of the network/simulation config files. If an absolute path isn't used find
+                # the file relative to the current config file. TODO: test if this will work on windows?
+                conf_str = conf[childconfig]
+                conf_path = conf_str if conf_str.startswith('/') else os.path.join(conf['config_dir'], conf_str)
+
+                # Build individual json file and merge into parent.
+                child_json = from_json(conf_path)
+                del child_json['config_path']  # we don't want 'config_path' of parent being overwritten.
+                conf.update(child_json)
+
+        # Run the validator
+        if self.validator is not None:
+            self.validator.validate(conf)
+
+        return conf
+
+    def _special_variables(self, conf):
+        """A list of preloaded variables to insert into the manifest, containing things like path to run-time directory,
+        configuration directory, etc.
+        """
+        pre_manifest = dict()
+        pre_manifest['workingdir'] = os.path.dirname(os.getcwd())
+        if 'config_path' in conf:
+            pre_manifest['configdir'] = os.path.dirname(conf['config_path'])  # path of configuration file
+            pre_manifest['configfname'] = conf['config_path']
+
+        dt_now = datetime.datetime.now()
+        pre_manifest['time'] = dt_now.strftime('%H-%M-%S')
+        pre_manifest['date'] = dt_now.strftime('%Y-%m-%d')
+        pre_manifest['datetime'] = dt_now.strftime('%Y-%m-%d_%H-%M-%S')
+
+        return pre_manifest
+
+    def _build_manifest(self, conf):
+        """Resolves the manifest section and resolve any internal variables"""
+        if 'manifest' not in conf:
+            return self._special_variables(conf)
+
+        manifest = {}
+        for key, val in conf['manifest'].items():
+            nkey = key[1:] if key.startswith('$') else key
+            manifest[nkey] = val
+
+        resolved_manifest = self._special_variables(conf)
+        resolved_keys = set()
+        unresolved_keys = set(manifest.keys())
+
+        # No longer using recursion since that can lead to an infinite loop if the person who writes the config file isn't
+        # careful. Also added code to allow for ${VAR} format in-case user wants to user "$.../some_${MODEl}_here/..."
+        while unresolved_keys:
+            for key in unresolved_keys:
+                # Find all variables in manifest and see if they can be replaced by the value in resolved_manifest
+                value = self._find_variables(manifest[key], resolved_manifest)
+
+                # If value no longer has variables, and key-value pair to resolved_manifest and remove from unresolved-keys
+                if value.find('$') < 0:
+                    resolved_manifest[key] = value
+                    resolved_keys.add(key)
+
+            # remove resolved key-value pairs from set, and make sure at every iteration unresolved_keys shrinks to prevent
+            # infinite loops
+            n_unresolved = len(unresolved_keys)
+            unresolved_keys -= resolved_keys
+            if n_unresolved == len(unresolved_keys):
+                msg = "Unable to resolve manifest variables: {}".format(unresolved_keys)
+                raise Exception(msg)
+
+        return resolved_manifest
+
+    def _recursive_insert(self, json_obj, manifest):
+        """Loop through the config and substitute the path variables (e.g.: $MY_DIR) with the values from the manifest
+
+        :param json_obj: A json dictionary object that may contain variables needing to be resolved.
+        :param manifest: A dictionary of variable values
+        :return: A new json dictionar config file with variables resolved
+        """
+        if isinstance(json_obj, string_types):
+            return self._find_variables(json_obj, manifest)
+
+        elif isinstance(json_obj, list):
+            new_list = []
+            for itm in json_obj:
+                new_list.append(self._recursive_insert(itm, manifest))
+            return new_list
+
+        elif isinstance(json_obj, dict):
+            for key, val in json_obj.items():
+                if key == 'manifest':
+                    continue
+                json_obj[key] = self._recursive_insert(val, manifest)
+
+            return json_obj
+
+        else:
+            return json_obj
+
+    def _find_variables(self, json_str, manifest):
+        """Replaces variables (i.e. $VAR, ${VAR}) with their values from the manifest.
+
+        :param json_str: a json string that may contain none, one or multiple variable
+        :param manifest: dictionary of variable lookup values
+        :return: json rvalue with resolved variables. Won't resolve variables that don't exist in manifest.
+        """
+        ret_val = json_str
+        variables = [m for m in re.finditer('\$\{?[\w]+\}?', json_str)]
+        for var in variables:
+            var_key = var.group()
+            # change $VAR or ${VAR} --> VAR
+            if var_key.startswith('${') and var_key.endswith('}'):
+                # replace ${VAR} with VAR
+                var_key = var_key[2:-1]
+            elif var_key.startswith('$'):
+                var_key = var_key[1:]
+
+            # find variable value
+            if var_key in self.usr_vars:
+                rval = self.usr_vars[var_key]
+            elif var_key in manifest:
+                rval = manifest[var_key]
+            else:
+                continue
+
+            if isinstance(rval, string_types) or len(json_str) > len(var.group()):
+                ret_val = ret_val.replace(var.group(), str(rval))
+            else:
+                # In the case the variable value is not a string or not a part of the string - bool, float, etc. Try to
+                # return the value directly
+                return rval
+
+        return ret_val
+
+
+'''
+def from_json(config_file, validator=None, **opts):
     """Builds and validates a configuration json file.
 
     :param config_file: File object or path to a json file.
@@ -55,10 +225,10 @@ def from_json(config_file, validator=None):
         conf['config_dir'] = os.path.dirname(conf['config_path'])
 
     # Will resolve manifest variables and validate
-    return from_dict(conf, validator)
+    return from_dict(conf, validator, **opts)
 
 
-def from_dict(config_dict, validator=None):
+def from_dict(config_dict, validator=None, **opts):
     """Builds and validates a configuration json dictionary object. Best to directly use from_json when possible.
 
     :param config_dict: Dictionary object
@@ -74,9 +244,9 @@ def from_dict(config_dict, validator=None):
 
     # Build the manifest and resolve variables.
     # TODO: Check that manifest exists
-    manifest = __build_manifest(conf)
+    manifest = __build_manifest(conf, **opts)
     conf['manifest'] = manifest
-    __recursive_insert(conf, manifest)
+    __recursive_insert(conf, manifest, **opts)
 
     # In our work with Blue-Brain it was agreed that 'network' and 'simulator' parts of config may be split up into
     # separate files. If this is the case we build each sub-file separately and merge into this one
@@ -119,25 +289,29 @@ def __special_variables(conf):
     configuration directory, etc.
     """
     pre_manifest = dict()
-    pre_manifest['$workingdir'] = os.path.dirname(os.getcwd())
+    pre_manifest['workingdir'] = os.path.dirname(os.getcwd())
     if 'config_path' in conf:
-        pre_manifest['$configdir'] = os.path.dirname(conf['config_path'])  # path of configuration file
-        pre_manifest['$configfname'] = conf['config_path']
+        pre_manifest['configdir'] = os.path.dirname(conf['config_path'])  # path of configuration file
+        pre_manifest['configfname'] = conf['config_path']
 
     dt_now = datetime.datetime.now()
-    pre_manifest['$time'] = dt_now.strftime('%H-%M-%S')
-    pre_manifest['$date'] = dt_now.strftime('%Y-%m-%d')
-    pre_manifest['$datetime'] = dt_now.strftime('%Y-%m-%d_%H-%M-%S')
+    pre_manifest['time'] = dt_now.strftime('%H-%M-%S')
+    pre_manifest['date'] = dt_now.strftime('%Y-%m-%d')
+    pre_manifest['datetime'] = dt_now.strftime('%Y-%m-%d_%H-%M-%S')
 
     return pre_manifest
 
 
-def __build_manifest(conf):
+def __build_manifest(conf, **opts):
     """Resolves the manifest section and resolve any internal variables"""
     if 'manifest' not in conf:
         return __special_variables(conf)
 
-    manifest = conf["manifest"]
+    manifest = {}
+    for key, val in conf['manifest'].items():
+        nkey = key[1:] if key.startswith('$') else key
+        manifest[nkey] = val
+
     resolved_manifest = __special_variables(conf)
     resolved_keys = set()
     unresolved_keys = set(manifest.keys())
@@ -147,7 +321,7 @@ def __build_manifest(conf):
     while unresolved_keys:
         for key in unresolved_keys:
             # Find all variables in manifest and see if they can be replaced by the value in resolved_manifest
-            value = __find_variables(manifest[key], resolved_manifest)
+            value = __find_variables(manifest[key], resolved_manifest, **opts)
 
             # If value no longer has variables, and key-value pair to resolved_manifest and remove from unresolved-keys
             if value.find('$') < 0:
@@ -165,7 +339,7 @@ def __build_manifest(conf):
     return resolved_manifest
 
 
-def __recursive_insert(json_obj, manifest):
+def __recursive_insert(json_obj, manifest, **opts):
     """Loop through the config and substitute the path variables (e.g.: $MY_DIR) with the values from the manifest
 
     :param json_obj: A json dictionary object that may contain variables needing to be resolved.
@@ -173,19 +347,19 @@ def __recursive_insert(json_obj, manifest):
     :return: A new json dictionar config file with variables resolved
     """
     if isinstance(json_obj, string_types):
-        return __find_variables(json_obj, manifest)
+        return __find_variables(json_obj, manifest, **opts)
 
     elif isinstance(json_obj, list):
         new_list = []
         for itm in json_obj:
-            new_list.append(__recursive_insert(itm, manifest))
+            new_list.append(__recursive_insert(itm, manifest, **opts))
         return new_list
 
     elif isinstance(json_obj, dict):
         for key, val in json_obj.items():
             if key == 'manifest':
                 continue
-            json_obj[key] = __recursive_insert(val, manifest)
+            json_obj[key] = __recursive_insert(val, manifest, **opts)
 
         return json_obj
 
@@ -193,24 +367,41 @@ def __recursive_insert(json_obj, manifest):
         return json_obj
 
 
-def __find_variables(json_str, manifest):
+def __find_variables(json_str, manifest, **opts):
     """Replaces variables (i.e. $VAR, ${VAR}) with their values from the manifest.
 
     :param json_str: a json string that may contain none, one or multiple variable
     :param manifest: dictionary of variable lookup values
-    :return: json_str with resolved variables. Won't resolve variables that don't exist in manifest.
+    :return: json rvalue with resolved variables. Won't resolve variables that don't exist in manifest.
     """
+    ret_val = json_str
     variables = [m for m in re.finditer('\$\{?[\w]+\}?', json_str)]
     for var in variables:
-        var_lookup = var.group()
-        if var_lookup.startswith('${') and var_lookup.endswith('}'):
-            # replace ${VAR} with $VAR
-            var_lookup = "$" + var_lookup[2:-1]
-        if var_lookup in manifest:
-            json_str = json_str.replace(var.group(), manifest[var_lookup])
+        var_key = var.group()
+        # change $VAR or ${VAR} --> VAR
+        if var_key.startswith('${') and var_key.endswith('}'):
+            # replace ${VAR} with VAR
+            var_key = var_key[2:-1]
+        elif var_key.startswith('$'):
+            var_key = var_key[1:]
 
-    return json_str
+        # find variable value
+        if var_key in opts:
+            rval = opts[var_key]
+        elif var_key in manifest:
+            rval = manifest[var_key]
+        else:
+            continue
 
+        if isinstance(rval, string_types) or len(json_str) > len(var.group()):
+            ret_val = ret_val.replace(var.group(), str(rval))
+        else:
+            # In the case the variable value is not a string or not a part of the string - bool, float, etc. Try to
+            # return the value directly
+            return rval
+
+    return ret_val
+'''
 
 class ConfigDict(dict):
     def __init__(self, *args, **kwargs):
@@ -407,9 +598,9 @@ class ConfigDict(dict):
         raise NotImplementedError
 
     @classmethod
-    def from_json(cls, config_file, validate=False):
+    def from_json(cls, config_file, validate=False, **opts):
         validator = cls.get_validator() if validate else None
-        return cls(from_json(config_file, validator))
+        return cls(from_json(config_file, validator, **opts))
 
     @classmethod
     def from_dict(cls, config_dict, validate=False):
@@ -432,3 +623,63 @@ class ConfigDict(dict):
                 return cls.from_json(config_file, validate)
         else:
             raise Exception
+
+
+def copy_config(conf):
+    """Copy configuration file to different directory, with manifest variables resolved.
+
+    :param conf: configuration dictionary
+    """
+    output_dir = conf.output_dir
+    config_name = os.path.basename(conf['config_path'])
+    output_path = os.path.join(output_dir, config_name)
+    with open(output_path, 'w') as fp:
+        out_cfg = conf.copy()
+        if 'manifest' in out_cfg:
+            del out_cfg['manifest']
+        json.dump(out_cfg, fp, indent=2)
+
+def from_dict(config_dict, validator=None, **opts):
+    """
+
+    :param config_dict:
+    :param validator:
+    :param opts:
+    :return:
+    """
+    return ConfigParser(validator=validator, **opts).parse(config_dict)
+
+
+def from_json(config_file, validator=None, **opts):
+    """Builds and validates a configuration json file.
+
+    :param config_file: File object or path to a json file.
+    :param validator: A SimConfigValidator object to validate json file. Won't validate if set to None
+    :param opts:
+    :return: A dictionary, verified against json validator and with manifest variables resolved.
+    """
+    if isinstance(config_file, string_types):
+        conf = json.load(open(config_file, 'r'))
+    elif isinstance(config_file, dict):
+        conf = config_file.copy()
+    else:
+        raise Exception('{} is not a file or file path.'.format(config_file))
+
+    # insert file path into dictionary
+    if 'config_path' not in conf:
+        conf['config_path'] = os.path.abspath(config_file)
+        conf['config_dir'] = os.path.dirname(conf['config_path'])
+
+    # Will resolve manifest variables and validate
+    return ConfigParser(validator=validator, **opts).parse(conf)
+
+
+def from_yaml(config_file, validator=None, **opts):
+    """
+
+    :param config_file:
+    :param validator:
+    :param opts:
+    :return:
+    """
+    raise NotImplementedError()
