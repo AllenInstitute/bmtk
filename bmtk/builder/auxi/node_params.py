@@ -33,6 +33,14 @@ def positions_columinar(N=1, center=[0.0, 50.0, 0.0], height=100.0, min_radius=0
 
     return np.column_stack((x, y, z))
 
+# This function distributes the cells in a 3D cuboid (x,y,z sides may have different lengths). 
+# Written by Ben Latimer at University of Missouri (latimerb@missouri.edu)
+def positions_cuboid(N=1, center=[0.0, 0.0, 0.0], height=100.0, xside_length=100.0, yside_length=100.0, distribution='uniform'):
+    x = np.random.random([N])*(side_length-center[0])
+    y = np.random.random([N])*(side_length-center[1])
+    z = np.random.random([N])*(height-center[2])
+    return np.column_stack((x, y, z))
+
 
 def xiter_random(N=1, min_x=0.0, max_x=1.0):
     return np.random.uniform(low=min_x, high=max_x, size=(N,))
