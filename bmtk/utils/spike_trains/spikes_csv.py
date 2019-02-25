@@ -32,9 +32,10 @@ class Rates(object):
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         raise StopIteration
-
+    
+    next = __next__ # For Python 2
 
 class NormalRates(Rates):
     def __init__(self, t_start, t_end, rate_mu, rate_sigma=5.0):
@@ -45,13 +46,15 @@ class NormalRates(Rates):
 
         self._current_t = t_start
 
-    def next(self):
+    def __next__(self):
         self._current_t += abs(np.random.normal(self.period_mu, self.period_sigma))
         if self._current_t > self.t_end:
             self._current_t = self.t_start
             raise StopIteration
         else:
             return self._current_t
+
+    next = __next__ # For Python 2
 
 
 class SpikesGenerator(object):
