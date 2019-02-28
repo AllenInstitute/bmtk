@@ -8,6 +8,7 @@ import pandas as pd
 from bmtk.simulator.core.sonata_reader import NodeAdaptor, SonataBaseNode, EdgeAdaptor, SonataBaseEdge
 from bmtk.simulator.pointnet.io_tools import io
 from bmtk.simulator.pointnet.pyfunction_cache import py_modules
+from bmtk.simulator.pointnet.glif_utils import convert_aibs2nest
 
 
 def all_null(node_group, column_name):
@@ -140,6 +141,20 @@ class PointNodeAdaptor(NodeAdaptor):
 
         return [PointNodeBatched(nid_groups[nt_id], gid_groups[nt_id], node_group.parent.node_types_table, nt_id)
                 for nt_id in ntids_counter]
+
+    @staticmethod
+    def preprocess_node_types(network, node_population):
+        NodeAdaptor.preprocess_node_types(network, node_population)
+        node_types_table = node_population.types_table
+        if 'model_template' in node_types_table.columns and 'dynamics_params' in node_types_table.columns:
+            node_type_ids = np.unique(node_population.type_ids)
+            for nt_id in node_type_ids:
+                node_type_attrs = node_types_table[nt_id]
+                mtemplate = node_type_attrs['model_template']
+                dyn_params = node_type_attrs['dynamics_params']
+                if mtemplate.startswith('nest:glif') and dyn_params.get('type', None) == 'GLIF':
+                    node_type_attrs['dynamics_params'] = convert_aibs2nest(mtemplate, dyn_params)
+
 
     @staticmethod
     def patch_adaptor(adaptor, node_group, network):
