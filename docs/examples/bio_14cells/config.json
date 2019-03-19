@@ -8,7 +8,7 @@
   },
 
   "run": {
-    "tstop": 3000.0,
+    "tstop": 1000.0,
     "dt": 0.1,
     "dL": 20.0,
     "spike_threshold": -15,
@@ -72,6 +72,14 @@
       "module": "membrane_report",
       "sections": "soma",
       "enabled": true
+    },
+
+    "syn_report": {
+      "cells": [0, 1, 2, 3],
+      "variable_name": "tau1",
+      "module": "netcon_report",
+      "sections": "soma",
+      "syn_type": "Exp2Syn"
     }
   },
 
