@@ -102,14 +102,13 @@ class NetconReport(SimulatorMod):
 
             cell = sim.net.get_cell_gid(gid)
             for nc in cell.netcons:
-                sec_id, seg_x = self._get_syn_location(nc, cell)
-                src_gid = int(nc.srcgid())
-                sec_list.append(sec_id)
-                seg_list.append(seg_x)
-                src_list.append(src_gid)
-
                 synapse = nc.syn()
                 if self._syn_type is None or synapse.hname().startswith(self._syn_type):
+                    sec_id, seg_x = self._get_syn_location(nc, cell)
+                    src_gid = int(nc.srcgid())
+                    sec_list.append(sec_id)
+                    seg_list.append(seg_x)
+                    src_list.append(src_gid)
                     syn_objects.append(nc.syn())
                 elif self._syn_type == 'netcon':
                     syn_objects.append(nc)
