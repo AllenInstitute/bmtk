@@ -1,0 +1,208 @@
+import csv
+import six
+from enum import Enum
+
+import pandas as pd
+import numpy as np
+
+
+class SortOrder(Enum):
+    '''
+    none = 0
+    by_id = 1
+    by_time = 2
+    unknown = 3
+    '''
+    none = 'none'
+    by_id = 'by_id'
+    by_time = 'by_time'
+    unknown = 'unknown'
+
+
+
+class SpikeTrains(object):
+    @classmethod
+    def from_csv(cls, path, **kwargs):
+        return CSVSTReader(path, **kwargs)
+
+
+class STReader(object):
+    @property
+    def populations(self):
+        raise NotImplementedError()
+
+    def nodes(self, population=None):
+        raise NotImplementedError()
+
+    def time_range(self, populations=None):
+        raise NotImplementedError()
+
+    def get_times(self, node_id, population=None, time_window=None, **kwargs):
+        raise NotImplementedError()
+
+    # def get_spikes(self, node_ids, population=None, time_window=None, **kwargs):
+    #     raise NotImplementedError()
+
+    def to_dataframe(self, nodes_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
+        raise NotImplementedError()
+
+    def spikes(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
+        raise NotImplementedError()
+
+    def __len__(self):
+        return len(self.to_dataframe())
+
+
+col_timestamps = 'timestamps'
+col_node_ids = 'node_ids'
+col_population = 'population'
+csv_headers = [col_timestamps, col_population, col_node_ids]
+pop_na = '<sonata:none>'
+
+
+class CSVSTReader(STReader):
+    def __init__(self, path, sep=' ', **kwargs):
+        # self._node_ids = None
+        # self._min_time = None
+        # self._max_time = None
+
+        self._n_spikes = None
+        self._populations = None
+        # self._n_nodes = None
+        # self._min_time = None
+        # self._max_time = None
+
+
+        try:
+            # check to see if file contains headers
+            with open(path, 'r') as csvfile:
+                sniffer = csv.Sniffer()
+                has_headers = sniffer.has_header(csvfile.read(1024))
+        except Exception:
+            has_headers = True
+
+        self._spikes_df = pd.read_csv(path, sep=sep, header=0 if has_headers else None)
+
+        if not has_headers:
+            self._spikes_df.columns = csv_headers[0::2]
+
+        if col_population not in self._spikes_df.columns:
+            pop_name = kwargs.get(col_population, pop_na)
+            self._spikes_df[col_population] = pop_name
+
+        # TODO: Check all the necessary columns exits
+        self._spikes_df = self._spikes_df[csv_headers]
+
+    @property
+    def populations(self):
+        if self._populations is None:
+            self._populations = self._spikes_df['population'].unique()
+
+        return self._populations
+
+    def to_dataframe(self, node_ids=None, populations=None, time_window=None, sort_by=SortOrder.none, **kwargs):
+        selected = self._spikes_df.copy()
+
+        mask = True
+        if populations is not None:
+            if isinstance(populations, six.string_types) or np.isscalar(populations):
+                mask &= selected[col_population] == populations
+            else:
+                mask &= selected[col_population].isin(populations)
+
+        if node_ids is not None:
+            node_ids = [node_ids] if np.isscalar(node_ids) else node_ids
+            mask &= selected[col_node_ids].isin(node_ids)
+
+        if time_window is not None:
+            mask &= (selected[col_timestamps] >= time_window[0]) & (selected[col_timestamps] <= time_window[1])
+
+        if isinstance(mask, pd.Series):
+            selected = selected[mask]
+
+        if sort_by == SortOrder.by_time:
+            selected.sort_values(by=col_timestamps, inplace=True)
+        elif sort_by == SortOrder.by_id:
+            selected.sort_values(by=col_node_ids, inplace=True)
+
+        selected.index = pd.RangeIndex(len(selected.index))
+        return selected
+
+    def get_times(self, node_id, population=None, time_window=None, **kwargs):
+        selected = self._spikes_df.copy()
+        mask = (selected[col_node_ids] == node_id)
+
+        if population is not None:
+            mask &= (selected[col_population] == population)
+
+        if time_window is not None:
+            mask &= (selected[col_timestamps] >= time_window[0]) & (selected[col_timestamps] <= time_window[1])
+
+        return np.array(self._spikes_df[mask][col_timestamps])
+
+    def nodes(self, populations=None):
+        selected = self._spikes_df.copy()
+        if populations is not None:
+            if isinstance(populations, six.string_types) or np.isscalar(populations):
+                mask = selected[col_population] == populations
+            else:
+                mask = selected[col_population].isin(populations)
+
+        selected = selected[mask]
+        return selected.groupby(by=[col_population, col_node_ids]).indices.keys()
+
+    def time_range(self, populations=None):
+        selected = self._spikes_df.copy()
+        if populations is not None:
+            if isinstance(populations, six.string_types) or np.isscalar(populations):
+                mask = selected[col_population] == populations
+            else:
+                mask = selected[col_population].isin(populations)
+
+            selected = selected[mask]
+
+        return selected[col_timestamps].agg([np.min, np.max]).values
+
+    def spikes(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
+        selected = self._spikes_df.copy()
+
+        mask = True
+        if populations is not None:
+            if isinstance(populations, six.string_types) or np.isscalar(populations):
+                mask &= selected[col_population] == populations
+            else:
+                mask &= selected[col_population].isin(populations)
+
+        if node_ids is not None:
+            node_ids = [node_ids] if np.isscalar(node_ids) else node_ids
+            mask &= selected[col_node_ids].isin(node_ids)
+
+        if time_window is not None:
+            mask &= (selected[col_timestamps] >= time_window[0]) & (selected[col_timestamps] <= time_window[1])
+
+        if isinstance(mask, pd.Series):
+            selected = selected[mask]
+
+        if sort_order == SortOrder.by_time:
+            selected.sort_values(by=col_timestamps, inplace=True)
+        elif sort_order == SortOrder.by_id:
+            # print('BLAH')
+            selected.sort_values(by=col_node_ids, inplace=True)
+
+        indicies = selected.index.values
+        for indx in indicies:
+            yield tuple(self._spikes_df.iloc[indx])
+            #exit()
+
+            #yield self._spikes_df.iloc[indx]
+
+        #print(selected.head()
+        #print(selected.index.values)
+        #exit()
+
+    def __len__(self):
+        if self._n_spikes is None:
+            self._n_spikes = len(self._spikes_df)
+
+        return self._n_spikes
+
