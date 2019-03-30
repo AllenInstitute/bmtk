@@ -68,8 +68,21 @@ def create_multipop_h5():
         tw_grp.create_dataset('node_ids', data=tw_spikes_df['node_ids'], dtype=np.uint64)
 
 
+def create_nwb():
+    spikes_df = pd.read_csv('spike_files/spikes.one_pop.csv', sep=' ')
+    with h5py.File('spike_files/spikes.onepop.v1.0.nwb', 'w') as h5:
+        spikes_grp = h5.create_group('/processing/trial_0/spike_train')
+        for node_id in range(14):
+            timestamps = spikes_df[spikes_df['node_ids'] == node_id]['timestamps'].values
+            data_ds = spikes_grp.create_dataset('{}/data'.format(node_id), data=timestamps, dtype=np.float64)
+            data_ds.attrs['dimension'] = 'time'
+            data_ds.attrs['unit'] = 'millisecond'
+
+
+
 if __name__ == '__main__':
     # create_multipop_csv()
-    create_multipop_h5()
+    # create_multipop_h5()
+    create_nwb()
 
 

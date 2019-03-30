@@ -30,6 +30,10 @@ class SpikeTrains(object):
     def from_sonata(cls, path, **kwargs):
         return SONATASTReader(path, **kwargs)
 
+    @classmethod
+    def from_nwb(cls, path, **kwargs):
+        return NWBSTReader(path, **kwargs)
+
 
 class STReader(object):
     @property
@@ -45,9 +49,6 @@ class STReader(object):
     def get_times(self, node_id, population=None, time_window=None, **kwargs):
         raise NotImplementedError()
 
-    # def get_spikes(self, node_ids, population=None, time_window=None, **kwargs):
-    #     raise NotImplementedError()
-
     def to_dataframe(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
         raise NotImplementedError()
 
@@ -61,6 +62,64 @@ class STReader(object):
 GRP_spikes_root = 'spikes'
 DATASET_timestamps = 'timestamps'
 DATASET_node_ids = 'node_ids'
+
+
+class NWBSTReader(STReader):
+    def __init__(self, path, **kwargs):
+        self._path = path
+        self._h5_file = h5py.File(self._path, 'r')
+        self._n_nodes = None
+        self._spikes_df = None
+
+        # TODO: Check for other versions
+        self._population = kwargs.get('population', pop_na)
+        if 'trial' in kwargs.keys():
+            self._trial = kwargs['trial']
+        elif len(self._h5_file['/processing']) == 1:
+            self._trial = self._h5_file['/processing'].keys()[0]
+        else:
+            raise Exception('Please specify a trial')
+
+        self._trial_grp = self._h5_file['processing'][self._trial]['spike_train']
+
+    @property
+    def populations(self):
+        return [self._population]
+
+    def nodes(self, populations=None):
+        if populations is None:
+            populations = [self._population]
+        elif isinstance(populations, six.string_types):
+            populations = [populations]
+
+        if self._population not in populations:
+            return []
+
+        return [(self._population, np.uint64(node_id)) for node_id in self._trial_grp.keys()]
+
+    def time_range(self, populations=None):
+        data_df = self.to_dataframe()
+        return data_df[col_timestamps].agg([np.min, np.max]).values
+
+    def get_times(self, node_id, population=None, time_window=None, **kwargs):
+        if population != self._population:
+            return []
+
+    def to_dataframe(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
+        if self._spikes_df is None:
+            self._spikes_df[0]
+
+
+    def spikes(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
+        raise NotImplementedError()
+
+    def __len__(self):
+        if self._n_nodes is None:
+            self._n_nodes = 0
+            for node_id in self._trial_grp.keys():
+                self._n_nodes += len(self._trial_grp[node_id]['data'])
+
+        return self._n_nodes
 
 sorting_attrs = {
     'time': SortOrder.by_time,

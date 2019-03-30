@@ -12,6 +12,8 @@ def load_spike_trains(file_path):
     elif file_path.endswith('.h5'):
         return SpikeTrains.from_sonata(file_path)
 
+    elif file_path.endswith(('.nwb')):
+        return SpikeTrains.from_nwb(file_path)
 
 
 def test_spikes_nopopulation(file_path, pop_name):
@@ -25,7 +27,7 @@ def test_spikes_nopopulation(file_path, pop_name):
     assert(len(node_list) == 14)
     assert(len(node_list[0]) == 2)
     assert(isinstance(node_list[0][0], (six.string_types, np.integer)))  # first value is the name/id of population
-    assert (node_list[0][0] == pop_name)
+    assert(node_list[0][0] == pop_name)
     assert(isinstance(node_list[0][1], np.integer))  # second value is node_id
     assert(len(spikes.nodes(populations='INVALID')) == 0)
     assert(len(spikes.nodes(populations=pop_name)) == 14)
@@ -98,9 +100,9 @@ def test_spikes_nopopulation(file_path, pop_name):
         spike_counts += 1
     assert(spike_counts == 124)
 
-
 if __name__ == '__main__':
-    test_spikes_nopopulation(file_path='spike_files/spikes.noheader.nopop.csv', pop_name=pop_na)
-    test_spikes_nopopulation(file_path='./spike_files/spikes.one_pop.csv', pop_name='v1')
-    test_spikes_nopopulation(file_path='spike_files/spikes.old.h5', pop_name=pop_na)
-    test_spikes_nopopulation(file_path='spike_files/spikes.one_pop.h5', pop_name='v1')
+    #test_spikes_nopopulation(file_path='spike_files/spikes.noheader.nopop.csv', pop_name=pop_na)
+    #test_spikes_nopopulation(file_path='./spike_files/spikes.one_pop.csv', pop_name='v1')
+    #test_spikes_nopopulation(file_path='spike_files/spikes.old.h5', pop_name=pop_na)
+    #test_spikes_nopopulation(file_path='spike_files/spikes.one_pop.h5', pop_name='v1')
+    test_spikes_nopopulation(file_path='spike_files/spikes.onepop.v1.0.nwb', pop_name=pop_na)
