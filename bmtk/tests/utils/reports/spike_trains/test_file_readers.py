@@ -173,9 +173,16 @@ def test_spikes_multipop(file_path):
 
 if __name__ == '__main__':
     test_spikes_nopopulation(file_path='spike_files/spikes.noheader.nopop.csv', pop_name=pop_na)
+    #print('Done 1')
     test_spikes_nopopulation(file_path='./spike_files/spikes.one_pop.csv', pop_name='v1')
+    #print('Done 2')
     test_spikes_nopopulation(file_path='spike_files/spikes.old.h5', pop_name=pop_na)
+    #print('Done 3')
     test_spikes_nopopulation(file_path='spike_files/spikes.one_pop.h5', pop_name='v1')
+    #print('Done 4')
     test_spikes_nopopulation(file_path='spike_files/spikes.onepop.v1.0.nwb', pop_name=pop_na)
+    #print('Done 5')
     test_spikes_multipop('spike_files/spikes.multipop.csv')
+    #print('Done 6')
     test_spikes_multipop('spike_files/spikes.multipop.h5')
+    #print('Done 7')

@@ -20,7 +20,7 @@ class SortOrder(Enum):
     unknown = 'unknown'
 
 
-
+'''
 class SpikeTrains(object):
     @classmethod
     def from_csv(cls, path, **kwargs):
@@ -33,7 +33,7 @@ class SpikeTrains(object):
     @classmethod
     def from_nwb(cls, path, **kwargs):
         return NWBSTReader(path, **kwargs)
-
+'''
 
 class STReader(object):
     @property
@@ -41,6 +41,9 @@ class STReader(object):
         raise NotImplementedError()
 
     def nodes(self, populations=None):
+        raise NotImplementedError()
+
+    def n_spikes(self, population=None):
         raise NotImplementedError()
 
     def time_range(self, populations=None):
@@ -68,7 +71,7 @@ class NWBSTReader(STReader):
     def __init__(self, path, **kwargs):
         self._path = path
         self._h5_file = h5py.File(self._path, 'r')
-        self._n_nodes = None
+        self._n_spikes = None
         self._spikes_df = None
 
         # TODO: Check for other versions
@@ -96,6 +99,12 @@ class NWBSTReader(STReader):
             return []
 
         return [(self._population, np.uint64(node_id)) for node_id in self._trial_grp.keys()]
+
+    def n_spikes(self, population=None):
+        if population != self._population:
+            return 0
+
+        return self.__len__()
 
     def time_range(self, populations=None):
         data_df = self.to_dataframe()
@@ -181,12 +190,12 @@ class NWBSTReader(STReader):
                     yield (ts, self._population, node_id)
 
     def __len__(self):
-        if self._n_nodes is None:
-            self._n_nodes = 0
+        if self._n_spikes is None:
+            self._n_spikes = 0
             for node_id in self._trial_grp.keys():
-                self._n_nodes += len(self._trial_grp[node_id]['data'])
+                self._n_spikes += len(self._trial_grp[node_id]['data'])
 
-        return self._n_nodes
+        return self._n_spikes
 
 sorting_attrs = {
     'time': SortOrder.by_time,
@@ -299,6 +308,12 @@ class SONATASTReader(STReader):
                 node_list.extend((pop_name, node_id) for node_id in np.unique(pop_grp[self._DATASET_node_ids][()]))
 
         return node_list
+
+    def n_spikes(self, population=None):
+        if population not in self._population_map:
+            return 0
+
+        return len(self._population_map[population][DATASET_timestamps])
 
     def time_range(self, populations=None):
         if populations is None:
@@ -568,6 +583,9 @@ class CSVSTReader(STReader):
         if isinstance(mask, pd.Series):
             selected = selected[mask]
         return selected.groupby(by=[col_population, col_node_ids]).indices.keys()
+
+    def n_spikes(self, population=None):
+        return len(self.to_dataframe(populations=population))
 
     def time_range(self, populations=None):
         selected = self._spikes_df.copy()
