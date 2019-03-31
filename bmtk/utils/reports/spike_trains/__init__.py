@@ -1,7 +1,8 @@
-# from .core import SpikeTrains
 from .core import SortOrder as sort_order
 from .core import pop_na
-from .core import CSVSTReader, SONATASTReader, NWBSTReader
+from .nwb_adaptors import NWBSTReader
+from .csv_adaptors import CSVSTReader, write_csv
+from .sonata_adaptors import SonataSTReader, write_sonata
 
 
 class SpikeTrains(object):
@@ -27,7 +28,7 @@ class SpikeTrains(object):
 
     @classmethod
     def from_sonata(cls, path, **kwargs):
-        return cls(read_adaptor=SONATASTReader(path, **kwargs))
+        return cls(read_adaptor=SonataSTReader(path, **kwargs))
         # return SONATASTReader(path, **kwargs)
 
     @classmethod
@@ -55,6 +56,14 @@ class SpikeTrains(object):
         return self.read_adaptor.spikes(node_ids=node_ids, populations=populations, time_window=time_window,
                                         sort_order=sort_order, **kwargs)
 
+    def to_csv(self, path, mode='w', sort_order=sort_order.none, **kwargs):
+        write_csv(path=path, spiketrain_reader=self.read_adaptor, mode=mode, sort_order=sort_order, **kwargs)
+
+    def to_sonata(self, path, mode='w', sort_order=sort_order.none, **kwargs):
+        write_sonata(path=path, spiketrain_reader=self.read_adaptor, mode=mode, sort_order=sort_order, **kwargs)
+
+    def to_nwb(self, path, **kwargs):
+        raise NotImplementedError()
+
     def __len__(self):
         return len(self.read_adaptor)
-

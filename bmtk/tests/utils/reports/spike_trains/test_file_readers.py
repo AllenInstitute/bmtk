@@ -105,14 +105,7 @@ def test_spikes_multipop(file_path):
     assert(set(spikes.populations) == set(['lgn', 'tw']))
     assert(len(spikes) == 144434)
 
-    #import pandas as pd
-    #tmp = pd.read_csv('spike_files/spikes.multipop.csv', sep=' ')
-    #for grp_name, grp in tmp.groupby('population'): # tmp.groupby(['population', 'node_ids']):
-    #    print(grp_name, len(grp['node_ids'].unique()))
-
     assert(len(spikes.nodes()) == 4000 + 1997)
-    # print(spikes.nodes())
-    # exit()
     lgn_nodes = spikes.nodes(populations='lgn')
     assert(len(lgn_nodes) == 4000)
     assert(lgn_nodes[0][0] == 'lgn')
@@ -173,16 +166,9 @@ def test_spikes_multipop(file_path):
 
 if __name__ == '__main__':
     test_spikes_nopopulation(file_path='spike_files/spikes.noheader.nopop.csv', pop_name=pop_na)
-    #print('Done 1')
     test_spikes_nopopulation(file_path='./spike_files/spikes.one_pop.csv', pop_name='v1')
-    #print('Done 2')
     test_spikes_nopopulation(file_path='spike_files/spikes.old.h5', pop_name=pop_na)
-    #print('Done 3')
     test_spikes_nopopulation(file_path='spike_files/spikes.one_pop.h5', pop_name='v1')
-    #print('Done 4')
     test_spikes_nopopulation(file_path='spike_files/spikes.onepop.v1.0.nwb', pop_name=pop_na)
-    #print('Done 5')
     test_spikes_multipop('spike_files/spikes.multipop.csv')
-    #print('Done 6')
     test_spikes_multipop('spike_files/spikes.multipop.h5')
-    #print('Done 7')
