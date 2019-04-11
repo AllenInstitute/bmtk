@@ -44,6 +44,9 @@ class SonataBaseNode(object):
     def __getitem__(self, prop_key):
         return self._node[prop_key]
 
+    def __contains__(self, item):
+        return item in self._node
+
 
 class NodeAdaptor(object):
     COL_MODEL_TYPE = 'model_type'
@@ -140,6 +143,8 @@ class NodeAdaptor(object):
                     params_dir = network.get_component('point_neuron_models_dir')
                 elif model_type == 'population':
                     params_dir = network.get_component('population_models_dir')
+                elif model_type == 'lgnmodel' or model_type == 'virtual':
+                    params_dir = network.get_component('filter_models_dir')
                 else:
                     # Not sure what to do in this case, throw Exception?
                     params_dir = network.get_component('custom_neuron_models')
