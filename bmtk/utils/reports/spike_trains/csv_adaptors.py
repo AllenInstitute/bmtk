@@ -103,7 +103,7 @@ class CSVSTReader(STReader):
 
         if isinstance(mask, pd.Series):
             selected = selected[mask]
-        return selected.groupby(by=[col_population, col_node_ids]).indices.keys()
+        return list(selected.groupby(by=[col_population, col_node_ids]).indices.keys())
 
     def n_spikes(self, population=None):
         return len(self.to_dataframe(populations=population))

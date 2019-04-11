@@ -1,6 +1,8 @@
 import numpy as np
 import pytest
 import six
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 from bmtk.utils.reports.spike_trains import SpikeTrains, sort_order, pop_na
 

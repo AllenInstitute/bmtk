@@ -19,7 +19,7 @@ class NWBSTReader(STReader):
         if 'trial' in kwargs.keys():
             self._trial = kwargs['trial']
         elif len(self._h5_file['/processing']) == 1:
-            self._trial = self._h5_file['/processing'].keys()[0]
+            self._trial = list(self._h5_file['/processing'].keys())[0]
         else:
             raise Exception('Please specify a trial')
 
@@ -120,7 +120,7 @@ class NWBSTReader(STReader):
                 # print(r)
                 yield (r[col_timestamps], r[col_population], r[col_node_ids])
         else:
-            node_ids = np.array(self._trial_grp.keys(), dtype=np.uint64)
+            node_ids = np.array(list(self._trial_grp.keys()), dtype=np.uint64)
             if sort_order == SortOrder.by_id:
                 node_ids.sort()
 
