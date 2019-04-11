@@ -249,7 +249,7 @@ class SonataSTReader(STReader):
 
                 timestamps_ds = self._population_map[pop_name][DATASET_timestamps]
                 index_map = self._index_nids[pop_name]
-                node_ids = index_map.keys()
+                node_ids = list(index_map.keys())
                 node_ids.sort()
                 for node_id in node_ids:
                     st_indices = index_map[node_id]
