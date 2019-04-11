@@ -11,7 +11,7 @@ class CellVarsFile(object):
         self._h5_root = self._h5_handle[params['h5_root']] if 'h5_root' in params else self._h5_handle['/']
         self._var_data = {}
         self._var_units = {}
-
+        
         self._mapping = None
 
         # Look for variabl and mapping groups
@@ -54,7 +54,7 @@ class CellVarsFile(object):
             self._t_stop = time_ds[1]
             self._dt = time_ds[2]
             self._n_steps = int((self._t_stop - self._t_start) / self._dt)
-
+            
     @property
     def variables(self):
         return list(self._var_data.keys())
@@ -132,3 +132,6 @@ class CellVarsFile(object):
 
         data = np.array(self._var_data[var_name][time_slice, gid_slice])
         return data.T if multi_compartments else data
+
+    def close(self):
+        self._h5_handle.close()

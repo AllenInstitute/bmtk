@@ -62,6 +62,7 @@ def _create_node_table(node_file, node_type_file, group_key=None, exclude=[]):
         for cond in exclude:
             full_df = full_df[full_df[group_key] != cond]
 
+    nodes_h5.close()
     return full_df
 
 def _count_spikes(spikes_file, max_gid, interval=None):
@@ -110,6 +111,7 @@ def _count_spikes(spikes_file, max_gid, interval=None):
                 t_min = ts if ts < t_min else t_min
                 t_max = ts if ts > t_max else t_max
     """
+    spikes_h5.close()
     return spikes, spike_sums/(float(t_max-t_min)*1e-3)
 
 
@@ -130,7 +132,7 @@ def plot_spikes_config(configure, group_key=None, exclude=[], save_as=None, show
 
 
 def plot_spikes(cells_file, cell_models_file, spikes_file, population=None, group_key=None, exclude=[], save_as=None,
-                show=True, title=None):
+                show=True, title=None, legend=True):
     # check if can be shown and/or saved
     #if save_as is not None:
     #    if os.path.exists(save_as):
@@ -156,13 +158,14 @@ def plot_spikes(cells_file, cell_models_file, spikes_file, population=None, grou
                         how='left',
                         left_on='node_type_id',
                         right_index=True)  # use 'model_id' key to merge, for right table the "model_id" is an index
-
+    cells_h5.close()
     # TODO: Uses utils.SpikesReader to open
     spikes_h5 = h5py.File(spikes_file, 'r')
     spike_gids = np.array(spikes_h5['/spikes/gids'], dtype=np.uint)
     spike_times = np.array(spikes_h5['/spikes/timestamps'], dtype=np.float)
     # spike_times, spike_gids = np.loadtxt(spikes_file, dtype='float32,int', unpack=True)
     # spike_gids, spike_times = np.loadtxt(spikes_file, dtype='int,float32', unpack=True)
+    spikes_h5.close()
 
     spike_times = spike_times * 1.0e-3
 
@@ -204,7 +207,8 @@ def plot_spikes(cells_file, cell_models_file, spikes_file, population=None, grou
     ax1.set_ylabel('cell_id')
     ax1.set_xlim([0, max(spike_times)])
     ax1.set_ylim([gid_min, gid_max])
-    plt.legend(markerscale=2, scatterpoints=1)
+    if legend:
+        plt.legend(markerscale=2, scatterpoints=1)
 
     ax2 = plt.subplot(gs[1])
     plt.hist(spike_times, 100)
