@@ -56,6 +56,7 @@ class CellVarRecorder(object):
 
         self._mapping_gids = []  # list of gids in the order they appear in the data
         self._gid_map = {}  # table for looking up the gid offsets
+        self._map_attrs = {}  # Used for additonal attributes in /mapping
 
         self._mapping_element_ids = []  # sections
         self._mapping_element_pos = []  # segments
@@ -127,7 +128,7 @@ class CellVarRecorder(object):
         add_hdf5_version(self._h5_handle)
         add_hdf5_magic(self._h5_handle)
 
-    def add_cell(self, gid, sec_list, seg_list):
+    def add_cell(self, gid, sec_list, seg_list, **map_attrs):
         assert(len(sec_list) == len(seg_list))
         # TODO: Check the same gid isn't added twice
         n_segs = len(seg_list)
@@ -138,6 +139,11 @@ class CellVarRecorder(object):
         self._mapping_index.append(self._mapping_index[-1] + n_segs)
         self._n_segments_local += n_segs
         self._n_gids_local += 1
+        for k, v in map_attrs.items():
+            if k not in self._map_attrs:
+                self._map_attrs[k] = v
+            else:
+                self._map_attrs[k].extend(v)
 
     def initialize(self, n_steps, buffer_size=0):
         self._calc_offset()
@@ -149,11 +155,15 @@ class CellVarRecorder(object):
         var_grp.create_dataset('element_pos', shape=(self._n_segments_all,), dtype=np.float)
         var_grp.create_dataset('index_pointer', shape=(self._n_gids_all+1,), dtype=np.uint64)
         var_grp.create_dataset('time', data=[self.tstart, self.tstop, self.dt])
+        for k, v in self._map_attrs.items():
+            var_grp.create_dataset(k, shape=(self._n_segments_all,), dtype=type(v[0]))
 
         var_grp['gids'][self._gids_beg:self._gids_end] = self._mapping_gids
         var_grp['element_id'][self._seg_offset_beg:self._seg_offset_end] = self._mapping_element_ids
         var_grp['element_pos'][self._seg_offset_beg:self._seg_offset_end] = self._mapping_element_pos
         var_grp['index_pointer'][self._gids_beg:(self._gids_end+1)] = self._mapping_index
+        for k, v in self._map_attrs.items():
+            var_grp[k][self._seg_offset_beg:self._seg_offset_end] = v
 
         self._total_steps = n_steps
         self._buffer_block_size = buffer_size
@@ -260,6 +270,8 @@ class CellVarRecorder(object):
             el_pos_ds = mapping_grp.create_dataset('element_pos', shape=(total_seg_count,), dtype=np.float)
             gids_ds = mapping_grp.create_dataset('gids', shape=(total_gid_count,), dtype=np.uint)
             index_pointer_ds = mapping_grp.create_dataset('index_pointer', shape=(total_gid_count+1,), dtype=np.uint)
+            for k, v in self._map_attrs.items():
+                mapping_grp.create_dataset(k, shape=(total_seg_count,), dtype=type(v[0]))
 
             # combine the /mapping datasets
             for i, h5_tmp in enumerate(tmp_h5_handles):
@@ -267,6 +279,8 @@ class CellVarRecorder(object):
                 beg, end = seg_ranges[i]
                 element_id_ds[beg:end] = tmp_mapping_grp['element_id']
                 el_pos_ds[beg:end] = tmp_mapping_grp['element_pos']
+                for k, v in self._map_attrs.items():
+                    mapping_grp[k][beg:end] = v
 
                 # shift the index pointer values
                 index_pointer = np.array(tmp_mapping_grp['index_pointer'])
@@ -275,6 +289,7 @@ class CellVarRecorder(object):
                 beg, end = gid_ranges[i]
                 gids_ds[beg:end] = tmp_mapping_grp['gids']
                 index_pointer_ds[beg:(end+1)] = update_index
+
 
             # combine the /var/data datasets
             for var_name in self._variables:

@@ -145,7 +145,7 @@ def plot_spikes(cells_file, cell_models_file, spikes_file, population=None, grou
         if len(cells_h5['/nodes']) > 1:
             raise Exception('Multiple populations in nodes file. Please specify one to plot using population param')
         else:
-            population = cells_h5['/nodes'].keys()[0]
+            population = list(cells_h5['/nodes'])[0]
 
     nodes_grp = cells_h5['/nodes'][population]
     c_df = pd.DataFrame({'node_id': nodes_grp['node_id'], 'node_type_id': nodes_grp['node_type_id']})

@@ -310,6 +310,9 @@ class BioSimulator(Simulator):
             if isinstance(report, reports.SpikesReport):
                 mod = mods.SpikesMod(**report.params)
 
+            elif report.module == 'netcon_report':
+                mod = mods.NetconReport(**report.params)
+
             elif isinstance(report, reports.MembraneReport):
                 if report.params['sections'] == 'soma':
                     mod = mods.SomaReport(**report.params)
@@ -326,6 +329,8 @@ class BioSimulator(Simulator):
 
             elif report.module == 'save_synapses':
                 mod = mods.SaveSynapses(**report.params)
+
+
 
             else:
                 # TODO: Allow users to register customized modules using pymodules
