@@ -161,10 +161,6 @@ def test_spikes_multipop(file_path):
         spike_counts += 1
     assert(spike_counts == 144434)
 
-    # assert(len(spikes.populations) == 1)
-    # assert(spikes.populations[0] == pop_name)
-    # assert(len(spikes) == 124)
-
 
 if __name__ == '__main__':
     test_spikes_nopopulation(file_path='spike_files/spikes.noheader.nopop.csv', pop_name=pop_na)

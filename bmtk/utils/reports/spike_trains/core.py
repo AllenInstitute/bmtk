@@ -8,6 +8,13 @@ class SortOrder(Enum):
     unknown = 'unknown'
 
 
+col_timestamps = 'timestamps'
+col_node_ids = 'node_ids'
+col_population = 'population'
+csv_headers = [col_timestamps, col_population, col_node_ids]
+pop_na = '<sonata:none>'
+
+
 class STReader(object):
     @property
     def populations(self):
@@ -35,8 +42,19 @@ class STReader(object):
         return len(self.to_dataframe())
 
 
-col_timestamps = 'timestamps'
-col_node_ids = 'node_ids'
-col_population = 'population'
-csv_headers = [col_timestamps, col_population, col_node_ids]
-pop_na = '<sonata:none>'
+class STBuffer(object):
+    def add_spike(self, node_id, timestamp, population=None, **kwargs):
+        raise NotImplementedError()
+
+    def add_spikes(self, nodes, timestamps, population=None, **kwargs):
+        raise NotImplementedError()
+
+    def import_spikes(self, obj, **kwargs):
+        raise NotImplementedError()
+
+    def flush(self):
+        raise NotImplementedError()
+
+
+
+

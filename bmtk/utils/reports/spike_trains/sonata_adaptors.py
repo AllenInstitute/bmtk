@@ -9,6 +9,18 @@ from .core import col_node_ids, col_timestamps, col_population, pop_na
 from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
 
 
+try:
+    from mpi4py import MPI
+    comm = MPI.COMM_WORLD
+    MPI_rank = comm.Get_rank()
+    MPI_size = comm.Get_size()
+    barrier = comm.Barrier
+except:
+    MPI_rank = 0
+    MPI_size = 1
+    barrier = lambda: None
+
+
 GRP_spikes_root = 'spikes'
 DATASET_timestamps = 'timestamps'
 DATASET_node_ids = 'node_ids'
@@ -26,18 +38,21 @@ sorting_attrs = {
 
 def write_sonata(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, **kwargs):
     path_dir = os.path.dirname(path)
-    if not os.path.exists(path_dir):
+    if path_dir and not os.path.exists(path_dir):
         os.makedirs(path_dir)
 
     with h5py.File(path, mode=mode) as h5:
         add_hdf5_magic(h5)
         add_hdf5_version(h5)
         for pop_name in spiketrain_reader.populations:
+            n_spikes = spiketrain_reader.n_spikes(pop_name)
+            if n_spikes <= 0:
+                continue
+
             spikes_grp = h5.create_group('/spikes/{}/'.format(pop_name))
             if sort_order != SortOrder.unknown:
                 spikes_grp.attrs['sorting'] = sort_order.value
 
-            n_spikes = spiketrain_reader.n_spikes(pop_name)
             timestamps_ds = spikes_grp.create_dataset('timestamps', shape=(n_spikes,), dtype=np.float64)
             node_ids_ds = spikes_grp.create_dataset('node_ids', shape=(n_spikes,), dtype=np.uint64)
             for i, spk in enumerate(spiketrain_reader.spikes(populations=pop_name, sort_order=sort_order)):
