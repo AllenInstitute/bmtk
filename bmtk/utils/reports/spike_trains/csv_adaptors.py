@@ -10,7 +10,7 @@ from .core import csv_headers, col_population, pop_na, col_timestamps, col_node_
 
 def write_csv(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, **kwargs):
     path_dir = os.path.dirname(path)
-    if not os.path.exists(path_dir):
+    if path_dir and not os.path.exists(path_dir):
         os.makedirs(path_dir)
 
     with open(path, mode=mode) as f:
