@@ -150,7 +150,7 @@ class SonataSTReader(STReader):
 
     @property
     def units(self):
-        return self.units
+        return self._units
 
     @units.setter
     def units(self, v):
@@ -261,9 +261,9 @@ class SonataSTReader(STReader):
         elif population not in self.populations:
             return []
 
-        # print population, self._index_nids[population].keys()
-        spikes_index = self._index_nids[population][node_id]
-        # print(spikes_index)
+        spikes_index = self._index_nids[population].get(node_id, None)
+        if spikes_index is None:
+            return []
         spike_times = self._population_map[population][DATASET_timestamps][spikes_index]
 
         if time_window is not None:

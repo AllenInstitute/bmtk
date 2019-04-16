@@ -19,26 +19,7 @@ except:
     MPI_size = 1
     barrier = lambda: None
 
-'''
-class STWriter(object):
-    def add_spike(self, node_id, timestamp, population=None):
-        pass
-
-    def add_spikes(self, nodes, timestamps, population=None):
-        pass
-
-    def import_spikes(self, obj):
-        pass
-
-    def flush(self):
-        pass
-
-    def close(self):
-        pass
-'''
-
-
-
+"""
 class DiskBuffer(object):
     def __init__(self, cache_dir, **kwargs):
         self.cache_dir = cache_dir
@@ -166,149 +147,7 @@ class STBufferedWriter(STBuffer, STReader):
 
     def __len__(self):
         return len(self.to_dataframe())
-
-
-'''
-class STBufferedWriter(STWriter, STReader):
-    class TmpFileMetadata(object):
-        def __init__(self, file_name, sort_order=None):
-            self.file_name = file_name
-            self.sort_order = sort_order
-
-    def __init__(self, tmp_dir='.', mpi_rank=0, mpi_size=1):
-        # For NEST/NEURON based simulations it is prefereable not to use mpi4py, so let the parent simulator determine
-        # MPI rank and size
-        self._mpi_rank = mpi_rank
-        self._mpi_size = mpi_size
-
-        # used to temporary save spike files since for large simulations saving spikes into memory can crash the
-        # system. Requires the user to create the directory
-        self._tmp_dir = tmp_dir
-        if self._tmp_dir is None or not os.path.exists(self._tmp_dir):
-            raise Exception('Directory path {} does not exists'.format(self._tmp_dir))
-        self._all_tmp_files = [self.TmpFileMetadata(self._get_tmp_filename(r)) for r in range(mpi_size)]
-        # TODO: Determine best buffer size.
-        self._tmp_file_handle = open(self._all_tmp_files[mpi_rank].file_name, 'w')
-
-        self._tmp_spikes_handles = []  # used when sorting mulitple file
-        self._spike_count = -1
-
-        # Nest gid files uses tab seperators and a different order for tmp spike files.
-        self.delimiter = ' '  # delimiter for temporary file
-        self.time_col = 0
-        self.gid_col = 2
-
-        self._populations = set()
-        self._nspikes = 0
-        # raise Exception()
-
-    def _get_tmp_filename(self, rank):
-        return os.path.join(self._tmp_dir, '_bmtk_tmp_spikes_{}.csv'.format(rank))
-
-    def _count_spikes(self, recount=False):
-        if self._mpi_rank == 0:
-            if self._spike_count > -1 and not recount:
-                return self._spike_count
-
-            self._spike_count = 0
-            for tmp_file in self._all_tmp_files:
-                with open(tmp_file.file_name, 'r') as csvfile:
-                    csv_reader = csv.reader(csvfile, delimiter=self.delimiter)
-                    self._spike_count += sum(1 for _ in csv_reader)
-
-    def _sort_tmp_file(self, file_name, sort_order):
-        if sort_order == SortOrder.by_time:
-            sort_col = 'time'
-        elif sort_order == SortOrder.by_id:
-            sort_col = 'node'
-        else:
-            return
-
-        tmp_spikes_ds = pd.read_csv(file_name, sep=' ', names=['time', 'population', 'node'])
-        tmp_spikes_ds = tmp_spikes_ds.sort_values(by=sort_col)
-        tmp_spikes_ds.to_csv(file_name, sep=' ', index=False, header=False)
-
-    def _next_spike(self, rank):
-        try:
-            val = next(self._tmp_spikes_handles[rank])
-            return val[0], val[1], rank
-        except StopIteration:
-            return None
-
-    def add_spike(self, node_id, timestamp, population=None):
-        population = population or pop_na
-        self._populations.add(population)
-        self._nspikes += 1
-        self._tmp_file_handle.write('{} {} {}\n'.format(timestamp, population, node_id))
-
-    def add_spikes(self, node_ids, timestamps, population=None):
-        population = population or pop_na
-        for t in timestamps:
-            self.add_spike(node_ids, t, population)
-
-    def _sort_files(self, sort_order, sort_column, file_write_fnc):
-        self._tmp_spikes_handles = []
-        for fdata in self._all_tmp_files:
-            self._sort_tmp_file(fdata, sort_order)
-            self._tmp_spikes_handles.append(csv.reader(open(fdata.file_name, 'r'), delimiter=self.delimiter))
-
-        spikes = []
-        for rank in range(len(self._tmp_spikes_handles)):  # range(self._mpi_size):
-            spike = self._next_spike(rank)
-            if spike is not None:
-                spikes.append(spike)
-
-        # Iterate through all the ranks and find the first spike. Write that spike/gid to the output, then
-        # replace that data point with the next spike on the selected rank
-        indx = 0
-        while spikes:
-            # find which rank has the first spike
-            selected_index = 0
-            selected_val = spikes[0][sort_column]
-            for i, spike in enumerate(spikes[1:]):
-                if spike[sort_column] < selected_val:
-                    selected_index = i + 1
-                    selected_val = spike[sort_column]
-
-            # write the spike to the file
-            row = spikes.pop(selected_index)
-            file_write_fnc(float(row[self.time_col]), int(row[self.gid_col]), indx)
-            indx += 1
-
-            # get the next spike on that rank and replace in spikes table
-            another_spike = self._next_spike(row[2])
-            if another_spike is not None:
-                spikes.append(another_spike)
-
-    def spikes(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
-        self.flush()
-        self._sort_tmp_file(self._get_tmp_filename(0), sort_order)
-
-        with open(self._get_tmp_filename(0), 'r') as csvfile:
-            csv_reader = csv.reader(csvfile, delimiter=' ')
-            for row in csv_reader:
-                yield float(row[0]), row[1], int(row[2])
-
-    @property
-    def populations(self):
-        return list(self._populations)
-
-    def n_spikes(self, population=None):
-        return self._nspikes
-
-    def flush(self):
-        self._tmp_file_handle.flush()
-
-    def close_tmp_file(self):
-        self._tmp_file_handle.close()
-
-    def close(self):
-        if self._mpi_rank == 0:
-            for tmp_file in self._all_tmp_files:
-                if os.path.exists(tmp_file.file_name):
-                    os.remove(tmp_file.file_name)
-'''
-
+"""
 
 def _spikes_filter1(p, t, time_window, populations):
     return p in populations and time_window[0] <= t <= time_window[1]
@@ -338,14 +177,23 @@ def _create_filter(populations, time_window):
 
 
 class STMemoryBuffer(STBuffer, STReader):
+    """ A Class for creating, storing and reading multi-population spike-trains - especially for saving the spikes of a
+    large scale network simulation. Keeps a running tally of the (timestamp, population-name, node_id) for each
+    individual spike.
+
+    The spikes are stored in memory and very large and/or epiletic simulations may run into memory issues. Not designed
+    to work with parallel simulations.
+    """
+
     def __init__(self, default_population=None, **kwargs):
         self._default_population = default_population or pop_na
 
+        # look into storing data using numpy arrays or pandas series.
         self._node_ids = []
         self._timestamps = []
         self._populations = []
-        self._pop_counts = {self._default_population: 0}
-        self._units = kwargs.get('units', 'ms')
+        self._pop_counts = {self._default_population: 0}  # A count of spikes per population
+        self._units = kwargs.get('units', 'ms')  # for backwards compatability default to milliseconds
 
     def add_spike(self, node_id, timestamp, population=None):
         population = population or self._default_population
@@ -362,11 +210,8 @@ class STMemoryBuffer(STBuffer, STReader):
         for node_id, ts in zip(node_ids, timestamps):
             self.add_spike(node_id, ts, population)
 
-    def import_spikes(self, obj):
-        pass
-
     def flush(self):
-        pass
+        pass # not necessary since everything is stored in memory
 
     @property
     def populations(self):
@@ -423,9 +268,20 @@ class STMemoryBuffer(STBuffer, STReader):
 
 
 class STCSVBuffer(STBuffer, STReader):
+    """ A Class for creating, storing and reading multi-population spike-trains - especially for saving the spikes of a
+    large scale network simulation. Keeps a running tally of the (timestamp, population-name, node_id) for each
+    individual spike.
+
+    Uses a caching mechanism to periodically save spikes to the disk. Will encure a runtime performance penality but
+    will always have an upper bound on the maximum memory used.
+
+    If running parallel simulations should use the STMPIBuffer adaptor instead.
+    """
+
     def __init__(self, cache_dir=None, default_population=None, **kwargs):
         self._default_population = default_population or pop_na
 
+        # Keep a file handle open for writing spike information
         self._cache_dir = cache_dir or '.'
         self._buffer_filename = self._cache_fname(self._cache_dir)
         self._buffer_handle = open(self._buffer_filename, 'w')
@@ -435,6 +291,7 @@ class STCSVBuffer(STBuffer, STReader):
         self._units = kwargs.get('units', 'ms')
 
     def _cache_fname(self, cache_dir):
+        # TODO: Potential problem if multiple SpikeTrains are opened at the same time, add salt to prevent collisions
         if not os.path.exists(self._cache_dir):
             os.mkdirs(self._cache_dir)
         return os.path.join(cache_dir, '.bmtk.spikes.cache.csv')
@@ -442,6 +299,9 @@ class STCSVBuffer(STBuffer, STReader):
     def add_spike(self, node_id, timestamp, population=None):
         population = population or pop_na
 
+        # NOTE: I looked into using a in-memory buffer to save data and caching only when they reached a threshold,
+        # however on my computer it was actually slower than just calling file.write() each time. Likely the python
+        # file writer is more efficent than what I could write. However still would like to benchmark on a NSF.
         self._buffer_handle.write('{} {} {}\n'.format(timestamp, population, node_id))
         self._nspikes += 1
         self._pop_counts[population] = self._pop_counts.get(population, 0) + 1
@@ -453,9 +313,6 @@ class STCSVBuffer(STBuffer, STReader):
         else:
             for node_id, ts in zip(node_ids, timestamps):
                 self.add_spike(node_id, ts, population)
-
-    def import_spikes(self, obj):
-        pass
 
     @property
     def populations(self):
@@ -476,7 +333,7 @@ class STCSVBuffer(STBuffer, STReader):
         return self._pop_counts.get(population, 0)
 
     def time_range(self, populations=None):
-        raise np.min(self._timestamps), np.max(self._timestamps)
+        return np.min(self._timestamps), np.max(self._timestamps)
 
     def get_times(self, node_id, population=None, time_window=None, **kwargs):
         return np.array([t[0] for t in self.spikes(population=population, time_window=time_window) if t[1] == node_id])
@@ -580,6 +437,7 @@ class STMPIBuffer(STCSVBuffer):
         raise StopIteration
 
     def _sorted_itr(self, filter, sort_col):
+        """Iterates through all the spikes on each rank, returning them in the specified order"""
         import heapq
 
         def next_row(csv_reader):
@@ -590,6 +448,8 @@ class STMPIBuffer(STCSVBuffer):
             except StopIteration:
                 return None
 
+        # Assumes all the ranked cached files have already been sorted. Pop the top row off of each rank onto the
+        # heap, pull next spike off the heap and replace. Repeat until all spikes on all ranks have been poped.
         h = []
         readers = [next_row(csv.reader(open(fn, 'r'), delimiter=' ')) for fn in self._all_cached_files()]
         for r in readers:
