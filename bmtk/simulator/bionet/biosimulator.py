@@ -32,6 +32,8 @@ import bmtk.simulator.utils.simulation_reports as reports
 import bmtk.simulator.utils.simulation_inputs as inputs
 from bmtk.utils.io import spike_trains
 
+from bmtk.utils.reports.spike_trains import SpikeTrains
+
 
 pc = h.ParallelContext()    # object to access MPI methods
 
@@ -286,8 +288,11 @@ class BioSimulator(Simulator):
             node_set = network.get_node_set(sim_input.node_set)
             if sim_input.input_type == 'spikes':
                 io.log_info('Building virtual cell stimulations for {}'.format(sim_input.name))
-                spikes = spike_trains.SpikesInput.load(name=sim_input.name, module=sim_input.module,
-                                                       input_type=sim_input.input_type, params=sim_input.params)
+                path = sim_input.params['input_file']
+                spikes = SpikeTrains.load(path=path, file_type=sim_input.module, **sim_input.params)
+                #exit()
+                #spikes = spike_trains.SpikesInput.load(name=sim_input.name, module=sim_input.module,
+                #                                       input_type=sim_input.input_type, params=sim_input.params)
                 network.add_spike_trains(spikes, node_set)
 
             elif sim_input.module == 'IClamp':

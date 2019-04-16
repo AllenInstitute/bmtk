@@ -7,6 +7,8 @@ from .core import STReader, SortOrder
 from .core import pop_na, col_timestamps, col_population, col_node_ids
 
 
+# TODO: Get rid of population filters,
+
 class NWBSTReader(STReader):
     def __init__(self, path, **kwargs):
         self._path = path
@@ -51,11 +53,12 @@ class NWBSTReader(STReader):
         return data_df[col_timestamps].agg([np.min, np.max]).values
 
     def get_times(self, node_id, population=None, time_window=None, **kwargs):
-        if population is None:
-            population = self._population
-
-        if population != self._population:
-            return []
+        #population = self._population
+        #if population is None:
+        #    population = self._population
+        #
+        #if population != self._population:
+        #    return []
 
         spiketimes = self._trial_grp[str(node_id)]['data'][()]
 
@@ -117,7 +120,6 @@ class NWBSTReader(STReader):
             spikes_df = spikes_df.sort_values(col_timestamps)
             for indx in spikes_df.index:
                 r = spikes_df.loc[indx]
-                # print(r)
                 yield (r[col_timestamps], r[col_population], r[col_node_ids])
         else:
             node_ids = np.array(list(self._trial_grp.keys()), dtype=np.uint64)

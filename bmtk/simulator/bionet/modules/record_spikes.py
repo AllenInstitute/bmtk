@@ -22,7 +22,7 @@
 #
 import os
 from bmtk.simulator.bionet.modules.sim_module import SimulatorMod
-from bmtk.utils.reports.spike_trains import SpikeTrains, sort_order
+from bmtk.utils.reports.spike_trains import SpikeTrains, sort_order, sort_order_lu
 
 from neuron import h
 
@@ -30,17 +30,6 @@ from neuron import h
 pc = h.ParallelContext()
 MPI_RANK = int(pc.id())
 N_HOSTS = int(pc.nhost())
-
-sort_order_lu = {
-    'by_time': sort_order.by_time,
-    'time': sort_order.by_time,
-    'by_id': sort_order.by_id,
-    'id': sort_order.by_id,
-    'node_id': sort_order.by_id,
-    'gid': sort_order.by_id,
-    'none': sort_order.none,
-    'na': sort_order.none
-}
 
 
 class SpikesMod(SimulatorMod):

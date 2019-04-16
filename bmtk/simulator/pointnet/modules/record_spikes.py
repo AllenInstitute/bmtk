@@ -22,7 +22,10 @@
 #
 import os
 import glob
-from bmtk.utils.io.spike_trains import SpikeTrainWriter
+import pandas as pd
+import csv
+# from bmtk.utils.io.spike_trains import SpikeTrainWriter
+from bmtk.utils.reports.spike_trains import SpikeTrains, sort_order, sort_order_lu
 from bmtk.simulator.pointnet.io_tools import io
 
 import nest
@@ -52,11 +55,12 @@ class SpikesMod(object):
         self._tmp_file_base = 'tmp_spike_times'
         self._spike_labels = os.path.join(self._tmp_dir, self._tmp_file_base)
 
-        self._spike_writer = SpikeTrainWriter(tmp_dir=tmp_dir, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)
+        self._spike_writer = SpikeTrains(cache_dir=tmp_dir)
+        # self._spike_writer = SpikeTrainWriter(tmp_dir=tmp_dir, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)
         self._spike_writer.delimiter = '\t'
         self._spike_writer.gid_col = 0
         self._spike_writer.time_col = 1
-        self._sort_order = spikes_sort_order
+        self._sort_order = sort_order.none if not spikes_sort_order else sort_order_lu[spikes_sort_order]
 
         self._spike_detector = None
 
@@ -68,23 +72,31 @@ class SpikesMod(object):
             nest.Connect(list(pop.keys()), self._spike_detector)
 
     def finalize(self, sim):
+        # convert NEST gdf files into SONATA spikes/ format
+        # TODO: Create a gdf_adaptor in bmtk/utils/reports/spike_trains to improve conversion speed.
         if MPI_RANK == 0:
             for gdf_file in glob.glob(self._spike_labels + '*.gdf'):
-                self._spike_writer.add_spikes_file(gdf_file)
+                self.__parse_gdf(gdf_file, sim.net.gid_map)
+                # self._spike_writer.add_spikes_file(gdf_file)
         io.barrier()
 
-        gid_map = sim._graph._nestid2gid
-
         if self._csv_fname is not None:
-            self._spike_writer.to_csv(self._csv_fname, sort_order=self._sort_order, gid_map=gid_map)
+            self._spike_writer.to_csv(self._csv_fname, sort_order=self._sort_order)
             io.barrier()
 
         if self._h5_fname is not None:
-            self._spike_writer.to_hdf5(self._h5_fname, sort_order=self._sort_order, gid_map=gid_map)
+            self._spike_writer.to_sonata(self._h5_fname, sort_order=self._sort_order)
             io.barrier()
 
         if self._nwb_fname is not None:
-            self._spike_writer.to_nwb(self._nwb_fname, sort_order=self._sort_order, gid_map=gid_map)
+            self._spike_writer.to_nwb(self._nwb_fname, sort_order=self._sort_order)
             io.barrier()
 
         self._spike_writer.close()
+
+    def __parse_gdf(self, gdf_path, gid_map):
+        with open(gdf_path, 'r') as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter='\t')
+            for r in csv_reader:
+                p = gid_map.get_pool_id(int(r[0]))
+                self._spike_writer.add_spike(node_id=p.node_id, timestamp=float(r[1]), population=p.population)

@@ -4,20 +4,36 @@ import six
 import pandas as pd
 import numpy as np
 
-from .core import STReader, SortOrder
+from .core import STReader, SortOrder, find_conversion
 from .core import csv_headers, col_population, pop_na, col_timestamps, col_node_ids
 
+# TODO: BMTK won't work with a non-population column csv file. Update so that if there is no populations then it will
+#   do a lookup by node_id only.
 
-def write_csv(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, **kwargs):
+
+def write_csv(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, include_header=True,
+              include_population=True, units='ms', **kwargs):
     path_dir = os.path.dirname(path)
     if path_dir and not os.path.exists(path_dir):
         os.makedirs(path_dir)
 
+    conv_factor = find_conversion(spiketrain_reader.units, units)
     with open(path, mode=mode) as f:
-        csv_writer = csv.writer(f, delimiter=' ')
-        csv_writer.writerow(csv_headers)
-        for spk in spiketrain_reader.spikes(sort_order=sort_order):
-            csv_writer.writerow([spk[0], spk[1], spk[2]])
+        if include_population:
+            # Saves the Population column
+            csv_writer = csv.writer(f, delimiter=' ')
+            if include_header:
+                csv_writer.writerow(csv_headers)
+            for spk in spiketrain_reader.spikes(sort_order=sort_order):
+                csv_writer.writerow([spk[0]*conv_factor, spk[1], spk[2]])
+
+        else:
+            # Don't write the Population column
+            csv_writer = csv.writer(f, delimiter=' ')
+            if include_header:
+                csv_writer.writerow([c for c in csv_headers if c != col_population])
+            for spk in spiketrain_reader.spikes(sort_order=sort_order):
+                csv_writer.writerow([spk[0]*conv_factor, spk[2]])
 
 
 class CSVSTReader(STReader):
