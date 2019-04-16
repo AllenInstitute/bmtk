@@ -40,15 +40,17 @@ def find_file_type(path):
 
 class SpikeTrains(object):
     def __init__(self, adaptor=None, **kwargs):
-        if adaptor is None:
-            if MPI_size > 1:
-                self._adaptor = STMPIBuffer(**kwargs)
-            else:
-                self._adaptor = STCSVBuffer(**kwargs)
-        else:
+        if adaptor is not None:
             self._adaptor = adaptor
 
-        #self._read_adaptor = self._write_adaptor = self._adaptor
+        elif MPI_size > 1:
+            self._adaptor = STMPIBuffer(**kwargs)
+
+        elif 'cache_dir' in kwargs or kwargs.get('use_caching', False):
+            self._adaptor = STCSVBuffer(**kwargs)
+
+        else:
+            self._adaptor = STMemoryBuffer(**kwargs)
 
     @property
     def write_adaptor(self):
@@ -57,31 +59,6 @@ class SpikeTrains(object):
     @property
     def read_adaptor(self):
         return self._adaptor
-
-
-    """
-    def __init__(self, read_adaptor=None, write_adaptor=None, **kwargs):
-        if write_adaptor is None:
-            if MPI_size > 1:
-                self._write_adaptor = STMPIBuffer(**kwargs)
-            else:
-                self._write_adaptor = STCSVBuffer(**kwargs)
-        else:
-            self._write_adaptor = write_adaptor
-
-        if read_adaptor is None:
-            self._read_adaptor = self._write_adaptor
-        else:
-            self._read_adaptor = read_adaptor
-
-    @property
-    def write_adaptor(self):
-        return self._write_adaptor
-
-    @property
-    def read_adaptor(self):
-        return self._read_adaptor
-    """
 
     @property
     def populations(self):
@@ -107,7 +84,6 @@ class SpikeTrains(object):
     @classmethod
     def from_nwb(cls, path, **kwargs):
         return cls(adaptor=NWBSTReader(path, **kwargs))
-        # return NWBSTReader(path, **kwargs)
 
     @classmethod
     def load(cls, path, file_type=None, **kwargs):
@@ -155,16 +131,16 @@ class SpikeTrains(object):
         self.write_adaptor.close()
 
     def to_csv(self, path, mode='w', sort_order=sort_order.none, **kwargs):
-        # self._write_adaptor.flush()
+        self.write_adaptor.flush()
         if MPI_rank == 0:
             write_csv(path=path, spiketrain_reader=self.read_adaptor, mode=mode, sort_order=sort_order, **kwargs)
+        barrier()
 
     def to_sonata(self, path, mode='w', sort_order=sort_order.none, **kwargs):
         self.write_adaptor.flush()
         if MPI_rank == 0:
             write_sonata(path=path, spiketrain_reader=self.read_adaptor, mode=mode, sort_order=sort_order, **kwargs)
         barrier()
-
 
     def to_nwb(self, path, **kwargs):
         raise NotImplementedError()
@@ -194,7 +170,6 @@ class PoissonSpikeGenerator(SpikeTrains):
 
         super(PoissonSpikeGenerator, self).__init__(adaptor=adaptor)
         self.units = 's'
-
 
     def add(self, node_ids, firing_rate, population=None, times=(0.0, 1.0)):
         # TODO: Add refactory period
@@ -264,4 +239,3 @@ class PoissonSpikeGenerator(SpikeTrains):
 def _interpolate_fr(t, t0, t1, fr0, fr1):
     # Used to interpolate the firing rate at time t from a discrete list of firing rates
     return fr0 + (fr1 - fr0)*(t - t0)/t1
-
