@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 
 from .core import SortOrder, STReader
-from .core import col_node_ids, col_timestamps, col_population, pop_na
+from .core import col_node_ids, col_timestamps, col_population, pop_na, find_conversion
 from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
 
 
@@ -36,11 +36,12 @@ sorting_attrs = {
 }
 
 
-def write_sonata(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, **kwargs):
+def write_sonata(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, units='ms', **kwargs):
     path_dir = os.path.dirname(path)
     if path_dir and not os.path.exists(path_dir):
         os.makedirs(path_dir)
 
+    conv_factor = find_conversion(spiketrain_reader.units, units)
     with h5py.File(path, mode=mode) as h5:
         add_hdf5_magic(h5)
         add_hdf5_version(h5)
@@ -54,9 +55,10 @@ def write_sonata(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, *
                 spikes_grp.attrs['sorting'] = sort_order.value
 
             timestamps_ds = spikes_grp.create_dataset('timestamps', shape=(n_spikes,), dtype=np.float64)
+            timestamps_ds.attrs['units'] = units
             node_ids_ds = spikes_grp.create_dataset('node_ids', shape=(n_spikes,), dtype=np.uint64)
             for i, spk in enumerate(spiketrain_reader.spikes(populations=pop_name, sort_order=sort_order)):
-                timestamps_ds[i] = spk[0]
+                timestamps_ds[i] = spk[0]*conv_factor
                 node_ids_ds[i] = spk[2]
 
 
@@ -110,6 +112,11 @@ class SonataSTReader(STReader):
         # TODO: Add option to skip building indices
         self._build_node_index()
 
+        # units are not instrinsic to a csv file, but allow users to pass it in if they know
+        # TODO: Should check the populations for the units
+        self._units = kwargs.get('units', 'unknown')
+
+
     def _build_node_index(self):
         self._indexed = False
         for pop_name, pop_grp in self._population_map.items():
@@ -140,6 +147,17 @@ class SonataSTReader(STReader):
     @property
     def populations(self):
         return list(self._population_map.keys())
+
+    @property
+    def units(self):
+        return self.units
+
+    @units.setter
+    def units(self, v):
+        self._units = v
+
+    def sort_order(self, population):
+        return self._population_sorting_map[population]
 
     def nodes(self, populations=None):
         if populations is None:

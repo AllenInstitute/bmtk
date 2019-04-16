@@ -95,6 +95,7 @@ class STBufferedWriter(STBuffer, STReader):
 
         # self._populations = set([default_pop])
         self._populations_counts = {self.default_pop: 0}
+        self._units = kwargs.get('units', 'ms')
 
     def add_spike(self, node_id, timestamp, population=None):
         if population is None:
@@ -129,6 +130,14 @@ class STBufferedWriter(STBuffer, STReader):
     @property
     def populations(self):
         return list(self._populations_counts.keys())
+
+    @property
+    def units(self):
+        return self._units
+
+    @units.setter
+    def units(self, v):
+        self._units = v
 
     def nodes(self, populations=None):
         raise NotImplementedError()
@@ -336,6 +345,7 @@ class STMemoryBuffer(STBuffer, STReader):
         self._timestamps = []
         self._populations = []
         self._pop_counts = {self._default_population: 0}
+        self._units = kwargs.get('units', 'ms')
 
     def add_spike(self, node_id, timestamp, population=None):
         population = population or self._default_population
@@ -364,6 +374,14 @@ class STMemoryBuffer(STBuffer, STReader):
 
     def nodes(self, populations=None):
         return list(set(self._node_ids))
+
+    @property
+    def units(self):
+        return self._units
+
+    @units.setter
+    def units(self, v):
+        self._units = v
 
     def n_spikes(self, population=None):
         return self._pop_counts.get(population, 0)
@@ -414,6 +432,7 @@ class STCSVBuffer(STBuffer, STReader):
 
         self._pop_counts = {self._default_population: 0}
         self._nspikes = 0
+        self._units = kwargs.get('units', 'ms')
 
     def _cache_fname(self, cache_dir):
         if not os.path.exists(self._cache_dir):
@@ -442,6 +461,14 @@ class STCSVBuffer(STBuffer, STReader):
     def populations(self):
         return list(self._pop_counts.keys())
 
+    @property
+    def units(self):
+        return self._units
+
+    @units.setter
+    def units(self, v):
+        self._units = v
+
     def nodes(self, populations=None):
         return list(set(self._node_ids))
 
@@ -462,6 +489,8 @@ class STCSVBuffer(STBuffer, STReader):
 
     def close(self):
         self._buffer_handle.close()
+        if os.path.exists(self._buffer_filename):
+            os.remove(self._buffer_filename)
 
     def spikes(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
         self.flush()

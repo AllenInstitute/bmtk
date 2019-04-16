@@ -119,7 +119,7 @@ class BioNetwork(SimNetwork):
             return self._virtual_nodes[population][node_id]
         else:
             node = self.get_node_id(population, node_id)
-            virt_cell = VirtualCell(node, spike_trains)
+            virt_cell = VirtualCell(node, population, spike_trains)
             self._virtual_nodes[population][node_id] = virt_cell
             return virt_cell
 

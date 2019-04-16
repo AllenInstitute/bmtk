@@ -8,6 +8,19 @@ class SortOrder(Enum):
     unknown = 'unknown'
 
 
+# convient method for converting different string values
+sort_order_lu = {
+    'by_time': SortOrder.by_time,
+    'time': SortOrder.by_time,
+    'by_id': SortOrder.by_id,
+    'id': SortOrder.by_id,
+    'node_id': SortOrder.by_id,
+    'gid': SortOrder.by_id,
+    'none': SortOrder.none,
+    'na': SortOrder.none
+}
+
+
 col_timestamps = 'timestamps'
 col_node_ids = 'node_ids'
 col_population = 'population'
@@ -19,6 +32,18 @@ class STReader(object):
     @property
     def populations(self):
         raise NotImplementedError()
+
+    @property
+    def units(self):
+        # for backwards comptability assume everything is in milliseconds unless overwritten
+        return 'ms'
+
+    @units.setter
+    def units(self, v):
+        raise NotImplementedError()
+
+    def sort_order(self, population):
+        return SortOrder.unknown
 
     def nodes(self, populations=None):
         raise NotImplementedError()
@@ -56,5 +81,14 @@ class STBuffer(object):
         raise NotImplementedError()
 
 
+def find_conversion(units_old, units_new):
+    if units_new is None or units_old is None:
+        return 1.0
 
+    if units_old == 's' and units_new == 'ms':
+        return 1000.
 
+    if units_old == 'ms' and units_new == 's':
+        return 0.001
+
+    return 1.0

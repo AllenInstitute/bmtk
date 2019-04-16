@@ -108,6 +108,13 @@ def add_hdf5_version(hdf5_handle):
     hdf5_handle['/'].attrs['version'] = [np.uint32(VERSION_MAJOR), np.uint32(VERSION_MINOR)]
 
 
+def get_node_ids(nodes_path, population):
+    # Used by PoissonSpikesGenerator
+    with h5py.File(nodes_path, 'r') as h5:
+        node_ids = h5['/nodes'][population]['node_id'][()]
+    return node_ids
+
+
 if sys.version_info[0] == 3:
     using_py3 = True
     range_itr = range
