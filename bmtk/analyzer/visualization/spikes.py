@@ -40,7 +40,7 @@ def _create_node_table(node_file, node_type_file, group_key=None, exclude=[]):
     node_types_df = pd.read_csv(node_type_file, sep=' ', index_col='node_type_id')
     nodes_h5 = h5py.File(node_file)
     # TODO: Use utils.spikesReader
-    node_pop_name = nodes_h5['/nodes'].keys()[0]
+    node_pop_name = list(nodes_h5['/nodes'])[0]
 
     nodes_grp = nodes_h5['/nodes'][node_pop_name]
     # TODO: Need to be able to handle gid or node_id
