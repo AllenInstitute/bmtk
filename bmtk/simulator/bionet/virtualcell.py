@@ -46,9 +46,7 @@ class VirtualCell(object):
 
     def set_stim(self, stim_prop, spike_train):
         """Gets the spike trains for each individual cell."""
-        # self._train_vec = h.Vector(spike_train.get_spikes(self.node_id))
-        # print spike_train.get_times(node_id=self.node_id, population=self._population)
-        self._train_vec = h.Vector(spike_train.get_times(node_id=self.node_id, population=self._population))
+        self._train_vec = h.Vector(spike_train.get_times(node_id=self.node_id)) #, population=self._population))
         vecstim = h.VecStim()
         vecstim.play(self._train_vec)
         self._hobj = vecstim

@@ -32,6 +32,8 @@ import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
 
 import bmtk.simulator.utils.config as config
+from bmtk.utils.reports.spike_trains.plotting import plot_raster, plot_rates, plot_raster_cmp
+
 
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
@@ -307,7 +309,7 @@ def plot_ratess(cells_file, cell_models_file, spikes_file, group_key='pop_name',
     plt.show()
 
 
-def plot_rates(cells_file, cell_models_file, spikes_file, group_key=None, exclude=[], interval=None, show=True,
+def plot_rates_old(cells_file, cell_models_file, spikes_file, group_key=None, exclude=[], interval=None, show=True,
                title=None, save_as=None, smoothed=False):
     def smooth(data, window=100):
         h = int(window/2)
