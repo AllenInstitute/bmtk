@@ -85,6 +85,13 @@ def load_sonata_file(path, version=None, **kwargs):
     return SonataOldReader(path, **kwargs)
 
 
+def to_list(v):
+    if v is not None and np.isscalar(v):
+        return [v]
+    else:
+        return v
+
+
 class SonataSTReader(STReader):
     # TODO: Split into multi-children so we can handle reading different version
 
@@ -105,11 +112,22 @@ class SonataSTReader(STReader):
         else:
             self._spikes_root = self._h5_handle[GRP_spikes_root]
 
+
+        if 'population' in kwargs:
+            pop_filter = to_list(kwargs['population'])
+        elif 'populations' in kwargs:
+            pop_filter = to_list(kwargs['populations'])
+        else:
+            pop_filter = None
+
         # get a map of 'pop_name' -> pop_group
         self._population_map = {}
         for name, h5_obj in self._h5_handle[GRP_spikes_root].items():
             if isinstance(h5_obj, h5py.Group):
-                self._population_map[name] = h5_obj
+                if pop_filter is not None and name not in pop_filter:
+                    continue
+                else:
+                    self._population_map[name] = h5_obj
 
         if not self._population_map:
             # In old version of the sonata standard there was no 'population' subgroup. For backwards compatability

@@ -2,6 +2,7 @@ import numpy as np
 from six import string_types
 
 from .core import SortOrder as sort_order
+from .core import STBuffer
 from .adaptors import CSVSTReader, write_csv
 from .adaptors import load_sonata_file, write_sonata
 from .adaptors import NWBSTReader
@@ -119,7 +120,8 @@ class SpikeTrains(object):
             write_csv(path=path, spiketrain_reader=self.read_adaptor, mode=mode, sort_order=sort_order, **kwargs)
 
     def to_sonata(self, path, mode='w', sort_order=sort_order.none, **kwargs):
-        self.write_adaptor.flush()
+        if isinstance(self.write_adaptor, STBuffer):
+            self.write_adaptor.flush()
         if MPI_rank == 0:
             write_sonata(path=path, spiketrain_reader=self.read_adaptor, mode=mode, sort_order=sort_order, **kwargs)
         barrier()
