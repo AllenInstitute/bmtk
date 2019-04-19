@@ -3,9 +3,10 @@ import six
 import h5py
 import pandas as pd
 import numpy as np
+from collections import defaultdict
 
-from .core import SortOrder, STReader
-from .core import col_node_ids, col_timestamps, col_population, pop_na, find_conversion
+from ..core import SortOrder, STReader
+from ..core import col_node_ids, col_timestamps, col_population, pop_na, find_conversion
 from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
 
 
@@ -62,6 +63,28 @@ def write_sonata(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, u
                 node_ids_ds[i] = spk[2]
 
 
+def load_sonata_file(path, version=None, **kwargs):
+    """Loads a Sonata file reader, making sure it matches the correct version.
+
+    :param path:
+    :param version:
+    :param kwargs:
+    :return:
+    """
+    try:
+        with h5py.File(path, 'r') as h5:
+            spikes_root = h5[GRP_spikes_root]
+            for name, h5_obj in spikes_root.items():
+                if isinstance(h5_obj, h5py.Group):
+                    # In case there exists a population subgroup
+                    return SonataSTReader(path, **kwargs)
+
+    except Exception:
+        pass
+
+    return SonataOldReader(path, **kwargs)
+
+
 class SonataSTReader(STReader):
     # TODO: Split into multi-children so we can handle reading different version
 
@@ -89,10 +112,14 @@ class SonataSTReader(STReader):
                 self._population_map[name] = h5_obj
 
         if not self._population_map:
+            # In old version of the sonata standard there was no 'population' subgroup. For backwards compatability
+            # use a default dictionary
+            # TODO: Remove so we only have to support latest version of SONATA
+            self._population_map = defaultdict(lambda: self._h5_handle[GRP_spikes_root])
             self._population_map[pop_na] = self._h5_handle[GRP_spikes_root]
             self._DATASET_node_ids = 'gids'
 
-        self._default_pop = list(self._population_map.keys())  # [0]
+        self._default_pop = list(self._population_map.keys())[0]
 
         self._population_sorting_map = {}
         for pop_name, pop_grp in self._population_map.items():
@@ -114,8 +141,7 @@ class SonataSTReader(STReader):
 
         # units are not instrinsic to a csv file, but allow users to pass it in if they know
         # TODO: Should check the populations for the units
-        self._units = kwargs.get('units', 'unknown')
-
+        self._units = kwargs.get('units', 'ms')
 
     def _build_node_index(self):
         self._indexed = False
@@ -150,7 +176,7 @@ class SonataSTReader(STReader):
 
     @property
     def units(self):
-        return self.units
+        return self._units
 
     @units.setter
     def units(self, v):
@@ -161,18 +187,15 @@ class SonataSTReader(STReader):
 
     def nodes(self, populations=None):
         if populations is None:
-            populations = self._default_pop  # [self._default_pop]
+            populations = [self._default_pop]
 
         if isinstance(populations, six.string_types) or np.isscalar(populations):
             populations = [populations]
 
         node_list = []
         for pop_name, pop_grp in self._population_map.items():
-            # print(pop_name)
-            # print populations
             if pop_name in populations:
                 # TODO: Check memory profile, may be better to iterate node_ids than convert entire set
-                # print 'BLAH'
                 node_list.extend((pop_name, node_id) for node_id in np.unique(pop_grp[self._DATASET_node_ids][()]))
 
         return node_list
@@ -185,7 +208,7 @@ class SonataSTReader(STReader):
 
     def time_range(self, populations=None):
         if populations is None:
-            populations = self._default_pop  # [self._default_pop]
+            populations = [self._default_pop]
 
         if isinstance(populations, six.string_types) or np.isscalar(populations):
             populations = [populations]
@@ -206,7 +229,7 @@ class SonataSTReader(STReader):
 
     def to_dataframe(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
         if populations is None:
-            populations = self._default_pop  # [self._default_pop]
+            populations = [self._default_pop]
 
         if isinstance(populations, six.string_types) or np.isscalar(populations):
             populations = [populations]
@@ -258,12 +281,10 @@ class SonataSTReader(STReader):
 
             population = self._default_pop[0]
 
-        elif population not in self.populations:
+        elif population not in self._population_map:
             return []
 
-        # print population, self._index_nids[population].keys()
         spikes_index = self._index_nids[population][node_id]
-        # print(spikes_index)
         spike_times = self._population_map[population][DATASET_timestamps][spikes_index]
 
         if time_window is not None:
@@ -273,7 +294,7 @@ class SonataSTReader(STReader):
 
     def spikes(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
         if populations is None:
-            populations = self._default_pop  # [self._default_pop]
+            populations = [self._default_pop]
 
         if sort_order == SortOrder.by_id:
             for pop_name in populations:
@@ -341,3 +362,30 @@ class SonataSTReader(STReader):
                 self._n_spikes += len(pop_grp[self._DATASET_node_ids])
 
         return self._n_spikes
+
+
+class SonataOldReader(SonataSTReader):
+    """
+
+    """
+
+    def nodes(self, populations=None):
+        return super(SonataOldReader, self).nodes(populations=self._default_pop)
+
+    def n_spikes(self, population=None):
+        return super(SonataOldReader, self).n_spikes(population=self._default_pop)
+
+    def time_range(self, populations=None):
+        return super(SonataOldReader, self).time_range(populations=self._default_pop)
+
+    def to_dataframe(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
+        return super(SonataOldReader, self).to_dataframe(node_ids=node_ids, populations=self._default_pop,
+                                                         time_window=time_window, sort_order=sort_order, **kwargs)
+
+    def get_times(self, node_id, population=None, time_window=None, **kwargs):
+        return super(SonataOldReader, self).get_times(node_id=node_id, population=self._default_pop,
+                                                      time_window=time_window, **kwargs)
+
+    def spikes(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
+        return super(SonataOldReader, self).spikes(node_ids=node_ids, populations=self._default_pop,
+                                                   time_window=time_window, sort_order=sort_order, **kwargs)

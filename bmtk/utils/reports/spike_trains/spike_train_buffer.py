@@ -19,296 +19,6 @@ except:
     MPI_size = 1
     barrier = lambda: None
 
-'''
-class STWriter(object):
-    def add_spike(self, node_id, timestamp, population=None):
-        pass
-
-    def add_spikes(self, nodes, timestamps, population=None):
-        pass
-
-    def import_spikes(self, obj):
-        pass
-
-    def flush(self):
-        pass
-
-    def close(self):
-        pass
-'''
-
-
-
-class DiskBuffer(object):
-    def __init__(self, cache_dir, **kwargs):
-        self.cache_dir = cache_dir
-        self.mpi_rank = kwargs.get('MPI_rank', MPI_rank)
-        self.mpi_size = kwargs.get('MPI_size', MPI_size)
-        self.cached_fname = os.path.join(self.cache_dir, '.spikes.cache.node{}.csv'.format(self.mpi_rank))
-
-        if self.mpi_rank == 0:
-            if not os.path.exists(cache_dir):
-                os.makedirs(cache_dir)
-        barrier()
-
-        self.cached_fhandle = open(self.cached_fname, 'w')
-        self._csv_reader = None
-
-    def append(self, timestamp, population, node_id):
-        self.cached_fhandle.write('{} {} {}\n'.format(timestamp, population, node_id))
-
-    def extend(self, timestamps, population, node_id):
-        pass
-
-    def __iter__(self):
-        self.cached_fhandle.flush()
-        barrier()
-        self._csv_reader = csv.reader(open(self.cached_fname, 'r'), delimiter=' ')
-        return self
-
-    def __next__(self):
-        #try:
-        r = next(self._csv_reader)
-        return [np.float64(r[0]), r[1], np.uint64(r[2])]
-        #except StopIteration:
-        #    return StopIteration
-        #exit()
-        #return next(self._csv_reader)
-
-    next = __next__
-
-
-class MemoryBuffer(object):
-    pass
-
-
-class STBufferedWriter(STBuffer, STReader):
-    def __init__(self, buffer_dir=None, default_pop=None, **kwargs):
-        if default_pop is None or isinstance(default_pop, six.string_types) or np.isscalar(default_pop):
-            self.default_pop = pop_na
-        elif len(default_pop) == 1:
-            self.default_pop = default_pop[0]
-        else:
-            self.default_pop = Exception
-
-        self._buffer = DiskBuffer('cache')
-
-        # self._populations = set([default_pop])
-        self._populations_counts = {self.default_pop: 0}
-        self._units = kwargs.get('units', 'ms')
-
-    def add_spike(self, node_id, timestamp, population=None):
-        if population is None:
-            population = self.default_pop
-
-        if population not in self._populations_counts:
-            self._populations_counts[population] = 0
-        self._populations_counts[population] += 1
-        # self._populations.add(population)
-        self._buffer.write(timestamp=timestamp, population=population, node_id=node_id)
-
-    def add_spikes(self, node_ids, timestamps, population=None, **kwargs):
-        if population is None:
-            population = self.default_pop
-
-        if np.isscalar(node_ids):
-            for ts in timestamps:
-                self.add_spike(node_ids, ts, population)
-        else:
-            if len(node_ids) != len(timestamps):
-                raise Exception('timestamps and node_ids must be of the same length.')
-
-            for node_id, ts in zip(node_ids, timestamps):
-                self.add_spike(node_id, ts, population)
-
-    def import_spikes(self, obj):
-        pass
-
-    def flush(self):
-        pass
-
-    @property
-    def populations(self):
-        return list(self._populations_counts.keys())
-
-    @property
-    def units(self):
-        return self._units
-
-    @units.setter
-    def units(self, v):
-        self._units = v
-
-    def nodes(self, populations=None):
-        raise NotImplementedError()
-
-    def n_spikes(self, population=None):
-        return self._populations_counts[population]
-
-    def time_range(self, populations=None):
-        raise NotImplementedError()
-
-    def get_times(self, node_id, population=None, time_window=None, **kwargs):
-        raise NotImplementedError()
-
-    def to_dataframe(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
-        raise NotImplementedError()
-
-    def spikes(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
-        if sort_order == SortOrder.by_time or sort_order == SortOrder.by_time:
-            raise Exception("Can't sort by time or node-id")
-
-        for n in self._buffer:
-            if n[1] == populations:
-                yield n
-
-        raise StopIteration
-
-    def __len__(self):
-        return len(self.to_dataframe())
-
-
-'''
-class STBufferedWriter(STWriter, STReader):
-    class TmpFileMetadata(object):
-        def __init__(self, file_name, sort_order=None):
-            self.file_name = file_name
-            self.sort_order = sort_order
-
-    def __init__(self, tmp_dir='.', mpi_rank=0, mpi_size=1):
-        # For NEST/NEURON based simulations it is prefereable not to use mpi4py, so let the parent simulator determine
-        # MPI rank and size
-        self._mpi_rank = mpi_rank
-        self._mpi_size = mpi_size
-
-        # used to temporary save spike files since for large simulations saving spikes into memory can crash the
-        # system. Requires the user to create the directory
-        self._tmp_dir = tmp_dir
-        if self._tmp_dir is None or not os.path.exists(self._tmp_dir):
-            raise Exception('Directory path {} does not exists'.format(self._tmp_dir))
-        self._all_tmp_files = [self.TmpFileMetadata(self._get_tmp_filename(r)) for r in range(mpi_size)]
-        # TODO: Determine best buffer size.
-        self._tmp_file_handle = open(self._all_tmp_files[mpi_rank].file_name, 'w')
-
-        self._tmp_spikes_handles = []  # used when sorting mulitple file
-        self._spike_count = -1
-
-        # Nest gid files uses tab seperators and a different order for tmp spike files.
-        self.delimiter = ' '  # delimiter for temporary file
-        self.time_col = 0
-        self.gid_col = 2
-
-        self._populations = set()
-        self._nspikes = 0
-        # raise Exception()
-
-    def _get_tmp_filename(self, rank):
-        return os.path.join(self._tmp_dir, '_bmtk_tmp_spikes_{}.csv'.format(rank))
-
-    def _count_spikes(self, recount=False):
-        if self._mpi_rank == 0:
-            if self._spike_count > -1 and not recount:
-                return self._spike_count
-
-            self._spike_count = 0
-            for tmp_file in self._all_tmp_files:
-                with open(tmp_file.file_name, 'r') as csvfile:
-                    csv_reader = csv.reader(csvfile, delimiter=self.delimiter)
-                    self._spike_count += sum(1 for _ in csv_reader)
-
-    def _sort_tmp_file(self, file_name, sort_order):
-        if sort_order == SortOrder.by_time:
-            sort_col = 'time'
-        elif sort_order == SortOrder.by_id:
-            sort_col = 'node'
-        else:
-            return
-
-        tmp_spikes_ds = pd.read_csv(file_name, sep=' ', names=['time', 'population', 'node'])
-        tmp_spikes_ds = tmp_spikes_ds.sort_values(by=sort_col)
-        tmp_spikes_ds.to_csv(file_name, sep=' ', index=False, header=False)
-
-    def _next_spike(self, rank):
-        try:
-            val = next(self._tmp_spikes_handles[rank])
-            return val[0], val[1], rank
-        except StopIteration:
-            return None
-
-    def add_spike(self, node_id, timestamp, population=None):
-        population = population or pop_na
-        self._populations.add(population)
-        self._nspikes += 1
-        self._tmp_file_handle.write('{} {} {}\n'.format(timestamp, population, node_id))
-
-    def add_spikes(self, node_ids, timestamps, population=None):
-        population = population or pop_na
-        for t in timestamps:
-            self.add_spike(node_ids, t, population)
-
-    def _sort_files(self, sort_order, sort_column, file_write_fnc):
-        self._tmp_spikes_handles = []
-        for fdata in self._all_tmp_files:
-            self._sort_tmp_file(fdata, sort_order)
-            self._tmp_spikes_handles.append(csv.reader(open(fdata.file_name, 'r'), delimiter=self.delimiter))
-
-        spikes = []
-        for rank in range(len(self._tmp_spikes_handles)):  # range(self._mpi_size):
-            spike = self._next_spike(rank)
-            if spike is not None:
-                spikes.append(spike)
-
-        # Iterate through all the ranks and find the first spike. Write that spike/gid to the output, then
-        # replace that data point with the next spike on the selected rank
-        indx = 0
-        while spikes:
-            # find which rank has the first spike
-            selected_index = 0
-            selected_val = spikes[0][sort_column]
-            for i, spike in enumerate(spikes[1:]):
-                if spike[sort_column] < selected_val:
-                    selected_index = i + 1
-                    selected_val = spike[sort_column]
-
-            # write the spike to the file
-            row = spikes.pop(selected_index)
-            file_write_fnc(float(row[self.time_col]), int(row[self.gid_col]), indx)
-            indx += 1
-
-            # get the next spike on that rank and replace in spikes table
-            another_spike = self._next_spike(row[2])
-            if another_spike is not None:
-                spikes.append(another_spike)
-
-    def spikes(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
-        self.flush()
-        self._sort_tmp_file(self._get_tmp_filename(0), sort_order)
-
-        with open(self._get_tmp_filename(0), 'r') as csvfile:
-            csv_reader = csv.reader(csvfile, delimiter=' ')
-            for row in csv_reader:
-                yield float(row[0]), row[1], int(row[2])
-
-    @property
-    def populations(self):
-        return list(self._populations)
-
-    def n_spikes(self, population=None):
-        return self._nspikes
-
-    def flush(self):
-        self._tmp_file_handle.flush()
-
-    def close_tmp_file(self):
-        self._tmp_file_handle.close()
-
-    def close(self):
-        if self._mpi_rank == 0:
-            for tmp_file in self._all_tmp_files:
-                if os.path.exists(tmp_file.file_name):
-                    os.remove(tmp_file.file_name)
-'''
-
 
 def _spikes_filter1(p, t, time_window, populations):
     return p in populations and time_window[0] <= t <= time_window[1]
@@ -347,7 +57,7 @@ class STMemoryBuffer(STBuffer, STReader):
         self._pop_counts = {self._default_population: 0}
         self._units = kwargs.get('units', 'ms')
 
-    def add_spike(self, node_id, timestamp, population=None):
+    def add_spike(self, node_id, timestamp, population=None, **kwargs):
         population = population or self._default_population
         self._node_ids.append(node_id)
         self._timestamps.append(timestamp)
@@ -362,7 +72,7 @@ class STMemoryBuffer(STBuffer, STReader):
         for node_id, ts in zip(node_ids, timestamps):
             self.add_spike(node_id, ts, population)
 
-    def import_spikes(self, obj):
+    def import_spikes(self, obj, **kwargs):
         pass
 
     def flush(self):
@@ -387,7 +97,7 @@ class STMemoryBuffer(STBuffer, STReader):
         return self._pop_counts.get(population, 0)
 
     def time_range(self, populations=None):
-        raise np.min(self._timestamps), np.max(self._timestamps)
+        return np.min(self._timestamps), np.max(self._timestamps)
 
     def get_times(self, node_id, population=None, time_window=None, **kwargs):
         population = population or self._default_population
@@ -439,7 +149,7 @@ class STCSVBuffer(STBuffer, STReader):
             os.mkdirs(self._cache_dir)
         return os.path.join(cache_dir, '.bmtk.spikes.cache.csv')
 
-    def add_spike(self, node_id, timestamp, population=None):
+    def add_spike(self, node_id, timestamp, population=None, **kwargs):
         population = population or pop_na
 
         self._buffer_handle.write('{} {} {}\n'.format(timestamp, population, node_id))
@@ -476,7 +186,7 @@ class STCSVBuffer(STBuffer, STReader):
         return self._pop_counts.get(population, 0)
 
     def time_range(self, populations=None):
-        raise np.min(self._timestamps), np.max(self._timestamps)
+        return np.min(self._timestamps), np.max(self._timestamps)
 
     def get_times(self, node_id, population=None, time_window=None, **kwargs):
         return np.array([t[0] for t in self.spikes(population=population, time_window=time_window) if t[1] == node_id])
@@ -524,7 +234,6 @@ class STMPIBuffer(STCSVBuffer):
         self.mpi_rank = kwargs.get('MPI_rank', MPI_rank)
         self.mpi_size = kwargs.get('MPI_size', MPI_size)
         super(STMPIBuffer, self).__init__(cache_dir, default_population=default_population, **kwargs)
-        #self._gather()
 
     def _cache_fname(self, cache_dir):
         if self.mpi_rank == 0:
@@ -584,8 +293,8 @@ class STMPIBuffer(STCSVBuffer):
 
         def next_row(csv_reader):
             try:
-                r = next(csv_reader)
-                row = [float(r[0]), r[1], int(r[2])]
+                rn = next(csv_reader)
+                row = [float(rn[0]), rn[1], int(rn[2])]
                 return row[sort_col], row, csv_reader
             except StopIteration:
                 return None

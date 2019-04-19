@@ -4,8 +4,8 @@ import six
 import pandas as pd
 import numpy as np
 
-from .core import STReader, SortOrder, find_conversion
-from .core import csv_headers, col_population, pop_na, col_timestamps, col_node_ids
+from ..core import STReader, SortOrder, find_conversion
+from ..core import csv_headers, col_population, pop_na, col_timestamps, col_node_ids
 
 # TODO: BMTK won't work with a non-population column csv file. Update so that if there is no populations then it will
 #   do a lookup by node_id only.

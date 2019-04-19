@@ -1,20 +1,13 @@
-from .spike_trains import SpikeTrains
-from .spike_trains import PoissonSpikeGenerator
-from .core import SortOrder as sort_order, sort_order_lu
-from .core import pop_na
-
-
-'''
-import os
 import numpy as np
 from six import string_types
 
-from .core import SortOrder as sort_order, sort_order_lu
-from .core import pop_na
-from .nwb_adaptors import NWBSTReader
-from .csv_adaptors import CSVSTReader, write_csv
+from .core import SortOrder as sort_order
+from .adaptors import CSVSTReader, write_csv
+from .adaptors import load_sonata_file, write_sonata
+from .adaptors import NWBSTReader
+from .adaptors import find_file_type
 from .spike_train_buffer import STMemoryBuffer, STCSVBuffer, STMPIBuffer
-from .sonata_adaptors import SonataSTReader, write_sonata, load_sonata_file
+
 from bmtk.utils.sonata.utils import get_node_ids
 
 try:
@@ -27,22 +20,6 @@ except:
     MPI_rank = 0
     MPI_size = 1
     barrier = lambda: None
-
-
-def find_file_type(path):
-    """Tries to find the input type (sonata/h5, NWB, CSV) from the file-name"""
-    if path is None:
-        return ''
-
-    path = path.lower()
-    if path.endswith('.hdf5') or path.endswith('.hdf') or path.endswith('.sonata'):
-        return 'h5'
-
-    elif path.endswith('.nwb'):
-        return 'nwb'
-
-    elif path.endswith('.csv'):
-        return 'csv'
 
 
 class SpikeTrains(object):
@@ -64,31 +41,6 @@ class SpikeTrains(object):
     @property
     def read_adaptor(self):
         return self._adaptor
-
-
-    """
-    def __init__(self, read_adaptor=None, write_adaptor=None, **kwargs):
-        if write_adaptor is None:
-            if MPI_size > 1:
-                self._write_adaptor = STMPIBuffer(**kwargs)
-            else:
-                self._write_adaptor = STCSVBuffer(**kwargs)
-        else:
-            self._write_adaptor = write_adaptor
-
-        if read_adaptor is None:
-            self._read_adaptor = self._write_adaptor
-        else:
-            self._read_adaptor = read_adaptor
-
-    @property
-    def write_adaptor(self):
-        return self._write_adaptor
-
-    @property
-    def read_adaptor(self):
-        return self._read_adaptor
-    """
 
     @property
     def populations(self):
@@ -271,4 +223,3 @@ class PoissonSpikeGenerator(SpikeTrains):
 def _interpolate_fr(t, t0, t1, fr0, fr1):
     # Used to interpolate the firing rate at time t from a discrete list of firing rates
     return fr0 + (fr1 - fr0)*(t - t0)/t1
-'''

@@ -29,13 +29,28 @@ pop_na = '<sonata:none>'
 
 
 class STReader(object):
+    """The interface for reading a SONATA formatted spike-train files or objects.
+
+    """
+
     @property
     def populations(self):
+        """Get all available spike population names
+
+        :return: A list of strings
+        """
         raise NotImplementedError()
 
     @property
     def units(self):
+        """Returns the units used in the timestamps.
+
+        :return: str
+        """
+
         # for backwards comptability assume everything is in milliseconds unless overwritten
+        # TODO: Use an enum/struct to pre-define the avilable units.
+        # TODO: Different populations may use different units.
         return 'ms'
 
     @units.setter
@@ -46,6 +61,11 @@ class STReader(object):
         return SortOrder.unknown
 
     def nodes(self, populations=None):
+        """ Returns a list of (node-ids, population_name).
+
+        :param populations: Name of population
+        :return:
+        """
         raise NotImplementedError()
 
     def n_spikes(self, population=None):
