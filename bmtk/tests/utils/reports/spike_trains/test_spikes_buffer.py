@@ -116,9 +116,9 @@ def multi_proc():
 
 if __name__ == '__main__':
     if MPI_size == 1:
-        # single_proc(spike_train_buffer.STCSVBuffer)
+        single_proc(spike_train_buffer.STCSVBuffer)
         # single_proc(spike_train_buffer.STMemoryBuffer)
-        test_poission_generator()
+        # test_poission_generator()
 
     else:
         multi_proc()

@@ -4,10 +4,9 @@ import pandas as pd
 import h5py
 
 from bmtk.utils.reports.spike_trains import SpikeTrains, sort_order, pop_na
-from bmtk.utils.reports.spike_trains.csv_adaptors import write_csv
-from bmtk.utils.reports.spike_trains.sonata_adaptors import write_sonata
+from bmtk.utils.reports.spike_trains import write_csv
+from bmtk.utils.reports.spike_trains import write_sonata
 
-# from bmtk.utils.reports.spike_trains.spike_train_buffer import STBufferedWriter
 
 def load_spike_trains(file_path):
     if file_path.endswith('.csv'):
@@ -106,21 +105,28 @@ def test_sonata_writer_multipop(input_path):
     os.remove(output_path)
 
 
+def update(n=14):
+    for i in range(n):
+        print('{} of {}'.format(i+1, n))
+        yield
+
+
 if __name__ == '__main__':
-    test_csv_writer_onepop('spike_files/spikes.noheader.nopop.csv', pop_name=pop_na)
-    test_csv_writer_onepop('spike_files/spikes.one_pop.csv', pop_name='v1')
-    test_csv_writer_onepop('spike_files/spikes.old.h5', pop_name=pop_na)
-    test_csv_writer_onepop('spike_files/spikes.one_pop.h5', pop_name='v1')
-    test_csv_writer_onepop('spike_files/spikes.onepop.v1.0.nwb', pop_name=pop_na)
+    prnt_stmt = update()
+    test_csv_writer_onepop('spike_files/spikes.noheader.nopop.csv', pop_name=pop_na); next(prnt_stmt)
+    test_csv_writer_onepop('spike_files/spikes.one_pop.csv', pop_name='v1'); next(prnt_stmt)
+    test_csv_writer_onepop('spike_files/spikes.old.h5', pop_name=pop_na); next(prnt_stmt)
+    test_csv_writer_onepop('spike_files/spikes.one_pop.h5', pop_name='v1'); next(prnt_stmt)
+    test_csv_writer_onepop('spike_files/spikes.onepop.v1.0.nwb', pop_name=pop_na); next(prnt_stmt)
 
-    test_csv_writer_multipop('spike_files/spikes.multipop.csv')
-    test_csv_writer_multipop('spike_files/spikes.multipop.h5')
+    test_csv_writer_multipop('spike_files/spikes.multipop.csv'); next(prnt_stmt)
+    test_csv_writer_multipop('spike_files/spikes.multipop.h5'); next(prnt_stmt)
 
-    test_sonata_writer_onepop('spike_files/spikes.noheader.nopop.csv', pop_name=pop_na)
-    test_sonata_writer_onepop('spike_files/spikes.one_pop.csv', pop_name='v1')
-    test_sonata_writer_onepop('spike_files/spikes.old.h5', pop_name=pop_na)
-    test_sonata_writer_onepop('spike_files/spikes.one_pop.h5', pop_name='v1')
-    test_sonata_writer_onepop('spike_files/spikes.onepop.v1.0.nwb', pop_name=pop_na)
+    test_sonata_writer_onepop('spike_files/spikes.noheader.nopop.csv', pop_name=pop_na); next(prnt_stmt)
+    test_sonata_writer_onepop('spike_files/spikes.one_pop.csv', pop_name='v1'); next(prnt_stmt)
+    test_sonata_writer_onepop('spike_files/spikes.old.h5', pop_name=pop_na); next(prnt_stmt)
+    test_sonata_writer_onepop('spike_files/spikes.one_pop.h5', pop_name='v1'); next(prnt_stmt)
+    test_sonata_writer_onepop('spike_files/spikes.onepop.v1.0.nwb', pop_name=pop_na); next(prnt_stmt)
 
-    test_sonata_writer_multipop('spike_files/spikes.multipop.csv')
-    test_sonata_writer_multipop('spike_files/spikes.multipop.h5')
+    test_sonata_writer_multipop('spike_files/spikes.multipop.csv'); next(prnt_stmt)
+    test_sonata_writer_multipop('spike_files/spikes.multipop.h5'); next(prnt_stmt)
