@@ -53,19 +53,15 @@ class NWBSTReader(STReader):
         return data_df[col_timestamps].agg([np.min, np.max]).values
 
     def get_times(self, node_id, population=None, time_window=None, **kwargs):
-        #population = self._population
-        #if population is None:
-        #    population = self._population
-        #
-        #if population != self._population:
-        #    return []
+        try:
+            spiketimes = self._trial_grp[str(node_id)]['data'][()]
 
-        spiketimes = self._trial_grp[str(node_id)]['data'][()]
+            if time_window is not None:
+                spiketimes = spiketimes[(time_window[0] <= spiketimes) & (spiketimes <= time_window[1])]
 
-        if time_window is not None:
-            spiketimes = spiketimes[(time_window[0] <= spiketimes) & (spiketimes <= time_window[1])]
-
-        return spiketimes
+            return spiketimes
+        except KeyError:
+            return []
 
     def to_dataframe(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
         if self._spikes_df is None:

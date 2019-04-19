@@ -66,7 +66,7 @@ def test_spikes_nopopulation(file_path, pop_name):
     assert(isinstance(spikes.get_times(0)[0], np.float))
     assert(len(spikes.get_times(0, population=pop_name)) == 15)
     assert(len(spikes.get_times(10, time_window=(500.0, 1000.0))) == 8)
-    assert(len(spikes.get_times(10, population='INVALID', time_window=(500.0, 1000.0))) == 0)
+    assert(len(spikes.get_times(100000)) == 0)
 
     # Check spikes iterator
     spike_counts = 0
@@ -135,11 +135,13 @@ def test_spikes_multipop(file_path):
     assert(len(lgn_spike0) == 32)
     assert(lgn_spike0[0] == 445.539 and lgn_spike0[-1] == 2924.594)
 
+    assert(len(spikes.get_times(100000, population='lgn')) == 0)
+    assert(len(spikes.get_times(10, population='INVALID', time_window=(500.0, 1000.0))) == 0)
+
     # Check spikes iterator
     spike_counts = 0
     last_nid = -1
     for spk in spikes.spikes(populations=['lgn'], sort_order=sort_order.by_id):
-        # print(spk)
         assert(isinstance(spk[0], np.float))
         assert(isinstance(spk[1], six.string_types))
         assert(isinstance(spk[2], (np.int, np.integer)))

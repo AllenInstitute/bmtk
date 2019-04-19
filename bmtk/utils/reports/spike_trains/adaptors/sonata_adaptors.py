@@ -284,7 +284,9 @@ class SonataSTReader(STReader):
         elif population not in self._population_map:
             return []
 
-        spikes_index = self._index_nids[population][node_id]
+        spikes_index = self._index_nids[population].get(node_id, None)
+        if spikes_index is None:
+            return []
         spike_times = self._population_map[population][DATASET_timestamps][spikes_index]
 
         if time_window is not None:

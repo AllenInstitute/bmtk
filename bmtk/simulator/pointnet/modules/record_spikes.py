@@ -22,7 +22,6 @@
 #
 import os
 import glob
-import pandas as pd
 import csv
 # from bmtk.utils.io.spike_trains import SpikeTrainWriter
 from bmtk.utils.reports.spike_trains import SpikeTrains, sort_order, sort_order_lu
@@ -93,6 +92,7 @@ class SpikesMod(object):
             io.barrier()
 
         self._spike_writer.close()
+        self.__clean_gdf_files()
 
     def __parse_gdf(self, gdf_path, gid_map):
         with open(gdf_path, 'r') as csv_file:
@@ -100,3 +100,8 @@ class SpikesMod(object):
             for r in csv_reader:
                 p = gid_map.get_pool_id(int(r[0]))
                 self._spike_writer.add_spike(node_id=p.node_id, timestamp=float(r[1]), population=p.population)
+
+    def __clean_gdf_files(self):
+        if MPI_RANK == 0:
+            for gdf_file in glob.glob(self._spike_labels + '*.gdf'):
+                os.remove(gdf_file)
