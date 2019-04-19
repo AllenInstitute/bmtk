@@ -186,8 +186,9 @@ class SonataSTReader(STReader):
         return self._population_sorting_map[population]
 
     def nodes(self, populations=None):
-        if populations is None:
-            populations = [self._default_pop]
+        populations = populations or self.populations
+        # if populations is None:
+        #    populations = [self._default_pop]
 
         if isinstance(populations, six.string_types) or np.isscalar(populations):
             populations = [populations]
@@ -228,8 +229,9 @@ class SonataSTReader(STReader):
         return min_time, max_time
 
     def to_dataframe(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
-        if populations is None:
-            populations = [self._default_pop]
+        populations = populations or self.populations
+        # if populations is None:
+        #     populations = [self._default_pop]
 
         if isinstance(populations, six.string_types) or np.isscalar(populations):
             populations = [populations]
@@ -276,10 +278,10 @@ class SonataSTReader(STReader):
 
     def get_times(self, node_id, population=None, time_window=None, **kwargs):
         if population is None:
-            if len(self._default_pop) > 1:
+            if not isinstance(self._default_pop, six.string_types) and len(self._default_pop) > 1:
                 raise Exception('Error: Multiple populations, must select one.')
 
-            population = self._default_pop[0]
+            population = self._default_pop
 
         elif population not in self._population_map:
             return []
@@ -295,8 +297,9 @@ class SonataSTReader(STReader):
         return spike_times
 
     def spikes(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
-        if populations is None:
-            populations = [self._default_pop]
+        populations = populations or self.populations
+        if np.isscalar(populations):
+            populations = [populations]
 
         if sort_order == SortOrder.by_id:
             for pop_name in populations:
@@ -313,6 +316,7 @@ class SonataSTReader(STReader):
                         yield st, pop_name, node_id
 
         elif sort_order == SortOrder.by_time:
+            # TODO: Reimplement using a heap
             index_ranges = []
             for pop_name in populations:
                 if pop_name not in self.populations:
@@ -372,22 +376,22 @@ class SonataOldReader(SonataSTReader):
     """
 
     def nodes(self, populations=None):
-        return super(SonataOldReader, self).nodes(populations=self._default_pop)
+        return super(SonataOldReader, self).nodes(populations=None)
 
     def n_spikes(self, population=None):
         return super(SonataOldReader, self).n_spikes(population=self._default_pop)
 
     def time_range(self, populations=None):
-        return super(SonataOldReader, self).time_range(populations=self._default_pop)
+        return super(SonataOldReader, self).time_range(populations=None)
 
     def to_dataframe(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
-        return super(SonataOldReader, self).to_dataframe(node_ids=node_ids, populations=self._default_pop,
+        return super(SonataOldReader, self).to_dataframe(node_ids=node_ids, populations=None,
                                                          time_window=time_window, sort_order=sort_order, **kwargs)
 
     def get_times(self, node_id, population=None, time_window=None, **kwargs):
-        return super(SonataOldReader, self).get_times(node_id=node_id, population=self._default_pop,
+        return super(SonataOldReader, self).get_times(node_id=node_id, population=None,
                                                       time_window=time_window, **kwargs)
 
     def spikes(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
-        return super(SonataOldReader, self).spikes(node_ids=node_ids, populations=self._default_pop,
+        return super(SonataOldReader, self).spikes(node_ids=node_ids, populations=None,
                                                    time_window=time_window, sort_order=sort_order, **kwargs)

@@ -69,12 +69,34 @@ class STReader(object):
         raise NotImplementedError()
 
     def n_spikes(self, population=None):
+        """Get the number of spikes for the given population.
+
+        :param population: population name. If none None will use the default population (when possible).
+        :return: unsigned integer, number of spikes.
+        """
         raise NotImplementedError()
 
     def time_range(self, populations=None):
+        """Get the time range of the firing, i.e the min and max spike time, for the specified populations. If more
+        than one node population is specified will search across all and return values that encompasses all spikes
+        across each population.
+
+        :param populations: None, A string, or a list of strings. Default None will search across all populations.
+        :return: tuple of integers, (min-spike-time, max-spike-time). If No values found returns None
+        """
         raise NotImplementedError()
 
     def get_times(self, node_id, population=None, time_window=None, **kwargs):
+        """Returns a list of spike-times for a given node.
+
+        :param node_id: The id of the node
+        :param population: Name of the node-population which the node belongs to. By default will try to use the
+        default population (if possible).
+        :param time_window: A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.
+        :param kwargs:
+        :return: list of spike times [float]
+        """
+
         raise NotImplementedError()
 
     def to_dataframe(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
