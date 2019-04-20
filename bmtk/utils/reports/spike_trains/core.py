@@ -122,6 +122,9 @@ class STBuffer(object):
     def flush(self):
         raise NotImplementedError()
 
+    def close(self):
+        raise NotImplementedError()
+
 
 def find_conversion(units_old, units_new):
     if units_new is None or units_old is None:

@@ -1,8 +1,9 @@
 import pytest
+import os
 import numpy as np
 
 from bmtk.utils.reports.spike_trains import SpikeTrains, pop_na
-
+from bmtk.utils.reports.spike_trains import spike_train_buffer
 
 def test_old_populations(path):
     st = SpikeTrains.from_sonata(path)
@@ -42,8 +43,22 @@ def test_multipop_with_default(path):
     assert(np.all(n1_tw_ts == st.get_times(node_id=0)))
 
 
+def test_empty_spikes():
+    st = SpikeTrains(adaptor=spike_train_buffer.STMemoryBuffer())
+    output_path = 'output/tmpspikes.h5'
+    st.to_sonata(path=output_path)
+    st.close()
+
+    st_empty = SpikeTrains.from_sonata(output_path)
+    assert(st_empty.populations == [])
+    assert(st_empty.n_spikes() == 0)
+    assert(list(st_empty.spikes()) == [])
+    os.remove(output_path)
+
+
 if __name__ == '__main__':
     test_old_populations('spike_files/spikes.old.h5')
     test_single_populations('spike_files/spikes.one_pop.h5')
     test_multi_populations('spike_files/spikes.multipop.h5')
     test_multipop_with_default('spike_files/spikes.multipop.h5')
+    test_empty_spikes()
