@@ -119,19 +119,60 @@ class SpikeTrains(object):
         if MPI_rank == 0:
             write_csv(path=path, spiketrain_reader=self.read_adaptor, mode=mode, sort_order=sort_order, **kwargs)
 
-    def to_sonata(self, path, mode='w', sort_order=sort_order.none, **kwargs):
+    def to_sonata(self, path, mode='a', sort_order=sort_order.none, **kwargs):
         if isinstance(self.write_adaptor, STBuffer):
             self.write_adaptor.flush()
         if MPI_rank == 0:
             write_sonata(path=path, spiketrain_reader=self.read_adaptor, mode=mode, sort_order=sort_order, **kwargs)
         barrier()
 
+    def is_equal(self, other, populations=None, err=0.00001, time_window=None):
+        if populations is None:
+            # Both must contain the same populations
+            populations = self.populations
+            if set(other.populations) != set(populations):
+                return False
+        else:
+            # Comparing only a subset of the node populations, make sure both files contains them (or both files don't
+            # contain the populations
+            populations = [populations] if np.isscalar(populations) else populations
+            for p in populations:
+                if (p in self.populations) != (p in other.populations):
+                    return False
+
+        for p in populations:
+            if time_window is None:
+                # check that each SpikeTrains contain the same number and ids of nodes so we don't have to iterate
+                # through each spike. This won't always work if the user limits the time-window.
+                self_nodes = sorted([n[1] for n in self.nodes(populations=p)])
+                other_nodes = sorted([n[1] for n in other.nodes(populations=p)])
+                if not np.all(self_nodes == other_nodes):
+                    return False
+            else:
+                # If the time-window being checked is restricted
+                self_nodes = set([n[1] for n in self.nodes(p)]) & set([n[1] for n in other.nodes(p)])
+
+            for node_id in self_nodes:
+                self_ts = self.get_times(node_id=node_id, population=p, time_window=time_window)
+                other_ts = other.get_times(node_id=node_id, population=p, time_window=time_window)
+
+                if len(self_ts) != len(other_ts):
+                    return False
+
+                for t0, t1 in zip(self_ts, other_ts):
+                    if abs(t1 - t0) > err:
+                        return False
+
+        return True
 
     def to_nwb(self, path, **kwargs):
         raise NotImplementedError()
 
     def __len__(self):
         return len(self.read_adaptor)
+
+    def __eq__(self, other):
+        return self.is_equal(other)
 
 
 class PoissonSpikeGenerator(SpikeTrains):
