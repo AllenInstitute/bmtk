@@ -132,7 +132,7 @@ def plot_spikes_config(configure, group_key=None, exclude=[], save_as=None, show
 
 
 def plot_spikes(cells_file, cell_models_file, spikes_file, population=None, group_key=None, exclude=[], save_as=None,
-                show=True, title=None, legend=True):
+                show=True, title=None, legend=True, font_size=None):
     # check if can be shown and/or saved
     #if save_as is not None:
     #    if os.path.exists(save_as):
@@ -187,6 +187,15 @@ def plot_spikes(cells_file, cell_models_file, spikes_file, population=None, grou
 
     # Create plot
     gs = gridspec.GridSpec(2, 1, height_ratios=[7, 1])
+    
+    
+    import matplotlib
+    if font_size is not None:
+        matplotlib.rcParams.update({'font.size': font_size})
+        plt.xlabel('xlabel', fontsize=font_size)
+        plt.ylabel('ylabel', fontsize=font_size)
+    
+    
     ax1 = plt.subplot(gs[0])
     gid_min = 10**10
     gid_max = -1
@@ -204,7 +213,7 @@ def plot_spikes(cells_file, cell_models_file, spikes_file, population=None, grou
 
     #ax1.set_xlabel('time (s)')
     ax1.axes.get_xaxis().set_visible(False)
-    ax1.set_ylabel('cell_id')
+    ax1.set_ylabel('Cell ID')
     ax1.set_xlim([0, max(spike_times)])
     ax1.set_ylim([gid_min, gid_max])
     if legend:
@@ -212,9 +221,10 @@ def plot_spikes(cells_file, cell_models_file, spikes_file, population=None, grou
 
     ax2 = plt.subplot(gs[1])
     plt.hist(spike_times, 100)
-    ax2.set_xlabel('time (s)')
+    ax2.set_xlabel('Time (s)')
     ax2.set_xlim([0, max(spike_times)])
-    ax2.axes.get_yaxis().set_visible(False)
+    #ax2.axes.get_yaxis().set_visible(False)
+    ax2.set_ylabel('Firing rate (AU)')
     if title is not None:
         ax1.set_title(title)
 
