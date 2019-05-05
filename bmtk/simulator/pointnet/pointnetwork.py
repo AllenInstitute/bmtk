@@ -173,8 +173,7 @@ class PointNetwork(SimNetwork):
                         #print(nest_id)
                         #print self.gid_map.get_pool_id(nest_id)
                         nest.SetStatus([nest_id],
-                                       {'spike_times': np.array(spike_trains.get_times(node_id=node_id,
-                                                                                            population=node_pop.name))})
+                                       {'spike_times': np.array(spike_trains.get_times(node_id=node_id))})
 
             elif node_pop.mixed_nodes:
                 for node in node_pop.get_nodes():
@@ -184,7 +183,7 @@ class PointNetwork(SimNetwork):
                     nest_ids = nest.Create('spike_generator', node.n_nodes, {})
                     for node_id, nest_id in zip(node.node_ids, nest_ids):
                         virt_node_map[node_id] = nest_id
-                        nest.SetStatus([nest_id], {'spike_times': np.array(spike_trains.get_spikes(node_id))})
+                        nest.SetStatus([nest_id], {'spike_times': np.array(spike_trains.get_times(node_id=node_id))})
 
             self._virtual_ids_map[node_pop.name] = virt_node_map
 
