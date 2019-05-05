@@ -11,6 +11,7 @@ addons:
     - python-jsonschema
     - python-mpi4py
     - python-matplotlib
+    - python-tornado
     - python-tk
     
 language: python
@@ -57,7 +58,7 @@ script:
   
   - cd ../../bio_14cells/
   #- sed -i -e 's/: 3000.0,/: 600,/g'  config.json  # Run shorter simulation
-  - python run_bionet.py config.json 
+  ###- python run_bionet.py config.json   # Pandas version..?
   
   #- cd ../14cells_multinode
   #- sed -i -e 's/: 3000.0,/: 600,/g'  config.json  # Run shorter simulation
