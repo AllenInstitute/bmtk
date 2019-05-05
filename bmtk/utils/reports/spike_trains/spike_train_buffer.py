@@ -214,7 +214,10 @@ class STMemoryBuffer(STBuffer, STReader):
         pass
 
     def flush(self):
-        pass # not necessary since everything is stored in memory
+        pass  # not necessary since everything is stored in memory
+
+    def close(self):
+        pass  # don't need to do anything
 
     @property
     def populations(self):
@@ -455,7 +458,8 @@ class STMPIBuffer(STCSVBuffer):
         h = []
         readers = [next_row(csv.reader(open(fn, 'r'), delimiter=' ')) for fn in self._all_cached_files()]
         for r in readers:
-            heapq.heappush(h, r)
+            if r is not None:  # Some ranks may not have produced any spikes
+                heapq.heappush(h, r)
 
         while h:
             v, row, csv_reader = heapq.heappop(h)

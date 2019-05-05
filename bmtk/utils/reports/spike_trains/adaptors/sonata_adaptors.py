@@ -6,7 +6,7 @@ import numpy as np
 from collections import defaultdict
 
 from ..core import SortOrder, STReader
-from ..core import col_node_ids, col_timestamps, col_population, pop_na, find_conversion
+from ..core import col_node_ids, col_timestamps, col_population, pop_na, find_conversion, csv_headers
 from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
 
 
@@ -37,7 +37,8 @@ sorting_attrs = {
 }
 
 
-def write_sonata(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, units='ms', **kwargs):
+def write_sonata(path, spiketrain_reader, mode='a', sort_order=SortOrder.none, units='ms',
+                 population_renames=None, **kwargs):
     path_dir = os.path.dirname(path)
     if path_dir and not os.path.exists(path_dir):
         os.makedirs(path_dir)
@@ -46,12 +47,15 @@ def write_sonata(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, u
     with h5py.File(path, mode=mode) as h5:
         add_hdf5_magic(h5)
         add_hdf5_version(h5)
+        # Even if there is no spikes (thus no populations to report), still create the /spikes group.
+        spikes_root = h5.create_group('/spikes')
+        population_renames = population_renames or {}
         for pop_name in spiketrain_reader.populations:
             n_spikes = spiketrain_reader.n_spikes(pop_name)
             if n_spikes <= 0:
                 continue
 
-            spikes_grp = h5.create_group('/spikes/{}/'.format(pop_name))
+            spikes_grp = spikes_root.create_group('{}'.format(population_renames.get(pop_name, pop_name)))
             if sort_order != SortOrder.unknown:
                 spikes_grp.attrs['sorting'] = sort_order.value
 
@@ -78,11 +82,32 @@ def load_sonata_file(path, version=None, **kwargs):
                 if isinstance(h5_obj, h5py.Group):
                     # In case there exists a population subgroup
                     return SonataSTReader(path, **kwargs)
-
     except Exception:
         pass
 
-    return SonataOldReader(path, **kwargs)
+    try:
+        with h5py.File(path, 'r') as h5:
+            spikes_root = h5[GRP_spikes_root]
+            if 'gids' in spikes_root and 'timestamps' in spikes_root:
+                return SonataOldReader(path, **kwargs)
+    except Exception:
+        pass
+
+    try:
+        with h5py.File(path, 'r') as h5:
+            if '/spikes' in h5:
+                return EmptySonataReader(path, **kwargs)
+    except Exception:
+        pass
+
+    raise Exception('Could not open file, does not contain SONATA spike-trains')
+
+
+def to_list(v):
+    if v is not None and np.isscalar(v):
+        return [v]
+    else:
+        return v
 
 
 class SonataSTReader(STReader):
@@ -105,11 +130,22 @@ class SonataSTReader(STReader):
         else:
             self._spikes_root = self._h5_handle[GRP_spikes_root]
 
+
+        if 'population' in kwargs:
+            pop_filter = to_list(kwargs['population'])
+        elif 'populations' in kwargs:
+            pop_filter = to_list(kwargs['populations'])
+        else:
+            pop_filter = None
+
         # get a map of 'pop_name' -> pop_group
         self._population_map = {}
         for name, h5_obj in self._h5_handle[GRP_spikes_root].items():
             if isinstance(h5_obj, h5py.Group):
-                self._population_map[name] = h5_obj
+                if pop_filter is not None and name not in pop_filter:
+                    continue
+                else:
+                    self._population_map[name] = h5_obj
 
         if not self._population_map:
             # In old version of the sonata standard there was no 'population' subgroup. For backwards compatability
@@ -371,7 +407,7 @@ class SonataSTReader(STReader):
 
 
 class SonataOldReader(SonataSTReader):
-    """
+    """Older version of SONATA
 
     """
 
@@ -395,3 +431,37 @@ class SonataOldReader(SonataSTReader):
     def spikes(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
         return super(SonataOldReader, self).spikes(node_ids=node_ids, populations=None,
                                                    time_window=time_window, sort_order=sort_order, **kwargs)
+
+
+class EmptySonataReader(STReader):
+    """A Hack that is needed for when a simulation produces a file with no spikes, since there won't/can't be
+    <population_name> subgroup and/or gids/timestamps datasets.
+
+    """
+    def __init__(self, path, **kwargs):
+        pass
+
+    @property
+    def populations(self):
+        return []
+
+
+    def nodes(self, populations=None):
+        return []
+
+    def n_spikes(self, population=None):
+        return 0
+
+    def time_range(self, populations=None):
+        return None
+
+    def to_dataframe(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
+        return pd.DataFrame(columns=csv_headers)
+
+    def get_times(self, node_id, population=None, time_window=None, **kwargs):
+        return []
+
+    def spikes(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
+        return []
+
+
