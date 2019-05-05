@@ -32,6 +32,7 @@ from bmtk.simulator.bionet.morphology import Morphology
 from bmtk.simulator.bionet.io_tools import io
 from bmtk.simulator.bionet import nrn
 from bmtk.simulator.bionet.sonata_adaptors import BioNodeAdaptor, BioEdgeAdaptor
+from .gids import GidPool
 
 # TODO: leave this import, it will initialize some of the default functions for building neurons/synapses/weights.
 import bmtk.simulator.bionet.default_setters
@@ -70,6 +71,12 @@ class BioNetwork(SimNetwork):
         self._cells_built = False
         self._connections_initialized = False
 
+        self._gid_pool = GidPool()
+
+    @property
+    def gid_pool(self):
+        return self._gid_pool
+
     @property
     def py_function_caches(self):
         return nrn
@@ -103,12 +110,16 @@ class BioNetwork(SimNetwork):
     def local_gids(self):
         return list(self._rank_node_gids.keys())
 
+    def add_nodes(self, node_population):
+        self._gid_pool.add_pool(node_population.name, node_population.n_nodes())
+        super(BioNetwork, self).add_nodes(node_population)
+
     def get_virtual_cells(self, population, node_id, spike_trains):
         if node_id in self._virtual_nodes[population]:
             return self._virtual_nodes[population][node_id]
         else:
             node = self.get_node_id(population, node_id)
-            virt_cell = VirtualCell(node, spike_trains)
+            virt_cell = VirtualCell(node, population, spike_trains)
             self._virtual_nodes[population][node_id] = virt_cell
             return virt_cell
 

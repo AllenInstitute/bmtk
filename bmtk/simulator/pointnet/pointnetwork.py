@@ -30,6 +30,7 @@ from bmtk.simulator.core.simulator_network import SimNetwork
 from bmtk.simulator.pointnet.sonata_adaptors import PointNodeAdaptor, PointEdgeAdaptor
 from bmtk.simulator.pointnet import pyfunction_cache
 from bmtk.simulator.pointnet.io_tools import io
+from .gids import GidPool
 
 
 class PointNetwork(SimNetwork):
@@ -52,9 +53,15 @@ class PointNetwork(SimNetwork):
         self._nodes_table = {}
         self._gid2nestid = {}
 
+        self._gid_map = GidPool()
+
     @property
     def py_function_caches(self):
         return pyfunction_cache
+
+    @property
+    def gid_map(self):
+        return self._gid_map
 
     def __get_params(self, node_params):
         if node_params.with_dynamics_params:
@@ -89,13 +96,22 @@ class PointNetwork(SimNetwork):
         return self.__weight_functions[name]
 
     def build_nodes(self):
+        #print [p.name for p in self.node_populations]
+        # exit()
+
         for node_pop in self.node_populations:
+            pop_name = node_pop.name
+            gid_map = self.gid_map
+
+            gid_map.create_pool(pop_name)
             nid2nest_map = {}
             nest2nid_map = {}
             if node_pop.internal_nodes_only:
                 for node in node_pop.get_nodes():
                     node.build()
                     for nid, gid, nest_id in zip(node.node_ids, node.gids, node.nest_ids):
+                        gid_map.add(name=pop_name, node_id=nid, gid=nest_id)
+
                         self._nestid2gid[nest_id] = gid
                         self._gid2nestid[gid] = nest_id
                         nid2nest_map[nid] = nest_id
@@ -106,8 +122,9 @@ class PointNetwork(SimNetwork):
                     if node.model_type != 'virtual':
                         node.build()
                         for nid, gid, nest_id in zip(node.node_ids, node.gids, node.nest_ids):
-                            self._nestid2gid[nest_id] = gid
-                            self._gid2nestid[gid] = nest_id
+                            gid_map.add(name=pop_name, node_id=nid, gid=nest_id)
+                            #self._nestid2gid[nest_id] = gid
+                            #self._gid2nestid[gid] = nest_id
                             nid2nest_map[nid] = nest_id
                             nest2nid_map[nest_id] = nid
 
@@ -152,7 +169,11 @@ class PointNetwork(SimNetwork):
                     nest_ids = nest.Create('spike_generator', node.n_nodes, {})
                     for node_id, nest_id in zip(node.node_ids, nest_ids):
                         virt_node_map[node_id] = nest_id
-                        nest.SetStatus([nest_id], {'spike_times': np.array(spike_trains.get_spikes(node_id))})
+                        #print(node_id, node_pop.name)
+                        #print(nest_id)
+                        #print self.gid_map.get_pool_id(nest_id)
+                        nest.SetStatus([nest_id],
+                                       {'spike_times': np.array(spike_trains.get_times(node_id=node_id))})
 
             elif node_pop.mixed_nodes:
                 for node in node_pop.get_nodes():
@@ -162,7 +183,7 @@ class PointNetwork(SimNetwork):
                     nest_ids = nest.Create('spike_generator', node.n_nodes, {})
                     for node_id, nest_id in zip(node.node_ids, nest_ids):
                         virt_node_map[node_id] = nest_id
-                        nest.SetStatus([nest_id], {'spike_times': np.array(spike_trains.get_spikes(node_id))})
+                        nest.SetStatus([nest_id], {'spike_times': np.array(spike_trains.get_times(node_id=node_id))})
 
             self._virtual_ids_map[node_pop.name] = virt_node_map
 

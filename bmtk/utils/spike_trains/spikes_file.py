@@ -8,7 +8,7 @@ import h5py
 class SpikesFile(object):
     _file_adaptors = {}
 
-    def __init__(self, filename, mode='r', filetype=None, **params):
+    def __init__(self, filename, filetype=None, **params):
         self._ftype = self._get_file_type(filename, filetype)
         self._adaptor = SpikesFile._file_adaptors[self._ftype](filename, **params)
 

@@ -2,7 +2,7 @@
   "manifest": {
     "$BASE_DIR": "${configdir}",
     "$OUTPUT_DIR": "$BASE_DIR/output",
-    "$INPUT_DIR": "$BASE_DIR/../NWB_files",
+    "$INPUT_DIR": "$BASE_DIR/../spikes_inputs",
     "$NETWORK_DIR": "$BASE_DIR/network",
     "$COMPONENT_DIR": "$BASE_DIR/../biophys_components"
   },
@@ -25,10 +25,10 @@
   "inputs": {
     "external_spikes": {
       "input_type": "spikes",
-      "module": "nwb",
-      "input_file": "$INPUT_DIR/lgn_spikes.nwb",
-      "node_set": "external",
-      "trial": "trial_0"
+      "module": "sonata",
+      "input_file": "$INPUT_DIR/lgn_spikes.h5",
+      "population": "lgn",
+      "node_set": "external"
     }
   },
 

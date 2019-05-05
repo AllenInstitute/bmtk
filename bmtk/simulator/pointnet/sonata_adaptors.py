@@ -237,6 +237,20 @@ class PointEdgeAdaptor(EdgeAdaptor):
     def get_edge(self, sonata_node):
         return PointEdge(sonata_node, self)
 
+    @staticmethod
+    def preprocess_edge_types(network, edge_population):
+        # Fix for sonata/300_pointneurons
+        EdgeAdaptor.preprocess_edge_types(network, edge_population)
+        edge_types_table = edge_population.types_table
+        edge_type_ids = np.unique(edge_population.type_ids)
+
+        for et_id in edge_type_ids:
+            edge_type = edge_types_table[et_id]
+            if 'model_template' in edge_types_table.columns:
+                model_template = edge_type['model_template']
+                if model_template.startswith('nest'):
+                    edge_type['model_template'] = model_template[5:]
+                    print edge_type['model_template']
 
     def get_batches(self, edge_group):
         src_ids = {}

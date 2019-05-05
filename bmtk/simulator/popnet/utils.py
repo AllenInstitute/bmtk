@@ -79,7 +79,7 @@ def get_firing_rates(populations, spike_trains):
         spike_min_t = 1.0e30
         spike_max_t = 0.0
         for gid in pop.get_gids():
-            spike_times = spike_trains.get_spikes(gid)
+            spike_times = spike_trains.get_times(gid)
             if spike_times is not None and len(spike_times) > 0:
                 tmp_min = min(spike_times)
                 spike_min_t = tmp_min if tmp_min < spike_min_t else spike_min_t
