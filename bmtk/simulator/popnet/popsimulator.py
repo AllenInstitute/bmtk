@@ -33,7 +33,8 @@ from bmtk.simulator.core.simulator import Simulator
 from . import config as cfg
 from . import utils as poputils
 import bmtk.simulator.utils.simulation_inputs as inputs
-from bmtk.utils.io import spike_trains, firing_rates
+from bmtk.utils.reports.spike_trains import SpikeTrains
+from bmtk.utils.io import firing_rates
 
 
 class PopSimulator(Simulator):
@@ -385,8 +386,8 @@ class PopSimulator(Simulator):
         for sim_input in inputs.from_config(config):
             node_set = graph.get_node_set(sim_input.node_set)
             if sim_input.input_type == 'spikes':
-                spikes = spike_trains.SpikesInput.load(name=sim_input.name, module=sim_input.module,
-                                                       input_type=sim_input.input_type, params=sim_input.params)
+                path = sim_input.params['input_file']
+                spikes = SpikeTrains.load(path=path, file_type=sim_input.module, **sim_input.params)
                 graph.io.log_info('Build virtual cell stimulations for {}'.format(sim_input.name))
                 graph.add_spike_trains(spikes, node_set)
             else:

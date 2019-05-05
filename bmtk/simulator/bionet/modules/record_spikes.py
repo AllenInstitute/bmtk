@@ -21,11 +21,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import os
-import csv
-import h5py
-import numpy as np
 from bmtk.simulator.bionet.modules.sim_module import SimulatorMod
-from bmtk.utils.io.spike_trains import SpikeTrainWriter
+from bmtk.utils.reports.spike_trains import SpikeTrains, sort_order, sort_order_lu
 
 from neuron import h
 
@@ -57,27 +54,29 @@ class SpikesMod(SimulatorMod):
         self._save_nwb = spikes_file_nwb is not None
 
         self._tmpdir = tmp_dir
-        self._sort_order = spikes_sort_order
+        self._sort_order = sort_order_lu.get(spikes_sort_order, sort_order.none)
 
-        self._spike_writer = SpikeTrainWriter(tmp_dir=tmp_dir, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)
+        self._spike_writer = SpikeTrains(cache_dir=tmp_dir)
+        self._gid_map = None
 
     def initialize(self, sim):
         # TODO: since it's possible that other modules may need to access spikes, set_spikes_recordings() should
         # probably be called in the simulator itself.
         sim.set_spikes_recording()
+        self._gid_map = sim.net.gid_pool
 
     def block(self, sim, block_interval):
         # take spikes from Simulator spikes vector and save to the tmp file
         for gid, tVec in sim.spikes_table.items():
+            pop_id = self._gid_map.get_pool_id(gid)
             for t in tVec:
-                self._spike_writer.add_spike(time=t, gid=gid)
+                self._spike_writer.add_spike(node_id=pop_id.node_id, timestamp=t, population=pop_id.population)
 
         pc.barrier()  # wait until all ranks have been saved
         sim.set_spikes_recording()  # reset recording vector
 
     def finalize(self, sim):
         self._spike_writer.flush()
-        self._spike_writer.close_tmp_file()
         pc.barrier()
 
         if self._save_csv:
@@ -85,7 +84,7 @@ class SpikesMod(SimulatorMod):
             pc.barrier()
 
         if self._save_h5:
-            self._spike_writer.to_hdf5(self._h5_fname, sort_order=self._sort_order)
+            self._spike_writer.to_sonata(self._h5_fname, sort_order=self._sort_order)
             pc.barrier()
 
         if self._save_nwb:

@@ -32,7 +32,8 @@ from bmtk.simulator.pointnet.config import Config
 from bmtk.simulator.pointnet.io_tools import io
 import bmtk.simulator.utils.simulation_reports as reports
 import bmtk.simulator.utils.simulation_inputs as inputs
-from bmtk.utils.io import spike_trains
+# from bmtk.utils.io import spike_trains
+from bmtk.utils.reports.spike_trains import SpikeTrains
 from . import modules as mods
 from bmtk.simulator.core.node_sets import NodeSet
 
@@ -224,9 +225,11 @@ class PointSimulator(Simulator):
         for sim_input in inputs.from_config(config):
             node_set = graph.get_node_set(sim_input.node_set)
             if sim_input.input_type == 'spikes':
-                spikes = spike_trains.SpikesInput.load(name=sim_input.name, module=sim_input.module,
-                                                       input_type=sim_input.input_type, params=sim_input.params)
                 io.log_info('Build virtual cell stimulations for {}'.format(sim_input.name))
+                path = sim_input.params['input_file']
+                spikes = SpikeTrains.load(path=path, file_type=sim_input.module, **sim_input.params)
+                #spikes = spike_trains.SpikesInput.load(name=sim_input.name, module=sim_input.module,
+                #                                       input_type=sim_input.input_type, params=sim_input.params)
                 graph.add_spike_trains(spikes, node_set)
 
             elif sim_input.input_type == 'current_clamp':
