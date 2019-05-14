@@ -89,12 +89,15 @@ class MembraneReport(SimulatorMod):
             in_mpi = h5py.get_cofig().mpi
         except Exception as e:
             in_mpi = False
-            
+
         if self._file_name.endswith('.nwb'):
+            # NWB
             if in_mpi:
-                raise NotImplementedError("BMTK does not yet support parallel I/O with NWB")
-            return cell_vars.CellVarRecorderNWB
+                return cell_vars.CellVarRecorderNWBParallel
+            else:
+                return cell_vars.CellVarRecorderNWB
         else:
+            # HDF5
             if in_mpi:
                 return cell_vars.CellVarRecorderParallel
             else:

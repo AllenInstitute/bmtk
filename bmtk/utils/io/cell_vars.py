@@ -16,10 +16,9 @@ try:
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     nhosts = comm.Get_size()
-
 except Exception as exc:
-    pass
-
+    comm = None
+    rank = 1
 
 class CellVarRecorder(object):
     """Used to save cell membrane variables (V, Ca2+, etc) to the described hdf5 format.
@@ -129,8 +128,12 @@ class CellVarRecorder(object):
         self._gids_beg = 0
         self._gids_end = self._n_gids_local
 
-    def _create_file(self):
-        self._file_handle = h5py.File(self._file_name, 'w')
+    def _create_file(self, parallel=False):
+        import ipdb; ipdb.set_trace()
+        if parallel:
+            self._file_handle = h5py.File(self._file_name, 'w', driver='mpio', comm=comm)
+        else:
+            self._file_handle = h5py.File(self._file_name, 'w')
         add_hdf5_version(self._file_handle)
         add_hdf5_magic(self._file_handle)
 
@@ -149,6 +152,7 @@ class CellVarRecorder(object):
             self._map_attrs[k].extend(v)
 
     def initialize(self, n_steps, buffer_size=0):
+        print(self.__class__.__mro__)
         self._calc_offset()
         self._create_file()
         self._init_mapping()
@@ -323,18 +327,14 @@ class CellVarRecorderNWB(CellVarRecorder):
         )
         self._compartments = Compartments('compartments')
         self._compartmentseries = {}
-        if self._mpi_size > 1:
+
+    def _create_file(self, parallel=False):
+        if parallel:
             self._nwbio = NWBHDF5IO(self._file_name, 'w', comm=comm)
         else:
             self._nwbio = NWBHDF5IO(self._file_name, 'w')
-
-    def _create_file(self):
         self._file_handle = NWBFile('description', 'id', datetime.now().astimezone()) # TODO: pass in descr, id
 
-    def initialize(self, n_steps, buffer_size=0):
-        super(CellVarRecorderNWB, self).initialize(n_steps, buffer_size=buffer_size)
-        
-    
     def add_cell(self, gid, sec_list, seg_list, **map_attrs):
         self._compartments.add_row(number=sec_list, position=seg_list, id=gid)
         super(CellVarRecorderNWB, self).add_cell(gid, sec_list, seg_list, **map_attrs)
@@ -359,13 +359,9 @@ class CellVarRecorderNWB(CellVarRecorder):
 
         self._nwbio.write(self._file_handle)
 
-        # Re-read data sets to make them NWB objects, not numpy arrays
-        # (this way, they are immediately written to disk when modified)
+        # Re-read data sets to force immediate write upon modification
         self._nwbio.close()
-        if self._mpi_size > 1:
-            self._nwbio = NWBHDF5IO(self._file_name, 'a', comm=comm)
-        else:
-            self._nwbio = NWBHDF5IO(self._file_name, 'a')
+        self._nwbio = NWBHDF5IO(self._file_name, 'a', comm=comm)
         self._file_handle = self._nwbio.read()
         for var_name, data_tables in self._data_blocks.items():
             self._data_blocks[var_name].data_block = self._file_handle.acquisition[var_name].data
@@ -375,10 +371,9 @@ class CellVarRecorderNWB(CellVarRecorder):
 
 
 
-class CellVarRecorderParallel(CellVarRecorder):
+class ParallelRecorderMixin():
     """
-    Unlike the parent, this take advantage of parallel h5py to writting to the results file across different ranks.
-
+    When inherited along with one of the CellVarRecorder classes, this takes advantage of parallel h5py to writting to the results file across different ranks.
     """
     def __init__(self, file_name, tmp_dir, variables, buffer_data=True, mpi_rank=0, mpi_size=1):
         super(CellVarRecorderParallel, self).__init__(
@@ -418,10 +413,16 @@ class CellVarRecorderParallel(CellVarRecorder):
         self._n_segments_all = total_counts[0]
         self._n_gids_all = total_counts[1]
 
-    def _create_file(self):
-        self._file_handle = h5py.File(self._file_name, 'w', driver='mpio', comm=MPI.COMM_WORLD)
-        add_hdf5_version(self._file_handle)
-        add_hdf5_magic(self._file_handle)
+    def _create_file(self, parallel=True):
+        import ipdb; ipdb.set_trace()
+        super(ParallelRecorderMixin, self)._create_file(parallel=True)
 
     def merge(self):
         pass
+
+
+class CellVarRecorderParallel(ParallelRecorderMixin, CellVarRecorder):
+    pass
+
+class CellVarRecorderNWBParallel(ParallelRecorderMixin, CellVarRecorderNWB):
+    pass
