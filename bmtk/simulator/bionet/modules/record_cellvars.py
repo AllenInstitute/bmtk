@@ -86,7 +86,7 @@ class MembraneReport(SimulatorMod):
 
     def _get_var_recorder_cls(self):
         try:
-            in_mpi = h5py.get_cofig().mpi
+            in_mpi = h5py.get_config().mpi
         except Exception as e:
             in_mpi = False
 

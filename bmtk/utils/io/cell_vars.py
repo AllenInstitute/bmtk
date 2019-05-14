@@ -152,7 +152,6 @@ class CellVarRecorder(object):
             self._map_attrs[k].extend(v)
 
     def initialize(self, n_steps, buffer_size=0):
-        print(self.__class__.__mro__)
         self._calc_offset()
         self._create_file()
         self._init_mapping()
