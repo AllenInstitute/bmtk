@@ -129,7 +129,6 @@ class CellVarRecorder(object):
         self._gids_end = self._n_gids_local
 
     def _create_file(self, parallel=False):
-        import ipdb; ipdb.set_trace()
         if parallel:
             self._file_handle = h5py.File(self._file_name, 'w', driver='mpio', comm=comm)
         else:
@@ -413,7 +412,6 @@ class ParallelRecorderMixin():
         self._n_gids_all = total_counts[1]
 
     def _create_file(self, parallel=True):
-        import ipdb; ipdb.set_trace()
         super(ParallelRecorderMixin, self)._create_file(parallel=True)
 
     def merge(self):
