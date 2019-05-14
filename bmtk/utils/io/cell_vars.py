@@ -237,7 +237,6 @@ class CellVarRecorder(object):
             if blk_end > self._total_steps:
                 # Need to handle the case that simulation doesn't end on a block step
                 blk_end = blk_beg + self._total_steps - blk_beg
-            seg_beg, seg_end = self._seg_offset_beg, self._seg_offset_end
 
             block_size = blk_end - blk_beg
             self._last_save_indx += block_size
