@@ -28,17 +28,6 @@ from bmtk.simulator.bionet.modules.sim_module import SimulatorMod
 from bmtk.simulator.bionet.io_tools import io
 
 from bmtk.utils.io import cell_vars
-try:
-    # Check to see if h5py is built to run in parallel
-    if h5py.get_config().mpi:
-        MembraneRecorder = cell_vars.CellVarRecorderParallel
-    else:
-        MembraneRecorder = cell_vars.CellVarRecorder
-
-except Exception as e:
-    MembraneRecorder = cell_vars.CellVarRecorder
-
-MembraneRecorder._io = io
 
 pc = h.ParallelContext()
 MPI_RANK = int(pc.id())
@@ -86,8 +75,12 @@ class MembraneReport(SimulatorMod):
         self._local_gids = []
         self._sections = sections
 
-        self._var_recorder = MembraneRecorder(self._file_name, self._tmp_dir, self._all_variables,
-                                              buffer_data=buffer_data, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)
+        recorder_cls = cell_vars.get_cell_var_recorder_cls(file_name)
+        recorder_cls._io = io
+        self._var_recorder = recorder_cls(
+            self._file_name, self._tmp_dir, self._all_variables,
+            buffer_data=buffer_data, mpi_rank=MPI_RANK, mpi_size=N_HOSTS
+        )
 
         self._gid_list = []  # list of all gids that will have their variables saved
         self._data_block = {}  # table of variable data indexed by [gid][variable]
@@ -119,7 +112,7 @@ class MembraneReport(SimulatorMod):
                     # TODO: Make sure the seg has the recorded variable(s)
                     sec_list.append(sec_id)
                     seg_list.append(seg.x)
-
+                    
             self._var_recorder.add_cell(gid, sec_list, seg_list)
 
         self._var_recorder.initialize(sim.n_steps, sim.nsteps_block)

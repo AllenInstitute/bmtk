@@ -1,7 +1,7 @@
 import os
 import glob
 import pandas as pd
-from bmtk.utils.io.cell_vars import CellVarRecorder
+from bmtk.utils.io.cell_vars import CellVarRecorderH5 as CellVarRecorder
 from bmtk.simulator.pointnet.io_tools import io
 
 import nest
