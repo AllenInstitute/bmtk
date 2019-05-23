@@ -10,14 +10,6 @@ from bmtk.simulator.bionet.io_tools import io
 from bmtk.simulator.bionet.pointprocesscell import PointProcessCell
 
 from bmtk.utils.io import cell_vars
-try:
-    # Check to see if h5py is built to run in parallel
-    if h5py.get_config().mpi:
-        MembraneRecorder = cell_vars.CellVarRecorderParallel
-    else:
-        MembraneRecorder = cell_vars.CellVarRecorder
-except Exception as e:
-    MembraneRecorder = cell_vars.CellVarRecorder
 
 pc = h.ParallelContext()
 MPI_RANK = int(pc.id())
@@ -46,9 +38,13 @@ class NetconReport(SimulatorMod):
         self._all_gids = cells
         self._local_gids = []
         self._sections = sections
-
-        self._var_recorder = MembraneRecorder(self._file_name, self._tmp_dir, self._all_variables,
-                                              buffer_data=buffer_data, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)
+        
+        recorder_cls = cell_vars.get_cell_var_recorder_cls(file_name)
+        recorder_cls._io = io
+        self._var_recorder = recorder_cls(
+            self._file_name, self._tmp_dir, self._all_variables,
+            buffer_data=buffer_data, mpi_rank=MPI_RANK, mpi_size=N_HOSTS
+        )
 
         self._virt_lookup = {}
         self._gid_lookup = {}

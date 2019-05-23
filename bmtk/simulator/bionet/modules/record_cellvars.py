@@ -75,33 +75,16 @@ class MembraneReport(SimulatorMod):
         self._local_gids = []
         self._sections = sections
 
-        recorder_cls = self._get_var_recorder_cls()
+        recorder_cls = cell_vars.get_cell_var_recorder_cls(file_name)
         recorder_cls._io = io
-        self._var_recorder = recorder_cls(self._file_name, self._tmp_dir, self._all_variables,
-                                          buffer_data=buffer_data, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)
+        self._var_recorder = recorder_cls(
+            self._file_name, self._tmp_dir, self._all_variables,
+            buffer_data=buffer_data, mpi_rank=MPI_RANK, mpi_size=N_HOSTS
+        )
 
         self._gid_list = []  # list of all gids that will have their variables saved
         self._data_block = {}  # table of variable data indexed by [gid][variable]
         self._block_step = 0  # time step within a given block
-
-    def _get_var_recorder_cls(self):
-        try:
-            in_mpi = h5py.get_config().mpi
-        except Exception as e:
-            in_mpi = False
-
-        if self._file_name.endswith('.nwb'):
-            # NWB
-            if in_mpi:
-                return cell_vars.CellVarRecorderNWBParallel
-            else:
-                return cell_vars.CellVarRecorderNWB
-        else:
-            # HDF5
-            if in_mpi:
-                return cell_vars.CellVarRecorderParallel
-            else:
-                return cell_vars.CellVarRecorder
 
     def _get_gids(self, sim):
         # get list of gids to save. Will only work for biophysical cells saved on the current MPI rank
@@ -129,7 +112,7 @@ class MembraneReport(SimulatorMod):
                     # TODO: Make sure the seg has the recorded variable(s)
                     sec_list.append(sec_id)
                     seg_list.append(seg.x)
-
+                    
             self._var_recorder.add_cell(gid, sec_list, seg_list)
 
         self._var_recorder.initialize(sim.n_steps, sim.nsteps_block)
@@ -159,7 +142,6 @@ class MembraneReport(SimulatorMod):
 
         pc.barrier()
         self._var_recorder.merge()
-
 
 
 class SomaReport(MembraneReport):

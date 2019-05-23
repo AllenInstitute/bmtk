@@ -20,12 +20,34 @@ except Exception as exc:
     comm = None
     rank = 1
 
-class CellVarRecorder(object):
+
+def get_cell_var_recorder_cls(file_name):
+    """Return the right class for recording cellvars based on the filename and whether parallel h5py is enabled"""
+    try:
+        in_mpi = h5py.get_config().mpi
+    except Exception as e:
+        in_mpi = False
+
+    if file_name.endswith('.nwb'):
+        # NWB
+        if in_mpi:
+            return cell_vars.CellVarRecorderNWBParallel
+        else:
+            return cell_vars.CellVarRecorderNWB
+    else:
+        # HDF5
+        if in_mpi:
+            return cell_vars.CellVarRecorderH5Parallel
+        else:
+            return cell_vars.CellVarRecorderH5
+
+
+class CellVarRecorderH5(object):
     """Used to save cell membrane variables (V, Ca2+, etc) to the described hdf5 format.
 
     For parallel simulations this class will write to a seperate tmp file on each rank, then use the merge method to
     combine the results. This is less efficent, but doesn't require the user to install mpi4py and build h5py in
-    parallel mode. For better performance use the CellVarRecorderParrallel class instead.
+    parallel mode. For better performance use one of the CellVarRecorder{H5,NWB}Parallel classes instead.
     """
     _io = io
 
@@ -50,7 +72,7 @@ class CellVarRecorder(object):
         self._tmp_files = []
         self._saved_file = file_name
 
-        if mpi_size > 1 and not isinstance(self, CellVarRecorderParallel):
+        if mpi_size > 1 and not isinstance(self, ParallelRecorderMixin):
             
             self._io.log_warning('Was unable to run h5py in parallel (mpi) mode.' +
                                  ' Saving of membrane variable(s) may slow down.')
@@ -128,11 +150,8 @@ class CellVarRecorder(object):
         self._gids_beg = 0
         self._gids_end = self._n_gids_local
 
-    def _create_file(self, parallel=False):
-        if parallel:
-            self._file_handle = h5py.File(self._file_name, 'w', driver='mpio', comm=comm)
-        else:
-            self._file_handle = h5py.File(self._file_name, 'w')
+    def _create_file(self, **io_kwargs):
+        self._file_handle = h5py.File(self._file_name, 'w', **io_kwargs)
         add_hdf5_version(self._file_handle)
         add_hdf5_magic(self._file_handle)
 
@@ -159,8 +178,8 @@ class CellVarRecorder(object):
         self._init_buffers()
         
         if not self._buffer_data:
-        # If data is not being buffered and instead written to the main block, we have to add a rank offset
-        # to the gid offset
+            # If data is not being buffered and instead written to the main block,
+            # we have to add a rank offset to the gid offset
             for gid, gid_offset in self._gid_map.items():
                 self._gid_map[gid] = (gid_offset[0] + self._seg_offset_beg, gid_offset[1] + self._seg_offset_beg)
 
@@ -184,7 +203,6 @@ class CellVarRecorder(object):
             var_grp[k][self._seg_offset_beg:self._seg_offset_end] = v
         
     def _init_buffers(self):
-        
         for var_name, data_tables in self._data_blocks.items():
             # If users are trying to save multiple variables in the same file put data table in its own /{var} group
             # (not sonata compliant). Otherwise the data table is located at the root
@@ -293,7 +311,6 @@ class CellVarRecorder(object):
                 for k, v in self._map_attrs.items():
                     mapping_grp[k][beg:end] = v
 
-
                 # shift the index pointer values
                 index_pointer = np.array(tmp_mapping_grp['index_pointer'])
                 update_index = beg + index_pointer
@@ -316,7 +333,7 @@ class CellVarRecorder(object):
                 os.remove(tmp_file)
 
 
-class CellVarRecorderNWB(CellVarRecorder):
+class CellVarRecorderNWB(CellVarRecorderH5):
     def __init__(self, file_name, tmp_dir, variables, buffer_data=True, mpi_rank=0, mpi_size=1):
         super(CellVarRecorderNWB, self).__init__(
             file_name, tmp_dir, variables, buffer_data=buffer_data,
@@ -325,24 +342,24 @@ class CellVarRecorderNWB(CellVarRecorder):
         self._compartments = Compartments('compartments')
         self._compartmentseries = {}
 
-    def _create_file(self, parallel=False):
-        if parallel:
-            self._nwbio = NWBHDF5IO(self._file_name, 'w', comm=comm)
-        else:
-            self._nwbio = NWBHDF5IO(self._file_name, 'w')
+    def _create_file(self, **io_kwargs):
+        self._nwbio = NWBHDF5IO(self._file_name, 'w', **io_kwargs)
         self._file_handle = NWBFile('description', 'id', datetime.now().astimezone()) # TODO: pass in descr, id
 
     def add_cell(self, gid, sec_list, seg_list, **map_attrs):
+        if map_attrs:
+            raise NotImplementedError('Cannot use map_attrs with NWB') # TODO: support this
         self._compartments.add_row(number=sec_list, position=seg_list, id=gid)
         super(CellVarRecorderNWB, self).add_cell(gid, sec_list, seg_list, **map_attrs)
 
     def _init_mapping(self):
-        pass # TODO: add timing info, cell ids?
+        # Cell/section id and pos are in the Compartments table
+        # 1/dt is the rate of the recorded datasets.
+        # tstart was used as session_start_time when creating the NWBFile
+        # nwb doesn't store tstop
+        pass
 
     def _init_buffers(self):
-        if not self._buffer_data:
-            raise NotImplementedError('Must buffer data with CellVarRecorderNWB')
-
         self._file_handle.add_acquisition(self._compartments)
         for var_name, data_tables in self._data_blocks.items():
             cs = CompartmentSeries(
@@ -356,7 +373,8 @@ class CellVarRecorderNWB(CellVarRecorder):
 
         self._nwbio.write(self._file_handle)
 
-        # Re-read data sets to force immediate write upon modification
+        # Re-read data sets so that pynwb forgets it has them in memory
+        # (forces immediate write upon modification)
         self._nwbio.close()
         self._nwbio = NWBHDF5IO(self._file_name, 'a', comm=comm)
         self._file_handle = self._nwbio.read()
@@ -366,18 +384,15 @@ class CellVarRecorderNWB(CellVarRecorder):
     def close(self):
         self._nwbio.close()
 
+    def merge(self):
+        raise NotImplementedError("Can't merge NWB files across ranks")
 
 
 class ParallelRecorderMixin():
     """
-    When inherited along with one of the CellVarRecorder classes, this takes advantage of parallel h5py to writting to the results file across different ranks.
+    When inherited along with one of the CellVarRecorder classes, this takes
+    advantage of parallel h5py to collectively write the results file from multiple ranks.
     """
-    def __init__(self, file_name, tmp_dir, variables, buffer_data=True, mpi_rank=0, mpi_size=1):
-        super(CellVarRecorderParallel, self).__init__(
-            file_name, tmp_dir, variables, buffer_data=buffer_data,
-            mpi_rank=mpi_rank, mpi_size=mpi_size
-        )
-
     def _calc_offset(self):
         # iterate through the ranks let rank r determine the offset from rank r-1
         for r in range(comm.Get_size()):
@@ -410,15 +425,18 @@ class ParallelRecorderMixin():
         self._n_segments_all = total_counts[0]
         self._n_gids_all = total_counts[1]
 
-    def _create_file(self, parallel=True):
-        super(ParallelRecorderMixin, self)._create_file(parallel=True)
-
     def merge(self):
         pass
 
 
-class CellVarRecorderParallel(ParallelRecorderMixin, CellVarRecorder):
-    pass
+class CellVarRecorderH5Parallel(ParallelRecorderMixin, CellVarRecorderH5):
+    def _create_file(self, **io_kwargs):
+        io_kwargs['driver'] = 'mpio'
+        io_kwargs['comm'] = comm
+        super(CellVarRecorderH5Parallel, self)._create_file(**io_kwargs)
 
+        
 class CellVarRecorderNWBParallel(ParallelRecorderMixin, CellVarRecorderNWB):
-    pass
+    def _create_file(self, **io_kwargs):
+        io_kwargs['comm'] = comm
+        super(CellVarRecorderNWBParallel, self)._create_file(**io_kwargs)
