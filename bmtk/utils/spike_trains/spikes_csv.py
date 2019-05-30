@@ -35,6 +35,7 @@ class Rates(object):
     def next(self):
         raise StopIteration
 
+
 class NormalRates(Rates):
     def __init__(self, t_start, t_end, rate_mu, rate_sigma=5.0):
         self.t_start = t_start
@@ -81,18 +82,6 @@ class SpikesGenerator(object):
         gids = gids or self._nodes.keys()
         for gid in gids:
             self._nodes[gid] = NormalRates(t_start, t_end, firing_rate)
-
-    def set_variable_rate(self, firing_rate, gids=None, t_start=None, t_end=None):
-        t_start = t_start or self._t_min
-        assert(t_start >= self._t_min)
-
-        t_end = t_end or self._t_max
-        assert(t_end <= self._t_max)
-
-        gids = gids or self._nodes.keys()
-        for gid in gids:
-            self._nodes[gid] = NormalRates(t_start, t_end, firing_rate)
-        
 
     def save_csv(self, csv_file_name, in_ms=False):
         conv = 1000.0 if in_ms else 1.0
