@@ -37,8 +37,8 @@ N_HOSTS = int(pc.nhost())
 
 
 class EcpMod(SimulatorMod):
-    def __init__(self, tmp_dir, file_name, electrode_positions, contributions_dir=None, cells=[], variable_name='v',
-                 electrode_channels=None):
+    def __init__(self, tmp_dir, file_name, electrode_positions, contributions_dir=None, cells=None, variable_name='v',
+                 electrode_channels=None, cell_bounds=None):
         self._ecp_output = file_name if os.path.isabs(file_name) else os.path.join(tmp_dir, file_name)
         self._positions_file = electrode_positions
         self._tmp_outputdir = tmp_dir
@@ -51,7 +51,10 @@ class EcpMod(SimulatorMod):
             self._save_individ_cells = False
             self._contributions_dir = None
 
-        self._cells = cells
+        if cell_bounds is None:
+            self._cells = cells
+        else:
+            self._cells = list(np.arange(cell_bounds[0],cell_bounds[1]+1))
         self._rel = None
         self._fih1 = None
         self._rel_nsites = 0
