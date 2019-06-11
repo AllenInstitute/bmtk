@@ -6,16 +6,6 @@ from bmtk.utils import io
 from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
 
 
-try:
-    from mpi4py import MPI
-    comm = MPI.COMM_WORLD
-    rank = comm.Get_rank()
-    nhosts = comm.Get_size()
-
-except Exception as exc:
-    pass
-
-
 class CellVarRecorder(object):
     """Used to save cell membrane variables (V, Ca2+, etc) to the described hdf5 format.
 
@@ -315,6 +305,11 @@ class CellVarRecorderParallel(CellVarRecorder):
                                               mpi_size=1)
 
     def _calc_offset(self):
+        from mpi4py import MPI
+        comm = io.bmtk_world_comm.comm
+        rank = comm.Get_rank()
+        nhosts = comm.Get_size()
+
         # iterate through the ranks let rank r determine the offset from rank r-1
         for r in range(comm.Get_size()):
             if rank == r:
@@ -346,7 +341,7 @@ class CellVarRecorderParallel(CellVarRecorder):
         self._n_gids_all = total_counts[1]
 
     def _create_h5_file(self):
-        self._h5_handle = h5py.File(self._file_name, 'w', driver='mpio', comm=MPI.COMM_WORLD)
+        self._h5_handle = h5py.File(self._file_name, 'w', driver='mpio', comm=io.bmtk_world_comm.comm)
         add_hdf5_version(self._h5_handle)
         add_hdf5_magic(self._h5_handle)
 

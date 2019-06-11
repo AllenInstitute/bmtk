@@ -7,17 +7,8 @@ import csv
 from .core import pop_na, STReader, STBuffer
 from .core import SortOrder
 from .core import csv_headers
+from bmtk.utils.io import bmtk_world_comm
 
-try:
-    from mpi4py import MPI
-    comm = MPI.COMM_WORLD
-    MPI_rank = comm.Get_rank()
-    MPI_size = comm.Get_size()
-    barrier = comm.Barrier
-except:
-    MPI_rank = 0
-    MPI_size = 1
-    barrier = lambda: None
 
 """
 class DiskBuffer(object):
@@ -384,20 +375,20 @@ class STCSVBuffer(STBuffer, STReader):
 
 class STMPIBuffer(STCSVBuffer):
     def __init__(self, cache_dir=None, default_population=None, **kwargs):
-        self.mpi_rank = kwargs.get('MPI_rank', MPI_rank)
-        self.mpi_size = kwargs.get('MPI_size', MPI_size)
+        self.mpi_rank = kwargs.get('MPI_rank', bmtk_world_comm.MPI_rank)
+        self.mpi_size = kwargs.get('MPI_size', bmtk_world_comm.MPI_size)
         super(STMPIBuffer, self).__init__(cache_dir, default_population=default_population, **kwargs)
 
     def _cache_fname(self, cache_dir):
         if self.mpi_rank == 0:
             if not os.path.exists(self._cache_dir):
                 os.mkdirs(self._cache_dir)
-        barrier()
+        bmtk_world_comm.barrier()
 
         return os.path.join(self._cache_dir, '.bmtk.spikes.cache.node{}.csv'.format(self.mpi_rank))
 
     def _all_cached_files(self):
-        return [os.path.join(self._cache_dir, '.bmtk.spikes.cache.node{}.csv'.format(r)) for r in range(MPI_size)]
+        return [os.path.join(self._cache_dir, '.bmtk.spikes.cache.node{}.csv'.format(r)) for r in range(bmtk_world_comm.MPI_size)]
 
     @property
     def populations(self):
