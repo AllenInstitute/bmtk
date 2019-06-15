@@ -63,6 +63,10 @@ class PointNetwork(SimNetwork):
     def gid_map(self):
         return self._gid_map
 
+    def get_nodes_df(self, population):
+        nodes_adaptor = self.get_node_population(population)
+        return nodes_adaptor.nodes_df()
+
     def __get_params(self, node_params):
         if node_params.with_dynamics_params:
             # TODO: use property, not name
@@ -95,10 +99,11 @@ class PointNetwork(SimNetwork):
     def get_weight_function(self, name):
         return self.__weight_functions[name]
 
-    def build_nodes(self):
-        #print [p.name for p in self.node_populations]
-        # exit()
+    def get_node_id(self, population, node_id):
+        pop = self.get_node_population(population)
+        return pop.get_node(node_id)
 
+    def build_nodes(self):
         for node_pop in self.node_populations:
             pop_name = node_pop.name
             gid_map = self.gid_map
@@ -140,6 +145,8 @@ class PointNetwork(SimNetwork):
             src_nest_ids = self._nest_id_map[edge_pop.source_nodes]
             trg_nest_ids = self._nest_id_map[edge_pop.target_nodes]
             for edge in edge_pop.get_edges():
+                # print(edge)
+                # print(edge.nest_params)
                 nest_srcs = [src_nest_ids[nid] for nid in edge.source_node_ids]
                 nest_trgs = [trg_nest_ids[nid] for nid in edge.target_node_ids]
                 nest.Connect(nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=edge.nest_params)
