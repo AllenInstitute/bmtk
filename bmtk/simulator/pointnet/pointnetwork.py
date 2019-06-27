@@ -24,6 +24,7 @@ import os
 import json
 import functools
 import nest
+from six import string_types
 import numpy as np
 
 from bmtk.simulator.core.simulator_network import SimNetwork
@@ -45,7 +46,7 @@ class PointNetwork(SimNetwork):
 
         self._batch_nodes = True
 
-        self._nest_id_map = {}
+        # self._nest_id_map = {}
         self._nestid2nodeid_map = {}
 
         self._nestid2gid = {}
@@ -54,6 +55,7 @@ class PointNetwork(SimNetwork):
         self._gid2nestid = {}
 
         self._gid_map = GidPool()
+        self._virtual_gids = GidPool()
 
     @property
     def py_function_caches(self):
@@ -89,12 +91,12 @@ class PointNetwork(SimNetwork):
         self._edge_adaptors['sonata'] = PointEdgeAdaptor
 
     # TODO: reimplement with py_modules like in bionet
-    def add_weight_function(self, function, name=None):
+    def add_weight_function(self, fnc, name=None, **kwargs):
         fnc_name = name if name is not None else function.__name__
-        self.__weight_functions[fnc_name] = functools.partial(function)
+        self.__weight_functions[fnc_name] = functools.partial(fnc)
 
-    def set_default_weight_function(self, function):
-        self.add_weight_function(function, 'default_weight_fnc', overwrite=True)
+    def set_default_weight_function(self, fnc):
+        self.add_weight_function(fnc, 'default_weight_fnc', overwrite=True)
 
     def get_weight_function(self, name):
         return self.__weight_functions[name]
@@ -109,32 +111,36 @@ class PointNetwork(SimNetwork):
             gid_map = self.gid_map
 
             gid_map.create_pool(pop_name)
-            nid2nest_map = {}
-            nest2nid_map = {}
+            # nid2nest_map = {}
+            # nest2nid_map = {}
             if node_pop.internal_nodes_only:
                 for node in node_pop.get_nodes():
                     node.build()
+                    gid_map.add_nestids(name=pop_name, node_ids=node.node_ids, nest_ids=node.nest_ids)
+                    '''
                     for nid, gid, nest_id in zip(node.node_ids, node.gids, node.nest_ids):
-                        gid_map.add(name=pop_name, node_id=nid, gid=nest_id)
+                        # gid_map.add(name=pop_name, node_id=nid, gid=nest_id)
 
                         self._nestid2gid[nest_id] = gid
                         self._gid2nestid[gid] = nest_id
                         nid2nest_map[nid] = nest_id
                         nest2nid_map[nest_id] = nid
+                    '''
 
             elif node_pop.mixed_nodes:
                 for node in node_pop.get_nodes():
                     if node.model_type != 'virtual':
                         node.build()
+                        gid_map.add_nestids(name=pop_name, node_ids=node.node_ids, nest_ids=node.nest_ids)
+                        '''
                         for nid, gid, nest_id in zip(node.node_ids, node.gids, node.nest_ids):
                             gid_map.add(name=pop_name, node_id=nid, gid=nest_id)
-                            #self._nestid2gid[nest_id] = gid
-                            #self._gid2nestid[gid] = nest_id
                             nid2nest_map[nid] = nest_id
                             nest2nid_map[nest_id] = nid
+                        '''
 
-            self._nest_id_map[node_pop.name] = nid2nest_map
-            self._nestid2nodeid_map[node_pop.name] = nest2nid_map
+            #self._nest_id_map[node_pop.name] = nid2nest_map
+            #self._nestid2nodeid_map[node_pop.name] = nest2nid_map
 
     def build_recurrent_edges(self):
         recurrent_edge_pops = [ep for ep in self._edge_populations if not ep.virtual_connections]
@@ -142,13 +148,9 @@ class PointNetwork(SimNetwork):
             return
 
         for edge_pop in recurrent_edge_pops:
-            src_nest_ids = self._nest_id_map[edge_pop.source_nodes]
-            trg_nest_ids = self._nest_id_map[edge_pop.target_nodes]
             for edge in edge_pop.get_edges():
-                # print(edge)
-                # print(edge.nest_params)
-                nest_srcs = [src_nest_ids[nid] for nid in edge.source_node_ids]
-                nest_trgs = [trg_nest_ids[nid] for nid in edge.target_node_ids]
+                nest_srcs = self.gid_map.get_nestids(edge_pop.source_nodes, edge.source_node_ids)
+                nest_trgs = self.gid_map.get_nestids(edge_pop.target_nodes, edge.target_node_ids)
                 nest.Connect(nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=edge.nest_params)
 
     def find_edges(self, source_nodes=None, target_nodes=None):
@@ -166,19 +168,18 @@ class PointNetwork(SimNetwork):
     def add_spike_trains(self, spike_trains, node_set):
         # Build the virtual nodes
         src_nodes = [node_pop for node_pop in self.node_populations if node_pop.name in node_set.population_names()]
+        virt_gid_map = self._virtual_gids
         for node_pop in src_nodes:
             if node_pop.name in self._virtual_ids_map:
-                 continue
+                continue
 
             virt_node_map = {}
             if node_pop.virtual_nodes_only:
                 for node in node_pop.get_nodes():
-                    nest_ids = nest.Create('spike_generator', node.n_nodes, {})
+                    nest_ids = nest.Create('spike_generator', node.n_nodes, {'allow_offgrid_spikes': True})
+                    virt_gid_map.add_nestids(name=node_pop.name, nest_ids=nest_ids, node_ids=node.node_ids)
                     for node_id, nest_id in zip(node.node_ids, nest_ids):
                         virt_node_map[node_id] = nest_id
-                        #print(node_id, node_pop.name)
-                        #print(nest_id)
-                        #print self.gid_map.get_pool_id(nest_id)
                         nest.SetStatus([nest_id],
                                        {'spike_times': np.array(spike_trains.get_times(node_id=node_id))})
 
@@ -187,7 +188,7 @@ class PointNetwork(SimNetwork):
                     if node.model_type != 'virtual':
                         continue
 
-                    nest_ids = nest.Create('spike_generator', node.n_nodes, {})
+                    nest_ids = nest.Create('spike_generator', node.n_nodes, {'allow_offgrid_spikes': True})
                     for node_id, nest_id in zip(node.node_ids, nest_ids):
                         virt_node_map[node_id] = nest_id
                         nest.SetStatus([nest_id], {'spike_times': np.array(spike_trains.get_times(node_id=node_id))})
@@ -197,9 +198,7 @@ class PointNetwork(SimNetwork):
         # Create virtual synaptic connections
         for source_reader in src_nodes:
             for edge_pop in self.find_edges(source_nodes=source_reader.name):
-                src_nest_ids = self._virtual_ids_map[edge_pop.source_nodes]
-                trg_nest_ids = self._nest_id_map[edge_pop.target_nodes]
                 for edge in edge_pop.get_edges():
-                    nest_srcs = [src_nest_ids[nid] for nid in edge.source_node_ids]
-                    nest_trgs = [trg_nest_ids[nid] for nid in edge.target_node_ids]
+                    nest_trgs = self.gid_map.get_nestids(edge_pop.target_nodes, edge.target_node_ids)
+                    nest_srcs = virt_gid_map.get_nestids(edge_pop.source_nodes, edge.source_node_ids)
                     nest.Connect(nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=edge.nest_params)

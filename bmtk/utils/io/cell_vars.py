@@ -24,7 +24,7 @@ class CellVarRecorder(object):
             self.data_block = None
             self.buffer_block = None
 
-    def __init__(self, file_name, tmp_dir, variables, buffer_data=True, mpi_rank=0, mpi_size=1):
+    def __init__(self, file_name, tmp_dir, variables, buffer_data=True, mpi_rank=0, mpi_size=1, **kwargs):
         self._file_name = file_name
         self._h5_handle = None
         self._tmp_dir = tmp_dir
@@ -35,6 +35,8 @@ class CellVarRecorder(object):
         self._mpi_size = mpi_size
         self._tmp_files = []
         self._saved_file = file_name
+        self._population = kwargs.get('population', None)
+        self._units = kwargs.get('units', None)
 
         if mpi_size > 1:
             self._io.log_warning('Was unable to run h5py in parallel (mpi) mode.' +
@@ -139,17 +141,19 @@ class CellVarRecorder(object):
         self._calc_offset()
         self._create_h5_file()
 
-        var_grp = self._h5_handle.create_group('/mapping')
-        var_grp.create_dataset('gids', shape=(self._n_gids_all,), dtype=np.uint)
-        var_grp.create_dataset('element_id', shape=(self._n_segments_all,), dtype=np.uint)
+        root_name = '/report/{}'.format(self._population) if self._population is not None else '/'
+        var_grp = self._h5_handle.create_group('{}/mapping'.format(root_name))
+        var_grp.create_dataset('node_ids', shape=(self._n_gids_all,), dtype=np.uint)
+        var_grp.create_dataset('element_ids', shape=(self._n_segments_all,), dtype=np.uint)
         var_grp.create_dataset('element_pos', shape=(self._n_segments_all,), dtype=np.float)
         var_grp.create_dataset('index_pointer', shape=(self._n_gids_all+1,), dtype=np.uint64)
         var_grp.create_dataset('time', data=[self.tstart, self.tstop, self.dt])
+        var_grp['time'].attrs['units'] = 'ms'
         for k, v in self._map_attrs.items():
             var_grp.create_dataset(k, shape=(self._n_segments_all,), dtype=type(v[0]))
 
-        var_grp['gids'][self._gids_beg:self._gids_end] = self._mapping_gids
-        var_grp['element_id'][self._seg_offset_beg:self._seg_offset_end] = self._mapping_element_ids
+        var_grp['node_ids'][self._gids_beg:self._gids_end] = self._mapping_gids
+        var_grp['element_ids'][self._seg_offset_beg:self._seg_offset_end] = self._mapping_element_ids
         var_grp['element_pos'][self._seg_offset_beg:self._seg_offset_end] = self._mapping_element_pos
         var_grp['index_pointer'][self._gids_beg:(self._gids_end+1)] = self._mapping_index
         for k, v in self._map_attrs.items():
@@ -170,14 +174,18 @@ class CellVarRecorder(object):
             if self._buffer_data:
                 # Set up in-memory block to buffer recorded variables before writing to the dataset
                 data_tables.buffer_block = np.zeros((buffer_size, self._n_segments_local), dtype=np.float)
-                data_tables.data_block = data_grp.create_dataset('data', shape=(n_steps, self._n_segments_all),
+                data_tables.data_block = data_grp.create_dataset('{}/data'.format(root_name), shape=(n_steps, self._n_segments_all),
                                                                  dtype=np.float, chunks=True)
-                data_tables.data_block.attrs['variable_name'] = var_name
+                #data_tables.data_block.attrs['variable_name'] = var_name
+                if self._units is not None:
+                    data_tables.data_block.attrs['units'] = self._units
             else:
                 # Since we are not buffering data, we just write directly to the on-disk dataset
-                data_tables.buffer_block = data_grp.create_dataset('data', shape=(n_steps, self._n_segments_all),
+                data_tables.buffer_block = data_grp.create_dataset('{}/data'.format(root_name), shape=(n_steps, self._n_segments_all),
                                                                    dtype=np.float, chunks=True)
-                data_tables.buffer_block.attrs['variable_name'] = var_name
+                # data_tables.buffer_block.attrs['variable_name'] = var_name
+                if self._units is not None:
+                    data_tables.buffer_block.attrs['units'] = self._units
 
         self._is_initialized = True
 
@@ -300,9 +308,9 @@ class CellVarRecorderParallel(CellVarRecorder):
     Unlike the parent, this take advantage of parallel h5py to writting to the results file across different ranks.
 
     """
-    def __init__(self, file_name, tmp_dir, variables, buffer_data=True):
+    def __init__(self, file_name, tmp_dir, variables, buffer_data=True, **kwargs):
         super(CellVarRecorder, self).__init__(file_name, tmp_dir, variables, buffer_data=buffer_data, mpi_rank=0,
-                                              mpi_size=1)
+                                              mpi_size=1, **kwargs)
 
     def _calc_offset(self):
         from mpi4py import MPI

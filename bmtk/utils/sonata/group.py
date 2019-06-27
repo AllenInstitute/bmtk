@@ -262,6 +262,7 @@ class NodeGroup(Group):
         type_filter = False
         group_prop_filter = {}  # list of 'prop_name'==prov_val for group datasets
         group_filter = False
+        node_id_filter = []
 
         # Build key==value lists
         for filter_key, filter_val in filter_props.items():
@@ -276,6 +277,9 @@ class NodeGroup(Group):
                 node_type_filter &= set(node_types_table.find(filter_key, filter_val))
                 type_filter = True
 
+            elif filter_key in ['node_id', 'node_ids']:
+                node_id_filter += filter_val
+
             else:
                 # TODO: should we raise an exception?
                 # TODO: User logger
@@ -287,6 +291,9 @@ class NodeGroup(Group):
             node = self._parent.get_row(indx)
             if type_filter and node.node_type_id not in node_type_filter:
                 # confirm node_type_id is a correct one
+                continue
+
+            if node_id_filter and node.node_id not in node_id_filter:
                 continue
 
             if group_filter:
