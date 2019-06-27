@@ -277,9 +277,9 @@ class PointEdgeAdaptor(EdgeAdaptor):
         if 'delay' in edge_group.columns:
             tmp_df['delay'] = edge_group.get_dataset('delay')
 
-        for et_id, grp_vals in tmp_df.groupby('etid'):
-            src_ids[et_id] = np.array(grp_vals['src_nids'])
-            trg_ids[et_id] = np.array(grp_vals['trg_nids'])
+        #for et_id, grp_vals in tmp_df.groupby('etid'):
+        #    src_ids[et_id] = np.array(grp_vals['src_nids'])
+        #    trg_ids[et_id] = np.array(grp_vals['trg_nids'])
 
         type_params = {edge_id: {} for edge_id in et_id_counter.keys()}
         src_pop = edge_group.parent.source_population
@@ -335,11 +335,24 @@ class PointEdgeAdaptor(EdgeAdaptor):
                 # caluclate weight
                 type_params[edge_id]['weight'] = nsyns * syn_weight
 
+            yield PointEdgeBatched(source_nids=grp_vals['src_nids'].values, target_nids=grp_vals['trg_nids'].values,
+                                   nest_params=type_params[edge_id])
+
+            #print(type_params[edge_id])
+            #print(src_ids[edge_id])
+            #print(grp_vals['src_nids'].values)
+            #print(trg_ids[edge_id])
+            #print(grp_vals['trg_nids'].values)
+            #exit()
+
+
+        '''
         batched_edges = []
         for et_id in et_id_counter.keys():
             batched_edges.append(PointEdgeBatched(src_ids[et_id], trg_ids[et_id], type_params[et_id]))
 
         return batched_edges
+        '''
 
     @staticmethod
     def patch_adaptor(adaptor, edge_group):
