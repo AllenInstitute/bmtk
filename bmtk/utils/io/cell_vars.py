@@ -141,19 +141,22 @@ class CellVarRecorder(object):
         self._calc_offset()
         self._create_h5_file()
 
-        root_name = '/report/{}'.format(self._population) if self._population is not None else '/'
-        var_grp = self._h5_handle.create_group('{}/mapping'.format(root_name))
-        var_grp.create_dataset('node_ids', shape=(self._n_gids_all,), dtype=np.uint)
-        var_grp.create_dataset('element_ids', shape=(self._n_segments_all,), dtype=np.uint)
+        #root_name = '/report/{}'.format(self._population) if self._population is not None else '/'
+        var_grp = self._h5_handle.create_group('/mapping')
+        # TODO: gids --> node_ids
+        var_grp.create_dataset('gids', shape=(self._n_gids_all,), dtype=np.uint)
+        # TODO: element_id --> element_ids
+        var_grp.create_dataset('element_id', shape=(self._n_segments_all,), dtype=np.uint)
         var_grp.create_dataset('element_pos', shape=(self._n_segments_all,), dtype=np.float)
         var_grp.create_dataset('index_pointer', shape=(self._n_gids_all+1,), dtype=np.uint64)
         var_grp.create_dataset('time', data=[self.tstart, self.tstop, self.dt])
+        # TODO: Let user determine value
         var_grp['time'].attrs['units'] = 'ms'
         for k, v in self._map_attrs.items():
             var_grp.create_dataset(k, shape=(self._n_segments_all,), dtype=type(v[0]))
 
-        var_grp['node_ids'][self._gids_beg:self._gids_end] = self._mapping_gids
-        var_grp['element_ids'][self._seg_offset_beg:self._seg_offset_end] = self._mapping_element_ids
+        var_grp['gids'][self._gids_beg:self._gids_end] = self._mapping_gids
+        var_grp['element_id'][self._seg_offset_beg:self._seg_offset_end] = self._mapping_element_ids
         var_grp['element_pos'][self._seg_offset_beg:self._seg_offset_end] = self._mapping_element_pos
         var_grp['index_pointer'][self._gids_beg:(self._gids_end+1)] = self._mapping_index
         for k, v in self._map_attrs.items():
@@ -174,18 +177,20 @@ class CellVarRecorder(object):
             if self._buffer_data:
                 # Set up in-memory block to buffer recorded variables before writing to the dataset
                 data_tables.buffer_block = np.zeros((buffer_size, self._n_segments_local), dtype=np.float)
-                data_tables.data_block = data_grp.create_dataset('{}/data'.format(root_name), shape=(n_steps, self._n_segments_all),
+                data_tables.data_block = data_grp.create_dataset('data', shape=(n_steps, self._n_segments_all),
                                                                  dtype=np.float, chunks=True)
-                #data_tables.data_block.attrs['variable_name'] = var_name
+                # TODO: Remove Variable name
+                data_tables.data_block.attrs['variable_name'] = var_name
                 if self._units is not None:
                     data_tables.data_block.attrs['units'] = self._units
             else:
                 # Since we are not buffering data, we just write directly to the on-disk dataset
-                data_tables.buffer_block = data_grp.create_dataset('{}/data'.format(root_name), shape=(n_steps, self._n_segments_all),
+                data_tables.buffer_block = data_grp.create_dataset('data', shape=(n_steps, self._n_segments_all),
                                                                    dtype=np.float, chunks=True)
-                # data_tables.buffer_block.attrs['variable_name'] = var_name
+                data_tables.buffer_block.attrs['variable_name'] = var_name
                 if self._units is not None:
                     data_tables.buffer_block.attrs['units'] = self._units
+
 
         self._is_initialized = True
 

@@ -176,7 +176,7 @@ class PointNetwork(SimNetwork):
             virt_node_map = {}
             if node_pop.virtual_nodes_only:
                 for node in node_pop.get_nodes():
-                    nest_ids = nest.Create('spike_generator', node.n_nodes, {'allow_offgrid_spikes': True})
+                    nest_ids = nest.Create('spike_generator', node.n_nodes, {'precise_times': True})
                     virt_gid_map.add_nestids(name=node_pop.name, nest_ids=nest_ids, node_ids=node.node_ids)
                     for node_id, nest_id in zip(node.node_ids, nest_ids):
                         virt_node_map[node_id] = nest_id
@@ -188,7 +188,7 @@ class PointNetwork(SimNetwork):
                     if node.model_type != 'virtual':
                         continue
 
-                    nest_ids = nest.Create('spike_generator', node.n_nodes, {'allow_offgrid_spikes': True})
+                    nest_ids = nest.Create('spike_generator', node.n_nodes, {'precise_times': True})
                     for node_id, nest_id in zip(node.node_ids, nest_ids):
                         virt_node_map[node_id] = nest_id
                         nest.SetStatus([nest_id], {'spike_times': np.array(spike_trains.get_times(node_id=node_id))})
