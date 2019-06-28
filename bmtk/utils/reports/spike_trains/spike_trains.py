@@ -10,23 +10,13 @@ from .adaptors import find_file_type
 from .spike_train_buffer import STMemoryBuffer, STCSVBuffer, STMPIBuffer
 
 from bmtk.utils.sonata.utils import get_node_ids
-
-try:
-    from mpi4py import MPI
-    comm = MPI.COMM_WORLD
-    MPI_rank = comm.Get_rank()
-    MPI_size = comm.Get_size()
-    barrier = comm.Barrier
-except:
-    MPI_rank = 0
-    MPI_size = 1
-    barrier = lambda: None
+from bmtk.utils.io import bmtk_world_comm
 
 
 class SpikeTrains(object):
     def __init__(self, adaptor=None, **kwargs):
         if adaptor is None:
-            if MPI_size > 1:
+            if bmtk_world_comm.MPI_size > 1:
                 self._adaptor = STMPIBuffer(**kwargs)
             else:
                 self._adaptor = STCSVBuffer(**kwargs)
@@ -116,15 +106,15 @@ class SpikeTrains(object):
 
     def to_csv(self, path, mode='w', sort_order=sort_order.none, **kwargs):
         # self._write_adaptor.flush()
-        if MPI_rank == 0:
+        if bmtk_world_comm.MPI_rank == 0:
             write_csv(path=path, spiketrain_reader=self.read_adaptor, mode=mode, sort_order=sort_order, **kwargs)
 
     def to_sonata(self, path, mode='a', sort_order=sort_order.none, **kwargs):
         if isinstance(self.write_adaptor, STBuffer):
             self.write_adaptor.flush()
-        if MPI_rank == 0:
+        if bmtk_world_comm.MPI_rank == 0:
             write_sonata(path=path, spiketrain_reader=self.read_adaptor, mode=mode, sort_order=sort_order, **kwargs)
-        barrier()
+        bmtk_world_comm.barrier()
 
     def is_equal(self, other, populations=None, err=0.00001, time_window=None):
         if populations is None:

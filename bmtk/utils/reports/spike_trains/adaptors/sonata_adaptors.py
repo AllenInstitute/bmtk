@@ -8,18 +8,7 @@ from collections import defaultdict
 from ..core import SortOrder, STReader
 from ..core import col_node_ids, col_timestamps, col_population, pop_na, find_conversion, csv_headers
 from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
-
-
-try:
-    from mpi4py import MPI
-    comm = MPI.COMM_WORLD
-    MPI_rank = comm.Get_rank()
-    MPI_size = comm.Get_size()
-    barrier = comm.Barrier
-except:
-    MPI_rank = 0
-    MPI_size = 1
-    barrier = lambda: None
+from bmtk.utils.io import bmtk_world_comm
 
 
 GRP_spikes_root = 'spikes'

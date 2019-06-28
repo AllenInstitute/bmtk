@@ -237,7 +237,14 @@ class NodePopulation(Population):
         self._has_gids = True
 
     def to_dataframe(self):
-        raise NotImplementedError
+        if len(self.groups) == 1:
+            return self.get_group(self.group_ids[0]).to_dataframe()
+        else:
+            dataframes = pd.DataFrame()
+            for grp_id in self.group_ids:
+                dataframes = dataframes.append(self.get_group(grp_id).to_dataframe(), sort=False)
+            dataframes = dataframes.set_index('node_id')
+            return dataframes
 
     def get_row(self, row_indx):
         # TODO: Use helper function so we don't have to lookup gid/node_id twice
@@ -400,7 +407,8 @@ class EdgePopulation(Population):
         return self._types_table
 
     def to_dataframe(self):
-        raise NotImplementedError
+        raise NotImplementedError()
+
 
     def build_indicies(self):
         if 'indicies' in self._pop_group:
@@ -439,7 +447,10 @@ class EdgePopulation(Population):
     def _build_group(self, group_id, group_h5):
         return EdgeGroup(group_id, group_h5, self)
 
-    def group_indicies(self, group_id, build_cache=False):
+    def group_indicies(self, group_id, build_cache=False, as_list=False):
+        if as_list:
+            return super(EdgePopulation, self).group_indicies(group_id, build_cache)
+
         # For nodes it's safe to just keep a list of all indicies that map onto a given group. For edges bc there are
         # many more rows (and typically a lot less groups), We want to build an index like for source/target ids
         if len(self._group_map) == 1:
@@ -499,7 +510,14 @@ class EdgePopulation(Population):
             del filter_props['edge_type_id']
             types_filter = True
 
-        selected_groups = set(self._group_map.keys())  # list of grp_id's that will be used
+        if 'group_id' in filter_props:
+            grp_id = filter_props['group_id']
+            grp_id = [grp_id] if np.isscalar(grp_id) else grp_id
+            selected_groups = set(grp_id)
+            del filter_props['group_id']
+        else:
+            selected_groups = set(self._group_map.keys())  # list of grp_id's that will be used
+
         group_prop_filter = {}  # list of actual query statements
         group_filter = False  # do we need to filter results by group_id
 
