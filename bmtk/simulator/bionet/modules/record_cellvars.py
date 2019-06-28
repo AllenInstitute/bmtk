@@ -55,7 +55,7 @@ transforms_table = {
 
 
 class MembraneReport(SimulatorMod):
-    def __init__(self, tmp_dir, file_name, variable_name, cells, sections='all', buffer_data=True, transform={}):
+    def __init__(self, tmp_dir, file_name, variable_name, cells, sections='all', buffer_data=True, transform={}, **kwargs):
         """Module used for saving NEURON cell properities at each given step of the simulation.
 
         :param tmp_dir:
@@ -87,7 +87,7 @@ class MembraneReport(SimulatorMod):
         self._sections = sections
 
         self._var_recorder = MembraneRecorder(self._file_name, self._tmp_dir, self._all_variables,
-                                              buffer_data=buffer_data, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)
+                                              buffer_data=buffer_data, mpi_rank=MPI_RANK, mpi_size=N_HOSTS, **kwargs)
 
         self._gid_list = []  # list of all gids that will have their variables saved
         self._data_block = {}  # table of variable data indexed by [gid][variable]
@@ -153,9 +153,9 @@ class MembraneReport(SimulatorMod):
 
 class SomaReport(MembraneReport):
     """Special case for when only needing to save the soma variable"""
-    def __init__(self, tmp_dir, file_name, variable_name, cells, sections='soma', buffer_data=True, transform={}):
+    def __init__(self, tmp_dir, file_name, variable_name, cells, sections='soma', buffer_data=True, transform={}, **kwargs):
         super(SomaReport, self).__init__(tmp_dir=tmp_dir, file_name=file_name, variable_name=variable_name, cells=cells,
-                                         sections=sections, buffer_data=buffer_data, transform=transform)
+                                         sections=sections, buffer_data=buffer_data, transform=transform, **kwargs)
 
     def initialize(self, sim):
         self._get_gids(sim)
