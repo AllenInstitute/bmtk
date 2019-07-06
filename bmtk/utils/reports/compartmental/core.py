@@ -1,0 +1,2 @@
+class CompartmentReader(object):
+    pass
