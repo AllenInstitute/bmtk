@@ -66,10 +66,16 @@ class PointSimulator(Simulator):
 
         self._inputs = {}  # Used to hold references to nest input objects (current_generators, etc)
 
+        # TODO: Make this a parameter in the config file
+        # TODO: Allow different inputs to have different options
+        self._sg_params = {'precise_times': True}
+
         # Reset the NEST kernel for a new simualtion
         # TODO: move this into it's own function and make sure it is called before network is built
         nest.ResetKernel()
         nest.SetKernelStatus({"resolution": self._dt, "overwrite_files": self._overwrite, "print_time": print_time})
+
+
 
     @property
     def tstart(self):
@@ -98,6 +104,12 @@ class PointSimulator(Simulator):
     @property
     def gid_map(self):
         return self._graph._nestid2gid
+
+    def set_spike_generator_params(self, **params):
+        self._sg_params = params
+
+    def get_spike_generator_params(self):
+        return self._sg_params
 
     def _get_block_trial(self, duration):
         """
@@ -207,6 +219,9 @@ class PointSimulator(Simulator):
             network.tstop = run_dict['duration']
         elif 'tstop' in run_dict:
             network.tstop = run_dict['tstop']
+
+        if run_dict.get('allow_offgrid_spikes', False):
+            network.set_spike_generator_params(allow_offgrid_spikes=True)
 
         # Create the output-directory, or delete existing files if it already exists
         graph.io.log_info('Setting up output directory')
