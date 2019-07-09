@@ -165,7 +165,7 @@ class PointNetwork(SimNetwork):
 
         return selected_edges
 
-    def add_spike_trains(self, spike_trains, node_set):
+    def add_spike_trains(self, spike_trains, node_set, sg_params={'precise_times': True}):
         # Build the virtual nodes
         src_nodes = [node_pop for node_pop in self.node_populations if node_pop.name in node_set.population_names()]
         virt_gid_map = self._virtual_gids
@@ -176,7 +176,7 @@ class PointNetwork(SimNetwork):
             virt_node_map = {}
             if node_pop.virtual_nodes_only:
                 for node in node_pop.get_nodes():
-                    nest_ids = nest.Create('spike_generator', node.n_nodes, {'precise_times': True})
+                    nest_ids = nest.Create('spike_generator', node.n_nodes, sg_params)
                     virt_gid_map.add_nestids(name=node_pop.name, nest_ids=nest_ids, node_ids=node.node_ids)
                     for node_id, nest_id in zip(node.node_ids, nest_ids):
                         virt_node_map[node_id] = nest_id
@@ -188,7 +188,7 @@ class PointNetwork(SimNetwork):
                     if node.model_type != 'virtual':
                         continue
 
-                    nest_ids = nest.Create('spike_generator', node.n_nodes, {'precise_times': True})
+                    nest_ids = nest.Create('spike_generator', node.n_nodes, sg_params)
                     for node_id, nest_id in zip(node.node_ids, nest_ids):
                         virt_node_map[node_id] = nest_id
                         nest.SetStatus([nest_id], {'spike_times': np.array(spike_trains.get_times(node_id=node_id))})
