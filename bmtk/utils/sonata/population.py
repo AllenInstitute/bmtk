@@ -122,7 +122,7 @@ class Population(object):
         else:
             tmp_index = pd.DataFrame()
             # TODO: Need to check the memory overhead, especially for edges. See if an iterative search is just as fast
-            tmp_index['grp_id'] = pd.Series(self._group_id_ds, dtype=self._group_id_ds.dtype)
+            tmp_index['grp_id'] = pd.Series(self._group_id_ds[()], dtype=self._group_id_ds.dtype)
             tmp_index['row_indx'] = pd.Series(range_itr(self._nrows), dtype=np.uint32)
             if build_cache:
                 # save all indicies as arrays
