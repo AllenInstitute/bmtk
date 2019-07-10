@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import pytest
 import six
@@ -8,6 +9,8 @@ from bmtk.utils.reports.spike_trains import SpikeTrains, sort_order, pop_na
 
 
 def load_spike_trains(file_path):
+    cpath = os.path.dirname(os.path.realpath(__file__))
+    file_path = os.path.join(cpath, file_path)
     if file_path.endswith('.csv'):
         return SpikeTrains.from_csv(file_path)
 
@@ -18,6 +21,13 @@ def load_spike_trains(file_path):
         return SpikeTrains.from_nwb(file_path)
 
 
+@pytest.mark.parametrize('file_path,pop_name',
+                         [
+                             ('spike_files/spikes.noheader.nopop.csv', pop_na),
+                             ('spike_files/spikes.one_pop.csv', 'v1'),
+                             ('spike_files/spikes.one_pop.h5', 'v1'),
+                             ('spike_files/spikes.onepop.v1.0.nwb', pop_na)
+                         ])
 def test_spikes_nopopulation(file_path, pop_name):
     spikes = load_spike_trains(file_path)  # SpikeTrains.from_csv(file_path)
     assert(len(spikes.populations) == 1)
@@ -101,6 +111,11 @@ def test_spikes_nopopulation(file_path, pop_name):
         spike_counts += 1
     assert(spike_counts == 124)
 
+
+@pytest.mark.parametrize('file_path,pop_name',
+                         [
+                             ('spike_files/spikes.old.h5', pop_na)
+                         ])
 def test_sonata_old(file_path, pop_name):
     spikes = load_spike_trains(file_path)  # SpikeTrains.from_csv(file_path)
     assert(len(spikes.populations) == 1)
@@ -185,6 +200,11 @@ def test_sonata_old(file_path, pop_name):
     assert(spike_counts == 124)
 
 
+@pytest.mark.parametrize('file_path',
+                         [
+                             ('spike_files/spikes.multipop.csv'),
+                             ('spike_files/spikes.multipop.h5')
+                         ])
 def test_spikes_multipop(file_path):
     spikes = load_spike_trains(file_path)  # SpikeTrains.from_csv(file_path)
     assert(set(spikes.populations) == set(['lgn', 'tw']))
