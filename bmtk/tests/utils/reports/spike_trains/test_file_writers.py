@@ -1,4 +1,5 @@
 import os
+import pytest
 import numpy as np
 import pandas as pd
 import h5py
@@ -9,6 +10,8 @@ from bmtk.utils.reports.spike_trains import write_sonata
 
 
 def load_spike_trains(file_path):
+    cpath = os.path.dirname(os.path.realpath(__file__))
+    file_path = os.path.join(cpath, file_path)
     if file_path.endswith('.csv'):
         return SpikeTrains.from_csv(file_path)
 
@@ -19,6 +22,14 @@ def load_spike_trains(file_path):
         return SpikeTrains.from_nwb(file_path)
 
 
+@pytest.mark.parametrize('input_path,pop_name',
+                         [
+                             ('spike_files/spikes.noheader.nopop.csv', pop_na),
+                             ('spike_files/spikes.one_pop.csv', 'v1'),
+                             ('spike_files/spikes.old.h5', pop_na),
+                             ('spike_files/spikes.one_pop.h5', 'v1'),
+                             ('spike_files/spikes.onepop.v1.0.nwb', pop_na)
+                         ])
 def test_csv_writer_onepop(input_path, pop_name):
     spikes = load_spike_trains(input_path)
     output_path = 'output/tmpspikes.csv'
@@ -34,6 +45,11 @@ def test_csv_writer_onepop(input_path, pop_name):
     assert(np.all(np.diff(output_df['node_ids']) >= 0))
 
 
+@pytest.mark.parametrize('input_path',
+                         [
+                             ('spike_files/spikes.multipop.csv'),
+                             ('spike_files/spikes.multipop.h5')
+                         ])
 def test_csv_writer_multipop(input_path):
     spikes = load_spike_trains(input_path)
     output_path = 'output/tmpspikes.csv'
@@ -53,6 +69,14 @@ def test_csv_writer_multipop(input_path):
     os.remove(output_path)
 
 
+@pytest.mark.parametrize('input_path,pop_name',
+                         [
+                             ('spike_files/spikes.noheader.nopop.csv', pop_na),
+                             ('spike_files/spikes.one_pop.csv', 'v1'),
+                             ('spike_files/spikes.old.h5', pop_na),
+                             ('spike_files/spikes.one_pop.h5', 'v1'),
+                             ('spike_files/spikes.onepop.v1.0.nwb', pop_na)
+                         ])
 def test_sonata_writer_onepop(input_path, pop_name):
     spikes = load_spike_trains(input_path)
     output_path = 'output/tmpspikes.h5'
@@ -79,6 +103,11 @@ def test_sonata_writer_onepop(input_path, pop_name):
     os.remove(output_path)
 
 
+@pytest.mark.parametrize('input_path',
+                         [
+                             ('spike_files/spikes.multipop.csv'),
+                             ('spike_files/spikes.multipop.h5')
+                         ])
 def test_sonata_writer_multipop(input_path):
     spikes = load_spike_trains(input_path)
     output_path = 'output/tmpspikes.h5'
