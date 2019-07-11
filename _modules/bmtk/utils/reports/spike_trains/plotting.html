@@ -1,0 +1,989 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>bmtk.utils.reports.spike_trains.plotting &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+<script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
+<style>
+
+	/* the icon font-family definition and helper classes */
+	@font-face {
+	  font-family: 'portal_icon_font';
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
+	  font-weight: normal;
+	  font-style: normal;
+	}
+	 
+	 [class^="icon-"]:before, [class*=" icon-"]:before {
+	  font-family: "portal_icon_font";
+	  font-style: normal;
+	  font-weight: normal;
+	  speak: none;
+	 
+	  display: inline-block;
+	  text-decoration: inherit;
+	  width: 1em;
+	  margin-right: .2em;
+	  text-align: center;
+	  /* opacity: .8; */
+	 
+	  /* For safety - reset parent styles, that can break glyph codes*/
+	  font-variant: normal;
+	  text-transform: none;
+	     
+	  /* fix buttons height, for twitter bootstrap */
+	  line-height: 1em;
+	 
+	  /* Animation center compensation - margins should be symmetric */
+	  /* remove if not needed */
+	  margin-left: .2em;
+	
+	}
+	 
+	.icon-spin5:before { content: '\e806'; } /* '' */
+	.icon-left-open-1:before { content: '\e81e'; } /* '' */
+	.icon-plus-1:before { content: '\e801'; } /* '' */
+	.icon-facebook:before { content: '\e816'; } /* '' */
+	.icon-gplus:before { content: '\e818'; } /* '' */
+	.icon-linkedin-3:before { content: '\e815'; } /* '' */
+	.icon-twitter:before { content: '\e817'; } /* '' */
+	.icon-youtube-play:before { content: '\e805'; } /* '' */
+	.icon-plus-2:before { content: '\e809'; } /* '' */
+	.icon-record-1:before { content: '\e81c'; } /* '' */
+	.icon-cancel:before { content: '\e80b'; } /* '' */
+	.icon-search:before { content: '\e804'; } /* '' */
+	.icon-cancel-2:before { content: '\e80c'; } /* '' */
+	.icon-plus-4:before { content: '\e80d'; } /* '' */
+	.icon-cancel-3:before { content: '\e80e'; } /* '' */
+	.icon-plus:before { content: '\e808'; } /* '' */
+	.icon-down-open:before { content: '\e800'; } /* '' */
+	.icon-right-open:before { content: '\e802'; } /* '' */
+	.icon-up-open:before { content: '\e803'; } /* '' */
+	.icon-stop:before { content: '\e813'; } /* '' */
+	.icon-cancel-1:before { content: '\e820'; } /* '' */
+	.icon-plus-3:before { content: '\e80a'; } /* '' */
+	/* end icon font helpers */
+
+	/* icon font spin animation */
+	.animate-spin {
+	  -moz-animation: spin 2s infinite linear;
+	  -o-animation: spin 2s infinite linear;
+	  -webkit-animation: spin 2s infinite linear;
+	  animation: spin 2s infinite linear;
+	  display: inline-block;
+	}
+	@-moz-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-webkit-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-o-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-ms-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	/*  end spin animation */	
+
+	@font-face {
+	    font-family: 'bebas_neueregular';
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
+	    font-weight: normal;
+	    font-style: normal;
+	}
+
+	/* top chrome styles */
+	#top_chrome {
+
+		width:100%;
+		height:28px;
+		background-color:#163E65;
+	}
+
+	.chrome_link_block {
+
+		color:#fff !important;	
+		display:inline-block;
+		height:100%;
+		max-height:28px;
+	}
+
+	.chrome_link_block:hover {
+
+		background-color:#eee;
+		color:#0779BE !important;	
+		cursor:pointer;
+	}
+
+	#top_chrome a {
+
+		color:inherit !important;	
+		text-decoration:none;
+	}
+
+	#top_chrome a:hover {
+
+		color:inherit !important;	
+	}
+
+	#top_chrome_buttons {
+
+		float:right;
+		margin-right:50px;
+	}
+
+	.chrome_button {
+
+		font-family:arial,sans-serif;
+		font-weight:bold;
+		display:inline-block;
+		font-size:9px;
+		text-align:left;
+		text-decoration:none;
+		margin:9px 20px 10px 20px;
+	}
+
+	.chrome_active {
+
+		background-color:#1b7abd;
+		color:#fff;
+	}
+
+
+	/* header element styles*/
+	#header_content {
+
+		font-family: bebas_neueregular, arial, sans-serif;
+		font-size:22px;
+		color:#0779be;		
+		letter-spacing:0.03em;
+
+		position:relative;
+		width:calc(100% - 112px);
+		min-width:800px;
+		height:76px;
+		border-bottom:2px solid #A5A8AB;
+		margin-left:50px;
+		margin-right:50px;
+        z-index:9999; /* IT-9508 */
+	}
+
+	#portal_logo {
+
+		position:absolute;
+		top:20px;
+		left:0px;
+		width:236px;
+	}
+
+	#portal_tabs {
+
+		position: absolute;
+		bottom: 12px;
+		left: 0px;
+		margin-bottom: -12px;
+		display: block;
+	}
+
+	.horizontal_list
+	{
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		display: inline; 		
+	}
+
+	.horizontal_list li { 
+
+		display: inline; 	
+	}	
+
+	#portal_tab_menu_container {
+
+		display:none;
+	}
+
+	#portal_search_input_group {
+
+		position:absolute;
+		margin: 0;
+		padding: 0;
+		bottom:12px;
+		right:0px;
+		border:1px solid #DAD9D3;
+		color:#DAD9D3;
+	}
+
+	#portal_search_input_group input {
+
+		margin: 0;
+		padding: 0;
+		border:none;
+		width:110px;
+		color:#DAD9D3;
+		font-family:Helvetica,sans-serif;
+		font-size:12px;
+		height:28px;
+		margin-left:10px;
+
+		outline:none;
+	}
+
+	input::-ms-clear {
+		display: none;
+	}
+
+	#portal_search_input_group i {
+
+		font-size:0.8em;
+		cursor:pointer;
+	}
+
+	#pSiteSearchTextInput:focus {
+
+		color:#000;
+	}
+
+	.icon_menu_down {
+
+		font-size: 12px;
+		margin-left: 4px;
+		vertical-align: text-top;
+		padding-top: 4px;
+		display: inline-block;
+	}
+
+	.portal_tab_item {
+
+		background-color: #fff;
+		padding: 12px;
+		padding-left:20px;
+		padding-right:20px;
+		display: inline-block !important;		
+	}
+
+	.portal_tab_item a:hover {
+
+		color:#fbe300;	
+	}
+
+	.portal_tab_item:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}	
+
+
+	.portal_menu_active {
+
+		background-color: #EEEEEE;
+	}	
+
+	.portal_menu_item_active {
+
+		color:#fbe300 !important;	
+	}
+
+	.portal_tab_active {
+
+		color:#a5a8ab !important;
+	}
+
+	#header_content a {		
+
+		color:inherit !important;
+	}
+
+	#header_content a:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}
+
+	#header_content ul {
+
+		list-style: none;
+		position: relative;
+		top: 58px;
+		display: inline-table;
+	}
+
+	#header_content ul ul {
+		
+		display:none;
+		opacity:0;
+	}
+
+	/* the fly out menus */
+	#header_content ul li:hover > ul,
+	#header_content ul li.hover > ul {
+
+		position: absolute;
+		top: 48px;
+		z-index:999;
+
+		display: block;
+		width: 152px;
+		padding:0px;
+		padding-top:20px;
+		padding-bottom:10px;
+		font-size: 12px;
+		font-family: Arial,Sans-Serif;
+		font-weight: bold;
+		text-transform: uppercase;
+
+		background-color: rgba(8,122,191,0.98);
+		color: #fff !important;
+		opacity: 1;
+
+		-webkit-animation: fade 0.25s;
+		animation: fade 0.25s;
+	}
+
+	@-webkit-keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}
+	@keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}	
+
+	#header_content ul li:hover > ul li {
+
+		padding: 10px;
+		padding-top: 0px;
+		padding-left: 20px;
+		display: block;
+		opacity:1;
+	}
+
+	#header_content ul li:hover > ul a {
+
+		display: block;
+		opacity:1;
+		white-space:nowrap;
+	}
+
+	#portal_menu_start_list {
+
+		left: 81px;
+
+		/* IE sauce */
+		left:85px\9;
+
+		/* Safari sauce */
+		(;left:79px;);
+	}
+
+	#portal_menu_atlases_list {
+
+		left: 290px;
+		width: 210px !important;
+        height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 303px\9;
+        height: 225px\9;
+
+		/* Safari sauce */
+		(;left:279px;);
+	}
+
+	#portal_menu_tools_list {
+
+		left: 500px;
+		width: 172px !important;
+		height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 513px\9;
+		height:225px\9;
+
+		/* Safari sauce */
+		(;left:489px;);
+		(;height:227px;);
+	}
+
+	/* mozilla sauce */
+	@-moz-document url-prefix() {
+
+		#header_content {
+
+			height:107px;
+		}
+
+		#portal_menu_start_list {
+
+			left:85px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 302px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 512px;
+			height:236px;
+		}
+	}
+
+
+	/* make it look OK on iPad also */
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:portrait) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}  
+	}
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:landscape) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}	  
+	}
+
+	.portal_menu_list_heading {
+
+		color:#9ccae5;
+		border-bottom:1px solid #9ccae5;
+		padding-bottom:5px !important;
+	}
+
+	.portal_menu_list_heading + li {
+
+		padding-top:10px !important;
+	}
+
+	.portal_menu_list_heading li {
+
+		padding-bottom:0px;
+	}	
+
+	#portal_menu_atlases_list li:last-of-type {
+
+		padding-bottom:15px !important;
+	}
+
+	.icon-spin5 {
+
+		color:#000;
+	}
+</style>
+<div id="pHeader">
+<div id="top_chrome">
+	<div id="top_chrome_buttons">
+		<div class="chrome_link_block"><a href="http://www.alleninstitute.org" target="_blank" class="chrome_button">ALLEN INSTITUTE</a></div>
+	</div>
+</div>
+
+<div id="header_content">
+
+	<a href="http://AllenInstitute.github.io">
+		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/AIBS_Logo.png"/>
+	</a>
+</div>
+</div>
+
+<script>
+
+jQuery('#portal_tab_menu').bind('touchstart', function() {
+
+	if(window.console)
+		console.log("touchstart");
+});
+</script>
+<link rel="stylesheet" type="text/css" href="_static/external_assets/stylesheets/common_layout.css" />
+
+
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for bmtk.utils.reports.spike_trains.plotting</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">six</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="k">import</span> <span class="n">gridspec</span>
+
+<span class="kn">from</span> <span class="nn">.spike_trains</span> <span class="k">import</span> <span class="n">SpikeTrains</span>
+<span class="kn">from</span> <span class="nn">.core</span> <span class="k">import</span> <span class="n">STReader</span>
+
+<span class="kn">from</span> <span class="nn">bmtk.utils.sonata.file</span> <span class="k">import</span> <span class="n">File</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">plot_raster(&#39;output/spikes.h5&#39;,</span>
+<span class="sd">            # time_window=(500.0, 1000.0),</span>
+<span class="sd">            # node_ids=range(50,150),</span>
+<span class="sd">            # with_histogram=True,</span>
+<span class="sd">            # overlapping=True,</span>
+<span class="sd">            # with_labels=True,</span>
+<span class="sd">            nodes_file=&#39;network/internal_nodes.h5&#39;,</span>
+<span class="sd">            node_types_file=&#39;network/internal_node_types.csv&#39;,</span>
+<span class="sd">            group_by=&#39;model_name&#39;,</span>
+<span class="sd">            )</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">plot_raster((&#39;output/spikes.h5&#39;, &#39;output.old/spikes.h5&#39;),</span>
+<span class="sd">            # time_window=(500.0, 1000.0),</span>
+<span class="sd">            # node_ids=range(50,150),</span>
+<span class="sd">            with_histogram=True,</span>
+<span class="sd">            overlapping=False,</span>
+<span class="sd">            with_labels=[&#39;bmtk&#39;, &#39;sonata&#39;],</span>
+<span class="sd">            # nodes_file=&#39;network/internal_nodes.h5&#39;,</span>
+<span class="sd">            # node_types_file=&#39;network/internal_node_types.csv&#39;,</span>
+<span class="sd">            # group_by=&#39;model_name&#39;,</span>
+<span class="sd">            # with_labels=[&#39;bmtk&#39;, &#39;sonata&#39;]</span>
+<span class="sd">            )</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">plot_raster(&#39;output/spikes.h5&#39;,</span>
+<span class="sd">            time_window=(500.0, 1000.0), node_ids=range(50,150),</span>
+<span class="sd">            with_histogram=True,</span>
+<span class="sd">            overlapping=True,</span>
+<span class="sd">            with_labels=True, #[&#39;Hello&#39;]</span>
+<span class="sd">            )</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">plt.figure()</span>
+<span class="sd">plot_raster(&#39;output/spikes.h5&#39;,</span>
+<span class="sd">            # time_window=(500.0, 1000.0),</span>
+<span class="sd">            # node_ids=range(50,150),</span>
+<span class="sd">            # with_histogram=True,</span>
+<span class="sd">            # overlapping=True,</span>
+<span class="sd">            # with_labels=True,</span>
+<span class="sd">            nodes_file=&#39;network/internal_nodes.h5&#39;,</span>
+<span class="sd">            node_types_file=&#39;network/internal_node_types.csv&#39;,</span>
+<span class="sd">            group_by=&#39;model_name&#39;,</span>
+<span class="sd">            show_plot=False</span>
+<span class="sd">            )</span>
+
+<span class="sd">plt.figure()</span>
+<span class="sd">plot_rates(&#39;output/spikes.h5&#39;,</span>
+<span class="sd">           # node_ids=range(50, 150),</span>
+<span class="sd">           nodes_file=&#39;network/internal_nodes.h5&#39;,</span>
+<span class="sd">           node_types_file=&#39;network/internal_node_types.csv&#39;,</span>
+<span class="sd">           group_by=&#39;model_name&#39;,</span>
+<span class="sd">           show_plot=False)</span>
+<span class="sd">plt.show()</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+
+
+
+<span class="n">color_map</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">color_map</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;k&#39;</span><span class="p">})</span>
+
+<span class="k">def</span> <span class="nf">_get_spike_trains</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a list of reports.spike_trains.SpikeTrains objects&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">SpikeTrains</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)]</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="p">(</span><span class="n">SpikeTrains</span><span class="p">,</span> <span class="n">STReader</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">spike_trains</span><span class="p">]</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">_get_spike_trains</span><span class="p">(</span><span class="n">st</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">st</span> <span class="ow">in</span> <span class="n">spike_trains</span><span class="p">]</span>
+
+    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Could not parse spiketrains. Pass in file-path, SpikeTrains object, or list of the previous&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_get_labels</span><span class="p">(</span><span class="n">labels</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">labels</span><span class="p">]</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)):</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">st</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">st</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+                <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">st</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">labels</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span> <span class="nf">_find_time_window</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">populations</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Use the spike-train(s) to find the time-window to plot&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="p">(</span><span class="n">SpikeTrains</span><span class="p">,</span> <span class="n">STReader</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">spike_trains</span><span class="o">.</span><span class="n">time_range</span><span class="p">(</span><span class="n">populations</span><span class="o">=</span><span class="n">populations</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">t_mins</span> <span class="o">=</span> <span class="p">[</span><span class="n">st</span><span class="o">.</span><span class="n">time_range</span><span class="p">(</span><span class="n">populations</span><span class="o">=</span><span class="n">populations</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">st</span> <span class="ow">in</span> <span class="n">spike_trains</span><span class="p">]</span>
+        <span class="n">t_maxs</span> <span class="o">=</span> <span class="p">[</span><span class="n">st</span><span class="o">.</span><span class="n">time_range</span><span class="p">(</span><span class="n">populations</span><span class="o">=</span><span class="n">populations</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">st</span> <span class="ow">in</span> <span class="n">spike_trains</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">t_mins</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">t_maxs</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Filter"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.plotting.Filter">[docs]</a><span class="k">class</span> <span class="nc">Filter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_ids</span> <span class="o">=</span> <span class="n">node_ids</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">label</span>
+
+<div class="viewcode-block" id="Filter.build"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.plotting.Filter.build">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">nodes_file</span><span class="p">,</span> <span class="n">node_types_file</span><span class="p">,</span> <span class="n">populations</span><span class="p">,</span> <span class="n">group_by</span><span class="p">,</span> <span class="n">group_exclude</span><span class="p">,</span> <span class="n">node_ids_filter</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">group_by</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">sonata_file</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">data_files</span><span class="o">=</span><span class="n">nodes_file</span><span class="p">,</span> <span class="n">data_type_files</span><span class="o">=</span><span class="n">node_types_file</span><span class="p">)</span>
+            <span class="n">pop</span> <span class="o">=</span> <span class="n">populations</span> <span class="ow">or</span> <span class="n">sonata_file</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
+            <span class="n">node_types_df</span> <span class="o">=</span> <span class="n">sonata_file</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">pop</span><span class="p">]</span><span class="o">.</span><span class="n">node_types_table</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span>
+            <span class="n">pop_nodes</span> <span class="o">=</span> <span class="n">sonata_file</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">pop</span><span class="p">]</span>
+            <span class="n">nodes_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="n">pop_nodes</span><span class="o">.</span><span class="n">node_ids</span><span class="p">,</span> <span class="s1">&#39;node_type_ids&#39;</span><span class="p">:</span> <span class="n">pop_nodes</span><span class="o">.</span><span class="n">type_ids</span><span class="p">})</span>
+            <span class="n">nodes_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="n">nodes_df</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="n">node_types_df</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="s1">&#39;node_type_ids&#39;</span><span class="p">,</span>
+                                <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">grp_name</span><span class="p">,</span> <span class="n">grp</span> <span class="ow">in</span> <span class="n">nodes_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">group_by</span><span class="p">):</span>
+                <span class="nb">print</span> <span class="n">grp_name</span><span class="p">,</span> <span class="n">grp</span><span class="p">[</span><span class="s1">&#39;node_ids&#39;</span><span class="p">][:</span><span class="mi">10</span><span class="p">]</span></div></div>
+
+
+<span class="k">def</span> <span class="nf">_create_grouping</span><span class="p">(</span><span class="n">nodes_file</span><span class="p">,</span> <span class="n">node_types_file</span><span class="p">,</span> <span class="n">populations</span><span class="p">,</span> <span class="n">group_by</span><span class="p">,</span> <span class="n">node_ids_filter</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">group_by</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">intersection</span><span class="p">(</span><span class="n">node_ids</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">node_ids_filter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">node_ids</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">intersection</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">node_ids_filter</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">node_ids</span><span class="p">)</span>
+                <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">intersection</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="p">[(</span><span class="n">label</span><span class="p">,</span> <span class="n">intersection</span><span class="p">(</span><span class="n">node_ids</span><span class="p">))</span> <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">node_ids</span> <span class="ow">in</span> <span class="n">group_by</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+
+    <span class="k">elif</span> <span class="n">group_by</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sonata_file</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">data_files</span><span class="o">=</span><span class="n">nodes_file</span><span class="p">,</span> <span class="n">data_type_files</span><span class="o">=</span><span class="n">node_types_file</span><span class="p">)</span>
+        <span class="n">pop</span> <span class="o">=</span> <span class="n">populations</span> <span class="ow">or</span> <span class="n">sonata_file</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">node_types_df</span> <span class="o">=</span> <span class="n">sonata_file</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">pop</span><span class="p">]</span><span class="o">.</span><span class="n">node_types_table</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span>
+        <span class="n">pop_nodes</span> <span class="o">=</span> <span class="n">sonata_file</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">pop</span><span class="p">]</span>
+        <span class="n">nodes_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="n">pop_nodes</span><span class="o">.</span><span class="n">node_ids</span><span class="p">,</span> <span class="s1">&#39;node_type_ids&#39;</span><span class="p">:</span> <span class="n">pop_nodes</span><span class="o">.</span><span class="n">type_ids</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">node_ids_filter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">nodes_df</span> <span class="o">=</span> <span class="n">nodes_df</span><span class="p">[</span><span class="n">nodes_df</span><span class="p">[</span><span class="s1">&#39;node_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">node_ids_filter</span><span class="p">)]</span>
+
+        <span class="n">nodes_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="n">nodes_df</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="n">node_types_df</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="s1">&#39;node_type_ids&#39;</span><span class="p">,</span>
+                            <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">[(</span><span class="n">grp_name</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">grp</span><span class="p">[</span><span class="s1">&#39;node_ids&#39;</span><span class="p">]))</span> <span class="k">for</span> <span class="n">grp_name</span><span class="p">,</span> <span class="n">grp</span> <span class="ow">in</span> <span class="n">nodes_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">group_by</span><span class="p">)]</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_ids_filter</span><span class="p">)]</span>
+
+
+<span class="k">def</span> <span class="nf">_build_labels_lu</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">spike_trains_file</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">labels</span><span class="p">:</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)):</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">labels</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spike_trains_file</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">)</span> <span class="k">else</span> <span class="n">spike_trains_file</span>
+
+    <span class="k">return</span> <span class="n">labels</span>
+
+
+<div class="viewcode-block" id="plot_raster"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.plotting.plot_raster">[docs]</a><span class="k">def</span> <span class="nf">plot_raster</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ts_units</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overlapping</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">with_histogram</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">nodes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_types_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># TODO: This is assuming all the units are the same (ms). Will cause problem if not.</span>
+    <span class="n">spike_trains_l</span> <span class="o">=</span> <span class="n">_get_spike_trains</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">overlapping</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">spike_trains_l</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">plot_raster_cmp</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="n">time_window</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="n">node_ids</span><span class="p">,</span>
+                               <span class="n">ts_units</span><span class="o">=</span><span class="n">ts_units</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="n">show_plot</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="n">save_as</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="n">with_labels</span><span class="p">)</span>
+
+
+    <span class="c1"># if user doesn&#39;t specifiy time-window then get it from the spike trains</span>
+    <span class="n">time_window</span> <span class="o">=</span> <span class="n">time_window</span> <span class="ow">or</span> <span class="n">_find_time_window</span><span class="p">(</span><span class="n">spike_trains_l</span><span class="p">,</span> <span class="n">population</span><span class="p">)</span>
+
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">_build_labels_lu</span><span class="p">(</span><span class="n">with_labels</span><span class="p">,</span> <span class="n">spike_trains</span><span class="p">)</span>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    # Get the labels</span>
+<span class="sd">    if not with_labels:</span>
+<span class="sd">        labels = defaultdict(lambda: &#39;&#39;)</span>
+<span class="sd">    elif isinstance(with_labels, (list, tuple, np.ndarray, pd.Series)):</span>
+<span class="sd">        labels = with_labels</span>
+<span class="sd">    else:</span>
+<span class="sd">        labels = [spike_trains] if isinstance(spike_trains, six.string_types) else spike_trains</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">groups</span> <span class="o">=</span> <span class="n">_create_grouping</span><span class="p">(</span><span class="n">nodes_file</span><span class="p">,</span> <span class="n">node_types_file</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">group_by</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">)</span>
+
+    <span class="n">n_rasters</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">spike_trains_l</span><span class="p">)</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    if overlapping and n_rasters &gt; 1:</span>
+<span class="sd">        gs = gridspec.GridSpec(1, 1)</span>
+<span class="sd">        raster_gs = [gs[0]]*n_rasters</span>
+<span class="sd">        hists_gs = []</span>
+<span class="sd">        last_gs = raster_gs[-1]</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">with_histogram</span><span class="p">:</span>
+        <span class="n">gs</span> <span class="o">=</span> <span class="n">gridspec</span><span class="o">.</span><span class="n">GridSpec</span><span class="p">(</span><span class="n">n_rasters</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">height_ratios</span><span class="o">=</span><span class="p">[</span><span class="mi">7</span> <span class="k">if</span> <span class="n">i</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_rasters</span><span class="o">*</span><span class="mi">2</span><span class="p">)])</span>
+        <span class="n">raster_gs</span> <span class="o">=</span> <span class="p">[</span><span class="n">gs</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_rasters</span><span class="p">)]</span>
+        <span class="n">hists_gs</span> <span class="o">=</span> <span class="p">[</span><span class="n">gs</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_rasters</span><span class="p">)]</span>
+        <span class="n">last_gs</span> <span class="o">=</span> <span class="n">hists_gs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">gs</span> <span class="o">=</span> <span class="n">gridspec</span><span class="o">.</span><span class="n">GridSpec</span><span class="p">(</span><span class="n">n_rasters</span><span class="p">,</span> <span class="n">height_ratios</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">n_rasters</span><span class="p">))</span>
+        <span class="n">raster_gs</span> <span class="o">=</span> <span class="p">[</span><span class="n">gs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_rasters</span><span class="p">)]</span>
+        <span class="n">hists_gs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">last_gs</span> <span class="o">=</span> <span class="n">raster_gs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">spikes</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">spike_trains_l</span><span class="p">):</span>
+        <span class="n">gs_i</span> <span class="o">=</span> <span class="n">raster_gs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">grp_label</span><span class="p">,</span> <span class="n">grp_nodes</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+            <span class="n">spikes_df</span> <span class="o">=</span> <span class="n">spikes</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">(</span><span class="n">populations</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="n">time_window</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="n">grp_nodes</span><span class="p">)</span>
+            <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs_i</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">spikes_df</span><span class="p">[</span><span class="s1">&#39;timestamps&#39;</span><span class="p">],</span> <span class="n">spikes_df</span><span class="p">[</span><span class="s1">&#39;node_ids&#39;</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">grp_label</span> <span class="ow">or</span> <span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="n">time_window</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">time_window</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;node_id&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">gs_i</span> <span class="o">!=</span> <span class="n">last_gs</span><span class="p">:</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;time (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ts_units</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">spikes</span><span class="p">,</span> <span class="n">gs_i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">spike_trains_l</span><span class="p">,</span> <span class="n">hists_gs</span><span class="p">):</span>
+        <span class="n">spikes_df</span> <span class="o">=</span> <span class="n">spikes</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">(</span><span class="n">populations</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="n">time_window</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="n">node_ids</span><span class="p">)</span>
+        <span class="n">ax_hist</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs_i</span><span class="p">)</span>
+        <span class="n">ax_hist</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">spikes_df</span><span class="p">[</span><span class="s1">&#39;timestamps&#39;</span><span class="p">],</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">ax_hist</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">get_yaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ax_hist</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="n">time_window</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">time_window</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="k">if</span> <span class="n">gs_i</span> <span class="o">!=</span> <span class="n">last_gs</span><span class="p">:</span>
+            <span class="n">ax_hist</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax_hist</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;time (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ts_units</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">save_as</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_as</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">show_plot</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="plot_raster_cmp"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.plotting.plot_raster_cmp">[docs]</a><span class="k">def</span> <span class="nf">plot_raster_cmp</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ts_units</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">save_as</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">spike_trains_l</span> <span class="o">=</span> <span class="n">_get_spike_trains</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>
+    <span class="n">time_window</span> <span class="o">=</span> <span class="n">time_window</span> <span class="ow">or</span> <span class="n">_find_time_window</span><span class="p">(</span><span class="n">spike_trains_l</span><span class="p">,</span> <span class="n">population</span><span class="p">)</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">_build_labels_lu</span><span class="p">(</span><span class="n">with_labels</span><span class="p">,</span> <span class="n">spike_trains</span><span class="p">)</span>
+
+    <span class="n">gs</span> <span class="o">=</span> <span class="n">gridspec</span><span class="o">.</span><span class="n">GridSpec</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">spikes</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">spike_trains_l</span><span class="p">):</span>
+        <span class="n">spikes_df</span> <span class="o">=</span> <span class="n">spikes</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">(</span><span class="n">populations</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="n">time_window</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="n">node_ids</span><span class="p">)</span>
+        <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">ax1</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">spikes_df</span><span class="p">[</span><span class="s1">&#39;timestamps&#39;</span><span class="p">],</span> <span class="n">spikes_df</span><span class="p">[</span><span class="s1">&#39;node_ids&#39;</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+        <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="n">time_window</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">time_window</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+
+    <span class="k">if</span> <span class="n">save_as</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_as</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">show_plot</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="plot_rates"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.plotting.plot_rates">[docs]</a><span class="k">def</span> <span class="nf">plot_rates</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+               <span class="n">smoothed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+               <span class="n">nodes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_types_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="kc">None</span>
+               <span class="p">):</span>
+    <span class="k">def</span> <span class="nf">smooth</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">window_size</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">x_max</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">x</span><span class="o">-</span><span class="n">h</span><span class="p">):</span><span class="nb">min</span><span class="p">(</span><span class="n">x_max</span><span class="p">,</span> <span class="n">x</span><span class="o">+</span><span class="n">h</span><span class="p">)])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">x_max</span><span class="p">)]</span>
+
+
+    <span class="n">spike_trains_l</span> <span class="o">=</span> <span class="n">_get_spike_trains</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>
+    <span class="n">time_window</span> <span class="o">=</span> <span class="n">time_window</span> <span class="ow">or</span> <span class="n">_find_time_window</span><span class="p">(</span><span class="n">spike_trains_l</span><span class="p">,</span> <span class="n">population</span><span class="p">)</span>
+    <span class="n">sim_time</span> <span class="o">=</span> <span class="n">time_window</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">time_window</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">groups</span> <span class="o">=</span> <span class="n">_create_grouping</span><span class="p">(</span><span class="n">nodes_file</span><span class="p">,</span> <span class="n">node_types_file</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">group_by</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">spikes</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">spike_trains_l</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">grp_label</span><span class="p">,</span> <span class="n">grp_nodes</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+            <span class="n">spikes_df</span> <span class="o">=</span> <span class="n">spikes</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">(</span><span class="n">populations</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="n">time_window</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="n">grp_nodes</span><span class="p">)</span>
+            <span class="n">spike_rates</span> <span class="o">=</span> <span class="n">spikes_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;node_ids&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">/</span><span class="p">(</span><span class="n">sim_time</span><span class="o">/</span><span class="mf">1000.0</span><span class="p">)</span>
+            <span class="c1"># Fill in missing gids with 0.0</span>
+            <span class="n">spike_rates</span> <span class="o">=</span> <span class="n">spike_rates</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">spike_rates</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="nb">int</span><span class="p">(</span><span class="n">spike_rates</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">+</span><span class="mi">1</span><span class="p">)))</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">smoothed</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">spike_rates</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">smooth</span><span class="p">(</span><span class="n">spike_rates</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="n">grp_label</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">spike_rates</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">spike_rates</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">prop</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;size&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">})</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Firing Rate (Hz)&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;node_id&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">show_plot</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../../../../../index.html">Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../builder.html">Building Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../simulators.html">Simulation Engines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../pointnet.html">PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../filternet.html">FilterNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../mintnet.html">MintNet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+    </div>
+<script type="text/javascript" src="_static/external_assets/javascript/portalFooter.js"></script>
+
+  </body>
+</html>

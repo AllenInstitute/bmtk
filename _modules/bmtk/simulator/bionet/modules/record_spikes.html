@@ -643,11 +643,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c1">#</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">csv</span>
-<span class="kn">import</span> <span class="nn">h5py</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.modules.sim_module</span> <span class="k">import</span> <span class="n">SimulatorMod</span>
-<span class="kn">from</span> <span class="nn">bmtk.utils.io.spike_trains</span> <span class="k">import</span> <span class="n">SpikeTrainWriter</span>
+<span class="kn">from</span> <span class="nn">bmtk.utils.reports.spike_trains</span> <span class="k">import</span> <span class="n">SpikeTrains</span><span class="p">,</span> <span class="n">sort_order</span><span class="p">,</span> <span class="n">sort_order_lu</span>
 
 <span class="kn">from</span> <span class="nn">neuron</span> <span class="k">import</span> <span class="n">h</span>
 
@@ -679,20 +676,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_save_nwb</span> <span class="o">=</span> <span class="n">spikes_file_nwb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_tmpdir</span> <span class="o">=</span> <span class="n">tmp_dir</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sort_order</span> <span class="o">=</span> <span class="n">spikes_sort_order</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sort_order</span> <span class="o">=</span> <span class="n">sort_order_lu</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">spikes_sort_order</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">.</span><span class="n">none</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span> <span class="o">=</span> <span class="n">SpikeTrainWriter</span><span class="p">(</span><span class="n">tmp_dir</span><span class="o">=</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="n">mpi_rank</span><span class="o">=</span><span class="n">MPI_RANK</span><span class="p">,</span> <span class="n">mpi_size</span><span class="o">=</span><span class="n">N_HOSTS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span> <span class="o">=</span> <span class="n">SpikeTrains</span><span class="p">(</span><span class="n">cache_dir</span><span class="o">=</span><span class="n">tmp_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="SpikesMod.initialize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_spikes.SpikesMod.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
         <span class="c1"># TODO: since it&#39;s possible that other modules may need to access spikes, set_spikes_recordings() should</span>
         <span class="c1"># probably be called in the simulator itself.</span>
-        <span class="n">sim</span><span class="o">.</span><span class="n">set_spikes_recording</span><span class="p">()</span></div>
+        <span class="n">sim</span><span class="o">.</span><span class="n">set_spikes_recording</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">gid_pool</span></div>
 
 <div class="viewcode-block" id="SpikesMod.block"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_spikes.SpikesMod.block">[docs]</a>    <span class="k">def</span> <span class="nf">block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">block_interval</span><span class="p">):</span>
         <span class="c1"># take spikes from Simulator spikes vector and save to the tmp file</span>
         <span class="k">for</span> <span class="n">gid</span><span class="p">,</span> <span class="n">tVec</span> <span class="ow">in</span> <span class="n">sim</span><span class="o">.</span><span class="n">spikes_table</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">pop_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span><span class="o">.</span><span class="n">get_pool_id</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tVec</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">add_spike</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">gid</span><span class="o">=</span><span class="n">gid</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">add_spike</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">pop_id</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">pop_id</span><span class="o">.</span><span class="n">population</span><span class="p">)</span>
 
         <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>  <span class="c1"># wait until all ranks have been saved</span>
         <span class="n">sim</span><span class="o">.</span><span class="n">set_spikes_recording</span><span class="p">()</span>  <span class="c1"># reset recording vector</span></div>
@@ -706,7 +706,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_h5</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">to_hdf5</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h5_fname</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sort_order</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">to_sonata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h5_fname</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sort_order</span><span class="p">)</span>
             <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_nwb</span><span class="p">:</span>

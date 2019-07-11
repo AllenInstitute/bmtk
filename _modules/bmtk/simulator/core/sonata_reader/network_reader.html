@@ -655,6 +655,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="k">def</span> <span class="nf">adaptor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adaptor</span>
 
+<div class="viewcode-block" id="SonataNodes.n_nodes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.n_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">n_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_node_pop</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SonataNodes.nodes_df"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.nodes_df">[docs]</a>    <span class="k">def</span> <span class="nf">nodes_df</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_pop</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span></div>
+
 <div class="viewcode-block" id="SonataNodes.initialize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.network_reader.SonataNodes.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">network</span><span class="p">):</span>
         <span class="c1"># Determine the various mode-types available in the Node Population, whether or not a population of nodes</span>
         <span class="c1"># contains virtual/external nodes, internal nodes, or a mix of both affects how to nodes are built</span>

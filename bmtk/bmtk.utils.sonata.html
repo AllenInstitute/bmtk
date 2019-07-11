@@ -17,7 +17,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="bmtk.utils.spike_trains package" href="bmtk.utils.spike_trains.html" />
-    <link rel="prev" title="bmtk.utils.io package" href="bmtk.utils.io.html" /> 
+    <link rel="prev" title="bmtk.utils.reports.spike_trains.adaptors package" href="bmtk.utils.reports.spike_trains.adaptors.html" /> 
   </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
 <style>
@@ -1134,6 +1134,11 @@ worried about efficeny don’t use this method.</div></blockquote>
 <code class="descname">build_indicies</code><span class="sig-paren">(</span><em>force=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sonata/group.html#EdgeGroup.build_indicies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sonata.group.EdgeGroup.build_indicies" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="attribute">
+<dt id="bmtk.utils.sonata.group.EdgeGroup.edge_type_ids">
+<code class="descname">edge_type_ids</code><a class="headerlink" href="#bmtk.utils.sonata.group.EdgeGroup.edge_type_ids" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="bmtk.utils.sonata.group.EdgeGroup.filter">
 <code class="descname">filter</code><span class="sig-paren">(</span><em>**filter_props</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sonata/group.html#EdgeGroup.filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sonata.group.EdgeGroup.filter" title="Permalink to this definition">¶</a></dt>
@@ -1169,14 +1174,9 @@ list as they appear in the dataset (will be faster).</p>
 <code class="descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sonata/group.html#EdgeGroup.next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sonata.group.EdgeGroup.next" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="bmtk.utils.sonata.group.EdgeGroup.node_type_ids">
-<code class="descname">node_type_ids</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sonata/group.html#EdgeGroup.node_type_ids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sonata.group.EdgeGroup.node_type_ids" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
+<dl class="attribute">
 <dt id="bmtk.utils.sonata.group.EdgeGroup.src_node_ids">
-<code class="descname">src_node_ids</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sonata/group.html#EdgeGroup.src_node_ids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sonata.group.EdgeGroup.src_node_ids" title="Permalink to this definition">¶</a></dt>
+<code class="descname">src_node_ids</code><a class="headerlink" href="#bmtk.utils.sonata.group.EdgeGroup.src_node_ids" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1184,9 +1184,9 @@ list as they appear in the dataset (will be faster).</p>
 <code class="descname">to_dataframe</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sonata/group.html#EdgeGroup.to_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sonata.group.EdgeGroup.to_dataframe" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="attribute">
 <dt id="bmtk.utils.sonata.group.EdgeGroup.trg_node_ids">
-<code class="descname">trg_node_ids</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sonata/group.html#EdgeGroup.trg_node_ids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sonata.group.EdgeGroup.trg_node_ids" title="Permalink to this definition">¶</a></dt>
+<code class="descname">trg_node_ids</code><a class="headerlink" href="#bmtk.utils.sonata.group.EdgeGroup.trg_node_ids" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1508,7 +1508,7 @@ list as they appear in the dataset (will be faster).</p>
 
 <dl class="method">
 <dt id="bmtk.utils.sonata.population.EdgePopulation.group_indicies">
-<code class="descname">group_indicies</code><span class="sig-paren">(</span><em>group_id</em>, <em>build_cache=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sonata/population.html#EdgePopulation.group_indicies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sonata.population.EdgePopulation.group_indicies" title="Permalink to this definition">¶</a></dt>
+<code class="descname">group_indicies</code><span class="sig-paren">(</span><em>group_id</em>, <em>build_cache=False</em>, <em>as_list=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sonata/population.html#EdgePopulation.group_indicies"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sonata.population.EdgePopulation.group_indicies" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of all the population row index that maps onto the given group.</p>
 <p>Used for iterating or searching within a Group</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1900,6 +1900,11 @@ more memory (default False)</li>
 <dl class="function">
 <dt id="bmtk.utils.sonata.utils.get_attribute_h5">
 <code class="descclassname">bmtk.utils.sonata.utils.</code><code class="descname">get_attribute_h5</code><span class="sig-paren">(</span><em>h5obj</em>, <em>attribut_name</em>, <em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sonata/utils.html#get_attribute_h5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sonata.utils.get_attribute_h5" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.utils.sonata.utils.get_node_ids">
+<code class="descclassname">bmtk.utils.sonata.utils.</code><code class="descname">get_node_ids</code><span class="sig-paren">(</span><em>nodes_path</em>, <em>population</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sonata/utils.html#get_node_ids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sonata.utils.get_node_ids" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">

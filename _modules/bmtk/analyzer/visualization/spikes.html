@@ -654,6 +654,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">import</span> <span class="nn">matplotlib.gridspec</span> <span class="k">as</span> <span class="nn">gridspec</span>
 
 <span class="kn">import</span> <span class="nn">bmtk.simulator.utils.config</span> <span class="k">as</span> <span class="nn">config</span>
+<span class="kn">from</span> <span class="nn">bmtk.utils.reports.spike_trains.plotting</span> <span class="k">import</span> <span class="n">plot_raster</span><span class="p">,</span> <span class="n">plot_rates</span><span class="p">,</span> <span class="n">plot_raster_cmp</span>
+
 
 <span class="kn">from</span> <span class="nn">mpl_toolkits.axes_grid1</span> <span class="k">import</span> <span class="n">make_axes_locatable</span>
 
@@ -662,7 +664,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="n">node_types_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">node_type_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">)</span>
     <span class="n">nodes_h5</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">node_file</span><span class="p">)</span>
     <span class="c1"># TODO: Use utils.spikesReader</span>
-    <span class="n">node_pop_name</span> <span class="o">=</span> <span class="n">nodes_h5</span><span class="p">[</span><span class="s1">&#39;/nodes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">node_pop_name</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nodes_h5</span><span class="p">[</span><span class="s1">&#39;/nodes&#39;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="n">nodes_grp</span> <span class="o">=</span> <span class="n">nodes_h5</span><span class="p">[</span><span class="s1">&#39;/nodes&#39;</span><span class="p">][</span><span class="n">node_pop_name</span><span class="p">]</span>
     <span class="c1"># TODO: Need to be able to handle gid or node_id</span>
@@ -684,6 +686,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">for</span> <span class="n">cond</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">:</span>
             <span class="n">full_df</span> <span class="o">=</span> <span class="n">full_df</span><span class="p">[</span><span class="n">full_df</span><span class="p">[</span><span class="n">group_key</span><span class="p">]</span> <span class="o">!=</span> <span class="n">cond</span><span class="p">]</span>
 
+    <span class="n">nodes_h5</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">full_df</span>
 
 <span class="k">def</span> <span class="nf">_count_spikes</span><span class="p">(</span><span class="n">spikes_file</span><span class="p">,</span> <span class="n">max_gid</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -732,6 +735,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">                t_min = ts if ts &lt; t_min else t_min</span>
 <span class="sd">                t_max = ts if ts &gt; t_max else t_max</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">spikes_h5</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">spikes</span><span class="p">,</span> <span class="n">spike_sums</span><span class="o">/</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">t_max</span><span class="o">-</span><span class="n">t_min</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-3</span><span class="p">)</span>
 
 
@@ -752,7 +756,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="plot_spikes"><a class="viewcode-back" href="../../../../bmtk/bmtk.analyzer.visualization.html#bmtk.analyzer.visualization.spikes.plot_spikes">[docs]</a><span class="k">def</span> <span class="nf">plot_spikes</span><span class="p">(</span><span class="n">cells_file</span><span class="p">,</span> <span class="n">cell_models_file</span><span class="p">,</span> <span class="n">spikes_file</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[],</span> <span class="n">save_as</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="c1"># check if can be shown and/or saved</span>
     <span class="c1">#if save_as is not None:</span>
     <span class="c1">#    if os.path.exists(save_as):</span>
@@ -767,7 +771,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cells_h5</span><span class="p">[</span><span class="s1">&#39;/nodes&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Multiple populations in nodes file. Please specify one to plot using population param&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">population</span> <span class="o">=</span> <span class="n">cells_h5</span><span class="p">[</span><span class="s1">&#39;/nodes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">population</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cells_h5</span><span class="p">[</span><span class="s1">&#39;/nodes&#39;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="n">nodes_grp</span> <span class="o">=</span> <span class="n">cells_h5</span><span class="p">[</span><span class="s1">&#39;/nodes&#39;</span><span class="p">][</span><span class="n">population</span><span class="p">]</span>
     <span class="n">c_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;node_id&#39;</span><span class="p">:</span> <span class="n">nodes_grp</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">],</span> <span class="s1">&#39;node_type_id&#39;</span><span class="p">:</span> <span class="n">nodes_grp</span><span class="p">[</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">]})</span>
@@ -778,13 +782,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                         <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span>
                         <span class="n">left_on</span><span class="o">=</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">,</span>
                         <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># use &#39;model_id&#39; key to merge, for right table the &quot;model_id&quot; is an index</span>
-
+    <span class="n">cells_h5</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="c1"># TODO: Uses utils.SpikesReader to open</span>
     <span class="n">spikes_h5</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">spikes_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
     <span class="n">spike_gids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">spikes_h5</span><span class="p">[</span><span class="s1">&#39;/spikes/gids&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">)</span>
     <span class="n">spike_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">spikes_h5</span><span class="p">[</span><span class="s1">&#39;/spikes/timestamps&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
     <span class="c1"># spike_times, spike_gids = np.loadtxt(spikes_file, dtype=&#39;float32,int&#39;, unpack=True)</span>
     <span class="c1"># spike_gids, spike_times = np.loadtxt(spikes_file, dtype=&#39;int,float32&#39;, unpack=True)</span>
+    <span class="n">spikes_h5</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
     <span class="n">spike_times</span> <span class="o">=</span> <span class="n">spike_times</span> <span class="o">*</span> <span class="mf">1.0e-3</span>
 
@@ -806,6 +811,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
     <span class="c1"># Create plot</span>
     <span class="n">gs</span> <span class="o">=</span> <span class="n">gridspec</span><span class="o">.</span><span class="n">GridSpec</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">height_ratios</span><span class="o">=</span><span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+    
+    
+    <span class="kn">import</span> <span class="nn">matplotlib</span>
+    <span class="k">if</span> <span class="n">font_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;font.size&#39;</span><span class="p">:</span> <span class="n">font_size</span><span class="p">})</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;xlabel&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">font_size</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;ylabel&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">font_size</span><span class="p">)</span>
+    
+    
     <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">gid_min</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="mi">10</span>
     <span class="n">gid_max</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
@@ -823,16 +837,18 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
     <span class="c1">#ax1.set_xlabel(&#39;time (s)&#39;)</span>
     <span class="n">ax1</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">get_xaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;cell_id&#39;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Cell ID&#39;</span><span class="p">)</span>
     <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">spike_times</span><span class="p">)])</span>
     <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="n">gid_min</span><span class="p">,</span> <span class="n">gid_max</span><span class="p">])</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">markerscale</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">scatterpoints</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">legend</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">markerscale</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">scatterpoints</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="n">ax2</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">spike_times</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-    <span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;time (s)&#39;</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time (s)&#39;</span><span class="p">)</span>
     <span class="n">ax2</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">spike_times</span><span class="p">)])</span>
-    <span class="n">ax2</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">get_yaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1">#ax2.axes.get_yaxis().set_visible(False)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Firing rate (AU)&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
 
@@ -929,7 +945,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="plot_rates"><a class="viewcode-back" href="../../../../bmtk/bmtk.analyzer.visualization.html#bmtk.analyzer.visualization.spikes.plot_rates">[docs]</a><span class="k">def</span> <span class="nf">plot_rates</span><span class="p">(</span><span class="n">cells_file</span><span class="p">,</span> <span class="n">cell_models_file</span><span class="p">,</span> <span class="n">spikes_file</span><span class="p">,</span> <span class="n">group_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[],</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<div class="viewcode-block" id="plot_rates_old"><a class="viewcode-back" href="../../../../bmtk/bmtk.analyzer.visualization.html#bmtk.analyzer.visualization.spikes.plot_rates_old">[docs]</a><span class="k">def</span> <span class="nf">plot_rates_old</span><span class="p">(</span><span class="n">cells_file</span><span class="p">,</span> <span class="n">cell_models_file</span><span class="p">,</span> <span class="n">spikes_file</span><span class="p">,</span> <span class="n">group_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[],</span> <span class="n">interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">smoothed</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">smooth</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
         <span class="n">h</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">window</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>

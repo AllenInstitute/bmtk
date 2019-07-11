@@ -639,6 +639,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.modules.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.modules.html#module-bmtk.simulator.bionet.modules.ecp">bmtk.simulator.bionet.modules.ecp module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.modules.html#module-bmtk.simulator.bionet.modules.record_cellvars">bmtk.simulator.bionet.modules.record_cellvars module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.modules.html#module-bmtk.simulator.bionet.modules.record_netcons">bmtk.simulator.bionet.modules.record_netcons module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.modules.html#module-bmtk.simulator.bionet.modules.record_spikes">bmtk.simulator.bionet.modules.record_spikes module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.modules.html#module-bmtk.simulator.bionet.modules.save_synapses">bmtk.simulator.bionet.modules.save_synapses module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.modules.html#module-bmtk.simulator.bionet.modules.sim_module">bmtk.simulator.bionet.modules.sim_module module</a></li>
@@ -790,6 +791,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.bionetwork.</code><code class="descname">BioNetwork</code><a class="reference internal" href="../_modules/bmtk/simulator/bionet/bionetwork.html#BioNetwork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.bionetwork.BioNetwork" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.simulator_network.SimNetwork" title="bmtk.simulator.core.simulator_network.SimNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.simulator_network.SimNetwork</span></code></a></p>
 <dl class="method">
+<dt id="bmtk.simulator.bionet.bionetwork.BioNetwork.add_nodes">
+<code class="descname">add_nodes</code><span class="sig-paren">(</span><em>node_population</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/bionetwork.html#BioNetwork.add_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.add_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="bmtk.simulator.bionet.bionetwork.BioNetwork.add_spike_trains">
 <code class="descname">add_spike_trains</code><span class="sig-paren">(</span><em>spike_trains</em>, <em>node_set</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/bionetwork.html#BioNetwork.add_spike_trains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.add_spike_trains" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -843,6 +849,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dl class="method">
 <dt id="bmtk.simulator.bionet.bionetwork.BioNetwork.get_virtual_cells">
 <code class="descname">get_virtual_cells</code><span class="sig-paren">(</span><em>population</em>, <em>node_id</em>, <em>spike_trains</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/bionetwork.html#BioNetwork.get_virtual_cells"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.get_virtual_cells" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.bionet.bionetwork.BioNetwork.gid_pool">
+<code class="descname">gid_pool</code><a class="headerlink" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.gid_pool" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1093,6 +1104,48 @@ positions, synapses, and other parameters depending on the desired cell class.</
 </dd></dl>
 
 </div>
+<div class="section" id="module-bmtk.simulator.bionet.gids">
+<span id="bmtk-simulator-bionet-gids-module"></span><h2>bmtk.simulator.bionet.gids module<a class="headerlink" href="#module-bmtk.simulator.bionet.gids" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.simulator.bionet.gids.GidPool">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.gids.</code><code class="descname">GidPool</code><a class="reference internal" href="../_modules/bmtk/simulator/bionet/gids.html#GidPool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.gids.GidPool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.simulator.bionet.gids.GidPool.add_pool">
+<code class="descname">add_pool</code><span class="sig-paren">(</span><em>name</em>, <em>n_nodes</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/gids.html#GidPool.add_pool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.gids.GidPool.add_pool" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.gids.GidPool.get_gid">
+<code class="descname">get_gid</code><span class="sig-paren">(</span><em>name</em>, <em>node_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/gids.html#GidPool.get_gid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.gids.GidPool.get_gid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.gids.GidPool.get_pool_id">
+<code class="descname">get_pool_id</code><span class="sig-paren">(</span><em>gid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/gids.html#GidPool.get_pool_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.gids.GidPool.get_pool_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.bionet.gids.PopulationID">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.gids.</code><code class="descname">PopulationID</code><a class="headerlink" href="#bmtk.simulator.bionet.gids.PopulationID" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="attribute">
+<dt id="bmtk.simulator.bionet.gids.PopulationID.node_id">
+<code class="descname">node_id</code><a class="headerlink" href="#bmtk.simulator.bionet.gids.PopulationID.node_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.bionet.gids.PopulationID.population">
+<code class="descname">population</code><a class="headerlink" href="#bmtk.simulator.bionet.gids.PopulationID.population" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 <div class="section" id="module-bmtk.simulator.bionet.iclamp">
 <span id="bmtk-simulator-bionet-iclamp-module"></span><h2>bmtk.simulator.bionet.iclamp module<a class="headerlink" href="#module-bmtk.simulator.bionet.iclamp" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
@@ -1113,6 +1166,12 @@ positions, synapses, and other parameters depending on the desired cell class.</
 <dt id="bmtk.simulator.bionet.io_tools.NEURONIOUtils">
 <em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.io_tools.</code><code class="descname">NEURONIOUtils</code><a class="reference internal" href="../_modules/bmtk/simulator/bionet/io_tools.html#NEURONIOUtils"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.io_tools.NEURONIOUtils" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.io_tools.IOUtils" title="bmtk.simulator.core.io_tools.IOUtils"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.io_tools.IOUtils</span></code></a></p>
+<dl class="method">
+<dt id="bmtk.simulator.bionet.io_tools.NEURONIOUtils.barrier">
+<code class="descname">barrier</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/io_tools.html#NEURONIOUtils.barrier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.io_tools.NEURONIOUtils.barrier" title="Permalink to this definition">¶</a></dt>
+<dd><p>MPI Barrier call</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -1459,6 +1518,16 @@ def weight_function(): …</dd>
 <code class="descname">rotation_angle_zaxis</code><a class="headerlink" href="#bmtk.simulator.bionet.sonata_adaptors.BioNode.rotation_angle_zaxis" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="attribute">
+<dt id="bmtk.simulator.bionet.sonata_adaptors.BioNode.rotations">
+<code class="descname">rotations</code><a class="headerlink" href="#bmtk.simulator.bionet.sonata_adaptors.BioNode.rotations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.simulator.bionet.sonata_adaptors.BioNode.rotations_quaternion">
+<code class="descname">rotations_quaternion</code><a class="headerlink" href="#bmtk.simulator.bionet.sonata_adaptors.BioNode.rotations_quaternion" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -1480,6 +1549,21 @@ def weight_function(): …</dd>
 <dl class="function">
 <dt id="bmtk.simulator.bionet.sonata_adaptors.position">
 <code class="descclassname">bmtk.simulator.bionet.sonata_adaptors.</code><code class="descname">position</code><span class="sig-paren">(</span><em>self</em>, <em>node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/sonata_adaptors.html#position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.sonata_adaptors.position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.sonata_adaptors.position_x">
+<code class="descclassname">bmtk.simulator.bionet.sonata_adaptors.</code><code class="descname">position_x</code><span class="sig-paren">(</span><em>self</em>, <em>node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/sonata_adaptors.html#position_x"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.sonata_adaptors.position_x" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.sonata_adaptors.position_xy">
+<code class="descclassname">bmtk.simulator.bionet.sonata_adaptors.</code><code class="descname">position_xy</code><span class="sig-paren">(</span><em>self</em>, <em>node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/sonata_adaptors.html#position_xy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.sonata_adaptors.position_xy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.sonata_adaptors.position_xyz">
+<code class="descclassname">bmtk.simulator.bionet.sonata_adaptors.</code><code class="descname">position_xyz</code><span class="sig-paren">(</span><em>self</em>, <em>node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/sonata_adaptors.html#position_xyz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.sonata_adaptors.position_xyz" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -1510,6 +1594,16 @@ def weight_function(): …</dd>
 <dl class="function">
 <dt id="bmtk.simulator.bionet.sonata_adaptors.rotation_angle_z">
 <code class="descclassname">bmtk.simulator.bionet.sonata_adaptors.</code><code class="descname">rotation_angle_z</code><span class="sig-paren">(</span><em>self</em>, <em>node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/sonata_adaptors.html#rotation_angle_z"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.sonata_adaptors.rotation_angle_z" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.sonata_adaptors.rotations">
+<code class="descclassname">bmtk.simulator.bionet.sonata_adaptors.</code><code class="descname">rotations</code><span class="sig-paren">(</span><em>self</em>, <em>node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/sonata_adaptors.html#rotations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.sonata_adaptors.rotations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.simulator.bionet.sonata_adaptors.value_none">
+<code class="descclassname">bmtk.simulator.bionet.sonata_adaptors.</code><code class="descname">value_none</code><span class="sig-paren">(</span><em>self</em>, <em>node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/sonata_adaptors.html#value_none"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.sonata_adaptors.value_none" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -1547,7 +1641,7 @@ def weight_function(): …</dd>
 <span id="bmtk-simulator-bionet-virtualcell-module"></span><h2>bmtk.simulator.bionet.virtualcell module<a class="headerlink" href="#module-bmtk.simulator.bionet.virtualcell" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="bmtk.simulator.bionet.virtualcell.VirtualCell">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.virtualcell.</code><code class="descname">VirtualCell</code><span class="sig-paren">(</span><em>node</em>, <em>spike_train_dataset</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/virtualcell.html#VirtualCell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.virtualcell.VirtualCell" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.virtualcell.</code><code class="descname">VirtualCell</code><span class="sig-paren">(</span><em>node</em>, <em>population</em>, <em>spike_train_dataset</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/virtualcell.html#VirtualCell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.virtualcell.VirtualCell" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Representation of a Virtual/External node</p>
 <dl class="attribute">

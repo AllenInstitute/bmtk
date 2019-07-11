@@ -1,0 +1,1258 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>bmtk.utils.reports.spike_trains.spike_trains_file &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+<script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
+<style>
+
+	/* the icon font-family definition and helper classes */
+	@font-face {
+	  font-family: 'portal_icon_font';
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
+	  font-weight: normal;
+	  font-style: normal;
+	}
+	 
+	 [class^="icon-"]:before, [class*=" icon-"]:before {
+	  font-family: "portal_icon_font";
+	  font-style: normal;
+	  font-weight: normal;
+	  speak: none;
+	 
+	  display: inline-block;
+	  text-decoration: inherit;
+	  width: 1em;
+	  margin-right: .2em;
+	  text-align: center;
+	  /* opacity: .8; */
+	 
+	  /* For safety - reset parent styles, that can break glyph codes*/
+	  font-variant: normal;
+	  text-transform: none;
+	     
+	  /* fix buttons height, for twitter bootstrap */
+	  line-height: 1em;
+	 
+	  /* Animation center compensation - margins should be symmetric */
+	  /* remove if not needed */
+	  margin-left: .2em;
+	
+	}
+	 
+	.icon-spin5:before { content: '\e806'; } /* '' */
+	.icon-left-open-1:before { content: '\e81e'; } /* '' */
+	.icon-plus-1:before { content: '\e801'; } /* '' */
+	.icon-facebook:before { content: '\e816'; } /* '' */
+	.icon-gplus:before { content: '\e818'; } /* '' */
+	.icon-linkedin-3:before { content: '\e815'; } /* '' */
+	.icon-twitter:before { content: '\e817'; } /* '' */
+	.icon-youtube-play:before { content: '\e805'; } /* '' */
+	.icon-plus-2:before { content: '\e809'; } /* '' */
+	.icon-record-1:before { content: '\e81c'; } /* '' */
+	.icon-cancel:before { content: '\e80b'; } /* '' */
+	.icon-search:before { content: '\e804'; } /* '' */
+	.icon-cancel-2:before { content: '\e80c'; } /* '' */
+	.icon-plus-4:before { content: '\e80d'; } /* '' */
+	.icon-cancel-3:before { content: '\e80e'; } /* '' */
+	.icon-plus:before { content: '\e808'; } /* '' */
+	.icon-down-open:before { content: '\e800'; } /* '' */
+	.icon-right-open:before { content: '\e802'; } /* '' */
+	.icon-up-open:before { content: '\e803'; } /* '' */
+	.icon-stop:before { content: '\e813'; } /* '' */
+	.icon-cancel-1:before { content: '\e820'; } /* '' */
+	.icon-plus-3:before { content: '\e80a'; } /* '' */
+	/* end icon font helpers */
+
+	/* icon font spin animation */
+	.animate-spin {
+	  -moz-animation: spin 2s infinite linear;
+	  -o-animation: spin 2s infinite linear;
+	  -webkit-animation: spin 2s infinite linear;
+	  animation: spin 2s infinite linear;
+	  display: inline-block;
+	}
+	@-moz-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-webkit-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-o-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-ms-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	/*  end spin animation */	
+
+	@font-face {
+	    font-family: 'bebas_neueregular';
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
+	    font-weight: normal;
+	    font-style: normal;
+	}
+
+	/* top chrome styles */
+	#top_chrome {
+
+		width:100%;
+		height:28px;
+		background-color:#163E65;
+	}
+
+	.chrome_link_block {
+
+		color:#fff !important;	
+		display:inline-block;
+		height:100%;
+		max-height:28px;
+	}
+
+	.chrome_link_block:hover {
+
+		background-color:#eee;
+		color:#0779BE !important;	
+		cursor:pointer;
+	}
+
+	#top_chrome a {
+
+		color:inherit !important;	
+		text-decoration:none;
+	}
+
+	#top_chrome a:hover {
+
+		color:inherit !important;	
+	}
+
+	#top_chrome_buttons {
+
+		float:right;
+		margin-right:50px;
+	}
+
+	.chrome_button {
+
+		font-family:arial,sans-serif;
+		font-weight:bold;
+		display:inline-block;
+		font-size:9px;
+		text-align:left;
+		text-decoration:none;
+		margin:9px 20px 10px 20px;
+	}
+
+	.chrome_active {
+
+		background-color:#1b7abd;
+		color:#fff;
+	}
+
+
+	/* header element styles*/
+	#header_content {
+
+		font-family: bebas_neueregular, arial, sans-serif;
+		font-size:22px;
+		color:#0779be;		
+		letter-spacing:0.03em;
+
+		position:relative;
+		width:calc(100% - 112px);
+		min-width:800px;
+		height:76px;
+		border-bottom:2px solid #A5A8AB;
+		margin-left:50px;
+		margin-right:50px;
+        z-index:9999; /* IT-9508 */
+	}
+
+	#portal_logo {
+
+		position:absolute;
+		top:20px;
+		left:0px;
+		width:236px;
+	}
+
+	#portal_tabs {
+
+		position: absolute;
+		bottom: 12px;
+		left: 0px;
+		margin-bottom: -12px;
+		display: block;
+	}
+
+	.horizontal_list
+	{
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		display: inline; 		
+	}
+
+	.horizontal_list li { 
+
+		display: inline; 	
+	}	
+
+	#portal_tab_menu_container {
+
+		display:none;
+	}
+
+	#portal_search_input_group {
+
+		position:absolute;
+		margin: 0;
+		padding: 0;
+		bottom:12px;
+		right:0px;
+		border:1px solid #DAD9D3;
+		color:#DAD9D3;
+	}
+
+	#portal_search_input_group input {
+
+		margin: 0;
+		padding: 0;
+		border:none;
+		width:110px;
+		color:#DAD9D3;
+		font-family:Helvetica,sans-serif;
+		font-size:12px;
+		height:28px;
+		margin-left:10px;
+
+		outline:none;
+	}
+
+	input::-ms-clear {
+		display: none;
+	}
+
+	#portal_search_input_group i {
+
+		font-size:0.8em;
+		cursor:pointer;
+	}
+
+	#pSiteSearchTextInput:focus {
+
+		color:#000;
+	}
+
+	.icon_menu_down {
+
+		font-size: 12px;
+		margin-left: 4px;
+		vertical-align: text-top;
+		padding-top: 4px;
+		display: inline-block;
+	}
+
+	.portal_tab_item {
+
+		background-color: #fff;
+		padding: 12px;
+		padding-left:20px;
+		padding-right:20px;
+		display: inline-block !important;		
+	}
+
+	.portal_tab_item a:hover {
+
+		color:#fbe300;	
+	}
+
+	.portal_tab_item:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}	
+
+
+	.portal_menu_active {
+
+		background-color: #EEEEEE;
+	}	
+
+	.portal_menu_item_active {
+
+		color:#fbe300 !important;	
+	}
+
+	.portal_tab_active {
+
+		color:#a5a8ab !important;
+	}
+
+	#header_content a {		
+
+		color:inherit !important;
+	}
+
+	#header_content a:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}
+
+	#header_content ul {
+
+		list-style: none;
+		position: relative;
+		top: 58px;
+		display: inline-table;
+	}
+
+	#header_content ul ul {
+		
+		display:none;
+		opacity:0;
+	}
+
+	/* the fly out menus */
+	#header_content ul li:hover > ul,
+	#header_content ul li.hover > ul {
+
+		position: absolute;
+		top: 48px;
+		z-index:999;
+
+		display: block;
+		width: 152px;
+		padding:0px;
+		padding-top:20px;
+		padding-bottom:10px;
+		font-size: 12px;
+		font-family: Arial,Sans-Serif;
+		font-weight: bold;
+		text-transform: uppercase;
+
+		background-color: rgba(8,122,191,0.98);
+		color: #fff !important;
+		opacity: 1;
+
+		-webkit-animation: fade 0.25s;
+		animation: fade 0.25s;
+	}
+
+	@-webkit-keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}
+	@keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}	
+
+	#header_content ul li:hover > ul li {
+
+		padding: 10px;
+		padding-top: 0px;
+		padding-left: 20px;
+		display: block;
+		opacity:1;
+	}
+
+	#header_content ul li:hover > ul a {
+
+		display: block;
+		opacity:1;
+		white-space:nowrap;
+	}
+
+	#portal_menu_start_list {
+
+		left: 81px;
+
+		/* IE sauce */
+		left:85px\9;
+
+		/* Safari sauce */
+		(;left:79px;);
+	}
+
+	#portal_menu_atlases_list {
+
+		left: 290px;
+		width: 210px !important;
+        height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 303px\9;
+        height: 225px\9;
+
+		/* Safari sauce */
+		(;left:279px;);
+	}
+
+	#portal_menu_tools_list {
+
+		left: 500px;
+		width: 172px !important;
+		height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 513px\9;
+		height:225px\9;
+
+		/* Safari sauce */
+		(;left:489px;);
+		(;height:227px;);
+	}
+
+	/* mozilla sauce */
+	@-moz-document url-prefix() {
+
+		#header_content {
+
+			height:107px;
+		}
+
+		#portal_menu_start_list {
+
+			left:85px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 302px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 512px;
+			height:236px;
+		}
+	}
+
+
+	/* make it look OK on iPad also */
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:portrait) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}  
+	}
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:landscape) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}	  
+	}
+
+	.portal_menu_list_heading {
+
+		color:#9ccae5;
+		border-bottom:1px solid #9ccae5;
+		padding-bottom:5px !important;
+	}
+
+	.portal_menu_list_heading + li {
+
+		padding-top:10px !important;
+	}
+
+	.portal_menu_list_heading li {
+
+		padding-bottom:0px;
+	}	
+
+	#portal_menu_atlases_list li:last-of-type {
+
+		padding-bottom:15px !important;
+	}
+
+	.icon-spin5 {
+
+		color:#000;
+	}
+</style>
+<div id="pHeader">
+<div id="top_chrome">
+	<div id="top_chrome_buttons">
+		<div class="chrome_link_block"><a href="http://www.alleninstitute.org" target="_blank" class="chrome_button">ALLEN INSTITUTE</a></div>
+	</div>
+</div>
+
+<div id="header_content">
+
+	<a href="http://AllenInstitute.github.io">
+		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/AIBS_Logo.png"/>
+	</a>
+</div>
+</div>
+
+<script>
+
+jQuery('#portal_tab_menu').bind('touchstart', function() {
+
+	if(window.console)
+		console.log("touchstart");
+});
+</script>
+<link rel="stylesheet" type="text/css" href="_static/external_assets/stylesheets/common_layout.css" />
+
+
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for bmtk.utils.reports.spike_trains.spike_trains_file</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="k">import</span> <span class="n">Enum</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<span class="n">MPI_Rank</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">MPI_Size</span> <span class="o">=</span> <span class="mi">1</span>
+
+
+<div class="viewcode-block" id="SortOrder"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SortOrder">[docs]</a><span class="k">class</span> <span class="nc">SortOrder</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="n">none</span> <span class="o">=</span> <span class="s1">&#39;none&#39;</span>
+    <span class="n">by_id</span> <span class="o">=</span> <span class="s1">&#39;by_id&#39;</span>
+    <span class="n">by_time</span> <span class="o">=</span> <span class="s1">&#39;by_time&#39;</span>
+    <span class="n">unknown</span> <span class="o">=</span> <span class="s1">&#39;unknown&#39;</span></div>
+
+
+<div class="viewcode-block" id="SpikeTrains"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SpikeTrains">[docs]</a><span class="k">class</span> <span class="nc">SpikeTrains</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="c1"># _read_adaptor = {}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_caching</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">opt_args</span><span class="p">):</span>
+        <span class="c1"># TODO: implement as lazy attribute</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_read_adapter</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Used for reading spike trains from a file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Used for adding new spikes</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_population_name</span> <span class="o">=</span> <span class="n">population_name</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        if use_caching or MPI_Size &gt; 0:</span>
+<span class="sd">            self._spikes_cache = STDiskCache(output_dir=output_dir, **opt_args)</span>
+<span class="sd">        else:</span>
+<span class="sd">            self._spikes_cache = STMemoryCache(**opt_args)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sort_by</span> <span class="o">=</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">unknown</span>
+
+        <span class="c1">## self._itr_order = SortOrder.none</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sorted_by</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sort_by</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">population</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_population_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">node_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_adapter</span><span class="o">.</span><span class="n">node_ids</span>
+        <span class="c1"># return self._spikes_cache.node_ids()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">gids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># TODO: Depreciate</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_ids</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spikes_cache</span><span class="o">.</span><span class="n">count_spikes</span><span class="p">()</span>
+
+<div class="viewcode-block" id="SpikeTrains.from_csv"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SpikeTrains.from_csv">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_csv</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">_read_adapter</span> <span class="o">=</span> <span class="n">CSVReader</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+    <span class="c1">#@staticmethod</span>
+    <span class="c1">#def from_csv(path, sep=&#39; &#39;):</span>
+    <span class="c1">#    raise NotImplementedError()</span>
+
+<div class="viewcode-block" id="SpikeTrains.from_sonata"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SpikeTrains.from_sonata">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_sonata</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SpikeTrains.from_nwb"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SpikeTrains.from_nwb">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_nwb</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SpikeTrains.from_file"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SpikeTrains.from_file">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_file</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SpikeTrains.to_csv"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SpikeTrains.to_csv">[docs]</a>    <span class="k">def</span> <span class="nf">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">none</span><span class="p">,</span> <span class="o">**</span><span class="n">opt_params</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+        <span class="c1"># csv_writer = CSVWriter(spike_trains=self, file_name=file_name, mode=mode, sort_order=sort_order, **opt_params)</span>
+        <span class="c1"># csv_writer.save()</span>
+
+<div class="viewcode-block" id="SpikeTrains.to_sonata"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SpikeTrains.to_sonata">[docs]</a>    <span class="k">def</span> <span class="nf">to_sonata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="SpikeTrains.to_nwb"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SpikeTrains.to_nwb">[docs]</a>    <span class="k">def</span> <span class="nf">to_nwb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SpikeTrains.add_spike"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SpikeTrains.add_spike">[docs]</a>    <span class="k">def</span> <span class="nf">add_spike</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spike_time</span><span class="p">,</span> <span class="n">node_id</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spikes_cache</span><span class="o">.</span><span class="n">add_spikes</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="p">[</span><span class="n">spike_time</span><span class="p">],</span> <span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SpikeTrains.add_spikes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SpikeTrains.add_spikes">[docs]</a>    <span class="k">def</span> <span class="nf">add_spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spike_times</span><span class="p">,</span> <span class="n">node_id</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spikes_cache</span><span class="o">.</span><span class="n">add_spikes</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">spike_times</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SpikeTrains.get_spikes_df"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SpikeTrains.get_spikes_df">[docs]</a>    <span class="k">def</span> <span class="nf">get_spikes_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_by</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">none</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_adapter</span><span class="o">.</span><span class="n">get_spikes_df</span><span class="p">(</span><span class="n">node_ids</span><span class="o">=</span><span class="n">node_ids</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="n">time_window</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span>
+                                                <span class="n">sort_by</span><span class="o">=</span><span class="n">sort_by</span><span class="p">)</span></div>
+        <span class="c1"># return self._spikes_cache.get_spikes(gid, time_window=None)</span>
+        <span class="c1"># pass</span>
+
+    <span class="c1">#def spikes(self, sort_order):</span>
+    <span class="c1">#    return self._spikes_cache.spikes(sort_order)</span>
+
+<div class="viewcode-block" id="SpikeTrains.get_spike_times"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SpikeTrains.get_spike_times">[docs]</a>    <span class="k">def</span> <span class="nf">get_spike_times</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_adapter</span><span class="o">.</span><span class="n">get_spike_times</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="n">time_window</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span>
+                                                  <span class="nb">sorted</span><span class="o">=</span><span class="nb">sorted</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SpikeTrains.flush"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SpikeTrains.flush">[docs]</a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SpikeTrains.close"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SpikeTrains.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spikes_cache</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="SpikeBuffer"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SpikeBuffer">[docs]</a><span class="k">class</span> <span class="nc">SpikeBuffer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="SpikeBuffer.insert"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SpikeBuffer.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">node_id</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="SpikeBuffer.add"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SpikeBuffer.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">node_id</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="SpikeBuffer.cache"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SpikeBuffer.cache">[docs]</a>    <span class="k">def</span> <span class="nf">cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="SpikeTrainRecorder"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SpikeTrainRecorder">[docs]</a><span class="k">class</span> <span class="nc">SpikeTrainRecorder</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    class CachedFileMetadata(object):</span>
+<span class="sd">        def __init__(self, file_name, sort_order=None):</span>
+<span class="sd">            self.file_name = file_name</span>
+<span class="sd">            self.sort_order = sort_order</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_total_spikes</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spikes_buffer</span> <span class="o">=</span> <span class="n">SpikeBuffer</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_disk_cache</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># self._use_cache = True</span>
+
+    <span class="k">def</span> <span class="nf">_get_tmp_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rank</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmp_dir</span><span class="p">,</span> <span class="s1">&#39;.bmtk_spikes_cache_</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rank</span><span class="p">))</span>
+
+<div class="viewcode-block" id="SpikeTrainRecorder.add_spikes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SpikeTrainRecorder.add_spikes">[docs]</a>    <span class="k">def</span> <span class="nf">add_spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">node_id</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spikes</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spikes_buffer</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">node_id</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spikes_buffer</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">node_id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_node_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_total_spikes</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SpikeTrainRecorder.flush"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SpikeTrainRecorder.flush">[docs]</a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spikes_buffer</span><span class="o">.</span><span class="n">cache</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SpikeTrainRecorder.count_node_ids"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SpikeTrainRecorder.count_node_ids">[docs]</a>    <span class="k">def</span> <span class="nf">count_node_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id_count</span></div>
+
+<div class="viewcode-block" id="SpikeTrainRecorder.count_spikes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SpikeTrainRecorder.count_spikes">[docs]</a>    <span class="k">def</span> <span class="nf">count_spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spike_count</span></div>
+
+<div class="viewcode-block" id="SpikeTrainRecorder.node_ids"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.SpikeTrainRecorder.node_ids">[docs]</a>    <span class="k">def</span> <span class="nf">node_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spikes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="STReadAdapter"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.STReadAdapter">[docs]</a><span class="k">class</span> <span class="nc">STReadAdapter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="STReadAdapter.to_dataframe"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.STReadAdapter.to_dataframe">[docs]</a>    <span class="k">def</span> <span class="nf">to_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="STReadAdapter.get_spikes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.STReadAdapter.get_spikes">[docs]</a>    <span class="k">def</span> <span class="nf">get_spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="STReadAdapter.time_min"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.STReadAdapter.time_min">[docs]</a>    <span class="k">def</span> <span class="nf">time_min</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="STReadAdapter.time_max"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.STReadAdapter.time_max">[docs]</a>    <span class="k">def</span> <span class="nf">time_max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sorted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+
+<span class="n">col_timestamps</span> <span class="o">=</span> <span class="s1">&#39;timestamps&#39;</span>
+<span class="n">col_node_ids</span> <span class="o">=</span> <span class="s1">&#39;node_ids&#39;</span>
+<span class="n">col_population</span> <span class="o">=</span> <span class="s1">&#39;population&#39;</span>
+<span class="n">csv_headers</span> <span class="o">=</span> <span class="p">[</span><span class="n">col_timestamps</span><span class="p">,</span> <span class="n">col_node_ids</span><span class="p">,</span> <span class="n">col_population</span><span class="p">]</span>
+<span class="n">pop_na</span> <span class="o">=</span> <span class="s1">&#39;NONE&#39;</span>
+
+
+<div class="viewcode-block" id="CSVReader"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.CSVReader">[docs]</a><span class="k">class</span> <span class="nc">CSVReader</span><span class="p">(</span><span class="n">STReadAdapter</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_ids</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_min_time</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_time</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># self._dt = None</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># check to see if file contains headers</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+                <span class="n">sniffer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">Sniffer</span><span class="p">()</span>
+                <span class="n">has_headers</span> <span class="o">=</span> <span class="n">sniffer</span><span class="o">.</span><span class="n">has_header</span><span class="p">(</span><span class="n">csvfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1024</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">has_headers</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spikes_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span> <span class="k">if</span> <span class="n">has_headers</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">has_headers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spikes_df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">csv_headers</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">_spikes_df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+
+        <span class="k">if</span> <span class="n">col_population</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spikes_df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">pop_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">col_population</span><span class="p">,</span> <span class="n">pop_na</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spikes_df</span><span class="p">[</span><span class="n">col_population</span><span class="p">]</span> <span class="o">=</span> <span class="n">pop_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">node_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_ids</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_node_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spikes_df</span><span class="p">[</span><span class="n">col_node_ids</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_ids</span>
+
+<div class="viewcode-block" id="CSVReader.get_spikes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.CSVReader.get_spikes">[docs]</a>    <span class="k">def</span> <span class="nf">get_spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">spike_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="k">if</span> <span class="n">node_ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="CSVReader.get_spike_times"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.CSVReader.get_spike_times">[docs]</a>    <span class="k">def</span> <span class="nf">get_spike_times</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spikes_df</span><span class="p">[</span><span class="n">col_node_ids</span><span class="p">]</span> <span class="o">==</span> <span class="n">node_id</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">&amp;=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spikes_df</span><span class="p">[</span><span class="n">col_population</span><span class="p">]</span> <span class="o">==</span> <span class="n">population</span><span class="p">)</span> <span class="k">if</span> <span class="n">population</span> <span class="k">else</span> <span class="kc">True</span>
+
+        <span class="c1"># spike_times = self._spikes_df[self._spikes_df[col_node_ids] == node_id]# [col_timestamps].values</span>
+        <span class="c1"># spike_times = self._spikes_df[self._spikes_df[col_node_ids] == node_id][col_timestamps].values</span>
+        <span class="n">spike_times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spikes_df</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="n">col_timestamps</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="k">if</span> <span class="n">time_window</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">spike_times</span> <span class="o">=</span> <span class="n">spike_times</span><span class="p">[(</span><span class="n">spike_times</span> <span class="o">&gt;=</span> <span class="n">time_window</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">spike_times</span> <span class="o">&lt;=</span> <span class="n">time_window</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+
+        <span class="k">if</span> <span class="nb">sorted</span><span class="p">:</span>
+            <span class="n">spike_times</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">spike_times</span></div>
+
+<div class="viewcode-block" id="CSVReader.get_spikes_df"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_file.CSVReader.get_spikes_df">[docs]</a>    <span class="k">def</span> <span class="nf">get_spikes_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_by</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">none</span><span class="p">):</span>
+        <span class="n">selected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spikes_df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1">#mask = (selected_spikes[col_node_ids].isin(node_ids)) if node_ids else True</span>
+        <span class="c1">#mask &amp;= (selected_spikes[col_population] == population) if population else True</span>
+        <span class="c1">#mask &amp;= ()</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">if</span> <span class="n">population</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">&amp;=</span> <span class="n">selected</span><span class="p">[</span><span class="n">col_population</span><span class="p">]</span> <span class="o">==</span> <span class="n">population</span>
+
+        <span class="k">if</span> <span class="n">node_ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">&amp;=</span> <span class="n">selected</span><span class="p">[</span><span class="n">col_node_ids</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">node_ids</span><span class="p">)</span>
+            <span class="c1"># selected_spikes = selected_spikes[selected_spikes[col_node_ids].isin(node_ids)]</span>
+
+        <span class="k">if</span> <span class="n">time_window</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">&amp;=</span> <span class="p">(</span><span class="n">selected</span><span class="p">[</span><span class="n">col_timestamps</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">time_window</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">selected</span><span class="p">[</span><span class="n">col_timestamps</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">time_window</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="c1">#selected_spikes = selected_spikes[(selected_spikes[col_timestamps] &gt;= time_window[0]) &amp;</span>
+            <span class="c1">#                                  (selected_spikes[col_timestamps] &lt;= time_window[1])]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
+            <span class="n">selected</span> <span class="o">=</span> <span class="n">selected</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="c1"># print(type(mask))</span>
+        <span class="c1"># exit()</span>
+
+        <span class="k">if</span> <span class="n">sort_by</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_time</span><span class="p">:</span>
+            <span class="n">selected</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="n">col_timestamps</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">sort_by</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_id</span><span class="p">:</span>
+            <span class="n">selected</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="n">col_node_ids</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">selected</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">RangeIndex</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">selected</span><span class="o">.</span><span class="n">index</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">selected</span></div></div>
+
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">class SonataSTFile(SpikeTrains):</span>
+<span class="sd">    pass</span>
+
+
+
+
+<span class="sd">class CSVWriter(object):</span>
+<span class="sd">    def __init__(self, spike_trains, file_name, mode, sort_order, **opt_params):</span>
+<span class="sd">        self._st_obj = spike_trains</span>
+<span class="sd">        self._sort_order = sort_order</span>
+
+<span class="sd">        self._population_column = opt_params.get(&#39;population_column&#39;, False)</span>
+<span class="sd">        delimiter = opt_params.get(&#39;delimiter&#39;, &#39; &#39;)</span>
+<span class="sd">        self._csv_handle = open(file_name, mode)</span>
+<span class="sd">        self._csv_writer = csv.writer(self._csv_handle, delimiter=delimiter)</span>
+
+<span class="sd">    def save(self):</span>
+<span class="sd">        if self._population_column:</span>
+<span class="sd">            pop_name = self._st_obj.population_name</span>
+<span class="sd">            self._csv_writer.write_row([&#39;time&#39;, &#39;node_id&#39;, &#39;population&#39;])</span>
+<span class="sd">            for node_id, spike_time in self._st_obj.spikes(sorted_by=self._sort_order):</span>
+<span class="sd">                self._csv_writer.writerow([spike_time, node_id, pop_name])</span>
+
+<span class="sd">        else:</span>
+<span class="sd">            self._csv_writer.writerow([&#39;time&#39;, &#39;node_id&#39;])</span>
+<span class="sd">            for node_id, spike_time in self._st_obj.spikes(sort_order=self._sort_order):</span>
+<span class="sd">                self._csv_writer.writerow([spike_time, node_id])</span>
+
+
+
+
+<span class="sd">class ISTCache(object):</span>
+<span class="sd">    def add_spikes(self, times, node_id):</span>
+<span class="sd">        raise NotImplementedError()</span>
+
+
+<span class="sd">class STMemoryCache(ISTCache):</span>
+<span class="sd">    def __init__(self, **opt_args):</span>
+<span class="sd">        self._spikes = {}</span>
+<span class="sd">        self._node_id_count = 0</span>
+<span class="sd">        self._spike_count = 0</span>
+
+<span class="sd">        self._spike_itr_indx = {}</span>
+
+<span class="sd">    def _next_spike(self, node_id):</span>
+<span class="sd">        spike_train = self._spikes[node_id]</span>
+<span class="sd">        c_spike_indx = self._spike_itr_indx[node_id]</span>
+<span class="sd">        # print(self._spikes)</span>
+<span class="sd">        # print(spike_train)</span>
+
+<span class="sd">        if c_spike_indx &gt;= len(spike_train):</span>
+<span class="sd">            return None</span>
+<span class="sd">        else:</span>
+<span class="sd">            c_spike = spike_train[c_spike_indx]</span>
+<span class="sd">            self._spike_itr_indx[node_id] += 1</span>
+<span class="sd">            return c_spike</span>
+
+<span class="sd">    def add_spikes(self, times, node_id):</span>
+<span class="sd">        if node_id in self._spikes.keys():</span>
+<span class="sd">            self._spikes[node_id].extend(times)</span>
+<span class="sd">        else:</span>
+<span class="sd">            self._spikes[node_id] = times</span>
+<span class="sd">            self._node_id_count += 1</span>
+
+<span class="sd">        self._spike_count += len(times)</span>
+
+<span class="sd">    def count_node_ids(self):</span>
+<span class="sd">        return self._node_id_count</span>
+
+<span class="sd">    def count_spikes(self):</span>
+<span class="sd">        return self._spike_count</span>
+
+<span class="sd">    def node_ids(self):</span>
+<span class="sd">        return list(self._spikes.keys())</span>
+
+<span class="sd">    def spikes(self, sort_order):</span>
+<span class="sd">        if sort_order == SortOrder.unknown or sort_order == SortOrder.none:</span>
+<span class="sd">            for nid, spike_times in self._spikes.items():</span>
+<span class="sd">                for st in spike_times:</span>
+<span class="sd">                    yield nid, st</span>
+
+<span class="sd">        elif sort_order == SortOrder.by_id:</span>
+<span class="sd">            #print(&#39;HERE&#39;)</span>
+<span class="sd">            node_ids_sorted = list(self._spikes.keys()).copy()</span>
+<span class="sd">            node_ids_sorted.sort()</span>
+<span class="sd">            #print(list(self._spikes.keys()).sort())</span>
+<span class="sd">            #node_ids_sorted = list(self._spikes.keys()).sort()</span>
+<span class="sd">            #print(node_ids_sorted)</span>
+<span class="sd">            for nid in node_ids_sorted:</span>
+<span class="sd">                spike_trains = self._spikes[nid]</span>
+<span class="sd">                for st in spike_trains:</span>
+<span class="sd">                    yield nid, st</span>
+
+<span class="sd">        elif sort_order == SortOrder.by_time:</span>
+<span class="sd">            # make sure spike times are ordered</span>
+<span class="sd">            for nid, spike_times in self._spikes.items():</span>
+<span class="sd">                self._spikes[nid].sort()</span>
+
+<span class="sd">            self._spike_itr_indx = {nid: 0 for nid in self._spikes.keys()}</span>
+
+<span class="sd">            spikes = []</span>
+<span class="sd">            for nid in self._spikes.keys():  # range(self._mpi_size):</span>
+<span class="sd">                spike = self._next_spike(nid)</span>
+<span class="sd">                if spike is not None:</span>
+<span class="sd">                    spikes.append((nid, spike))</span>
+<span class="sd">            #print(spikes)</span>
+<span class="sd">            #exit()</span>
+
+<span class="sd">            # Iterate through all the ranks and find the first spike. Write that spike/gid to the output, then</span>
+<span class="sd">            # replace that data point with the next spike on the selected rank</span>
+<span class="sd">            indx = 0</span>
+<span class="sd">            while spikes:</span>
+<span class="sd">                # print(&#39;&gt;&gt;&#39;, spikes)</span>
+<span class="sd">                # find which rank has the first spike</span>
+<span class="sd">                selected_index = 0</span>
+<span class="sd">                selected_val = spikes[0][1]</span>
+<span class="sd">                for i, spike in enumerate(spikes[1:]):</span>
+<span class="sd">                    # print(spike)</span>
+<span class="sd">                    if spike[1] &lt; selected_val:</span>
+<span class="sd">                        selected_index = i + 1</span>
+<span class="sd">                        selected_val = spike[1]</span>
+
+<span class="sd">                # write the spike to the file</span>
+<span class="sd">                row = spikes.pop(selected_index)</span>
+<span class="sd">                #print(row)</span>
+<span class="sd">                #exit()</span>
+<span class="sd">                # file_write_fnc(float(row[self.time_col]), int(row[self.gid_col]), indx)</span>
+<span class="sd">                indx += 1</span>
+
+<span class="sd">                # get the next spike on that rank and replace in spikes table</span>
+<span class="sd">                another_spike = self._next_spike(row[0])</span>
+<span class="sd">                if another_spike is not None:</span>
+<span class="sd">                    spikes.append((row[0], another_spike))</span>
+
+<span class="sd">                yield row[0], selected_val</span>
+
+
+<span class="sd">class STDiskCache(ISTCache):</span>
+<span class="sd">    class TmpFileMetadata(object):</span>
+<span class="sd">        def __init__(self, file_name, sort_order=None):</span>
+<span class="sd">            self.file_name = file_name</span>
+<span class="sd">            self.sort_order = sort_order</span>
+
+<span class="sd">    def __init__(self, output_dir, **opt_args):</span>
+<span class="sd">        # For NEST/NEURON based simulations it is prefereable not to use mpi4py, so let the parent simulator determine</span>
+<span class="sd">        # MPI rank and size</span>
+<span class="sd">        #self._mpi_rank = MPI_Rank</span>
+<span class="sd">        #self._mpi_size = MPI_Size</span>
+
+<span class="sd">        # used to temporary save spike files since for large simulations saving spikes into memory can crash the</span>
+<span class="sd">        # system. Requires the user to create the directory</span>
+<span class="sd">        self._tmp_dir = output_dir</span>
+<span class="sd">        if self._tmp_dir is None or not os.path.exists(self._tmp_dir):</span>
+<span class="sd">            raise Exception(&#39;Directory path {} does not exists&#39;.format(self._tmp_dir))</span>
+<span class="sd">        self._all_tmp_files = [self.TmpFileMetadata(self._get_tmp_filename(r)) for r in range(MPI_Size)]</span>
+<span class="sd">        # TODO: Determine best buffer size.</span>
+<span class="sd">        self._tmp_file_handle = open(self._all_tmp_files[MPI_Rank].file_name, &#39;w&#39;)</span>
+
+<span class="sd">        self._tmp_spikes_handles = []  # used when sorting mulitple file</span>
+<span class="sd">        # self._spike_count = -1</span>
+
+<span class="sd">        # Nest gid files uses tab seperators and a different order for tmp spike files.</span>
+<span class="sd">        self.delimiter = &#39; &#39;  # delimiter for temporary file</span>
+<span class="sd">        self.time_col = 0</span>
+<span class="sd">        self.gid_col = 1</span>
+
+<span class="sd">        # self._</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    def _next_spike(self, node_id):</span>
+<span class="sd">        spike_train = self._spikes[node_id]</span>
+<span class="sd">        c_spike_indx = self._spike_itr_indx[node_id]</span>
+<span class="sd">        # print(self._spikes)</span>
+<span class="sd">        # print(spike_train)</span>
+
+<span class="sd">        if c_spike_indx &gt;= len(spike_train):</span>
+<span class="sd">            return None</span>
+<span class="sd">        else:</span>
+<span class="sd">            c_spike = spike_train[c_spike_indx]</span>
+<span class="sd">            self._spike_itr_indx[node_id] += 1</span>
+<span class="sd">            return c_spike</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="sd">    def _get_tmp_filename(self, rank):</span>
+<span class="sd">        return os.path.join(self._tmp_dir, &#39;.bmtk_spikes_cache_{}.csv&#39;.format(rank))</span>
+
+<span class="sd">    def add_spikes(self, times, node_id):</span>
+<span class="sd">        for t in times:</span>
+<span class="sd">            self.add_spike(t, node_id)</span>
+
+<span class="sd">    def add_spike(self, time, gid):</span>
+<span class="sd">        self._tmp_file_handle.write(&#39;{:.6f} {}\n&#39;.format(time, gid))</span>
+
+<span class="sd">    def count_node_ids(self):</span>
+<span class="sd">        return len(self.node_ids())</span>
+
+<span class="sd">    def count_spikes(self):</span>
+<span class="sd">        spike_count = 0</span>
+<span class="sd">        for tmp_file in self._all_tmp_files:</span>
+<span class="sd">            with open(tmp_file.file_name, &#39;r&#39;) as csvfile:</span>
+<span class="sd">                csv_reader = csv.reader(csvfile, delimiter=self.delimiter)</span>
+<span class="sd">                spike_count += sum(1 for _ in csv_reader)</span>
+
+<span class="sd">        return spike_count</span>
+
+<span class="sd">    def node_ids(self):</span>
+<span class="sd">        node_id_set = set()</span>
+<span class="sd">        for tmp_file in self._all_tmp_files:</span>
+<span class="sd">            with open(tmp_file.file_name, &#39;r&#39;) as csvfile:</span>
+<span class="sd">                # print(csvfile)</span>
+<span class="sd">                csv_reader = csv.reader(csvfile, delimiter=self.delimiter)</span>
+<span class="sd">                # print(csv_reader)</span>
+<span class="sd">                for r in csv_reader:</span>
+<span class="sd">                    node_id_set.add(int(r[1]))</span>
+
+<span class="sd">        return list(node_id_set)</span>
+
+<span class="sd">    def spikes(self, sort_order):</span>
+<span class="sd">        if sort_order == SortOrder.unknown or sort_order == SortOrder.none:</span>
+<span class="sd">            for nid, spike_times in self._spikes.items():</span>
+<span class="sd">                for st in spike_times:</span>
+<span class="sd">                    yield nid, st</span>
+
+<span class="sd">        elif sort_order == SortOrder.by_id:</span>
+<span class="sd">            #print(&#39;HERE&#39;)</span>
+<span class="sd">            node_ids_sorted = list(self._spikes.keys()).copy()</span>
+<span class="sd">            node_ids_sorted.sort()</span>
+<span class="sd">            #print(list(self._spikes.keys()).sort())</span>
+<span class="sd">            #node_ids_sorted = list(self._spikes.keys()).sort()</span>
+<span class="sd">            #print(node_ids_sorted)</span>
+<span class="sd">            for nid in node_ids_sorted:</span>
+<span class="sd">                spike_trains = self._spikes[nid]</span>
+<span class="sd">                for st in spike_trains:</span>
+<span class="sd">                    yield nid, st</span>
+
+<span class="sd">        elif sort_order == SortOrder.by_time:</span>
+<span class="sd">            # make sure spike times are ordered</span>
+<span class="sd">            for nid, spike_times in self._spikes.items():</span>
+<span class="sd">                self._spikes[nid].sort()</span>
+
+<span class="sd">            self._spike_itr_indx = {nid: 0 for nid in self._spikes.keys()}</span>
+
+<span class="sd">            spikes = []</span>
+<span class="sd">            for nid in self._spikes.keys():  # range(self._mpi_size):</span>
+<span class="sd">                spike = self._next_spike(nid)</span>
+<span class="sd">                if spike is not None:</span>
+<span class="sd">                    spikes.append((nid, spike))</span>
+<span class="sd">            #print(spikes)</span>
+<span class="sd">            #exit()</span>
+
+<span class="sd">            # Iterate through all the ranks and find the first spike. Write that spike/gid to the output, then</span>
+<span class="sd">            # replace that data point with the next spike on the selected rank</span>
+<span class="sd">            indx = 0</span>
+<span class="sd">            while spikes:</span>
+<span class="sd">                # print(&#39;&gt;&gt;&#39;, spikes)</span>
+<span class="sd">                # find which rank has the first spike</span>
+<span class="sd">                selected_index = 0</span>
+<span class="sd">                selected_val = spikes[0][1]</span>
+<span class="sd">                for i, spike in enumerate(spikes[1:]):</span>
+<span class="sd">                    # print(spike)</span>
+<span class="sd">                    if spike[1] &lt; selected_val:</span>
+<span class="sd">                        selected_index = i + 1</span>
+<span class="sd">                        selected_val = spike[1]</span>
+
+<span class="sd">                # write the spike to the file</span>
+<span class="sd">                row = spikes.pop(selected_index)</span>
+<span class="sd">                #print(row)</span>
+<span class="sd">                #exit()</span>
+<span class="sd">                # file_write_fnc(float(row[self.time_col]), int(row[self.gid_col]), indx)</span>
+<span class="sd">                indx += 1</span>
+
+<span class="sd">                # get the next spike on that rank and replace in spikes table</span>
+<span class="sd">                another_spike = self._next_spike(row[0])</span>
+<span class="sd">                if another_spike is not None:</span>
+<span class="sd">                    spikes.append((row[0], another_spike))</span>
+
+<span class="sd">                yield row[0], selected_val</span>
+
+<span class="sd">    def flush(self):</span>
+<span class="sd">        self._tmp_file_handle.flush()</span>
+
+<span class="sd">    def close(self):</span>
+<span class="sd">        self._tmp_file_handle.close()</span>
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../../../../../index.html">Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../builder.html">Building Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../simulators.html">Simulation Engines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../pointnet.html">PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../filternet.html">FilterNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../mintnet.html">MintNet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+    </div>
+<script type="text/javascript" src="_static/external_assets/javascript/portalFooter.js"></script>
+
+  </body>
+</html>

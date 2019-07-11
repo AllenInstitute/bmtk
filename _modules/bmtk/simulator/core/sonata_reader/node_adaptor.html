@@ -664,7 +664,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prop_adaptor</span><span class="o">.</span><span class="n">network</span>
 
     <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop_key</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="n">prop_key</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="n">prop_key</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span></div>
 
 
 <div class="viewcode-block" id="NodeAdaptor"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor">[docs]</a><span class="k">class</span> <span class="nc">NodeAdaptor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -762,6 +765,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                     <span class="n">params_dir</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">&#39;point_neuron_models_dir&#39;</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;population&#39;</span><span class="p">:</span>
                     <span class="n">params_dir</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">&#39;population_models_dir&#39;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;lgnmodel&#39;</span> <span class="ow">or</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;virtual&#39;</span><span class="p">:</span>
+                    <span class="n">params_dir</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">&#39;filter_models_dir&#39;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># Not sure what to do in this case, throw Exception?</span>
                     <span class="n">params_dir</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">&#39;custom_neuron_models&#39;</span><span class="p">)</span>

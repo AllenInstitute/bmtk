@@ -630,6 +630,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">from</span> <span class="nn">bmtk.simulator.core.sonata_reader</span> <span class="k">import</span> <span class="n">NodeAdaptor</span><span class="p">,</span> <span class="n">SonataBaseNode</span><span class="p">,</span> <span class="n">EdgeAdaptor</span><span class="p">,</span> <span class="n">SonataBaseEdge</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.pointnet.io_tools</span> <span class="k">import</span> <span class="n">io</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.pointnet.pyfunction_cache</span> <span class="k">import</span> <span class="n">py_modules</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.pointnet.glif_utils</span> <span class="k">import</span> <span class="n">convert_aibs2nest</span>
 
 
 <div class="viewcode-block" id="all_null"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.sonata_adaptors.all_null">[docs]</a><span class="k">def</span> <span class="nf">all_null</span><span class="p">(</span><span class="n">node_group</span><span class="p">,</span> <span class="n">column_name</span><span class="p">):</span>
@@ -763,6 +764,20 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="p">[</span><span class="n">PointNodeBatched</span><span class="p">(</span><span class="n">nid_groups</span><span class="p">[</span><span class="n">nt_id</span><span class="p">],</span> <span class="n">gid_groups</span><span class="p">[</span><span class="n">nt_id</span><span class="p">],</span> <span class="n">node_group</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">node_types_table</span><span class="p">,</span> <span class="n">nt_id</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">nt_id</span> <span class="ow">in</span> <span class="n">ntids_counter</span><span class="p">]</span></div>
 
+<div class="viewcode-block" id="PointNodeAdaptor.preprocess_node_types"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor.preprocess_node_types">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">preprocess_node_types</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">node_population</span><span class="p">):</span>
+        <span class="n">NodeAdaptor</span><span class="o">.</span><span class="n">preprocess_node_types</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">node_population</span><span class="p">)</span>
+        <span class="n">node_types_table</span> <span class="o">=</span> <span class="n">node_population</span><span class="o">.</span><span class="n">types_table</span>
+        <span class="k">if</span> <span class="s1">&#39;model_template&#39;</span> <span class="ow">in</span> <span class="n">node_types_table</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="s1">&#39;dynamics_params&#39;</span> <span class="ow">in</span> <span class="n">node_types_table</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">node_type_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">node_population</span><span class="o">.</span><span class="n">type_ids</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">nt_id</span> <span class="ow">in</span> <span class="n">node_type_ids</span><span class="p">:</span>
+                <span class="n">node_type_attrs</span> <span class="o">=</span> <span class="n">node_types_table</span><span class="p">[</span><span class="n">nt_id</span><span class="p">]</span>
+                <span class="n">mtemplate</span> <span class="o">=</span> <span class="n">node_type_attrs</span><span class="p">[</span><span class="s1">&#39;model_template&#39;</span><span class="p">]</span>
+                <span class="n">dyn_params</span> <span class="o">=</span> <span class="n">node_type_attrs</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">mtemplate</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;nest:glif&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dyn_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;GLIF&#39;</span><span class="p">:</span>
+                    <span class="n">node_type_attrs</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">convert_aibs2nest</span><span class="p">(</span><span class="n">mtemplate</span><span class="p">,</span> <span class="n">dyn_params</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="PointNodeAdaptor.patch_adaptor"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor.patch_adaptor">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">patch_adaptor</span><span class="p">(</span><span class="n">adaptor</span><span class="p">,</span> <span class="n">node_group</span><span class="p">,</span> <span class="n">network</span><span class="p">):</span>
         <span class="n">node_adaptor</span> <span class="o">=</span> <span class="n">NodeAdaptor</span><span class="o">.</span><span class="n">patch_adaptor</span><span class="p">(</span><span class="n">adaptor</span><span class="p">,</span> <span class="n">node_group</span><span class="p">,</span> <span class="n">network</span><span class="p">)</span>
@@ -796,11 +811,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nest_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_template</span> <span class="ow">in</span> <span class="n">py_modules</span><span class="o">.</span><span class="n">synapse_models</span><span class="p">:</span>
+            <span class="n">src_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prop_adaptor</span><span class="o">.</span><span class="n">_network</span><span class="o">.</span><span class="n">get_node_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_population</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_node_id</span><span class="p">)</span>
+            <span class="n">trg_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prop_adaptor</span><span class="o">.</span><span class="n">_network</span><span class="o">.</span><span class="n">get_node_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_population</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_node_id</span><span class="p">)</span>
             <span class="n">syn_model_fnc</span> <span class="o">=</span> <span class="n">py_modules</span><span class="o">.</span><span class="n">synapse_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_template</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="n">src_node</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">trg_node</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="n">syn_model_fnc</span> <span class="o">=</span> <span class="n">py_modules</span><span class="o">.</span><span class="n">synapse_models</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">syn_model_fnc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">syn_model_fnc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">trg_node</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PointEdgeBatched"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeBatched">[docs]</a><span class="k">class</span> <span class="nc">PointEdgeBatched</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -844,64 +863,118 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="viewcode-block" id="PointEdgeAdaptor.get_edge"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.get_edge">[docs]</a>    <span class="k">def</span> <span class="nf">get_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sonata_node</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">PointEdge</span><span class="p">(</span><span class="n">sonata_node</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="PointEdgeAdaptor.preprocess_edge_types"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.preprocess_edge_types">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">preprocess_edge_types</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">edge_population</span><span class="p">):</span>
+        <span class="c1"># Fix for sonata/300_pointneurons</span>
+        <span class="n">EdgeAdaptor</span><span class="o">.</span><span class="n">preprocess_edge_types</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">edge_population</span><span class="p">)</span>
+        <span class="n">edge_types_table</span> <span class="o">=</span> <span class="n">edge_population</span><span class="o">.</span><span class="n">types_table</span>
+        <span class="n">edge_type_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">edge_population</span><span class="o">.</span><span class="n">type_ids</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">et_id</span> <span class="ow">in</span> <span class="n">edge_type_ids</span><span class="p">:</span>
+            <span class="n">edge_type</span> <span class="o">=</span> <span class="n">edge_types_table</span><span class="p">[</span><span class="n">et_id</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s1">&#39;model_template&#39;</span> <span class="ow">in</span> <span class="n">edge_types_table</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">model_template</span> <span class="o">=</span> <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;model_template&#39;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">model_template</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;nest&#39;</span><span class="p">):</span>
+                    <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;model_template&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model_template</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span></div>
+                    <span class="c1"># print edge_type[&#39;model_template&#39;]</span>
+
 
 <div class="viewcode-block" id="PointEdgeAdaptor.get_batches"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.get_batches">[docs]</a>    <span class="k">def</span> <span class="nf">get_batches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_group</span><span class="p">):</span>
         <span class="n">src_ids</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">trg_ids</span> <span class="o">=</span> <span class="p">{}</span>
+
         <span class="n">edge_types_table</span> <span class="o">=</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">edge_types_table</span>
 
-        <span class="n">edge_type_ids</span> <span class="o">=</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">node_type_ids</span><span class="p">()</span>
+        <span class="n">edge_type_ids</span> <span class="o">=</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">edge_type_ids</span>
         <span class="n">et_id_counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">edge_type_ids</span><span class="p">)</span>
-        <span class="n">tmp_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;etid&#39;</span><span class="p">:</span> <span class="n">edge_type_ids</span><span class="p">,</span> <span class="s1">&#39;src_nids&#39;</span><span class="p">:</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">src_node_ids</span><span class="p">(),</span>
-                               <span class="s1">&#39;trg_nids&#39;</span><span class="p">:</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">trg_node_ids</span><span class="p">()})</span>
+        <span class="n">tmp_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;etid&#39;</span><span class="p">:</span> <span class="n">edge_type_ids</span><span class="p">,</span> <span class="s1">&#39;src_nids&#39;</span><span class="p">:</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">src_node_ids</span><span class="p">,</span>
+                               <span class="s1">&#39;trg_nids&#39;</span><span class="p">:</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">trg_node_ids</span><span class="p">})</span>
 
-        <span class="k">for</span> <span class="n">et_id</span><span class="p">,</span> <span class="n">grp_vals</span> <span class="ow">in</span> <span class="n">tmp_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;etid&#39;</span><span class="p">):</span>
-            <span class="n">src_ids</span><span class="p">[</span><span class="n">et_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">grp_vals</span><span class="p">[</span><span class="s1">&#39;src_nids&#39;</span><span class="p">])</span>
-            <span class="n">trg_ids</span><span class="p">[</span><span class="n">et_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">grp_vals</span><span class="p">[</span><span class="s1">&#39;trg_nids&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s1">&#39;nsyns&#39;</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">tmp_df</span><span class="p">[</span><span class="s1">&#39;nsyns&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="s1">&#39;nsyns&#39;</span><span class="p">)</span>
 
-        <span class="c1"># selected_etids = np.unique(edge_type_ids)</span>
-        <span class="n">type_params</span> <span class="o">=</span> <span class="p">{</span><span class="n">et_id</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">et_id</span> <span class="ow">in</span> <span class="n">et_id_counter</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
-        <span class="k">for</span> <span class="n">et_id</span><span class="p">,</span> <span class="n">p_dict</span> <span class="ow">in</span> <span class="n">type_params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">p_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">edge_types_table</span><span class="p">[</span><span class="n">et_id</span><span class="p">][</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">])</span>
-            <span class="k">if</span> <span class="s1">&#39;model_template&#39;</span> <span class="ow">in</span> <span class="n">edge_types_table</span><span class="p">[</span><span class="n">et_id</span><span class="p">]:</span>
-                <span class="n">p_dict</span><span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_types_table</span><span class="p">[</span><span class="n">et_id</span><span class="p">][</span><span class="s1">&#39;model_template&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;syn_weight&#39;</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">tmp_df</span><span class="p">[</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="s1">&#39;delay&#39;</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-        <span class="k">elif</span> <span class="s1">&#39;delay&#39;</span> <span class="ow">in</span> <span class="n">edge_types_table</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">et_id</span><span class="p">,</span> <span class="n">p_dict</span> <span class="ow">in</span> <span class="n">type_params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">p_dict</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_types_table</span><span class="p">[</span><span class="n">et_id</span><span class="p">][</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span>
+            <span class="n">tmp_df</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="s1">&#39;delay&#39;</span><span class="p">)</span>
 
-        <span class="n">scalar_syn_weight</span> <span class="o">=</span> <span class="s1">&#39;syn_weight&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">columns</span>
-        <span class="n">scalar_nsyns</span> <span class="o">=</span> <span class="s1">&#39;nsyns&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">columns</span>
+        <span class="c1">#for et_id, grp_vals in tmp_df.groupby(&#39;etid&#39;):</span>
+        <span class="c1">#    src_ids[et_id] = np.array(grp_vals[&#39;src_nids&#39;])</span>
+        <span class="c1">#    trg_ids[et_id] = np.array(grp_vals[&#39;trg_nids&#39;])</span>
 
-        <span class="k">if</span> <span class="n">scalar_syn_weight</span> <span class="ow">and</span> <span class="n">scalar_nsyns</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">et_id</span><span class="p">,</span> <span class="n">p_dict</span> <span class="ow">in</span> <span class="n">type_params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">et_dict</span> <span class="o">=</span> <span class="n">edge_types_table</span><span class="p">[</span><span class="n">et_id</span><span class="p">]</span>
-                <span class="n">p_dict</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">et_dict</span><span class="p">[</span><span class="s1">&#39;nsyns&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">et_dict</span><span class="p">[</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">]</span>
+        <span class="n">type_params</span> <span class="o">=</span> <span class="p">{</span><span class="n">edge_id</span><span class="p">:</span> <span class="p">{}</span> <span class="k">for</span> <span class="n">edge_id</span> <span class="ow">in</span> <span class="n">et_id_counter</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+        <span class="n">src_pop</span> <span class="o">=</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">source_population</span>
+        <span class="n">trg_pop</span> <span class="o">=</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">target_population</span>
 
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">scalar_nsyns</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">scalar_syn_weight</span><span class="p">:</span>
-                <span class="n">tmp_df</span><span class="p">[</span><span class="s1">&#39;nsyns&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="s1">&#39;nsyns&#39;</span><span class="p">)</span>
-                <span class="n">tmp_df</span><span class="p">[</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">et_id</span><span class="p">,</span> <span class="n">grp_vals</span> <span class="ow">in</span> <span class="n">tmp_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;etid&#39;</span><span class="p">):</span>
-                    <span class="n">type_params</span><span class="p">[</span><span class="n">et_id</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">grp_vals</span><span class="p">[</span><span class="s1">&#39;nsyns&#39;</span><span class="p">])</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">grp_vals</span><span class="p">[</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">])</span>
+        <span class="n">grp_df</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">src_nodes_df</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">trg_nodes_df</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">edge_id</span><span class="p">,</span> <span class="n">grp_vals</span> <span class="ow">in</span> <span class="n">tmp_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;etid&#39;</span><span class="p">):</span>
+            <span class="n">edge_props</span> <span class="o">=</span> <span class="n">edge_types_table</span><span class="p">[</span><span class="n">edge_id</span><span class="p">]</span>
 
-            <span class="k">elif</span> <span class="n">scalar_nsyns</span><span class="p">:</span>
-                <span class="n">tmp_df</span><span class="p">[</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">et_id</span><span class="p">,</span> <span class="n">grp_vals</span> <span class="ow">in</span> <span class="n">tmp_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;etid&#39;</span><span class="p">):</span>
-                    <span class="n">type_params</span><span class="p">[</span><span class="n">et_id</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_types_table</span><span class="p">[</span><span class="n">et_id</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;nsyns&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">grp_vals</span><span class="p">[</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">])</span>
+            <span class="c1"># Get the model type</span>
+            <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_props</span><span class="p">[</span><span class="s1">&#39;model_template&#39;</span><span class="p">]</span>
 
-            <span class="k">elif</span> <span class="n">scalar_syn_weight</span><span class="p">:</span>
-                <span class="n">tmp_df</span><span class="p">[</span><span class="s1">&#39;nsyns&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">get_dataset</span><span class="p">(</span><span class="s1">&#39;nsyns&#39;</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">et_id</span><span class="p">,</span> <span class="n">grp_vals</span> <span class="ow">in</span> <span class="n">tmp_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;etid&#39;</span><span class="p">):</span>
-                    <span class="n">type_params</span><span class="p">[</span><span class="n">et_id</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">grp_vals</span><span class="p">[</span><span class="s1">&#39;nsyns&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="n">edge_types_table</span><span class="p">[</span><span class="n">et_id</span><span class="p">][</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">]</span>
+            <span class="c1"># Add dynamics params</span>
+            <span class="c1"># TODO: Add to dataframe and if a part of hdf5 we can return any dynamics params as a list</span>
+            <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">edge_props</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">])</span>
 
-        <span class="n">batched_edges</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">et_id</span> <span class="ow">in</span> <span class="n">et_id_counter</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">batched_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PointEdgeBatched</span><span class="p">(</span><span class="n">src_ids</span><span class="p">[</span><span class="n">et_id</span><span class="p">],</span> <span class="n">trg_ids</span><span class="p">[</span><span class="n">et_id</span><span class="p">],</span> <span class="n">type_params</span><span class="p">[</span><span class="n">et_id</span><span class="p">]))</span>
+            <span class="c1"># get the delay parameter</span>
+            <span class="k">if</span> <span class="s1">&#39;delay&#39;</span> <span class="ow">in</span> <span class="n">grp_vals</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">][</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">grp_vals</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="s1">&#39;delay&#39;</span> <span class="ow">in</span> <span class="n">edge_props</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">][</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_props</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span>
 
-        <span class="k">return</span> <span class="n">batched_edges</span></div>
+            <span class="n">weight_function</span> <span class="o">=</span> <span class="n">edge_types_table</span><span class="p">[</span><span class="n">edge_id</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;weight_function&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">weight_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">grp_df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">grp_df</span> <span class="o">=</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span>
+                    <span class="n">src_nodes_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network</span><span class="o">.</span><span class="n">get_nodes_df</span><span class="p">(</span><span class="n">src_pop</span><span class="p">)</span>
+                    <span class="n">trg_nodes_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network</span><span class="o">.</span><span class="n">get_nodes_df</span><span class="p">(</span><span class="n">trg_pop</span><span class="p">)</span>
+                <span class="n">edges</span> <span class="o">=</span> <span class="n">grp_df</span><span class="p">[</span><span class="n">grp_df</span><span class="p">[</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">edge_id</span><span class="p">]</span>
+                <span class="n">target_nodes</span> <span class="o">=</span> <span class="n">trg_nodes_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">edges</span><span class="p">[</span><span class="s1">&#39;target_node_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">]</span>
+                <span class="n">source_nodes</span> <span class="o">=</span> <span class="n">src_nodes_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">edges</span><span class="p">[</span><span class="s1">&#39;source_node_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">]</span>
+                <span class="n">weight_fnc</span> <span class="o">=</span> <span class="n">py_modules</span><span class="o">.</span><span class="n">synaptic_weight</span><span class="p">(</span><span class="n">weight_function</span><span class="p">)</span>
+                <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">weight_fnc</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">source_nodes</span><span class="p">,</span> <span class="n">target_nodes</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Get nsyns as either an array or a constant. If not explcitiy specified assume nsyns = 1</span>
+                <span class="k">if</span> <span class="s1">&#39;nsyns&#39;</span> <span class="ow">in</span> <span class="n">grp_vals</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                    <span class="n">nsyns</span> <span class="o">=</span> <span class="n">grp_vals</span><span class="p">[</span><span class="s1">&#39;nsyns&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">nsyns</span> <span class="o">=</span> <span class="n">edge_props</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;nsyns&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+                <span class="c1"># get syn_weight as either an array or constant. If not explicity stated throw an error</span>
+                <span class="k">if</span> <span class="s1">&#39;syn_weight&#39;</span> <span class="ow">in</span> <span class="n">grp_vals</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                    <span class="n">syn_weight</span> <span class="o">=</span> <span class="n">grp_vals</span><span class="p">[</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+                <span class="k">elif</span> <span class="s1">&#39;syn_weight&#39;</span> <span class="ow">in</span> <span class="n">edge_props</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">syn_weight</span> <span class="o">=</span> <span class="n">edge_props</span><span class="p">[</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># TODO: Make more explicity. Or default to syn_weight of 0</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Could not find syn_weight value&#39;</span><span class="p">)</span>
+
+                <span class="c1"># caluclate weight</span>
+                <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nsyns</span> <span class="o">*</span> <span class="n">syn_weight</span>
+
+            <span class="k">yield</span> <span class="n">PointEdgeBatched</span><span class="p">(</span><span class="n">source_nids</span><span class="o">=</span><span class="n">grp_vals</span><span class="p">[</span><span class="s1">&#39;src_nids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">target_nids</span><span class="o">=</span><span class="n">grp_vals</span><span class="p">[</span><span class="s1">&#39;trg_nids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+                                   <span class="n">nest_params</span><span class="o">=</span><span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">])</span>
+
+            <span class="c1">#print(type_params[edge_id])</span>
+            <span class="c1">#print(src_ids[edge_id])</span>
+            <span class="c1">#print(grp_vals[&#39;src_nids&#39;].values)</span>
+            <span class="c1">#print(trg_ids[edge_id])</span>
+            <span class="c1">#print(grp_vals[&#39;trg_nids&#39;].values)</span>
+            <span class="c1">#exit()</span>
+
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        batched_edges = []</span>
+<span class="sd">        for et_id in et_id_counter.keys():</span>
+<span class="sd">            batched_edges.append(PointEdgeBatched(src_ids[et_id], trg_ids[et_id], type_params[et_id]))</span>
+
+<span class="sd">        return batched_edges</span>
+<span class="sd">        &#39;&#39;&#39;</span></div>
 
 <div class="viewcode-block" id="PointEdgeAdaptor.patch_adaptor"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.patch_adaptor">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">patch_adaptor</span><span class="p">(</span><span class="n">adaptor</span><span class="p">,</span> <span class="n">edge_group</span><span class="p">):</span>
@@ -909,6 +982,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="k">if</span> <span class="s1">&#39;weight_function&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">all_columns</span> <span class="ow">and</span> <span class="s1">&#39;syn_weight&#39;</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">all_columns</span><span class="p">:</span>
             <span class="n">adaptor</span><span class="o">.</span><span class="n">syn_weight</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">point_syn_weight</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span>
+
+        <span class="c1">#else:</span>
+        <span class="c1">#    edge_adaptor.batch_process = False</span>
 
         <span class="k">return</span> <span class="n">edge_adaptor</span></div></div>
 

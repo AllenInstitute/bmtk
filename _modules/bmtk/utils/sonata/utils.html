@@ -730,6 +730,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="n">hdf5_handle</span><span class="p">[</span><span class="s1">&#39;/&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;version&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="n">VERSION_MAJOR</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">(</span><span class="n">VERSION_MINOR</span><span class="p">)]</span></div>
 
 
+<div class="viewcode-block" id="get_node_ids"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.utils.get_node_ids">[docs]</a><span class="k">def</span> <span class="nf">get_node_ids</span><span class="p">(</span><span class="n">nodes_path</span><span class="p">,</span> <span class="n">population</span><span class="p">):</span>
+    <span class="c1"># Used by PoissonSpikesGenerator</span>
+    <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">nodes_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5</span><span class="p">:</span>
+        <span class="n">node_ids</span> <span class="o">=</span> <span class="n">h5</span><span class="p">[</span><span class="s1">&#39;/nodes&#39;</span><span class="p">][</span><span class="n">population</span><span class="p">][</span><span class="s1">&#39;node_id&#39;</span><span class="p">][()]</span>
+    <span class="k">return</span> <span class="n">node_ids</span></div>
+
+
 <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
     <span class="n">using_py3</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">range_itr</span> <span class="o">=</span> <span class="nb">range</span>

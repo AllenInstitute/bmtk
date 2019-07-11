@@ -654,6 +654,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.io_tools</span> <span class="k">import</span> <span class="n">io</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.bionet</span> <span class="k">import</span> <span class="n">nrn</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.sonata_adaptors</span> <span class="k">import</span> <span class="n">BioNodeAdaptor</span><span class="p">,</span> <span class="n">BioEdgeAdaptor</span>
+<span class="kn">from</span> <span class="nn">.gids</span> <span class="k">import</span> <span class="n">GidPool</span>
 
 <span class="c1"># TODO: leave this import, it will initialize some of the default functions for building neurons/synapses/weights.</span>
 <span class="kn">import</span> <span class="nn">bmtk.simulator.bionet.default_setters</span>
@@ -692,6 +693,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_cells_built</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_connections_initialized</span> <span class="o">=</span> <span class="kc">False</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gid_pool</span> <span class="o">=</span> <span class="n">GidPool</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">gid_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid_pool</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">py_function_caches</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">nrn</span>
@@ -725,12 +732,16 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="k">def</span> <span class="nf">local_gids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rank_node_gids</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
+<div class="viewcode-block" id="BioNetwork.add_nodes"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.bionetwork.BioNetwork.add_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">add_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_population</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gid_pool</span><span class="o">.</span><span class="n">add_pool</span><span class="p">(</span><span class="n">node_population</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">node_population</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">())</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BioNetwork</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">node_population</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="BioNetwork.get_virtual_cells"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.bionetwork.BioNetwork.get_virtual_cells">[docs]</a>    <span class="k">def</span> <span class="nf">get_virtual_cells</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">spike_trains</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_virtual_nodes</span><span class="p">[</span><span class="n">population</span><span class="p">]:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_virtual_nodes</span><span class="p">[</span><span class="n">population</span><span class="p">][</span><span class="n">node_id</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_node_id</span><span class="p">(</span><span class="n">population</span><span class="p">,</span> <span class="n">node_id</span><span class="p">)</span>
-            <span class="n">virt_cell</span> <span class="o">=</span> <span class="n">VirtualCell</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">spike_trains</span><span class="p">)</span>
+            <span class="n">virt_cell</span> <span class="o">=</span> <span class="n">VirtualCell</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">spike_trains</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_virtual_nodes</span><span class="p">[</span><span class="n">population</span><span class="p">][</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">virt_cell</span>
             <span class="k">return</span> <span class="n">virt_cell</span></div>
 
@@ -777,7 +788,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">make_morphologies</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_seg_props</span><span class="p">()</span>  <span class="c1"># set segment properties by creating Morphologies</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">calc_seg_coords</span><span class="p">()</span>  <span class="c1"># use for computing the ECP</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cells_built</span> <span class="o">=</span> <span class="kc">True</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cells_built</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="BioNetwork.set_seg_props"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.bionetwork.BioNetwork.set_seg_props">[docs]</a>    <span class="k">def</span> <span class="nf">set_seg_props</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Set morphological properties for biophysically (morphologically) detailed cells&quot;&quot;&quot;</span>
@@ -854,7 +866,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                         <span class="n">src_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_node_id</span><span class="p">(</span><span class="n">source_population</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">source_node_id</span><span class="p">)</span>
                         <span class="k">if</span> <span class="n">src_node</span><span class="o">.</span><span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;virtual&#39;</span><span class="p">:</span>
                             <span class="k">continue</span>
-                        <span class="n">trg_cell</span><span class="o">.</span><span class="n">set_syn_connection</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">src_node</span><span class="p">)</span></div>
+                        <span class="n">trg_cell</span><span class="o">.</span><span class="n">set_syn_connection</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">src_node</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="BioNetwork.find_edges"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.bionetwork.BioNetwork.find_edges">[docs]</a>    <span class="k">def</span> <span class="nf">find_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">selected_edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_populations</span><span class="p">[:]</span>
@@ -881,7 +895,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                             <span class="n">trg_cell</span><span class="o">.</span><span class="n">set_syn_connection</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">src_cell</span><span class="p">,</span> <span class="n">src_cell</span><span class="p">)</span>
 
                 <span class="k">elif</span> <span class="n">edge_pop</span><span class="o">.</span><span class="n">mixed_connections</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div></div>
+                    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span></div></div>
 </pre></div>
 
           </div>

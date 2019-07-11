@@ -855,7 +855,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="p">{})</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tstart</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -887,7 +887,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;conditions&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;conditions&#39;</span><span class="p">,</span> <span class="p">{})</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">celsius</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -935,7 +935,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">mechanisms_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="s1">&#39;mechanisms_dir&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mechanisms_dir&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">biophysical_neuron_models_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

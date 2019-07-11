@@ -644,7 +644,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1">#</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">glob</span>
-<span class="kn">from</span> <span class="nn">bmtk.utils.io.spike_trains</span> <span class="k">import</span> <span class="n">SpikeTrainWriter</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="c1"># from bmtk.utils.io.spike_trains import SpikeTrainWriter</span>
+<span class="kn">from</span> <span class="nn">bmtk.utils.reports.spike_trains</span> <span class="k">import</span> <span class="n">SpikeTrains</span><span class="p">,</span> <span class="n">sort_order</span><span class="p">,</span> <span class="n">sort_order_lu</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.pointnet.io_tools</span> <span class="k">import</span> <span class="n">io</span>
 
 <span class="kn">import</span> <span class="nn">nest</span>
@@ -674,11 +676,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_file_base</span> <span class="o">=</span> <span class="s1">&#39;tmp_spike_times&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_labels</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmp_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_file_base</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span> <span class="o">=</span> <span class="n">SpikeTrainWriter</span><span class="p">(</span><span class="n">tmp_dir</span><span class="o">=</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="n">mpi_rank</span><span class="o">=</span><span class="n">MPI_RANK</span><span class="p">,</span> <span class="n">mpi_size</span><span class="o">=</span><span class="n">N_HOSTS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span> <span class="o">=</span> <span class="n">SpikeTrains</span><span class="p">(</span><span class="n">cache_dir</span><span class="o">=</span><span class="n">tmp_dir</span><span class="p">)</span>
+        <span class="c1"># self._spike_writer = SpikeTrainWriter(tmp_dir=tmp_dir, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">delimiter</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">gid_col</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">time_col</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sort_order</span> <span class="o">=</span> <span class="n">spikes_sort_order</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sort_order</span> <span class="o">=</span> <span class="n">sort_order</span><span class="o">.</span><span class="n">none</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">spikes_sort_order</span> <span class="k">else</span> <span class="n">sort_order_lu</span><span class="p">[</span><span class="n">spikes_sort_order</span><span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_detector</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -686,30 +689,47 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_detector</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="s2">&quot;spike_detector&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spike_labels</span><span class="p">,</span> <span class="s1">&#39;withtime&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
                                                                  <span class="s1">&#39;withgid&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;to_file&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
 
-        <span class="k">for</span> <span class="n">pop_name</span><span class="p">,</span> <span class="n">pop</span> <span class="ow">in</span> <span class="n">sim</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">_nestid2nodeid_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">nest</span><span class="o">.</span><span class="n">Connect</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spike_detector</span><span class="p">)</span></div>
+        <span class="n">nest</span><span class="o">.</span><span class="n">Connect</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">gid_map</span><span class="o">.</span><span class="n">gids</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spike_detector</span><span class="p">)</span></div>
+        <span class="c1">#print(sim.net.gid_map.gids)</span>
+        <span class="c1">#exit()</span>
+        <span class="c1">#for pop_name, pop in sim._graph._nestid2nodeid_map.items():</span>
+        <span class="c1">#    nest.Connect(list(pop.keys()), self._spike_detector)</span>
 
 <div class="viewcode-block" id="SpikesMod.finalize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.record_spikes.SpikesMod.finalize">[docs]</a>    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+        <span class="c1"># convert NEST gdf files into SONATA spikes/ format</span>
+        <span class="c1"># TODO: Create a gdf_adaptor in bmtk/utils/reports/spike_trains to improve conversion speed.</span>
         <span class="k">if</span> <span class="n">MPI_RANK</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">gdf_file</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spike_labels</span> <span class="o">+</span> <span class="s1">&#39;*.gdf&#39;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">add_spikes_file</span><span class="p">(</span><span class="n">gdf_file</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__parse_gdf</span><span class="p">(</span><span class="n">gdf_file</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">gid_map</span><span class="p">)</span>
+                <span class="c1"># self._spike_writer.add_spikes_file(gdf_file)</span>
         <span class="n">io</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
 
-        <span class="n">gid_map</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">_nestid2gid</span>
-
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_csv_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_csv_fname</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sort_order</span><span class="p">,</span> <span class="n">gid_map</span><span class="o">=</span><span class="n">gid_map</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_csv_fname</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sort_order</span><span class="p">)</span>
             <span class="n">io</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h5_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">to_hdf5</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h5_fname</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sort_order</span><span class="p">,</span> <span class="n">gid_map</span><span class="o">=</span><span class="n">gid_map</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">to_sonata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h5_fname</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sort_order</span><span class="p">)</span>
             <span class="n">io</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nwb_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">to_nwb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nwb_fname</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sort_order</span><span class="p">,</span> <span class="n">gid_map</span><span class="o">=</span><span class="n">gid_map</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">to_nwb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nwb_fname</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sort_order</span><span class="p">)</span>
             <span class="n">io</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__clean_gdf_files</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">__parse_gdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdf_path</span><span class="p">,</span> <span class="n">gid_map</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">gdf_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csv_file</span><span class="p">:</span>
+            <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">csv_file</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">gid_map</span><span class="o">.</span><span class="n">get_pool_id</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">add_spike</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">population</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">population</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__clean_gdf_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">MPI_RANK</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">gdf_file</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spike_labels</span> <span class="o">+</span> <span class="s1">&#39;*.gdf&#39;</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">gdf_file</span><span class="p">)</span></div>
 </pre></div>
 
           </div>

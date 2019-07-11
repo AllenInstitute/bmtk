@@ -685,30 +685,31 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Error: cannot set logging levels to </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">loglevel</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="IOUtils.barrier"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.io_tools.IOUtils.barrier">[docs]</a>    <span class="k">def</span> <span class="nf">barrier</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span></div>
+        <span class="sd">&quot;&quot;&quot;MPI Barrier call&quot;&quot;&quot;</span>
+        <span class="k">pass</span>  <span class="c1"># By default this does nothing, if a simulator is to implement mpi support it should overwrite.</span></div>
 
 <div class="viewcode-block" id="IOUtils.quiet_simulator"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.io_tools.IOUtils.quiet_simulator">[docs]</a>    <span class="k">def</span> <span class="nf">quiet_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">pass</span></div>
+        <span class="sd">&quot;&quot;&quot;Turns off logging/messages of the native simulator&quot;&quot;&quot;</span>
+        <span class="k">pass</span>  <span class="c1"># Simulators should implement their own versions</span></div>
 
 <div class="viewcode-block" id="IOUtils.setup_output_dir"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.io_tools.IOUtils.setup_output_dir">[docs]</a>    <span class="k">def</span> <span class="nf">setup_output_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">log_file</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpi_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="c1"># Create output directory</span>
+            <span class="c1"># Create output directory, do it only on one rank to prevent overwrite errors</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_dir</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">overwrite</span><span class="p">:</span>
                     <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;Directory already exists (remove or set to overwrite).&#39;</span><span class="p">)</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>  <span class="c1"># other ranks wait for output directory to be created.</span>
 
-            <span class="c1"># Create log file</span>
-            <span class="k">if</span> <span class="n">log_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">log_path</span> <span class="o">=</span> <span class="n">log_file</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">log_file</span><span class="p">)</span> <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">log_file</span><span class="p">)</span>
-                <span class="n">file_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">log_path</span><span class="p">)</span>
-                <span class="n">file_logger</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_format</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">file_logger</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Created log file&#39;</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span></div>
+        <span class="c1"># Create logger handle for writing to log.txt file</span>
+        <span class="k">if</span> <span class="n">log_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">log_path</span> <span class="o">=</span> <span class="n">log_file</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">log_file</span><span class="p">)</span> <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">log_file</span><span class="p">)</span>
+            <span class="n">file_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">log_path</span><span class="p">)</span>
+            <span class="n">file_logger</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_format</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">file_logger</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Created log file&#39;</span><span class="p">,</span> <span class="n">all_ranks</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># write first message only on rank 0</span></div>
 
 <div class="viewcode-block" id="IOUtils.log_info"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.io_tools.IOUtils.log_info">[docs]</a>    <span class="k">def</span> <span class="nf">log_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">all_ranks</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">all_ranks</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpi_rank</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>

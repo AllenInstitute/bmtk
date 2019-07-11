@@ -690,10 +690,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">nrn</span><span class="o">.</span><span class="n">load_neuron_modules</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mechanisms_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">templates_dir</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Config.build_env"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.config.Config.build_env">[docs]</a>    <span class="k">def</span> <span class="nf">build_env</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">MPI_Rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">create_output_dir</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">copy_to_output</span><span class="p">()</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_output_dir</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">copy_to_output</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">io</span><span class="o">.</span><span class="n">mpi_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># A friendly message requested by fb</span>
             <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Running NEURON with mpi (</span><span class="si">{}</span><span class="s1"> cores).&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">mpi_size</span><span class="p">))</span>

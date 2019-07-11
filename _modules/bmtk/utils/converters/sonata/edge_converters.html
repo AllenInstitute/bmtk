@@ -622,10 +622,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h1>Source code for bmtk.utils.converters.sonata.edge_converters</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
-
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">h5py</span>
+
+<span class="kn">from</span> <span class="nn">bmtk.utils.sonata.utils</span> <span class="k">import</span> <span class="n">add_hdf5_magic</span><span class="p">,</span> <span class="n">add_hdf5_version</span>
+
 
 <span class="n">column_renames</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;params_file&#39;</span><span class="p">:</span> <span class="s1">&#39;dynamics_params&#39;</span><span class="p">,</span>
@@ -660,7 +662,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">edges_csv2h5</span><span class="p">(</span><span class="n">edges_file</span><span class="p">,</span> <span class="n">edge_types_file</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+        <span class="n">edges_csv2h5</span><span class="p">(</span><span class="n">edges_file</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
         <span class="k">return</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">exc</span>
@@ -726,6 +728,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">edges_output_fn</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">hf</span><span class="p">:</span>
+        <span class="n">add_hdf5_magic</span><span class="p">(</span><span class="n">hf</span><span class="p">)</span>
+        <span class="n">add_hdf5_version</span><span class="p">(</span><span class="n">hf</span><span class="p">)</span>
         <span class="n">grp</span> <span class="o">=</span> <span class="n">hf</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s1">&#39;/edges/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">population_name</span><span class="p">))</span>
 
         <span class="n">grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;target_node_id&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">trg_gids</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;uint64&#39;</span><span class="p">)</span>
@@ -766,8 +770,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="s1">&#39;weight_function&#39;</span><span class="p">:</span> <span class="s1">&#39;weight_func&#39;</span><span class="p">,</span>
     <span class="p">}</span>
 
-    <span class="n">columns_order</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">,</span> <span class="s1">&#39;model_type&#39;</span><span class="p">,</span> <span class="s1">&#39;model_template&#39;</span><span class="p">,</span> <span class="s1">&#39;model_processing&#39;</span><span class="p">,</span> <span class="s1">&#39;dynamics_params&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;target_query&#39;</span><span class="p">,</span> <span class="s1">&#39;source_query&#39;</span><span class="p">]</span>
+    <span class="n">columns_order</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">,</span> <span class="s1">&#39;target_query&#39;</span><span class="p">,</span> <span class="s1">&#39;source_query&#39;</span><span class="p">]</span>
 
     <span class="n">edges_h5</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">edges_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
     <span class="n">edge_types_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">edge_types_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
@@ -817,7 +820,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="c1"># find each source_label, use value to find edge_type_id</span>
             <span class="c1"># TODO: may be faster to filter by model_id, trg_label_val before iterating through the sources</span>
             <span class="n">src_label_val</span> <span class="o">=</span> <span class="n">src_nodes_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">src_gid</span><span class="p">][</span><span class="n">src_label</span><span class="p">]</span>
-            <span class="c1"># print trg_label_val, src_label_val</span>
             <span class="n">edge_type_id</span> <span class="o">=</span> <span class="n">edge_types_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">model_id</span><span class="p">,</span> <span class="n">trg_label_val</span><span class="p">,</span> <span class="n">src_label_val</span><span class="p">][</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">]</span>
             <span class="n">edge_types_ids</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_type_id</span>
             <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>

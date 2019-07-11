@@ -654,9 +654,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-<div class="viewcode-block" id="Rates.next"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.spike_trains.html#bmtk.utils.spike_trains.spikes_csv.Rates.next">[docs]</a>    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">StopIteration</span></div></div>
-
+    <span class="k">def</span> <span class="nf">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">StopIteration</span>
+    
+    <span class="nb">next</span> <span class="o">=</span> <span class="fm">__next__</span> <span class="c1"># For Python 2</span></div>
 
 <div class="viewcode-block" id="NormalRates"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.spike_trains.html#bmtk.utils.spike_trains.spikes_csv.NormalRates">[docs]</a><span class="k">class</span> <span class="nc">NormalRates</span><span class="p">(</span><span class="n">Rates</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t_start</span><span class="p">,</span> <span class="n">t_end</span><span class="p">,</span> <span class="n">rate_mu</span><span class="p">,</span> <span class="n">rate_sigma</span><span class="o">=</span><span class="mf">5.0</span><span class="p">):</span>
@@ -667,13 +668,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_current_t</span> <span class="o">=</span> <span class="n">t_start</span>
 
-<div class="viewcode-block" id="NormalRates.next"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.spike_trains.html#bmtk.utils.spike_trains.spikes_csv.NormalRates.next">[docs]</a>    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_current_t</span> <span class="o">+=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">period_mu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">period_sigma</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_t</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_end</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_current_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_start</span>
             <span class="k">raise</span> <span class="ne">StopIteration</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_t</span></div></div>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_t</span>
+
+    <span class="nb">next</span> <span class="o">=</span> <span class="fm">__next__</span> <span class="c1"># For Python 2</span></div>
 
 
 <div class="viewcode-block" id="SpikesGenerator"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.spike_trains.html#bmtk.utils.spike_trains.spikes_csv.SpikesGenerator">[docs]</a><span class="k">class</span> <span class="nc">SpikesGenerator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>

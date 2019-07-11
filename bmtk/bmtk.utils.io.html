@@ -16,7 +16,7 @@
     <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="bmtk.utils.sonata package" href="bmtk.utils.sonata.html" />
+    <link rel="next" title="bmtk.utils.reports package" href="bmtk.utils.reports.html" />
     <link rel="prev" title="bmtk.utils.converters.sonata package" href="bmtk.utils.converters.sonata.html" /> 
   </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
@@ -630,7 +630,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span id="bmtk-utils-io-cell-vars-module"></span><h2>bmtk.utils.io.cell_vars module<a class="headerlink" href="#module-bmtk.utils.io.cell_vars" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="bmtk.utils.io.cell_vars.CellVarRecorder">
-<em class="property">class </em><code class="descclassname">bmtk.utils.io.cell_vars.</code><code class="descname">CellVarRecorder</code><span class="sig-paren">(</span><em>file_name</em>, <em>tmp_dir</em>, <em>variables</em>, <em>buffer_data=True</em>, <em>mpi_rank=0</em>, <em>mpi_size=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.cell_vars.</code><code class="descname">CellVarRecorder</code><span class="sig-paren">(</span><em>file_name</em>, <em>tmp_dir</em>, <em>variables</em>, <em>buffer_data=True</em>, <em>mpi_rank=0</em>, <em>mpi_size=1</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Used to save cell membrane variables (V, Ca2+, etc) to the described hdf5 format.</p>
 <p>For parallel simulations this class will write to a seperate tmp file on each rank, then use the merge method to
@@ -645,7 +645,7 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 
 <dl class="method">
 <dt id="bmtk.utils.io.cell_vars.CellVarRecorder.add_cell">
-<code class="descname">add_cell</code><span class="sig-paren">(</span><em>gid</em>, <em>sec_list</em>, <em>seg_list</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorder.add_cell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.add_cell" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_cell</code><span class="sig-paren">(</span><em>gid</em>, <em>sec_list</em>, <em>seg_list</em>, <em>**map_attrs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorder.add_cell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.add_cell" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -732,7 +732,7 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 
 <dl class="class">
 <dt id="bmtk.utils.io.cell_vars.CellVarRecorderParallel">
-<em class="property">class </em><code class="descclassname">bmtk.utils.io.cell_vars.</code><code class="descname">CellVarRecorderParallel</code><span class="sig-paren">(</span><em>file_name</em>, <em>tmp_dir</em>, <em>variables</em>, <em>buffer_data=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorderParallel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorderParallel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.cell_vars.</code><code class="descname">CellVarRecorderParallel</code><span class="sig-paren">(</span><em>file_name</em>, <em>tmp_dir</em>, <em>variables</em>, <em>buffer_data=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorderParallel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorderParallel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.cell_vars.CellVarRecorder" title="bmtk.utils.io.cell_vars.CellVarRecorder"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.cell_vars.CellVarRecorder</span></code></a></p>
 <p>Unlike the parent, this take advantage of parallel h5py to writting to the results file across different ranks.</p>
 <dl class="method">
@@ -783,8 +783,70 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 </dd></dl>
 
 </div>
+<div class="section" id="module-bmtk.utils.io.ioutils">
+<span id="bmtk-utils-io-ioutils-module"></span><h2>bmtk.utils.io.ioutils module<a class="headerlink" href="#module-bmtk.utils.io.ioutils" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.utils.io.ioutils.BMTKWorldComm">
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.ioutils.</code><code class="descname">BMTKWorldComm</code><a class="reference internal" href="../_modules/bmtk/utils/io/ioutils.html#BMTKWorldComm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.ioutils.BMTKWorldComm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="bmtk.utils.io.ioutils.BMTKWorldComm.MPI_rank">
+<code class="descname">MPI_rank</code><a class="headerlink" href="#bmtk.utils.io.ioutils.BMTKWorldComm.MPI_rank" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.utils.io.ioutils.BMTKWorldComm.MPI_size">
+<code class="descname">MPI_size</code><a class="headerlink" href="#bmtk.utils.io.ioutils.BMTKWorldComm.MPI_size" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.io.ioutils.BMTKWorldComm.barrier">
+<code class="descname">barrier</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/ioutils.html#BMTKWorldComm.barrier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.ioutils.BMTKWorldComm.barrier" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.utils.io.ioutils.BMTKWorldComm.comm">
+<code class="descname">comm</code><a class="headerlink" href="#bmtk.utils.io.ioutils.BMTKWorldComm.comm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.utils.io.ioutils.set_world_comm">
+<code class="descclassname">bmtk.utils.io.ioutils.</code><code class="descname">set_world_comm</code><span class="sig-paren">(</span><em>comm</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/ioutils.html#set_world_comm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.ioutils.set_world_comm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
 <div class="section" id="module-bmtk.utils.io.spike_trains">
 <span id="bmtk-utils-io-spike-trains-module"></span><h2>bmtk.utils.io.spike_trains module<a class="headerlink" href="#module-bmtk.utils.io.spike_trains" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.utils.io.spike_trains.DFIndexedGIDs">
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.spike_trains.</code><code class="descname">DFIndexedGIDs</code><span class="sig-paren">(</span><em>spikes_input_h5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#DFIndexedGIDs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.DFIndexedGIDs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.spike_trains.SONATAIndexer" title="bmtk.utils.io.spike_trains.SONATAIndexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.spike_trains.SONATAIndexer</span></code></a></p>
+<dl class="method">
+<dt id="bmtk.utils.io.spike_trains.DFIndexedGIDs.get_spikes">
+<code class="descname">get_spikes</code><span class="sig-paren">(</span><em>gid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#DFIndexedGIDs.get_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.DFIndexedGIDs.get_spikes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.utils.io.spike_trains.DictIndexedGIDs">
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.spike_trains.</code><code class="descname">DictIndexedGIDs</code><span class="sig-paren">(</span><em>spikes_input_h5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#DictIndexedGIDs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.DictIndexedGIDs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.spike_trains.SONATAIndexer" title="bmtk.utils.io.spike_trains.SONATAIndexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.spike_trains.SONATAIndexer</span></code></a></p>
+<dl class="method">
+<dt id="bmtk.utils.io.spike_trains.DictIndexedGIDs.get_spikes">
+<code class="descname">get_spikes</code><span class="sig-paren">(</span><em>gid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#DictIndexedGIDs.get_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.DictIndexedGIDs.get_spikes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.utils.io.spike_trains.HDF5IndexedGIDs">
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.spike_trains.</code><code class="descname">HDF5IndexedGIDs</code><span class="sig-paren">(</span><em>spikes_input_h5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#HDF5IndexedGIDs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.HDF5IndexedGIDs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.spike_trains.SONATAIndexer" title="bmtk.utils.io.spike_trains.SONATAIndexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.spike_trains.SONATAIndexer</span></code></a></p>
+</dd></dl>
+
 <dl class="class">
 <dt id="bmtk.utils.io.spike_trains.PoissonSpikesGenerator">
 <em class="property">class </em><code class="descclassname">bmtk.utils.io.spike_trains.</code><code class="descname">PoissonSpikesGenerator</code><span class="sig-paren">(</span><em>gids</em>, <em>firing_rate</em>, <em>tstart=0.0</em>, <em>tstop=1000.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#PoissonSpikesGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.PoissonSpikesGenerator" title="Permalink to this definition">¶</a></dt>
@@ -792,6 +854,17 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 <dl class="method">
 <dt id="bmtk.utils.io.spike_trains.PoissonSpikesGenerator.to_hdf5">
 <code class="descname">to_hdf5</code><span class="sig-paren">(</span><em>file_name</em>, <em>sort_order='gid'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#PoissonSpikesGenerator.to_hdf5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.PoissonSpikesGenerator.to_hdf5" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.utils.io.spike_trains.SONATAIndexer">
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.spike_trains.</code><code class="descname">SONATAIndexer</code><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SONATAIndexer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SONATAIndexer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="bmtk.utils.io.spike_trains.SONATAIndexer.get_spikes">
+<code class="descname">get_spikes</code><span class="sig-paren">(</span><em>gid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SONATAIndexer.get_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SONATAIndexer.get_spikes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -824,6 +897,11 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 <dl class="method">
 <dt id="bmtk.utils.io.spike_trains.SpikeTrainWriter.close">
 <code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.io.spike_trains.SpikeTrainWriter.close_tmp_file">
+<code class="descname">close_tmp_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter.close_tmp_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter.close_tmp_file" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -884,6 +962,16 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 <code class="descname">get_spikes</code><span class="sig-paren">(</span><em>gid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInputH5.get_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputH5.get_spikes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="attribute">
+<dt id="bmtk.utils.io.spike_trains.SpikesInputH5.gids">
+<code class="descname">gids</code><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputH5.gids" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.utils.io.spike_trains.SpikesInputH5.timestamps">
+<code class="descname">timestamps</code><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputH5.timestamps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -895,6 +983,12 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 <code class="descname">get_spikes</code><span class="sig-paren">(</span><em>gid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInputNWBv1.get_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputNWBv1.get_spikes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.utils.io.spike_trains.UnindexedGIDs">
+<em class="property">class </em><code class="descclassname">bmtk.utils.io.spike_trains.</code><code class="descname">UnindexedGIDs</code><span class="sig-paren">(</span><em>spikes_input_h5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#UnindexedGIDs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.UnindexedGIDs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.spike_trains.SONATAIndexer" title="bmtk.utils.io.spike_trains.SONATAIndexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.spike_trains.SONATAIndexer</span></code></a></p>
 </dd></dl>
 
 </div>

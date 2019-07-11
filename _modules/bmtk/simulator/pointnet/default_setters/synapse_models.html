@@ -623,11 +623,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span></span><span class="kn">from</span> <span class="nn">bmtk.simulator.pointnet.pyfunction_cache</span> <span class="k">import</span> <span class="n">add_synapse_model</span>
 
 
-<div class="viewcode-block" id="static_synapse"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.default_setters.html#bmtk.simulator.pointnet.default_setters.synapse_models.static_synapse">[docs]</a><span class="k">def</span> <span class="nf">static_synapse</span><span class="p">(</span><span class="n">edge</span><span class="p">):</span>
+<div class="viewcode-block" id="static_synapse"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.default_setters.html#bmtk.simulator.pointnet.default_setters.synapse_models.static_synapse">[docs]</a><span class="k">def</span> <span class="nf">static_synapse</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">source_node</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target_node</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">model_params</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="s1">&#39;static_synapse&#39;</span><span class="p">,</span>
         <span class="s1">&#39;delay&#39;</span><span class="p">:</span> <span class="n">edge</span><span class="o">.</span><span class="n">delay</span><span class="p">,</span>
-        <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="n">edge</span><span class="o">.</span><span class="n">syn_weight</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="n">edge</span><span class="o">.</span><span class="n">syn_weight</span><span class="p">(</span><span class="n">source_node</span><span class="p">,</span> <span class="n">target_node</span><span class="p">)</span>
     <span class="p">}</span>
 
     <span class="n">model_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">dynamics_params</span><span class="p">)</span>

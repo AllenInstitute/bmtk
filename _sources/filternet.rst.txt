@@ -1,7 +1,12 @@
 FilterNet
 =========
-FilterNet will simulate the effects of visual stimuli onto a receptive field. It uses LGNModel simulator as a backend, which
-uses neural-filters to simulate firing rates and spike-trains over a given time-course and stimuli.
+Many models of the nervous system utilize filters – mathematical objects that take in multi-dimensional data and return an output, typically time series. FilterNet is a module of BMTK that allows users to operate with filters.
+
+A typical application may be processing of peripheral sensory input – for example, an array of filters may be used to represent retinal cells, with the input being movies and the output being retinal firing rates or spikes that in turn can be used as inputs to neurons deeper in the brain explicitly simulated using other modules of BMTK, such as BioNet or PointNet.
+
+Current implementation of FilterNet contains the LGNModel simulator, which was created to provide thalamocortical `inputs to biologically realistic models of the mouse visual cortex <http://portal.brain-map.org/explore/models/mv1-all-layers>`_. This simulator assumes that the input is a movie (a 3D array – two dimensions for space and one for time) and produces the output which is a time-varying firing rate for each filter. A filter here represents an individual cell in the LGN of mouse thalamus, which projects to the visual cortex. Realistic parameters for such filters, parameterized based on the experimental recordings, `are available online <http://portal.brain-map.org/explore/models/mv1-all-layers>`_.
+
+In the future, more general functions modeling the input-output filter relationship and/or more general types of inputs (for example, representing other sensory stimuli, beyond the visual 3D arrays) can be added per user demand. The current FilterNet code can also be easily extended by users to include more general forms of filters than those already supported.
 
 
 Features

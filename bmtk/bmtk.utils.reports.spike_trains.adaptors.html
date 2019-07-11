@@ -1,0 +1,1212 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>bmtk.utils.reports.spike_trains.adaptors package &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="bmtk.utils.sonata package" href="bmtk.utils.sonata.html" />
+    <link rel="prev" title="bmtk.utils.reports.spike_trains package" href="bmtk.utils.reports.spike_trains.html" /> 
+  </head><body>
+<script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
+<style>
+
+	/* the icon font-family definition and helper classes */
+	@font-face {
+	  font-family: 'portal_icon_font';
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
+	  font-weight: normal;
+	  font-style: normal;
+	}
+	 
+	 [class^="icon-"]:before, [class*=" icon-"]:before {
+	  font-family: "portal_icon_font";
+	  font-style: normal;
+	  font-weight: normal;
+	  speak: none;
+	 
+	  display: inline-block;
+	  text-decoration: inherit;
+	  width: 1em;
+	  margin-right: .2em;
+	  text-align: center;
+	  /* opacity: .8; */
+	 
+	  /* For safety - reset parent styles, that can break glyph codes*/
+	  font-variant: normal;
+	  text-transform: none;
+	     
+	  /* fix buttons height, for twitter bootstrap */
+	  line-height: 1em;
+	 
+	  /* Animation center compensation - margins should be symmetric */
+	  /* remove if not needed */
+	  margin-left: .2em;
+	
+	}
+	 
+	.icon-spin5:before { content: '\e806'; } /* '' */
+	.icon-left-open-1:before { content: '\e81e'; } /* '' */
+	.icon-plus-1:before { content: '\e801'; } /* '' */
+	.icon-facebook:before { content: '\e816'; } /* '' */
+	.icon-gplus:before { content: '\e818'; } /* '' */
+	.icon-linkedin-3:before { content: '\e815'; } /* '' */
+	.icon-twitter:before { content: '\e817'; } /* '' */
+	.icon-youtube-play:before { content: '\e805'; } /* '' */
+	.icon-plus-2:before { content: '\e809'; } /* '' */
+	.icon-record-1:before { content: '\e81c'; } /* '' */
+	.icon-cancel:before { content: '\e80b'; } /* '' */
+	.icon-search:before { content: '\e804'; } /* '' */
+	.icon-cancel-2:before { content: '\e80c'; } /* '' */
+	.icon-plus-4:before { content: '\e80d'; } /* '' */
+	.icon-cancel-3:before { content: '\e80e'; } /* '' */
+	.icon-plus:before { content: '\e808'; } /* '' */
+	.icon-down-open:before { content: '\e800'; } /* '' */
+	.icon-right-open:before { content: '\e802'; } /* '' */
+	.icon-up-open:before { content: '\e803'; } /* '' */
+	.icon-stop:before { content: '\e813'; } /* '' */
+	.icon-cancel-1:before { content: '\e820'; } /* '' */
+	.icon-plus-3:before { content: '\e80a'; } /* '' */
+	/* end icon font helpers */
+
+	/* icon font spin animation */
+	.animate-spin {
+	  -moz-animation: spin 2s infinite linear;
+	  -o-animation: spin 2s infinite linear;
+	  -webkit-animation: spin 2s infinite linear;
+	  animation: spin 2s infinite linear;
+	  display: inline-block;
+	}
+	@-moz-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-webkit-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-o-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-ms-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	/*  end spin animation */	
+
+	@font-face {
+	    font-family: 'bebas_neueregular';
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
+	    font-weight: normal;
+	    font-style: normal;
+	}
+
+	/* top chrome styles */
+	#top_chrome {
+
+		width:100%;
+		height:28px;
+		background-color:#163E65;
+	}
+
+	.chrome_link_block {
+
+		color:#fff !important;	
+		display:inline-block;
+		height:100%;
+		max-height:28px;
+	}
+
+	.chrome_link_block:hover {
+
+		background-color:#eee;
+		color:#0779BE !important;	
+		cursor:pointer;
+	}
+
+	#top_chrome a {
+
+		color:inherit !important;	
+		text-decoration:none;
+	}
+
+	#top_chrome a:hover {
+
+		color:inherit !important;	
+	}
+
+	#top_chrome_buttons {
+
+		float:right;
+		margin-right:50px;
+	}
+
+	.chrome_button {
+
+		font-family:arial,sans-serif;
+		font-weight:bold;
+		display:inline-block;
+		font-size:9px;
+		text-align:left;
+		text-decoration:none;
+		margin:9px 20px 10px 20px;
+	}
+
+	.chrome_active {
+
+		background-color:#1b7abd;
+		color:#fff;
+	}
+
+
+	/* header element styles*/
+	#header_content {
+
+		font-family: bebas_neueregular, arial, sans-serif;
+		font-size:22px;
+		color:#0779be;		
+		letter-spacing:0.03em;
+
+		position:relative;
+		width:calc(100% - 112px);
+		min-width:800px;
+		height:76px;
+		border-bottom:2px solid #A5A8AB;
+		margin-left:50px;
+		margin-right:50px;
+        z-index:9999; /* IT-9508 */
+	}
+
+	#portal_logo {
+
+		position:absolute;
+		top:20px;
+		left:0px;
+		width:236px;
+	}
+
+	#portal_tabs {
+
+		position: absolute;
+		bottom: 12px;
+		left: 0px;
+		margin-bottom: -12px;
+		display: block;
+	}
+
+	.horizontal_list
+	{
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		display: inline; 		
+	}
+
+	.horizontal_list li { 
+
+		display: inline; 	
+	}	
+
+	#portal_tab_menu_container {
+
+		display:none;
+	}
+
+	#portal_search_input_group {
+
+		position:absolute;
+		margin: 0;
+		padding: 0;
+		bottom:12px;
+		right:0px;
+		border:1px solid #DAD9D3;
+		color:#DAD9D3;
+	}
+
+	#portal_search_input_group input {
+
+		margin: 0;
+		padding: 0;
+		border:none;
+		width:110px;
+		color:#DAD9D3;
+		font-family:Helvetica,sans-serif;
+		font-size:12px;
+		height:28px;
+		margin-left:10px;
+
+		outline:none;
+	}
+
+	input::-ms-clear {
+		display: none;
+	}
+
+	#portal_search_input_group i {
+
+		font-size:0.8em;
+		cursor:pointer;
+	}
+
+	#pSiteSearchTextInput:focus {
+
+		color:#000;
+	}
+
+	.icon_menu_down {
+
+		font-size: 12px;
+		margin-left: 4px;
+		vertical-align: text-top;
+		padding-top: 4px;
+		display: inline-block;
+	}
+
+	.portal_tab_item {
+
+		background-color: #fff;
+		padding: 12px;
+		padding-left:20px;
+		padding-right:20px;
+		display: inline-block !important;		
+	}
+
+	.portal_tab_item a:hover {
+
+		color:#fbe300;	
+	}
+
+	.portal_tab_item:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}	
+
+
+	.portal_menu_active {
+
+		background-color: #EEEEEE;
+	}	
+
+	.portal_menu_item_active {
+
+		color:#fbe300 !important;	
+	}
+
+	.portal_tab_active {
+
+		color:#a5a8ab !important;
+	}
+
+	#header_content a {		
+
+		color:inherit !important;
+	}
+
+	#header_content a:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}
+
+	#header_content ul {
+
+		list-style: none;
+		position: relative;
+		top: 58px;
+		display: inline-table;
+	}
+
+	#header_content ul ul {
+		
+		display:none;
+		opacity:0;
+	}
+
+	/* the fly out menus */
+	#header_content ul li:hover > ul,
+	#header_content ul li.hover > ul {
+
+		position: absolute;
+		top: 48px;
+		z-index:999;
+
+		display: block;
+		width: 152px;
+		padding:0px;
+		padding-top:20px;
+		padding-bottom:10px;
+		font-size: 12px;
+		font-family: Arial,Sans-Serif;
+		font-weight: bold;
+		text-transform: uppercase;
+
+		background-color: rgba(8,122,191,0.98);
+		color: #fff !important;
+		opacity: 1;
+
+		-webkit-animation: fade 0.25s;
+		animation: fade 0.25s;
+	}
+
+	@-webkit-keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}
+	@keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}	
+
+	#header_content ul li:hover > ul li {
+
+		padding: 10px;
+		padding-top: 0px;
+		padding-left: 20px;
+		display: block;
+		opacity:1;
+	}
+
+	#header_content ul li:hover > ul a {
+
+		display: block;
+		opacity:1;
+		white-space:nowrap;
+	}
+
+	#portal_menu_start_list {
+
+		left: 81px;
+
+		/* IE sauce */
+		left:85px\9;
+
+		/* Safari sauce */
+		(;left:79px;);
+	}
+
+	#portal_menu_atlases_list {
+
+		left: 290px;
+		width: 210px !important;
+        height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 303px\9;
+        height: 225px\9;
+
+		/* Safari sauce */
+		(;left:279px;);
+	}
+
+	#portal_menu_tools_list {
+
+		left: 500px;
+		width: 172px !important;
+		height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 513px\9;
+		height:225px\9;
+
+		/* Safari sauce */
+		(;left:489px;);
+		(;height:227px;);
+	}
+
+	/* mozilla sauce */
+	@-moz-document url-prefix() {
+
+		#header_content {
+
+			height:107px;
+		}
+
+		#portal_menu_start_list {
+
+			left:85px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 302px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 512px;
+			height:236px;
+		}
+	}
+
+
+	/* make it look OK on iPad also */
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:portrait) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}  
+	}
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:landscape) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}	  
+	}
+
+	.portal_menu_list_heading {
+
+		color:#9ccae5;
+		border-bottom:1px solid #9ccae5;
+		padding-bottom:5px !important;
+	}
+
+	.portal_menu_list_heading + li {
+
+		padding-top:10px !important;
+	}
+
+	.portal_menu_list_heading li {
+
+		padding-bottom:0px;
+	}	
+
+	#portal_menu_atlases_list li:last-of-type {
+
+		padding-bottom:15px !important;
+	}
+
+	.icon-spin5 {
+
+		color:#000;
+	}
+</style>
+<div id="pHeader">
+<div id="top_chrome">
+	<div id="top_chrome_buttons">
+		<div class="chrome_link_block"><a href="http://www.alleninstitute.org" target="_blank" class="chrome_button">ALLEN INSTITUTE</a></div>
+	</div>
+</div>
+
+<div id="header_content">
+
+	<a href="http://AllenInstitute.github.io">
+		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/AIBS_Logo.png"/>
+	</a>
+</div>
+</div>
+
+<script>
+
+jQuery('#portal_tab_menu').bind('touchstart', function() {
+
+	if(window.console)
+		console.log("touchstart");
+});
+</script>
+<link rel="stylesheet" type="text/css" href="_static/external_assets/stylesheets/common_layout.css" />
+
+
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="bmtk-utils-reports-spike-trains-adaptors-package">
+<h1>bmtk.utils.reports.spike_trains.adaptors package<a class="headerlink" href="#bmtk-utils-reports-spike-trains-adaptors-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-bmtk.utils.reports.spike_trains.adaptors.csv_adaptors">
+<span id="bmtk-utils-reports-spike-trains-adaptors-csv-adaptors-module"></span><h2>bmtk.utils.reports.spike_trains.adaptors.csv_adaptors module<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.adaptors.csv_adaptors" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader">
+<em class="property">class </em><code class="descclassname">bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.</code><code class="descname">CSVSTReader</code><span class="sig-paren">(</span><em>path</em>, <em>sep=' '</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/csv_adaptors.html#CSVSTReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.core.STReader" title="bmtk.utils.reports.spike_trains.core.STReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.core.STReader</span></code></a></p>
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.get_times">
+<code class="descname">get_times</code><span class="sig-paren">(</span><em>node_id</em>, <em>population=None</em>, <em>time_window=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/csv_adaptors.html#CSVSTReader.get_times"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.get_times" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of spike-times for a given node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node_id</strong> – The id of the node</li>
+<li><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>default population (if possible).
+:param time_window: A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.
+:param kwargs:
+:return: list of spike times [float]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.n_spikes">
+<code class="descname">n_spikes</code><span class="sig-paren">(</span><em>population=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/csv_adaptors.html#CSVSTReader.n_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.n_spikes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of spikes for the given population.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>population</strong> – population name. If none None will use the default population (when possible).</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">unsigned integer, number of spikes.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.nodes">
+<code class="descname">nodes</code><span class="sig-paren">(</span><em>populations=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/csv_adaptors.html#CSVSTReader.nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of (node-ids, population_name).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>populations</strong> – Name of population</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.populations">
+<code class="descname">populations</code><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.populations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.spikes">
+<code class="descname">spikes</code><span class="sig-paren">(</span><em>node_ids=None</em>, <em>populations=None</em>, <em>time_window=None</em>, <em>sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/csv_adaptors.html#CSVSTReader.spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.spikes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.time_range">
+<code class="descname">time_range</code><span class="sig-paren">(</span><em>populations=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/csv_adaptors.html#CSVSTReader.time_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.time_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the time range of the firing, i.e the min and max spike time, for the specified populations. If more
+than one node population is specified will search across all and return values that encompasses all spikes
+across each population.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>populations</strong> – None, A string, or a list of strings. Default None will search across all populations.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">tuple of integers, (min-spike-time, max-spike-time). If No values found returns None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.to_dataframe">
+<code class="descname">to_dataframe</code><span class="sig-paren">(</span><em>node_ids=None</em>, <em>populations=None</em>, <em>time_window=None</em>, <em>sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/csv_adaptors.html#CSVSTReader.to_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.CSVSTReader.to_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.write_csv">
+<code class="descclassname">bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.</code><code class="descname">write_csv</code><span class="sig-paren">(</span><em>path</em>, <em>spiketrain_reader</em>, <em>mode='w'</em>, <em>sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em>include_header=True</em>, <em>include_population=True</em>, <em>units='ms'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/csv_adaptors.html#write_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.csv_adaptors.write_csv" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors">
+<span id="bmtk-utils-reports-spike-trains-adaptors-nwb-adaptors-module"></span><h2>bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors module<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader">
+<em class="property">class </em><code class="descclassname">bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.</code><code class="descname">NWBSTReader</code><span class="sig-paren">(</span><em>path</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/nwb_adaptors.html#NWBSTReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.core.STReader" title="bmtk.utils.reports.spike_trains.core.STReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.core.STReader</span></code></a></p>
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.get_times">
+<code class="descname">get_times</code><span class="sig-paren">(</span><em>node_id</em>, <em>population=None</em>, <em>time_window=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/nwb_adaptors.html#NWBSTReader.get_times"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.get_times" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of spike-times for a given node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node_id</strong> – The id of the node</li>
+<li><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>default population (if possible).
+:param time_window: A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.
+:param kwargs:
+:return: list of spike times [float]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.n_spikes">
+<code class="descname">n_spikes</code><span class="sig-paren">(</span><em>population=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/nwb_adaptors.html#NWBSTReader.n_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.n_spikes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of spikes for the given population.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>population</strong> – population name. If none None will use the default population (when possible).</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">unsigned integer, number of spikes.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.nodes">
+<code class="descname">nodes</code><span class="sig-paren">(</span><em>populations=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/nwb_adaptors.html#NWBSTReader.nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of (node-ids, population_name).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>populations</strong> – Name of population</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.populations">
+<code class="descname">populations</code><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.populations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.spikes">
+<code class="descname">spikes</code><span class="sig-paren">(</span><em>node_ids=None</em>, <em>populations=None</em>, <em>time_window=None</em>, <em>sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/nwb_adaptors.html#NWBSTReader.spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.spikes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.time_range">
+<code class="descname">time_range</code><span class="sig-paren">(</span><em>populations=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/nwb_adaptors.html#NWBSTReader.time_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.time_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the time range of the firing, i.e the min and max spike time, for the specified populations. If more
+than one node population is specified will search across all and return values that encompasses all spikes
+across each population.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>populations</strong> – None, A string, or a list of strings. Default None will search across all populations.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">tuple of integers, (min-spike-time, max-spike-time). If No values found returns None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.to_dataframe">
+<code class="descname">to_dataframe</code><span class="sig-paren">(</span><em>node_ids=None</em>, <em>populations=None</em>, <em>time_window=None</em>, <em>sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/nwb_adaptors.html#NWBSTReader.to_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors.NWBSTReader.to_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors">
+<span id="bmtk-utils-reports-spike-trains-adaptors-sonata-adaptors-module"></span><h2>bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors module<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader">
+<em class="property">class </em><code class="descclassname">bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.</code><code class="descname">EmptySonataReader</code><span class="sig-paren">(</span><em>path</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#EmptySonataReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.core.STReader" title="bmtk.utils.reports.spike_trains.core.STReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.core.STReader</span></code></a></p>
+<p>A Hack that is needed for when a simulation produces a file with no spikes, since there won’t/can’t be
+&lt;population_name&gt; subgroup and/or gids/timestamps datasets.</p>
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.get_times">
+<code class="descname">get_times</code><span class="sig-paren">(</span><em>node_id</em>, <em>population=None</em>, <em>time_window=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#EmptySonataReader.get_times"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.get_times" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of spike-times for a given node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node_id</strong> – The id of the node</li>
+<li><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>default population (if possible).
+:param time_window: A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.
+:param kwargs:
+:return: list of spike times [float]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.n_spikes">
+<code class="descname">n_spikes</code><span class="sig-paren">(</span><em>population=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#EmptySonataReader.n_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.n_spikes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of spikes for the given population.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>population</strong> – population name. If none None will use the default population (when possible).</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">unsigned integer, number of spikes.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.nodes">
+<code class="descname">nodes</code><span class="sig-paren">(</span><em>populations=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#EmptySonataReader.nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of (node-ids, population_name).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>populations</strong> – Name of population</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.populations">
+<code class="descname">populations</code><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.populations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.spikes">
+<code class="descname">spikes</code><span class="sig-paren">(</span><em>node_ids=None</em>, <em>populations=None</em>, <em>time_window=None</em>, <em>sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#EmptySonataReader.spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.spikes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.time_range">
+<code class="descname">time_range</code><span class="sig-paren">(</span><em>populations=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#EmptySonataReader.time_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.time_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the time range of the firing, i.e the min and max spike time, for the specified populations. If more
+than one node population is specified will search across all and return values that encompasses all spikes
+across each population.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>populations</strong> – None, A string, or a list of strings. Default None will search across all populations.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">tuple of integers, (min-spike-time, max-spike-time). If No values found returns None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.to_dataframe">
+<code class="descname">to_dataframe</code><span class="sig-paren">(</span><em>node_ids=None</em>, <em>populations=None</em>, <em>time_window=None</em>, <em>sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#EmptySonataReader.to_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.EmptySonataReader.to_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader">
+<em class="property">class </em><code class="descclassname">bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.</code><code class="descname">SonataOldReader</code><span class="sig-paren">(</span><em>path</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataOldReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader" title="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader</span></code></a></p>
+<p>Older version of SONATA</p>
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader.get_times">
+<code class="descname">get_times</code><span class="sig-paren">(</span><em>node_id</em>, <em>population=None</em>, <em>time_window=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataOldReader.get_times"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader.get_times" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of spike-times for a given node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node_id</strong> – The id of the node</li>
+<li><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>default population (if possible).
+:param time_window: A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.
+:param kwargs:
+:return: list of spike times [float]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader.n_spikes">
+<code class="descname">n_spikes</code><span class="sig-paren">(</span><em>population=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataOldReader.n_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader.n_spikes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of spikes for the given population.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>population</strong> – population name. If none None will use the default population (when possible).</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">unsigned integer, number of spikes.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader.nodes">
+<code class="descname">nodes</code><span class="sig-paren">(</span><em>populations=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataOldReader.nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader.nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of (node-ids, population_name).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>populations</strong> – Name of population</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader.spikes">
+<code class="descname">spikes</code><span class="sig-paren">(</span><em>node_ids=None</em>, <em>populations=None</em>, <em>time_window=None</em>, <em>sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataOldReader.spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader.spikes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader.time_range">
+<code class="descname">time_range</code><span class="sig-paren">(</span><em>populations=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataOldReader.time_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader.time_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the time range of the firing, i.e the min and max spike time, for the specified populations. If more
+than one node population is specified will search across all and return values that encompasses all spikes
+across each population.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>populations</strong> – None, A string, or a list of strings. Default None will search across all populations.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">tuple of integers, (min-spike-time, max-spike-time). If No values found returns None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader.to_dataframe">
+<code class="descname">to_dataframe</code><span class="sig-paren">(</span><em>node_ids=None</em>, <em>populations=None</em>, <em>time_window=None</em>, <em>sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataOldReader.to_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataOldReader.to_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader">
+<em class="property">class </em><code class="descclassname">bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.</code><code class="descname">SonataSTReader</code><span class="sig-paren">(</span><em>path</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataSTReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.core.STReader" title="bmtk.utils.reports.spike_trains.core.STReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.core.STReader</span></code></a></p>
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.get_times">
+<code class="descname">get_times</code><span class="sig-paren">(</span><em>node_id</em>, <em>population=None</em>, <em>time_window=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataSTReader.get_times"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.get_times" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of spike-times for a given node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node_id</strong> – The id of the node</li>
+<li><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>default population (if possible).
+:param time_window: A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.
+:param kwargs:
+:return: list of spike times [float]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.n_spikes">
+<code class="descname">n_spikes</code><span class="sig-paren">(</span><em>population=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataSTReader.n_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.n_spikes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the number of spikes for the given population.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>population</strong> – population name. If none None will use the default population (when possible).</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">unsigned integer, number of spikes.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.nodes">
+<code class="descname">nodes</code><span class="sig-paren">(</span><em>populations=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataSTReader.nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of (node-ids, population_name).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>populations</strong> – Name of population</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.populations">
+<code class="descname">populations</code><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.populations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.sort_order">
+<code class="descname">sort_order</code><span class="sig-paren">(</span><em>population</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataSTReader.sort_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.sort_order" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.spikes">
+<code class="descname">spikes</code><span class="sig-paren">(</span><em>node_ids=None</em>, <em>populations=None</em>, <em>time_window=None</em>, <em>sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataSTReader.spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.spikes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.time_range">
+<code class="descname">time_range</code><span class="sig-paren">(</span><em>populations=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataSTReader.time_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.time_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the time range of the firing, i.e the min and max spike time, for the specified populations. If more
+than one node population is specified will search across all and return values that encompasses all spikes
+across each population.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>populations</strong> – None, A string, or a list of strings. Default None will search across all populations.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">tuple of integers, (min-spike-time, max-spike-time). If No values found returns None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.to_dataframe">
+<code class="descname">to_dataframe</code><span class="sig-paren">(</span><em>node_ids=None</em>, <em>populations=None</em>, <em>time_window=None</em>, <em>sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#SonataSTReader.to_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.to_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.units">
+<code class="descname">units</code><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.SonataSTReader.units" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.load_sonata_file">
+<code class="descclassname">bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.</code><code class="descname">load_sonata_file</code><span class="sig-paren">(</span><em>path</em>, <em>version=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#load_sonata_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.load_sonata_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a Sonata file reader, making sure it matches the correct version.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> – </li>
+<li><strong>version</strong> – </li>
+<li><strong>kwargs</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.to_list">
+<code class="descclassname">bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.</code><code class="descname">to_list</code><span class="sig-paren">(</span><em>v</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#to_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.to_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.write_sonata">
+<code class="descclassname">bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.</code><code class="descname">write_sonata</code><span class="sig-paren">(</span><em>path</em>, <em>spiketrain_reader</em>, <em>mode='a'</em>, <em>sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em>units='ms'</em>, <em>population_renames=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html#write_sonata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors.write_sonata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.utils.reports.spike_trains.adaptors">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.adaptors" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="bmtk.utils.reports.spike_trains.adaptors.find_file_type">
+<code class="descclassname">bmtk.utils.reports.spike_trains.adaptors.</code><code class="descname">find_file_type</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/adaptors.html#find_file_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.adaptors.find_file_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tries to find the input type (sonata/h5, NWB, CSV) from the file-name</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../index.html">Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../builder.html">Building Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../simulators.html">Simulation Engines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pointnet.html">PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../filternet.html">FilterNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../mintnet.html">MintNet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+    </div>
+<script type="text/javascript" src="_static/external_assets/javascript/portalFooter.js"></script>
+
+  </body>
+</html>

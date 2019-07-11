@@ -627,7 +627,18 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="Config"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.filternet.html#bmtk.simulator.filternet.config.Config">[docs]</a><span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="n">ConfigDict</span><span class="p">):</span>
-    <span class="k">pass</span></div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">jitter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">conds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conditions</span>
+        <span class="n">has_lj</span> <span class="o">=</span> <span class="s1">&#39;jitter_lower&#39;</span> <span class="ow">in</span> <span class="n">conds</span>
+        <span class="n">has_uj</span> <span class="o">=</span> <span class="s1">&#39;jitter_upper&#39;</span> <span class="ow">in</span> <span class="n">conds</span>
+
+        <span class="k">if</span> <span class="n">has_lj</span> <span class="ow">and</span> <span class="n">has_uj</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">conds</span><span class="p">[</span><span class="s1">&#39;jitter_lower&#39;</span><span class="p">],</span> <span class="n">conds</span><span class="p">[</span><span class="s1">&#39;jitter_upper&#39;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">has_lj</span> <span class="o">^</span> <span class="n">has_uj</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Please define both jitter_upper and jitter_lower parameters&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
 </pre></div>
 
           </div>

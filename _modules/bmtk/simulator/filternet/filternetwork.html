@@ -623,13 +623,28 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span></span><span class="kn">from</span> <span class="nn">bmtk.simulator.core.simulator_network</span> <span class="k">import</span> <span class="n">SimNetwork</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.filternet.cell</span> <span class="k">import</span> <span class="n">Cell</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.filternet.pyfunction_cache</span> <span class="k">import</span> <span class="n">py_modules</span>
-
+<span class="kn">from</span> <span class="nn">bmtk.simulator.filternet.sonata_adaptors</span> <span class="k">import</span> <span class="n">FilterNodeAdaptor</span>
 
 <div class="viewcode-block" id="FilterNetwork"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.filternet.html#bmtk.simulator.filternet.filternetwork.FilterNetwork">[docs]</a><span class="k">class</span> <span class="nc">FilterNetwork</span><span class="p">(</span><span class="n">SimNetwork</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">FilterNetwork</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_local_cells</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_network_jitter</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">jitter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network_jitter</span>
+
+    <span class="nd">@jitter</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">jitter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_network_jitter</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="k">def</span> <span class="nf">_register_adaptors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FilterNetwork</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_register_adaptors</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_adaptors</span><span class="p">[</span><span class="s1">&#39;sonata&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">FilterNodeAdaptor</span>
 
 <div class="viewcode-block" id="FilterNetwork.cells"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.filternet.html#bmtk.simulator.filternet.filternetwork.FilterNetwork.cells">[docs]</a>    <span class="k">def</span> <span class="nf">cells</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_cells</span></div>
@@ -644,10 +659,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">for</span> <span class="n">node_pop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_populations</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">():</span>
                 <span class="n">cell</span> <span class="o">=</span> <span class="n">Cell</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                <span class="n">cell</span><span class="o">.</span><span class="n">default_jitter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">jitter</span>
                 <span class="n">cell</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_local_cells</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span></div></div>
-
-
 </pre></div>
 
           </div>
