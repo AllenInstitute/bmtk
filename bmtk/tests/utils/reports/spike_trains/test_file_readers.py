@@ -3,9 +3,11 @@ import numpy as np
 import pytest
 import six
 import warnings
-warnings.simplefilter(action='ignore', category=FutureWarning)
 
 from bmtk.utils.reports.spike_trains import SpikeTrains, sort_order, pop_na
+
+
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
 def load_spike_trains(file_path):
@@ -63,7 +65,7 @@ def test_spikes_nopopulation(file_path, pop_name):
 
     filtered_nodes = spikes.to_dataframe(node_ids=[10, 11, 13, 12, 14])
     assert(len(filtered_nodes) == 44)
-    assert(set(filtered_nodes['node_ids'].unique()) == set([10, 11, 12, 13]))
+    assert(set(filtered_nodes['node_ids'].unique()) == {10, 11, 12, 13})  # set([10, 11, 12, 13]))
 
     filtered_nodes = spikes.to_dataframe(node_ids=[10, 11, 13, 12, 14], time_window=(200.0, 800.0))
     assert(len(filtered_nodes) == 36)
@@ -151,7 +153,7 @@ def test_sonata_old(file_path, pop_name):
 
     filtered_nodes = spikes.to_dataframe(node_ids=[10, 11, 13, 12, 14])
     assert(len(filtered_nodes) == 44)
-    assert(set(filtered_nodes['node_ids'].unique()) == set([10, 11, 12, 13]))
+    assert(set(filtered_nodes['node_ids'].unique()) == {10, 11, 12, 13})  # set([10, 11, 12, 13]))
 
     filtered_nodes = spikes.to_dataframe(node_ids=[10, 11, 13, 12, 14], time_window=(200.0, 800.0))
     assert(len(filtered_nodes) == 36)
@@ -207,7 +209,7 @@ def test_sonata_old(file_path, pop_name):
                          ])
 def test_spikes_multipop(file_path):
     spikes = load_spike_trains(file_path)  # SpikeTrains.from_csv(file_path)
-    assert(set(spikes.populations) == set(['lgn', 'tw']))
+    assert(set(spikes.populations) == {'lgn', 'tw'})  # set(['lgn', 'tw']))
     assert(len(spikes) == 144434)
 
     assert(len(spikes.nodes()) == 4000 + 1997)
@@ -232,7 +234,7 @@ def test_spikes_multipop(file_path):
     spikes_df = spikes.to_dataframe(node_ids=np.arange(100), populations='lgn', time_window=(100.0, 1500.0))
     assert(np.max(spikes_df['node_ids']) == 99)
     assert(np.all(spikes_df['population'].unique() == ['lgn']))
-    assert(np.min(spikes_df['timestamps']) >= 100.0) # .agg([np.min, np.max]).values <= 1500.0)
+    assert(np.min(spikes_df['timestamps']) >= 100.0)  # .agg([np.min, np.max]).values <= 1500.0)
     assert(np.max(spikes_df['timestamps']) <= 1500.0)
 
     lgn_spike0 = spikes.get_times(0, population='lgn')
@@ -271,7 +273,7 @@ def test_spikes_multipop(file_path):
 if __name__ == '__main__':
     test_spikes_nopopulation(file_path='spike_files/spikes.noheader.nopop.csv', pop_name=pop_na)
     test_spikes_nopopulation(file_path='./spike_files/spikes.one_pop.csv', pop_name='v1')
-    ####test_spikes_nopopulation(file_path='spike_files/spikes.old.h5', pop_name=pop_na)
+    # test_spikes_nopopulation(file_path='spike_files/spikes.old.h5', pop_name=pop_na)
     test_sonata_old(file_path='spike_files/spikes.old.h5', pop_name=pop_na)
     test_spikes_nopopulation(file_path='spike_files/spikes.one_pop.h5', pop_name='v1')
     test_spikes_nopopulation(file_path='spike_files/spikes.onepop.v1.0.nwb', pop_name=pop_na)
