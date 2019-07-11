@@ -213,6 +213,7 @@ def test_block_record():
         os.remove(output_file)
     barrier()
 
+
 def test_custom_columns():
     cells = [(0, 10), (1, 50), (2, 100), (3, 1), (4, 200)]
     total_elements = sum(n_elements for _, n_elements in cells)
