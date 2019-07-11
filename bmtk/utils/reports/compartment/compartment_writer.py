@@ -196,7 +196,6 @@ class PopulationWriterv01(CompartmentWriterABC, CompartmentReader):
         if self._buffer_data:
             # Set up in-memory block to buffer recorded variables before writing to the dataset
             self._data_block.buffer_block = np.zeros((self._buffer_size, self._n_segments_local), dtype=np.float)
-            print(self.n_steps(), self._n_segments_all)
             self._data_block.data_block = base_grp.create_dataset('data', shape=(self.n_steps(), self._n_segments_all),
                                                                   dtype=np.float, chunks=True)
             if self._variable is not None:
