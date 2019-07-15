@@ -100,7 +100,7 @@ def load_sonata_file(path, version=None, **kwargs):
     except Exception:
         pass
 
-    raise Exception('Could not open file, does not contain SONATA spike-trains')
+    raise Exception('Could not open file {}, does not contain SONATA spike-trains'.format(path))
 
 
 def to_list(v):
