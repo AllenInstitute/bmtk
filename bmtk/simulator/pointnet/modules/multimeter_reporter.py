@@ -46,6 +46,7 @@ class MultimeterMod(object):
         self._gids = None
         self._nest_ids = None
         self._multimeter = None
+        self._population = None
 
         self._min_delay = 1.0  # Required for calculating steps recorded
 
@@ -53,9 +54,10 @@ class MultimeterMod(object):
         self._var_recorder = CellVarRecorder(self._file_name, self._output_dir, self._variable_name, buffer_data=False)
 
     def initialize(self, sim):
-        self._gids = list(sim.net.get_node_set(self._node_set).gids())
-        self._nest_ids = [sim.net._gid2nestid[gid] for gid in self._gids]
-
+        node_set = sim.net.get_node_set(self._node_set)
+        self._gids =  list(node_set.gids())
+        self._population = node_set.population_names()[0]
+        self._nest_ids = list(sim.net.gid_map.get_gids(name=self._population, node_ids=self._gids))
         self._tstart = self._tstart or sim.tstart
         self._tstop = self._tstop or sim.tstop
         self._interval = self._interval or sim.dt
@@ -91,12 +93,13 @@ class MultimeterMod(object):
 
                 return self._var_recorder
 
-            gid_map = sim.net._nestid2gid
+            # gid_map = sim.net._nestid2gid
+            gid_map = sim.net.gid_map
             for nest_file in glob.glob('{}*'.format(self.__output_label)):
                 report_df = pd.read_csv(nest_file, index_col=False, names=['nest_id', 'time']+self._variable_name,
                                         sep='\t')
                 for grp_id, grp_df in report_df.groupby(by='nest_id'):
-                    gid = gid_map[grp_id]
+                    gid = gid_map.get_pool_id(grp_id).node_id
                     vr = get_var_recorder(grp_df)
                     for var_name in self._variable_name:
                         vr.record_cell_block(gid, var_name, grp_df[var_name])

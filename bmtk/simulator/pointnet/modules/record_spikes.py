@@ -67,8 +67,11 @@ class SpikesMod(object):
         self._spike_detector = nest.Create("spike_detector", 1, {'label': self._spike_labels, 'withtime': True,
                                                                  'withgid': True, 'to_file': True})
 
-        for pop_name, pop in sim._graph._nestid2nodeid_map.items():
-            nest.Connect(list(pop.keys()), self._spike_detector)
+        nest.Connect(sim.net.gid_map.gids, self._spike_detector)
+        #print(sim.net.gid_map.gids)
+        #exit()
+        #for pop_name, pop in sim._graph._nestid2nodeid_map.items():
+        #    nest.Connect(list(pop.keys()), self._spike_detector)
 
     def finalize(self, sim):
         # convert NEST gdf files into SONATA spikes/ format
