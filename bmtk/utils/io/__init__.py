@@ -25,3 +25,5 @@
 
 def log_warning(message):
     pass
+
+from .ioutils import bmtk_world_comm
