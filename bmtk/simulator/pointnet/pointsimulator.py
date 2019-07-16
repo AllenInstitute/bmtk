@@ -220,6 +220,9 @@ class PointSimulator(Simulator):
         elif 'tstop' in run_dict:
             network.tstop = run_dict['tstop']
 
+        if 'precise_times' in run_dict:
+            network.set_spike_generator_params(precise_times=run_dict['precise_times'])
+
         if run_dict.get('allow_offgrid_spikes', False):
             network.set_spike_generator_params(allow_offgrid_spikes=True)
 
@@ -245,7 +248,7 @@ class PointSimulator(Simulator):
                 spikes = SpikeTrains.load(path=path, file_type=sim_input.module, **sim_input.params)
                 #spikes = spike_trains.SpikesInput.load(name=sim_input.name, module=sim_input.module,
                 #                                       input_type=sim_input.input_type, params=sim_input.params)
-                graph.add_spike_trains(spikes, node_set)
+                graph.add_spike_trains(spikes, node_set, network.get_spike_generator_params())
 
             elif sim_input.input_type == 'current_clamp':
                 # TODO: Need to make this more robust

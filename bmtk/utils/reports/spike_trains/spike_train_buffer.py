@@ -402,6 +402,8 @@ class STMPIBuffer(STCSVBuffer):
     def _gather(self):
         self._pop_counts = {}
         for fn in self._all_cached_files():
+            if not os.path.exists(fn):
+                continue
             with open(fn, 'r') as csvfile:
                 csv_reader = csv.reader(csvfile, delimiter=' ')
                 for row in csv_reader:
@@ -414,6 +416,9 @@ class STMPIBuffer(STCSVBuffer):
         filter = _create_filter(populations, time_window)
         if sort_order == SortOrder.by_time or sort_order == SortOrder.by_id:
             for file_name in self._all_cached_files():
+                if not os.path.exists(file_name):
+                    continue
+
                 self._sort_buffer_file(file_name, sort_order)
 
             return self._sorted_itr(filter, 0 if sort_order == SortOrder.by_time else 1)
@@ -422,6 +427,9 @@ class STMPIBuffer(STCSVBuffer):
 
     def _unsorted_itr(self, filter):
         for fn in self._all_cached_files():
+            if not os.path.exists(fn):
+                continue
+
             with open(fn, 'r') as csvfile:
                 csv_reader = csv.reader(csvfile, delimiter=' ')
                 for row in csv_reader:

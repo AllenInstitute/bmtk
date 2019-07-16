@@ -35,7 +35,7 @@ class PopulationWriterv01(CompartmentWriterABC, CompartmentReader):
             self.data_block = None
             self.buffer_block = None
 
-    def __init__(self, parent, population, variable=None, units=None, tstart=0.0, tstop=0.0, dt=0.01, n_steps=None,
+    def __init__(self, parent, population, variable=None, units=None, tstart=0.0, tstop=1.0, dt=0.01, n_steps=None,
                  buffer_size=0, **kwargs):
         self._h5_base = None
         self._parent = parent
@@ -48,8 +48,8 @@ class PopulationWriterv01(CompartmentWriterABC, CompartmentReader):
         self._dt = dt
 
         self._n_steps = n_steps
-        if self._n_steps is None:
-            self._n_steps = int((self._tstop - self._tstart)/self._dt)
+        #if self._n_steps is None:
+        #    self._n_steps = int((self._tstop - self._tstart)/self._dt)
 
         self._tmp_files = []
 
@@ -130,6 +130,8 @@ class PopulationWriterv01(CompartmentWriterABC, CompartmentReader):
         return self._dt
 
     def n_steps(self, population=None):
+        if self._n_steps is None:
+            self._n_steps = int((self._tstop - self._tstart) / self._dt)
         return self._n_steps
 
     def set_time_trace(self, val, population=None):
@@ -159,7 +161,8 @@ class PopulationWriterv01(CompartmentWriterABC, CompartmentReader):
         if self._is_initialized:
             return
 
-        if self._n_steps <= 0:
+        n_steps = self.n_steps()
+        if n_steps <= 0:
             raise Exception('A non-zero positive integer num-of-steps is required to initialize the compartment report.'
                             'Please specify report length using the n_steps parameters (or using appropiate tstop,'
                             'tstart, and dt).')
@@ -183,7 +186,7 @@ class PopulationWriterv01(CompartmentWriterABC, CompartmentReader):
         for k, v in self._element_data.items():
             var_grp[k][self._seg_offset_beg:self._seg_offset_end] = v
 
-        self._total_steps = self._n_steps
+        self._total_steps = n_steps
         self._buffer_block_size = self._buffer_size
 
         if not self._buffer_data:
@@ -196,6 +199,7 @@ class PopulationWriterv01(CompartmentWriterABC, CompartmentReader):
         if self._buffer_data:
             # Set up in-memory block to buffer recorded variables before writing to the dataset
             self._data_block.buffer_block = np.zeros((self._buffer_size, self._n_segments_local), dtype=np.float)
+
             self._data_block.data_block = base_grp.create_dataset('data', shape=(self.n_steps(), self._n_segments_all),
                                                                   dtype=np.float, chunks=True)
             if self._variable is not None:
@@ -240,10 +244,11 @@ class PopulationWriterv01(CompartmentWriterABC, CompartmentReader):
         self.initialize()
         gid_beg, gid_end = self._gid_map[node_id]
         buffer_block = self._data_block.buffer_block
-        if gid_end - gid_beg == 1:
-            buffer_block[beg_step:end_step, gid_beg:gid_end] = vals
+        if isinstance(vals, list) or vals.ndim == 1:
+            buffer_block[:, gid_beg] = vals
+            #buffer_block[beg_step:end_step, gid_beg:gid_end] = vals
         else:
-            buffer_block[beg_step:end_step, gid_beg:gid_end] = vals
+            buffer_block[:, gid_beg:gid_end] = vals
 
     def flush(self):
         """Move data from memory to dataset"""
@@ -270,7 +275,7 @@ class PopulationWriterv01(CompartmentWriterABC, CompartmentReader):
 
 class CompartmentWriterv01(CompartmentWriterABC):
     def __init__(self, file_path, mode='w', default_population=None, cache_dir=None, variable=None, units=None,
-                 buffer_size=0, tstart=0.0, tstop=0.0, dt=0.0, **kwargs):
+                 buffer_size=0, tstart=0.0, tstop=0.0, dt=0.0, n_steps=None, **kwargs):
         self._mode = mode
         self._variable = variable
         self._units = units
@@ -281,6 +286,7 @@ class CompartmentWriterv01(CompartmentWriterABC):
         self._tstart = tstart
         self._tstop = tstop
         self._dt = dt
+        self._n_steps = n_steps
         self._kwargs = kwargs
 
         self._h5_handle = None
@@ -339,6 +345,9 @@ class CompartmentWriterv01(CompartmentWriterABC):
     def set_dt(self, val, population=None):
         self[population].set_dt(val)
 
+    def n_steps(self, population=None):
+        self[population].n_steps()
+
     def set_time_trace(self, val, population=None):
         self[population].set_time_trace(val)
 
@@ -367,7 +376,8 @@ class CompartmentWriterv01(CompartmentWriterABC):
         for pop_grp in self._pop_tables.values():
             pop_grp.close()
         self._h5_handle.close()
-        self.merge()
+        if self._mpi_size > 1:
+            self.merge()
 
     def merge(self):
         barrier()
@@ -488,7 +498,7 @@ class CompartmentWriterv01(CompartmentWriterABC):
         else:
             pop_grp = PopulationWriterv01(self, population, variable=self._variable, units=self._units,
                                           tstart=self._tstart, tstop=self._tstop, dt=self._dt,
-                                          buffer_size=self._buffer_size)
+                                          buffer_size=self._buffer_size, n_steps=self._n_steps)
             self._pop_tables[population] = pop_grp
         return pop_grp
 
