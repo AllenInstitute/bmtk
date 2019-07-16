@@ -2,6 +2,7 @@ import h5py
 import numpy as np
 
 from .core import CompartmentReaderABC
+from bmtk.utils.hdf5_helper import get_attribute_h5
 
 
 class _CompartmentPopulationReaderVer01(CompartmentReaderABC):
@@ -16,7 +17,7 @@ class _CompartmentPopulationReaderVer01(CompartmentReaderABC):
         if self._mapping is None:
             raise Exception('could not find /mapping group')
 
-        gids_ds = self._mapping['node_ids']
+        gids_ds = self._mapping[self.node_ids_ds]  # ['node_ids']
         index_pointer_ds = self._mapping['index_pointer']
         for indx, gid in enumerate(gids_ds):
             self._gid2data_table[gid] = slice(index_pointer_ds[indx], index_pointer_ds[indx+1])
@@ -41,14 +42,20 @@ class _CompartmentPopulationReaderVer01(CompartmentReaderABC):
     def data_ds(self):
         return self._data_grp
 
+    @property
+    def node_ids_ds(self):
+        return 'node_ids'
+
     def get_population(self, population, default=None):
         raise NotImplementedError()
 
     def units(self, population=None):
-        return self.data_ds.attrs.get('units', None)
+        return get_attribute_h5(self.data_ds, 'units', None)
+        #return self.data_ds.attrs.get('units', None)
 
     def variable(self, population=None):
-        return self.data_ds.attrs.get('variable', None)
+        return get_attribute_h5(self.data_ds, 'variable', None)
+        #return self.data_ds.attrs.get('variable', None)
 
     def tstart(self, population=None):
         return self._t_start
@@ -84,8 +91,9 @@ class _CompartmentPopulationReaderVer01(CompartmentReaderABC):
         if node_id is None:
             return self._mapping['element_ids'][()]
         else:
-            indx_beg, indx_end = self._get_index(node_id)
-            return self._mapping['element_ids'][self._get_index(node_id)]#[indx_beg:indx_end]
+            #indx_beg, indx_end = self._get_index(node_id)
+            #return self._mapping['element_ids'][self._get_index(node_id)]#[indx_beg:indx_end]
+            return self._mapping['element_ids'][self._get_index(node_id)]
 
     def n_elements(self, node_id=None, population=None):
         return len(self.element_pos(node_id))
@@ -139,6 +147,25 @@ class _CompartmentPopulationReaderVer01(CompartmentReaderABC):
         return self
 
 
+class _CompartmentPopulationReaderVer00(_CompartmentPopulationReaderVer01):
+    sonata_columns = ['element_id', 'element_pos', 'index_pointer', 'gids', 'time']
+
+    def node_ids(self, population=None):
+        return self._mapping[self.node_ids_ds][()]
+
+    @property
+    def node_ids_ds(self):
+        return 'gids'
+
+    def element_ids(self, node_id=None, population=None):
+        if node_id is None:
+            return self._mapping['element_id'][()]
+        else:
+            #indx_beg, indx_end = self._get_index(node_id)
+            #return self._mapping['element_id'][self._get_index(node_id)]#[indx_beg:indx_end]
+            return self._mapping['element_id'][self._get_index(node_id)]  # [indx_beg:indx_end]
+
+
 class CompartmentReaderVer01(CompartmentReaderABC):
     def __init__(self, filename, mode='r', **params):
         self._h5_handle = h5py.File(filename, mode)
@@ -151,6 +178,9 @@ class CompartmentReaderVer01(CompartmentReaderABC):
             report_grp = self._h5_root['report']
             for pop_name, pop_grp in report_grp.items():
                 self._popgrps[pop_name] = _CompartmentPopulationReaderVer01(pop_grp=pop_grp, pop_name=pop_name)
+        else:
+            self._default_population = 'pop_na'
+            self._popgrps[self._default_population] = _CompartmentPopulationReaderVer00(pop_grp=self._h5_root, pop_name=self._default_population)
 
         if 'default_population' in params:
             # If user has specified a default population
