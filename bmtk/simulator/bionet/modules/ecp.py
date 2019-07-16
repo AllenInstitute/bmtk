@@ -85,7 +85,7 @@ class EcpMod(SimulatorMod):
 
         # create file to temporary store ecp data on each rank
         self._tmp_ecp_handle = h5py.File(self._tmp_ecp_file, 'a')
-        self._tmp_ecp_handle.create_dataset('data', (self._nsteps, self._rel_nsites), maxshape=(None, self._rel_nsites),
+        self._tmp_ecp_handle.create_dataset('/ecp/data', (self._nsteps, self._rel_nsites), maxshape=(None, self._rel_nsites),
                                             chunks=True)
 
         # only the primary node will need to save the final ecp
@@ -93,14 +93,18 @@ class EcpMod(SimulatorMod):
             with h5py.File(self._ecp_output, 'w') as f5:
                 add_hdf5_magic(f5)
                 add_hdf5_version(f5)
-                f5.create_dataset('data', (self._nsteps, self._rel_nsites), maxshape=(None, self._rel_nsites),
+                f5.create_dataset('/ecp/data', (self._nsteps, self._rel_nsites), maxshape=(None, self._rel_nsites),
                                   chunks=True)
-                f5.attrs['dt'] = dt
-                f5.attrs['tstart'] = 0.0
-                f5.attrs['tstop'] = tstop
+                f5['/ecp/data'].attrs['units'] = 'mV'
+                #f5.attrs['dt'] = dt
+                #f5.attrs['tstart'] = 0.0
+                #f5.attrs['tstop'] = tstop
+
+                f5.create_dataset('/ecp/time', (3,), data=(0.0, sim.tstop, sim.dt))
+                f5['/ecp/time'].attrs['units'] = 'ms'
 
                 # Save channels. Current we record from all channels, may want to be more selective in the future.
-                f5.create_dataset('channel_id', data=np.arange(self._rel.nsites))
+                f5.create_dataset('/ecp/channel_id', data=np.arange(self._rel.nsites))
 
         pc.barrier()
 
@@ -111,7 +115,7 @@ class EcpMod(SimulatorMod):
         file_name = os.path.join(self._contributions_dir, '{}.h5'.format(int(gid)))
         file_h5 = h5py.File(file_name, 'a')
         self._cell_var_files[gid] = file_h5
-        file_h5.create_dataset('data', (self._nsteps, self._rel_nsites), maxshape=(None, self._rel_nsites), chunks=True)
+        file_h5.create_dataset('/ecp/data', (self._nsteps, self._rel_nsites), maxshape=(None, self._rel_nsites), chunks=True)
         # self._cell_var_files[gid] = file_h5['ecp']
 
     def _calculate_ecp(self, sim):
@@ -135,7 +139,7 @@ class EcpMod(SimulatorMod):
     def _save_block(self, interval):
         """Add """
         itstart, itend = interval
-        self._tmp_ecp_handle['data'][itstart:itend, :] += self._data_block[0:(itend - itstart), :]
+        self._tmp_ecp_handle['/ecp/data'][itstart:itend, :] += self._data_block[0:(itend - itstart), :]
         self._tmp_ecp_handle.flush()
         self._data_block[:] = 0.0
 
@@ -151,7 +155,7 @@ class EcpMod(SimulatorMod):
             if rank == MPI_RANK:  # wait until finished with a particular rank
                 with h5py.File(self._ecp_output, 'a') as ecp_f5:
                     for i in range(len(ivals)-1):
-                        ecp_f5['data'][ivals[i]:ivals[i+1], :] += self._tmp_ecp_handle['data'][ivals[i]:ivals[i+1], :]
+                        ecp_f5['/ecp/data'][ivals[i]:ivals[i+1], :] += self._tmp_ecp_handle['/ecp/data'][ivals[i]:ivals[i+1], :]
 
             pc.barrier()
 
@@ -160,7 +164,7 @@ class EcpMod(SimulatorMod):
 
         for gid, data in self._saved_gids.items():
             h5_file = self._cell_var_files[gid]
-            h5_file['data'][itstart:itend, :] = data[0:(itend-itstart), :]
+            h5_file['/ecp/data'][itstart:itend, :] = data[0:(itend-itstart), :]
             h5_file.flush()
             data[:] = 0.0
 

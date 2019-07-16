@@ -1,10 +1,10 @@
+import pytest
 import os
 import tempfile
 import numpy as np
 import pandas as pd
 import h5py
 import shutil
-from mpi4py import MPI
 
 # , STNumpyBuffer, STBuffer2
 from bmtk.utils.reports.spike_trains import SpikeTrains, PoissonSpikeGenerator, pop_na
@@ -12,12 +12,18 @@ from bmtk.utils.reports.spike_trains import sort_order
 from bmtk.utils.reports.spike_trains import spike_train_buffer
 
 
-comm = MPI.COMM_WORLD
-MPI_rank = comm.Get_rank()
-MPI_size = comm.Get_size()
+try:
+    from mpi4py import MPI
+    comm = MPI.COMM_WORLD
+    MPI_rank = comm.Get_rank()
+    MPI_size = comm.Get_size()
+except:
+    MPI_rank = 0
+    MPI_size = 1
 
 
-def single_proc(adaptor_cls):
+@pytest.mark.parametrize('adaptor_cls', [spike_train_buffer.STCSVBuffer, spike_train_buffer.STMemoryBuffer])
+def test_single_proc(adaptor_cls):
     buffer_dir = tempfile.mkdtemp()
     output_csv = os.path.join(buffer_dir, 'testfile.csv')
     output_h5 = os.path.join(buffer_dir, 'testfile.h5')
@@ -67,30 +73,43 @@ def single_proc(adaptor_cls):
     spike_trains.close()
     shutil.rmtree(buffer_dir)
 
-def test_poission_generator():
-    psg = PoissonSpikeGenerator(node_ids=range(0,100), population='test', firing_rate=15.0)
-    # print(sum(1 for _ in psg.spikes())/100.0)
-    #for i in range(100):
-    #    print(psg.get_times(i))
 
-    times = np.linspace(0.0, 10.0, 50)
-    firing_rates = 15.0*np.sin(times) + 15.0
-    # firing_rates = 25.0*np.exp(-0.5*times)
-    psg = PoissonSpikeGenerator(node_ids=range(100), population='test', firing_rate=firing_rates, times=times)
-    #for i in range(100):
-    #    print(psg.get_times(i))
+def test_psg_fixed():
+    psg = PoissonSpikeGenerator(population='test', seed=0.0)
+    psg.add(node_ids=range(10), firing_rate=10.0, times=(0.0, 10.0))
+    assert(psg.populations == ['test'])
+    assert(psg.nodes() == range(10))
 
-    import matplotlib.pyplot as plt
-    print psg.get_times(0)
-    plt.figure()
-    #for s in psg.get_times(0):
-    #    plt.axvline(x=s, color='k', linestyle='-')
-    #    plt.yticks([])
-    plt.hist(psg.get_times(0), 10)
-    plt.plot(times, firing_rates)
-    plt.show()
+    time_range = psg.time_range()
+    assert(0 <= time_range[0] < 1.0)
+    assert(9.0 < time_range[1] <= 10.0)
+
+    # This may fail on certain versions
+    assert(psg.get_times(node_id=5).size > 10)
+    assert(0 < psg.get_times(node_id=8).size < 300)
+
+    for i in range(10):
+        spikes = psg.get_times(i)
+        assert(np.max(spikes) > 0.1)
 
 
+def test_psg_variable():
+    times = np.linspace(0.0, 10.0, 1000)
+    fr = np.exp(-np.power(times - 5.0, 2) / (2*np.power(.5, 2)))*5
+
+    psg = PoissonSpikeGenerator(population='test', seed=0.0)
+    psg.add(node_ids=range(10), firing_rate=fr, times=times)
+
+    assert(psg.populations == ['test'])
+    assert(psg.nodes() == range(10))
+
+    for i in range(10):
+        spikes = psg.get_times(i)
+        assert(len(spikes) > 0)
+        assert(1.0 < np.min(spikes))
+        assert(np.max(spikes) < 9.0)
+
+'''
 def multi_proc():
     # from bmtk.utils.reports.spike_trains.spike_train_buffer import STMemoryBuffer as STBuffer
     from bmtk.utils.reports.spike_trains.spike_train_buffer import STMPIBuffer as STBuffer
@@ -112,13 +131,15 @@ def multi_proc():
         spike_trains.add_spikes(np.repeat(node_id, 50), np.random.uniform(0.1, 3000.0, 50), population='test')
 
     spike_trains.to_sonata('testfile_mpi.h5', sort_order=sort_order.by_time)
-
+'''
 
 if __name__ == '__main__':
     if MPI_size == 1:
-        single_proc(spike_train_buffer.STCSVBuffer)
-        # single_proc(spike_train_buffer.STMemoryBuffer)
-        # test_poission_generator()
+        #single_proc(spike_train_buffer.STCSVBuffer)
+        test_single_proc(spike_train_buffer.STMemoryBuffer)
+        #test_psg_fixed()
+        test_psg_variable()
 
     else:
-        multi_proc()
+        pass
+        #multi_proc()

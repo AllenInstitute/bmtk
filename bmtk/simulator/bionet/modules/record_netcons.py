@@ -6,18 +6,18 @@ from neuron import h
 
 from .sim_module import SimulatorMod
 from bmtk.simulator.bionet.biocell import BioCell
-from bmtk.simulator.bionet.io_tools import io
-from bmtk.simulator.bionet.pointprocesscell import PointProcessCell
+# from bmtk.simulator.bionet.io_tools import io
+# from bmtk.simulator.bionet.pointprocesscell import PointProcessCell
+from bmtk.utils.reports import CompartmentReport
 
-from bmtk.utils.io import cell_vars
 try:
     # Check to see if h5py is built to run in parallel
     if h5py.get_config().mpi:
-        MembraneRecorder = cell_vars.CellVarRecorderParallel
+        MembraneRecorder = CompartmentReport  # cell_vars.CellVarRecorderParallel
     else:
-        MembraneRecorder = cell_vars.CellVarRecorder
+        MembraneRecorder = CompartmentReport  # cell_vars.CellVarRecorder
 except Exception as e:
-    MembraneRecorder = cell_vars.CellVarRecorder
+    MembraneRecorder = CompartmentReport  # cell_vars.CellVarRecorder
 
 pc = h.ParallelContext()
 MPI_RANK = int(pc.id())
@@ -47,8 +47,9 @@ class NetconReport(SimulatorMod):
         self._local_gids = []
         self._sections = sections
 
-        self._var_recorder = MembraneRecorder(self._file_name, self._tmp_dir, self._all_variables,
-                                              buffer_data=buffer_data, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)
+        self._var_recorder = None
+        #self._var_recorder = MembraneRecorder(self._file_name, self._tmp_dir, self._all_variables,
+        #                                      buffer_data=buffer_data, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)
 
         self._virt_lookup = {}
         self._gid_lookup = {}
@@ -59,6 +60,7 @@ class NetconReport(SimulatorMod):
         self._block_step = 0  # time step within a given block
         self._object_lookup = {}
         self._syn_type = syn_type
+        self._gid_map = None
 
     def _get_gids(self, sim):
         selected_gids = set(sim.net.get_node_set(self._all_gids).gids())
@@ -80,8 +82,13 @@ class NetconReport(SimulatorMod):
             return -1, -1
 
     def initialize(self, sim):
+        self._gid_map = sim.net.gid_pool
         self._get_gids(sim)
-        self._save_sim_data(sim)
+
+        self._var_recorder = MembraneRecorder(self._file_name, mode='w', variable=self._variables[0],
+                                              buffer_size=sim.nsteps_block, tstart=0.0, tstop=sim.tstop, dt=sim.dt,
+                                              n_steps=sim.n_steps)
+        #self._save_sim_data(sim)
 
         for node_pop in sim.net.node_populations:
             pop_name = node_pop.name
@@ -95,6 +102,7 @@ class NetconReport(SimulatorMod):
                 self._sec_lookup[gid] = {sec_name: sec_id for sec_id, sec_name in enumerate(cell.get_sections_id())}
 
         for gid in self._local_gids:
+            pop_id = self._gid_map.get_pool_id(gid)
             sec_list = []
             seg_list = []
             src_list = []
@@ -114,18 +122,24 @@ class NetconReport(SimulatorMod):
                     syn_objects.append(nc)
 
             if syn_objects:
-                self._var_recorder.add_cell(gid, sec_list, seg_list, src_ids=src_list, trg_ids=[gid]*len(src_list))
+                # self._var_recorder.add_cell(gid, sec_list, seg_list, src_ids=src_list, trg_ids=[gid]*len(src_list))
+                self._var_recorder.add_cell(node_id=pop_id.node_id, population=pop_id.population, element_ids=sec_list,
+                                            element_pos=seg_list, src_ids=src_list, trg_ids=[gid]*len(src_list))
+
                 self._object_lookup[gid] = syn_objects
 
-        self._var_recorder.initialize(sim.n_steps, sim.nsteps_block)
+        # self._var_recorder.initialize(sim.n_steps, sim.nsteps_block)
+        self._var_recorder.initialize()
 
     def step(self, sim, tstep):
         # save all necessary cells/variables at the current time-step into memory
         for gid, netcon_objs in self._object_lookup.items():
+            pop_id = self._gid_map.get_pool_id(gid)
             for var_name in self._variables:
                 syn_values = [getattr(syn, var_name) for syn in netcon_objs]
                 if syn_values:
-                    self._var_recorder.record_cell(gid, var_name, syn_values, tstep)
+                    self._var_recorder.record_cell(pop_id.node_id, population=pop_id.population, vals=syn_values,
+                                                   tstep=tstep)
 
         self._block_step += 1
 
@@ -138,5 +152,5 @@ class NetconReport(SimulatorMod):
         pc.barrier()
         self._var_recorder.close()
 
-        pc.barrier()
-        self._var_recorder.merge()
+        #pc.barrier()
+        #self._var_recorder.merge()
