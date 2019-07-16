@@ -23,7 +23,6 @@
 import os
 import glob
 import csv
-# from bmtk.utils.io.spike_trains import SpikeTrainWriter
 from bmtk.utils.reports.spike_trains import SpikeTrains, sort_order, sort_order_lu
 from bmtk.simulator.pointnet.io_tools import io
 
@@ -84,23 +83,26 @@ class SpikesMod(object):
 
         if self._csv_fname is not None:
             self._spike_writer.to_csv(self._csv_fname, sort_order=self._sort_order)
-            io.barrier()
+            # io.barrier()
 
         if self._h5_fname is not None:
+            # TODO: reimplement with pandas
             self._spike_writer.to_sonata(self._h5_fname, sort_order=self._sort_order)
-            io.barrier()
+            # io.barrier()
 
         if self._nwb_fname is not None:
             self._spike_writer.to_nwb(self._nwb_fname, sort_order=self._sort_order)
-            io.barrier()
+            # io.barrier()
 
         self._spike_writer.close()
         self.__clean_gdf_files()
 
     def __parse_gdf(self, gdf_path, gid_map):
         with open(gdf_path, 'r') as csv_file:
+            #print(gdf_path)
             csv_reader = csv.reader(csv_file, delimiter='\t')
             for r in csv_reader:
+                #print(r)
                 p = gid_map.get_pool_id(int(r[0]))
                 self._spike_writer.add_spike(node_id=p.node_id, timestamp=float(r[1]), population=p.population)
 

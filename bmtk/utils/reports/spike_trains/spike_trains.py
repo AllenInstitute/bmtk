@@ -187,7 +187,6 @@ class PoissonSpikeGenerator(SpikeTrains):
         super(PoissonSpikeGenerator, self).__init__(adaptor=adaptor)
         self.units = 's'
 
-
     def add(self, node_ids, firing_rate, population=None, times=(0.0, 1.0)):
         # TODO: Add refactory period
         if isinstance(node_ids, string_types):
