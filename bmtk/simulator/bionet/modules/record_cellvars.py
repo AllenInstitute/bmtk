@@ -28,16 +28,15 @@ from bmtk.simulator.bionet.modules.sim_module import SimulatorMod
 from bmtk.simulator.bionet.io_tools import io
 from bmtk.utils.reports import CompartmentReport
 
-# from bmtk.utils.io import cell_vars
 try:
     # Check to see if h5py is built to run in parallel
     if h5py.get_config().mpi:
-        MembraneRecorder = CompartmentReport # cell_vars.CellVarRecorderParallel
+        MembraneRecorder = CompartmentReport
     else:
-        MembraneRecorder = CompartmentReport # cell_vars.CellVarRecorder
+        MembraneRecorder = CompartmentReport
 
 except Exception as e:
-    MembraneRecorder = CompartmentReport # cell_vars.CellVarRecorder
+    MembraneRecorder = CompartmentReport
 
 MembraneRecorder._io = io
 

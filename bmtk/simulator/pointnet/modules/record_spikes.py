@@ -23,7 +23,6 @@
 import os
 import glob
 import csv
-# from bmtk.utils.io.spike_trains import SpikeTrainWriter
 from bmtk.utils.reports.spike_trains import SpikeTrains, sort_order, sort_order_lu
 from bmtk.simulator.pointnet.io_tools import io
 
