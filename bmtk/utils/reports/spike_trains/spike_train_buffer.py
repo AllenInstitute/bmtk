@@ -241,7 +241,12 @@ class STMemoryBuffer(STBuffer, STReader):
         return ts[mask]
 
     def to_dataframe(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
-        raise NotImplementedError()
+        # raise NotImplementedError()
+        populations = populations or self._default_population
+        # TODO: Filter by population, node-id and time
+        # TODO: Sort dataframe if needed
+        return pd.DataFrame({'node_id': self._node_ids, 'population': self._populations, 'timestamps': self._timestamps})
+
 
     def spikes(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
         if sort_order == SortOrder.by_time:

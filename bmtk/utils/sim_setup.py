@@ -364,8 +364,11 @@ def __set_manifest(config_dict, base_dir, network_dir=None, components_dir=None,
     if network_dir is not None:
         config_dict['manifest']['$NETWORK_DIR'] = replace_str(network_dir, base_dir, '$BASE_DIR')
         if len(config_dict['networks'].get('nodes', [])) > 0:
+            #config_dict['networks']['nodes'] = [{k: replace_str(v, network_dir, '$NETWORK_DIR')
+            #                                     for l in config_dict['networks']['nodes'] for k, v in l.items()}]
             config_dict['networks']['nodes'] = [{k: replace_str(v, network_dir, '$NETWORK_DIR')
-                                                 for l in config_dict['networks']['nodes'] for k, v in l.items()}]
+                                                 for k, v in l.items()} for l in config_dict['networks']['nodes'] ]
+
 
         if len(config_dict['networks'].get('edges', [])) > 0:
             config_dict['networks']['edges'] = [{k: replace_str(v, network_dir, '$NETWORK_DIR')
@@ -378,6 +381,15 @@ def __set_manifest(config_dict, base_dir, network_dir=None, components_dir=None,
 
     if output_dir is not None:
         config_dict['manifest']['$OUTPUT_DIR'] = os.path.join('$BASE_DIR', output_dir)
+
+    if 'inputs' in config_dict:
+        for input_dict in config_dict['inputs'].values():
+            if 'input_file' in input_dict:
+                input_dict['input_file'] = replace_str(input_dict['input_file'], base_dir, '$BASE_DIR')
+
+            if 'file_name' in input_dict:
+                input_dict['file_name'] = replace_str(input_dict['file_name'], base_dir, '$BASE_DIR')
+
 
 def __create_node_sets_file(base_dir, ns_file_path=None, **custom_ns):
     if ns_file_path is None or not os.path.isabs(ns_file_path):
@@ -459,11 +471,33 @@ def set_logging():
     logger.handlers = [handler]
 
 
+def __add_spikes_inputs(spikes_inputs):
+    inputs_dict = {}
+    for s in spikes_inputs:
+        pop_name = s[0] or 'all'
+        input_name = '{}_spikes'.format(s[0] or 'input')
+        spikes_file = os.path.abspath(s[1])
+        # if os.path.abspath(spikes_file).startswith()
+
+        spikes_ext = os.path.splitext(spikes_file)[1][1:]
+        spikes_ext = 'sonata' if spikes_ext in ['h5', 'hdf5'] else spikes_ext
+
+        inputs_dict[input_name] = {
+            "input_type": "spikes",
+            "module": spikes_ext,
+            "input_file": spikes_file,
+            "node_set": pop_name
+        }
+
+    return inputs_dict
+
+
 def build_env_bionet(base_dir='.', network_dir=None, components_dir=None, node_sets_file=None, include_examples=False,
                      tstart=0.0, tstop=1000.0, dt=0.001, dL=20.0, spikes_threshold=-15.0, nsteps_block=5000,
                      v_init=-80.0, celsius=34.0,
                      report_vars=[], report_nodes=None,
                      current_clamp=None,
+                     spikes_inputs=None,
                      compile_mechanisms=False,
                      use_relative_paths=True):
     logger.info('Creating BioNet simulation environment ({})'.format(datetime.datetime.now()))
@@ -519,6 +553,9 @@ def build_env_bionet(base_dir='.', network_dir=None, components_dir=None, node_s
     simulation_config['inputs'] = {}
     if current_clamp is not None:
         simulation_config['inputs']['current_clamp'] = __add_current_clamp(**current_clamp)
+
+    if spikes_inputs is not None and len(spikes_inputs) > 0:
+        simulation_config['inputs'].update(__add_spikes_inputs(spikes_inputs))
 
     __set_manifest(simulation_config, parsed_base_dir, output_dir='output')
     copy_config(base_dir, simulation_config, 'simulation_config.json')
@@ -614,6 +651,8 @@ if __name__ == '__main__':
     parser.add_option('--iclamp', dest='current_clamp', type='string', action='callback',
                       callback=membrane_report_parser, default=None,
                       help='Adds a soma current clamp using three variables: <amp>,<delay>,<duration> (nA, ms, ms)')
+    parser.add_option('--spikes-inputs', dest='spikes_input', type='string', action='callback',
+                      callback=membrane_report_parser, default=None)
     # parser.add_option('--membrane_report_file', dest='mem_rep_file', type='string', action='callback',
     #                   callback=membrane_report_parser, default='$OUTPUT_DIR/cell_vars.h5')
     #parser.add_option('--membrane_report-sections', dest='mem_rep_secs', type='string', action='callback',
@@ -648,10 +687,23 @@ if __name__ == '__main__':
     else:
         iclamp_args = None
 
+    spikes_inputs = []
+    if options.spikes_input is not None:
+        spikes = [options.spikes_input] if isinstance(options.spikes_input, str) else list(options.spikes_input)
+        for spike_str in spikes:
+            vals = spike_str.split(':')
+            if len(vals) == 1:
+                spikes_inputs.append((None, vals[0]))
+            elif len(vals) == 2:
+                spikes_inputs.append((vals[0], vals[1]))
+            else:
+                parser.error('Cannot parse spike-input string <pop1>:<spikes-file1>,<pop2>:<spikes-file2>,...')
+
     if target_sim == 'bionet':
         build_env_bionet(base_dir=base_dir, network_dir=options.network_dir, tstop=options.tstop,
                          dt=options.dt, report_vars=options.mem_rep_vars, report_nodes=options.mem_rep_cells,
                          current_clamp=iclamp_args, include_examples=options.include_examples,
+                         spikes_inputs=spikes_inputs,
                          compile_mechanisms=options.compile_mechanisms)
 
     elif target_sim == 'pointnet':
