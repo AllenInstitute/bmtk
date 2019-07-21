@@ -21,6 +21,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import os
+import sys
 import shutil
 import json
 import h5py
@@ -168,6 +169,7 @@ def build_simulation_env(base_dir, target_simulator, tstop, dt, reports):
 
 
 def copy_config(base_dir, json_dict, config_file_name):
+    logger.info('Creating config file: {}'.format(config_file_name))
     with open(os.path.join(base_dir, config_file_name), 'w') as outfile:
         ordered_dict = OrderedDict(sorted(json_dict.items(),
                                           key=lambda s: config_order.index(s[0]) if s[0] in config_order else 100))
@@ -223,7 +225,6 @@ def __get_network_dir(base_dir, network_dir=None):
     :return: The absolute path of the directory that does/should contain the network files
     """
     network_dir_abs = None
-    print(base_dir)
 
     if network_dir is None:
         # Check to see if there are any folders in base_dir that might contain SONATA network files
@@ -335,7 +336,6 @@ def __create_components_dir(components_dir, comp_root, copy_files=True):
     components_config = {}
 
     comps_dirs = [sd for sd in os.listdir(comp_root) if os.path.isdir(os.path.join(comp_root, sd))]
-    print(components_dir)
     for sub_dir in comps_dirs:
         comp_name = sub_dir + '_dir'
         src_dir = os.path.join(comp_root, sub_dir)
@@ -354,13 +354,123 @@ def __create_components_dir(components_dir, comp_root, copy_files=True):
 
     return components_config
 
-def build_env_bionet(base_dir='.', network_dir=None, components_dir=None,reports=None, with_examples=True, tstop=1000.0,
-                     dt=0.001, compile_mechanisms=True, **args):
+
+def __set_manifest(config_dict, base_dir, network_dir=None, components_dir=None, output_dir=None):
+    config_dict['manifest'] = {'$BASE_DIR': '${configdir}'}
+    base_dir = os.path.abspath(base_dir)
+
+    replace_str = lambda fd, bd, var_name: fd.replace(bd, var_name) if fd.startswith(bd) else fd
+
+    if network_dir is not None:
+        config_dict['manifest']['$NETWORK_DIR'] = replace_str(network_dir, base_dir, '$BASE_DIR')
+        if len(config_dict['networks'].get('nodes', [])) > 0:
+            config_dict['networks']['nodes'] = [{k: replace_str(v, network_dir, '$NETWORK_DIR')
+                                                 for l in config_dict['networks']['nodes'] for k, v in l.items()}]
+
+        if len(config_dict['networks'].get('edges', [])) > 0:
+            config_dict['networks']['edges'] = [{k: replace_str(v, network_dir, '$NETWORK_DIR')
+                                                 for l in config_dict['networks']['edges'] for k, v in l.items()}]
+
+    if components_dir is not None:
+        config_dict['manifest']['$COMPONENTS_DIR'] = replace_str(components_dir, base_dir, '$BASE_DIR')
+        for k, v in config_dict['components'].items():
+            config_dict['components'][k] = replace_str(v, components_dir, '$COMPONENTS_DIR')
+
+    if output_dir is not None:
+        config_dict['manifest']['$OUTPUT_DIR'] = os.path.join('$BASE_DIR', output_dir)
+
+def __create_node_sets_file(base_dir, ns_file_path=None, **custom_ns):
+    if ns_file_path is None or not os.path.isabs(ns_file_path):
+        abs_path = os.path.abspath(os.path.join(base_dir, ns_file_path or 'node_sets.json'))
+    else:
+        abs_path = ns_file_path
+
+    if os.path.exists(abs_path):
+        logger.info('Found existing node sets file: {}'.format(ns_file_path))
+    else:
+        logger.info('Creating new node sets file: {}'.format(abs_path))
+        node_sets = {
+            'biophysical_nodes': {'model_type': 'biophysical'},
+            'point_nodes': {'model_type': 'point_process'}
+        }
+        for k, v in custom_ns.items():
+            node_sets[''] = {'node_ids': v} if isinstance(v, list) else {'population': v}
+
+        json.dump(node_sets, open(abs_path, 'w'), indent=2)
+
+    return abs_path
+
+
+def __add_reports(cell_vars, node_set, section='soma'):
+    for v in cell_vars:
+        logger.info('Adding membrane report for variable {}'.format(v))
+
+    report_config = {
+        '{}_report'.format(v): {
+            'variable_name': v,
+            'cells': node_set,
+            'module': 'membrane_report',
+            'sections': section
+        } for v in cell_vars}
+
+    return report_config
+
+
+def __add_output_section():
+    return {
+        'log_file': 'log.txt',
+        'output_dir': '$OUTPUT_DIR',
+        'spikes_file': 'spikes.h5'
+    }
+
+
+def __add_current_clamp(amp, delay, duration):
+    logger.info('Adding current clamp')
+    return {
+        "input_type": "current_clamp",
+        "module": "IClamp",
+        "node_set": "all",
+        "amp": float(amp),
+        "delay": float(delay),
+        "duration": float(duration)
+    }
+
+'''
+def _initalize_logger():
+    logger.setLevel(logging.INFO)
+    console_logger = logging.StreamHandler()
+    console_logger.setFormatter(logging.Formatter('%(module)s [%(levelname)s] %(message)s'))
+    logger.addHandler(console_logger)
+'''
+
+def set_logging():
+    """"""
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+
+    # Create STDERR handler
+    handler = logging.StreamHandler(sys.stdout)
+
+    # Create formatter and add it to the handler
+    formatter = logging.Formatter('%(module)s [%(levelname)s] %(message)s')
+    handler.setFormatter(formatter)
+
+    # Set STDERR handler as the only handler
+    logger.handlers = [handler]
+
+
+def build_env_bionet(base_dir='.', network_dir=None, components_dir=None, node_sets_file=None, include_examples=False,
+                     tstart=0.0, tstop=1000.0, dt=0.001, dL=20.0, spikes_threshold=-15.0, nsteps_block=5000,
+                     v_init=-80.0, celsius=34.0,
+                     report_vars=[], report_nodes=None,
+                     current_clamp=None,
+                     compile_mechanisms=False,
+                     use_relative_paths=True):
     logger.info('Creating BioNet simulation environment ({})'.format(datetime.datetime.now()))
     simulator='bionet'
     target_simulator='NEURON'
-    # components_dir='biophys_components'
 
+    # Create files and json for circuit configurations.
     circuit_config = {}
 
     parsed_base_dir = __get_base_dir(base_dir)
@@ -371,37 +481,63 @@ def build_env_bionet(base_dir='.', network_dir=None, components_dir=None,reports
     parsed_components_dir = __get_components_dir(base_dir, components_dir)
     circuit_config['components'] = __create_components_dir(parsed_components_dir,
                                                            comp_root=os.path.join(scripts_path, 'bionet'),
-                                                           copy_files=with_examples)
+                                                           copy_files=include_examples)
 
-    exit()
+    if use_relative_paths:
+        __set_manifest(circuit_config, parsed_base_dir, network_dir=parsed_network_dir,
+                       components_dir=parsed_components_dir)
+    copy_config(base_dir, circuit_config, 'circuit_config.json')
 
 
-    # Copy run script
+    # Create node sets files and figure out the
+    simulation_config = {}
+    if report_nodes is not None:
+        selected_ns = 'report_nodes'
+        abs_nsfile = __create_node_sets_file(base_dir, node_sets_file, report_nodes=report_nodes)
+    else:
+        selected_ns = 'biophysical_nodes'
+        abs_nsfile = __create_node_sets_file(base_dir, node_sets_file)
+
+    simulation_config['node_sets_file'] = abs_nsfile
+    simulation_config['reports'] = __add_reports(report_vars, selected_ns)
+    simulation_config['output'] = __add_output_section()
+    simulation_config['target_simulator'] = target_simulator
+    simulation_config['network'] = os.path.join('$BASE_DIR', 'circuit_config.json')
+    simulation_config['run'] = {
+        'tstart': tstart,
+        'tstop': tstop,
+        'dt': dt,
+        'dL': dL,
+        'spike_threshold': spikes_threshold,
+        'nsteps_block': nsteps_block
+    }
+    simulation_config['conditions'] = {
+        'celsius': celsius,
+        'v_init': v_init
+    }
+
+    simulation_config['inputs'] = {}
+    if current_clamp is not None:
+        simulation_config['inputs']['current_clamp'] = __add_current_clamp(**current_clamp)
+
+    __set_manifest(simulation_config, parsed_base_dir, output_dir='output')
+    copy_config(base_dir, simulation_config, 'simulation_config.json')
+
+    logger.info('Copying run_bionet.py file')
     copy_run_script(base_dir=base_dir, simulator=simulator, run_script='run_{}.py'.format(simulator))
 
-    # Build circuit_config and componenets directory
-    circuit_config = build_circuit_env(base_dir=base_dir, network_dir=network_dir, components_dir=components_dir,
-                                       simulator=simulator, with_examples=with_examples)
-    copy_config(base_dir, circuit_config, 'circuit_config.json')
     if compile_mechanisms:
+        mechanisms_dir = os.path.join(parsed_components_dir, 'mechanisms')
+        logger.info('Attempting to compile NEURON mechanims under "{}"'.format(mechanisms_dir))
         cwd = os.getcwd()
-        os.chdir(os.path.join(base_dir, components_dir, 'mechanisms'))  # circuit_config['components']['mechanisms_dir'])
-        try:
-            print(os.getcwd())
-            call(['nrnivmodl', 'modfiles'])
-        except Exception as e:
-            print('Was unable to compile mechanism in {}'.format(circuit_config['components']['mechanisms_dir']))
-            # print e.message
-        os.chdir(cwd)
 
-    # Build simulation config
-    simulation_config = build_simulation_env(base_dir=base_dir, target_simulator=target_simulator, tstop=tstop, dt=dt,
-                                             reports=reports)
-    simulation_config['run']['dL'] = args.get('dL', 20.0)
-    simulation_config['run']['spike_threshold'] = args.get('spike_threshold', -15.0)
-    simulation_config['run']['nsteps_block'] = args.get('nsteps_block', 5000)
-    simulation_config['conditions']['v_init'] = args.get('v_init', -80.0)
-    copy_config(base_dir, simulation_config, 'simulation_config.json')
+        try:
+            os.chdir(os.path.join(mechanisms_dir))
+            call(['nrnivmodl', 'modfiles'])
+            logger.info('  Success.')
+        except Exception as e:
+            logger.error('  Was unable to compile mechanism in {}'.format(mechanisms_dir))
+        os.chdir(cwd)
 
 
 def build_env_popnet(base_dir='.', network_dir=None, reports=None, with_examples=True, tstop=1000.0, dt=0.001, **args):
@@ -440,28 +576,23 @@ def build_env_popnet(base_dir='.', network_dir=None, reports=None, with_examples
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(module)s [%(levelname)s] %(message)s')
-    #logger.setLevel(level=logging.INFO)
-    # logger.setFormatter('%(asctime)s [%(levelname)s] %(message)s')
 
-    def str_list(option, opt, value, parser):
-        setattr(parser.values, option.dest, value.split(','))
-
+    #def str_list(option, opt, value, parser):
+    #    setattr(parser.values, option.dest, value.split(','))
     #def int_list(option, opt, value, parser):
     #    setattr(parser.values, option.dest, [int(v) for v in value.split(',')])
-
-    def parse_node_set(option, opt, value, parser):
-        try:
-            setattr(parser.values, option.dest, [int(v) for v in value.split(',')])
-        except ValueError as ve:
-            setattr(parser.values, option.dest, value)
+    #def parse_node_set(option, opt, value, parser):
+    #    try:
+    #        setattr(parser.values, option.dest, [int(v) for v in value.split(',')])
+    #    except ValueError as ve:
+    #        setattr(parser.values, option.dest, value)
 
 
     parser = OptionParser(usage="Usage: python %prog [options] [bionet|pointnet|popnet|filternet] sim_dir")
-    # parser.add_option('-b', '--base_dir', dest='base_dir', default='.', help='path of environment')
     parser.add_option('-n', '--network_dir', dest='network_dir', default=None,
                       help="Use an exsting directory with network files.")
-    parser.add_option('-r', '--tstop', type='float', dest='tstop', default=1000.0)
-    parser.add_option('-d', '--dt', type=float, dest='dt', help='simulation time step dt', default=0.001)
+    parser.add_option('--tstop', type='float', dest='tstop', default=1000.0)
+    parser.add_option('--dt', type=float, dest='dt', help='simulation time step dt', default=0.001)
 
     # For membrane report
     def membrane_report_parser(option, opt, value, parser):
@@ -475,29 +606,26 @@ if __name__ == '__main__':
         else:
             setattr(parser.values, option.dest, value)
 
-    parser.add_option('--membrane_report', dest='has_membrane_report', action='store_true', default=False)
-    parser.add_option('--membrane_report-vars', dest='mem_rep_vars', type='string', action='callback',
-                      callback=membrane_report_parser, default=[])
-    parser.add_option('--membrane_report-cells', dest='mem_rep_cells', type='string', action='callback',
-                      callback=membrane_report_parser, default='all')
+    parser.add_option('--report-vars', dest='mem_rep_vars', type='string', action='callback',
+                      callback=membrane_report_parser, default=[],
+                      help='A list of membrane variables to record from; v, cai, etc.')
+    parser.add_option('--report-nodes', dest='mem_rep_cells', type='string', action='callback',
+                      callback=membrane_report_parser, default=None)
+    parser.add_option('--iclamp', dest='current_clamp', type='string', action='callback',
+                      callback=membrane_report_parser, default=None,
+                      help='Adds a soma current clamp using three variables: <amp>,<delay>,<duration> (nA, ms, ms)')
     # parser.add_option('--membrane_report_file', dest='mem_rep_file', type='string', action='callback',
     #                   callback=membrane_report_parser, default='$OUTPUT_DIR/cell_vars.h5')
-    parser.add_option('--membrane_report-sections', dest='mem_rep_secs', type='string', action='callback',
-                      callback=membrane_report_parser, default='all')
+    #parser.add_option('--membrane_report-sections', dest='mem_rep_secs', type='string', action='callback',
+    #                  callback=membrane_report_parser, default='all')
+
+    parser.add_option('--include-examples', dest='include_examples', action='store_true', default=False,
+                      help='Copies component files used by examples and tutorials.')
+    parser.add_option('--compile-mechanisms', dest='compile_mechanisms', action='store_true', default=False,
+                      help='Will try to compile the NEURON mechanisms (BioNet only).')
+
 
     options, args = parser.parse_args()
-
-
-    reports = {}
-
-    if options.has_membrane_report:
-        reports['membrane_report'] = {
-            'module': 'membrane_report',
-            'variable_name': options.mem_rep_vars,
-            'cells': options.mem_rep_cells,
-            # 'file_name': options.mem_rep_file,
-            'sections': options.mem_rep_secs,
-        }
 
     # Check the passed in argments are correct. [sim] </path/to/dir/>
     if len(args) < 2:
@@ -511,9 +639,20 @@ if __name__ == '__main__':
             parser.error('Must specify one target simulator. options: "bionet", pointnet", "popnet", "filternet"')
         base_dir = args[1]
 
+    if options.current_clamp is not None:
+        cc_args = options.current_clamp
+        if len(cc_args) != 3:
+            parser.error('Invalid arguments for current clamp, requires three floating point numbers '
+                         '<ampage>,<delay>,<duration> (nA, ms, ms)')
+        iclamp_args = {'amp': cc_args[0], 'delay': cc_args[1], 'duration': cc_args[2]}
+    else:
+        iclamp_args = None
+
     if target_sim == 'bionet':
         build_env_bionet(base_dir=base_dir, network_dir=options.network_dir, tstop=options.tstop,
-                         dt=options.dt, reports=reports)
+                         dt=options.dt, report_vars=options.mem_rep_vars, report_nodes=options.mem_rep_cells,
+                         current_clamp=iclamp_args, include_examples=options.include_examples,
+                         compile_mechanisms=options.compile_mechanisms)
 
     elif target_sim == 'pointnet':
         build_env_pointnet(base_dir=base_dir, network_dir=options.network_dir, tstop=options.tstop,

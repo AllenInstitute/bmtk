@@ -5,12 +5,20 @@ import h5py
 
 from bmtk.analyzer.visualization.spikes import plot_spikes as raster_plot
 from bmtk.analyzer.visualization.spikes import plot_rates as rates_plot
-from .io_tools import load_config
-from bmtk.utils.spike_trains import SpikesFile
+# from .io_tools import load_config
+from bmtk.simulator.utils.config import ConfigDict
+from bmtk.utils.reports import SpikeTrains
+
+
+def load_spikes_file(config_file=None, spikes_file=None):
+    if spikes_file is not None:
+        return SpikeTrains.load(spikes_file)
+
+    elif config_file is not None:
+        config = ConfigDict.from_json(config_file)
+        return SpikeTrains.load(config.spikes_file)
 
 
 def to_dataframe(config_file, spikes_file=None):
-    config = load_config(config_file)
-    spikes_file = SpikesFile(config.spikes_file)
-    return spikes_file.to_dataframe()
-
+    spike_trains = load_spikes_file(config_file=config_file, spikes_file=spikes_file)
+    return spike_trains.to_dataframe()

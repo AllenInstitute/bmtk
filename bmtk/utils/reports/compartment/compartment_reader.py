@@ -230,7 +230,7 @@ class CompartmentReaderVer01(CompartmentReaderABC):
 
     def time_trace(self, population=None):
         population = population or self.default_population
-        return self[population].time()
+        return self[population].time_trace()
 
     def node_ids(self, population=None):
         population = population or self.default_population
