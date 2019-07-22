@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 from .io_tools import load_config
 from .utils import listify
-from bmtk.utils.cell_vars import CellVarsFile
+# from bmtk.utils.cell_vars import CellVarsFile
 from bmtk.simulator.utils.config import ConfigDict
 from bmtk.utils.reports import CompartmentReport
 
@@ -50,22 +50,24 @@ def load_reports(config_file):
     return reports
 
 
-def plot_report(config_file=None, report_file=None, report_name=None, variables=None, gids=None):
+def plot_report(config_file=None, report_file=None, report_name=None, variables=None, node_ids=None):
     reports = load_reports(config_file)
     for report in reports:
         plt.figure()
-        for node_id in report.node_ids():
-            plt.plot(report.time_trace(), report.data(), label='node-id {}'.format(node_id))
+        node_ids = report.node_ids() if node_ids is None else node_ids
+        for node_id in node_ids:
+            plt.plot(report.time_trace(), report.data(node_id=node_id), label='node-id {}'.format(node_id))
             plt.xlabel('ms')
             plt.title(report.variable())
             #plt.ylabel('{}'.format(report.units()))
+        plt.legend()
         #print(report.node_ids())
         #print(report.data().T)
         #print(report.time_trace())
         #plt.show()
 
     # print(reports)
-    #plt.show()
+    plt.show()
 
     """
     exit()

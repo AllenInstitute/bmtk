@@ -296,7 +296,7 @@ def __parse_network_dir(network_dir):
                 edges_dict = net_edges.get(net_name, {})
                 edges_dict['edge_types_file'] = os.path.abspath(os.path.join(root, f))
                 net_edges[net_name] = edges_dict
-                logger.info('  Adding edge types file: {}'.format(edges_dict['edges_file']))
+                logger.info('  Adding edge types file: {}'.format(edges_dict['edge_types_file']))
 
             else:
                 logger.info('  Skipping file (could not categorize): {}'.format(os.path.abspath(os.path.join(root, f))))
@@ -371,8 +371,10 @@ def __set_manifest(config_dict, base_dir, network_dir=None, components_dir=None,
 
 
         if len(config_dict['networks'].get('edges', [])) > 0:
+            #config_dict['networks']['edges'] = [{k: replace_str(v, network_dir, '$NETWORK_DIR')
+            #                                     for l in config_dict['networks']['edges'] for k, v in l.items()}]
             config_dict['networks']['edges'] = [{k: replace_str(v, network_dir, '$NETWORK_DIR')
-                                                 for l in config_dict['networks']['edges'] for k, v in l.items()}]
+                                                 for k, v in l.items()} for l in config_dict['networks']['edges'] ]
 
     if components_dir is not None:
         config_dict['manifest']['$COMPONENTS_DIR'] = replace_str(components_dir, base_dir, '$BASE_DIR')
