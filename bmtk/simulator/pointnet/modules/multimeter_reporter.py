@@ -56,7 +56,8 @@ class MultimeterMod(object):
 
     def initialize(self, sim):
         node_set = sim.net.get_node_set(self._node_set)
-        self._gids =  list(node_set.gids())
+
+        self._gids =  list(set(node_set.gids()))
         self._population = node_set.population_names()[0]
         self._nest_ids = list(sim.net.gid_map.get_gids(name=self._population, node_ids=self._gids))
         self._tstart = self._tstart or sim.tstart
