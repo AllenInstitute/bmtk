@@ -61,6 +61,7 @@ def plot_report(config_file=None, report_file=None, report_name=None, variables=
             plt.title(report.variable())
             #plt.ylabel('{}'.format(report.units()))
         plt.legend()
+
         #print(report.node_ids())
         #print(report.data().T)
         #print(report.time_trace())

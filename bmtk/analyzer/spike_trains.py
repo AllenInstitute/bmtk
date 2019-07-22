@@ -4,7 +4,7 @@ import h5py
 
 
 # from bmtk.analyzer.visualization.spikes import plot_spikes as raster_plot
-from bmtk.analyzer.visualization.spikes import plot_rates as rates_plot
+# from bmtk.analyzer.visualization.spikes import plot_rates as rates_plot
 # from .io_tools import load_config
 import matplotlib.pyplot as plt
 
@@ -32,3 +32,9 @@ def plot_raster(config_file, spikes_file=None):
     spike_trains = load_spikes_file(config_file=config_file, spikes_file=spikes_file)
     plotting.plot_raster(spike_trains)
     plt.show()
+
+
+def plot_rates(config_file):
+    spike_trains = load_spikes_file(config_file)
+    plotting.plot_rates(spike_trains)
+
