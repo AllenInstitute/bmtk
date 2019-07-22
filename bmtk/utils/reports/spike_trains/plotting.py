@@ -173,7 +173,7 @@ def _build_labels_lu(labels, spike_trains_file):
     elif isinstance(labels, (list, tuple, np.ndarray, pd.Series)):
         labels = labels
     else:
-        labels = [labels] if isinstance(spike_trains_file, six.string_types) else spike_trains_file
+        labels = [labels] if isinstance(spike_trains_file, six.string_types) else ['']
 
     return labels
 
