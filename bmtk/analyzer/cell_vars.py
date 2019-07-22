@@ -3,7 +3,9 @@ import matplotlib.pyplot as plt
 
 from .io_tools import load_config
 from .utils import listify
-from bmtk.utils.cell_vars import CellVarsFile
+# from bmtk.utils.cell_vars import CellVarsFile
+from bmtk.simulator.utils.config import ConfigDict
+from bmtk.utils.reports import CompartmentReport
 
 # In the case reports are missing units, try to guess based on
 missing_units = {
@@ -16,6 +18,7 @@ missing_units = {
 def _get_cell_report(config_file, report_name):
     cfg = load_config(config_file)
     if report_name is not None:
+        print('HERE')
         return cfg.reports[report_name], report_name
 
     else:
@@ -34,7 +37,44 @@ def _get_cell_report(config_file, report_name):
             return report_name, os.path.join(cfg.output_dir, report_fname)
 
 
-def plot_report(config_file=None, report_file=None, report_name=None, variables=None, gids=None):
+def load_reports(config_file):
+    cfg = ConfigDict.from_json(config_file)
+    reports = []
+    for report_name, report in cfg.reports.items():
+        if report['module'] != 'membrane_report':
+            continue
+        report_file = report['file_name'] if 'file_name' in report else '{}.h5'.format(report_name)
+        report_file = report_file if os.path.isabs(report_file) else os.path.join(cfg.output_dir, report_file)
+        reports.append(CompartmentReport(report_file, 'r'))
+
+    return reports
+
+
+def plot_report(config_file=None, report_file=None, report_name=None, variables=None, node_ids=None):
+    reports = load_reports(config_file)
+    for report in reports:
+        plt.figure()
+        node_ids = report.node_ids() if node_ids is None else node_ids
+        for node_id in node_ids:
+            plt.plot(report.time_trace(), report.data(node_id=node_id), label='node-id {}'.format(node_id))
+            plt.xlabel('ms')
+            plt.title(report.variable())
+            #plt.ylabel('{}'.format(report.units()))
+        plt.legend()
+
+        #print(report.node_ids())
+        #print(report.data().T)
+        #print(report.time_trace())
+        #plt.show()
+
+    # print(reports)
+    plt.show()
+
+    """
+    exit()
+
+
+
     if report_file is None:
         report_name, report_file = _get_cell_report(config_file, report_name)
 
@@ -90,6 +130,7 @@ def plot_report(config_file=None, report_file=None, report_name=None, variables=
     plt.legend()
     plt.show()
     '''
+    """
 
 
 
