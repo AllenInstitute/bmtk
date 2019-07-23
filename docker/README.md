@@ -43,13 +43,13 @@ as expected.
 If you are running BioNet and have special mechanims/mod files that need to be compiled, you can do so by running:
 ```bash
   $ cd path/to/mechanims
-  $ docker run -v $(pwd):/home/shared/workspace/mechanisms nrnivmodl modfiles/
+  $ docker run -v $(pwd):/home/shared/workspace/mechanisms alleninstitute/bmtk nrnivmodl modfiles/
 ```
 
 ### Through Jupyter Notebooks
 To run a Jupyter Notebook server:
 ```bash
-  $ docker run -v $(pwd):/home/shared/workspace -p 8888:8888 jupyter
+  $ docker run -v $(pwd):/home/shared/workspace -p 8888:8888 alleninstitute/bmtk jupyter
 ```
 
 Then open a browser to 127.0.0.1:8888/. Any new files and/or notebooks that you want to save permenately should
