@@ -1,4 +1,4 @@
-FROM continuumio/anaconda2
+FROM continuumio/anaconda3
 MAINTAINER Kael Dai <kaeld@alleninstitute.org>
 
 RUN apt-get update && apt-get install -y automake \
