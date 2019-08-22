@@ -78,7 +78,7 @@ def test_psg_fixed():
     psg = PoissonSpikeGenerator(population='test', seed=0.0)
     psg.add(node_ids=range(10), firing_rate=10.0, times=(0.0, 10.0))
     assert(psg.populations == ['test'])
-    assert(psg.nodes() == range(10))
+    assert(psg.nodes() == list(range(10)))
 
     time_range = psg.time_range()
     assert(0 <= time_range[0] < 1.0)
@@ -101,7 +101,7 @@ def test_psg_variable():
     psg.add(node_ids=range(10), firing_rate=fr, times=times)
 
     assert(psg.populations == ['test'])
-    assert(psg.nodes() == range(10))
+    assert(psg.nodes() == list(range(10)))
 
     for i in range(10):
         spikes = psg.get_times(i)
@@ -136,7 +136,7 @@ def multi_proc():
 if __name__ == '__main__':
     if MPI_size == 1:
         #single_proc(spike_train_buffer.STCSVBuffer)
-        test_single_proc(spike_train_buffer.STMemoryBuffer)
+        # test_single_proc(spike_train_buffer.STMemoryBuffer)
         #test_psg_fixed()
         test_psg_variable()
 
