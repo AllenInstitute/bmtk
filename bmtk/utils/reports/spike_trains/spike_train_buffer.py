@@ -263,7 +263,8 @@ class STMemoryBuffer(STBuffer, STReader):
             if filter(p=p, t=t):
                 yield t, p, self._node_ids[i]
 
-        raise StopIteration
+        return
+        #raise StopIteration
 
     def __len__(self):
         return len(self.to_dataframe())
@@ -363,7 +364,8 @@ class STCSVBuffer(STBuffer, STReader):
                 if filter(p=p, t=t):
                     yield t, p, int(row[2])
 
-        raise StopIteration
+        return
+        #raise StopIteration
 
     def _sort_buffer_file(self, file_name, sort_order):
         if sort_order == SortOrder.by_time:
@@ -443,7 +445,8 @@ class STMPIBuffer(STCSVBuffer):
                     if filter(p=p, t=t):
                         yield t, p, int(row[2])
 
-        raise StopIteration
+        return
+        #raise StopIteration
 
     def _sorted_itr(self, filter, sort_col):
         """Iterates through all the spikes on each rank, returning them in the specified order"""
