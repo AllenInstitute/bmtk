@@ -135,7 +135,7 @@ class Filter(object):
                                 right_index=True)
 
             for grp_name, grp in nodes_df.groupby(group_by):
-                print grp_name, grp['node_ids'][:10]
+                print (grp_name, grp['node_ids'][:10])
 
 
 def _create_grouping(nodes_file, node_types_file, populations, group_by, node_ids_filter):
