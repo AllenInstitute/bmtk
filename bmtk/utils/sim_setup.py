@@ -437,7 +437,8 @@ class EnvBuilder(object):
         self._simulation_config['network'] = os.path.join(self.base_dir, 'circuit_config.json')
         self._add_run_params(**run_args)
         self._add_current_clamp(current_clamp)
-        self._add_spikes_inputs(spikes_inputs)
+        if spikes_inputs!=None:
+            self._add_spikes_inputs(spikes_inputs)
         if use_relative_paths:
             self._add_manifest(self._simulation_config, output_dir=self.output_dir)
         self._save_config(self._simulation_config, 'simulation_config.json')
