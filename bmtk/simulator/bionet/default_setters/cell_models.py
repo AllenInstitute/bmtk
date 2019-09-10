@@ -467,7 +467,7 @@ def set_extracellular(hobj, cell, dynamics_params):
     return hobj
 
 
-add_cell_model(NMLLoad, directive='hoc', model_type='biophysical')
+add_cell_model(loadHOC, directive='hoc', model_type='biophysical')
 add_cell_model(NMLLoad, directive='nml', model_type='biophysical')
 add_cell_model(Biophys1, directive='ctdb:Biophys1', model_type='biophysical', overwrite=False)
 add_cell_model(Biophys1, directive='ctdb:Biophys1.hoc', model_type='biophysical', overwrite=False)
