@@ -31,15 +31,15 @@ def get_cell_var_recorder_cls(file_name):
     if file_name.endswith('.nwb'):
         # NWB
         if in_mpi:
-            return cell_vars.CellVarRecorderNWBParallel
+            return CellVarRecorderNWBParallel
         else:
-            return cell_vars.CellVarRecorderNWB
+            return CellVarRecorderNWB
     else:
         # HDF5
         if in_mpi:
-            return cell_vars.CellVarRecorderH5Parallel
+            return CellVarRecorderH5Parallel
         else:
-            return cell_vars.CellVarRecorderH5
+            return CellVarRecorderH5
 
 
 class CellVarRecorderH5(object):
