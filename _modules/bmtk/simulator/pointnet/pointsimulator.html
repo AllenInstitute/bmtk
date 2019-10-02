@@ -688,10 +688,16 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Used to hold references to nest input objects (current_generators, etc)</span>
 
+        <span class="c1"># TODO: Make this a parameter in the config file</span>
+        <span class="c1"># TODO: Allow different inputs to have different options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sg_params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;precise_times&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+
         <span class="c1"># Reset the NEST kernel for a new simualtion</span>
         <span class="c1"># TODO: move this into it&#39;s own function and make sure it is called before network is built</span>
         <span class="n">nest</span><span class="o">.</span><span class="n">ResetKernel</span><span class="p">()</span>
         <span class="n">nest</span><span class="o">.</span><span class="n">SetKernelStatus</span><span class="p">({</span><span class="s2">&quot;resolution&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span><span class="p">,</span> <span class="s2">&quot;overwrite_files&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overwrite</span><span class="p">,</span> <span class="s2">&quot;print_time&quot;</span><span class="p">:</span> <span class="n">print_time</span><span class="p">})</span>
+
+
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tstart</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -720,6 +726,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">gid_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">_nestid2gid</span>
+
+<div class="viewcode-block" id="PointSimulator.set_spike_generator_params"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointsimulator.PointSimulator.set_spike_generator_params">[docs]</a>    <span class="k">def</span> <span class="nf">set_spike_generator_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sg_params</span> <span class="o">=</span> <span class="n">params</span></div>
+
+<div class="viewcode-block" id="PointSimulator.get_spike_generator_params"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointsimulator.PointSimulator.get_spike_generator_params">[docs]</a>    <span class="k">def</span> <span class="nf">get_spike_generator_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sg_params</span></div>
 
     <span class="k">def</span> <span class="nf">_get_block_trial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -830,6 +842,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">elif</span> <span class="s1">&#39;tstop&#39;</span> <span class="ow">in</span> <span class="n">run_dict</span><span class="p">:</span>
             <span class="n">network</span><span class="o">.</span><span class="n">tstop</span> <span class="o">=</span> <span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;tstop&#39;</span><span class="p">]</span>
 
+        <span class="k">if</span> <span class="s1">&#39;precise_times&#39;</span> <span class="ow">in</span> <span class="n">run_dict</span><span class="p">:</span>
+            <span class="n">network</span><span class="o">.</span><span class="n">set_spike_generator_params</span><span class="p">(</span><span class="n">precise_times</span><span class="o">=</span><span class="n">run_dict</span><span class="p">[</span><span class="s1">&#39;precise_times&#39;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">run_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;allow_offgrid_spikes&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="n">network</span><span class="o">.</span><span class="n">set_spike_generator_params</span><span class="p">(</span><span class="n">allow_offgrid_spikes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
         <span class="c1"># Create the output-directory, or delete existing files if it already exists</span>
         <span class="n">graph</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Setting up output directory&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;output_dir&#39;</span><span class="p">]):</span>
@@ -852,7 +870,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="n">spikes</span> <span class="o">=</span> <span class="n">SpikeTrains</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">file_type</span><span class="o">=</span><span class="n">sim_input</span><span class="o">.</span><span class="n">module</span><span class="p">,</span> <span class="o">**</span><span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
                 <span class="c1">#spikes = spike_trains.SpikesInput.load(name=sim_input.name, module=sim_input.module,</span>
                 <span class="c1">#                                       input_type=sim_input.input_type, params=sim_input.params)</span>
-                <span class="n">graph</span><span class="o">.</span><span class="n">add_spike_trains</span><span class="p">(</span><span class="n">spikes</span><span class="p">,</span> <span class="n">node_set</span><span class="p">)</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">add_spike_trains</span><span class="p">(</span><span class="n">spikes</span><span class="p">,</span> <span class="n">node_set</span><span class="p">,</span> <span class="n">network</span><span class="o">.</span><span class="n">get_spike_generator_params</span><span class="p">())</span>
 
             <span class="k">elif</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">input_type</span> <span class="o">==</span> <span class="s1">&#39;current_clamp&#39;</span><span class="p">:</span>
                 <span class="c1"># TODO: Need to make this more robust</span>
@@ -905,7 +923,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../popnet.html">PopNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../filternet.html">FilterNet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../mintnet.html">MintNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
@@ -914,6 +931,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l1"><a class="reference internal" href="../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>

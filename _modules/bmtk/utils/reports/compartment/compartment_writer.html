@@ -1,0 +1,1184 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>bmtk.utils.reports.compartment.compartment_writer &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+<script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
+<style>
+
+	/* the icon font-family definition and helper classes */
+	@font-face {
+	  font-family: 'portal_icon_font';
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
+	  font-weight: normal;
+	  font-style: normal;
+	}
+	 
+	 [class^="icon-"]:before, [class*=" icon-"]:before {
+	  font-family: "portal_icon_font";
+	  font-style: normal;
+	  font-weight: normal;
+	  speak: none;
+	 
+	  display: inline-block;
+	  text-decoration: inherit;
+	  width: 1em;
+	  margin-right: .2em;
+	  text-align: center;
+	  /* opacity: .8; */
+	 
+	  /* For safety - reset parent styles, that can break glyph codes*/
+	  font-variant: normal;
+	  text-transform: none;
+	     
+	  /* fix buttons height, for twitter bootstrap */
+	  line-height: 1em;
+	 
+	  /* Animation center compensation - margins should be symmetric */
+	  /* remove if not needed */
+	  margin-left: .2em;
+	
+	}
+	 
+	.icon-spin5:before { content: '\e806'; } /* '' */
+	.icon-left-open-1:before { content: '\e81e'; } /* '' */
+	.icon-plus-1:before { content: '\e801'; } /* '' */
+	.icon-facebook:before { content: '\e816'; } /* '' */
+	.icon-gplus:before { content: '\e818'; } /* '' */
+	.icon-linkedin-3:before { content: '\e815'; } /* '' */
+	.icon-twitter:before { content: '\e817'; } /* '' */
+	.icon-youtube-play:before { content: '\e805'; } /* '' */
+	.icon-plus-2:before { content: '\e809'; } /* '' */
+	.icon-record-1:before { content: '\e81c'; } /* '' */
+	.icon-cancel:before { content: '\e80b'; } /* '' */
+	.icon-search:before { content: '\e804'; } /* '' */
+	.icon-cancel-2:before { content: '\e80c'; } /* '' */
+	.icon-plus-4:before { content: '\e80d'; } /* '' */
+	.icon-cancel-3:before { content: '\e80e'; } /* '' */
+	.icon-plus:before { content: '\e808'; } /* '' */
+	.icon-down-open:before { content: '\e800'; } /* '' */
+	.icon-right-open:before { content: '\e802'; } /* '' */
+	.icon-up-open:before { content: '\e803'; } /* '' */
+	.icon-stop:before { content: '\e813'; } /* '' */
+	.icon-cancel-1:before { content: '\e820'; } /* '' */
+	.icon-plus-3:before { content: '\e80a'; } /* '' */
+	/* end icon font helpers */
+
+	/* icon font spin animation */
+	.animate-spin {
+	  -moz-animation: spin 2s infinite linear;
+	  -o-animation: spin 2s infinite linear;
+	  -webkit-animation: spin 2s infinite linear;
+	  animation: spin 2s infinite linear;
+	  display: inline-block;
+	}
+	@-moz-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-webkit-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-o-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-ms-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	/*  end spin animation */	
+
+	@font-face {
+	    font-family: 'bebas_neueregular';
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
+	    font-weight: normal;
+	    font-style: normal;
+	}
+
+	/* top chrome styles */
+	#top_chrome {
+
+		width:100%;
+		height:28px;
+		background-color:#163E65;
+	}
+
+	.chrome_link_block {
+
+		color:#fff !important;	
+		display:inline-block;
+		height:100%;
+		max-height:28px;
+	}
+
+	.chrome_link_block:hover {
+
+		background-color:#eee;
+		color:#0779BE !important;	
+		cursor:pointer;
+	}
+
+	#top_chrome a {
+
+		color:inherit !important;	
+		text-decoration:none;
+	}
+
+	#top_chrome a:hover {
+
+		color:inherit !important;	
+	}
+
+	#top_chrome_buttons {
+
+		float:right;
+		margin-right:50px;
+	}
+
+	.chrome_button {
+
+		font-family:arial,sans-serif;
+		font-weight:bold;
+		display:inline-block;
+		font-size:9px;
+		text-align:left;
+		text-decoration:none;
+		margin:9px 20px 10px 20px;
+	}
+
+	.chrome_active {
+
+		background-color:#1b7abd;
+		color:#fff;
+	}
+
+
+	/* header element styles*/
+	#header_content {
+
+		font-family: bebas_neueregular, arial, sans-serif;
+		font-size:22px;
+		color:#0779be;		
+		letter-spacing:0.03em;
+
+		position:relative;
+		width:calc(100% - 112px);
+		min-width:800px;
+		height:76px;
+		border-bottom:2px solid #A5A8AB;
+		margin-left:50px;
+		margin-right:50px;
+        z-index:9999; /* IT-9508 */
+	}
+
+	#portal_logo {
+
+		position:absolute;
+		top:20px;
+		left:0px;
+		width:236px;
+	}
+
+	#portal_tabs {
+
+		position: absolute;
+		bottom: 12px;
+		left: 0px;
+		margin-bottom: -12px;
+		display: block;
+	}
+
+	.horizontal_list
+	{
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		display: inline; 		
+	}
+
+	.horizontal_list li { 
+
+		display: inline; 	
+	}	
+
+	#portal_tab_menu_container {
+
+		display:none;
+	}
+
+	#portal_search_input_group {
+
+		position:absolute;
+		margin: 0;
+		padding: 0;
+		bottom:12px;
+		right:0px;
+		border:1px solid #DAD9D3;
+		color:#DAD9D3;
+	}
+
+	#portal_search_input_group input {
+
+		margin: 0;
+		padding: 0;
+		border:none;
+		width:110px;
+		color:#DAD9D3;
+		font-family:Helvetica,sans-serif;
+		font-size:12px;
+		height:28px;
+		margin-left:10px;
+
+		outline:none;
+	}
+
+	input::-ms-clear {
+		display: none;
+	}
+
+	#portal_search_input_group i {
+
+		font-size:0.8em;
+		cursor:pointer;
+	}
+
+	#pSiteSearchTextInput:focus {
+
+		color:#000;
+	}
+
+	.icon_menu_down {
+
+		font-size: 12px;
+		margin-left: 4px;
+		vertical-align: text-top;
+		padding-top: 4px;
+		display: inline-block;
+	}
+
+	.portal_tab_item {
+
+		background-color: #fff;
+		padding: 12px;
+		padding-left:20px;
+		padding-right:20px;
+		display: inline-block !important;		
+	}
+
+	.portal_tab_item a:hover {
+
+		color:#fbe300;	
+	}
+
+	.portal_tab_item:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}	
+
+
+	.portal_menu_active {
+
+		background-color: #EEEEEE;
+	}	
+
+	.portal_menu_item_active {
+
+		color:#fbe300 !important;	
+	}
+
+	.portal_tab_active {
+
+		color:#a5a8ab !important;
+	}
+
+	#header_content a {		
+
+		color:inherit !important;
+	}
+
+	#header_content a:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}
+
+	#header_content ul {
+
+		list-style: none;
+		position: relative;
+		top: 58px;
+		display: inline-table;
+	}
+
+	#header_content ul ul {
+		
+		display:none;
+		opacity:0;
+	}
+
+	/* the fly out menus */
+	#header_content ul li:hover > ul,
+	#header_content ul li.hover > ul {
+
+		position: absolute;
+		top: 48px;
+		z-index:999;
+
+		display: block;
+		width: 152px;
+		padding:0px;
+		padding-top:20px;
+		padding-bottom:10px;
+		font-size: 12px;
+		font-family: Arial,Sans-Serif;
+		font-weight: bold;
+		text-transform: uppercase;
+
+		background-color: rgba(8,122,191,0.98);
+		color: #fff !important;
+		opacity: 1;
+
+		-webkit-animation: fade 0.25s;
+		animation: fade 0.25s;
+	}
+
+	@-webkit-keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}
+	@keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}	
+
+	#header_content ul li:hover > ul li {
+
+		padding: 10px;
+		padding-top: 0px;
+		padding-left: 20px;
+		display: block;
+		opacity:1;
+	}
+
+	#header_content ul li:hover > ul a {
+
+		display: block;
+		opacity:1;
+		white-space:nowrap;
+	}
+
+	#portal_menu_start_list {
+
+		left: 81px;
+
+		/* IE sauce */
+		left:85px\9;
+
+		/* Safari sauce */
+		(;left:79px;);
+	}
+
+	#portal_menu_atlases_list {
+
+		left: 290px;
+		width: 210px !important;
+        height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 303px\9;
+        height: 225px\9;
+
+		/* Safari sauce */
+		(;left:279px;);
+	}
+
+	#portal_menu_tools_list {
+
+		left: 500px;
+		width: 172px !important;
+		height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 513px\9;
+		height:225px\9;
+
+		/* Safari sauce */
+		(;left:489px;);
+		(;height:227px;);
+	}
+
+	/* mozilla sauce */
+	@-moz-document url-prefix() {
+
+		#header_content {
+
+			height:107px;
+		}
+
+		#portal_menu_start_list {
+
+			left:85px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 302px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 512px;
+			height:236px;
+		}
+	}
+
+
+	/* make it look OK on iPad also */
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:portrait) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}  
+	}
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:landscape) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}	  
+	}
+
+	.portal_menu_list_heading {
+
+		color:#9ccae5;
+		border-bottom:1px solid #9ccae5;
+		padding-bottom:5px !important;
+	}
+
+	.portal_menu_list_heading + li {
+
+		padding-top:10px !important;
+	}
+
+	.portal_menu_list_heading li {
+
+		padding-bottom:0px;
+	}	
+
+	#portal_menu_atlases_list li:last-of-type {
+
+		padding-bottom:15px !important;
+	}
+
+	.icon-spin5 {
+
+		color:#000;
+	}
+</style>
+<div id="pHeader">
+<div id="top_chrome">
+	<div id="top_chrome_buttons">
+		<div class="chrome_link_block"><a href="http://www.alleninstitute.org" target="_blank" class="chrome_button">ALLEN INSTITUTE</a></div>
+	</div>
+</div>
+
+<div id="header_content">
+
+	<a href="http://AllenInstitute.github.io">
+		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/AIBS_Logo.png"/>
+	</a>
+</div>
+</div>
+
+<script>
+
+jQuery('#portal_tab_menu').bind('touchstart', function() {
+
+	if(window.console)
+		console.log("touchstart");
+});
+</script>
+<link rel="stylesheet" type="text/css" href="_static/external_assets/stylesheets/common_layout.css" />
+
+
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for bmtk.utils.reports.compartment.compartment_writer</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">bmtk.utils.sonata.utils</span> <span class="k">import</span> <span class="n">add_hdf5_magic</span><span class="p">,</span> <span class="n">add_hdf5_version</span>
+<span class="kn">from</span> <span class="nn">.compartment_reader</span> <span class="k">import</span> <span class="n">CompartmentReaderVer01</span> <span class="k">as</span> <span class="n">CompartmentReader</span>
+<span class="kn">from</span> <span class="nn">.core</span> <span class="k">import</span> <span class="n">CompartmentWriterABC</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">mpi4py</span> <span class="k">import</span> <span class="n">MPI</span>
+    <span class="n">comm</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span>
+    <span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+    <span class="n">nhosts</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_size</span><span class="p">()</span>
+    <span class="n">barrier</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Barrier</span>
+
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+    <span class="n">rank</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">nhosts</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">barrier</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="PopulationWriterv01"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01">[docs]</a><span class="k">class</span> <span class="nc">PopulationWriterv01</span><span class="p">(</span><span class="n">CompartmentWriterABC</span><span class="p">,</span> <span class="n">CompartmentReader</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Used to save cell membrane variables (V, Ca2+, etc) to the described hdf5 format.</span>
+
+<span class="sd">    For parallel simulations this class will write to a seperate tmp file on each rank, then use the merge method to</span>
+<span class="sd">    combine the results. This is less efficent, but doesn&#39;t require the user to install mpi4py and build h5py in</span>
+<span class="sd">    parallel mode. For better performance use the CellVarRecorderParrallel class instead.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="PopulationWriterv01.DataTable"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.DataTable">[docs]</a>    <span class="k">class</span> <span class="nc">DataTable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A small struct to keep track of different */data (and buffer) tables&quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_name</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">var_name</span> <span class="o">=</span> <span class="n">var_name</span>
+            <span class="c1"># If buffering data, buffer_block will be an in-memory array and will write to data_block during when</span>
+            <span class="c1"># filled. If not buffering buffer_block is an hdf5 dataset and data_block is ignored</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_block</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer_block</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">tstop</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">buffer_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_h5_base</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="n">parent</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_population</span> <span class="o">=</span> <span class="n">population</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_variable</span> <span class="o">=</span> <span class="n">variable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="o">=</span> <span class="n">units</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tstart</span> <span class="o">=</span> <span class="n">tstart</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tstop</span> <span class="o">=</span> <span class="n">tstop</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> <span class="o">=</span> <span class="n">dt</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_steps</span> <span class="o">=</span> <span class="n">n_steps</span>
+        <span class="c1">#if self._n_steps is None:</span>
+        <span class="c1">#    self._n_steps = int((self._tstop - self._tstart)/self._dt)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_files</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_gids</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of gids in the order they appear in the data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># table for looking up the gid offsets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_element_data</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Used for additonal attributes in /mapping</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_element_ids</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># sections</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_element_pos</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># segments</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_index</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># index_pointer</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_size</span> <span class="o">=</span> <span class="n">buffer_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_data</span> <span class="o">=</span> <span class="n">buffer_size</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DataTable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_variable</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_save_indx</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># for buffering, used to keep track of last timestep data was saved to disk</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_block_size</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_total_steps</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Keep track of gids across the different ranks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_gids_all</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_gids_local</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gids_beg</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gids_end</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Keep track of segment counts across the different ranks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_segments_all</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_segments_local</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_seg_offset_beg</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_seg_offset_end</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_initialized</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">h5_base</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h5_base</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_h5_base</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span><span class="o">.</span><span class="n">report_group</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_population</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h5_base</span>
+
+    <span class="k">def</span> <span class="nf">_calc_offset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_segments_all</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_segments_local</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_seg_offset_beg</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_seg_offset_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_segments_local</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_gids_all</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_gids_local</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gids_beg</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gids_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_gids_local</span>
+
+<div class="viewcode-block" id="PopulationWriterv01.set_units"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.set_units">[docs]</a>    <span class="k">def</span> <span class="nf">set_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="o">=</span> <span class="n">val</span></div>
+
+<div class="viewcode-block" id="PopulationWriterv01.units"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.units">[docs]</a>    <span class="k">def</span> <span class="nf">units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units</span></div>
+
+<div class="viewcode-block" id="PopulationWriterv01.set_variable"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.set_variable">[docs]</a>    <span class="k">def</span> <span class="nf">set_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_variable</span> <span class="o">=</span> <span class="n">val</span></div>
+
+<div class="viewcode-block" id="PopulationWriterv01.variable"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.variable">[docs]</a>    <span class="k">def</span> <span class="nf">variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variable</span></div>
+
+<div class="viewcode-block" id="PopulationWriterv01.set_tstart"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.set_tstart">[docs]</a>    <span class="k">def</span> <span class="nf">set_tstart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tstart</span> <span class="o">=</span> <span class="n">val</span></div>
+
+<div class="viewcode-block" id="PopulationWriterv01.tstart"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.tstart">[docs]</a>    <span class="k">def</span> <span class="nf">tstart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tstart</span></div>
+
+<div class="viewcode-block" id="PopulationWriterv01.set_tstop"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.set_tstop">[docs]</a>    <span class="k">def</span> <span class="nf">set_tstop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tstop</span> <span class="o">=</span> <span class="n">val</span></div>
+
+<div class="viewcode-block" id="PopulationWriterv01.tstop"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.tstop">[docs]</a>    <span class="k">def</span> <span class="nf">tstop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tstop</span></div>
+
+<div class="viewcode-block" id="PopulationWriterv01.set_dt"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.set_dt">[docs]</a>    <span class="k">def</span> <span class="nf">set_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> <span class="o">=</span> <span class="n">val</span></div>
+
+<div class="viewcode-block" id="PopulationWriterv01.dt"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.dt">[docs]</a>    <span class="k">def</span> <span class="nf">dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span></div>
+
+<div class="viewcode-block" id="PopulationWriterv01.n_steps"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.n_steps">[docs]</a>    <span class="k">def</span> <span class="nf">n_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_steps</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_n_steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_tstop</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tstart</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_steps</span></div>
+
+<div class="viewcode-block" id="PopulationWriterv01.set_time_trace"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.set_time_trace">[docs]</a>    <span class="k">def</span> <span class="nf">set_time_trace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PopulationWriterv01.time_trace"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.time_trace">[docs]</a>    <span class="k">def</span> <span class="nf">time_trace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PopulationWriterv01.add_cell"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.add_cell">[docs]</a>    <span class="k">def</span> <span class="nf">add_cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">element_ids</span><span class="p">,</span> <span class="n">element_pos</span><span class="p">,</span> <span class="o">**</span><span class="n">map_attrs</span><span class="p">):</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">element_ids</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">element_pos</span><span class="p">))</span>
+        <span class="c1"># TODO: Check the same gid isn&#39;t added twice</span>
+        <span class="n">n_segs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">element_pos</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_segments_local</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_segments_local</span> <span class="o">+</span> <span class="n">n_segs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_gids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_element_ids</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">element_ids</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_element_pos</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">element_pos</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mapping_index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">n_segs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_segments_local</span> <span class="o">+=</span> <span class="n">n_segs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_gids_local</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">map_attrs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_element_data</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_element_data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_element_data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PopulationWriterv01.initialize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_initialized</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">n_steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_steps</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">n_steps</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;A non-zero positive integer num-of-steps is required to initialize the compartment report.&#39;</span>
+                            <span class="s1">&#39;Please specify report length using the n_steps parameters (or using appropiate tstop,&#39;</span>
+                            <span class="s1">&#39;tstart, and dt).&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calc_offset</span><span class="p">()</span>
+        <span class="n">base_grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">h5_base</span>
+
+        <span class="n">var_grp</span> <span class="o">=</span> <span class="n">base_grp</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s1">&#39;mapping&#39;</span><span class="p">)</span>
+        <span class="n">var_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;node_ids&#39;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_gids_all</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">)</span>
+        <span class="n">var_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;element_ids&#39;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_segments_all</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">)</span>
+        <span class="n">var_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;element_pos&#39;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_segments_all</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="n">var_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;index_pointer&#39;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_gids_all</span><span class="o">+</span><span class="mi">1</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span>
+        <span class="n">var_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tstart</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">tstop</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">()])</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_element_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">var_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_segments_all</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+        <span class="n">var_grp</span><span class="p">[</span><span class="s1">&#39;node_ids&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_gids_beg</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_gids_end</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_gids</span>
+        <span class="n">var_grp</span><span class="p">[</span><span class="s1">&#39;element_ids&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_seg_offset_beg</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_seg_offset_end</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_element_ids</span>
+        <span class="n">var_grp</span><span class="p">[</span><span class="s1">&#39;element_pos&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_seg_offset_beg</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_seg_offset_end</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_element_pos</span>
+        <span class="n">var_grp</span><span class="p">[</span><span class="s1">&#39;index_pointer&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_gids_beg</span><span class="p">:(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gids_end</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapping_index</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_element_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">var_grp</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_seg_offset_beg</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_seg_offset_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_total_steps</span> <span class="o">=</span> <span class="n">n_steps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_block_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_size</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_data</span><span class="p">:</span>
+            <span class="c1"># If data is not being buffered and instead written to the main block, we have to add a rank offset</span>
+            <span class="c1"># to the gid offset</span>
+            <span class="k">for</span> <span class="n">gid</span><span class="p">,</span> <span class="n">gid_offset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">gid_offset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seg_offset_beg</span><span class="p">,</span> <span class="n">gid_offset</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seg_offset_beg</span><span class="p">)</span>
+
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_data</span><span class="p">:</span>
+            <span class="c1"># Set up in-memory block to buffer recorded variables before writing to the dataset</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">buffer_block</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_segments_local</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">data_block</span> <span class="o">=</span> <span class="n">base_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_steps</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_segments_all</span><span class="p">),</span>
+                                                                  <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variable</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">data_block</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;variable&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variable</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">data_block</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Since we are not buffering data, we just write directly to the on-disk dataset</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">buffer_block</span> <span class="o">=</span> <span class="n">base_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_steps</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_segments_all</span><span class="p">),</span>
+                                                               <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variable</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">buffer_block</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;variable&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variable</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">buffer_block</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_initialized</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="PopulationWriterv01.record_cell"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.record_cell">[docs]</a>    <span class="k">def</span> <span class="nf">record_cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">tstep</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Record cell parameters.</span>
+
+<span class="sd">        :param gid: gid of cell.</span>
+<span class="sd">        :param var_name: name of variable being recorded.</span>
+<span class="sd">        :param seg_vals: list of all segment values</span>
+<span class="sd">        :param tstep: time step</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+        <span class="n">gid_beg</span><span class="p">,</span> <span class="n">gid_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span>
+        <span class="n">buffer_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">buffer_block</span>
+        <span class="n">update_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">tstep</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_save_indx</span><span class="p">)</span>
+        <span class="n">buffer_block</span><span class="p">[</span><span class="n">update_index</span><span class="p">,</span> <span class="n">gid_beg</span><span class="p">:</span><span class="n">gid_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">vals</span></div>
+
+<div class="viewcode-block" id="PopulationWriterv01.record_cell_block"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.record_cell_block">[docs]</a>    <span class="k">def</span> <span class="nf">record_cell_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">beg_step</span><span class="p">,</span> <span class="n">end_step</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Save cell parameters one block at a time</span>
+
+<span class="sd">        :param gid: gid of cell.</span>
+<span class="sd">        :param var_name: name of variable being recorded.</span>
+<span class="sd">        :param seg_vals: A vector/matrix of values being recorded</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+        <span class="n">gid_beg</span><span class="p">,</span> <span class="n">gid_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span>
+        <span class="n">buffer_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">buffer_block</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="n">vals</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">buffer_block</span><span class="p">[:,</span> <span class="n">gid_beg</span><span class="p">]</span> <span class="o">=</span> <span class="n">vals</span>
+            <span class="c1">#buffer_block[beg_step:end_step, gid_beg:gid_end] = vals</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">buffer_block</span><span class="p">[:,</span> <span class="n">gid_beg</span><span class="p">:</span><span class="n">gid_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">vals</span></div>
+
+<div class="viewcode-block" id="PopulationWriterv01.flush"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.flush">[docs]</a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Move data from memory to dataset&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_data</span><span class="p">:</span>
+            <span class="n">blk_beg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_save_indx</span>
+            <span class="n">blk_end</span> <span class="o">=</span> <span class="n">blk_beg</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_block_size</span>
+            <span class="k">if</span> <span class="n">blk_end</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_steps</span><span class="p">:</span>
+                <span class="c1"># Need to handle the case that simulation doesn&#39;t end on a block step</span>
+                <span class="n">blk_end</span> <span class="o">=</span> <span class="n">blk_beg</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_steps</span> <span class="o">-</span> <span class="n">blk_beg</span>
+
+            <span class="n">block_size</span> <span class="o">=</span> <span class="n">blk_end</span> <span class="o">-</span> <span class="n">blk_beg</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_save_indx</span> <span class="o">+=</span> <span class="n">block_size</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">data_block</span><span class="p">[</span><span class="n">blk_beg</span><span class="p">:</span><span class="n">blk_end</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">buffer_block</span><span class="p">[:</span><span class="n">block_size</span><span class="p">,</span> <span class="p">:]</span></div>
+
+<div class="viewcode-block" id="PopulationWriterv01.close"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Let the parent take care of this</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="PopulationWriterv01.merge"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.merge">[docs]</a>    <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Let the parent take care of this</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="CompartmentWriterv01"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.CompartmentWriterv01">[docs]</a><span class="k">class</span> <span class="nc">CompartmentWriterv01</span><span class="p">(</span><span class="n">CompartmentWriterABC</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">default_population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">buffer_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">tstop</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_variable</span> <span class="o">=</span> <span class="n">variable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="o">=</span> <span class="n">units</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pop_tables</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_pop</span> <span class="o">=</span> <span class="n">default_population</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_size</span> <span class="o">=</span> <span class="n">buffer_size</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tstart</span> <span class="o">=</span> <span class="n">tstart</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tstop</span> <span class="o">=</span> <span class="n">tstop</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> <span class="o">=</span> <span class="n">dt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_steps</span> <span class="o">=</span> <span class="n">n_steps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_h5_handle</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_h5report_grp</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mpi_rank</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mpi_rank&#39;</span><span class="p">,</span> <span class="n">rank</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mpi_size</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;mpi_size&#39;</span><span class="p">,</span> <span class="n">nhosts</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_final_fpath</span> <span class="o">=</span> <span class="n">file_path</span>  <span class="c1"># name of file being writen too.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache_dir</span> <span class="o">=</span> <span class="n">cache_dir</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">file_path</span><span class="p">))</span>  <span class="c1"># used for mulitple ranks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_base_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>  <span class="c1"># make sure file names don&#39;t clash if there are multiple reports</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_interm_fpath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_iterm_fpath</span><span class="p">()</span> <span class="c1"># In certain cases (parallelized simulation) split the final file by rank.</span>
+
+    <span class="k">def</span> <span class="nf">_get_iterm_fpath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mpi_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">temp_files</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mpi_rank</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_final_fpath</span>
+
+    <span class="k">def</span> <span class="nf">_create_h5file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_interm_fpath</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fdir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">fdir</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_h5_handle</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_interm_fpath</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">)</span>
+        <span class="n">add_hdf5_version</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h5_handle</span><span class="p">)</span>
+        <span class="n">add_hdf5_magic</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h5_handle</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">report_group</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h5report_grp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_h5file</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s1">&#39;report&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h5_handle</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_h5report_grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h5_handle</span><span class="p">[</span><span class="s1">&#39;report&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_h5report_grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h5_handle</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s1">&#39;report&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h5report_grp</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">temp_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_dir</span><span class="p">,</span> <span class="s1">&#39;.bmtk_tmp_cellvars_</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_name</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mpi_size</span><span class="p">)]</span>
+
+<div class="viewcode-block" id="CompartmentWriterv01.set_units"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.CompartmentWriterv01.set_units">[docs]</a>    <span class="k">def</span> <span class="nf">set_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">population</span><span class="p">]</span><span class="o">.</span><span class="n">set_units</span><span class="p">(</span><span class="n">val</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CompartmentWriterv01.set_variable"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.CompartmentWriterv01.set_variable">[docs]</a>    <span class="k">def</span> <span class="nf">set_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">population</span><span class="p">]</span><span class="o">.</span><span class="n">set_variable</span><span class="p">(</span><span class="n">val</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CompartmentWriterv01.set_tstart"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.CompartmentWriterv01.set_tstart">[docs]</a>    <span class="k">def</span> <span class="nf">set_tstart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">population</span><span class="p">]</span><span class="o">.</span><span class="n">set_tstart</span><span class="p">(</span><span class="n">val</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CompartmentWriterv01.set_tstop"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.CompartmentWriterv01.set_tstop">[docs]</a>    <span class="k">def</span> <span class="nf">set_tstop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">population</span><span class="p">]</span><span class="o">.</span><span class="n">set_tstop</span><span class="p">(</span><span class="n">val</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CompartmentWriterv01.set_dt"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.CompartmentWriterv01.set_dt">[docs]</a>    <span class="k">def</span> <span class="nf">set_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">population</span><span class="p">]</span><span class="o">.</span><span class="n">set_dt</span><span class="p">(</span><span class="n">val</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CompartmentWriterv01.n_steps"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.CompartmentWriterv01.n_steps">[docs]</a>    <span class="k">def</span> <span class="nf">n_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">population</span><span class="p">]</span><span class="o">.</span><span class="n">n_steps</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CompartmentWriterv01.set_time_trace"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.CompartmentWriterv01.set_time_trace">[docs]</a>    <span class="k">def</span> <span class="nf">set_time_trace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">population</span><span class="p">]</span><span class="o">.</span><span class="n">set_time_trace</span><span class="p">(</span><span class="n">val</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CompartmentWriterv01.add_cell"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.CompartmentWriterv01.add_cell">[docs]</a>    <span class="k">def</span> <span class="nf">add_cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">element_ids</span><span class="p">,</span> <span class="n">element_pos</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">element_data</span><span class="p">):</span>
+        <span class="n">pop_str</span> <span class="o">=</span> <span class="n">population</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_pop</span>
+        <span class="n">pop_grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_or_fetch_pop</span><span class="p">(</span><span class="n">pop_str</span><span class="p">)</span>
+        <span class="n">pop_grp</span><span class="o">.</span><span class="n">add_cell</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span> <span class="n">element_ids</span><span class="o">=</span><span class="n">element_ids</span><span class="p">,</span> <span class="n">element_pos</span><span class="o">=</span><span class="n">element_pos</span><span class="p">,</span> <span class="o">**</span><span class="n">element_data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CompartmentWriterv01.initialize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.CompartmentWriterv01.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">pop_grp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_tables</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">pop_grp</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CompartmentWriterv01.record_cell"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.CompartmentWriterv01.record_cell">[docs]</a>    <span class="k">def</span> <span class="nf">record_cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">tstep</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">pop_str</span> <span class="o">=</span> <span class="n">population</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_pop</span>
+        <span class="n">pop_grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_or_fetch_pop</span><span class="p">(</span><span class="n">pop_str</span><span class="p">)</span>
+        <span class="n">pop_grp</span><span class="o">.</span><span class="n">record_cell</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span> <span class="n">vals</span><span class="o">=</span><span class="n">vals</span><span class="p">,</span> <span class="n">tstep</span><span class="o">=</span><span class="n">tstep</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CompartmentWriterv01.record_cell_block"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.CompartmentWriterv01.record_cell_block">[docs]</a>    <span class="k">def</span> <span class="nf">record_cell_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">beg_step</span><span class="p">,</span> <span class="n">end_step</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="p">[</span><span class="n">population</span><span class="p">]</span><span class="o">.</span><span class="n">record_cell_block</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span> <span class="n">vals</span><span class="o">=</span><span class="n">vals</span><span class="p">,</span> <span class="n">beg_step</span><span class="o">=</span><span class="n">beg_step</span><span class="p">,</span> <span class="n">end_step</span><span class="o">=</span><span class="n">end_step</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CompartmentWriterv01.flush"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.CompartmentWriterv01.flush">[docs]</a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">pop_grp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_tables</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">pop_grp</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CompartmentWriterv01.close"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.CompartmentWriterv01.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">pop_grp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_tables</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">pop_grp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_h5_handle</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mpi_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">merge</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CompartmentWriterv01.merge"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.CompartmentWriterv01.merge">[docs]</a>    <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">barrier</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mpi_size</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mpi_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">h5final</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_final_fpath</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+            <span class="n">tmp_reports</span> <span class="o">=</span> <span class="p">[</span><span class="n">CompartmentReader</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">temp_files</span><span class="p">]</span>
+            <span class="n">populations</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">tmp_reports</span><span class="p">:</span>
+                <span class="n">populations</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">populations</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">pop</span> <span class="ow">in</span> <span class="n">populations</span><span class="p">:</span>
+                <span class="c1"># Find the gid and segment offsets for each temp h5 file</span>
+                <span class="n">gid_ranges</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of (gid-beg, gid-end)</span>
+                <span class="n">gid_offset</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">total_gid_count</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># total number of gids across all ranks</span>
+
+                <span class="n">seg_ranges</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">seg_offset</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">total_seg_count</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># total number of segments across all ranks</span>
+                <span class="n">times</span> <span class="o">=</span> <span class="kc">None</span>
+
+                <span class="n">n_steps</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">variable</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">units</span> <span class="o">=</span> <span class="kc">None</span>
+
+                <span class="k">for</span> <span class="n">rpt</span> <span class="ow">in</span> <span class="n">tmp_reports</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">pop</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">rpt</span><span class="o">.</span><span class="n">populations</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="n">report</span> <span class="o">=</span> <span class="n">rpt</span><span class="p">[</span><span class="n">pop</span><span class="p">]</span>
+
+                    <span class="n">seg_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">element_pos</span><span class="p">())</span>  <span class="c1"># [&#39;/mapping/element_pos&#39;])</span>
+                    <span class="n">seg_ranges</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">seg_offset</span><span class="p">,</span> <span class="n">seg_offset</span> <span class="o">+</span> <span class="n">seg_count</span><span class="p">))</span>
+                    <span class="n">seg_offset</span> <span class="o">+=</span> <span class="n">seg_count</span>
+                    <span class="n">total_seg_count</span> <span class="o">+=</span> <span class="n">seg_count</span>
+
+                    <span class="n">gid_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">node_ids</span><span class="p">())</span>  <span class="c1"># h5_tmp[&#39;mapping/node_ids&#39;])</span>
+                    <span class="n">gid_ranges</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">gid_offset</span><span class="p">,</span> <span class="n">gid_offset</span> <span class="o">+</span> <span class="n">gid_count</span><span class="p">))</span>
+                    <span class="n">gid_offset</span> <span class="o">+=</span> <span class="n">gid_count</span>
+                    <span class="n">total_gid_count</span> <span class="o">+=</span> <span class="n">gid_count</span>
+
+                    <span class="n">times</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>  <span class="c1"># h5_tmp[&#39;mapping/time&#39;]</span>
+
+                    <span class="n">n_steps</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">n_steps</span><span class="p">()</span>
+                    <span class="n">variable</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">variable</span><span class="p">()</span>
+                    <span class="n">units</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">units</span><span class="p">()</span>
+
+                <span class="n">mapping_grp</span> <span class="o">=</span> <span class="n">h5final</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s1">&#39;/report/</span><span class="si">{}</span><span class="s1">/mapping&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pop</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">times</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">mapping_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">times</span><span class="p">)</span>
+                <span class="n">element_id_ds</span> <span class="o">=</span> <span class="n">mapping_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;element_ids&#39;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">total_seg_count</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">)</span>
+                <span class="n">el_pos_ds</span> <span class="o">=</span> <span class="n">mapping_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;element_pos&#39;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">total_seg_count</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+                <span class="n">gids_ds</span> <span class="o">=</span> <span class="n">mapping_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;node_ids&#39;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">total_gid_count</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">)</span>
+                <span class="n">index_pointer_ds</span> <span class="o">=</span> <span class="n">mapping_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;index_pointer&#39;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">total_gid_count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,),</span>
+                                                              <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">rpt</span> <span class="ow">in</span> <span class="n">tmp_reports</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">pop</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">rpt</span><span class="o">.</span><span class="n">populations</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="n">report</span> <span class="o">=</span> <span class="n">rpt</span><span class="p">[</span><span class="n">pop</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">report</span><span class="o">.</span><span class="n">custom_columns</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mapping_grp</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                            <span class="n">mapping_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">total_seg_count</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+                <span class="c1"># combine the /mapping datasets</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">rpt</span> <span class="ow">in</span> <span class="n">tmp_reports</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">pop</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">rpt</span><span class="o">.</span><span class="n">populations</span><span class="p">:</span>
+                        <span class="k">continue</span>
+
+                    <span class="n">report</span> <span class="o">=</span> <span class="n">rpt</span><span class="p">[</span><span class="n">pop</span><span class="p">]</span>
+
+                    <span class="c1"># tmp_mapping_grp = h5_tmp[&#39;mapping&#39;]</span>
+                    <span class="n">beg</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">seg_ranges</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+                    <span class="n">element_id_ds</span><span class="p">[</span><span class="n">beg</span><span class="p">:</span><span class="n">end</span><span class="p">]</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">element_ids</span><span class="p">()</span>  <span class="c1"># tmp_mapping_grp[&#39;element_id&#39;]</span>
+                    <span class="n">el_pos_ds</span><span class="p">[</span><span class="n">beg</span><span class="p">:</span><span class="n">end</span><span class="p">]</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">element_pos</span><span class="p">()</span>  <span class="c1"># tmp_mapping_grp[&#39;element_pos&#39;]</span>
+                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">report</span><span class="o">.</span><span class="n">custom_columns</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="n">mapping_grp</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">beg</span><span class="p">:</span><span class="n">end</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+
+                    <span class="c1"># shift the index pointer values</span>
+                    <span class="n">index_pointer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">index_pointer</span><span class="p">())</span>  <span class="c1"># tmp_mapping_grp[&#39;index_pointer&#39;])</span>
+                    <span class="n">update_index</span> <span class="o">=</span> <span class="n">beg</span> <span class="o">+</span> <span class="n">index_pointer</span>
+
+                    <span class="n">beg</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">gid_ranges</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">gids_ds</span><span class="p">[</span><span class="n">beg</span><span class="p">:</span><span class="n">end</span><span class="p">]</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">node_ids</span><span class="p">()</span>  <span class="c1"># tmp_mapping_grp[&#39;node_ids&#39;]</span>
+                    <span class="n">index_pointer_ds</span><span class="p">[</span><span class="n">beg</span><span class="p">:(</span><span class="n">end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">update_index</span>
+                    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="c1"># combine the /var/data datasets</span>
+                <span class="n">data_name</span> <span class="o">=</span> <span class="s1">&#39;/report/</span><span class="si">{}</span><span class="s1">/data&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+                <span class="c1"># data_name = &#39;/{}/data&#39;.format(var_name)</span>
+                <span class="n">var_data</span> <span class="o">=</span> <span class="n">h5final</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">data_name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n_steps</span><span class="p">,</span> <span class="n">total_seg_count</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+                <span class="c1"># var_data.attrs[&#39;variable_name&#39;] = var_name</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">rpt</span> <span class="ow">in</span> <span class="n">tmp_reports</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">pop</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">rpt</span><span class="o">.</span><span class="n">populations</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="n">report</span> <span class="o">=</span> <span class="n">rpt</span><span class="p">[</span><span class="n">pop</span><span class="p">]</span>
+
+                    <span class="n">beg</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">seg_ranges</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">var_data</span><span class="p">[:,</span> <span class="n">beg</span><span class="p">:</span><span class="n">end</span><span class="p">]</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+                    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="k">if</span> <span class="n">variable</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">var_data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;variable&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">variable</span>
+
+                <span class="k">if</span> <span class="n">units</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">var_data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">units</span>
+
+            <span class="k">for</span> <span class="n">tmp_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">temp_files</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">tmp_file</span><span class="p">)</span>
+        <span class="n">barrier</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_build_or_fetch_pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">population</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Please specify a valid node population (or use default_population parameter in constructor).&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_tables</span><span class="p">:</span>
+            <span class="n">pop_grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_tables</span><span class="p">[</span><span class="n">population</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pop_grp</span> <span class="o">=</span> <span class="n">PopulationWriterv01</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_variable</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_units</span><span class="p">,</span>
+                                          <span class="n">tstart</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tstop</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dt</span><span class="p">,</span>
+                                          <span class="n">buffer_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer_size</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_steps</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pop_tables</span><span class="p">[</span><span class="n">population</span><span class="p">]</span> <span class="o">=</span> <span class="n">pop_grp</span>
+        <span class="k">return</span> <span class="n">pop_grp</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">):</span>
+        <span class="n">pop_str</span> <span class="o">=</span> <span class="n">population</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_pop</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_or_fetch_pop</span><span class="p">(</span><span class="n">pop_str</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../../../../../index.html">Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../builder.html">Building Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../simulators.html">Simulation Engines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../pointnet.html">PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../filternet.html">FilterNet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+    </div>
+<script type="text/javascript" src="_static/external_assets/javascript/portalFooter.js"></script>
+
+  </body>
+</html>

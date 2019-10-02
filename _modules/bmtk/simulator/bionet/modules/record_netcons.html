@@ -628,18 +628,18 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <span class="kn">from</span> <span class="nn">.sim_module</span> <span class="k">import</span> <span class="n">SimulatorMod</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.biocell</span> <span class="k">import</span> <span class="n">BioCell</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.io_tools</span> <span class="k">import</span> <span class="n">io</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.pointprocesscell</span> <span class="k">import</span> <span class="n">PointProcessCell</span>
+<span class="c1"># from bmtk.simulator.bionet.io_tools import io</span>
+<span class="c1"># from bmtk.simulator.bionet.pointprocesscell import PointProcessCell</span>
+<span class="kn">from</span> <span class="nn">bmtk.utils.reports</span> <span class="k">import</span> <span class="n">CompartmentReport</span>
 
-<span class="kn">from</span> <span class="nn">bmtk.utils.io</span> <span class="k">import</span> <span class="n">cell_vars</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="c1"># Check to see if h5py is built to run in parallel</span>
     <span class="k">if</span> <span class="n">h5py</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span><span class="o">.</span><span class="n">mpi</span><span class="p">:</span>
-        <span class="n">MembraneRecorder</span> <span class="o">=</span> <span class="n">cell_vars</span><span class="o">.</span><span class="n">CellVarRecorderParallel</span>
+        <span class="n">MembraneRecorder</span> <span class="o">=</span> <span class="n">CompartmentReport</span>  <span class="c1"># cell_vars.CellVarRecorderParallel</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">MembraneRecorder</span> <span class="o">=</span> <span class="n">cell_vars</span><span class="o">.</span><span class="n">CellVarRecorder</span>
+        <span class="n">MembraneRecorder</span> <span class="o">=</span> <span class="n">CompartmentReport</span>  <span class="c1"># cell_vars.CellVarRecorder</span>
 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="n">MembraneRecorder</span> <span class="o">=</span> <span class="n">cell_vars</span><span class="o">.</span><span class="n">CellVarRecorder</span>
+    <span class="n">MembraneRecorder</span> <span class="o">=</span> <span class="n">CompartmentReport</span>  <span class="c1"># cell_vars.CellVarRecorder</span>
 
 <span class="n">pc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">ParallelContext</span><span class="p">()</span>
 <span class="n">MPI_RANK</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pc</span><span class="o">.</span><span class="n">id</span><span class="p">())</span>
@@ -669,8 +669,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_local_gids</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span> <span class="o">=</span> <span class="n">sections</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span> <span class="o">=</span> <span class="n">MembraneRecorder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_variables</span><span class="p">,</span>
-                                              <span class="n">buffer_data</span><span class="o">=</span><span class="n">buffer_data</span><span class="p">,</span> <span class="n">mpi_rank</span><span class="o">=</span><span class="n">MPI_RANK</span><span class="p">,</span> <span class="n">mpi_size</span><span class="o">=</span><span class="n">N_HOSTS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1">#self._var_recorder = MembraneRecorder(self._file_name, self._tmp_dir, self._all_variables,</span>
+        <span class="c1">#                                      buffer_data=buffer_data, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_virt_lookup</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gid_lookup</span> <span class="o">=</span> <span class="p">{}</span>
@@ -681,6 +682,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_block_step</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># time step within a given block</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_object_lookup</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_syn_type</span> <span class="o">=</span> <span class="n">syn_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">_get_gids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
         <span class="n">selected_gids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">get_node_set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_gids</span><span class="p">)</span><span class="o">.</span><span class="n">gids</span><span class="p">())</span>
@@ -702,8 +704,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>
 
 <div class="viewcode-block" id="NetconReport.initialize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_netcons.NetconReport.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">gid_pool</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_get_gids</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_save_sim_data</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span> <span class="o">=</span> <span class="n">MembraneRecorder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_name</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_variables</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                              <span class="n">buffer_size</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">nsteps_block</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">tstop</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">tstop</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
+                                              <span class="n">n_steps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">n_steps</span><span class="p">)</span>
+        <span class="c1">#self._save_sim_data(sim)</span>
 
         <span class="k">for</span> <span class="n">node_pop</span> <span class="ow">in</span> <span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">node_populations</span><span class="p">:</span>
             <span class="n">pop_name</span> <span class="o">=</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">name</span>
@@ -717,6 +724,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="bp">self</span><span class="o">.</span><span class="n">_sec_lookup</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">sec_name</span><span class="p">:</span> <span class="n">sec_id</span> <span class="k">for</span> <span class="n">sec_id</span><span class="p">,</span> <span class="n">sec_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">get_sections_id</span><span class="p">())}</span>
 
         <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_gids</span><span class="p">:</span>
+            <span class="n">pop_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span><span class="o">.</span><span class="n">get_pool_id</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span>
             <span class="n">sec_list</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">seg_list</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">src_list</span> <span class="o">=</span> <span class="p">[]</span>
@@ -736,18 +744,24 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                     <span class="n">syn_objects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">syn_objects</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">add_cell</span><span class="p">(</span><span class="n">gid</span><span class="p">,</span> <span class="n">sec_list</span><span class="p">,</span> <span class="n">seg_list</span><span class="p">,</span> <span class="n">src_ids</span><span class="o">=</span><span class="n">src_list</span><span class="p">,</span> <span class="n">trg_ids</span><span class="o">=</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">src_list</span><span class="p">))</span>
+                <span class="c1"># self._var_recorder.add_cell(gid, sec_list, seg_list, src_ids=src_list, trg_ids=[gid]*len(src_list))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">add_cell</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">pop_id</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">pop_id</span><span class="o">.</span><span class="n">population</span><span class="p">,</span> <span class="n">element_ids</span><span class="o">=</span><span class="n">sec_list</span><span class="p">,</span>
+                                            <span class="n">element_pos</span><span class="o">=</span><span class="n">seg_list</span><span class="p">,</span> <span class="n">src_ids</span><span class="o">=</span><span class="n">src_list</span><span class="p">,</span> <span class="n">trg_ids</span><span class="o">=</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">src_list</span><span class="p">))</span>
+
                 <span class="bp">self</span><span class="o">.</span><span class="n">_object_lookup</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span> <span class="o">=</span> <span class="n">syn_objects</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">n_steps</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">nsteps_block</span><span class="p">)</span></div>
+        <span class="c1"># self._var_recorder.initialize(sim.n_steps, sim.nsteps_block)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="NetconReport.step"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_netcons.NetconReport.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">tstep</span><span class="p">):</span>
         <span class="c1"># save all necessary cells/variables at the current time-step into memory</span>
         <span class="k">for</span> <span class="n">gid</span><span class="p">,</span> <span class="n">netcon_objs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_object_lookup</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">pop_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span><span class="o">.</span><span class="n">get_pool_id</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span><span class="p">:</span>
                 <span class="n">syn_values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">var_name</span><span class="p">)</span> <span class="k">for</span> <span class="n">syn</span> <span class="ow">in</span> <span class="n">netcon_objs</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">syn_values</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">record_cell</span><span class="p">(</span><span class="n">gid</span><span class="p">,</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">syn_values</span><span class="p">,</span> <span class="n">tstep</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">record_cell</span><span class="p">(</span><span class="n">pop_id</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">pop_id</span><span class="o">.</span><span class="n">population</span><span class="p">,</span> <span class="n">vals</span><span class="o">=</span><span class="n">syn_values</span><span class="p">,</span>
+                                                   <span class="n">tstep</span><span class="o">=</span><span class="n">tstep</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_block_step</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
@@ -758,10 +772,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="viewcode-block" id="NetconReport.finalize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_netcons.NetconReport.finalize">[docs]</a>    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
         <span class="c1"># TODO: Build in mpi signaling into var_recorder</span>
         <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
 
-        <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">merge</span><span class="p">()</span></div></div>
+        <span class="c1">#pc.barrier()</span>
+        <span class="c1">#self._var_recorder.merge()</span>
 </pre></div>
 
           </div>
@@ -778,7 +792,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../../pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../popnet.html">PopNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../filternet.html">FilterNet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../mintnet.html">MintNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
@@ -787,6 +800,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>

@@ -16,7 +16,7 @@
     <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="MintNet" href="mintnet.html" />
+    <link rel="next" title="Contributors" href="contributors.html" />
     <link rel="prev" title="PopNet" href="popnet.html" /> 
   </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
@@ -623,10 +623,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             
   <div class="section" id="filternet">
 <h1>FilterNet<a class="headerlink" href="#filternet" title="Permalink to this headline">¶</a></h1>
-<p>Many models of the nervous system utilize filters – mathematical objects that take in multi-dimensional data and return an output, typically time series. FilterNet is a module of BMTK that allows users to operate with filters.</p>
-<p>A typical application may be processing of peripheral sensory input – for example, an array of filters may be used to represent retinal cells, with the input being movies and the output being retinal firing rates or spikes that in turn can be used as inputs to neurons deeper in the brain explicitly simulated using other modules of BMTK, such as BioNet or PointNet.</p>
-<p>Current implementation of FilterNet contains the LGNModel simulator, which was created to provide thalamocortical <a class="reference external" href="http://portal.brain-map.org/explore/models/mv1-all-layers">inputs to biologically realistic models of the mouse visual cortex</a>. This simulator assumes that the input is a movie (a 3D array – two dimensions for space and one for time) and produces the output which is a time-varying firing rate for each filter. A filter here represents an individual cell in the LGN of mouse thalamus, which projects to the visual cortex. Realistic parameters for such filters, parameterized based on the experimental recordings, <a class="reference external" href="http://portal.brain-map.org/explore/models/mv1-all-layers">are available online</a>.</p>
-<p>In the future, more general functions modeling the input-output filter relationship and/or more general types of inputs (for example, representing other sensory stimuli, beyond the visual 3D arrays) can be added per user demand. The current FilterNet code can also be easily extended by users to include more general forms of filters than those already supported.</p>
+<p>FilterNet will simulate the effects of visual stimuli onto a receptive field. It uses LGNModel simulator as a backend, which
+uses neural-filters to simulate firing rates and spike-trains over a given time-course and stimuli.</p>
 <div class="section" id="features">
 <h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -681,7 +679,6 @@ tutorials will have the folder prefix <em>filter_</em> and to run them in the co
 <li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="popnet.html">PopNet</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">FilterNet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mintnet.html">MintNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
@@ -690,6 +687,7 @@ tutorials will have the folder prefix <em>filter_</em> and to run them in the co
 <li class="toctree-l1"><a class="reference internal" href="bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>

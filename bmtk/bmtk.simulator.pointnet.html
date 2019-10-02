@@ -946,7 +946,7 @@ log(‘Created a log file’)</dd>
 <dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.simulator_network.SimNetwork" title="bmtk.simulator.core.simulator_network.SimNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.simulator_network.SimNetwork</span></code></a></p>
 <dl class="method">
 <dt id="bmtk.simulator.pointnet.pointnetwork.PointNetwork.add_spike_trains">
-<code class="descname">add_spike_trains</code><span class="sig-paren">(</span><em>spike_trains</em>, <em>node_set</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointnetwork.html#PointNetwork.add_spike_trains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.add_spike_trains" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_spike_trains</code><span class="sig-paren">(</span><em>spike_trains</em>, <em>node_set</em>, <em>sg_params={'precise_times': True}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointnetwork.html#PointNetwork.add_spike_trains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.add_spike_trains" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -1028,6 +1028,11 @@ log(‘Created a log file’)</dd>
 <em class="property">classmethod </em><code class="descname">from_config</code><span class="sig-paren">(</span><em>configure</em>, <em>graph</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointsimulator.html#PointSimulator.from_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.from_config" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="method">
+<dt id="bmtk.simulator.pointnet.pointsimulator.PointSimulator.get_spike_generator_params">
+<code class="descname">get_spike_generator_params</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointsimulator.html#PointSimulator.get_spike_generator_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.get_spike_generator_params" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="attribute">
 <dt id="bmtk.simulator.pointnet.pointsimulator.PointSimulator.gid_map">
 <code class="descname">gid_map</code><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.gid_map" title="Permalink to this definition">¶</a></dt>
@@ -1046,6 +1051,11 @@ log(‘Created a log file’)</dd>
 <dl class="method">
 <dt id="bmtk.simulator.pointnet.pointsimulator.PointSimulator.run">
 <code class="descname">run</code><span class="sig-paren">(</span><em>tstop=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointsimulator.html#PointSimulator.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.pointnet.pointsimulator.PointSimulator.set_spike_generator_params">
+<code class="descname">set_spike_generator_params</code><span class="sig-paren">(</span><em>**params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointsimulator.html#PointSimulator.set_spike_generator_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.set_spike_generator_params" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1524,7 +1534,6 @@ def weight_function(): …</dd>
 <li class="toctree-l2"><a class="reference internal" href="../pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../popnet.html">PopNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filternet.html">FilterNet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../mintnet.html">MintNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
@@ -1533,6 +1542,7 @@ def weight_function(): …</dd>
 <li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
 </ul>

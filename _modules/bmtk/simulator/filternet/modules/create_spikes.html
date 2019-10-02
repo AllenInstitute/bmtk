@@ -626,7 +626,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">import</span> <span class="nn">six</span>
 
 <span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">SimModule</span>
-<span class="kn">from</span> <span class="nn">bmtk.utils.io.spike_trains</span> <span class="k">import</span> <span class="n">SpikeTrainWriter</span>
+<span class="kn">from</span> <span class="nn">bmtk.utils.reports.spike_trains</span> <span class="k">import</span> <span class="n">SpikeTrains</span><span class="p">,</span> <span class="n">pop_na</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.filternet.lgnmodel</span> <span class="k">import</span> <span class="n">poissongeneration</span> <span class="k">as</span> <span class="n">pg</span>
 
 
@@ -649,7 +649,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_tmpdir</span> <span class="o">=</span> <span class="n">tmp_dir</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span> <span class="o">=</span> <span class="n">SpikeTrainWriter</span><span class="p">(</span><span class="n">tmp_dir</span><span class="o">=</span><span class="n">tmp_dir</span><span class="p">)</span>
+        <span class="c1"># self._spike_writer = SpikeTrainWriter(tmp_dir=tmp_dir)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span> <span class="o">=</span> <span class="n">SpikeTrains</span><span class="p">(</span><span class="n">cache_dir</span><span class="o">=</span><span class="n">tmp_dir</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SpikesGenerator.save"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.modules.html#bmtk.simulator.filternet.modules.create_spikes.SpikesGenerator.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">gid</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">rates</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
@@ -660,7 +661,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">spike_trains</span> <span class="o">=</span> <span class="mf">1000.0</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">generate_inhomogenous_poisson</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">rates</span><span class="p">,</span>
                                                                             <span class="n">seed</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10000</span><span class="p">)))</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">add_spikes</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">gid</span><span class="o">=</span><span class="n">gid</span><span class="p">)</span></div>
+        <span class="c1"># self._spike_writer.add_spikes(times=spike_trains, gid=gid)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">add_spikes</span><span class="p">(</span><span class="n">node_ids</span><span class="o">=</span><span class="n">gid</span><span class="p">,</span> <span class="n">timestamps</span><span class="o">=</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">pop_na</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="SpikesGenerator.finalize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.modules.html#bmtk.simulator.filternet.modules.create_spikes.SpikesGenerator.finalize">[docs]</a>    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
@@ -669,7 +672,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_csv_fname</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_h5</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">to_hdf5</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h5_fname</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">to_sonata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h5_fname</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_nwb</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">to_nwb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nwb_fname</span><span class="p">)</span>
@@ -678,47 +681,47 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="f_rate_to_spike_train"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.modules.html#bmtk.simulator.filternet.modules.create_spikes.f_rate_to_spike_train">[docs]</a><span class="k">def</span> <span class="nf">f_rate_to_spike_train</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">f_rate</span><span class="p">,</span> <span class="n">random_seed</span><span class="p">,</span> <span class="n">t_window_start</span><span class="p">,</span> <span class="n">t_window_end</span><span class="p">,</span> <span class="n">p_spike_max</span><span class="p">):</span>
-  <span class="c1"># t and f_rate are lists containing time stamps and corresponding firing rate values;</span>
-  <span class="c1"># they are assumed to be of the same length and ordered with the time strictly increasing;</span>
-  <span class="c1"># p_spike_max is the maximal probability of spiking that we allow within the time bin; it is used to decide on the size of the time bin; should be less than 1!</span>
+    <span class="c1"># t and f_rate are lists containing time stamps and corresponding firing rate values;</span>
+    <span class="c1"># they are assumed to be of the same length and ordered with the time strictly increasing;</span>
+    <span class="c1"># p_spike_max is the maximal probability of spiking that we allow within the time bin; it is used to decide on the size of the time bin; should be less than 1!</span>
 
-  <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">f_rate</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">t</span><span class="p">))</span><span class="o">/</span><span class="mf">1000.</span> <span class="o">&gt;</span> <span class="mf">0.1</span><span class="p">:</span>   <span class="c1">#Divide by 1000 to convert to seconds</span>
-      <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Firing rate to high for time interval and will not estimate spike correctly. Spikes will &#39;</span> \
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">f_rate</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">t</span><span class="p">))</span><span class="o">/</span><span class="mf">1000.</span> <span class="o">&gt;</span> <span class="mf">0.1</span><span class="p">:</span>   <span class="c1">#Divide by 1000 to convert to seconds</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Firing rate to high for time interval and will not estimate spike correctly. Spikes will &#39;</span> \
             <span class="s1">&#39;be calculated with the slower inhomogenous poisson generating fucntion&#39;</span><span class="p">)</span>
-      <span class="k">raise</span> <span class="ne">Exception</span><span class="p">()</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">()</span>
 
-  <span class="n">spike_times</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">spike_times</span> <span class="o">=</span> <span class="p">[]</span>
 
-  <span class="c1"># Use seed(...) to instantiate the random number generator.  Otherwise, current system time is used.</span>
-  <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
+    <span class="c1"># Use seed(...) to instantiate the random number generator.  Otherwise, current system time is used.</span>
+    <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
 
-  <span class="c1"># Assume here for each pair (t[k], f_rate[k]) that the f_rate[k] value applies to the time interval [t[k], t[k+1]).</span>
-  <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">moves</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">f_rate</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-    <span class="n">t_k</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-    <span class="n">t_k_1</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">if</span> <span class="p">((</span><span class="n">t_k</span> <span class="o">&gt;=</span> <span class="n">t_window_start</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">t_k_1</span> <span class="o">&lt;=</span> <span class="n">t_window_end</span><span class="p">)):</span>
-      <span class="n">delta_t</span> <span class="o">=</span> <span class="n">t_k_1</span> <span class="o">-</span> <span class="n">t_k</span>
-      <span class="c1"># Average number of spikes expected in this interval (note that firing rate is in Hz and time is in ms).</span>
-      <span class="n">av_N_spikes</span> <span class="o">=</span> <span class="n">f_rate</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">/</span> <span class="mf">1000.0</span> <span class="o">*</span> <span class="n">delta_t</span>
+    <span class="c1"># Assume here for each pair (t[k], f_rate[k]) that the f_rate[k] value applies to the time interval [t[k], t[k+1]).</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">moves</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">f_rate</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">t_k</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+        <span class="n">t_k_1</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="p">((</span><span class="n">t_k</span> <span class="o">&gt;=</span> <span class="n">t_window_start</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">t_k_1</span> <span class="o">&lt;=</span> <span class="n">t_window_end</span><span class="p">)):</span>
+            <span class="n">delta_t</span> <span class="o">=</span> <span class="n">t_k_1</span> <span class="o">-</span> <span class="n">t_k</span>
+            <span class="c1"># Average number of spikes expected in this interval (note that firing rate is in Hz and time is in ms).</span>
+            <span class="n">av_N_spikes</span> <span class="o">=</span> <span class="n">f_rate</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">/</span> <span class="mf">1000.0</span> <span class="o">*</span> <span class="n">delta_t</span>
 
-      <span class="k">if</span> <span class="p">(</span><span class="n">av_N_spikes</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">av_N_spikes</span> <span class="o">&lt;=</span> <span class="n">p_spike_max</span><span class="p">):</span>
-          <span class="n">N_bins</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="k">else</span><span class="p">:</span>
-          <span class="n">N_bins</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">av_N_spikes</span> <span class="o">/</span> <span class="n">p_spike_max</span><span class="p">))</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">av_N_spikes</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">av_N_spikes</span> <span class="o">&lt;=</span> <span class="n">p_spike_max</span><span class="p">):</span>
+                    <span class="n">N_bins</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">N_bins</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">av_N_spikes</span> <span class="o">/</span> <span class="n">p_spike_max</span><span class="p">))</span>
 
-        <span class="n">t_base</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-        <span class="n">t_bin</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">delta_t</span> <span class="o">/</span> <span class="n">N_bins</span>
-        <span class="n">p_spike_bin</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">av_N_spikes</span> <span class="o">/</span> <span class="n">N_bins</span>
-        <span class="k">for</span> <span class="n">i_bin</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">moves</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">N_bins</span><span class="p">):</span>
-          <span class="n">rand_tmp</span> <span class="o">=</span> <span class="n">random</span><span class="p">()</span>
-          <span class="k">if</span> <span class="n">rand_tmp</span> <span class="o">&lt;</span> <span class="n">p_spike_bin</span><span class="p">:</span>
-            <span class="n">spike_t</span> <span class="o">=</span> <span class="n">t_base</span> <span class="o">+</span> <span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="n">t_bin</span>
-            <span class="n">spike_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spike_t</span><span class="p">)</span>
+            <span class="n">t_base</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="n">t_bin</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">delta_t</span> <span class="o">/</span> <span class="n">N_bins</span>
+            <span class="n">p_spike_bin</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">av_N_spikes</span> <span class="o">/</span> <span class="n">N_bins</span>
+            <span class="k">for</span> <span class="n">i_bin</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">moves</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">N_bins</span><span class="p">):</span>
+                <span class="n">rand_tmp</span> <span class="o">=</span> <span class="n">random</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">rand_tmp</span> <span class="o">&lt;</span> <span class="n">p_spike_bin</span><span class="p">:</span>
+                    <span class="n">spike_t</span> <span class="o">=</span> <span class="n">t_base</span> <span class="o">+</span> <span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="n">t_bin</span>
+                    <span class="n">spike_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spike_t</span><span class="p">)</span>
 
-          <span class="n">t_base</span> <span class="o">+=</span> <span class="n">t_bin</span>
+                <span class="n">t_base</span> <span class="o">+=</span> <span class="n">t_bin</span>
 
-  <span class="k">return</span> <span class="n">spike_times</span></div>
+    <span class="k">return</span> <span class="n">spike_times</span></div>
 </pre></div>
 
           </div>
@@ -735,7 +738,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../../pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../popnet.html">PopNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../filternet.html">FilterNet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../mintnet.html">MintNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
@@ -744,6 +746,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>

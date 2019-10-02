@@ -16,7 +16,7 @@
     <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="bmtk.utils.cell_vars package" href="bmtk.utils.cell_vars.html" />
+    <link rel="next" title="bmtk.utils.converters package" href="bmtk.utils.converters.html" />
     <link rel="prev" title="bmtk.simulator.utils.tools package" href="bmtk.simulator.utils.tools.html" /> 
   </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
@@ -627,12 +627,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="bmtk.utils.cell_vars.html">bmtk.utils.cell_vars package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.cell_vars.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.cell_vars.html#module-bmtk.utils.cell_vars.var_reader">bmtk.utils.cell_vars.var_reader module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.cell_vars.html#module-bmtk.utils.cell_vars">Module contents</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.utils.converters.html">bmtk.utils.converters package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.converters.html#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="bmtk.utils.converters.sonata.html">bmtk.utils.converters.sonata package</a><ul>
@@ -663,6 +657,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.utils.reports.html">bmtk.utils.reports package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.reports.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bmtk.utils.reports.compartment.html">bmtk.utils.reports.compartment package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.reports.compartment.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.reports.compartment.html#module-bmtk.utils.reports.compartment.compartment_reader">bmtk.utils.reports.compartment.compartment_reader module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.reports.compartment.html#module-bmtk.utils.reports.compartment.compartment_report">bmtk.utils.reports.compartment.compartment_report module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.reports.compartment.html#module-bmtk.utils.reports.compartment.compartment_writer">bmtk.utils.reports.compartment.compartment_writer module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.reports.compartment.html#module-bmtk.utils.reports.compartment.core">bmtk.utils.reports.compartment.core module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.reports.compartment.html#module-bmtk.utils.reports.compartment">Module contents</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="bmtk.utils.reports.spike_trains.html">bmtk.utils.reports.spike_trains package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.utils.reports.spike_trains.html#subpackages">Subpackages</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="bmtk.utils.reports.spike_trains.adaptors.html">bmtk.utils.reports.spike_trains.adaptors package</a><ul>
@@ -718,6 +721,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
+<div class="section" id="module-bmtk.utils.hdf5_helper">
+<span id="bmtk-utils-hdf5-helper-module"></span><h2>bmtk.utils.hdf5_helper module<a class="headerlink" href="#module-bmtk.utils.hdf5_helper" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="bmtk.utils.hdf5_helper.get_attribute_h5">
+<code class="descclassname">bmtk.utils.hdf5_helper.</code><code class="descname">get_attribute_h5</code><span class="sig-paren">(</span><em>h5obj</em>, <em>attribut_name</em>, <em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/hdf5_helper.html#get_attribute_h5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.hdf5_helper.get_attribute_h5" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
 <div class="section" id="module-bmtk.utils.property_schema">
 <span id="bmtk-utils-property-schema-module"></span><h2>bmtk.utils.property_schema module<a class="headerlink" href="#module-bmtk.utils.property_schema" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
@@ -728,60 +739,123 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div>
 <div class="section" id="module-bmtk.utils.sim_setup">
 <span id="bmtk-utils-sim-setup-module"></span><h2>bmtk.utils.sim_setup module<a class="headerlink" href="#module-bmtk.utils.sim_setup" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="bmtk.utils.sim_setup.build_circuit_env">
-<code class="descclassname">bmtk.utils.sim_setup.</code><code class="descname">build_circuit_env</code><span class="sig-paren">(</span><em>base_dir</em>, <em>network_dir</em>, <em>components_dir</em>, <em>simulator</em>, <em>with_examples</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#build_circuit_env"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.build_circuit_env" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="bmtk.utils.sim_setup.BioNetEnvBuilder">
+<em class="property">class </em><code class="descclassname">bmtk.utils.sim_setup.</code><code class="descname">BioNetEnvBuilder</code><span class="sig-paren">(</span><em>base_dir='.'</em>, <em>network_dir=None</em>, <em>components_dir=None</em>, <em>output_dir=None</em>, <em>node_sets_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#BioNetEnvBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.BioNetEnvBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.sim_setup.EnvBuilder" title="bmtk.utils.sim_setup.EnvBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.sim_setup.EnvBuilder</span></code></a></p>
+<dl class="attribute">
+<dt id="bmtk.utils.sim_setup.BioNetEnvBuilder.bmtk_simulator">
+<code class="descname">bmtk_simulator</code><a class="headerlink" href="#bmtk.utils.sim_setup.BioNetEnvBuilder.bmtk_simulator" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
-<dt id="bmtk.utils.sim_setup.build_components">
-<code class="descclassname">bmtk.utils.sim_setup.</code><code class="descname">build_components</code><span class="sig-paren">(</span><em>circuit_config</em>, <em>components_path</em>, <em>scripts_path</em>, <em>with_examples</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#build_components"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.build_components" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="bmtk.utils.sim_setup.BioNetEnvBuilder.compile_mechanisms">
+<code class="descname">compile_mechanisms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#BioNetEnvBuilder.compile_mechanisms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.BioNetEnvBuilder.compile_mechanisms" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.utils.sim_setup.BioNetEnvBuilder.examples_dir">
+<code class="descname">examples_dir</code><a class="headerlink" href="#bmtk.utils.sim_setup.BioNetEnvBuilder.examples_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.utils.sim_setup.BioNetEnvBuilder.target_simulator">
+<code class="descname">target_simulator</code><a class="headerlink" href="#bmtk.utils.sim_setup.BioNetEnvBuilder.target_simulator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.utils.sim_setup.EnvBuilder">
+<em class="property">class </em><code class="descclassname">bmtk.utils.sim_setup.</code><code class="descname">EnvBuilder</code><span class="sig-paren">(</span><em>base_dir='.'</em>, <em>network_dir=None</em>, <em>components_dir=None</em>, <em>output_dir=None</em>, <em>node_sets_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#EnvBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="attribute">
+<dt id="bmtk.utils.sim_setup.EnvBuilder.base_dir">
+<code class="descname">base_dir</code><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.base_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.utils.sim_setup.EnvBuilder.bmtk_simulator">
+<code class="descname">bmtk_simulator</code><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.bmtk_simulator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.utils.sim_setup.EnvBuilder.build">
+<code class="descname">build</code><span class="sig-paren">(</span><em>include_examples=False</em>, <em>use_relative_paths=True</em>, <em>report_vars=[]</em>, <em>report_nodes=None</em>, <em>current_clamp=None</em>, <em>spikes_inputs=None</em>, <em>**run_args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#EnvBuilder.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.build" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.utils.sim_setup.EnvBuilder.components_dir">
+<code class="descname">components_dir</code><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.components_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.utils.sim_setup.EnvBuilder.examples_dir">
+<code class="descname">examples_dir</code><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.examples_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.utils.sim_setup.EnvBuilder.network_dir">
+<code class="descname">network_dir</code><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.network_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.utils.sim_setup.EnvBuilder.node_sets_file">
+<code class="descname">node_sets_file</code><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.node_sets_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.utils.sim_setup.EnvBuilder.output_dir">
+<code class="descname">output_dir</code><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.output_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.utils.sim_setup.EnvBuilder.scripts_root">
+<code class="descname">scripts_root</code><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.scripts_root" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.utils.sim_setup.EnvBuilder.target_simulator">
+<code class="descname">target_simulator</code><a class="headerlink" href="#bmtk.utils.sim_setup.EnvBuilder.target_simulator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.utils.sim_setup.PointNetEnvBuilder">
+<em class="property">class </em><code class="descclassname">bmtk.utils.sim_setup.</code><code class="descname">PointNetEnvBuilder</code><span class="sig-paren">(</span><em>base_dir='.'</em>, <em>network_dir=None</em>, <em>components_dir=None</em>, <em>output_dir=None</em>, <em>node_sets_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#PointNetEnvBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.PointNetEnvBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#bmtk.utils.sim_setup.EnvBuilder" title="bmtk.utils.sim_setup.EnvBuilder"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.sim_setup.EnvBuilder</span></code></a></p>
+<dl class="attribute">
+<dt id="bmtk.utils.sim_setup.PointNetEnvBuilder.bmtk_simulator">
+<code class="descname">bmtk_simulator</code><a class="headerlink" href="#bmtk.utils.sim_setup.PointNetEnvBuilder.bmtk_simulator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.utils.sim_setup.PointNetEnvBuilder.examples_dir">
+<code class="descname">examples_dir</code><a class="headerlink" href="#bmtk.utils.sim_setup.PointNetEnvBuilder.examples_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="bmtk.utils.sim_setup.PointNetEnvBuilder.target_simulator">
+<code class="descname">target_simulator</code><a class="headerlink" href="#bmtk.utils.sim_setup.PointNetEnvBuilder.target_simulator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
 
 <dl class="function">
 <dt id="bmtk.utils.sim_setup.build_env_bionet">
-<code class="descclassname">bmtk.utils.sim_setup.</code><code class="descname">build_env_bionet</code><span class="sig-paren">(</span><em>base_dir='.'</em>, <em>network_dir=None</em>, <em>reports=None</em>, <em>with_examples=True</em>, <em>tstop=1000.0</em>, <em>dt=0.001</em>, <em>compile_mechanisms=True</em>, <em>**args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#build_env_bionet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.build_env_bionet" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bmtk.utils.sim_setup.</code><code class="descname">build_env_bionet</code><span class="sig-paren">(</span><em>base_dir='.'</em>, <em>network_dir=None</em>, <em>components_dir=None</em>, <em>node_sets_file=None</em>, <em>include_examples=False</em>, <em>tstart=0.0</em>, <em>tstop=1000.0</em>, <em>dt=0.001</em>, <em>dL=20.0</em>, <em>spikes_threshold=-15.0</em>, <em>nsteps_block=5000</em>, <em>v_init=-80.0</em>, <em>celsius=34.0</em>, <em>report_vars=[]</em>, <em>report_nodes=None</em>, <em>current_clamp=None</em>, <em>spikes_inputs=None</em>, <em>compile_mechanisms=False</em>, <em>use_relative_paths=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#build_env_bionet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.build_env_bionet" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="bmtk.utils.sim_setup.build_env_pointnet">
-<code class="descclassname">bmtk.utils.sim_setup.</code><code class="descname">build_env_pointnet</code><span class="sig-paren">(</span><em>base_dir='.'</em>, <em>network_dir=None</em>, <em>reports=None</em>, <em>with_examples=True</em>, <em>tstop=1000.0</em>, <em>dt=0.001</em>, <em>**args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#build_env_pointnet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.build_env_pointnet" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bmtk.utils.sim_setup.</code><code class="descname">build_env_pointnet</code><span class="sig-paren">(</span><em>base_dir='.'</em>, <em>network_dir=None</em>, <em>components_dir=None</em>, <em>node_sets_file=None</em>, <em>include_examples=False</em>, <em>tstart=0.0</em>, <em>tstop=1000.0</em>, <em>dt=0.001</em>, <em>dL=20.0</em>, <em>spikes_threshold=-15.0</em>, <em>nsteps_block=5000</em>, <em>v_init=-80.0</em>, <em>celsius=34.0</em>, <em>report_vars=[]</em>, <em>report_nodes=None</em>, <em>current_clamp=None</em>, <em>spikes_inputs=None</em>, <em>use_relative_paths=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#build_env_pointnet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.build_env_pointnet" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="bmtk.utils.sim_setup.build_env_popnet">
 <code class="descclassname">bmtk.utils.sim_setup.</code><code class="descname">build_env_popnet</code><span class="sig-paren">(</span><em>base_dir='.'</em>, <em>network_dir=None</em>, <em>reports=None</em>, <em>with_examples=True</em>, <em>tstop=1000.0</em>, <em>dt=0.001</em>, <em>**args</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#build_env_popnet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.build_env_popnet" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="function">
-<dt id="bmtk.utils.sim_setup.build_simulation_env">
-<code class="descclassname">bmtk.utils.sim_setup.</code><code class="descname">build_simulation_env</code><span class="sig-paren">(</span><em>base_dir</em>, <em>target_simulator</em>, <em>tstop</em>, <em>dt</em>, <em>reports</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#build_simulation_env"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.build_simulation_env" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="bmtk.utils.sim_setup.copy_config">
-<code class="descclassname">bmtk.utils.sim_setup.</code><code class="descname">copy_config</code><span class="sig-paren">(</span><em>base_dir</em>, <em>json_dict</em>, <em>config_file_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#copy_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.copy_config" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="bmtk.utils.sim_setup.copy_run_script">
-<code class="descclassname">bmtk.utils.sim_setup.</code><code class="descname">copy_run_script</code><span class="sig-paren">(</span><em>base_dir</em>, <em>simulator</em>, <em>run_script</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#copy_run_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.copy_run_script" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="bmtk.utils.sim_setup.get_network_block">
-<code class="descclassname">bmtk.utils.sim_setup.</code><code class="descname">get_network_block</code><span class="sig-paren">(</span><em>circuit_config</em>, <em>network_dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sim_setup.html#get_network_block"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sim_setup.get_network_block" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="data">
-<dt id="bmtk.utils.sim_setup.scripts_path">
-<code class="descclassname">bmtk.utils.sim_setup.</code><code class="descname">scripts_path</code><em class="property"> = '/local1/workspace/bmtk/bmtk/utils/scripts'</em><a class="headerlink" href="#bmtk.utils.sim_setup.scripts_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>order_lookup = {k: i for i, k in enumerate(config_order)}
-def sort_config_keys(ckey):</p>
-<blockquote>
-<div>print(ckey)
-exit()</div></blockquote>
-</dd></dl>
 
 </div>
 <div class="section" id="module-bmtk.utils">
@@ -804,7 +878,6 @@ exit()</div></blockquote>
 <li class="toctree-l2"><a class="reference internal" href="../pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../popnet.html">PopNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filternet.html">FilterNet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../mintnet.html">MintNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
@@ -813,6 +886,7 @@ exit()</div></blockquote>
 <li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">bmtk.utils package</a></li>
 </ul>

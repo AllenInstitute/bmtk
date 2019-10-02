@@ -644,8 +644,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="section" id="module-bmtk.analyzer.cell_vars">
 <span id="bmtk-analyzer-cell-vars-module"></span><h2>bmtk.analyzer.cell_vars module<a class="headerlink" href="#module-bmtk.analyzer.cell_vars" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
+<dt id="bmtk.analyzer.cell_vars.load_reports">
+<code class="descclassname">bmtk.analyzer.cell_vars.</code><code class="descname">load_reports</code><span class="sig-paren">(</span><em>config_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/cell_vars.html#load_reports"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.cell_vars.load_reports" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="bmtk.analyzer.cell_vars.plot_report">
-<code class="descclassname">bmtk.analyzer.cell_vars.</code><code class="descname">plot_report</code><span class="sig-paren">(</span><em>config_file=None</em>, <em>report_file=None</em>, <em>report_name=None</em>, <em>variables=None</em>, <em>gids=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/cell_vars.html#plot_report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.cell_vars.plot_report" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bmtk.analyzer.cell_vars.</code><code class="descname">plot_report</code><span class="sig-paren">(</span><em>config_file=None</em>, <em>report_file=None</em>, <em>report_name=None</em>, <em>variables=None</em>, <em>node_ids=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/cell_vars.html#plot_report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.cell_vars.plot_report" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -672,6 +677,21 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div>
 <div class="section" id="module-bmtk.analyzer.spike_trains">
 <span id="bmtk-analyzer-spike-trains-module"></span><h2>bmtk.analyzer.spike_trains module<a class="headerlink" href="#module-bmtk.analyzer.spike_trains" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="bmtk.analyzer.spike_trains.load_spikes_file">
+<code class="descclassname">bmtk.analyzer.spike_trains.</code><code class="descname">load_spikes_file</code><span class="sig-paren">(</span><em>config_file=None</em>, <em>spikes_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spike_trains.html#load_spikes_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.load_spikes_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.analyzer.spike_trains.plot_raster">
+<code class="descclassname">bmtk.analyzer.spike_trains.</code><code class="descname">plot_raster</code><span class="sig-paren">(</span><em>config_file</em>, <em>spikes_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spike_trains.html#plot_raster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.plot_raster" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.analyzer.spike_trains.plot_rates">
+<code class="descclassname">bmtk.analyzer.spike_trains.</code><code class="descname">plot_rates</code><span class="sig-paren">(</span><em>config_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spike_trains.html#plot_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.plot_rates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="function">
 <dt id="bmtk.analyzer.spike_trains.to_dataframe">
 <code class="descclassname">bmtk.analyzer.spike_trains.</code><code class="descname">to_dataframe</code><span class="sig-paren">(</span><em>config_file</em>, <em>spikes_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spike_trains.html#to_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.to_dataframe" title="Permalink to this definition">¶</a></dt>
@@ -880,7 +900,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../popnet.html">PopNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../filternet.html">FilterNet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../mintnet.html">MintNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
@@ -889,6 +908,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
 </ul>

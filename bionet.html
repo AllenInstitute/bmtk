@@ -630,11 +630,10 @@ often with little-to-no programming.</p>
 <h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Automatically integrates MPI for parallel simulations without the need of extra coding.</li>
-<li>Supports models and morphologies from the Allen <a class="reference external" href="http://celltypes.brain-map.org/data">Cell-Types Database</a>, as well</li>
+<li>Supports models and morphologies from the Allen <a class="reference external" href="http://celltypes.brain-map.org/data">Cell-Types Database</a>, as well as custom hoc and NeuroML2 cell and synapse models.</li>
+<li>Use spike-trains, synaptic connections, current clamps or even extracellular stimulation to drive network firing.</li>
+<li>Can simulate extracelluarl field recordings.</li>
 </ul>
-<p>as custom hoc and NeuroML2 cell and synapse models.
-* Use spike-trains, synaptic connections, current clamps or even extracellular stimulation to drive network firing.
-* Can simulate extracelluarl field recordings.</p>
 </div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
@@ -645,11 +644,12 @@ often with little-to-no programming.</p>
 <h2>Documentation and Tutorials<a class="headerlink" href="#documentation-and-tutorials" title="Permalink to this headline">¶</a></h2>
 <p>Our <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial">github page</a> contains a number of jupyter-notebook
 tutorials for both building multi-compartmental neural networks and simulating them with BioNet, including ones specially
-how to:
-1. Simulate cell(s) with a <a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/01_single_cell_clamped.ipynb">current clamp</a>.
-2. Use synaptic inputs to stimulate <a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/02_single_cell_syn.ipynb">single</a> and
-<a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/03_single_pop.ipynb">multi-cell</a> networks.
-3. Build and simulate <a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/04_multi_pop.ipynb">multi-population heterogeneous networks</a>.</p>
+how to:</p>
+<ol class="arabic simple">
+<li>Simulate cell(s) with a <a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/01_single_cell_clamped.ipynb">current clamp</a>.</li>
+<li>Use synaptic inputs to stimulate <a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/02_single_cell_syn.ipynb">single</a> and <a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/03_single_pop.ipynb">multi-cell</a> networks.</li>
+<li>Build and simulate <a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/04_multi_pop.ipynb">multi-population heterogeneous networks</a>.</li>
+</ol>
 <div class="section" id="previous-materials">
 <h3>Previous Materials<a class="headerlink" href="#previous-materials" title="Permalink to this headline">¶</a></h3>
 <p>The following are from previous tutorials, workshops, and presentations; and may not work with the latest version of the bmtk.
@@ -696,7 +696,6 @@ tutorials will have the folder prefix <em>bio_</em> and to run them in the comma
 <li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="popnet.html">PopNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="filternet.html">FilterNet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mintnet.html">MintNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
@@ -705,6 +704,7 @@ tutorials will have the folder prefix <em>bio_</em> and to run them in the comma
 <li class="toctree-l1"><a class="reference internal" href="bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>

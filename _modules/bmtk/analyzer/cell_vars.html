@@ -625,7 +625,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <span class="kn">from</span> <span class="nn">.io_tools</span> <span class="k">import</span> <span class="n">load_config</span>
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="n">listify</span>
-<span class="kn">from</span> <span class="nn">bmtk.utils.cell_vars</span> <span class="k">import</span> <span class="n">CellVarsFile</span>
+<span class="c1"># from bmtk.utils.cell_vars import CellVarsFile</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.utils.config</span> <span class="k">import</span> <span class="n">ConfigDict</span>
+<span class="kn">from</span> <span class="nn">bmtk.utils.reports</span> <span class="k">import</span> <span class="n">CompartmentReport</span>
 
 <span class="c1"># In the case reports are missing units, try to guess based on</span>
 <span class="n">missing_units</span> <span class="o">=</span> <span class="p">{</span>
@@ -638,6 +640,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="k">def</span> <span class="nf">_get_cell_report</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="n">report_name</span><span class="p">):</span>
     <span class="n">cfg</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">report_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;HERE&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">cfg</span><span class="o">.</span><span class="n">reports</span><span class="p">[</span><span class="n">report_name</span><span class="p">],</span> <span class="n">report_name</span>
 
     <span class="k">else</span><span class="p">:</span>
@@ -656,54 +659,91 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">return</span> <span class="n">report_name</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">report_fname</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="plot_report"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.cell_vars.plot_report">[docs]</a><span class="k">def</span> <span class="nf">plot_report</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">report_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gids</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">report_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">report_name</span><span class="p">,</span> <span class="n">report_file</span> <span class="o">=</span> <span class="n">_get_cell_report</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="n">report_name</span><span class="p">)</span>
+<div class="viewcode-block" id="load_reports"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.cell_vars.load_reports">[docs]</a><span class="k">def</span> <span class="nf">load_reports</span><span class="p">(</span><span class="n">config_file</span><span class="p">):</span>
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
+    <span class="n">reports</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">report_name</span><span class="p">,</span> <span class="n">report</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">reports</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">report</span><span class="p">[</span><span class="s1">&#39;module&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;membrane_report&#39;</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">report_file</span> <span class="o">=</span> <span class="n">report</span><span class="p">[</span><span class="s1">&#39;file_name&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;file_name&#39;</span> <span class="ow">in</span> <span class="n">report</span> <span class="k">else</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.h5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">report_name</span><span class="p">)</span>
+        <span class="n">report_file</span> <span class="o">=</span> <span class="n">report_file</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">report_file</span><span class="p">)</span> <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">report_file</span><span class="p">)</span>
+        <span class="n">reports</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CompartmentReport</span><span class="p">(</span><span class="n">report_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">))</span>
 
-    <span class="n">var_report</span> <span class="o">=</span> <span class="n">CellVarsFile</span><span class="p">(</span><span class="n">report_file</span><span class="p">)</span>
-    <span class="n">variables</span> <span class="o">=</span> <span class="n">listify</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span> <span class="k">if</span> <span class="n">variables</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">var_report</span><span class="o">.</span><span class="n">variables</span>
-    <span class="n">gids</span> <span class="o">=</span> <span class="n">listify</span><span class="p">(</span><span class="n">gids</span><span class="p">)</span> <span class="k">if</span> <span class="n">gids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">var_report</span><span class="o">.</span><span class="n">gids</span>
-    <span class="n">time_steps</span> <span class="o">=</span> <span class="n">var_report</span><span class="o">.</span><span class="n">time_trace</span>
+    <span class="k">return</span> <span class="n">reports</span></div>
 
-    <span class="k">def</span> <span class="nf">__units_str</span><span class="p">(</span><span class="n">var</span><span class="p">):</span>
-        <span class="n">units</span> <span class="o">=</span> <span class="n">var_report</span><span class="o">.</span><span class="n">units</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">units</span> <span class="o">==</span> <span class="n">CellVarsFile</span><span class="o">.</span><span class="n">UNITS_UNKNOWN</span><span class="p">:</span>
-            <span class="n">units</span> <span class="o">=</span> <span class="n">missing_units</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s1">&#39;(</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">units</span><span class="p">)</span> <span class="k">if</span> <span class="n">units</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
 
-    <span class="n">n_plots</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">n_plots</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="c1"># If more than one variale to plot do so in different subplots</span>
-        <span class="n">f</span><span class="p">,</span> <span class="n">axarr</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">n_plots</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">variables</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="n">gids</span><span class="p">:</span>
-                <span class="n">axarr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_steps</span><span class="p">,</span> <span class="n">var_report</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">gid</span><span class="o">=</span><span class="n">gid</span><span class="p">,</span> <span class="n">var_name</span><span class="o">=</span><span class="n">var</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;gid </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gid</span><span class="p">))</span>
-
-            <span class="n">axarr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-            <span class="n">axarr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">__units_str</span><span class="p">(</span><span class="n">var</span><span class="p">)))</span>
-            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n_plots</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">axarr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([])</span>
-
-        <span class="n">axarr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;time (ms)&#39;</span><span class="p">)</span>
-
-    <span class="k">elif</span> <span class="n">n_plots</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="c1"># For plotting a single variable</span>
+<div class="viewcode-block" id="plot_report"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.cell_vars.plot_report">[docs]</a><span class="k">def</span> <span class="nf">plot_report</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">report_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">reports</span> <span class="o">=</span> <span class="n">load_reports</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">report</span> <span class="ow">in</span> <span class="n">reports</span><span class="p">:</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="n">gids</span><span class="p">:</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">time_steps</span><span class="p">,</span> <span class="n">var_report</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">gid</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">var_name</span><span class="o">=</span><span class="n">variables</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;gid </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gid</span><span class="p">))</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">variables</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">__units_str</span><span class="p">(</span><span class="n">variables</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;time (ms)&#39;</span><span class="p">)</span>
+        <span class="n">node_ids</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">node_ids</span><span class="p">()</span> <span class="k">if</span> <span class="n">node_ids</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">node_ids</span>
+        <span class="k">for</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="n">node_ids</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">time_trace</span><span class="p">(),</span> <span class="n">report</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;node-id </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">node_id</span><span class="p">))</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;ms&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">variable</span><span class="p">())</span>
+            <span class="c1">#plt.ylabel(&#39;{}&#39;.format(report.units()))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span>
+        <span class="c1">#print(report.node_ids())</span>
+        <span class="c1">#print(report.data().T)</span>
+        <span class="c1">#print(report.time_trace())</span>
+        <span class="c1">#plt.show()</span>
 
+    <span class="c1"># print(reports)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-    <span class="c1">#for gid in gids:</span>
-    <span class="c1">#    plt.plot(times, var_report.data(gid=0, var_name=&#39;v&#39;), label=&#39;gid {}&#39;.format(gid))</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    exit()</span>
 
 
-    <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">    if report_file is None:</span>
+<span class="sd">        report_name, report_file = _get_cell_report(config_file, report_name)</span>
+
+<span class="sd">    var_report = CellVarsFile(report_file)</span>
+<span class="sd">    variables = listify(variables) if variables is not None else var_report.variables</span>
+<span class="sd">    gids = listify(gids) if gids is not None else var_report.gids</span>
+<span class="sd">    time_steps = var_report.time_trace</span>
+
+<span class="sd">    def __units_str(var):</span>
+<span class="sd">        units = var_report.units(var)</span>
+<span class="sd">        if units == CellVarsFile.UNITS_UNKNOWN:</span>
+<span class="sd">            units = missing_units.get(var, &#39;&#39;)</span>
+<span class="sd">        return &#39;({})&#39;.format(units) if units else &#39;&#39;</span>
+
+<span class="sd">    n_plots = len(variables)</span>
+<span class="sd">    if n_plots &gt; 1:</span>
+<span class="sd">        # If more than one variale to plot do so in different subplots</span>
+<span class="sd">        f, axarr = plt.subplots(n_plots, 1)</span>
+<span class="sd">        for i, var in enumerate(variables):</span>
+<span class="sd">            for gid in gids:</span>
+<span class="sd">                axarr[i].plot(time_steps, var_report.data(gid=gid, var_name=var), label=&#39;gid {}&#39;.format(gid))</span>
+
+<span class="sd">            axarr[i].legend()</span>
+<span class="sd">            axarr[i].set_ylabel(&#39;{} {}&#39;.format(var, __units_str(var)))</span>
+<span class="sd">            if i &lt; n_plots - 1:</span>
+<span class="sd">                axarr[i].set_xticklabels([])</span>
+
+<span class="sd">        axarr[i].set_xlabel(&#39;time (ms)&#39;)</span>
+
+<span class="sd">    elif n_plots == 1:</span>
+<span class="sd">        # For plotting a single variable</span>
+<span class="sd">        plt.figure()</span>
+<span class="sd">        for gid in gids:</span>
+<span class="sd">            plt.plot(time_steps, var_report.data(gid=0, var_name=variables[0]), label=&#39;gid {}&#39;.format(gid))</span>
+<span class="sd">        plt.ylabel(&#39;{} {}&#39;.format(variables[0], __units_str(variables[0])))</span>
+<span class="sd">        plt.xlabel(&#39;time (ms)&#39;)</span>
+
+<span class="sd">    else:</span>
+<span class="sd">        return</span>
+
+<span class="sd">    plt.show()</span>
+
+<span class="sd">    #for gid in gids:</span>
+<span class="sd">    #    plt.plot(times, var_report.data(gid=0, var_name=&#39;v&#39;), label=&#39;gid {}&#39;.format(gid))</span>
+
+
+<span class="sd">    &#39;&#39;&#39;</span>
 
 
 
@@ -711,7 +751,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">    plt.xlabel(&#39;time (ms)&#39;)</span>
 <span class="sd">    plt.legend()</span>
 <span class="sd">    plt.show()</span>
-<span class="sd">    &#39;&#39;&#39;</span></div>
+<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 
@@ -731,7 +772,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../popnet.html">PopNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../filternet.html">FilterNet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../mintnet.html">MintNet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
@@ -740,6 +780,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l1"><a class="reference internal" href="../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
