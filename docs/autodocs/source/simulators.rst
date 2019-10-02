@@ -9,7 +9,4 @@ Simulation Engines
    pointnet
    popnet
    filternet
-   mintnet
-
-
 
