@@ -10,8 +10,7 @@ often with little-to-no programming.
 Features
 --------
 * Automatically integrates MPI for parallel simulations without the need of extra coding.
-* Supports models and morphologies from the Allen `Cell-Types Database <http://celltypes.brain-map.org/data>`_, as well
-as custom hoc and NeuroML2 cell and synapse models.
+* Supports models and morphologies from the Allen `Cell-Types Database <http://celltypes.brain-map.org/data>`_, as well as custom hoc and NeuroML2 cell and synapse models.
 * Use spike-trains, synaptic connections, current clamps or even extracellular stimulation to drive network firing.
 * Can simulate extracelluarl field recordings.
 
@@ -29,9 +28,9 @@ Documentation and Tutorials
 Our `github page <https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial>`__ contains a number of jupyter-notebook
 tutorials for both building multi-compartmental neural networks and simulating them with BioNet, including ones specially
 how to:
+
 1. Simulate cell(s) with a `current clamp <https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/01_single_cell_clamped.ipynb>`_.
-2. Use synaptic inputs to stimulate `single <https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/02_single_cell_syn.ipynb>`_ and
-`multi-cell <https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/03_single_pop.ipynb>`_ networks.
+2. Use synaptic inputs to stimulate `single <https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/02_single_cell_syn.ipynb>`_ and `multi-cell <https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/03_single_pop.ipynb>`_ networks.
 3. Build and simulate `multi-population heterogeneous networks <https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/04_multi_pop.ipynb>`_.
 
 
