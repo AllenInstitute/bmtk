@@ -374,12 +374,13 @@ class EnvBuilder(object):
     def _add_current_clamp(self, current_param):
         if current_param is None:
             return
-
+        
         logger.info('Adding current clamp')
         iclamp_config = {
             "input_type": "current_clamp",
             "module": "IClamp",
-            "node_set": "all",
+            "gids": current_param['gids'],
+            "node_set": 'all',
             "amp": float(current_param['amp']),
             "delay": float(current_param['delay']),
             "duration": float(current_param['duration'])
@@ -436,6 +437,10 @@ class EnvBuilder(object):
         self._simulation_config['target_simulator'] = self.target_simulator
         self._simulation_config['network'] = os.path.join(self.base_dir, 'circuit_config.json')
         self._add_run_params(**run_args)
+        try:
+            current_clamp['gids']
+        except:
+            current_clamp['gids']='all'
         self._add_current_clamp(current_clamp)
         if spikes_inputs!=None:
             self._add_spikes_inputs(spikes_inputs)

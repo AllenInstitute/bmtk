@@ -181,10 +181,10 @@ class BioSimulator(Simulator):
             self._spikes[gid] = tvec
 
     def attach_current_clamp(self, amplitude, delay, duration, gids=None):
-        # TODO: verify current clamp works with MPI
         # TODO: Create appropiate module
-        if gids is None:
-            gids = self.gids['biophysical']
+ 
+        if gids is None or gids=='all':
+            gids = self.biophysical_gids
         if isinstance(gids, int):
             gids = [gids]
         elif isinstance(gids, string_types):
@@ -300,8 +300,8 @@ class BioSimulator(Simulator):
                 amplitude = sim_input.params['amp']
                 delay = sim_input.params['delay']
                 duration = sim_input.params['duration']
-                gids = sim_input.params['node_set']
-                sim.attach_current_clamp(amplitude, delay, duration, node_set)
+                gids = sim_input.params['gids']
+                sim.attach_current_clamp(amplitude, delay, duration, gids)
 
             elif sim_input.module == 'xstim':
                 sim.add_mod(mods.XStimMod(**sim_input.params))
