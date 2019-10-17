@@ -192,12 +192,14 @@ class BioSimulator(Simulator):
         elif isinstance(gids, NodeSet):
             gids = gids.gids()
 
-
         gids = list(set(self.local_gids) & set(gids))
+        c = 0
         for gid in gids:
             cell = self.net.get_cell_gid(gid)
-            Ic = IClamp(amplitude, delay, duration)
+            Ic = IClamp(amplitude[c], delay, duration)
             Ic.attach_current(cell)
+            if len(amplitude)>1:
+                c=c+1
             self._iclamps.append(Ic)
 
     def add_mod(self, module):

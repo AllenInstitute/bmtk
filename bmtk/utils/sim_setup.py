@@ -376,12 +376,20 @@ class EnvBuilder(object):
             return
         
         logger.info('Adding current clamp')
+        
+        try: 
+            len(current_param['amp'])
+        except:
+            current_param['amp']=[float(current_param['amp'])]
+        if len(current_param['amp'])>1:
+            current_param['amp']=[float(i) for i in current_param['amp']]
+
         iclamp_config = {
             "input_type": "current_clamp",
             "module": "IClamp",
             "gids": current_param['gids'],
             "node_set": 'all',
-            "amp": float(current_param['amp']),
+            "amp": current_param['amp'],
             "delay": float(current_param['delay']),
             "duration": float(current_param['duration'])
         }
