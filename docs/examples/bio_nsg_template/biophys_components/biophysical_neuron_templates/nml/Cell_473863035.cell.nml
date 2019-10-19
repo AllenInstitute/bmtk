@@ -1,0 +1,41 @@
+<neuroml xmlns="http://www.neuroml.org/schema/neuroml2"  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.neuroml.org/schema/neuroml2 https://raw.github.com/NeuroML/NeuroML2/development/Schemas/NeuroML2/NeuroML_v2beta4.xsd" id="NeuroML2_file_exported_from_NEURON">
+    <concentrationModel id="CaDynamics" type="CaDynamics" segmentGroup="soma" minCai="1e-4 mM" decay="798.67999240300003 ms" depth="0.1 um" gamma="0.00071152004894800005" ion="ca"/>
+    <cell id="473863035">
+        <notes>
+
+Export of a cell model (473863035) obtained from the Allen Institute Cell Types Database into NeuroML2
+
+******************************************************
+*  This export to NeuroML2 has not yet been fully validated!!
+*  Use with caution!!
+******************************************************
+
+</notes>
+        <biophysicalProperties id="biophys">
+            <membraneProperties>
+                <channelDensity id="gbar_Im" segmentGroup="soma" ion="k" ionChannel="Im" erev="-107.0 mV" condDensity="0.00204889965055 S_per_cm2"/>
+                <channelDensity id="gbar_Ih" segmentGroup="soma" ion="hcn" ionChannel="Ih" erev="-45 mV" condDensity="3.7269252292e-05 S_per_cm2"/>
+                <channelDensity id="gbar_NaTs" segmentGroup="soma" ion="na" ionChannel="NaTs" erev="53.0 mV" condDensity="0.609270805023 S_per_cm2"/>
+                <channelDensity id="gbar_Nap" segmentGroup="soma" ion="na" ionChannel="Nap" erev="53.0 mV" condDensity="6.21618683651e-05 S_per_cm2"/>
+                <channelDensity id="gbar_K_P" segmentGroup="soma" ion="k" ionChannel="K_P" erev="-107.0 mV" condDensity="0.0181474244506 S_per_cm2"/>
+                <channelDensity id="gbar_K_T" segmentGroup="soma" ion="k" ionChannel="K_T" erev="-107.0 mV" condDensity="0.000555828337834 S_per_cm2"/>
+                <channelDensity id="gbar_SK" segmentGroup="soma" ion="k" ionChannel="SK" erev="-107.0 mV" condDensity="0.000417431711433 S_per_cm2"/>
+                <channelDensity id="gbar_Kv3_1" segmentGroup="soma" ion="k" ionChannel="Kv3_1" erev="-107.0 mV" condDensity="0.124684879699 S_per_cm2"/>
+                <channelDensity id="g_pas_soma" segmentGroup="soma" ion="non_specific" ionChannel="pas" erev="-89.4614028931 mV" condDensity="0.000545891512808 S_per_cm2"/>
+                <channelDensity id="g_pas_axon" segmentGroup="axon" ion="non_specific" ionChannel="pas" erev="-89.4614028931 mV" condDensity="0.000215421618129 S_per_cm2"/>
+                <channelDensity id="g_pas_dend" segmentGroup="dend" ion="non_specific" ionChannel="pas" erev="-89.4614028931 mV" condDensity="6.28272496237e-06 S_per_cm2"/>
+                <channelDensity id="g_pas_apic" segmentGroup="apic" ion="non_specific" ionChannel="pas" erev="-89.4614028931 mV" condDensity="5.93189984977e-06 S_per_cm2"/>
+                <channelDensityNernst id="gbar_Ca_HVA" ionChannel="Ca_HVA" condDensity="0.000972721896658 S_per_cm2" segmentGroup="soma" ion="ca"/>
+                <channelDensityNernst id="gbar_Ca_LVA" ionChannel="Ca_LVA" condDensity="0.00662965095681 S_per_cm2" segmentGroup="soma" ion="ca"/>
+                <specificCapacitance segmentGroup="soma" value="1.0 uF_per_cm2"/>
+                <specificCapacitance segmentGroup="axon" value="1.0 uF_per_cm2"/>
+                <specificCapacitance segmentGroup="apic" value="2.28 uF_per_cm2"/>
+                <specificCapacitance segmentGroup="dend" value="2.28 uF_per_cm2"/>
+            </membraneProperties>
+            <intracellularProperties>
+                <species segmentGroup="soma" ion="ca" initialExtConcentration="2 mM" concentrationModel="CaDynamics" id="ca" initialConcentration="0.0001 mM"/>
+                <resistivity segmentGroup="all" value="122.88 ohm_cm"/>
+            </intracellularProperties>
+        </biophysicalProperties>
+    </cell>
+</neuroml>
