@@ -97,6 +97,12 @@ Then open a browser to 127.0.0.1:8888/. Any new files/notebooks should be saved 
 will be lost once the container is closed.
 
 
+Through Neuroscience Gateway (NSG)
+++++++++++++++++++++++++++++++++++
+The bmtk can be ran through the Neuroscience Gateway for anyone who has an account.
+
+For running multi-core BioNet (NEURON based) simulations on the NSG please refer to `Readme file <https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/bio_nsg_template>`_.
+
 
 Running Simulations
 -------------------
