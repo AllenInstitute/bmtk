@@ -113,7 +113,7 @@ class Network (object):
                     raise Exception('Trying to pass in array of length {} into N={} nodes'.format(n_props, N))
                 node_params[prop_name] = prop_value
 
-            elif isinstance(prop_value, types.GeneratorType):
+            elif isinstance(prop_value, (types.GeneratorType, six.moves.range)):
                 vals = list(prop_value)
                 assert(len(vals) == N)
                 node_params[prop_name] = vals
