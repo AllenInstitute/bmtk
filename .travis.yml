@@ -6,7 +6,8 @@ matrix:
     - python: 3.6
 
 install:
-  - python setup.py install
+  - pip install -r requirements.txt
+  - pip install .
 
 script:  
   - python setup.py test
