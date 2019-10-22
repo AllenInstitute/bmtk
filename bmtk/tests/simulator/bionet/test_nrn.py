@@ -1,7 +1,8 @@
 import pytest
-from bmtk.simulator.bionet.pyfunction_cache import *
+from .conftest import *
 
 
+@pytest.mark.skipif(not nrn_installed, reason='NEURON is not installed')
 def test_weight():
     def wmax(v1, v2):
         return max(v1, v2)
@@ -23,6 +24,7 @@ def test_weight():
     py_modules.clear()
 
 
+@pytest.mark.skipif(not nrn_installed, reason='NEURON is not installed')
 def test_weight_decorator():
     @synaptic_weight
     def wmax(v1, v2):
@@ -43,6 +45,7 @@ def test_weight_decorator():
     py_modules.clear()
 
 
+@pytest.mark.skipif(not nrn_installed, reason='NEURON is not installed')
 def test_synapse_model():
     def syn1():
         return 'Syn1'
@@ -65,6 +68,7 @@ def test_synapse_model():
     py_modules.clear()
 
 
+@pytest.mark.skipif(not nrn_installed, reason='NEURON is not installed')
 def test_synapse_model_decorator():
     @synapse_model
     def syn1():
