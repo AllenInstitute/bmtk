@@ -1,14 +1,14 @@
 import pytest
 import os
 import json
-import tempfile
 
-import bionet_virtual_files as bvf
-from bmtk.simulator import bionet
+from .conftest import *
+from . import bionet_virtual_files as bvf
 
 
 @pytest.mark.skip()
 def test_add_nodes():
+
     nodes = bvf.NodesFile(N=100)
 
     net = bionet.BioNetwork()
