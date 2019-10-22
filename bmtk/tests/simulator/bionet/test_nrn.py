@@ -1,6 +1,5 @@
 import pytest
-from bmtk.simulator.bionet.pyfunction_cache import *
-
+from .conftest import *
 
 def test_weight():
     def wmax(v1, v2):
