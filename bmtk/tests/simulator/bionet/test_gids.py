@@ -1,5 +1,8 @@
-from bmtk.simulator.bionet.gids import GidPool
+import pytest
+from .conftest import *
 
+
+@pytest.mark.skipif(not nrn_installed, reason='NEURON is not installed')
 def test_gid_pool():
     gid_map = GidPool()
     gid_map.add_pool(name='p1', n_nodes=1000)

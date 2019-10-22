@@ -66,6 +66,6 @@ class IDGenerator(object):
         elif 'N' in 'kwargs':
             N = args['N']
 
-        assert(isinstance(N, (int, long)))
+        assert(isinstance(N, six.integer_types))
         return [self.next() for _ in six.moves.range(N)]
 
