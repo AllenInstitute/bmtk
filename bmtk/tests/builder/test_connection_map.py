@@ -113,4 +113,5 @@ def test_cm_params3(net):
     assert(edge_props_2.rule() == (1, 2, 3))
 
 
-test_connection_map_fnc(net())
+if __name__ == '__main__':
+    test_connection_map_fnc(net())
