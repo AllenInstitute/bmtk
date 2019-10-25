@@ -95,6 +95,14 @@ class SimNetwork(object):
         # Used in inputs/reports when needed to get all gids belonging to a node population
         self._node_sets[pop_name] = NodeSet({'population': pop_name}, self)
 
+    def node_properties(self):
+        node_props = {}
+        for node_pop in self.node_populations:
+            if node_pop.internal_nodes_only:
+                node_props[node_pop.name] = node_pop.nodes_df()
+
+        return node_props
+
     def add_edges(self, edge_population):
         edge_population.initialize(self)
         pop_name = edge_population.name
