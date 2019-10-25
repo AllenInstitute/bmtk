@@ -51,6 +51,8 @@ class Cell(object):
         # Load the NEURON HOC object
         self._hobj = node.load_cell()
 
+        self._edge_props = []
+
     @property
     def node(self):
         return self._node
@@ -102,3 +104,6 @@ class Cell(object):
 
     def set_syn_connections(self, edge_prop, src_node, stim=None):
         raise NotImplementedError
+
+    def __getitem__(self, node_prop):
+        return self._node[node_prop]

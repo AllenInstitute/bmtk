@@ -56,6 +56,7 @@ class PointProcessCell(Cell):
 
         if stim is not None:
             src_gid = -1
+            #src_gid = src_node.node_id
             nc = h.NetCon(stim.hobj, self.hobj)
         else:
             src_gid = src_node.node_id
@@ -68,6 +69,7 @@ class PointProcessCell(Cell):
         self._src_gids.append(src_gid)
         self._src_nets.append(-1)
         self._edge_type_ids.append(edge_prop.edge_type_id)
+        self._edge_props.append(edge_prop)
         return nsyns
 
     def get_connection_info(self):

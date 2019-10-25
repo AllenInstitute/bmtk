@@ -53,7 +53,7 @@ class BioCell(Cell):
         self._save_conn = False  # bionetwork.save_connection
         self._synapses = []
         self._syn_src_net = []
-        self._syn_src_gid = []
+        self._src_gids = []
         self._syn_seg_ix = []
         self._syn_sec_x = []
         self._edge_type_ids = []
@@ -152,8 +152,12 @@ class BioCell(Cell):
         syn_weight = edge_prop.syn_weight(src_node=src_node, trg_node=self._node)
 
         if edge_prop.preselected_targets:
+            self._edge_props.append(edge_prop)
+            self._src_gids.append(src_node.node_id)
             return self._set_connection_preselected(edge_prop, src_node, syn_weight, stim)
         else:
+            self._edge_props += [edge_prop]*edge_prop.nsyns
+            self._src_gids += [src_node.node_id]*edge_prop.nsyns
             return self._set_connections(edge_prop, src_node, syn_weight, stim)
 
     def _set_connection_preselected(self, edge_prop, src_node, syn_weight, stim=None):
@@ -214,7 +218,7 @@ class BioCell(Cell):
         return nsyns
 
     def _save_connection(self, src_gid, src_net, sec_x, seg_ix, edge_type_id):
-        self._syn_src_gid.append(src_gid)
+        self._src_gids.append(src_gid)
         self._syn_src_net.append(src_net)
         self._syn_sec_x.append(sec_x)
         self._syn_seg_ix.append(seg_ix)
