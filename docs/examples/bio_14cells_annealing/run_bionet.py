@@ -7,7 +7,8 @@ import pandas as pd
 from neuron import h
 
 from bmtk.simulator import bionet
-from bmtk.simulator.bionet.modules.record_spikes import SpikesMod
+#from bmtk.simulator.bionet.modules.record_spikes import SpikesMod
+from bmtk.simulator.bionet.modules import SaveSynapses, SpikesMod
 from bmtk.utils.reports.spike_trains import SpikeTrains
 
 
@@ -121,12 +122,15 @@ def calc_gradients(spikes_file, node_groups, target_fr, max_fr, learning_rate, s
 
     st = SpikeTrains.load(spikes_file)
     for grp_key, node_ids in node_groups.items():
-        total_spikes = np.sum([len(st.get_times(node_id)) for node_id in node_ids])
+        total_spikes = np.sum([len(st.get_times(node_id, population=pop)) for pop, node_id in node_ids])
+        #print(total_spikes)
+        #exit()
         n_nodes = len(node_ids)
         spiking_avg = 0.0 if n_nodes == 0 else total_spikes / (sim_time_s * n_nodes)  # caclucate pop avg (assuming n_nodes != 0)
         spiking_avg = min(spiking_avg, max_fr)  # set upper bound for firing rate
         spiking_rates.append((grp_key, spiking_avg))
         rel_fr = min((target_fr - spiking_avg) / max_fr, 1.0)
+
         #if grp_key == 'Scnn1a':
         #    print(rel_fr, spiking_avg, n_nodes, st.get_times(0))
         # exit()
@@ -151,7 +155,7 @@ def update_weights(graph, gradients):
             #if gid == 0:
             #    print(nc.weight[0])
 
-            # print(nc.weight[0])
+            #print(nc.weight[0])
 
     # exit()
 
@@ -163,6 +167,15 @@ def track_rates(rates_table, sim_rates):
             rates_table[k].append(v)
 
 
+def spike_statistics(spikes_file, network=None, groupby=None):
+    spike_trains = SpikeTrains.load(spikes_file)
+    spike_trains_df = spike_trains.to_dataframe()
+    return spike_trains.groupby(['population', 'node_ids'])['timestamps'].agg(np.mean)
+
+
+
+
+
 def run_iteration(config_file):
     conf = bionet.Config.from_json(config_file, validate=True)
     conf.build_env()
@@ -172,10 +185,24 @@ def run_iteration(config_file):
     sim.run()
     pc.barrier()
 
+    #print(spike_statistics(spikes_file='output/spikes.h5'))
+    #exit()
+
     rates_table = {}
     sim_time_s = sim.simulation_time(units='s')
-    node_props = graph.node_properties()
-    node_groups = {k: v.tolist() for k, v in node_props['v1'].groupby('pop_name').groups.items()}
+    node_props = graph.node_properties(populations='v1')
+    node_groups = {k: v.tolist() for k, v in node_props.groupby('pop_name').groups.items()}
+    #print(node_groups)
+    #exit()
+    #exit()
+
+    #for pop, grp in node_props.groupby('pop_name'):
+    #    print(pop)
+    #    print(grp.index.values.tolist())
+    #print(node_props.groupby('pop_name').groups.items())
+    #exit()
+
+    #node_groups = {k: v.tolist() for k, v in node_props['v1'].groupby('pop_name').groups.items()}
     gradients, sim_rates = calc_gradients(spikes_file='output/spikes.h5', node_groups=node_groups, target_fr=15.0, max_fr=100.0,
                                learning_rate=0.0003, sim_time_s=sim_time_s)
 
@@ -188,7 +215,7 @@ def run_iteration(config_file):
 
     #exit()
 
-    for i in range(2, 36):
+    for i in range(2, 3):
         spikes_file = 'spikes.h5'.format(i)
 
         pc.barrier()
@@ -201,6 +228,11 @@ def run_iteration(config_file):
 
         update_weights(graph, gradients)
         track_rates(rates_table, sim_rates)
+
+    connection_recorder = SaveSynapses('updated_weights')
+    #connection_recorder.syn_statistics(sim_step)
+    connection_recorder.initialize(sim_step)
+    connection_recorder.finalize(sim_step)
 
     summary_df = pd.DataFrame(rates_table)
     summary_df['MSE'] = summary_df.apply(lambda r: np.sum(np.power(15.0 - r, 2))/(len(r)), axis=1)
