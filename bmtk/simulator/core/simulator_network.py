@@ -120,6 +120,46 @@ class SimNetwork(object):
 
         return all_nodes_df
 
+    def get_node_groups(self, populations=None):
+        if populations is None:
+            selected_pops = self.node_populations
+
+        elif isinstance(populations, string_types):
+            selected_pops = [pop for pop in self.node_populations if pop.name == populations]
+
+        else:
+            selected_pops = [pop for pop in self.node_populations if pop.name in populations]
+
+        all_nodes_df = None
+        for node_pop in selected_pops:
+            node_pop_df = node_pop.nodes_df(index_by_id=False)
+            print(node_pop_df)
+            print('-----')
+            if 'population' not in node_pop_df:
+                node_pop_df['population'] = node_pop.name
+
+            #node_pop_df = node_pop_df.set_index([node_pop_df.index.astype(dtype=np.uint64)])
+
+            if all_nodes_df is None:
+                all_nodes_df = node_pop_df
+            else:
+                all_nodes_df = all_nodes_df.append(node_pop_df, sort=False)
+
+        return all_nodes_df
+
+    def get_node_sets(self, populations=None, groupby=None, **filterby):
+        selected_nodes_df = self.node_properties(populations)
+        for k, v in filterby:
+            if isinstance(v, (np.ndarray, list, tuple)):
+                selected_nodes_df = selected_nodes_df[selected_nodes_df[k].isin(v)]
+            else:
+                selected_nodes_df = selected_nodes_df[selected_nodes_df[k].isin(v)]
+
+        if groupby is not None:
+            return {k: v.tolist() for k, v in selected_nodes_df.groupby(groupby).groups.items()}
+        else:
+            return selected_nodes_df.index.tolist()
+
     def add_edges(self, edge_population):
         edge_population.initialize(self)
         pop_name = edge_population.name
