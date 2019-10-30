@@ -236,15 +236,18 @@ class NodePopulation(Population):
         self._gid_lookup_fnc = lambda row_indx: self._index_row2gid.loc[row_indx]['gid']
         self._has_gids = True
 
-    def to_dataframe(self):
+    def to_dataframe(self, index_by_id=True):
         if len(self.groups) == 1:
-            return self.get_group(self.group_ids[0]).to_dataframe()
+            ret_df = self.get_group(self.group_ids[0]).to_dataframe()
         else:
-            dataframes = pd.DataFrame()
+            ret_df = pd.DataFrame()
             for grp_id in self.group_ids:
-                dataframes = dataframes.append(self.get_group(grp_id).to_dataframe(), sort=False)
-            dataframes = dataframes.set_index('node_id')
-            return dataframes
+                ret_df = ret_df.append(self.get_group(grp_id).to_dataframe(), sort=False)
+
+        if index_by_id:
+            ret_df = ret_df.set_index('node_id')
+
+        return ret_df
 
     def get_row(self, row_indx):
         # TODO: Use helper function so we don't have to lookup gid/node_id twice
