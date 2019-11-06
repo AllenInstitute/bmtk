@@ -181,10 +181,11 @@ class BioSimulator(Simulator):
             self._spikes[gid] = tvec
 
     def attach_current_clamp(self, amplitude, delay, duration, gids=None):
-        # TODO: verify current clamp works with MPI
+
         # TODO: Create appropiate module
-        if gids is None:
-            gids = self.gids['biophysical']
+        if gids is None or gids=='all':
+            gids = self.biophysical_gids
+
         if isinstance(gids, int):
             gids = [gids]
         elif isinstance(gids, string_types):
@@ -194,9 +195,11 @@ class BioSimulator(Simulator):
 
 
         gids = list(set(self.local_gids) & set(gids))
-        for gid in gids:
+
+        for idx,gid in enumerate(gids):
             cell = self.net.get_cell_gid(gid)
-            Ic = IClamp(amplitude, delay, duration)
+            Ic = IClamp(amplitude[idx], delay, duration)
+
             Ic.attach_current(cell)
             self._iclamps.append(Ic)
 
