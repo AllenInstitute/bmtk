@@ -414,7 +414,14 @@ class EdgePopulation(Population):
 
 
     def build_indicies(self):
-        if 'indicies' in self._pop_group:
+        indicies_grp = None
+        for grp_name in ['indices', 'indicies']:
+            if grp_name in self._pop_group:
+                indicies_grp = self._pop_group[grp_name]
+                break
+
+        # if 'indicies' in self._pop_group:
+        if indicies_grp is not None:
             indicies_grp = self._pop_group['indicies']
             for index_name, index_grp in indicies_grp.items():
                 # TODO: Let __IndexStruct build the indicies

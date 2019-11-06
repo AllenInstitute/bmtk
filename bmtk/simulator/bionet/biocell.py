@@ -29,6 +29,30 @@ from neuron import h
 
 pc = h.ParallelContext()    # object to access MPI methods
 
+class ConnectionStruct(object):
+    def __init__(self, edge_prop, src_node, syn, nc, is_virtual=False):
+        self._src_node = src_node
+        self._edge_prop = edge_prop
+        self._syn = syn
+        self._nc = nc
+        self._is_virtual = is_virtual
+
+    @property
+    def is_virtual(self):
+        return self._is_virtual
+
+    @property
+    def source_node(self):
+        return self._src_node
+
+    @property
+    def syn_weight(self):
+        return self._nc.weight[0]
+
+    @syn_weight.setter
+    def syn_weight(self, val):
+        self._nc.weight[0] = val
+
 
 class BioCell(Cell):
     """Implemntation of a morphologically and biophysically detailed type cell.
@@ -58,6 +82,7 @@ class BioCell(Cell):
         self._syn_sec_x = []
         self._edge_type_ids = []
         self._segments = None
+        self._connections = []
 
         # potentially used by ecp module
         self.im_ptr = None
@@ -177,6 +202,8 @@ class BioCell(Cell):
 
         nc.weight[0] = syn_weight
         nc.delay = delay
+        self._connections.append(ConnectionStruct(edge_prop, src_node, syn, nc, stim is not None))
+
         self._netcons.append(nc)
         self._synapses.append(syn)
         if self._save_conn:
@@ -215,7 +242,12 @@ class BioCell(Cell):
             nc.delay = delay
             self.netcons.append(nc)
 
+            self._connections.append(ConnectionStruct(edge_prop, src_node, syn, nc, stim is not None))
+
         return nsyns
+
+    def connections(self):
+        return self._connections
 
     def _save_connection(self, src_gid, src_net, sec_x, seg_ix, edge_type_id):
         self._src_gids.append(src_gid)
