@@ -30,6 +30,7 @@ class VirtualCell(object):
         # VirtualCell is currently not a subclass of bionet.Cell class b/c the parent has a bunch of properties that
         # just don't apply to a virtual cell. May want to make bionet.Cell more generic in the future.
         self._node_id = node.node_id
+        self._node = node
         self._population = population
         self._hobj = None
         self._spike_train_dataset = spike_train_dataset
@@ -50,3 +51,6 @@ class VirtualCell(object):
         vecstim = h.VecStim()
         vecstim.play(self._train_vec)
         self._hobj = vecstim
+
+    def __getitem__(self, item):
+        return self._node[item]

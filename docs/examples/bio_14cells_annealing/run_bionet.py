@@ -59,7 +59,7 @@ def get_grads(spike_stats, targets_frs, update_rule=0.0005):
     """Calculate gradients for updating the synaptic weights"""
     mean_frs = spike_stats['firing_rate']['mean']
     fr_diffs = {pop_name: (trg_fr - mean_frs.loc[pop_name]) for pop_name, trg_fr in targets_frs.items()}
-    mse = np.sum(np.power(fr_diffs.values(), 2))/float(len(fr_diffs))
+    mse = np.sum(np.power(list(fr_diffs.values()), 2))/float(len(fr_diffs))
     rel_grads = {pop_name: min(update_rule * d / 100.0, 1.0) for pop_name, d in fr_diffs.items()}
     return rel_grads, mse
 
@@ -67,13 +67,16 @@ def get_grads(spike_stats, targets_frs, update_rule=0.0005):
 def update_syn_weights(net, gradients):
     for gid, cell in net.get_local_cells().items():
         trg_pop = cell['pop_name']
-        for i, nc in enumerate(cell._netcons):
-            if cell._src_gids[i] == -1:
+
+        for con in cell.connections():
+            if con.is_virtual:
                 continue
-            pop_id = net.gid_pool.get_pool_id(cell._src_gids[i])
-            src_type = net.get_node_id(pop_id.population, pop_id.node_id)['ei']
-            nc.weight[0] += gradients[trg_pop]*(-1.0 if src_type == 'i' else 1.0)
-            nc.weight[0] = max(nc.weight[0], 0.0)
+
+            src_node = con.source_node
+            src_type = src_node['ei']
+            con.syn_weight += gradients[trg_pop]*(-1.0 if src_type == 'i' else 1.0)
+
+            con.syn_weight = max(con.syn_weight, 0.0)
 
 
 def update_rates_table(rates_table, sim_stats, mse):
@@ -107,10 +110,10 @@ def run_iteration(config_file):
     update_syn_weights(graph, gradients)
 
     # Keep track of firing rates to display results at the end of run
-    rates_table = pd.DataFrame(columns=target_frs.keys() + ['MSE'])
+    rates_table = pd.DataFrame(columns=list(target_frs.keys()) + ['MSE'])
     rates_table = update_rates_table(rates_table, spike_stats_df, mse)
 
-    for i in range(2, 4):
+    for i in range(2, 12):
         # initialize a new simulation
         sim_step = bionet.BioSimulator(network=graph, dt=conf.dt, tstop=conf.tstop, v_init=conf.v_init,
                                        celsius=conf.celsius, nsteps_block=conf.block_step)

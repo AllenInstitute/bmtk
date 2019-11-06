@@ -28,6 +28,30 @@ from bmtk.simulator.bionet.cell import Cell
 pc = h.ParallelContext()    # object to access MPI methods
 
 
+class ConnectionStruct(object):
+    def __init__(self, edge_prop, src_node, nc, is_virtual=False):
+        self._src_node = src_node
+        self._edge_prop = edge_prop
+        self._nc = nc
+        self._is_virtual = is_virtual
+
+    @property
+    def is_virtual(self):
+        return self._is_virtual
+
+    @property
+    def source_node(self):
+        return self._src_node
+
+    @property
+    def syn_weight(self):
+        return self._nc.weight[0]
+
+    @syn_weight.setter
+    def syn_weight(self, val):
+        self._nc.weight[0] = val
+
+
 class PointProcessCell(Cell):
     """Implimentation of a Leaky Integrate-and-file neuron type cell."""
     def __init__(self, node, bionetwork):
@@ -36,6 +60,7 @@ class PointProcessCell(Cell):
         self._src_gids = []
         self._src_nets = []
         self._edge_type_ids = []
+        self._connections = []
 
     def set_spike_detector(self):
         nc = h.NetCon(self.hobj, None)
@@ -70,7 +95,12 @@ class PointProcessCell(Cell):
         self._src_nets.append(-1)
         self._edge_type_ids.append(edge_prop.edge_type_id)
         self._edge_props.append(edge_prop)
+        self._connections.append(ConnectionStruct(edge_prop, src_node, nc, stim is not None))
+
         return nsyns
+
+    def connections(self):
+        return self._connections
 
     def get_connection_info(self):
         # TODO: There should be a more effecient and robust way to return synapse information.

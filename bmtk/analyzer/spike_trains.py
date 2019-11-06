@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 from bmtk.simulator.utils.config import ConfigDict
 from bmtk.utils.reports import SpikeTrains
 from bmtk.utils.reports.spike_trains import plotting
+from bmtk.utils.sonata import File
 
 
 def load_spikes_file(config_file=None, spikes_file=None):
@@ -39,10 +40,8 @@ def plot_rates(config_file):
     plotting.plot_rates(spike_trains)
 
 
-def spike_statistics(spikes_file, simulation=None, groupby=None, **filterparams):
+def spike_statistics(spikes_file, simulation=None, simulation_time=None, groupby=None, network=None, **filterparams):
     spike_trains = SpikeTrains.load(spikes_file)
-    nodes_df = simulation.net.node_properties(**filterparams)
-    sim_time_s = simulation.simulation_time(units='s')
 
     def calc_stats(r):
         d = {}
@@ -60,11 +59,16 @@ def spike_statistics(spikes_file, simulation=None, groupby=None, **filterparams)
     spike_counts_df = spike_trains.to_dataframe().groupby(['population', 'node_ids']).apply(calc_stats)
     spike_counts_df = spike_counts_df.rename({'timestamps': 'counts'}, axis=1)
     spike_counts_df.index.names = ['population', 'node_id']
-    spike_counts_df['firing_rate'] = spike_counts_df['count'] / sim_time_s
 
-    vals_df = pd.merge(nodes_df, spike_counts_df, left_index=True, right_index=True, how='left')
-    vals_df = vals_df.fillna({'count': 0.0, 'firing_rate': 0.0, 'isi': 0.0})
+    if simulation is not None:
+        nodes_df = simulation.net.node_properties(**filterparams)
+        sim_time_s = simulation.simulation_time(units='s')
+        spike_counts_df['firing_rate'] = spike_counts_df['count'] / sim_time_s
 
-    vals_df = vals_df.groupby(groupby)[['firing_rate', 'count', 'isi']].agg([np.mean, np.std])
-    return vals_df
+        vals_df = pd.merge(nodes_df, spike_counts_df, left_index=True, right_index=True, how='left')
+        vals_df = vals_df.fillna({'count': 0.0, 'firing_rate': 0.0, 'isi': 0.0})
 
+        vals_df = vals_df.groupby(groupby)[['firing_rate', 'count', 'isi']].agg([np.mean, np.std])
+        return vals_df
+    else:
+        return spike_counts_df
