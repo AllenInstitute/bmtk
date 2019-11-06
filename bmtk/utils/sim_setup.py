@@ -445,10 +445,11 @@ class EnvBuilder(object):
         self._simulation_config['target_simulator'] = self.target_simulator
         self._simulation_config['network'] = os.path.join(self.base_dir, 'circuit_config.json')
         self._add_run_params(**run_args)
-        try:
-            current_clamp['gids']
-        except:
-            current_clamp['gids']='all'
+        if current_clamp is not None:
+            try:
+                current_clamp['gids']
+            except:
+                current_clamp['gids']='all'
         self._add_current_clamp(current_clamp)
         if spikes_inputs!=None:
             self._add_spikes_inputs(spikes_inputs)
