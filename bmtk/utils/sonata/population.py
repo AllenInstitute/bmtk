@@ -422,7 +422,7 @@ class EdgePopulation(Population):
 
         # if 'indicies' in self._pop_group:
         if indicies_grp is not None:
-            indicies_grp = self._pop_group['indicies']
+            # indicies_grp = self._pop_group['indicies']
             for index_name, index_grp in indicies_grp.items():
                 # TODO: Let __IndexStruct build the indicies
                 # Make sure subgroup has the correct datasets
