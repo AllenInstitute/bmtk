@@ -112,6 +112,7 @@ class H5Merger(object):
             self._point_edge_count[(src_pop, trg_pop)] += len(edges_grp['1/syn_weight'])
 
         for (src_pop, trg_pop), in_grps in self._tmp_files.items():
+            print(src_pop, trg_pop, in_grps)
             out_h5 = h5py.File(os.path.join(self._network_dir, '{}_{}_edges.h5'.format(src_pop, trg_pop)), 'w')
             pop_root = out_h5.create_group('/edges/{}_{}'.format(src_pop, trg_pop))
             n_edges_total = self._edge_counts[(src_pop, trg_pop)]
@@ -146,13 +147,14 @@ class H5Merger(object):
                 total_offset += n_ds
 
                 n_ds = len(grp['0/syn_weight'])
-                pop_root['0/syn_weight'][total_offset:(bio_offset + n_ds)] = grp['0/syn_weight'][()]
-                pop_root['0/sec_id'][total_offset:(bio_offset + n_ds)] = grp['0/sec_id'][()]
-                pop_root['0/sec_x'][total_offset:(bio_offset + n_ds)] = grp['0/sec_x'][()]
+                # print(grp['0/syn_weight'][()])
+                pop_root['0/syn_weight'][bio_offset:(bio_offset + n_ds)] = grp['0/syn_weight'][()]
+                pop_root['0/sec_id'][bio_offset:(bio_offset + n_ds)] = grp['0/sec_id'][()]
+                pop_root['0/sec_x'][bio_offset:(bio_offset + n_ds)] = grp['0/sec_x'][()]
                 bio_offset += n_ds
 
                 n_ds = len(grp['1/syn_weight'])
-                pop_root['1/syn_weight'][total_offset:(point_offset + n_ds)] = grp['1/syn_weight'][()]
+                pop_root['1/syn_weight'][point_offset:(point_offset + n_ds)] = grp['1/syn_weight'][()]
                 point_offset += n_ds
 
                 fname = grp.file.filename
@@ -161,14 +163,16 @@ class H5Merger(object):
                     os.remove(fname)
 
             self._create_index(pop_root, index_type='target')
+            self._create_index(pop_root, index_type='source')
+            out_h5.close()
 
     def _create_index(self, pop_root, index_type='target'):
         if index_type == 'target':
             edge_nodes = np.array(pop_root['target_node_id'], dtype=np.int64)
-            output_grp = pop_root.create_group('indicies/target_to_source')
+            output_grp = pop_root.create_group('indices/target_to_source')
         elif index_type == 'source':
             edge_nodes = np.array(pop_root['source_node_id'], dtype=np.int64)
-            output_grp = pop_root.create_group('indicies/source_to_target')
+            output_grp = pop_root.create_group('indices/source_to_target')
 
         edge_nodes = np.append(edge_nodes, [-1])
         n_targets = np.max(edge_nodes)
@@ -293,10 +297,10 @@ class ConnectionWriter(object):
         def _create_index(self, index_type='target'):
             if index_type == 'target':
                 edge_nodes = np.array(self._pop_root['target_node_id'], dtype=np.int64)
-                output_grp = self._pop_root.create_group('indicies/target_to_source')
+                output_grp = self._pop_root.create_group('indices/target_to_source')
             elif index_type == 'source':
                 edge_nodes = np.array(self._pop_root['source_node_id'], dtype=np.int64)
-                output_grp = self._pop_root.create_group('indicies/source_to_target')
+                output_grp = self._pop_root.create_group('indices/source_to_target')
 
             edge_nodes = np.append(edge_nodes, [-1])
             n_targets = np.max(edge_nodes)
