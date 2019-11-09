@@ -47,6 +47,7 @@ class BioSimulator(Simulator):
         self._start_from_state = start_from_state
         self.dt = dt
         self.tstop = tstop
+        self.tstart = 0.0
 
         self._v_init = v_init
         self._celsius = celsius
@@ -146,6 +147,17 @@ class BioSimulator(Simulator):
     def local_gids(self):
         # return self.net.get
         return self.net.local_gids
+
+    def simulation_time(self, units='ms'):
+        units_lc = units.lower()
+        time_ms = self.tstop - self.tstart
+        if units_lc == 'ms':
+            return time_ms
+        elif units_lc == 's':
+            return time_ms/1000.0
+
+        else:
+            raise AttributeError('Uknown unit type {}'.format(units))
 
     def __elapsed_time(self, time_s):
         if time_s < 120:

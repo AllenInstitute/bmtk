@@ -428,7 +428,7 @@ class STMPIBuffer(STCSVBuffer):
 
                 self._sort_buffer_file(file_name, sort_order)
 
-            return self._sorted_itr(filter, 0 if sort_order == SortOrder.by_time else 1)
+            return self._sorted_itr(filter, 0 if sort_order == SortOrder.by_time else 2)
         else:
             return self._unsorted_itr(filter)
 
