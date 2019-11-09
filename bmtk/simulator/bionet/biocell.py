@@ -206,6 +206,7 @@ class BioCell(Cell):
 
         self._netcons.append(nc)
         self._synapses.append(syn)
+        self._edge_type_ids.append(edge_prop.edge_type_id)
         if self._save_conn:
             self._save_connection(src_gid=src_node.node_id, src_net=src_node.network, sec_x=sec_x, seg_ix=sec_id,
                                   edge_type_id=edge_prop.edge_type_id)

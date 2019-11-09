@@ -318,7 +318,7 @@ class CellVarRecorderParallel(CellVarRecorder):
                                               mpi_size=1, **kwargs)
 
     def _calc_offset(self):
-        from mpi4py import MPI
+        from mpi4py import MPI  # Just needed for UNSIGNED_INT
         comm = io.bmtk_world_comm.comm
         rank = comm.Get_rank()
         nhosts = comm.Get_size()
