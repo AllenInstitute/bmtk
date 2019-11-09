@@ -41,7 +41,7 @@ def load_reports(config_file):
     cfg = ConfigDict.from_json(config_file)
     reports = []
     for report_name, report in cfg.reports.items():
-        if report['module'] != 'membrane_report':
+        if report['module'] not in  ['membrane_report', 'multimeter_report']:
             continue
         report_file = report['file_name'] if 'file_name' in report else '{}.h5'.format(report_name)
         report_file = report_file if os.path.isabs(report_file) else os.path.join(cfg.output_dir, report_file)
