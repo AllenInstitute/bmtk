@@ -23,8 +23,10 @@ class SaveSynapses(SimulatorMod):
         self._virt_lookup = {}
         self._gid_lookup = {}
         self._sec_lookup = {}
-        if not os.path.exists(network_dir):
-            os.makedirs(network_dir)
+        if MPI_RANK == 0:
+            if not os.path.exists(network_dir):
+                os.makedirs(network_dir)
+        pc.barrier()
 
         #if N_HOSTS > 1:
         #    io.log_exception('save_synapses module is not current supported with mpi')
@@ -112,7 +114,6 @@ class H5Merger(object):
             self._point_edge_count[(src_pop, trg_pop)] += len(edges_grp['1/syn_weight'])
 
         for (src_pop, trg_pop), in_grps in self._tmp_files.items():
-            print(src_pop, trg_pop, in_grps)
             out_h5 = h5py.File(os.path.join(self._network_dir, '{}_{}_edges.h5'.format(src_pop, trg_pop)), 'w')
             pop_root = out_h5.create_group('/edges/{}_{}'.format(src_pop, trg_pop))
             n_edges_total = self._edge_counts[(src_pop, trg_pop)]
