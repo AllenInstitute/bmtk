@@ -281,11 +281,12 @@ class STCSVBuffer(STBuffer, STReader):
     If running parallel simulations should use the STMPIBuffer adaptor instead.
     """
 
-    def __init__(self, cache_dir=None, default_population=None, **kwargs):
+    def __init__(self, cache_dir=None, default_population=None, cache_name='spikes', **kwargs):
         self._default_population = default_population or pop_na
 
         # Keep a file handle open for writing spike information
         self._cache_dir = cache_dir or '.'
+        self._cache_name = cache_name
         self._buffer_filename = self._cache_fname(self._cache_dir)
         self._buffer_handle = open(self._buffer_filename, 'w')
 
@@ -297,7 +298,7 @@ class STCSVBuffer(STBuffer, STReader):
         # TODO: Potential problem if multiple SpikeTrains are opened at the same time, add salt to prevent collisions
         if not os.path.exists(self._cache_dir):
             os.mkdirs(self._cache_dir)
-        return os.path.join(cache_dir, '.bmtk.spikes.cache.csv')
+        return os.path.join(cache_dir, '.bmtk.{}.cache.csv'.format(self._cache_name))
 
     def add_spike(self, node_id, timestamp, population=None, **kwargs):
         population = population or pop_na
@@ -381,10 +382,12 @@ class STCSVBuffer(STBuffer, STReader):
 
 
 class STMPIBuffer(STCSVBuffer):
-    def __init__(self, cache_dir=None, default_population=None, **kwargs):
+    def __init__(self, cache_dir=None, default_population=None, cache_name='spikes', **kwargs):
         self.mpi_rank = kwargs.get('MPI_rank', bmtk_world_comm.MPI_rank)
         self.mpi_size = kwargs.get('MPI_size', bmtk_world_comm.MPI_size)
+        self._cache_name = cache_name
         super(STMPIBuffer, self).__init__(cache_dir, default_population=default_population, **kwargs)
+
 
     def _cache_fname(self, cache_dir):
         if self.mpi_rank == 0:
@@ -392,10 +395,10 @@ class STMPIBuffer(STCSVBuffer):
                 os.mkdirs(self._cache_dir)
         bmtk_world_comm.barrier()
 
-        return os.path.join(self._cache_dir, '.bmtk.spikes.cache.node{}.csv'.format(self.mpi_rank))
+        return os.path.join(self._cache_dir, '.bmtk.{}.cache.node{}.csv'.format(self._cache_name, self.mpi_rank))
 
     def _all_cached_files(self):
-        return [os.path.join(self._cache_dir, '.bmtk.spikes.cache.node{}.csv'.format(r)) for r in range(bmtk_world_comm.MPI_size)]
+        return [os.path.join(self._cache_dir, '.bmtk.{}.cache.node{}.csv'.format(self._cache_name, r)) for r in range(bmtk_world_comm.MPI_size)]
 
     @property
     def populations(self):
