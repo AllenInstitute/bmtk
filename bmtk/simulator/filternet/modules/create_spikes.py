@@ -30,7 +30,7 @@ class SpikesGenerator(SimModule):
         # self._spike_writer = SpikeTrainWriter(tmp_dir=tmp_dir)
         self._spike_writer = SpikeTrains(cache_dir=tmp_dir)
 
-    def save(self, sim, gid, times, rates):
+    def save(self, sim, cell, times, rates):
         try:
             spike_trains = np.array(f_rate_to_spike_train(times*1000.0, rates, np.random.randint(10000),
                                                           1000.*min(times), 1000.*max(times), 0.1))
@@ -40,7 +40,7 @@ class SpikesGenerator(SimModule):
                                                                             seed=np.random.randint(10000)))
 
         # self._spike_writer.add_spikes(times=spike_trains, gid=gid)
-        self._spike_writer.add_spikes(node_ids=gid, timestamps=spike_trains, population=pop_na)
+        self._spike_writer.add_spikes(node_ids=cell.gid, timestamps=spike_trains, population=cell.population)
 
 
     def finalize(self, sim):
