@@ -188,6 +188,43 @@ class GratingMovie(Movie):
 
         return mov
 
+class LoomingMovie(Movie):
+
+    def __init__(self, row_size, col_size, frame_rate=1000.):
+        self.row_size = row_size                        #in degrees
+        self.col_size = col_size                        #in degrees
+        self.frame_rate = float(frame_rate)             #in Hz
+
+    def create_movie(self, t_looming = 1, gray_screen_dur = 0.5):
+        """Create the looming movie with the desired parameters
+
+        :param t_looming: duration of time looming
+        """
+        physical_spacing = 1.    #To make sure no aliasing occurs
+        self.row_range  = np.linspace(0, self.row_size, self.row_size / physical_spacing, endpoint = True)
+        self.col_range  = np.linspace(0, self.col_size, self.col_size / physical_spacing, endpoint = True)
+        loomingFramesNeeded = int(round(self.frame_rate * (t_looming)))
+        grayScreenFrames = int(round(self.frame_rate * (gray_screen_dur)))
+        time_range = np.linspace(0, t_looming, loomingFramesNeeded, endpoint=True)
+
+        data = np.zeros((grayScreenFrames + loomingFramesNeeded, self.row_size, self.col_size))
+        # mgrid is a mesh creation helper
+        xx, yy = np.mgrid[:self.row_size, :self.col_size]
+        # yy, xx = np.meshgrid(time_range, self.row_range, self.col_range, indexing='ij')
+        # circles contains the squared distance to the (middle, middle) point
+        # we are just using the circle equation learnt at school
+        circle = (xx - self.row_size / 2) ** 2 + (yy - self.col_size / 2) ** 2
+        radius = 25  # Cirlces grow to this size
+
+        for i in range(loomingFramesNeeded):
+            # Create filled circle
+            data[grayScreenFrames + i, :, :] = (circle <= (i/(4./3))%(radius**2))
+        data *= -1   # Adjusting so have dark looming and not bright looming disk
+
+        mov = Movie(data, row_range=self.row_range, col_range=self.col_range, labels=('time', 'y', 'x'), units=('second', 'pixel', 'pixel'), frame_rate=self.frame_rate)
+
+        return mov
+
 
 if __name__ == "__main__":
     m1 = FullFieldFlashMovie(range(60), range(80), 1, 2).full(t_max=2)
