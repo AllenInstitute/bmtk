@@ -1,8 +1,11 @@
+from six import string_types
+import ast
 from scipy import ndimage
 import numpy as np
 import itertools
 import importlib
 import scipy.interpolate as spinterp
+
 from . import utilities as util
 import matplotlib.pyplot as plt
 import scipy.misc as spmisc
@@ -41,7 +44,14 @@ class GaussianSpatialFilter(object):
 
         self.translate = translate
         self.rotation = rotation
-        self.sigma = sigma 
+
+        if isinstance(sigma, string_types):
+            try:
+                sigma = ast.literal_eval(sigma)
+            except Exception as exc:
+                pass
+
+        self.sigma = sigma
         self.origin = origin
         
     def imshow(self, row_range, col_range, threshold=0, **kwargs):

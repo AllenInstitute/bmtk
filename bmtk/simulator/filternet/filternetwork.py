@@ -36,7 +36,7 @@ class FilterNetwork(SimNetwork):
     def build_nodes(self):
         for node_pop in self.node_populations:
             for node in node_pop.get_nodes():
-                cell = Cell(node)
+                cell = Cell(node, population=node_pop.name)
                 cell.default_jitter = self.jitter
                 cell.build()
                 self._local_cells.append(cell)

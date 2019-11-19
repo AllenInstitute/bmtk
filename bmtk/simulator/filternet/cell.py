@@ -2,12 +2,13 @@ from bmtk.simulator.filternet.pyfunction_cache import py_modules
 
 
 class Cell(object):
-    def __init__(self, node):
+    def __init__(self, node, population=None):
         self._node = node
         self._gid = node.gid
         self._node_id = node.node_id
         self._lgn_cell_obj = None
         self._default_jitter = (0.0, 0.0)
+        self._population = population
 
     @property
     def gid(self):
@@ -16,6 +17,10 @@ class Cell(object):
     @property
     def lgn_cell_obj(self):
         return self._lgn_cell_obj
+
+    @property
+    def population(self):
+        return self._population
 
     @property
     def default_jitter(self):
