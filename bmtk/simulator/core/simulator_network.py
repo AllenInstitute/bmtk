@@ -133,8 +133,8 @@ class SimNetwork(object):
         all_nodes_df = None
         for node_pop in selected_pops:
             node_pop_df = node_pop.nodes_df(index_by_id=False)
-            print(node_pop_df)
-            print('-----')
+            # print(node_pop_df)
+            # print('-----')
             if 'population' not in node_pop_df:
                 node_pop_df['population'] = node_pop.name
 
