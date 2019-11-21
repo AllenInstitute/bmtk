@@ -295,8 +295,8 @@ class STCSVBuffer(STBuffer, STReader):
 
     def _cache_fname(self, cache_dir):
         # TODO: Potential problem if multiple SpikeTrains are opened at the same time, add salt to prevent collisions
-        if not os.path.exists(self._cache_dir):
-            os.mkdirs(self._cache_dir)
+        if not os.path.exists(cache_dir):
+            os.makedirs(cache_dir)
         return os.path.join(cache_dir, '.bmtk.spikes.cache.csv')
 
     def add_spike(self, node_id, timestamp, population=None, **kwargs):
@@ -389,7 +389,7 @@ class STMPIBuffer(STCSVBuffer):
     def _cache_fname(self, cache_dir):
         if self.mpi_rank == 0:
             if not os.path.exists(self._cache_dir):
-                os.mkdirs(self._cache_dir)
+                os.makedirs(self._cache_dir)
         bmtk_world_comm.barrier()
 
         return os.path.join(self._cache_dir, '.bmtk.spikes.cache.node{}.csv'.format(self.mpi_rank))
