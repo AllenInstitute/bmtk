@@ -15,9 +15,9 @@ class RecordRates(SimModule):
 
         self._save_to_h5 = h5_file is not None
 
-    def save(self, sim, gid, times, rates):
+    def save(self, sim, cell, times, rates):
         for t, r in zip(times, rates):
-            self._tmp_csv_writer.writerow([gid, t, r])
+            self._tmp_csv_writer.writerow([cell.gid, t, r])
         self._tmp_csv_fhandle.flush()
 
     def finalize(self, sim):

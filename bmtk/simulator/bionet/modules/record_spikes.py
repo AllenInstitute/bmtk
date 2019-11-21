@@ -57,7 +57,8 @@ class SpikesMod(SimulatorMod):
         self._tmpdir = tmp_dir
         self._sort_order = sort_order_lu.get(spikes_sort_order, sort_order.none)
 
-        self._spike_writer = SpikeTrains(cache_dir=tmp_dir)
+        cache_name = os.path.basename(self._h5_fname or self._csv_fname or self._nwb_fname)
+        self._spike_writer = SpikeTrains(cache_dir=tmp_dir, cache_name=cache_name)
         self._gid_map = None
 
     def initialize(self, sim):
