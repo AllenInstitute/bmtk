@@ -9,6 +9,7 @@ from itertools import product
 from .sim_module import SimulatorMod
 from bmtk.simulator.bionet.biocell import BioCell
 from bmtk.simulator.bionet.io_tools import io
+from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
 from bmtk.simulator.bionet.pointprocesscell import PointProcessCell
 
 
@@ -115,6 +116,8 @@ class H5Merger(object):
 
         for (src_pop, trg_pop), in_grps in self._tmp_files.items():
             out_h5 = h5py.File(os.path.join(self._network_dir, '{}_{}_edges.h5'.format(src_pop, trg_pop)), 'w')
+            add_hdf5_magic(out_h5)
+            add_hdf5_version(out_h5)
             pop_root = out_h5.create_group('/edges/{}_{}'.format(src_pop, trg_pop))
             n_edges_total = self._edge_counts[(src_pop, trg_pop)]
             n_edges_bio = self._biophys_edge_count[(src_pop, trg_pop)]
@@ -218,6 +221,8 @@ class ConnectionWriter(object):
             self._pop_name = '{}_{}'.format(src_pop, trg_pop)
             # self._h5_file = h5py.File(os.path.join(network_dir, '{}_edges.h5'.format(self._pop_name)), 'w')
             self._h5_file = h5py.File(file_path, 'w')
+            add_hdf5_magic(self._h5_file)
+            add_hdf5_version(self._h5_file)
             self._pop_root = self._h5_file.create_group('/edges/{}'.format(self._pop_name))
             self._pop_root.create_dataset('edge_group_id', (self._block_size, ), dtype=np.uint16,
                                           chunks=(self._block_size, ), maxshape=(None, ))
@@ -294,6 +299,7 @@ class ConnectionWriter(object):
                     point_count += 1
 
             self._create_index('target')
+            self._create_index('source')
 
         def _create_index(self, index_type='target'):
             if index_type == 'target':
