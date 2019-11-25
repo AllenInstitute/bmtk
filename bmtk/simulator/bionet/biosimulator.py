@@ -207,11 +207,14 @@ class BioSimulator(Simulator):
 
 
         gids = list(set(self.local_gids) & set(gids))
+        
+        if len(gids)!=len(amplitude):
+            amplitude = amplitude * len(gids)
 
         for idx,gid in enumerate(gids):
             cell = self.net.get_cell_gid(gid)
             Ic = IClamp(amplitude[idx], delay, duration)
-
+            
             Ic.attach_current(cell)
             self._iclamps.append(Ic)
 
@@ -315,8 +318,8 @@ class BioSimulator(Simulator):
                 amplitude = sim_input.params['amp']
                 delay = sim_input.params['delay']
                 duration = sim_input.params['duration']
-                gids = sim_input.params['node_set']
-                sim.attach_current_clamp(amplitude, delay, duration, node_set)
+                gids = sim_input.params['gids']
+                sim.attach_current_clamp(amplitude, delay, duration, gids)
 
             elif sim_input.module == 'xstim':
                 sim.add_mod(mods.XStimMod(**sim_input.params))

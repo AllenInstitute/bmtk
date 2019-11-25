@@ -390,6 +390,7 @@ class EnvBuilder(object):
             "input_type": "current_clamp",
             "module": "IClamp",
             "node_set": "all",
+            "gids": current_param['gids'],
             "amp": current_param['amp'],
             "delay": float(current_param['delay']),
             "duration": float(current_param['duration'])
