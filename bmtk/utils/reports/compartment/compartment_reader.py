@@ -1,6 +1,6 @@
 import h5py
 import numpy as np
-import pdb
+
 from .core import CompartmentReaderABC
 from bmtk.utils.hdf5_helper import get_attribute_h5
 
@@ -176,7 +176,6 @@ class CompartmentReaderVer01(CompartmentReaderABC):
 
         if 'report' in self._h5_handle.keys():
             report_grp = self._h5_root['report']
-            pdb.set_trace()
             for pop_name, pop_grp in report_grp.items():
                 self._popgrps[pop_name] = _CompartmentPopulationReaderVer01(pop_grp=pop_grp, pop_name=pop_name)
         else:
