@@ -9,11 +9,10 @@
     <title>bmtk.utils.sim_setup &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
@@ -998,11 +997,21 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">return</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Adding current clamp&#39;</span><span class="p">)</span>
+
+
+        <span class="k">try</span><span class="p">:</span> 
+            <span class="nb">len</span><span class="p">(</span><span class="n">current_param</span><span class="p">[</span><span class="s1">&#39;amp&#39;</span><span class="p">])</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">current_param</span><span class="p">[</span><span class="s1">&#39;amp&#39;</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">current_param</span><span class="p">[</span><span class="s1">&#39;amp&#39;</span><span class="p">])]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">current_param</span><span class="p">[</span><span class="s1">&#39;amp&#39;</span><span class="p">])</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">current_param</span><span class="p">[</span><span class="s1">&#39;amp&#39;</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">current_param</span><span class="p">[</span><span class="s1">&#39;amp&#39;</span><span class="p">]]</span>
+
+
         <span class="n">iclamp_config</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
             <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
             <span class="s2">&quot;node_set&quot;</span><span class="p">:</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;amp&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">current_param</span><span class="p">[</span><span class="s1">&#39;amp&#39;</span><span class="p">]),</span>
+            <span class="s2">&quot;amp&quot;</span><span class="p">:</span> <span class="n">current_param</span><span class="p">[</span><span class="s1">&#39;amp&#39;</span><span class="p">],</span>
             <span class="s2">&quot;delay&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">current_param</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">]),</span>
             <span class="s2">&quot;duration&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">current_param</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">])</span>
         <span class="p">}</span>
@@ -1058,6 +1067,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;target_simulator&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_simulator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">,</span> <span class="s1">&#39;circuit_config.json&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_add_run_params</span><span class="p">(</span><span class="o">**</span><span class="n">run_args</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">current_clamp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">current_clamp</span><span class="p">[</span><span class="s1">&#39;gids&#39;</span><span class="p">]</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">current_clamp</span><span class="p">[</span><span class="s1">&#39;gids&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;all&#39;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_add_current_clamp</span><span class="p">(</span><span class="n">current_clamp</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">spikes_inputs</span><span class="o">!=</span><span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_add_spikes_inputs</span><span class="p">(</span><span class="n">spikes_inputs</span><span class="p">)</span>
@@ -1315,6 +1331,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>

@@ -9,11 +9,10 @@
     <title>bmtk.utils.reports.spike_trains.spike_train_buffer &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
   </head><body>
@@ -903,11 +902,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">    If running parallel simulations should use the STMPIBuffer adaptor instead.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cache_name</span><span class="o">=</span><span class="s1">&#39;spikes&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_default_population</span> <span class="o">=</span> <span class="n">default_population</span> <span class="ow">or</span> <span class="n">pop_na</span>
 
         <span class="c1"># Keep a file handle open for writing spike information</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache_dir</span> <span class="o">=</span> <span class="n">cache_dir</span> <span class="ow">or</span> <span class="s1">&#39;.&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache_name</span> <span class="o">=</span> <span class="n">cache_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache_fname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_dir</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_handle</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer_filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
 
@@ -917,9 +917,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
     <span class="k">def</span> <span class="nf">_cache_fname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_dir</span><span class="p">):</span>
         <span class="c1"># TODO: Potential problem if multiple SpikeTrains are opened at the same time, add salt to prevent collisions</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_dir</span><span class="p">):</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">mkdirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_dir</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s1">&#39;.bmtk.spikes.cache.csv&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s1">&#39;.bmtk.</span><span class="si">{}</span><span class="s1">.cache.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_name</span><span class="p">))</span>
 
 <div class="viewcode-block" id="STCSVBuffer.add_spike"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.add_spike">[docs]</a>    <span class="k">def</span> <span class="nf">add_spike</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">population</span> <span class="o">=</span> <span class="n">population</span> <span class="ow">or</span> <span class="n">pop_na</span>
@@ -1003,21 +1003,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="STMPIBuffer"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer">[docs]</a><span class="k">class</span> <span class="nc">STMPIBuffer</span><span class="p">(</span><span class="n">STCSVBuffer</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cache_name</span><span class="o">=</span><span class="s1">&#39;spikes&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mpi_rank</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;MPI_rank&#39;</span><span class="p">,</span> <span class="n">bmtk_world_comm</span><span class="o">.</span><span class="n">MPI_rank</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mpi_size</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;MPI_size&#39;</span><span class="p">,</span> <span class="n">bmtk_world_comm</span><span class="o">.</span><span class="n">MPI_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache_name</span> <span class="o">=</span> <span class="n">cache_name</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">STMPIBuffer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="n">default_population</span><span class="o">=</span><span class="n">default_population</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
 
     <span class="k">def</span> <span class="nf">_cache_fname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_dir</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpi_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_dir</span><span class="p">):</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">mkdirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_dir</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_dir</span><span class="p">)</span>
         <span class="n">bmtk_world_comm</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_dir</span><span class="p">,</span> <span class="s1">&#39;.bmtk.spikes.cache.node</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mpi_rank</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_dir</span><span class="p">,</span> <span class="s1">&#39;.bmtk.</span><span class="si">{}</span><span class="s1">.cache.node</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpi_rank</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_all_cached_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_dir</span><span class="p">,</span> <span class="s1">&#39;.bmtk.spikes.cache.node</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">r</span><span class="p">))</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">bmtk_world_comm</span><span class="o">.</span><span class="n">MPI_size</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_dir</span><span class="p">,</span> <span class="s1">&#39;.bmtk.</span><span class="si">{}</span><span class="s1">.cache.node</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_name</span><span class="p">,</span> <span class="n">r</span><span class="p">))</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">bmtk_world_comm</span><span class="o">.</span><span class="n">MPI_size</span><span class="p">)]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">populations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1050,7 +1052,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">_sort_buffer_file</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">sort_order</span><span class="p">)</span>
 
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sorted_itr</span><span class="p">(</span><span class="nb">filter</span><span class="p">,</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_time</span> <span class="k">else</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sorted_itr</span><span class="p">(</span><span class="nb">filter</span><span class="p">,</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_time</span> <span class="k">else</span> <span class="mi">2</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unsorted_itr</span><span class="p">(</span><span class="nb">filter</span><span class="p">)</span></div>
 
@@ -1124,6 +1126,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>

@@ -9,11 +9,10 @@
     <title>bmtk.simulator.bionet.cell &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
@@ -673,6 +672,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="c1"># Load the NEURON HOC object</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hobj</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">load_cell</span><span class="p">()</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_props</span> <span class="o">=</span> <span class="p">[]</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">node</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span>
@@ -723,7 +724,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="p">[]</span></div>
 
 <div class="viewcode-block" id="Cell.set_syn_connections"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.cell.Cell.set_syn_connections">[docs]</a>    <span class="k">def</span> <span class="nf">set_syn_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_prop</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="n">node_prop</span><span class="p">]</span></div>
 </pre></div>
 
           </div>
@@ -750,6 +754,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>

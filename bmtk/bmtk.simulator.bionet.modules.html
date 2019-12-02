@@ -9,11 +9,10 @@
     <title>bmtk.simulator.bionet.modules package &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="bmtk.simulator.core package" href="bmtk.simulator.core.html" />
@@ -937,7 +936,7 @@ the setup, and the sim parameter can be used to access simulation, network and i
 <span id="bmtk-simulator-bionet-modules-record-spikes-module"></span><h2>bmtk.simulator.bionet.modules.record_spikes module<a class="headerlink" href="#module-bmtk.simulator.bionet.modules.record_spikes" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="bmtk.simulator.bionet.modules.record_spikes.SpikesMod">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.modules.record_spikes.</code><code class="descname">SpikesMod</code><span class="sig-paren">(</span><em>tmp_dir</em>, <em>spikes_file_csv=None</em>, <em>spikes_file=None</em>, <em>spikes_file_nwb=None</em>, <em>spikes_sort_order=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/record_spikes.html#SpikesMod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.record_spikes.SpikesMod" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.modules.record_spikes.</code><code class="descname">SpikesMod</code><span class="sig-paren">(</span><em>tmp_dir</em>, <em>spikes_file_csv=None</em>, <em>spikes_file=None</em>, <em>spikes_file_nwb=None</em>, <em>spikes_sort_order=None</em>, <em>mode='a'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/record_spikes.html#SpikesMod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.record_spikes.SpikesMod" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.modules.sim_module.SimulatorMod" title="bmtk.simulator.bionet.modules.sim_module.SimulatorMod"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.bionet.modules.sim_module.SimulatorMod</span></code></a></p>
 <p>Module use for saving spikes</p>
 <dl class="method">
@@ -1001,7 +1000,7 @@ all been finalized.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="class">
 <dt id="bmtk.simulator.bionet.modules.save_synapses.ConnectionWriter.H5Index">
-<em class="property">class </em><code class="descname">H5Index</code><span class="sig-paren">(</span><em>network_dir</em>, <em>src_pop</em>, <em>trg_pop</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/save_synapses.html#ConnectionWriter.H5Index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.save_synapses.ConnectionWriter.H5Index" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">H5Index</code><span class="sig-paren">(</span><em>file_path</em>, <em>src_pop</em>, <em>trg_pop</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/save_synapses.html#ConnectionWriter.H5Index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.save_synapses.ConnectionWriter.H5Index" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.save_synapses.ConnectionWriter.H5Index.add_bio_conn">
@@ -1016,6 +1015,11 @@ all been finalized.</p>
 <dl class="method">
 <dt id="bmtk.simulator.bionet.modules.save_synapses.ConnectionWriter.H5Index.clean_ends">
 <code class="descname">clean_ends</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/save_synapses.html#ConnectionWriter.H5Index.clean_ends"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.save_synapses.ConnectionWriter.H5Index.clean_ends" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="bmtk.simulator.bionet.modules.save_synapses.ConnectionWriter.H5Index.close_h5">
+<code class="descname">close_h5</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/save_synapses.html#ConnectionWriter.H5Index.close_h5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.save_synapses.ConnectionWriter.H5Index.close_h5" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1035,6 +1039,12 @@ all been finalized.</p>
 <code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/save_synapses.html#ConnectionWriter.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.save_synapses.ConnectionWriter.close" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+<dl class="class">
+<dt id="bmtk.simulator.bionet.modules.save_synapses.H5Merger">
+<em class="property">class </em><code class="descclassname">bmtk.simulator.bionet.modules.save_synapses.</code><code class="descname">H5Merger</code><span class="sig-paren">(</span><em>network_dir</em>, <em>grp_keys</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/modules/save_synapses.html#H5Merger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.modules.save_synapses.H5Merger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 </dd></dl>
 
 <dl class="class">
@@ -1350,6 +1360,7 @@ Supports json config in conf as well as string pointer to a file.
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>

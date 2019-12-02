@@ -9,11 +9,10 @@
     <title>bmtk.utils.reports.compartment.compartment_report &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
   </head><body>
@@ -622,11 +621,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h1>Source code for bmtk.utils.reports.compartment.compartment_report</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">.compartment_reader</span> <span class="k">import</span> <span class="n">CompartmentReaderVer01</span> <span class="k">as</span> <span class="n">SonataReaderDefault</span>
 <span class="kn">from</span> <span class="nn">.compartment_writer</span> <span class="k">import</span> <span class="n">CompartmentWriterv01</span> <span class="k">as</span> <span class="n">SonataWriterDefault</span>
-
+<span class="kn">from</span> <span class="nn">bmtk.utils.io</span> <span class="k">import</span> <span class="n">bmtk_world_comm</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">mpi4py</span> <span class="k">import</span> <span class="n">MPI</span>
-    <span class="n">comm</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span>
+    <span class="n">comm</span> <span class="o">=</span> <span class="n">bmtk_world_comm</span><span class="o">.</span><span class="n">comm</span>
     <span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
     <span class="n">nhosts</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_size</span><span class="p">()</span>
 
@@ -669,6 +667,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>

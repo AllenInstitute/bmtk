@@ -9,11 +9,10 @@
     <title>bmtk.analyzer.spike_trains &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
@@ -634,6 +633,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">from</span> <span class="nn">bmtk.simulator.utils.config</span> <span class="k">import</span> <span class="n">ConfigDict</span>
 <span class="kn">from</span> <span class="nn">bmtk.utils.reports</span> <span class="k">import</span> <span class="n">SpikeTrains</span>
 <span class="kn">from</span> <span class="nn">bmtk.utils.reports.spike_trains</span> <span class="k">import</span> <span class="n">plotting</span>
+<span class="kn">from</span> <span class="nn">bmtk.utils.sonata</span> <span class="k">import</span> <span class="n">File</span>
 
 
 <div class="viewcode-block" id="load_spikes_file"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.spike_trains.load_spikes_file">[docs]</a><span class="k">def</span> <span class="nf">load_spikes_file</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -660,6 +660,39 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="n">spike_trains</span> <span class="o">=</span> <span class="n">load_spikes_file</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
     <span class="n">plotting</span><span class="o">.</span><span class="n">plot_rates</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="spike_statistics"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.spike_trains.spike_statistics">[docs]</a><span class="k">def</span> <span class="nf">spike_statistics</span><span class="p">(</span><span class="n">spikes_file</span><span class="p">,</span> <span class="n">simulation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">simulation_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">groupby</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">filterparams</span><span class="p">):</span>
+    <span class="n">spike_trains</span> <span class="o">=</span> <span class="n">SpikeTrains</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">spikes_file</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">calc_stats</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;timestamps&#39;</span><span class="p">])</span>
+        <span class="n">diffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">diffs</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="s1">&#39;isi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">vals</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="s1">&#39;isi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="n">d</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">,</span> <span class="s1">&#39;isi&#39;</span><span class="p">])</span>
+
+    <span class="n">spike_counts_df</span> <span class="o">=</span> <span class="n">spike_trains</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;population&#39;</span><span class="p">,</span> <span class="s1">&#39;node_ids&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">calc_stats</span><span class="p">)</span>
+    <span class="n">spike_counts_df</span> <span class="o">=</span> <span class="n">spike_counts_df</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s1">&#39;timestamps&#39;</span><span class="p">:</span> <span class="s1">&#39;counts&#39;</span><span class="p">},</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">spike_counts_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">,</span> <span class="s1">&#39;node_id&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">simulation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">nodes_df</span> <span class="o">=</span> <span class="n">simulation</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">node_properties</span><span class="p">(</span><span class="o">**</span><span class="n">filterparams</span><span class="p">)</span>
+        <span class="n">sim_time_s</span> <span class="o">=</span> <span class="n">simulation</span><span class="o">.</span><span class="n">simulation_time</span><span class="p">(</span><span class="n">units</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">)</span>
+        <span class="n">spike_counts_df</span><span class="p">[</span><span class="s1">&#39;firing_rate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">spike_counts_df</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">sim_time_s</span>
+
+        <span class="n">vals_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">nodes_df</span><span class="p">,</span> <span class="n">spike_counts_df</span><span class="p">,</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+        <span class="n">vals_df</span> <span class="o">=</span> <span class="n">vals_df</span><span class="o">.</span><span class="n">fillna</span><span class="p">({</span><span class="s1">&#39;count&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;firing_rate&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;isi&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">})</span>
+
+        <span class="n">vals_df</span> <span class="o">=</span> <span class="n">vals_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">groupby</span><span class="p">)[[</span><span class="s1">&#39;firing_rate&#39;</span><span class="p">,</span> <span class="s1">&#39;count&#39;</span><span class="p">,</span> <span class="s1">&#39;isi&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">agg</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">vals_df</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">spike_counts_df</span></div>
 </pre></div>
 
           </div>
@@ -686,6 +719,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>

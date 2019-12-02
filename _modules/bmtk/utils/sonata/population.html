@@ -9,11 +9,10 @@
     <title>bmtk.utils.sonata.population &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
@@ -858,15 +857,18 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_gid_lookup_fnc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">row_indx</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_row2gid</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">row_indx</span><span class="p">][</span><span class="s1">&#39;gid&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_has_gids</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="NodePopulation.to_dataframe"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.population.NodePopulation.to_dataframe">[docs]</a>    <span class="k">def</span> <span class="nf">to_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="NodePopulation.to_dataframe"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.population.NodePopulation.to_dataframe">[docs]</a>    <span class="k">def</span> <span class="nf">to_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index_by_id</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">groups</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">group_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span>
+            <span class="n">ret_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">group_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">dataframes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+            <span class="n">ret_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">grp_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_ids</span><span class="p">:</span>
-                <span class="n">dataframes</span> <span class="o">=</span> <span class="n">dataframes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">grp_id</span><span class="p">)</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">(),</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="n">dataframes</span> <span class="o">=</span> <span class="n">dataframes</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;node_id&#39;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">dataframes</span></div>
+                <span class="n">ret_df</span> <span class="o">=</span> <span class="n">ret_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">grp_id</span><span class="p">)</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">(),</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">index_by_id</span><span class="p">:</span>
+            <span class="n">ret_df</span> <span class="o">=</span> <span class="n">ret_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;node_id&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ret_df</span></div>
 
 <div class="viewcode-block" id="NodePopulation.get_row"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.population.NodePopulation.get_row">[docs]</a>    <span class="k">def</span> <span class="nf">get_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_indx</span><span class="p">):</span>
         <span class="c1"># TODO: Use helper function so we don&#39;t have to lookup gid/node_id twice</span>
@@ -1033,8 +1035,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="EdgePopulation.build_indicies"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.population.EdgePopulation.build_indicies">[docs]</a>    <span class="k">def</span> <span class="nf">build_indicies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="s1">&#39;indicies&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_group</span><span class="p">:</span>
-            <span class="n">indicies_grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_group</span><span class="p">[</span><span class="s1">&#39;indicies&#39;</span><span class="p">]</span>
+        <span class="n">indicies_grp</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">grp_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;indices&#39;</span><span class="p">,</span> <span class="s1">&#39;indicies&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">grp_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_group</span><span class="p">:</span>
+                <span class="n">indicies_grp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_group</span><span class="p">[</span><span class="n">grp_name</span><span class="p">]</span>
+                <span class="k">break</span>
+
+        <span class="c1"># if &#39;indicies&#39; in self._pop_group:</span>
+        <span class="k">if</span> <span class="n">indicies_grp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># indicies_grp = self._pop_group[&#39;indicies&#39;]</span>
             <span class="k">for</span> <span class="n">index_name</span><span class="p">,</span> <span class="n">index_grp</span> <span class="ow">in</span> <span class="n">indicies_grp</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="c1"># TODO: Let __IndexStruct build the indicies</span>
                 <span class="c1"># Make sure subgroup has the correct datasets</span>
@@ -1272,6 +1281,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>

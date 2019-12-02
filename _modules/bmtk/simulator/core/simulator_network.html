@@ -9,11 +9,10 @@
     <title>bmtk.simulator.core.simulator_network &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
@@ -621,6 +620,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             
   <h1>Source code for bmtk.simulator.core.simulator_network</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">six</span> <span class="k">import</span> <span class="n">string_types</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">bmtk.simulator.core.io_tools</span> <span class="k">import</span> <span class="n">io</span>
 <span class="c1">#from bmtk.simulator.core.config import ConfigDict</span>
@@ -716,6 +716,68 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="c1"># Used in inputs/reports when needed to get all gids belonging to a node population</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_node_sets</span><span class="p">[</span><span class="n">pop_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">NodeSet</span><span class="p">({</span><span class="s1">&#39;population&#39;</span><span class="p">:</span> <span class="n">pop_name</span><span class="p">},</span> <span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SimNetwork.node_properties"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.simulator_network.SimNetwork.node_properties">[docs]</a>    <span class="k">def</span> <span class="nf">node_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">populations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">selected_pops</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_populations</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">populations</span><span class="p">,</span> <span class="n">string_types</span><span class="p">):</span>
+            <span class="n">selected_pops</span> <span class="o">=</span> <span class="p">[</span><span class="n">pop</span> <span class="k">for</span> <span class="n">pop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_populations</span> <span class="k">if</span> <span class="n">pop</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">populations</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">selected_pops</span> <span class="o">=</span> <span class="p">[</span><span class="n">pop</span> <span class="k">for</span> <span class="n">pop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_populations</span> <span class="k">if</span> <span class="n">pop</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">populations</span><span class="p">]</span>
+
+        <span class="n">all_nodes_df</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">node_pop</span> <span class="ow">in</span> <span class="n">selected_pops</span><span class="p">:</span>
+            <span class="n">node_pop_df</span> <span class="o">=</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">nodes_df</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s1">&#39;population&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node_pop_df</span><span class="p">:</span>
+                <span class="n">node_pop_df</span><span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">name</span>
+
+            <span class="n">node_pop_df</span> <span class="o">=</span> <span class="n">node_pop_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s1">&#39;population&#39;</span><span class="p">,</span> <span class="n">node_pop_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">)])</span>
+            <span class="k">if</span> <span class="n">all_nodes_df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">all_nodes_df</span> <span class="o">=</span> <span class="n">node_pop_df</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">all_nodes_df</span> <span class="o">=</span> <span class="n">all_nodes_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node_pop_df</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">all_nodes_df</span></div>
+
+<div class="viewcode-block" id="SimNetwork.get_node_groups"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.simulator_network.SimNetwork.get_node_groups">[docs]</a>    <span class="k">def</span> <span class="nf">get_node_groups</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">populations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">selected_pops</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_populations</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">populations</span><span class="p">,</span> <span class="n">string_types</span><span class="p">):</span>
+            <span class="n">selected_pops</span> <span class="o">=</span> <span class="p">[</span><span class="n">pop</span> <span class="k">for</span> <span class="n">pop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_populations</span> <span class="k">if</span> <span class="n">pop</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">populations</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">selected_pops</span> <span class="o">=</span> <span class="p">[</span><span class="n">pop</span> <span class="k">for</span> <span class="n">pop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_populations</span> <span class="k">if</span> <span class="n">pop</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">populations</span><span class="p">]</span>
+
+        <span class="n">all_nodes_df</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">node_pop</span> <span class="ow">in</span> <span class="n">selected_pops</span><span class="p">:</span>
+            <span class="n">node_pop_df</span> <span class="o">=</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">nodes_df</span><span class="p">(</span><span class="n">index_by_id</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s1">&#39;population&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node_pop_df</span><span class="p">:</span>
+                <span class="n">node_pop_df</span><span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">name</span>
+
+            <span class="c1">#node_pop_df = node_pop_df.set_index([node_pop_df.index.astype(dtype=np.uint64)])</span>
+
+            <span class="k">if</span> <span class="n">all_nodes_df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">all_nodes_df</span> <span class="o">=</span> <span class="n">node_pop_df</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">all_nodes_df</span> <span class="o">=</span> <span class="n">all_nodes_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node_pop_df</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">all_nodes_df</span></div>
+
+<div class="viewcode-block" id="SimNetwork.get_node_sets"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.simulator_network.SimNetwork.get_node_sets">[docs]</a>    <span class="k">def</span> <span class="nf">get_node_sets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">groupby</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">filterby</span><span class="p">):</span>
+        <span class="n">selected_nodes_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_properties</span><span class="p">(</span><span class="n">populations</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">filterby</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="n">selected_nodes_df</span> <span class="o">=</span> <span class="n">selected_nodes_df</span><span class="p">[</span><span class="n">selected_nodes_df</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">v</span><span class="p">)]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">selected_nodes_df</span> <span class="o">=</span> <span class="n">selected_nodes_df</span><span class="p">[</span><span class="n">selected_nodes_df</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">v</span><span class="p">)]</span>
+
+        <span class="k">if</span> <span class="n">groupby</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">selected_nodes_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">groupby</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">selected_nodes_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SimNetwork.add_edges"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.simulator_network.SimNetwork.add_edges">[docs]</a>    <span class="k">def</span> <span class="nf">add_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_population</span><span class="p">):</span>
         <span class="n">edge_population</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -846,6 +908,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>

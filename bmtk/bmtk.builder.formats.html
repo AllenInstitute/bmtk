@@ -9,11 +9,10 @@
     <title>bmtk.builder.formats package &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="bmtk.builder.io package" href="bmtk.builder.io.html" />
@@ -626,294 +625,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-bmtk.builder.formats.hdf5_format">
-<span id="bmtk-builder-formats-hdf5-format-module"></span><h2>bmtk.builder.formats.hdf5_format module<a class="headerlink" href="#module-bmtk.builder.formats.hdf5_format" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="bmtk.builder.formats.hdf5_format.HDF5Format">
-<em class="property">class </em><code class="descclassname">bmtk.builder.formats.hdf5_format.</code><code class="descname">HDF5Format</code><span class="sig-paren">(</span><em>network</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats/hdf5_format.html#HDF5Format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.builder.formats.iformats.IFormat" title="bmtk.builder.formats.iformats.IFormat"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.builder.formats.iformats.IFormat</span></code></a></p>
-<p>Format prior to Blue-brain project collaboration.
-Saves as:
-nodes (csv)
-node_types (csv)
-edge_types (csv)
-edges (h5)</p>
-<dl class="attribute">
-<dt id="bmtk.builder.formats.hdf5_format.HDF5Format.BASE_DIR">
-<code class="descname">BASE_DIR</code><em class="property"> = 'network'</em><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.BASE_DIR" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.builder.formats.hdf5_format.HDF5Format.COL_EDGE_TYPE_ID">
-<code class="descname">COL_EDGE_TYPE_ID</code><em class="property"> = 'edge_type_id'</em><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.COL_EDGE_TYPE_ID" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.builder.formats.hdf5_format.HDF5Format.COL_NODE_ID">
-<code class="descname">COL_NODE_ID</code><em class="property"> = 'node_id'</em><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.COL_NODE_ID" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.builder.formats.hdf5_format.HDF5Format.COL_NODE_TYPE_ID">
-<code class="descname">COL_NODE_TYPE_ID</code><em class="property"> = 'node_type_id'</em><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.COL_NODE_TYPE_ID" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.builder.formats.hdf5_format.HDF5Format.COL_SOURCE_QUERY">
-<code class="descname">COL_SOURCE_QUERY</code><em class="property"> = 'source_query'</em><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.COL_SOURCE_QUERY" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.builder.formats.hdf5_format.HDF5Format.COL_TARGET_QUERY">
-<code class="descname">COL_TARGET_QUERY</code><em class="property"> = 'target_query'</em><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.COL_TARGET_QUERY" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.builder.formats.hdf5_format.HDF5Format.CSV_DELIMITER">
-<code class="descname">CSV_DELIMITER</code><em class="property"> = ' '</em><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.CSV_DELIMITER" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.builder.formats.hdf5_format.HDF5Format.format">
-<code class="descname">format</code><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.format" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="bmtk.builder.formats.hdf5_format.HDF5Format.load">
-<code class="descname">load</code><span class="sig-paren">(</span><em>nodes_file=None</em>, <em>node_types_file=None</em>, <em>edges_file=None</em>, <em>edge_types_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats/hdf5_format.html#HDF5Format.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.load" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="bmtk.builder.formats.hdf5_format.HDF5Format.load_dir">
-<code class="descname">load_dir</code><span class="sig-paren">(</span><em>directory</em>, <em>metadata</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats/hdf5_format.html#HDF5Format.load_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.load_dir" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="bmtk.builder.formats.hdf5_format.HDF5Format.save">
-<code class="descname">save</code><span class="sig-paren">(</span><em>directory</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats/hdf5_format.html#HDF5Format.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>saves nodes.csv, node_types.csv, edges.h5, edge_types.csv and .metadata.json. Will overwrite existing files.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>directory</strong> – Directory where all the files will be saved, creating dir if it doesn’t exists.</li>
-<li><strong>kwargs</strong> – </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.builder.formats.hdf5_format.HDF5Format.save_edge_types">
-<code class="descname">save_edge_types</code><span class="sig-paren">(</span><em>file_name</em>, <em>columns=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats/hdf5_format.html#HDF5Format.save_edge_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.save_edge_types" title="Permalink to this definition">¶</a></dt>
-<dd><p>Write edge-types to csv.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>file_name</strong> – path to csv file. Will be overwritten if it exists</li>
-<li><strong>columns</strong> – optional columns (not incl. manditory ones). If None then will use all node properties.</li>
-<li><strong>kwargs</strong> – optional</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.builder.formats.hdf5_format.HDF5Format.save_edges">
-<code class="descname">save_edges</code><span class="sig-paren">(</span><em>file_name</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats/hdf5_format.html#HDF5Format.save_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.save_edges" title="Permalink to this definition">¶</a></dt>
-<dd><p>Saves edges to edges.h5</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>file_name</strong> – path to hdf5 file. Will be overwritten if it exists</li>
-<li><strong>kwargs</strong> – optional</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.builder.formats.hdf5_format.HDF5Format.save_node_types">
-<code class="descname">save_node_types</code><span class="sig-paren">(</span><em>file_name</em>, <em>columns=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats/hdf5_format.html#HDF5Format.save_node_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.save_node_types" title="Permalink to this definition">¶</a></dt>
-<dd><p>Write node_types to csv.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>file_name</strong> – path to csv file. Will be overwritten if it exists</li>
-<li><strong>columns</strong> – optional columns (not incl. manditory ones). If None then will use all node properties.</li>
-<li><strong>kwargs</strong> – optional</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.builder.formats.hdf5_format.HDF5Format.save_nodes">
-<code class="descname">save_nodes</code><span class="sig-paren">(</span><em>file_name</em>, <em>columns=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats/hdf5_format.html#HDF5Format.save_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.hdf5_format.HDF5Format.save_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Write nodes to csv.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>file_name</strong> – path to csv file. Will be overwritten if it exists</li>
-<li><strong>columns</strong> – optional columns (not incl. manditory ones). If None then will use all node properties.</li>
-<li><strong>kwargs</strong> – optional</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="bmtk-builder-formats-hdf5-format-module">
+<h2>bmtk.builder.formats.hdf5_format module<a class="headerlink" href="#bmtk-builder-formats-hdf5-format-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-bmtk.builder.formats.iformats">
-<span id="bmtk-builder-formats-iformats-module"></span><h2>bmtk.builder.formats.iformats module<a class="headerlink" href="#module-bmtk.builder.formats.iformats" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="bmtk.builder.formats.iformats.IFormat">
-<em class="property">class </em><code class="descclassname">bmtk.builder.formats.iformats.</code><code class="descname">IFormat</code><span class="sig-paren">(</span><em>network</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats/iformats.html#IFormat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.iformats.IFormat" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="attribute">
-<dt id="bmtk.builder.formats.iformats.IFormat.format">
-<code class="descname">format</code><a class="headerlink" href="#bmtk.builder.formats.iformats.IFormat.format" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<div class="section" id="bmtk-builder-formats-iformats-module">
+<h2>bmtk.builder.formats.iformats module<a class="headerlink" href="#bmtk-builder-formats-iformats-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-bmtk.builder.formats">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.builder.formats" title="Permalink to this headline">¶</a></h2>
-<p>network2.format</p>
-<p>The XFormat classes are implemented within Network class to allow network objects to handle different data types.
-Each class should be able to control both input and output file format (json, csv, h5, etc) and the expected parameters,
-including their corresponding order.</p>
-<dl class="docutils">
-<dt>Example:</dt>
-<dd>net = Network(format=ISeeFormat)
-…
-net.save(cells=”cells.csv”, models=”cell_models.csv”, connections=”connections.h5”)</dd>
-<dt>Todo:</dt>
-<dd><ul class="first last simple">
-<li>change network.load(cls) to be format specific.</li>
-</ul>
-</dd>
-</dl>
-<dl class="class">
-<dt id="bmtk.builder.formats.DefaultFormat">
-<em class="property">class </em><code class="descclassname">bmtk.builder.formats.</code><code class="descname">DefaultFormat</code><span class="sig-paren">(</span><em>network</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats.html#DefaultFormat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.DefaultFormat" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.builder.formats.iformats.IFormat" title="bmtk.builder.formats.iformats.IFormat"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.builder.formats.iformats.IFormat</span></code></a></p>
-<dl class="method">
-<dt id="bmtk.builder.formats.DefaultFormat.save">
-<code class="descname">save</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats.html#DefaultFormat.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.DefaultFormat.save" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="bmtk.builder.formats.DefaultFormat.save_edges">
-<code class="descname">save_edges</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats.html#DefaultFormat.save_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.DefaultFormat.save_edges" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="bmtk.builder.formats.DefaultFormat.save_nodes">
-<code class="descname">save_nodes</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats.html#DefaultFormat.save_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.DefaultFormat.save_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="bmtk.builder.formats.ISeeFormat">
-<em class="property">class </em><code class="descclassname">bmtk.builder.formats.</code><code class="descname">ISeeFormat</code><span class="sig-paren">(</span><em>network</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats.html#ISeeFormat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.ISeeFormat" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.builder.formats.iformats.IFormat" title="bmtk.builder.formats.iformats.IFormat"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.builder.formats.iformats.IFormat</span></code></a></p>
-<p>Controls the output of networks that will be used in the isee_engine simulator.</p>
-<dl class="docutils">
-<dt>The nodes are saved in a cells and cell_model csv files with predefined format. the edges/connections are</dt>
-<dd>saved in a connections h5 format.</dd>
-</dl>
-<dl class="method">
-<dt id="bmtk.builder.formats.ISeeFormat.load">
-<code class="descname">load</code><span class="sig-paren">(</span><em>nodes</em>, <em>edge_types=None</em>, <em>node_types=None</em>, <em>edges=None</em>, <em>positions=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats.html#ISeeFormat.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.ISeeFormat.load" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="bmtk.builder.formats.ISeeFormat.save">
-<code class="descname">save</code><span class="sig-paren">(</span><em>cells_fname</em>, <em>cell_models_fname</em>, <em>connections_fname</em>, <em>include_nsyns=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats.html#ISeeFormat.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.ISeeFormat.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Saves node (cells) and connection information to files.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>cells_fname</strong> – name of csv file where cell information will be saved.</li>
-<li><strong>cell_models_fname</strong> – name of csv file where cell model information will be saved.</li>
-<li><strong>connections_fname</strong> – Name of h5 file where connection information will be stored.</li>
-<li><strong>include_nsyns</strong> – set to False to build h5 without nsyn table.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.builder.formats.ISeeFormat.save_cells">
-<code class="descname">save_cells</code><span class="sig-paren">(</span><em>filename</em>, <em>columns</em>, <em>position_labels=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats.html#ISeeFormat.save_cells"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.ISeeFormat.save_cells" title="Permalink to this definition">¶</a></dt>
-<dd><p>Saves nodes/cell information and their model type metadata.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>cells_csv</strong> – name of csv file where cell information will be saved.</li>
-<li><strong>models_csv</strong> – name of csv file where cell model information will be saved.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.builder.formats.ISeeFormat.save_edges">
-<code class="descname">save_edges</code><span class="sig-paren">(</span><em>filename</em>, <em>include_nsyns=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats.html#ISeeFormat.save_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.ISeeFormat.save_edges" title="Permalink to this definition">¶</a></dt>
-<dd><p>Saves connection information into h5 format</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>filename</strong> – Name of h5 file where connection information will be stored.</li>
-<li><strong>include_nsyns</strong> – setting to false will omit the nsyns table in the h5 file, default
-true (nsyn table included).</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.builder.formats.ISeeFormat.save_types">
-<code class="descname">save_types</code><span class="sig-paren">(</span><em>filename</em>, <em>columns</em>, <em>key=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/formats.html#ISeeFormat.save_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.formats.ISeeFormat.save_types" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -942,6 +661,7 @@ true (nsyn table included).</li>
 <li class="toctree-l2 current"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>

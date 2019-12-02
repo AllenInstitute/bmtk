@@ -9,11 +9,10 @@
     <title>bmtk.simulator.utils package &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="bmtk.simulator.utils.stimulus package" href="bmtk.simulator.utils.stimulus.html" />
@@ -629,7 +628,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html">bmtk.simulator.utils.stimulus package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#module-bmtk.simulator.utils.stimulus.LocallySparseNoise">bmtk.simulator.utils.stimulus.LocallySparseNoise module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#bmtk-simulator-utils-stimulus-locallysparsenoise-module">bmtk.simulator.utils.stimulus.LocallySparseNoise module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#module-bmtk.simulator.utils.stimulus.NaturalScenes">bmtk.simulator.utils.stimulus.NaturalScenes module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#module-bmtk.simulator.utils.stimulus.StaticGratings">bmtk.simulator.utils.stimulus.StaticGratings module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#module-bmtk.simulator.utils.stimulus">Module contents</a></li>
@@ -652,7 +651,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span id="bmtk-simulator-utils-config-module"></span><h2>bmtk.simulator.utils.config module<a class="headerlink" href="#module-bmtk.simulator.utils.config" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="bmtk.simulator.utils.config.ConfigDict">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.config.</code><code class="descname">ConfigDict</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/config.html#ConfigDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.config.</code><code class="descname">ConfigDict</code><span class="sig-paren">(</span><em>) -&gt; new empty dictionary dict(mapping) -&gt; new dictionary initialized from a mapping object's (key</em>, <em>value) pairs dict(iterable) -&gt; new dictionary initialized as if via: d = {} for k</em>, <em>v in iterable: d[k] = v dict(**kwargs) -&gt; new dictionary initialized with the name=value pairs in the keyword argument list.  For example:  dict(one=1</em>, <em>two=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/config.html#ConfigDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.config.ConfigDict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
 <dl class="attribute">
 <dt id="bmtk.simulator.utils.config.ConfigDict.biophysical_neuron_models_dir">
@@ -913,183 +912,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </dd></dl>
 
 </div>
-<div class="section" id="module-bmtk.simulator.utils.graph">
-<span id="bmtk-simulator-utils-graph-module"></span><h2>bmtk.simulator.utils.graph module<a class="headerlink" href="#module-bmtk.simulator.utils.graph" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="bmtk.simulator.utils.graph.SimEdge">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.graph.</code><code class="descname">SimEdge</code><span class="sig-paren">(</span><em>original_params</em>, <em>dynamics_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/graph.html#SimEdge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.graph.SimEdge" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="attribute">
-<dt id="bmtk.simulator.utils.graph.SimEdge.edge_type_id">
-<code class="descname">edge_type_id</code><a class="headerlink" href="#bmtk.simulator.utils.graph.SimEdge.edge_type_id" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="bmtk.simulator.utils.graph.SimGraph">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.graph.</code><code class="descname">SimGraph</code><a class="reference internal" href="../_modules/bmtk/simulator/utils/graph.html#SimGraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="method">
-<dt id="bmtk.simulator.utils.graph.SimGraph.add_component">
-<code class="descname">add_component</code><span class="sig-paren">(</span><em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/graph.html#SimGraph.add_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.add_component" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a component key-value pair</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> – name of component</li>
-<li><strong>value</strong> – value</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.simulator.utils.graph.SimGraph.add_edges">
-<code class="descname">add_edges</code><span class="sig-paren">(</span><em>sonata_file</em>, <em>populations=None</em>, <em>source_pop=None</em>, <em>target_pop=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/graph.html#SimGraph.add_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.add_edges" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>sonata_file</strong> – </li>
-<li><strong>populations</strong> – </li>
-<li><strong>source_pop</strong> – </li>
-<li><strong>target_pop</strong> – </li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.simulator.utils.graph.SimGraph.add_nodes">
-<code class="descname">add_nodes</code><span class="sig-paren">(</span><em>sonata_file</em>, <em>populations=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/graph.html#SimGraph.add_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.add_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add nodes from a network to the graph.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>sonata_file</strong> – A NodesFormat type object containing list of nodes.</li>
-<li><strong>populations</strong> – name/identifier of network. If none will attempt to retrieve from nodes object</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.simulator.utils.graph.SimGraph.build_nodes">
-<code class="descname">build_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/graph.html#SimGraph.build_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.build_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="bmtk.simulator.utils.graph.SimGraph.build_recurrent_edges">
-<code class="descname">build_recurrent_edges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/graph.html#SimGraph.build_recurrent_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.build_recurrent_edges" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="bmtk.simulator.utils.graph.SimGraph.external_edge_populations">
-<code class="descname">external_edge_populations</code><span class="sig-paren">(</span><em>src_pop</em>, <em>trg_pop</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/graph.html#SimGraph.external_edge_populations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.external_edge_populations" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="classmethod">
-<dt id="bmtk.simulator.utils.graph.SimGraph.from_config">
-<em class="property">classmethod </em><code class="descname">from_config</code><span class="sig-paren">(</span><em>conf</em>, <em>**properties</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/graph.html#SimGraph.from_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.from_config" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates a graph structure from a json config file or dictionary.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>conf</strong> – name of json config file, or a dictionary with config parameters</li>
-<li><strong>properties</strong> – optional properties.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A graph object of type cls</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="bmtk.simulator.utils.graph.SimGraph.get_component">
-<code class="descname">get_component</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/graph.html#SimGraph.get_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.get_component" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the value of item in the components dictionary.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> – name of component</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">value assigned to component</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.simulator.utils.graph.SimGraph.internal_pop_names">
-<code class="descname">internal_pop_names</code><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.internal_pop_names" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.simulator.utils.graph.SimGraph.io">
-<code class="descname">io</code><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.io" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.simulator.utils.graph.SimGraph.model_type_col">
-<code class="descname">model_type_col</code><em class="property"> = 'model_type'</em><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.model_type_col" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.simulator.utils.graph.SimGraph.node_populations">
-<code class="descname">node_populations</code><a class="headerlink" href="#bmtk.simulator.utils.graph.SimGraph.node_populations" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="bmtk.simulator.utils.graph.SimNode">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.utils.graph.</code><code class="descname">SimNode</code><span class="sig-paren">(</span><em>node_id</em>, <em>graph</em>, <em>network</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/graph.html#SimNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.graph.SimNode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="attribute">
-<dt id="bmtk.simulator.utils.graph.SimNode.model_params">
-<code class="descname">model_params</code><a class="headerlink" href="#bmtk.simulator.utils.graph.SimNode.model_params" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parameters (json file, nml, dictionary) that describe a specific node</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.simulator.utils.graph.SimNode.network">
-<code class="descname">network</code><a class="headerlink" href="#bmtk.simulator.utils.graph.SimNode.network" title="Permalink to this definition">¶</a></dt>
-<dd><p>Name of network node belongs too.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.simulator.utils.graph.SimNode.node_id">
-<code class="descname">node_id</code><a class="headerlink" href="#bmtk.simulator.utils.graph.SimNode.node_id" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.simulator.utils.graph.SimNode.node_type_id">
-<code class="descname">node_type_id</code><a class="headerlink" href="#bmtk.simulator.utils.graph.SimNode.node_type_id" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<div class="section" id="bmtk-simulator-utils-graph-module">
+<h2>bmtk.simulator.utils.graph module<a class="headerlink" href="#bmtk-simulator-utils-graph-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-bmtk.simulator.utils.io">
 <span id="bmtk-simulator-utils-io-module"></span><h2>bmtk.simulator.utils.io module<a class="headerlink" href="#module-bmtk.simulator.utils.io" title="Permalink to this headline">¶</a></h2>
@@ -1656,6 +1480,7 @@ required). If there is no registered subclass a generic SimReport object will be
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>

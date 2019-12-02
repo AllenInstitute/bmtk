@@ -9,11 +9,10 @@
     <title>bmtk.utils.reports.spike_trains package &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="bmtk.utils.reports.spike_trains.adaptors package" href="bmtk.utils.reports.spike_trains.adaptors.html" />
@@ -800,6 +799,7 @@ across each population.</p>
 <dt id="bmtk.utils.reports.spike_trains.core.SortOrder">
 <em class="property">class </em><code class="descclassname">bmtk.utils.reports.spike_trains.core.</code><code class="descname">SortOrder</code><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/core.html#SortOrder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.core.SortOrder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>An enumeration.</p>
 <dl class="attribute">
 <dt id="bmtk.utils.reports.spike_trains.core.SortOrder.by_id">
 <code class="descname">by_id</code><em class="property"> = 'by_id'</em><a class="headerlink" href="#bmtk.utils.reports.spike_trains.core.SortOrder.by_id" title="Permalink to this definition">¶</a></dt>
@@ -861,7 +861,7 @@ across each population.</p>
 <span id="bmtk-utils-reports-spike-trains-spike-train-buffer-module"></span><h2>bmtk.utils.reports.spike_trains.spike_train_buffer module<a class="headerlink" href="#module-bmtk.utils.reports.spike_trains.spike_train_buffer" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer">
-<em class="property">class </em><code class="descclassname">bmtk.utils.reports.spike_trains.spike_train_buffer.</code><code class="descname">STCSVBuffer</code><span class="sig-paren">(</span><em>cache_dir=None</em>, <em>default_population=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STCSVBuffer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.utils.reports.spike_trains.spike_train_buffer.</code><code class="descname">STCSVBuffer</code><span class="sig-paren">(</span><em>cache_dir=None</em>, <em>default_population=None</em>, <em>cache_name='spikes'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STCSVBuffer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.core.STBuffer" title="bmtk.utils.reports.spike_trains.core.STBuffer"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.core.STBuffer</span></code></a>, <a class="reference internal" href="#bmtk.utils.reports.spike_trains.core.STReader" title="bmtk.utils.reports.spike_trains.core.STReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.core.STReader</span></code></a></p>
 <p>A Class for creating, storing and reading multi-population spike-trains - especially for saving the spikes of a
 large scale network simulation. Keeps a running tally of the (timestamp, population-name, node_id) for each
@@ -946,7 +946,16 @@ will always have an upper bound on the maximum memory used.</p>
 <dl class="attribute">
 <dt id="bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.populations">
 <code class="descname">populations</code><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.populations" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get all available spike population names</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A list of strings</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.spikes">
@@ -979,13 +988,22 @@ across each population.</p>
 <dl class="attribute">
 <dt id="bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.units">
 <code class="descname">units</code><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.units" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns the units used in the timestamps.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer">
-<em class="property">class </em><code class="descclassname">bmtk.utils.reports.spike_trains.spike_train_buffer.</code><code class="descname">STMPIBuffer</code><span class="sig-paren">(</span><em>cache_dir=None</em>, <em>default_population=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STMPIBuffer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.utils.reports.spike_trains.spike_train_buffer.</code><code class="descname">STMPIBuffer</code><span class="sig-paren">(</span><em>cache_dir=None</em>, <em>default_population=None</em>, <em>cache_name='spikes'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STMPIBuffer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer" title="bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer</span></code></a></p>
 <dl class="method">
 <dt id="bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer.n_spikes">
@@ -1006,7 +1024,16 @@ across each population.</p>
 <dl class="attribute">
 <dt id="bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer.populations">
 <code class="descname">populations</code><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer.populations" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get all available spike population names</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A list of strings</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer.spikes">
@@ -1106,7 +1133,16 @@ to work with parallel simulations.</p>
 <dl class="attribute">
 <dt id="bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.populations">
 <code class="descname">populations</code><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.populations" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get all available spike population names</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A list of strings</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.spikes">
@@ -1139,7 +1175,16 @@ across each population.</p>
 <dl class="attribute">
 <dt id="bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.units">
 <code class="descname">units</code><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.units" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns the units used in the timestamps.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </dd></dl>
 
@@ -1349,6 +1394,7 @@ across each population.</p>
 <dt id="bmtk.utils.reports.spike_trains.spike_trains_file.SortOrder">
 <em class="property">class </em><code class="descclassname">bmtk.utils.reports.spike_trains.spike_trains_file.</code><code class="descname">SortOrder</code><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_trains_file.html#SortOrder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_trains_file.SortOrder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>An enumeration.</p>
 <dl class="attribute">
 <dt id="bmtk.utils.reports.spike_trains.spike_trains_file.SortOrder.by_id">
 <code class="descname">by_id</code><em class="property"> = 'by_id'</em><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_trains_file.SortOrder.by_id" title="Permalink to this definition">¶</a></dt>
@@ -1572,6 +1618,7 @@ self.sort_order = sort_order</dd>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>

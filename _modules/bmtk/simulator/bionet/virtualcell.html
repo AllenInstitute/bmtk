@@ -9,11 +9,10 @@
     <title>bmtk.simulator.bionet.virtualcell &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
@@ -652,6 +651,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="c1"># VirtualCell is currently not a subclass of bionet.Cell class b/c the parent has a bunch of properties that</span>
         <span class="c1"># just don&#39;t apply to a virtual cell. May want to make bionet.Cell more generic in the future.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_node_id</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">node_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node</span> <span class="o">=</span> <span class="n">node</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_population</span> <span class="o">=</span> <span class="n">population</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_hobj</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_train_dataset</span> <span class="o">=</span> <span class="n">spike_train_dataset</span>
@@ -671,7 +671,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_train_vec</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="n">spike_train</span><span class="o">.</span><span class="n">get_times</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">node_id</span><span class="p">))</span> <span class="c1">#, population=self._population))</span>
         <span class="n">vecstim</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">VecStim</span><span class="p">()</span>
         <span class="n">vecstim</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_train_vec</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_hobj</span> <span class="o">=</span> <span class="n">vecstim</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hobj</span> <span class="o">=</span> <span class="n">vecstim</span></div>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="n">item</span><span class="p">]</span></div>
 </pre></div>
 
           </div>
@@ -698,6 +701,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>

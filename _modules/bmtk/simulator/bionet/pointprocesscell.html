@@ -9,11 +9,10 @@
     <title>bmtk.simulator.bionet.pointprocesscell &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
@@ -650,6 +649,30 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="n">pc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">ParallelContext</span><span class="p">()</span>    <span class="c1"># object to access MPI methods</span>
 
 
+<div class="viewcode-block" id="ConnectionStruct"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.pointprocesscell.ConnectionStruct">[docs]</a><span class="k">class</span> <span class="nc">ConnectionStruct</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">nc</span><span class="p">,</span> <span class="n">is_virtual</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_src_node</span> <span class="o">=</span> <span class="n">src_node</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_prop</span> <span class="o">=</span> <span class="n">edge_prop</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nc</span> <span class="o">=</span> <span class="n">nc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_virtual</span> <span class="o">=</span> <span class="n">is_virtual</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_virtual</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_virtual</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">source_node</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_src_node</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">syn_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nc</span><span class="o">.</span><span class="n">weight</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@syn_weight</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">syn_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nc</span><span class="o">.</span><span class="n">weight</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span></div>
+
+
 <div class="viewcode-block" id="PointProcessCell"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.pointprocesscell.PointProcessCell">[docs]</a><span class="k">class</span> <span class="nc">PointProcessCell</span><span class="p">(</span><span class="n">Cell</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Implimentation of a Leaky Integrate-and-file neuron type cell.&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">bionetwork</span><span class="p">):</span>
@@ -658,6 +681,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_src_gids</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_src_nets</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span> <span class="o">=</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="PointProcessCell.set_spike_detector"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.pointprocesscell.PointProcessCell.set_spike_detector">[docs]</a>    <span class="k">def</span> <span class="nf">set_spike_detector</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">nc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">NetCon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -678,6 +702,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="k">if</span> <span class="n">stim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">src_gid</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="c1">#src_gid = src_node.node_id</span>
             <span class="n">nc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">NetCon</span><span class="p">(</span><span class="n">stim</span><span class="o">.</span><span class="n">hobj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">src_gid</span> <span class="o">=</span> <span class="n">src_node</span><span class="o">.</span><span class="n">node_id</span>
@@ -690,7 +715,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_src_gids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">src_gid</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_src_nets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge_prop</span><span class="o">.</span><span class="n">edge_type_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_props</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ConnectionStruct</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">nc</span><span class="p">,</span> <span class="n">stim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">))</span>
+
         <span class="k">return</span> <span class="n">nsyns</span></div>
+
+<div class="viewcode-block" id="PointProcessCell.connections"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.pointprocesscell.PointProcessCell.connections">[docs]</a>    <span class="k">def</span> <span class="nf">connections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span></div>
 
 <div class="viewcode-block" id="PointProcessCell.get_connection_info"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.pointprocesscell.PointProcessCell.get_connection_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_connection_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># TODO: There should be a more effecient and robust way to return synapse information.</span>
@@ -731,6 +762,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>

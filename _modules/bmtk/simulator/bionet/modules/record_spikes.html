@@ -9,11 +9,10 @@
     <title>bmtk.simulator.bionet.modules.record_spikes &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
   </head><body>
@@ -659,7 +658,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="p">,</span> <span class="n">spikes_file_csv</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spikes_file_nwb</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spikes_sort_order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="p">,</span> <span class="n">spikes_file_csv</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spikes_file_nwb</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spikes_sort_order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">):</span>
         <span class="c1"># TODO: Have option to turn off caching spikes to csv.</span>
         <span class="k">def</span> <span class="nf">_file_path</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -671,6 +670,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_h5_fname</span> <span class="o">=</span> <span class="n">_file_path</span><span class="p">(</span><span class="n">spikes_file</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_save_h5</span> <span class="o">=</span> <span class="n">spikes_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">mode</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_nwb_fname</span> <span class="o">=</span> <span class="n">_file_path</span><span class="p">(</span><span class="n">spikes_file_nwb</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_save_nwb</span> <span class="o">=</span> <span class="n">spikes_file_nwb</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
@@ -678,7 +678,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_tmpdir</span> <span class="o">=</span> <span class="n">tmp_dir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sort_order</span> <span class="o">=</span> <span class="n">sort_order_lu</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">spikes_sort_order</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">.</span><span class="n">none</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span> <span class="o">=</span> <span class="n">SpikeTrains</span><span class="p">(</span><span class="n">cache_dir</span><span class="o">=</span><span class="n">tmp_dir</span><span class="p">)</span>
+        <span class="n">cache_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h5_fname</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_csv_fname</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nwb_fname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span> <span class="o">=</span> <span class="n">SpikeTrains</span><span class="p">(</span><span class="n">cache_dir</span><span class="o">=</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="n">cache_name</span><span class="o">=</span><span class="n">cache_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="SpikesMod.initialize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_spikes.SpikesMod.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
@@ -706,7 +707,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_h5</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">to_sonata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h5_fname</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sort_order</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">to_sonata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h5_fname</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sort_order</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">)</span>
             <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_nwb</span><span class="p">:</span>
@@ -740,6 +741,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>

@@ -9,11 +9,10 @@
     <title>bmtk.simulator.bionet.biocell &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
@@ -651,6 +650,30 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <span class="n">pc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">ParallelContext</span><span class="p">()</span>    <span class="c1"># object to access MPI methods</span>
 
+<div class="viewcode-block" id="ConnectionStruct"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biocell.ConnectionStruct">[docs]</a><span class="k">class</span> <span class="nc">ConnectionStruct</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">syn</span><span class="p">,</span> <span class="n">nc</span><span class="p">,</span> <span class="n">is_virtual</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_src_node</span> <span class="o">=</span> <span class="n">src_node</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_prop</span> <span class="o">=</span> <span class="n">edge_prop</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_syn</span> <span class="o">=</span> <span class="n">syn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nc</span> <span class="o">=</span> <span class="n">nc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_virtual</span> <span class="o">=</span> <span class="n">is_virtual</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_virtual</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_virtual</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">source_node</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_src_node</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">syn_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nc</span><span class="o">.</span><span class="n">weight</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@syn_weight</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">syn_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nc</span><span class="o">.</span><span class="n">weight</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span></div>
+
 
 <div class="viewcode-block" id="BioCell"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biocell.BioCell">[docs]</a><span class="k">class</span> <span class="nc">BioCell</span><span class="p">(</span><span class="n">Cell</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Implemntation of a morphologically and biophysically detailed type cell.</span>
@@ -675,11 +698,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_save_conn</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># bionetwork.save_connection</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_synapses</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_syn_src_net</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_syn_src_gid</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_src_gids</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_syn_seg_ix</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_syn_sec_x</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_ids</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_segments</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="c1"># potentially used by ecp module</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">im_ptr</span> <span class="o">=</span> <span class="kc">None</span>
@@ -774,8 +798,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">syn_weight</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">syn_weight</span><span class="p">(</span><span class="n">src_node</span><span class="o">=</span><span class="n">src_node</span><span class="p">,</span> <span class="n">trg_node</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">preselected_targets</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_edge_props</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_src_gids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">src_node</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_connection_preselected</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">,</span> <span class="n">stim</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_edge_props</span> <span class="o">+=</span> <span class="p">[</span><span class="n">edge_prop</span><span class="p">]</span><span class="o">*</span><span class="n">edge_prop</span><span class="o">.</span><span class="n">nsyns</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_src_gids</span> <span class="o">+=</span> <span class="p">[</span><span class="n">src_node</span><span class="o">.</span><span class="n">node_id</span><span class="p">]</span><span class="o">*</span><span class="n">edge_prop</span><span class="o">.</span><span class="n">nsyns</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_connections</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">,</span> <span class="n">stim</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_set_connection_preselected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -795,8 +823,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="n">nc</span><span class="o">.</span><span class="n">weight</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">syn_weight</span>
         <span class="n">nc</span><span class="o">.</span><span class="n">delay</span> <span class="o">=</span> <span class="n">delay</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ConnectionStruct</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">syn</span><span class="p">,</span> <span class="n">nc</span><span class="p">,</span> <span class="n">stim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">))</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_netcons</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_synapses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">syn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge_prop</span><span class="o">.</span><span class="n">edge_type_id</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_conn</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_save_connection</span><span class="p">(</span><span class="n">src_gid</span><span class="o">=</span><span class="n">src_node</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">src_net</span><span class="o">=</span><span class="n">src_node</span><span class="o">.</span><span class="n">network</span><span class="p">,</span> <span class="n">sec_x</span><span class="o">=</span><span class="n">sec_x</span><span class="p">,</span> <span class="n">seg_ix</span><span class="o">=</span><span class="n">sec_id</span><span class="p">,</span>
                                   <span class="n">edge_type_id</span><span class="o">=</span><span class="n">edge_prop</span><span class="o">.</span><span class="n">edge_type_id</span><span class="p">)</span>
@@ -833,10 +864,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">nc</span><span class="o">.</span><span class="n">delay</span> <span class="o">=</span> <span class="n">delay</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">netcons</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
 
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ConnectionStruct</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">syn</span><span class="p">,</span> <span class="n">nc</span><span class="p">,</span> <span class="n">stim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">))</span>
+
         <span class="k">return</span> <span class="n">nsyns</span>
 
+<div class="viewcode-block" id="BioCell.connections"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biocell.BioCell.connections">[docs]</a>    <span class="k">def</span> <span class="nf">connections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span></div>
+
     <span class="k">def</span> <span class="nf">_save_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_gid</span><span class="p">,</span> <span class="n">src_net</span><span class="p">,</span> <span class="n">sec_x</span><span class="p">,</span> <span class="n">seg_ix</span><span class="p">,</span> <span class="n">edge_type_id</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_syn_src_gid</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">src_gid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_src_gids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">src_gid</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_syn_src_net</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">src_net</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_syn_sec_x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec_x</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_syn_seg_ix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg_ix</span><span class="p">)</span>
@@ -939,6 +975,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>

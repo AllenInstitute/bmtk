@@ -9,11 +9,10 @@
     <title>bmtk.simulator.popnet package &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="bmtk.simulator.popnet.property_schemas package" href="bmtk.simulator.popnet.property_schemas.html" />
@@ -629,10 +628,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.simulator.popnet.property_schemas.html">bmtk.simulator.popnet.property_schemas package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.popnet.property_schemas.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.popnet.property_schemas.html#module-bmtk.simulator.popnet.property_schemas.base_schema">bmtk.simulator.popnet.property_schemas.base_schema module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.popnet.property_schemas.html#module-bmtk.simulator.popnet.property_schemas.property_schema_ver0">bmtk.simulator.popnet.property_schemas.property_schema_ver0 module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.popnet.property_schemas.html#module-bmtk.simulator.popnet.property_schemas.property_schema_ver1">bmtk.simulator.popnet.property_schemas.property_schema_ver1 module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.popnet.property_schemas.html#module-bmtk.simulator.popnet.property_schemas">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.popnet.property_schemas.html#bmtk-simulator-popnet-property-schemas-base-schema-module">bmtk.simulator.popnet.property_schemas.base_schema module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.popnet.property_schemas.html#bmtk-simulator-popnet-property-schemas-property-schema-ver0-module">bmtk.simulator.popnet.property_schemas.property_schema_ver0 module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.popnet.property_schemas.html#bmtk-simulator-popnet-property-schemas-property-schema-ver1-module">bmtk.simulator.popnet.property_schemas.property_schema_ver1 module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.popnet.property_schemas.html#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -645,7 +644,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span id="bmtk-simulator-popnet-config-module"></span><h2>bmtk.simulator.popnet.config module<a class="headerlink" href="#module-bmtk.simulator.popnet.config" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="bmtk.simulator.popnet.config.Config">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.popnet.config.</code><code class="descname">Config</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/popnet/config.html#Config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.popnet.config.Config" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bmtk.simulator.popnet.config.</code><code class="descname">Config</code><span class="sig-paren">(</span><em>) -&gt; new empty dictionary dict(mapping) -&gt; new dictionary initialized from a mapping object's (key</em>, <em>value) pairs dict(iterable) -&gt; new dictionary initialized as if via: d = {} for k</em>, <em>v in iterable: d[k] = v dict(**kwargs) -&gt; new dictionary initialized with the name=value pairs in the keyword argument list.  For example:  dict(one=1</em>, <em>two=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/popnet/config.html#Config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.popnet.config.Config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="bmtk.simulator.utils.html#bmtk.simulator.utils.config.ConfigDict" title="bmtk.simulator.utils.config.ConfigDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.utils.config.ConfigDict</span></code></a></p>
 </dd></dl>
 
@@ -655,44 +654,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dd></dd></dl>
 
 </div>
-<div class="section" id="module-bmtk.simulator.popnet.popedge">
-<span id="bmtk-simulator-popnet-popedge-module"></span><h2>bmtk.simulator.popnet.popedge module<a class="headerlink" href="#module-bmtk.simulator.popnet.popedge" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="bmtk.simulator.popnet.popedge.PopEdge">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.popnet.popedge.</code><code class="descname">PopEdge</code><span class="sig-paren">(</span><em>source_pop</em>, <em>target_pop</em>, <em>edge_params</em>, <em>dynamics_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/popnet/popedge.html#PopEdge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.popnet.popedge.PopEdge" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.utils.html#bmtk.simulator.utils.graph.SimEdge" title="bmtk.simulator.utils.graph.SimEdge"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.utils.graph.SimEdge</span></code></a></p>
-<dl class="attribute">
-<dt id="bmtk.simulator.popnet.popedge.PopEdge.delay">
-<code class="descname">delay</code><a class="headerlink" href="#bmtk.simulator.popnet.popedge.PopEdge.delay" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.simulator.popnet.popedge.PopEdge.nsyns">
-<code class="descname">nsyns</code><a class="headerlink" href="#bmtk.simulator.popnet.popedge.PopEdge.nsyns" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.simulator.popnet.popedge.PopEdge.params">
-<code class="descname">params</code><a class="headerlink" href="#bmtk.simulator.popnet.popedge.PopEdge.params" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.simulator.popnet.popedge.PopEdge.source">
-<code class="descname">source</code><a class="headerlink" href="#bmtk.simulator.popnet.popedge.PopEdge.source" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.simulator.popnet.popedge.PopEdge.target">
-<code class="descname">target</code><a class="headerlink" href="#bmtk.simulator.popnet.popedge.PopEdge.target" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.simulator.popnet.popedge.PopEdge.weight">
-<code class="descname">weight</code><a class="headerlink" href="#bmtk.simulator.popnet.popedge.PopEdge.weight" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<div class="section" id="bmtk-simulator-popnet-popedge-module">
+<h2>bmtk.simulator.popnet.popedge module<a class="headerlink" href="#bmtk-simulator-popnet-popedge-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-bmtk.simulator.popnet.popnetwork">
 <span id="bmtk-simulator-popnet-popnetwork-module"></span><h2>bmtk.simulator.popnet.popnetwork module<a class="headerlink" href="#module-bmtk.simulator.popnet.popnetwork" title="Permalink to this headline">¶</a></h2>
@@ -991,111 +954,8 @@ etc. (which should be called first).</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-bmtk.simulator.popnet.popnode">
-<span id="bmtk-simulator-popnet-popnode-module"></span><h2>bmtk.simulator.popnet.popnode module<a class="headerlink" href="#module-bmtk.simulator.popnet.popnode" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="bmtk.simulator.popnet.popnode.ExternalPopulation">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.popnet.popnode.</code><code class="descname">ExternalPopulation</code><span class="sig-paren">(</span><em>node_id</em>, <em>graph</em>, <em>network</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/popnet/popnode.html#ExternalPopulation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.popnet.popnode.ExternalPopulation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.popnet.popnode.PopNode" title="bmtk.simulator.popnet.popnode.PopNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.popnet.popnode.PopNode</span></code></a></p>
-<dl class="attribute">
-<dt id="bmtk.simulator.popnet.popnode.ExternalPopulation.firing_rate">
-<code class="descname">firing_rate</code><a class="headerlink" href="#bmtk.simulator.popnet.popnode.ExternalPopulation.firing_rate" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.simulator.popnet.popnode.ExternalPopulation.is_firing_rate_set">
-<code class="descname">is_firing_rate_set</code><a class="headerlink" href="#bmtk.simulator.popnet.popnode.ExternalPopulation.is_firing_rate_set" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.simulator.popnet.popnode.ExternalPopulation.is_internal">
-<code class="descname">is_internal</code><a class="headerlink" href="#bmtk.simulator.popnet.popnode.ExternalPopulation.is_internal" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="bmtk.simulator.popnet.popnode.InternalNode">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.popnet.popnode.</code><code class="descname">InternalNode</code><span class="sig-paren">(</span><em>node_id</em>, <em>graph</em>, <em>network</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/popnet/popnode.html#InternalNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.popnet.popnode.InternalNode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.popnet.popnode.PopNode" title="bmtk.simulator.popnet.popnode.PopNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.popnet.popnode.PopNode</span></code></a></p>
-<dl class="docutils">
-<dt>def __init__(self, node_id, graph, network, params):</dt>
-<dd>super(InternalNode, self).__init__(node_id, graph, network, params)
-#self._pop_id = node_id
-#self._graph = graph
-#self._network = network
-#self._graph_params = params
-#self._dynamics_params = {}
-#self._update_params = {‘dynamics_params’: self._dynamics_params}</dd>
-</dl>
-<dl class="attribute">
-<dt id="bmtk.simulator.popnet.popnode.InternalNode.dv">
-<code class="descname">dv</code><a class="headerlink" href="#bmtk.simulator.popnet.popnode.InternalNode.dv" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.simulator.popnet.popnode.InternalNode.is_internal">
-<code class="descname">is_internal</code><a class="headerlink" href="#bmtk.simulator.popnet.popnode.InternalNode.is_internal" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.simulator.popnet.popnode.InternalNode.tau_m">
-<code class="descname">tau_m</code><a class="headerlink" href="#bmtk.simulator.popnet.popnode.InternalNode.tau_m" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.simulator.popnet.popnode.InternalNode.v_max">
-<code class="descname">v_max</code><a class="headerlink" href="#bmtk.simulator.popnet.popnode.InternalNode.v_max" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.simulator.popnet.popnode.InternalNode.v_min">
-<code class="descname">v_min</code><a class="headerlink" href="#bmtk.simulator.popnet.popnode.InternalNode.v_min" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="bmtk.simulator.popnet.popnode.PopNode">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.popnet.popnode.</code><code class="descname">PopNode</code><span class="sig-paren">(</span><em>node_id</em>, <em>graph</em>, <em>network</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/popnet/popnode.html#PopNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.popnet.popnode.PopNode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.utils.html#bmtk.simulator.utils.graph.SimNode" title="bmtk.simulator.utils.graph.SimNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.utils.graph.SimNode</span></code></a></p>
-<dl class="method">
-<dt id="bmtk.simulator.popnet.popnode.PopNode.add_gid">
-<code class="descname">add_gid</code><span class="sig-paren">(</span><em>gid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/popnet/popnode.html#PopNode.add_gid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.popnet.popnode.PopNode.add_gid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.simulator.popnet.popnode.PopNode.dynamics_params">
-<code class="descname">dynamics_params</code><a class="headerlink" href="#bmtk.simulator.popnet.popnode.PopNode.dynamics_params" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="bmtk.simulator.popnet.popnode.PopNode.get_gids">
-<code class="descname">get_gids</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/popnet/popnode.html#PopNode.get_gids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.popnet.popnode.PopNode.get_gids" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.simulator.popnet.popnode.PopNode.is_internal">
-<code class="descname">is_internal</code><a class="headerlink" href="#bmtk.simulator.popnet.popnode.PopNode.is_internal" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.simulator.popnet.popnode.PopNode.network">
-<code class="descname">network</code><a class="headerlink" href="#bmtk.simulator.popnet.popnode.PopNode.network" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.simulator.popnet.popnode.PopNode.node_id">
-<code class="descname">node_id</code><a class="headerlink" href="#bmtk.simulator.popnet.popnode.PopNode.node_id" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="bmtk.simulator.popnet.popnode.PopNode.pop_id">
-<code class="descname">pop_id</code><a class="headerlink" href="#bmtk.simulator.popnet.popnode.PopNode.pop_id" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<div class="section" id="bmtk-simulator-popnet-popnode-module">
+<h2>bmtk.simulator.popnet.popnode module<a class="headerlink" href="#bmtk-simulator-popnet-popnode-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-bmtk.simulator.popnet.popsimulator">
 <span id="bmtk-simulator-popnet-popsimulator-module"></span><h2>bmtk.simulator.popnet.popsimulator module<a class="headerlink" href="#module-bmtk.simulator.popnet.popsimulator" title="Permalink to this headline">¶</a></h2>
@@ -1367,6 +1227,7 @@ etc. (which should be called first).</p>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>
