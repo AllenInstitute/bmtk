@@ -84,7 +84,7 @@ def make_single_unit_cell_list(number_of_cells=None,
                                amplitude=None,
                                sigma=None,
                                width=5,
-                               transfer_function_str = 'Heaviside(s)*s'):
+                               transfer_function_str='Heaviside(s)*s'):
 
     cell_list = []
     for _ in range(number_of_cells):

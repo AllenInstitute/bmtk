@@ -1,17 +1,8 @@
-#import isee_engine
 import os
-import itertools
-import matplotlib.pyplot as plt
 import numpy as np
-from . import utilities as util
-import importlib
-from .kernel import Kernel2D, Kernel3D
 from .linearfilter import SpatioTemporalFilter
-import json
 from .spatialfilter import GaussianSpatialFilter
-from .transferfunction import ScalarTransferFunction
 from .temporalfilter import TemporalFilterCosineBump
-from .cursor import LNUnitCursor, MultiLNUnitCursor
 from .movie import Movie
 from .lgnmodel1 import LGNModel, heat_plot
 from .transferfunction import MultiTransferFunction, ScalarTransferFunction
@@ -20,22 +11,22 @@ from sympy.abc import x as symbolic_x
 from sympy.abc import y as symbolic_y
 
 
-
 class OnUnit(LNUnit):
-      
     def __init__(self, linear_filter, transfer_function):
         assert linear_filter.amplitude > 0
         super(OnUnit, self).__init__(linear_filter, transfer_function)
-        
+
+
 class OffUnit(LNUnit):
-      
     def __init__(self, linear_filter, transfer_function):
         assert linear_filter.amplitude < 0
         super(OffUnit, self).__init__(linear_filter, transfer_function)
 
+
 class LGNOnOffCell(MultiLNUnit):
     """A cell model for a OnOff cell"""
-    def __init__(self, on_filter, off_filter, transfer_function=MultiTransferFunction((symbolic_x, symbolic_y), 'Heaviside(x)*(x)+Heaviside(y)*(y)')):
+    def __init__(self, on_filter, off_filter,
+                 transfer_function=MultiTransferFunction((symbolic_x, symbolic_y), 'Heaviside(x)*(x)+Heaviside(y)*(y)')):
         """Summary
 
         :param on_filter:
@@ -48,11 +39,11 @@ class LGNOnOffCell(MultiLNUnit):
         self.off_unit = OffUnit(self.off_filter, ScalarTransferFunction('s'))
         super(LGNOnOffCell, self).__init__([self.on_unit, self.off_unit], transfer_function)
         
+
 class TwoSubfieldLinearCell(MultiLNUnit):
-    
-    def __init__(self, dominant_filter, nondominant_filter,subfield_separation=10, onoff_axis_angle=45, dominant_subfield_location=(30,40),
-                 transfer_function = MultiTransferFunction((symbolic_x, symbolic_y), 'Heaviside(x)*(x)+Heaviside(y)*(y)')):
-         
+    def __init__(self, dominant_filter, nondominant_filter, subfield_separation=10, onoff_axis_angle=45,
+                 dominant_subfield_location=(30,40),
+                 transfer_function=MultiTransferFunction((symbolic_x, symbolic_y), 'Heaviside(x)*(x)+Heaviside(y)*(y)')):
         self.subfield_separation = subfield_separation
         self.onoff_axis_angle = onoff_axis_angle
         self.dominant_subfield_location = dominant_subfield_location
@@ -73,15 +64,13 @@ class TwoSubfieldLinearCell(MultiLNUnit):
         
         
 class LGNOnCell(object):
-    
     def __init__(self, **kwargs):
-        
         self.position = kwargs.pop('position', None)
         self.weights = kwargs.pop('weights', None)
         self.kpeaks = kwargs.pop('kpeaks', None)
         self.amplitude = kwargs.pop('amplitude', None)
         self.sigma = kwargs.pop('sigma', None)
-        self.transfer_function_str = kwargs.pop('transfer_function_str', 's') # 'Heaviside(s)*s')
+        self.transfer_function_str = kwargs.pop('transfer_function_str', 's')  # 'Heaviside(s)*s')
         self.metadata = kwargs.pop('metadata', {})
 
         temporal_filter = TemporalFilterCosineBump(self.weights, self.kpeaks)
@@ -89,11 +78,10 @@ class LGNOnCell(object):
         spatiotemporal_filter = SpatioTemporalFilter(spatial_filter, temporal_filter, amplitude=self.amplitude)
         transfer_function = ScalarTransferFunction(self.transfer_function_str)
         self.unit = OnUnit(spatiotemporal_filter, transfer_function)
-        
+
+
 class LGNOffCell(OffUnit):
-    
     def __init__(self, **kwargs):
-        
         lattice_unit_center = kwargs.pop('lattice_unit_center', None)
         weights = kwargs.pop('weights', None)
         kpeaks = kwargs.pop('kpeaks', None)
@@ -110,8 +98,8 @@ class LGNOffCell(OffUnit):
         transfer_function = ScalarTransferFunction(transfer_function_str)
         super(LGNOnCell, self).__init__(spatiotemporal_filter, transfer_function)
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     movie_file = '/data/mat/iSee_temp_shared/movies/TouchOfEvil.npy'
     m_data = np.load(movie_file, 'r')
     m = Movie(m_data[1000:], frame_rate=30.)
