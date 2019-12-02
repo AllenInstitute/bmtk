@@ -120,7 +120,7 @@ class SimNetwork(object):
 
         return all_nodes_df
 
-    def get_node_groups(self, populations=None, verbose=True):
+    def get_node_groups(self, populations=None):
         if populations is None:
             selected_pops = self.node_populations
 
@@ -133,9 +133,6 @@ class SimNetwork(object):
         all_nodes_df = None
         for node_pop in selected_pops:
             node_pop_df = node_pop.nodes_df(index_by_id=False)
-            if verbose:
-                print(node_pop_df)
-                print('-----')
             if 'population' not in node_pop_df:
                 node_pop_df['population'] = node_pop.name
 
