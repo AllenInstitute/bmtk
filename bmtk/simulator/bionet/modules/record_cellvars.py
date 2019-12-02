@@ -55,7 +55,7 @@ transforms_table = {
 
 
 class MembraneReport(SimulatorMod):
-    def __init__(self, tmp_dir, file_name, variable_name, cells, sections='all', buffer_data=True, transform={}, **kwargs):
+    def __init__(self, tmp_dir, file_name, variable_name, cells=None, gids=None, sections='all', buffer_data=True, transform={}, **kwargs):
         """Module used for saving NEURON cell properities at each given step of the simulation.
 
         :param tmp_dir:
@@ -90,14 +90,17 @@ class MembraneReport(SimulatorMod):
         #self._var_recorder = MembraneRecorder(self._file_name, self._tmp_dir, self._all_variables,
         #                                      buffer_data=buffer_data, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)
 
-        self._gid_list = []  # list of all gids that will have their variables saved
+        self._gid_list = gids # list of all gids that will have their variables saved
         self._data_block = {}  # table of variable data indexed by [gid][variable]
         self._block_step = 0  # time step within a given block
         self._gid_map = None
 
     def _get_gids(self, sim):
         # get list of gids to save. Will only work for biophysical cells saved on the current MPI rank
-        selected_gids = set(sim.net.get_node_set(self._all_gids).gids())
+        if self._gid_list is not None:
+            selected_gids = set(self._gid_list)
+        else:
+            selected_gids = set(sim.net.get_node_set(self._all_gids).gids())
         self._local_gids = list(set(sim.biophysical_gids) & selected_gids)
 
     def _save_sim_data(self, sim):
