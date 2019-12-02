@@ -390,6 +390,7 @@ class EnvBuilder(object):
             "input_type": "current_clamp",
             "module": "IClamp",
             "node_set": "all",
+            "gids": current_param['gids'],
             "amp": current_param['amp'],
             "delay": float(current_param['delay']),
             "duration": float(current_param['duration'])
@@ -684,3 +685,4 @@ if __name__ == '__main__':
     elif target_sim == 'popnet':
         build_env_popnet(base_dir=base_dir, network_dir=options.network_dir, tstop=options.tstop,
                            dt=options.dt, reports=reports)
+
