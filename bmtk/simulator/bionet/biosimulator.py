@@ -31,7 +31,6 @@ from bmtk.simulator.core.node_sets import NodeSet
 import bmtk.simulator.utils.simulation_reports as reports
 import bmtk.simulator.utils.simulation_inputs as inputs
 from bmtk.utils.io import spike_trains
-
 from bmtk.utils.reports.spike_trains import SpikeTrains
 
 
@@ -303,6 +302,10 @@ class BioSimulator(Simulator):
 
         # TODO: Need to create a gid selector
         for sim_input in inputs.from_config(config):
+            try:
+                network.get_node_set(sim_input.node_set)
+            except:
+                print("Parameter node_set must be given in inputs module of simulation_config file. If unsure of what node_set should be, set it to 'all'.")
             node_set = network.get_node_set(sim_input.node_set)
             if sim_input.input_type == 'spikes':
                 io.log_info('Building virtual cell stimulations for {}'.format(sim_input.name))
@@ -315,10 +318,26 @@ class BioSimulator(Simulator):
 
             elif sim_input.module == 'IClamp':
                 # TODO: Parse from csv file
+                try: 
+                    len(sim_input.params['amp'])
+                except:
+                    sim_input.params['amp']=[float(sim_input.params['amp'])]
+                if len(sim_input.params['amp'])>1:
+                    sim_input.params['amp']=[float(i) for i in sim_input.params['amp']]
+
                 amplitude = sim_input.params['amp']
                 delay = sim_input.params['delay']
                 duration = sim_input.params['duration']
-                gids = sim_input.params['gids']
+                
+                try:
+                    sim_input.params['gids']
+                except:
+                    sim_input.params['gids'] = None
+                if sim_input.params['gids'] is not None:
+                    gids = sim_input.params['gids']
+                else:
+                    gids = list(node_set.gids())
+
                 sim.attach_current_clamp(amplitude, delay, duration, gids)
 
             elif sim_input.module == 'xstim':
