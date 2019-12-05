@@ -26,17 +26,17 @@ from neuron import h
 
 from bmtk.simulator.bionet.modules.sim_module import SimulatorMod
 from bmtk.simulator.bionet.io_tools import io
+from bmtk.utils.reports import CompartmentReport
 
-from bmtk.utils.io import cell_vars
 try:
     # Check to see if h5py is built to run in parallel
     if h5py.get_config().mpi:
-        MembraneRecorder = cell_vars.CellVarRecorderParallel
+        MembraneRecorder = CompartmentReport
     else:
-        MembraneRecorder = cell_vars.CellVarRecorder
+        MembraneRecorder = CompartmentReport
 
 except Exception as e:
-    MembraneRecorder = cell_vars.CellVarRecorder
+    MembraneRecorder = CompartmentReport
 
 MembraneRecorder._io = io
 
@@ -55,7 +55,7 @@ transforms_table = {
 
 
 class MembraneReport(SimulatorMod):
-    def __init__(self, tmp_dir, file_name, variable_name, cells, sections='all', buffer_data=True, transform={}):
+    def __init__(self, tmp_dir, file_name, variable_name, cells, sections='all', buffer_data=True, transform={}, **kwargs):
         """Module used for saving NEURON cell properities at each given step of the simulation.
 
         :param tmp_dir:
@@ -86,12 +86,14 @@ class MembraneReport(SimulatorMod):
         self._local_gids = []
         self._sections = sections
 
-        self._var_recorder = MembraneRecorder(self._file_name, self._tmp_dir, self._all_variables,
-                                              buffer_data=buffer_data, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)
+        self._var_recorder = None
+        #self._var_recorder = MembraneRecorder(self._file_name, self._tmp_dir, self._all_variables,
+        #                                      buffer_data=buffer_data, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)
 
         self._gid_list = []  # list of all gids that will have their variables saved
         self._data_block = {}  # table of variable data indexed by [gid][variable]
         self._block_step = 0  # time step within a given block
+        self._gid_map = None
 
     def _get_gids(self, sim):
         # get list of gids to save. Will only work for biophysical cells saved on the current MPI rank
@@ -99,17 +101,23 @@ class MembraneReport(SimulatorMod):
         self._local_gids = list(set(sim.biophysical_gids) & selected_gids)
 
     def _save_sim_data(self, sim):
-        self._var_recorder.tstart = 0.0
-        self._var_recorder.tstop = sim.tstop
-        self._var_recorder.dt = sim.dt
+        #self._var_recorder.tstart = 0.0
+        #self._var_recorder.tstop = sim.tstop
+        #self._var_recorder.dt = sim.dt
+        pass
 
     def initialize(self, sim):
+        self._var_recorder = MembraneRecorder(self._file_name, mode='w', variable=self._variables[0],
+                                              buffer_size=sim.nsteps_block, tstart=0.0, tstop=sim.tstop, dt=sim.dt)
+        self._gid_map = sim.net.gid_pool
+
         self._get_gids(sim)
-        self._save_sim_data(sim)
+        #self._save_sim_data(sim)
 
         # TODO: get section by name and/or list of section ids
         # Build segment/section list
         for gid in self._local_gids:
+            pop_id = self._gid_map.get_pool_id(gid)
             sec_list = []
             seg_list = []
             cell = sim.net.get_cell_gid(gid)
@@ -120,21 +128,26 @@ class MembraneReport(SimulatorMod):
                     sec_list.append(sec_id)
                     seg_list.append(seg.x)
 
-            self._var_recorder.add_cell(gid, sec_list, seg_list)
+            #self._var_recorder.add_cell(gid, sec_list, seg_list)
+            self._var_recorder.add_cell(node_id=pop_id.node_id, population=pop_id.population, element_ids=sec_list,
+                                        element_pos=seg_list)
 
-        self._var_recorder.initialize(sim.n_steps, sim.nsteps_block)
+        #self._var_recorder.initialize(sim.n_steps, sim.nsteps_block)
+        self._var_recorder.initialize()
 
     def step(self, sim, tstep):
         # save all necessary cells/variables at the current time-step into memory
         for gid in self._local_gids:
+            pop_id = self._gid_map.get_pool_id(gid)
             cell = sim.net.get_cell_gid(gid)
             for var_name in self._variables:
                 seg_vals = [getattr(seg, var_name) for seg in cell.get_segments()]
-                self._var_recorder.record_cell(gid, var_name, seg_vals, tstep)
+                self._var_recorder.record_cell(pop_id.node_id, population=pop_id.population, vals=seg_vals, tstep=tstep)
 
             for var_name, fnc in self._transforms.items():
                 seg_vals = [fnc(getattr(seg, var_name)) for seg in cell.get_segments()]
-                self._var_recorder.record_cell(gid, var_name, seg_vals, tstep)
+                # self._var_recorder.record_cell(gid, var_name, seg_vals, tstep)
+                self._var_recorder.record_cell(pop_id.node_id, population=pop_id.population, val=seg_vals, tstep=tstep)
 
         self._block_step += 1
 
@@ -147,35 +160,49 @@ class MembraneReport(SimulatorMod):
         pc.barrier()
         self._var_recorder.close()
 
-        pc.barrier()
-        self._var_recorder.merge()
+        #pc.barrier()
+        #self._var_recorder.merge()
 
 
 class SomaReport(MembraneReport):
     """Special case for when only needing to save the soma variable"""
-    def __init__(self, tmp_dir, file_name, variable_name, cells, sections='soma', buffer_data=True, transform={}):
+    def __init__(self, tmp_dir, file_name, variable_name, cells, sections='soma', buffer_data=True, transform={}, **kwargs):
         super(SomaReport, self).__init__(tmp_dir=tmp_dir, file_name=file_name, variable_name=variable_name, cells=cells,
-                                         sections=sections, buffer_data=buffer_data, transform=transform)
+                                         sections=sections, buffer_data=buffer_data, transform=transform, **kwargs)
 
     def initialize(self, sim):
+        self._var_recorder = MembraneRecorder(self._file_name, mode='w', variable=self._variables[0],
+                                              buffer_size=sim.nsteps_block, tstart=0.0, tstop=sim.tstop, dt=sim.dt)
+        self._gid_map = sim.net.gid_pool
+
         self._get_gids(sim)
-        self._save_sim_data(sim)
+        # self._save_sim_data(sim)
 
         for gid in self._local_gids:
-            self._var_recorder.add_cell(gid, [0], [0.5])
-        self._var_recorder.initialize(sim.n_steps, sim.nsteps_block)
+            pop_id = self._gid_map.get_pool_id(gid)
+            # self._var_recorder.add_cell(gid, [0], [0.5])
+            self._var_recorder.add_cell(pop_id.node_id, population=pop_id.population, element_ids=[0],
+                                        element_pos=[0.5])
+
+        # self._var_recorder.initialize(sim.n_steps, sim.nsteps_block)
+        self._var_recorder.initialize()
 
     def step(self, sim, tstep, rel_time=0.0):
         # save all necessary cells/variables at the current time-step into memory
         for gid in self._local_gids:
+            pop_id = self._gid_map.get_pool_id(gid)
             cell = sim.net.get_cell_gid(gid)
             for var_name in self._variables:
                 var_val = getattr(cell.hobj.soma[0](0.5), var_name)
-                self._var_recorder.record_cell(gid, var_name, [var_val], tstep)
+                # self._var_recorder.record_cell(gid, var_name, [var_val], tstep)
+                self._var_recorder.record_cell(pop_id.node_id, population=pop_id.population, vals=[var_val],
+                                               tstep=tstep)
 
             for var_name, fnc in self._transforms.items():
                 var_val = getattr(cell.hobj.soma[0](0.5), var_name)
                 new_val = fnc(var_val)
-                self._var_recorder.record_cell(gid, var_name, [new_val], tstep)
+                # self._var_recorder.record_cell(gid, var_name, [new_val], tstep)
+                self._var_recorder.record_cell(pop_id.node_id, population=pop_id.population, vals=[new_val],
+                                               tstep=tstep)
 
         self._block_step += 1

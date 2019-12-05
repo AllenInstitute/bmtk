@@ -6,16 +6,6 @@ from bmtk.utils import io
 from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
 
 
-try:
-    from mpi4py import MPI
-    comm = MPI.COMM_WORLD
-    rank = comm.Get_rank()
-    nhosts = comm.Get_size()
-
-except Exception as exc:
-    pass
-
-
 class CellVarRecorder(object):
     """Used to save cell membrane variables (V, Ca2+, etc) to the described hdf5 format.
 
@@ -34,7 +24,7 @@ class CellVarRecorder(object):
             self.data_block = None
             self.buffer_block = None
 
-    def __init__(self, file_name, tmp_dir, variables, buffer_data=True, mpi_rank=0, mpi_size=1):
+    def __init__(self, file_name, tmp_dir, variables, buffer_data=True, mpi_rank=0, mpi_size=1, **kwargs):
         self._file_name = file_name
         self._h5_handle = None
         self._tmp_dir = tmp_dir
@@ -45,6 +35,8 @@ class CellVarRecorder(object):
         self._mpi_size = mpi_size
         self._tmp_files = []
         self._saved_file = file_name
+        self._population = kwargs.get('population', None)
+        self._units = kwargs.get('units', None)
 
         if mpi_size > 1:
             self._io.log_warning('Was unable to run h5py in parallel (mpi) mode.' +
@@ -149,12 +141,17 @@ class CellVarRecorder(object):
         self._calc_offset()
         self._create_h5_file()
 
+        #root_name = '/report/{}'.format(self._population) if self._population is not None else '/'
         var_grp = self._h5_handle.create_group('/mapping')
+        # TODO: gids --> node_ids
         var_grp.create_dataset('gids', shape=(self._n_gids_all,), dtype=np.uint)
+        # TODO: element_id --> element_ids
         var_grp.create_dataset('element_id', shape=(self._n_segments_all,), dtype=np.uint)
         var_grp.create_dataset('element_pos', shape=(self._n_segments_all,), dtype=np.float)
         var_grp.create_dataset('index_pointer', shape=(self._n_gids_all+1,), dtype=np.uint64)
         var_grp.create_dataset('time', data=[self.tstart, self.tstop, self.dt])
+        # TODO: Let user determine value
+        var_grp['time'].attrs['units'] = 'ms'
         for k, v in self._map_attrs.items():
             var_grp.create_dataset(k, shape=(self._n_segments_all,), dtype=type(v[0]))
 
@@ -182,12 +179,18 @@ class CellVarRecorder(object):
                 data_tables.buffer_block = np.zeros((buffer_size, self._n_segments_local), dtype=np.float)
                 data_tables.data_block = data_grp.create_dataset('data', shape=(n_steps, self._n_segments_all),
                                                                  dtype=np.float, chunks=True)
+                # TODO: Remove Variable name
                 data_tables.data_block.attrs['variable_name'] = var_name
+                if self._units is not None:
+                    data_tables.data_block.attrs['units'] = self._units
             else:
                 # Since we are not buffering data, we just write directly to the on-disk dataset
                 data_tables.buffer_block = data_grp.create_dataset('data', shape=(n_steps, self._n_segments_all),
                                                                    dtype=np.float, chunks=True)
                 data_tables.buffer_block.attrs['variable_name'] = var_name
+                if self._units is not None:
+                    data_tables.buffer_block.attrs['units'] = self._units
+
 
         self._is_initialized = True
 
@@ -310,11 +313,16 @@ class CellVarRecorderParallel(CellVarRecorder):
     Unlike the parent, this take advantage of parallel h5py to writting to the results file across different ranks.
 
     """
-    def __init__(self, file_name, tmp_dir, variables, buffer_data=True):
+    def __init__(self, file_name, tmp_dir, variables, buffer_data=True, **kwargs):
         super(CellVarRecorder, self).__init__(file_name, tmp_dir, variables, buffer_data=buffer_data, mpi_rank=0,
-                                              mpi_size=1)
+                                              mpi_size=1, **kwargs)
 
     def _calc_offset(self):
+        from mpi4py import MPI  # Just needed for UNSIGNED_INT
+        comm = io.bmtk_world_comm.comm
+        rank = comm.Get_rank()
+        nhosts = comm.Get_size()
+
         # iterate through the ranks let rank r determine the offset from rank r-1
         for r in range(comm.Get_size()):
             if rank == r:
@@ -346,7 +354,7 @@ class CellVarRecorderParallel(CellVarRecorder):
         self._n_gids_all = total_counts[1]
 
     def _create_h5_file(self):
-        self._h5_handle = h5py.File(self._file_name, 'w', driver='mpio', comm=MPI.COMM_WORLD)
+        self._h5_handle = h5py.File(self._file_name, 'w', driver='mpio', comm=io.bmtk_world_comm.comm)
         add_hdf5_version(self._h5_handle)
         add_hdf5_magic(self._h5_handle)
 

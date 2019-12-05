@@ -32,6 +32,8 @@ import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
 
 import bmtk.simulator.utils.config as config
+from bmtk.utils.reports.spike_trains.plotting import plot_raster, plot_rates, plot_raster_cmp
+
 
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
@@ -40,7 +42,7 @@ def _create_node_table(node_file, node_type_file, group_key=None, exclude=[]):
     node_types_df = pd.read_csv(node_type_file, sep=' ', index_col='node_type_id')
     nodes_h5 = h5py.File(node_file)
     # TODO: Use utils.spikesReader
-    node_pop_name = nodes_h5['/nodes'].keys()[0]
+    node_pop_name = list(nodes_h5['/nodes'])[0]
 
     nodes_grp = nodes_h5['/nodes'][node_pop_name]
     # TODO: Need to be able to handle gid or node_id
@@ -321,7 +323,7 @@ def plot_ratess(cells_file, cell_models_file, spikes_file, group_key='pop_name',
     plt.show()
 
 
-def plot_rates(cells_file, cell_models_file, spikes_file, group_key=None, exclude=[], interval=None, show=True,
+def plot_rates_old(cells_file, cell_models_file, spikes_file, group_key=None, exclude=[], interval=None, show=True,
                title=None, save_as=None, smoothed=False):
     def smooth(data, window=100):
         h = int(window/2)

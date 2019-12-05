@@ -70,7 +70,7 @@ there may be additional requirements.
 
   |dipde_icon| Population level firing rates simulation with PopNet uses `DiPDE <http://alleninstitute.github.io/dipde/>`_
 
-  **FilterNet** Filter models with LGNModel uses
+  **FilterNet** Filter models with LGNModel using built-in Python functions.
 
 .. |neuron_icon| image:: _static/images/neuron_icon.png
    :scale: 23%
@@ -105,7 +105,7 @@ Papers and Posters
 SONATA Data Format
 ------------------
 The SONATA data format was developed jointly by the Allen Institute and the Blue Brain Project as a standarized,
-cross-platform format for storing large scale networks and simulation results. The BMTK utilizes when building and
+cross-platform format for storing large scale networks and simulation results. The BMTK utilizes SONATA when building and
 simulating networks. Not only does this improve performance and file size, but it lets the BMTK interact with the growing
 list of software that supports the SONATA format.
 
@@ -114,4 +114,4 @@ More information about the SONATA (and hence BMTK) data format can be found at t
 
 Acknowledgements
 ----------------
-We wish to thank the Allen Institute for Brain Science Founders, Paul G. Allen and Jody Allen, for their vision, encouragement, and support.
+We wish to thank the Allen Institute for Brain Science founder, Paul G. Allen, for their vision, encouragement, and support.

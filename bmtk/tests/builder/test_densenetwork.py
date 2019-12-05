@@ -274,6 +274,7 @@ def test_save_multinetwork():
     assert(edge_types_csv['ctype_1'].iloc[0] == 'n2_rec')
 
 
+@pytest.mark.xfail
 def test_save_multinetwork_1():
     net1 = NetworkBuilder('NET1')
     net1.add_nodes(N=100, position=[(0.0, 1.0, -1.0)] * 100, cell_type='Scnna1', ei='e')
@@ -303,5 +304,5 @@ def test_save_multinetwork_1():
 
 
 if __name__ == '__main__':
-    test_save_weights()
-    # test_save_multinetwork_1()
+    #test_save_weights()
+    test_save_multinetwork_1()

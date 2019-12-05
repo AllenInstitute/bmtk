@@ -52,6 +52,13 @@ class FilterSimulator(Simulator):
             graiting_movie = gm.create_movie(t_min=0.0, t_max=self._tstop, **create_params)
             self._movies.append(graiting_movie)
 
+        elif movie_type == 'looming':
+            init_params = FilterSimulator.find_params(['row_size', 'col_size', 'frame_rate'], **params)
+            movie_params = FilterSimulator.find_params(['t_looming', 'gray_sceen_dur'], **params)
+            lm = LoomingMovie(**init_params)
+            looming_movie = lm.create_movie(**movie_params)
+            self._movies.append(looming_movie)
+
         else:
             raise Exception('Unknown movie type {}'.format(movie_type))
 
@@ -70,7 +77,7 @@ class FilterSimulator(Simulator):
                 ts, f_rates = cell.lgn_cell_obj.evaluate(movie, **options)
 
                 for mod in self._sim_mods:
-                    mod.save(self, cell.gid, ts, f_rates)
+                    mod.save(self, cell, ts, f_rates)
 
         io.log_info('Done.')
         for mod in self._sim_mods:

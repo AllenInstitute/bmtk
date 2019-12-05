@@ -3,21 +3,18 @@ from bmtk.builder.node_set import NodeSet
 from bmtk.builder.node import Node
 from bmtk.builder.id_generator import IDGenerator
 
+
 def test_node_set():
     generator = IDGenerator()
     node_set = NodeSet(N=100,
                        node_params={'p1': range(100), 'p2': range(0, 1000, 100)},
                        node_type_properties={'prop1': 'prop1', 'node_type_id': 1})
-    print(node_set.N)
-    print(node_set.node_type_id)
-    print(node_set.params_keys)
-
     nodes = node_set.build(generator)
-    print(len(nodes) == 100)
-    print(nodes[1]['p1'] == 1)
-    print(nodes[1]['p2'] == 100)
-    print(nodes[1]['prop1'] == 'prop1')
-    print(nodes[1]['node_type_id'] == 1)
+    assert(len(nodes) == 100)
+    assert(nodes[1]['p1'] == 1)
+    assert(nodes[1]['p2'] == 100)
+    assert(nodes[1]['prop1'] == 'prop1')
+    assert(nodes[1]['node_type_id'] == 1)
 
 
 def test_set_hash():
@@ -50,3 +47,8 @@ def test_node():
     assert('node_id' in node_1.params)
     assert('param1' in node_set1.params_keys)
     assert(node_1.params_hash == node_set1.params_hash)
+
+
+if __name__ == '__main__':
+    test_node_set()
+    #test_node()

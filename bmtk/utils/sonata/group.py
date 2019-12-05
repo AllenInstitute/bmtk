@@ -262,6 +262,7 @@ class NodeGroup(Group):
         type_filter = False
         group_prop_filter = {}  # list of 'prop_name'==prov_val for group datasets
         group_filter = False
+        node_id_filter = []
 
         # Build key==value lists
         for filter_key, filter_val in filter_props.items():
@@ -276,6 +277,9 @@ class NodeGroup(Group):
                 node_type_filter &= set(node_types_table.find(filter_key, filter_val))
                 type_filter = True
 
+            elif filter_key in ['node_id', 'node_ids']:
+                node_id_filter += filter_val
+
             else:
                 # TODO: should we raise an exception?
                 # TODO: User logger
@@ -287,6 +291,9 @@ class NodeGroup(Group):
             node = self._parent.get_row(indx)
             if type_filter and node.node_type_id not in node_type_filter:
                 # confirm node_type_id is a correct one
+                continue
+
+            if node_id_filter and node.node_id not in node_id_filter:
                 continue
 
             if group_filter:
@@ -330,8 +337,39 @@ class EdgeGroup(Group):
         self._parent_indicies_built = True
 
     def to_dataframe(self):
-        raise NotImplementedError
+        self.build_indicies()
 
+        # Build a dataframe of group properties
+        # TODO: Include dynamics_params?
+        properties_df = pd.DataFrame()
+        for col in self._group_columns:
+            if col.dimension > 1:
+                for i in range(col.dimension):
+                    # TODO: see if column name exists in the attributes
+                    col_name = '{}.{}'.format(col.name, i)
+                    properties_df[col_name] = pd.Series(self._h5_group[col.name][:, i])
+            else:
+                properties_df[col.name] = pd.Series(self._h5_group[col.name])
+
+        # Build a dataframe of parent node
+        root_df = pd.DataFrame()
+        root_df['edge_type_id'] = pd.Series(self.edge_type_ids)
+        root_df['source_node_id'] = pd.Series(self.src_node_ids)
+        root_df['target_node_id'] = pd.Series(self.trg_node_ids)
+        root_df['edge_group_index'] = pd.Series(self._parent.group_indicies(self.group_id, as_list=True))  # pivot col
+
+        # merge group props df with parent df
+        results_df = root_df.merge(properties_df, how='left', left_on='edge_group_index', right_index=True)
+        results_df = results_df.drop('edge_group_index', axis=1)
+
+        # Build node_types dataframe and merge
+        edge_types_df = self._parent.edge_types_table.to_dataframe()
+        # remove properties that exist in the group
+        edge_types_cols = [c.name for c in self._parent.edge_types_table.columns if c not in self._group_columns]
+        edge_types_df = edge_types_df[edge_types_cols]
+
+        # TODO: consider caching these results
+        return results_df.merge(edge_types_df, how='left', left_on='edge_type_id', right_index=True)
 
     def _get_parent_ds(self, parent_ds):
         self.build_indicies()
@@ -345,13 +383,16 @@ class EdgeGroup(Group):
 
         return ds_vals
 
+    @property
     def src_node_ids(self):
         return self._get_parent_ds(self.parent._source_node_id_ds)
 
+    @property
     def trg_node_ids(self):
         return self._get_parent_ds(self.parent._target_node_id_ds)
 
-    def node_type_ids(self):
+    @property
+    def edge_type_ids(self):
         return self._get_parent_ds(self.parent._type_id_ds)
 
     def get_values(self, property_name, all_rows=False):

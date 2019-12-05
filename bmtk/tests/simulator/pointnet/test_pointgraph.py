@@ -3,12 +3,14 @@ import os
 import json
 import tempfile
 
-from pointnet_virtual_files import NodesFile, EdgesFile
-from bmtk.simulator import pointnet
+from .conftest import *
+from .pointnet_virtual_files import NodesFile, EdgesFile
+
 
 
 @pytest.mark.skip()
 def test_add_nodes():
+
     nodes = NodesFile(N=100)
 
     net = pointnet.PointNetwork()

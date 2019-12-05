@@ -26,10 +26,12 @@ from neuron import h
 class VirtualCell(object):
     """Representation of a Virtual/External node"""
 
-    def __init__(self, node, spike_train_dataset):
+    def __init__(self, node, population, spike_train_dataset):
         # VirtualCell is currently not a subclass of bionet.Cell class b/c the parent has a bunch of properties that
         # just don't apply to a virtual cell. May want to make bionet.Cell more generic in the future.
         self._node_id = node.node_id
+        self._node = node
+        self._population = population
         self._hobj = None
         self._spike_train_dataset = spike_train_dataset
         self._train_vec = []
@@ -45,7 +47,10 @@ class VirtualCell(object):
 
     def set_stim(self, stim_prop, spike_train):
         """Gets the spike trains for each individual cell."""
-        self._train_vec = h.Vector(spike_train.get_spikes(self.node_id))
+        self._train_vec = h.Vector(spike_train.get_times(node_id=self.node_id)) #, population=self._population))
         vecstim = h.VecStim()
         vecstim.play(self._train_vec)
         self._hobj = vecstim
+
+    def __getitem__(self, item):
+        return self._node[item]

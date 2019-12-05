@@ -29,6 +29,30 @@ from neuron import h
 
 pc = h.ParallelContext()    # object to access MPI methods
 
+class ConnectionStruct(object):
+    def __init__(self, edge_prop, src_node, syn, nc, is_virtual=False):
+        self._src_node = src_node
+        self._edge_prop = edge_prop
+        self._syn = syn
+        self._nc = nc
+        self._is_virtual = is_virtual
+
+    @property
+    def is_virtual(self):
+        return self._is_virtual
+
+    @property
+    def source_node(self):
+        return self._src_node
+
+    @property
+    def syn_weight(self):
+        return self._nc.weight[0]
+
+    @syn_weight.setter
+    def syn_weight(self, val):
+        self._nc.weight[0] = val
+
 
 class BioCell(Cell):
     """Implemntation of a morphologically and biophysically detailed type cell.
@@ -53,11 +77,12 @@ class BioCell(Cell):
         self._save_conn = False  # bionetwork.save_connection
         self._synapses = []
         self._syn_src_net = []
-        self._syn_src_gid = []
+        self._src_gids = []
         self._syn_seg_ix = []
         self._syn_sec_x = []
         self._edge_type_ids = []
         self._segments = None
+        self._connections = []
 
         # potentially used by ecp module
         self.im_ptr = None
@@ -152,8 +177,12 @@ class BioCell(Cell):
         syn_weight = edge_prop.syn_weight(src_node=src_node, trg_node=self._node)
 
         if edge_prop.preselected_targets:
+            self._edge_props.append(edge_prop)
+            self._src_gids.append(src_node.node_id)
             return self._set_connection_preselected(edge_prop, src_node, syn_weight, stim)
         else:
+            self._edge_props += [edge_prop]*edge_prop.nsyns
+            self._src_gids += [src_node.node_id]*edge_prop.nsyns
             return self._set_connections(edge_prop, src_node, syn_weight, stim)
 
     def _set_connection_preselected(self, edge_prop, src_node, syn_weight, stim=None):
@@ -173,8 +202,11 @@ class BioCell(Cell):
 
         nc.weight[0] = syn_weight
         nc.delay = delay
+        self._connections.append(ConnectionStruct(edge_prop, src_node, syn, nc, stim is not None))
+
         self._netcons.append(nc)
         self._synapses.append(syn)
+        self._edge_type_ids.append(edge_prop.edge_type_id)
         if self._save_conn:
             self._save_connection(src_gid=src_node.node_id, src_net=src_node.network, sec_x=sec_x, seg_ix=sec_id,
                                   edge_type_id=edge_prop.edge_type_id)
@@ -211,10 +243,15 @@ class BioCell(Cell):
             nc.delay = delay
             self.netcons.append(nc)
 
+            self._connections.append(ConnectionStruct(edge_prop, src_node, syn, nc, stim is not None))
+
         return nsyns
 
+    def connections(self):
+        return self._connections
+
     def _save_connection(self, src_gid, src_net, sec_x, seg_ix, edge_type_id):
-        self._syn_src_gid.append(src_gid)
+        self._src_gids.append(src_gid)
         self._syn_src_net.append(src_net)
         self._syn_sec_x.append(sec_x)
         self._syn_seg_ix.append(seg_ix)
