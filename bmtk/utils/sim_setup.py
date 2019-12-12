@@ -378,18 +378,11 @@ class EnvBuilder(object):
         logger.info('Adding current clamp')
 
 
-        try: 
-            len(current_param['amp'])
-        except:
-            current_param['amp']=[float(current_param['amp'])]
-        if len(current_param['amp'])>1:
-            current_param['amp']=[float(i) for i in current_param['amp']]
-
-
         iclamp_config = {
             "input_type": "current_clamp",
             "module": "IClamp",
             "node_set": "all",
+            "gids": current_param['gids'],
             "amp": current_param['amp'],
             "delay": float(current_param['delay']),
             "duration": float(current_param['duration'])
@@ -684,3 +677,4 @@ if __name__ == '__main__':
     elif target_sim == 'popnet':
         build_env_popnet(base_dir=base_dir, network_dir=options.network_dir, tstop=options.tstop,
                            dt=options.dt, reports=reports)
+
