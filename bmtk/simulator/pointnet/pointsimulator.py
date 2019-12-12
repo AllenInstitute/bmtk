@@ -150,12 +150,9 @@ class PointSimulator(Simulator):
             node_set = self.net.get_node_set(node_set)
 
         # Convert node set into list of gids and then look-up the nest-ids
-        nest_ids = [self.net._gid2nestid[gid] for gid in node_set.gids()]
-
-        # Attach current clamp to nodes
-        nest.Connect(scg, nest_ids, syn_spec={'delay': self.dt})
-
-        self._inputs[input_name] = nest_ids
+        for pop_name in node_set.population_names():
+            nest_ids = self.net.gid_map.get_nestids(pop_name, node_set.gids())
+            nest.Connect(scg, list(nest_ids), syn_spec={'delay': self.dt})
 
     def run(self, tstop=None):
         if tstop is None:
