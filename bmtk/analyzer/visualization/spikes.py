@@ -163,10 +163,20 @@ def plot_spikes(cells_file, cell_models_file, spikes_file, population=None, grou
     cells_h5.close()
     # TODO: Uses utils.SpikesReader to open
     spikes_h5 = h5py.File(spikes_file, 'r')
-    spike_gids = np.array(spikes_h5['/spikes/gids'], dtype=np.uint)
-    spike_times = np.array(spikes_h5['/spikes/timestamps'], dtype=np.float)
-    # spike_times, spike_gids = np.loadtxt(spikes_file, dtype='float32,int', unpack=True)
-    # spike_gids, spike_times = np.loadtxt(spikes_file, dtype='int,float32', unpack=True)
+    
+    try:
+        spike_ids = np.array(spikes_h5['/spikes/gids'], dtype=np.uint)
+        spike_times = np.array(spikes_h5['/spikes/timestamps'], dtype=np.float)
+    except:
+        populations = spikes_h5['/spikes/']
+        if (len(populations)>1):
+            raise Exception('TODO: case where there is more than one population in a spike file (they will have overlapping node_ids, so must be shiftered to be plotted!)')
+
+        for pop in populations:
+            spike_ids = np.array(spikes_h5['/spikes/%s/node_ids'%pop], dtype=np.uint)
+            spike_times = np.array(spikes_h5['/spikes/%s/timestamps'%pop], dtype=np.float)
+            # spike_times, spike_gids = np.loadtxt(spikes_file, dtype='float32,int', unpack=True)
+            # spike_gids, spike_times = np.loadtxt(spikes_file, dtype='int,float32', unpack=True)
     spikes_h5.close()
 
     spike_times = spike_times * 1.0e-3
@@ -210,8 +220,8 @@ def plot_spikes(cells_file, cell_models_file, spikes_file, population=None, grou
         gid_max = group_max_gid if group_max_gid > gid_max else gid_max
 
         gids_group = group_df.index
-        indexes = np.in1d(spike_gids, gids_group)
-        ax1.scatter(spike_times[indexes], spike_gids[indexes], marker=marker, facecolors=color, label=group_name, lw=0, s=5)
+        indexes = np.in1d(spike_ids, gids_group)
+        ax1.scatter(spike_times[indexes], spike_ids[indexes], marker=marker, facecolors=color, label=group_name, lw=0, s=5)
 
     #ax1.set_xlabel('time (s)')
     ax1.axes.get_xaxis().set_visible(False)
@@ -229,6 +239,10 @@ def plot_spikes(cells_file, cell_models_file, spikes_file, population=None, grou
     ax2.set_ylabel('Firing rate (AU)')
     if title is not None:
         ax1.set_title(title)
+        ax1.spines['top'].set_visible(False)
+        ax1.spines['right'].set_visible(False)
+        ax2.spines['top'].set_visible(False)
+        ax2.spines['right'].set_visible(False)
 
     if save_as is not None:
         plt.savefig(save_as)
