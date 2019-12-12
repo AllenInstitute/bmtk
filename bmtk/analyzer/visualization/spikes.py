@@ -239,6 +239,10 @@ def plot_spikes(cells_file, cell_models_file, spikes_file, population=None, grou
     ax2.set_ylabel('Firing rate (AU)')
     if title is not None:
         ax1.set_title(title)
+        ax1.spines['top'].set_visible(False)
+        ax1.spines['right'].set_visible(False)
+        ax2.spines['top'].set_visible(False)
+        ax2.spines['right'].set_visible(False)
 
     if save_as is not None:
         plt.savefig(save_as)
