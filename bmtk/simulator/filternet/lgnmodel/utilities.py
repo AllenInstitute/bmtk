@@ -84,6 +84,5 @@ def get_convolution(t, frame_rate, flipped_t_inds, kernel, data):
         return sm*(1-(fi-fim)) + sM*(fi-fim)
     
     else:
-        
         # Requested time is exactly one piece of data:
         return get_convolution_ind(fim, flipped_t_inds, kernel, data)

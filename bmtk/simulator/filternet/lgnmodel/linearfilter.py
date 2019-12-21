@@ -10,6 +10,7 @@ class SpatioTemporalFilter(object):
         self.amplitude = amplitude
 
     def get_spatiotemporal_kernel(self, row_range, col_range, t_range=None, threshold=0, reverse=False):
+        # TODO: Rename to get_kernel() to match with spatialfilter and temporalfilter
         spatial_kernel = self.spatial_filter.get_kernel(row_range, col_range, threshold=0)
         temporal_kernel = self.temporal_filter.get_kernel(t_range=t_range, threshold=0, reverse=reverse)
 

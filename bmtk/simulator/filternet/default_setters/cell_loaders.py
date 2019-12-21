@@ -8,6 +8,7 @@ from bmtk.simulator.filternet.transfer_functions import ScalarTransferFunction, 
 from bmtk.simulator.filternet.utils import get_data_metrics_for_each_subclass, get_tcross_from_temporal_kernel
 from bmtk.simulator.filternet.pyfunction_cache import py_modules
 
+
 def create_two_sub_cell(dom_lf, non_dom_lf, dom_spont, non_dom_spont, onoff_axis_angle, subfield_separation, dom_location):
     dsp = str(dom_spont)
     ndsp = str(non_dom_spont)

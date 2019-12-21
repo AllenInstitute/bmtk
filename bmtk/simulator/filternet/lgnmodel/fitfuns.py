@@ -4,8 +4,7 @@ import numpy as np
 import numpy.fft as npft
 
 
-def makeFitStruct_GLM(dtsim,kbasprs,nkt,flag_exp):
-    
+def makeFitStruct_GLM(dtsim, kbasprs, nkt, flag_exp):
     gg = {}
     gg['k'] = []
     gg['dc'] = 0
@@ -24,6 +23,7 @@ def makeFitStruct_GLM(dtsim,kbasprs,nkt,flag_exp):
     gg['k'] = gg['ktbas']*gg['kt']
     
     return gg
+
 
 def makeBasis_StimKernel(kbasprs, nkt):
     neye = kbasprs['neye']
@@ -50,8 +50,7 @@ def makeBasis_StimKernel(kbasprs, nkt):
     kbasis0 = []
     for kk in range(ncos):
         kbasis0.append(ff(e2[:,kk],e3[:,kk],db))
-         
-    
+
     #Concatenate identity vectors
     nkt0 = np.size(kt0, 0)
     a1 = np.concatenate((np.eye(neye), np.zeros((nkt0,neye))),axis=0)
@@ -88,19 +87,19 @@ def makeBasis_StimKernel_exp(kbasprs,nkt):
     x0 = np.arange(0,nkt)
     kbasis = np.zeros((nkt,len(ks)))
     for ii in range(len(ks)):
-        kbasis[:,ii] = invnl(-ks[ii]*x0) #(1.0/ks[ii])*
+        kbasis[:,ii] = invnl(-ks[ii]*x0)  # (1.0/ks[ii])*
     
     kbasis = np.flipud(kbasis)     
-    #kbasis = normalizecols(kbasis)
-
+    # kbasis = normalizecols(kbasis)
     return kbasis  
-    
+
+
 def nlin(x):
     eps = 1e-20
-    #x.clip(0.)
-
+    # x.clip(0.)
     return np.log(x+eps)
-    
+
+
 def invnl(x):
     eps = 1e-20
     return np.exp(x)-eps
@@ -116,11 +115,10 @@ def ff(x, c, dc):
         m.append(val)
         
     return np.array(m)
-    
+
+
 def normalizecols(A):
-    
     B = A/np.tile(np.sqrt(sum(A**2,0)),(np.size(A,0),1))
-    
     return B
     
 def sameconv(A,B):
@@ -135,22 +133,3 @@ def sameconv(A,B):
     G = G[range(am)]
     
     return G
-
-# kbasprs = {}
-# kbasprs['neye'] = 0
-# kbasprs['ncos'] = 2
-# kbasprs['kpeaks'] = 40,80
-# kbasprs['b'] = .3
-#  
-# nkt = 400
-#  
-# filter_data = makeBasis_StimKernel(kbasprs, nkt)
-# 
-# print filter_data
-# 
-# print [x for x in filter_data.T]
-# 
-# import matplotlib.pyplot as plt
-# plt.plot(filter_data[:,0]+filter_data[:,1])
-# plt.show()
-

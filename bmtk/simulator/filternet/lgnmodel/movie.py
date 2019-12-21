@@ -1,5 +1,5 @@
-import matplotlib.pyplot as plt
 import numpy as np
+
 from .utilities import convert_tmin_tmax_framerate_to_trange
 
 
@@ -32,6 +32,8 @@ class Movie(object):
         return self.t_range, self.row_range, self.col_range
 
     def imshow_summary(self, ax=None, show=True, xlabel=None):
+        import matplotlib.pyplot as plt
+
         if ax is None:
             _, ax = plt.subplots(1,1)
         
@@ -50,7 +52,10 @@ class Movie(object):
             
         return ax, (t_vals, y_vals)
     
-    def imshow(self, t, show=True, vmin=-1, vmax=1, cmap=plt.cm.gray):
+    def imshow(self, t, show=True, vmin=-1, vmax=1, cmap=None):
+        import matplotlib.pyplot as plt
+
+        cmap = cmap or plt.cm.gray
         ti = int(t*self.frame_rate)
         data = self.data[ti, :, :]
         plt.imshow(data, vmin=vmin, vmax=vmax, cmap=cmap)
@@ -58,7 +63,7 @@ class Movie(object):
         if show:
             plt.show()
 
-    def play(self, interval=None, skip=None, playback_speed=1.0, cmap=plt.cm.gray, vmin=-1.0, vmax=1.0, save_as=None,
+    def play(self, interval=None, skip=None, playback_speed=1.0, cmap=None, vmin=-1.0, vmax=1.0, save_as=None,
              show=True):
         """
 
@@ -69,7 +74,10 @@ class Movie(object):
         :param save_as: If set to a valid (mp4 file) path animation will be saved. Otherwise it won't
         :param show: display the animation, default True
         """
+        import matplotlib.pyplot as plt
         import matplotlib.animation as animation
+
+        cmap = cmap or plt.cm.gray
 
         data = self.data
         times = self.t_range
@@ -187,12 +195,12 @@ class FullFieldFlashMovie(FullFieldMovie):
 
 
 class GratingMovie(Movie):
-    def __init__(self, row_size, col_size, frame_rate=1000.):
+    def __init__(self, row_size, col_size, frame_rate=1000.0):
         self.row_size = row_size  # in degrees
         self.col_size = col_size  # in degrees
         self.frame_rate = float(frame_rate)  # in Hz
 
-    def create_movie(self, t_min=0, t_max=1, gray_screen_dur=0, cpd=0.05, temporal_f=4, theta = 45,
+    def create_movie(self, t_min=0, t_max=1, gray_screen_dur=0, cpd=0.05, temporal_f=4, theta=45,
                      phase=0., contrast=1.0, row_size_new=None, col_size_new=None):
         """Create the grating movie with the desired parameters
 
