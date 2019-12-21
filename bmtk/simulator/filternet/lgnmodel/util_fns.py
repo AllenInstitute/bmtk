@@ -63,7 +63,7 @@ def create_grating_movie_list(gr_dir_name):
 
     return gr_mov_list
 
-
+"""
 ##################################################
 metrics_dir = os.path.join(os.path.dirname(__file__), 'cell_metrics')
 def get_data_metrics_for_each_subclass(ctype):
@@ -153,6 +153,7 @@ def get_data_metrics_for_each_subclass(ctype):
         exp_prs_dict[dict_key]['N_class'] = N_class
 
     return exp_prs_dict
+"""
 
 
 ##################################################

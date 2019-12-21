@@ -220,8 +220,8 @@ class GratingMovie(Movie):
         assert contrast > 0, "Contrast must be > 0"
 
         physical_spacing = 1.0 / (float(cpd) * 10)  # To make sure no aliasing occurs
-        self.row_range = np.linspace(0, self.row_size, self.row_size / physical_spacing, endpoint=True)
-        self.col_range = np.linspace(0, self.col_size, self.col_size / physical_spacing, endpoint=True)
+        self.row_range = np.linspace(0, self.row_size, int(self.row_size/physical_spacing), endpoint=True)
+        self.col_range = np.linspace(0, self.col_size, int(self.col_size/physical_spacing), endpoint=True)
         numberFramesNeeded = int(round(self.frame_rate * (t_max - gray_screen_dur))) + 1
         time_range = np.linspace(gray_screen_dur, t_max - gray_screen_dur, numberFramesNeeded, endpoint=True)
 
@@ -265,8 +265,8 @@ class LoomingMovie(Movie):
         :param gray_screen_dur:
         """
         physical_spacing = 1.0  # To make sure no aliasing occurs
-        self.row_range = np.linspace(0, self.row_size, self.row_size / physical_spacing, endpoint=True)
-        self.col_range = np.linspace(0, self.col_size, self.col_size / physical_spacing, endpoint=True)
+        self.row_range = np.linspace(0, self.row_size, int(self.row_size/physical_spacing), endpoint=True)
+        self.col_range = np.linspace(0, self.col_size, int(self.col_size/physical_spacing), endpoint=True)
         loomingFramesNeeded = int(round(self.frame_rate * t_looming))
         grayScreenFrames = int(round(self.frame_rate * gray_screen_dur))
         time_range = np.linspace(0, t_looming, loomingFramesNeeded, endpoint=True)
