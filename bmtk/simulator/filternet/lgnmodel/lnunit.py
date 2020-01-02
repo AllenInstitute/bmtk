@@ -1,15 +1,7 @@
-import numpy as np
-
 from .kernel import Kernel2D, Kernel3D
-from .linearfilter import SpatioTemporalFilter
-from .spatialfilter import GaussianSpatialFilter
-from .temporalfilter import TemporalFilterCosineBump
 from .cursor import LNUnitCursor, MultiLNUnitCursor, MultiLNUnitMultiMovieCursor, SeparableLNUnitCursor, \
     SeparableMultiLNUnitCursor
-from .movie import Movie
-from .lgnmodel1 import LGNModel, heat_plot
-from .transferfunction import MultiTransferFunction, ScalarTransferFunction
-    
+
     
 class LNUnit(object):
     def __init__(self, linear_filter, transfer_function, amplitude=1.):
@@ -23,7 +15,7 @@ class LNUnit(object):
     def get_spatiotemporal_kernel(self, *args, **kwargs):
         return self.linear_filter.get_spatiotemporal_kernel(*args, **kwargs)
     
-    def get_cursor(self, movie, threshold=0, separable = False):
+    def get_cursor(self, movie, threshold=0, separable=False):
         if separable:
             return SeparableLNUnitCursor(self, movie)
         else:
@@ -115,32 +107,3 @@ class MultiLNUnit(object):
     def evaluate(self, movie, **kwargs):
         seperable = kwargs.pop('separable', False)
         return self.get_cursor(movie, separable=seperable).evaluate(**kwargs)
-
-
-if __name__ == "__main__":
-    from sympy.abc import x, y
-    movie_file = '/data/mat/iSee_temp_shared/movies/TouchOfEvil.npy'
-    m_data = np.load(movie_file, 'r')
-    m = Movie(m_data[1000:], frame_rate=30.)
-    
-    # Create second cell:
-    transfer_function = ScalarTransferFunction('s')
-    temporal_filter = TemporalFilterCosineBump((.4, -.3), (20, 60))
-    cell_list = []
-    for xi in np.linspace(0, m.data.shape[2], 5):
-        for yi in np.linspace(0, m.data.shape[1], 5):
-            spatial_filter_on = GaussianSpatialFilter(sigma=(2, 2), origin=(0, 0), translate=(xi, yi))
-            on_linear_filter = SpatioTemporalFilter(spatial_filter_on, temporal_filter, amplitude=20)        
-            on_lnunit = LNUnit(on_linear_filter, transfer_function)
-            spatial_filter_off = GaussianSpatialFilter(sigma=(4, 4), origin=(0, 0), translate=(xi, yi))
-            off_linear_filter = SpatioTemporalFilter(spatial_filter_off, temporal_filter, amplitude=-20)        
-            off_lnunit = LNUnit(off_linear_filter, transfer_function)
-            
-            multi_transfer_function = MultiTransferFunction((x, y), 'x+y')
-            
-            multi_unit = MultiLNUnit([on_lnunit, off_lnunit], multi_transfer_function)
-            cell_list.append(multi_unit)
-    
-    lgn = LGNModel(cell_list)  # Here include a list of all cells
-    y = lgn.evaluate(m, downsample=10)  # Does the filtering + non-linearity on movie object m
-    heat_plot(y, interpolation='none', colorbar=False)

@@ -75,8 +75,6 @@ trans_sus_expected = {
 }
 
 
-
-
 @pytest.mark.parametrize("cell_subclass,expected_val",
                          [
                              ('tOFF', tOFF_expected),
@@ -92,7 +90,7 @@ def test_get_data_metrics(cell_subclass, expected_val):
 
     # Makes sure the singleton is caching values correctly
     cell_metrics_cached = get_data_metrics_for_each_subclass(cell_subclass)
-    assert (cmp_dicts(cell_metrics, expected_val))
+    assert(cmp_dicts(cell_metrics, expected_val))
 
 
 if __name__ == '__main__':

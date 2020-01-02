@@ -67,19 +67,21 @@ class TwoSubfieldLinearCell(MultiLNUnit):
         vert_offset = np.sin(self.onoff_axis_angle*np.pi/180.)*self.subfield_separation + self.dominant_subfield_location[1]
         rel_translation = (hor_offset, vert_offset)
         self.nondominant_filter.spatial_filter.translate = rel_translation
-        
-        
-class LGNOnCell(object):
+
+
+"""
+class LGNOnCell(OnUnit):
     def __init__(self, **kwargs):
         self.position = kwargs.pop('position', None)
         self.weights = kwargs.pop('weights', None)
         self.kpeaks = kwargs.pop('kpeaks', None)
+        self.delays = kwargs.pop('delays', None)
         self.amplitude = kwargs.pop('amplitude', None)
         self.sigma = kwargs.pop('sigma', None)
         self.transfer_function_str = kwargs.pop('transfer_function_str', 's')  # 'Heaviside(s)*s')
         self.metadata = kwargs.pop('metadata', {})
 
-        temporal_filter = TemporalFilterCosineBump(self.weights, self.kpeaks)
+        temporal_filter = TemporalFilterCosineBump(self.weights, self.kpeaks, self.delays)
         spatial_filter = GaussianSpatialFilter(translate=self.position, sigma=self.sigma,
                                                origin=(0, 0))  # all distances measured from BOTTOM LEFT
         spatiotemporal_filter = SpatioTemporalFilter(spatial_filter, temporal_filter, amplitude=self.amplitude)
@@ -104,7 +106,7 @@ class LGNOffCell(OffUnit):
         spatiotemporal_filter = SpatioTemporalFilter(spatial_filter, temporal_filter, amplitude=amplitude)
         transfer_function = ScalarTransferFunction(transfer_function_str)
         super(LGNOnCell, self).__init__(spatiotemporal_filter, transfer_function)
-
+"""
 
 if __name__ == "__main__":
     movie_file = '/data/mat/iSee_temp_shared/movies/TouchOfEvil.npy'

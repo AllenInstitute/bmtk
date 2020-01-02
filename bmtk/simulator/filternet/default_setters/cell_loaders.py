@@ -92,6 +92,7 @@ def default_cell_loader(node, template_name, dynamics_params):
             max_ron * sOFF_sum)
 
         # Create sON subunit:
+        # TODO: spont is a hard coded value
         xfer_fn_son = ScalarTransferFunction('Heaviside(s+' + str(0.5 * spont) + ')*(s+' + str(0.5 * spont) + ')')
         linear_filter_son = SpatioTemporalFilter(spatial_filter, sON_filt_new, amplitude=amp_on)
         scell_on = OnUnit(linear_filter_son, xfer_fn_son)
@@ -102,6 +103,7 @@ def default_cell_loader(node, template_name, dynamics_params):
         scell_off = OffUnit(linear_filter_soff, xfer_fn_soff)
 
         sf_sep = calc_sf_sep(node.sf_sep, jitter_lower, jitter_upper)
+
         sep_ss_onoff_cell = create_two_sub_cell(linear_filter_soff, linear_filter_son, 0.5 * spont, 0.5 * spont,
                                                 node.tuning_angle, sf_sep, translate)
         cell = sep_ss_onoff_cell
@@ -153,7 +155,7 @@ def default_cell_loader(node, template_name, dynamics_params):
         wts = [node_params['weight_dom_0'], node_params['weight_dom_1']]
         kpeaks = [node_params['kpeaks_dom_0'], node_params['kpeaks_dom_1']]
         delays = [node_params['delay_dom_0'], node_params['delay_dom_1']]
-        transfer_function = ScalarTransferFunction('s')
+        # transfer_function = ScalarTransferFunction('s')
         temporal_filter = TemporalFilterCosineBump(wts, kpeaks, delays)
 
         spatial_filter_on = GaussianSpatialFilter(sigma=node['sigma_on'], origin=origin, translate=translate)
@@ -347,6 +349,7 @@ def preset_params(node, template_name, dynamics_params):
 
         # Get filters
         transfer_function = ScalarTransferFunction('Heaviside(s+' + spont_str + ')*(s+' + spont_str + ')')
+
         temporal_filter = TemporalFilterCosineBump(wts, kpeaks, delays)
 
         if cell_type.find('ON') >= 0:
