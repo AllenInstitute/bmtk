@@ -525,6 +525,26 @@ class PointNetEnvBuilder(EnvBuilder):
         self._simulation_config['output']['quiet_simulator'] = True
 
 
+class FilterNetEnvBuilder(EnvBuilder):
+    @property
+    def examples_dir(self):
+        return os.path.join(self.scripts_root, 'filternet')
+
+    @property
+    def target_simulator(self):
+        return 'LGNModel'
+
+    @property
+    def bmtk_simulator(self):
+        return 'filternet'
+
+    def _add_output_section(self):
+        super(FilterNetEnvBuilder, self)._add_output_section()
+        self._simulation_config['output']['rates_csv'] = 'rates.csv'
+        self._simulation_config['output']['spikes_csv'] = 'spikes.csv'
+        self._simulation_config['output']['spikes_h5'] = 'spikes.h5'
+
+
 def build_env_bionet(base_dir='.', network_dir=None, components_dir=None, node_sets_file=None, include_examples=False,
                      tstart=0.0, tstop=1000.0, dt=0.001, dL=20.0, spikes_threshold=-15.0, nsteps_block=5000,
                      v_init=-80.0, celsius=34.0,
@@ -560,6 +580,17 @@ def build_env_pointnet(base_dir='.', network_dir=None, components_dir=None, node
                       spikes_inputs=spikes_inputs,
                       tstart=tstart, tstop=tstop, dt=dt, dL=dL, spikes_threshold=spikes_threshold,
                       nsteps_block=nsteps_block, v_init=v_init, celsius=celsius)
+
+
+def build_env_filternet(base_dir='.', network_dir=None, components_dir=None,
+                        node_sets_file=None, include_examples=False, tstart=0.0, tstop=1000.0):
+    env_builder = FilterNetEnvBuilder(base_dir=base_dir, network_dir=network_dir, components_dir=components_dir,
+                                     node_sets_file=node_sets_file)
+
+    env_builder.build(include_examples=include_examples,
+                      base_dir=base_dir, network_dir=network_dir, components_dir=components_dir, tstart=tstart,
+                      tstop=tstop)
+
 
 
 def build_env_popnet(base_dir='.', network_dir=None, reports=None, with_examples=True, tstop=1000.0, dt=0.001, **args):

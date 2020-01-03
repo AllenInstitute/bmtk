@@ -93,14 +93,14 @@ def default_cell_loader(node, template_name, dynamics_params):
 
         # Create sON subunit:
         # TODO: spont is a hard coded value
-        xfer_fn_son = ScalarTransferFunction('Heaviside(s+' + str(0.5 * spont) + ')*(s+' + str(0.5 * spont) + ')')
+        # xfer_fn_son = ScalarTransferFunction('Heaviside(s+' + str(0.5 * spont) + ')*(s+' + str(0.5 * spont) + ')')
         linear_filter_son = SpatioTemporalFilter(spatial_filter, sON_filt_new, amplitude=amp_on)
-        scell_on = OnUnit(linear_filter_son, xfer_fn_son)
+        # scell_on = OnUnit(linear_filter_son, xfer_fn_son)
 
         # Create sOFF subunit:
-        xfer_fn_soff = ScalarTransferFunction('Heaviside(s+' + str(0.5 * spont) + ')*(s+' + str(0.5 * spont) + ')')
+        # xfer_fn_soff = ScalarTransferFunction('Heaviside(s+' + str(0.5 * spont) + ')*(s+' + str(0.5 * spont) + ')')
         linear_filter_soff = SpatioTemporalFilter(spatial_filter, sOFF_filt_new, amplitude=amp_off)
-        scell_off = OffUnit(linear_filter_soff, xfer_fn_soff)
+        # scell_off = OffUnit(linear_filter_soff, xfer_fn_soff)
 
         sf_sep = calc_sf_sep(node.sf_sep, jitter_lower, jitter_upper)
 
@@ -167,7 +167,11 @@ def default_cell_loader(node, template_name, dynamics_params):
 
     else:
         type_split = model_name.split('_')
-        cell_type, tf_str = type_split[0], type_split[1]
+        if len(type_split) == 1:
+            cell_type = model_name
+            tf_str = 'TF8'
+        else:
+            cell_type, tf_str = type_split[0], type_split[1]
 
         # For temporal filter
         wts = [node_params['weight_dom_0'], node_params['weight_dom_1']]

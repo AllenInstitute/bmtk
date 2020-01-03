@@ -42,7 +42,18 @@ class FilterSimulator(Simulator):
             raise NotImplementedError
 
         elif movie_type == 'full_field_flash':
-            raise NotImplementedError
+            init_params = FilterSimulator.find_params(['row_size', 'col_size', 't_on', 't_off', 'max_intensity',
+                                                       'frame_rate'], **params)
+            init_params['row_range'] = range(init_params['row_size'])
+            del init_params['row_size']
+            init_params['col_range'] = range(init_params['col_size'])
+            del init_params['col_size']
+            init_params['t_on'] = init_params['t_on']/1000.0
+            init_params['t_off'] = init_params['t_off']/1000.0
+
+            ffm = FullFieldFlashMovie(**init_params)
+            mv = ffm.full(t_max=self._tstop)
+            self._movies.append(mv)
 
         elif movie_type == 'graiting':
             init_params = FilterSimulator.find_params(['row_size', 'col_size', 'frame_rate'], **params)

@@ -63,10 +63,10 @@ def f_rate_to_spike_train(t, f_rate, random_seed, t_window_start, t_window_end, 
     # they are assumed to be of the same length and ordered with the time strictly increasing;
     # p_spike_max is the maximal probability of spiking that we allow within the time bin; it is used to decide on the size of the time bin; should be less than 1!
 
-    if np.max(f_rate) * np.max(np.diff(t))/1000. > 0.1:   #Divide by 1000 to convert to seconds
-        print('Firing rate to high for time interval and will not estimate spike correctly. Spikes will ' \
-            'be calculated with the slower inhomogenous poisson generating fucntion')
-        raise Exception()
+    #if np.max(f_rate) * np.max(np.diff(t))/1000. > 0.1:   #Divide by 1000 to convert to seconds
+    #    print('Firing rate to high for time interval and will not estimate spike correctly. Spikes will ' \
+    #        'be calculated with the slower inhomogenous poisson generating fucntion')
+    #    raise Exception()
 
     spike_times = []
 
