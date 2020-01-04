@@ -227,12 +227,55 @@ def calc_sf_sep(sf_sep_base, upper_jitter, lower_jitter):
     return np.random.uniform(lower_jitter * sf_sep_base, upper_jitter * sf_sep_base)
 
 
+def add_jitter(v, jitter_lower, jitter_upper):
+    if np.isscalar(v):
+        return np.random.uniform(jitter_lower*v, jitter_upper*v)
+    else:
+        return np.apply_along_axis(lambda a: np.random.uniform(a*0.75, a*1.25))
+
+
+def get_tf_params(node, dynamics_params, non_dom_props=False):
+    if not non_dom_props:
+        weights = node.weights if node.weights is not None else dynamics_params['opt_wts']
+        kpeaks = node.kpeaks if node.kpeaks is not None else dynamics_params['opt_kpeaks']
+        delays = node.delays if node.delays is not None else dynamics_params['opt_delays']
+    else:
+        dp = dynamics_params or {}
+        weights = node.weights_non_dom if node.weights_non_dom is not None else dp.get('opt_wts', None)
+        kpeaks = node.kpeaks_non_dom if node.kpeaks_non_dom is not None else dp.get('opt_kpeaks', None)
+        delays = node.delays_non_dom if node.delays_non_dom is not None else dp.get('opt_delays', None)
+
+    if node.predefined_jitter:
+        jitter_fnc = np.vectorize(lambda a: np.random.uniform(a * node.jitter[0], a * node.jitter[0]))
+        weights = jitter_fnc(weights) if weights is not None else weights
+        kpeaks = jitter_fnc(kpeaks) if kpeaks is not None else kpeaks
+        delays = jitter_fnc(delays) if delays is not None else delays
+
+    return weights, kpeaks, delays
+
+
 def preset_params(node, template_name, dynamics_params):
     origin = (0.0, 0.0)
     translate = (node['x'], node['y'])
     sigma = node['spatial_size'] / 3.0  # convert from degree to SD
-    sigma = (sigma, sigma)
+    if np.isscalar(sigma):
+        sigma = (sigma, sigma)
     spatial_filter = GaussianSpatialFilter(translate=translate, sigma=sigma, origin=origin)
+
+    #if node.predefined_jitter:
+    #    jitter_fnc = np.vectorize(lambda a: np.random.uniform(a*node.jitter[0], a*node.jitter[0]))
+    #else:
+    #    jitter_fnc = lambda a: a
+
+    t_weights, t_kpeaks, t_delays = get_tf_params(node, dynamics_params)
+
+    #t_weights = node.weights if node.weights is not None else dynamics_params['opt_wts']
+    #t_kpeaks = node.kpeaks if node.kpeaks is not None else dynamics_params['opt_kpeaks']
+    #t_delays = node.delays if node.delays is not None else dynamics_params['opt_delays']
+
+    #t_weights = jitter_fnc(t_weights)
+    #t_kpeaks = jitter_fnc(t_kpeaks)
+    #t_delays = jitter_fnc(t_delays)
 
     if template_name:
         model_name = template_name[1]
@@ -240,19 +283,23 @@ def preset_params(node, template_name, dynamics_params):
         model_name = node['pop_name']
 
     if model_name == 'sONsOFF_001':
-
         # sON temporal filter
-        sON_prs = {'opt_wts': [node['weight_non_dom_0'], node['weight_non_dom_1']],
-                   'opt_kpeaks': [node['kpeaks_non_dom_0'], node['kpeaks_non_dom_1']],
-                   'opt_delays': [node['delay_non_dom_0'], node['delay_non_dom_1']]}
+        t_weights_nd, t_kpeaks_nd, t_delays_nd = get_tf_params(node, node.non_dom_params, non_dom_props=True)
+        sON_prs = {'opt_wts': t_weights_nd, 'opt_kpeaks': t_kpeaks_nd, 'opt_delays': t_delays_nd}
+
+        #sON_prs = {'opt_wts': [node['weight_non_dom_0'], node['weight_non_dom_1']],
+        #           'opt_kpeaks': [node['kpeaks_non_dom_0'], node['kpeaks_non_dom_1']],
+        #           'opt_delays': [node['delay_non_dom_0'], node['delay_non_dom_1']]}
+
         sON_filt_new = createOneUnitOfTwoSubunitFilter(sON_prs, 121.0)
         sON_sum = sON_filt_new[1]
         sON_filt_new = sON_filt_new[0]
 
         # tOFF temporal filter
-        sOFF_prs = {'opt_wts': [node['weight_dom_0'], node['weight_dom_1']],
-                    'opt_kpeaks': [node['kpeaks_dom_0'], node['kpeaks_dom_1']],
-                    'opt_delays': [node['delay_dom_0'], node['delay_dom_1']]}
+        sOFF_prs = {'opt_wts': t_weights, 'opt_kpeaks': t_kpeaks, 'opt_delays': t_delays}
+        # sOFF_prs = {'opt_wts': [node['weight_dom_0'], node['weight_dom_1']],
+        #             'opt_kpeaks': [node['kpeaks_dom_0'], node['kpeaks_dom_1']],
+        #             'opt_delays': [node['delay_dom_0'], node['delay_dom_1']]}
         sOFF_filt_new = createOneUnitOfTwoSubunitFilter(sOFF_prs, 115.0)
         sOFF_sum = sOFF_filt_new[1]
         sOFF_filt_new = sOFF_filt_new[0]
@@ -281,17 +328,20 @@ def preset_params(node, template_name, dynamics_params):
     elif model_name == 'sONtOFF_001':
         # spatial_filter.get_kernel(np.arange(120), np.arange(240)).imshow()
         # sON temporal filter
-        sON_prs = {'opt_wts': [node['weight_non_dom_0'], node['weight_non_dom_1']],
-                   'opt_kpeaks': [node['kpeaks_non_dom_0'], node['kpeaks_non_dom_1']],
-                   'opt_delays': [node['delay_non_dom_0'], node['delay_non_dom_1']]}
+        #sON_prs = {'opt_wts': [node['weight_non_dom_0'], node['weight_non_dom_1']],
+        #           'opt_kpeaks': [node['kpeaks_non_dom_0'], node['kpeaks_non_dom_1']],
+        #           'opt_delays': [node['delay_non_dom_0'], node['delay_non_dom_1']]}
+        t_weights_nd, t_kpeaks_nd, t_delays_nd = get_tf_params(node, node.non_dom_params, non_dom_props=True)
+        sON_prs = {'opt_wts': t_weights_nd, 'opt_kpeaks': t_kpeaks_nd, 'opt_delays': t_delays_nd}
         sON_filt_new = createOneUnitOfTwoSubunitFilter(sON_prs, 93.5)
         sON_sum = sON_filt_new[1]
         sON_filt_new = sON_filt_new[0]
 
         # tOFF temporal filter
-        tOFF_prs = {'opt_wts': [node['weight_dom_0'], node['weight_dom_1']],
-                    'opt_kpeaks': [node['kpeaks_dom_0'], node['kpeaks_dom_1']],
-                    'opt_delays': [node['delay_dom_0'], node['delay_dom_1']]}
+        #tOFF_prs = {'opt_wts': [node['weight_dom_0'], node['weight_dom_1']],
+        #            'opt_kpeaks': [node['kpeaks_dom_0'], node['kpeaks_dom_1']],
+        #            'opt_delays': [node['delay_dom_0'], node['delay_dom_1']]}
+        tOFF_prs = {'opt_wts': t_weights, 'opt_kpeaks': t_kpeaks, 'opt_delays': t_delays}
         tOFF_filt_new = createOneUnitOfTwoSubunitFilter(tOFF_prs, 64.8)  # 64.8
         tOFF_sum = tOFF_filt_new[1]
         tOFF_filt_new = tOFF_filt_new[0]
@@ -339,22 +389,32 @@ def preset_params(node, template_name, dynamics_params):
         cell_type, tf_str = type_split[0], type_split[1]
 
         # For temporal filter
-        wts = [node['weight_dom_0'], node['weight_dom_1']]
-        kpeaks = [node['kpeaks_dom_0'], node['kpeaks_dom_1']]
-        delays = [node['delay_dom_0'], node['delay_dom_1']]
+        #wts = node.weights # ['weights']
+        #  wts = [node['weight_dom_0'], node['weight_dom_1']]
+        #kpeaks = node.kpeaks #node['kpeaks']
+        # kpeaks = [node['kpeaks_dom_0'], node['kpeaks_dom_1']]
+        #delays = node.delays #[node['delay_dom_0'], node['delay_dom_1']]
 
         ################# End of extract cell parameters needed   #################
 
-        # Get spont from experimental data
-        exp_prs_dict = get_data_metrics_for_each_subclass(cell_type)
-        subclass_prs_dict = exp_prs_dict[tf_str]
-        spont_exp = subclass_prs_dict['spont_exp']
-        spont_str = str(spont_exp[0])
+        # Get spontaneous firing rate, either from the cell property of calculate from experimental data
+        if 'spont_fr' in node:
+            spont_fr = node['spont_fr']
+        else:
+            exp_prs_dict = get_data_metrics_for_each_subclass(cell_type)
+            subclass_prs_dict = exp_prs_dict[tf_str]
+            spont_fr = subclass_prs_dict['spont_exp'][0]
+            # spont_fr_str = str(spont_exp[0])
+
+        #print(spont_str)
+        #print('spont_fr' in node)
+        #exit()
 
         # Get filters
-        transfer_function = ScalarTransferFunction('Heaviside(s+' + spont_str + ')*(s+' + spont_str + ')')
+        #transfer_function = ScalarTransferFunction('Heaviside(s+' + spont_fr_str + ')*(s+' + spont_str + ')')
+        transfer_function = ScalarTransferFunction('Heaviside(s+{})*(s+{})'.format(spont_fr, spont_fr))
 
-        temporal_filter = TemporalFilterCosineBump(wts, kpeaks, delays)
+        temporal_filter = TemporalFilterCosineBump(t_weights, t_kpeaks, t_delays)
 
         if cell_type.find('ON') >= 0:
             amplitude = 1.0
