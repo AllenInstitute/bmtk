@@ -20,6 +20,15 @@ class MockNode(object):
 
     tuning_angle = 83.67
 
+    weights = None
+    kpeaks = None
+    delays = None
+    predefined_jitter = False
+
+    weights_non_dom = None
+    kpeaks_non_dom = None
+    delays_non_dom = None
+
     non_dom_params = {
         'opt_wts': [3.59404059587911, -1.8145831206023941],
         'opt_delays': [0, 25],
@@ -34,6 +43,9 @@ class MockNode(object):
 
     def __getitem__(self, item):
         return self.node_params[item]
+
+    def __contains__(self, item):
+        return item in self.node_params
 
 dynamics_params = {
     'opt_wts': [3.4416603571978417, -2.1155994819051305],
@@ -156,6 +168,6 @@ if __name__ == '__main__':
     # test_onunit('sON_TF8', [1.7667, 1.934, 1.9001, 1.7328, 1.5994])
     # test_onunit('sON_TF15', [10.88, 11.0473, 11.0135, 10.8462, 10.7127])
     #
-    # test_sONsOFF('sONsOFF_001', [4.0, 5.6769, 5.2724, 3.5743, 2.3019])
+    test_sONsOFF('sONsOFF_001', [4.0, 5.6769, 5.2724, 3.5743, 2.3019])
 
-    test_sONtOFF('sONtOFF_001', [5.5, 5.5919, 6.5667, 6.47, 5.4033])
+    # test_sONtOFF('sONtOFF_001', [5.5, 5.5919, 6.5667, 6.47, 5.4033])

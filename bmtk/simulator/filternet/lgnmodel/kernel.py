@@ -68,14 +68,17 @@ class Kernel1D(object):
     def __len__(self):
         return len(self.kernel)
         
-    def imshow(self, ax=None, show=True, save_file_name=None, ylim=None, xlim=None, color='b'):
+    def imshow(self, ax=None, show=True, save_file_name=None, ylim=None, xlim=None, color='b', reverse=True):
         
         if ax is None:
             _, ax = plt.subplots(1, 1)
         
         t_vals = self.t_range[self.t_inds]
+        kernel_data = self.kernel
+        if reverse:
+            kernel_data = self.kernel[-1::-1]
 
-        ax.plot(t_vals, self.kernel, color)
+        ax.plot(t_vals, kernel_data, color)
         ax.set_xlabel('Time (Seconds)')
         
         if ylim is not None:
@@ -89,7 +92,7 @@ class Kernel1D(object):
         
         if save_file_name is not None:
             ax.savefig(save_file_name, transparent=True)
-        
+
         if show:
             plt.show()
         
