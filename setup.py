@@ -65,7 +65,8 @@ setup(
         'matplotlib',
         'enum; python_version <= "2.7"',
         'scipy',
-        'scikit-image'  # Only required for filternet, consider making optional
+        'scikit-image',  # Only required for filternet, consider making optional
+        'sympy'  # For FilterNet
     ],
     extras_require={
         'bionet': ['NEURON'],
