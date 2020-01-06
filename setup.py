@@ -64,7 +64,9 @@ setup(
         'h5py',
         'matplotlib',
         'enum; python_version <= "2.7"',
-        'scipy'
+        'scipy',
+        'scikit-image',  # Only required for filternet, consider making optional
+        'sympy'  # For FilterNet
     ],
     extras_require={
         'bionet': ['NEURON'],

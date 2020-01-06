@@ -53,6 +53,9 @@ class Cell(object):
     def __getitem__(self, item):
         return self._node[item]
 
+    def __contains__(self, item):
+        return item in self._node
+
     def __getattr__(self, name):
         if name in self.__dict__:
             return self.__dict__[name]

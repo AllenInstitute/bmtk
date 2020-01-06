@@ -1,6 +1,5 @@
 import os
 import re
-import matplotlib.mlab as mlab
 import numpy as np
 import scipy.io as sio
 from scipy.fftpack import fft
@@ -64,7 +63,7 @@ def create_grating_movie_list(gr_dir_name):
 
     return gr_mov_list
 
-
+"""
 ##################################################
 metrics_dir = os.path.join(os.path.dirname(__file__), 'cell_metrics')
 def get_data_metrics_for_each_subclass(ctype):
@@ -135,6 +134,8 @@ def get_data_metrics_for_each_subclass(ctype):
         elif ctype.find('s') >= 0:
             tcross = 60.
             si_inf_exp = (si_exp - tcross / 200.) * (200. / (200. - tcross - 40.))
+        else:
+            si_inf_exp = np.nan
 
         dict_key = exp_means.iloc[scn].name[3:]
         exp_prs_dict[dict_key] = {}
@@ -152,6 +153,7 @@ def get_data_metrics_for_each_subclass(ctype):
         exp_prs_dict[dict_key]['N_class'] = N_class
 
     return exp_prs_dict
+"""
 
 
 ##################################################
@@ -180,11 +182,21 @@ def check_optim_results_against_bounds(bounds, opt_wts, opt_kpeaks):
     return prm_on_bds
 
 
+def cross_from_above(x, threshold):
+    """Return the indices into *x* where *x* crosses some threshold from above."""
+    x = np.asarray(x)
+    ind = np.nonzero((x[:-1] >= threshold) & (x[1:] < threshold))[0]
+    if len(ind):
+        return ind+1
+    else:
+        return ind
+
+
 #######################################################
 def get_tcross_from_temporal_kernel(temporal_kernel):
     max_ind = np.argmax(temporal_kernel)
     min_ind = np.argmin(temporal_kernel)
 
-    temp_tcross_ind = mlab.cross_from_above(temporal_kernel[max_ind:min_ind], 0.0)
+    temp_tcross_ind = cross_from_above(temporal_kernel[max_ind:min_ind], 0.0)
     tcross_ind = max_ind + temp_tcross_ind[0]
     return tcross_ind
