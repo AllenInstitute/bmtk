@@ -15,12 +15,13 @@ def cmp_vals(v1, v2):
 def cmp_dicts(d1, d2):
     if len(d1) != len(d2):
         return False
-    elif d1.keys() != d2.keys():
+    elif set(d1.keys()) != set(d2.keys()):  # can't directly compare dict keys in python 2
         return False
     else:
         for k in d1.keys():
             if isinstance(d1[k], dict):
                 if not cmp_dicts(d1[k], d2[k]):
+                    print(k)
                     return False
 
             elif not cmp_vals(d1[k], d2[k]):
@@ -94,8 +95,10 @@ def test_get_data_metrics(cell_subclass, expected_val):
 
 
 if __name__ == '__main__':
-    cell_metrics = get_data_metrics_for_each_subclass('trans_sus')
-    print(cell_metrics)
+    cell_metrics = get_data_metrics_for_each_subclass('tOFF')
+    print(cmp_dicts(cell_metrics, tOFF_expected))
+
+    #print(cell_metrics)
 
     #cell_metrics2 = get_data_metrics_for_each_subclass('tON')
     #print(cmp_dicts(cell_metrics, cell_metrics2))
