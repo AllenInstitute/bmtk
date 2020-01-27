@@ -41,8 +41,7 @@ import json
 import pandas as pd
 
 from ..node import Node
-
-from iformats import IFormat
+from .iformats import IFormat
 
 
 class DefaultFormat(IFormat):
@@ -217,28 +216,10 @@ class ISeeFormat(IFormat):
             df = pd.merge(left=df, right=types_df, how='left', left_on='node_type_id', right_index=True)
 
         gids_df = df['node_id'] if 'node_id' in df.columns else df['id']
-        #df = df.drop(['id'], axis=1)
-
-        positions_df = None
-        if positions:
-            positions_df = df[positions]
-            df = df.drop(positions, axis=1)
 
         node_params = df.to_dict(orient='records')
         node_tuples = [Node(gids_df[i], gids_df[i], None, array_params=node_params[i])
-                       for i in xrange(df.shape[0])]
-
-
-        if positions:
-            self._network.positions = position_set.PositionSet()
-            posr = positioner.create('points', location=positions_df.as_matrix())
-            #self._network.positions.add(posr(df.shape[0]), gids_df.tolist())
-            self._network.positions.add(positions_df.values, gids_df.tolist())
-
-            for i in xrange(df.shape[0]):
-                node_tuples[i]['position'] = np.array(positions_df.loc[i])
-
-            self._network.positions.finalize()
+                       for i in range(df.shape[0])]
 
         self._network._initialize()
         self._network._add_nodes(node_tuples)

@@ -1,15 +1,13 @@
 import numpy as np
 
-from bmtk.utils.io import tabular_network as tn
 
-
-class NodeRow(tn.NodeRow):
+class NodeRow(object):
     @property
     def with_dynamics_params(self):
         return False
 
 
-class NodesFile(tn.NodesFile):
+class NodesFile(object):
     def __init__(self, N):
         self._network_name = 'test_bionet'
         self._version = None
@@ -83,13 +81,13 @@ class NodesFile(tn.NodesFile):
             return self._node_types_table[102]
 
 
-class EdgeRow(tn.EdgeRow):
+class EdgeRow(object):
     @property
     def with_dynamics_params(self):
         return False
 
 
-class EdgesFile(tn.EdgesFile):
+class EdgesFile(object):
     def __init__(self, target_nodes, source_nodes):
         self._target_nodes = target_nodes
         self._source_nodes = source_nodes

@@ -27,6 +27,7 @@ import math
 import h5py
 import pandas as pd
 from ast import literal_eval
+from six import string_types
 
 import bmtk
 from .iformats import IFormat
@@ -269,7 +270,7 @@ class HDF5Format(IFormat):
             # TODO: keep column dtypes in metadata and use that for converting each column
             if isinstance(val, float) and math.isnan(val):
                 return None
-            elif isinstance(val, basestring):
+            elif isinstance(val, string_types):
                 try:
                     # this will be helpful for turning strings into lists where appropiate "(0, 1, 2)" --> (0, 1, 2)
                     return literal_eval(val)
@@ -387,9 +388,9 @@ class HDF5Format(IFormat):
                 # Creates a generator that will iteratively go through h5 file and return (source_gid, target_gid,
                 # nsyn) values for connections with matching edge_type.edge_type_id
                 edge_type_id = et.id
-                for ep_indx in xrange(n_edge_ptr - 1):
+                for ep_indx in range(n_edge_ptr - 1):
                     trg_gid = ep_indx
-                    for syn_indx in xrange(edge_ptr_ds[ep_indx], edge_ptr_ds[ep_indx + 1]):
+                    for syn_indx in range(edge_ptr_ds[ep_indx], edge_ptr_ds[ep_indx + 1]):
                         if edge_types_ds[syn_indx] == edge_type_id:
                             src_gid = src_gids_ds[syn_indx]
                             n_syn = num_syns_ds[syn_indx]

@@ -331,13 +331,15 @@ class STCSVBuffer(STBuffer, STReader):
         self._units = v
 
     def nodes(self, populations=None):
-        return list(set(self._node_ids))
+        return None  # TODO: try to fetch node_ids from disk or save in memory
+        # return list(set(self._node_ids))
 
     def n_spikes(self, population=None):
         return self._pop_counts.get(population, 0)
 
     def time_range(self, populations=None):
-        return np.min(self._timestamps), np.max(self._timestamps)
+        return None  # TODO: keep track of largest and smallest values
+        # return np.min(self._timestamps), np.max(self._timestamps)
 
     def get_times(self, node_id, population=None, time_window=None, **kwargs):
         return np.array([t[0] for t in self.spikes(population=population, time_window=time_window) if t[1] == node_id])

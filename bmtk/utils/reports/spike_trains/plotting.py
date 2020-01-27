@@ -220,7 +220,7 @@ def plot_raster(spike_trains, population=None, time_window=None, node_ids=None, 
         hists_gs = [gs[i*2 + 1] for i in range(n_rasters)]
         last_gs = hists_gs[-1]
     else:
-        gs = gridspec.GridSpec(n_rasters, height_ratios=[1]*len(n_rasters))
+        gs = gridspec.GridSpec(n_rasters, 1, height_ratios=[1]*len(n_rasters))
         raster_gs = [gs[i] for i in range(n_rasters)]
         hists_gs = []
         last_gs = raster_gs[-1]
@@ -285,8 +285,7 @@ def plot_rates(spike_trains, population=None, time_window=None, node_ids=None, s
     def smooth(data):
         h = int(window_size/2)
         x_max = len(data)
-        return [np.mean(data[max(0, x-h):min(x_max, x+h)]) for x in xrange(0, x_max)]
-
+        return [np.mean(data[max(0, x-h):min(x_max, x+h)]) for x in range(0, x_max)]
 
     spike_trains_l = _get_spike_trains(spike_trains)
     time_window = time_window or _find_time_window(spike_trains_l, population)

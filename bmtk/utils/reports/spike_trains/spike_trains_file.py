@@ -1,7 +1,4 @@
-import os
-import csv
 from enum import Enum
-
 import numpy as np
 
 
@@ -15,7 +12,7 @@ class SortOrder(Enum):
     by_time = 'by_time'
     unknown = 'unknown'
 
-
+'''
 class SpikeTrains(object):
     # _read_adaptor = {}
 
@@ -26,12 +23,12 @@ class SpikeTrains(object):
 
         self._population_name = population_name
 
-        '''
+        """
         if use_caching or MPI_Size > 0:
             self._spikes_cache = STDiskCache(output_dir=output_dir, **opt_args)
         else:
             self._spikes_cache = STMemoryCache(**opt_args)
-        '''
+        """
 
         self._sort_by = SortOrder.unknown
 
@@ -61,7 +58,8 @@ class SpikeTrains(object):
 
     @property
     def n_spikes(self):
-        return self._spikes_cache.count_spikes()
+        return self._read_adapter.count_spikes()
+        # return self._spikes_cache.count_spikes()
 
     @classmethod
     def from_csv(cls, path, **kwargs):
@@ -121,7 +119,7 @@ class SpikeTrains(object):
 
     def close(self):
         self._spikes_cache.close()
-
+'''
 
 class SpikeBuffer(object):
     def __init__(self):
@@ -136,7 +134,7 @@ class SpikeBuffer(object):
     def cache(self):
         pass
 
-
+'''
 class SpikeTrainRecorder(object):
     """
     class CachedFileMetadata(object):
@@ -178,7 +176,7 @@ class SpikeTrainRecorder(object):
 
     def node_ids(self):
         return list(self._spikes.keys())
-
+'''
 
 class STReadAdapter(object):
     def to_dataframe(self):

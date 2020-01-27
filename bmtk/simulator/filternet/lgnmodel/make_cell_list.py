@@ -4,7 +4,7 @@ import numpy as np
 from .linearfilter import SpatioTemporalFilter
 from .spatialfilter import GaussianSpatialFilter
 from .temporalfilter import TemporalFilterCosineBump
-from .cellmodel import LGNOnCell, LGNOffCell,LGNOnOffCell, TwoSubfieldLinearCell, OnUnit, OffUnit
+from .cellmodel import LGNOnOffCell, TwoSubfieldLinearCell, OnUnit, OffUnit
 from .transferfunction import MultiTransferFunction, ScalarTransferFunction
 
 

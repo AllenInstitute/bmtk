@@ -85,7 +85,7 @@ def _count_spikes(spikes_file, max_gid, interval=None):
         raise Exception("Unable to determine interval.")
 
     max_gid = int(max_gid)  # strange bug where max_gid was being returned as a float.
-    spikes = [[] for _ in xrange(max_gid+1)]
+    spikes = [[] for _ in range(max_gid+1)]
     spike_sums = np.zeros(max_gid+1)
     # TODO: Use utils.spikesReader
     spikes_h5 = h5py.File(spikes_file, 'r')
@@ -199,8 +199,7 @@ def plot_spikes(cells_file, cell_models_file, spikes_file, population=None, grou
 
     # Create plot
     gs = gridspec.GridSpec(2, 1, height_ratios=[7, 1])
-    
-    
+
     import matplotlib
     if font_size is not None:
         matplotlib.rcParams.update({'font.size': font_size})
@@ -333,7 +332,7 @@ def plot_ratess(cells_file, cell_models_file, spikes_file, group_key='pop_name',
 
     rates = rates / 3.0
 
-    plt.plot(xrange(max(spike_gids)+1), rates, '.')
+    plt.plot(range(max(spike_gids)+1), rates, '.')
     plt.show()
 
 
@@ -342,7 +341,7 @@ def plot_rates_old(cells_file, cell_models_file, spikes_file, group_key=None, ex
     def smooth(data, window=100):
         h = int(window/2)
         x_max = len(data)
-        return [np.mean(data[max(0, x-h):min(x_max, x+h)]) for x in xrange(0, x_max)]
+        return [np.mean(data[max(0, x-h):min(x_max, x+h)]) for x in range(0, x_max)]
 
     nodes_df = _create_node_table(cells_file, cell_models_file, group_key, exclude)
     _, spike_rates = _count_spikes(spikes_file, max(nodes_df.index), interval)
@@ -360,9 +359,9 @@ def plot_rates_old(cells_file, cell_models_file, spikes_file, group_key=None, ex
     else:
         ordered_groupings = [(0, 'blue', None, nodes_df)]
 
-    keys = ['' for _ in xrange(len(group_order))]
-    means = [0 for _ in xrange(len(group_order))]
-    stds = [0 for _ in xrange(len(group_order))]
+    keys = ['' for _ in range(len(group_order))]
+    means = [0 for _ in range(len(group_order))]
+    stds = [0 for _ in range(len(group_order))]
     fig = plt.figure()
     ax1 = fig.add_subplot(111)
     for indx, color, group_name, group_df in ordered_groupings:
@@ -383,10 +382,10 @@ def plot_rates_old(cells_file, cell_models_file, spikes_file, group_key=None, ex
         plt.savefig(save_as)
 
     plt.figure()
-    plt.errorbar(xrange(len(means)), means, stds, linestyle='None', marker='o')
+    plt.errorbar(range(len(means)), means, stds, linestyle='None', marker='o')
     plt.xlim(-0.5, len(color_map)-0.5) # len(color_map) == last_index + 1
     plt.ylim(0, 50.0)# max_rate*1.3)
-    plt.xticks(xrange(len(means)), keys)
+    plt.xticks(range(len(means)), keys)
     if title is not None:
         plt.title(title)
     if save_as is not None:
@@ -466,9 +465,9 @@ def plot_avg_rates(cell_models_file, rates_file, model_keys=None, save_as=None, 
         stds.append(np.std(r))
 
     plt.figure()
-    plt.errorbar(xrange(len(means)), means, stds, linestyle='None', marker='o')
+    plt.errorbar(range(len(means)), means, stds, linestyle='None', marker='o')
     plt.xlim(-0.5, len(means) - 0.5)
-    plt.xticks(xrange(len(means)), labels)
+    plt.xticks(range(len(means)), labels)
     plt.ylabel('firing rates (Hz)')
 
     if save_as is not None:
@@ -523,7 +522,3 @@ def plot_tuning(sg_analysis, node, band, Freq=0, show=True, save_as=None):
 
     if show:
         plt.show()
-
-
-            #config_file =
-# plot_spikes('../../examples/pointnet/example2/config.json', 'pop_name')

@@ -5,7 +5,7 @@ import json
 from . import popnet_virtual_files as pvf
 
 
-@pytest.mark.xfail
+@pytest.mark.skip()
 def test_add_nodes():
     from bmtk.simulator import popnet
 

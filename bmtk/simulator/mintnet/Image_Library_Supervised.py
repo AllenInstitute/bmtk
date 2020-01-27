@@ -24,6 +24,7 @@ from PIL import Image
 import numpy as np
 import os
 
+
 class Image_Library_Supervised (object):
 
     def __init__(self,image_dir,new_size=(256,256)):
@@ -33,11 +34,6 @@ class Image_Library_Supervised (object):
         self.num_categories = len(self.categories)  #len(image_dir_list)
         self.image_dir_list = [os.path.join(image_dir,x) for x in self.categories]
         self.new_size = new_size
-
-
-        # self.categories = []
-        # for d in self.image_dir_list:
-        #     self.categories += [os.path.basename(d)]
 
         self.im_lists = {}
         for i,cat in enumerate(self.categories):
@@ -55,16 +51,11 @@ class Image_Library_Supervised (object):
                 self.im_lists[cat].remove(im)
 
 
-        self.current_location = np.zeros(len(self.categories)) # used for sequential samples
+        self.current_location = np.zeros(len(self.categories))  # used for sequential samples
         self.lib_size = [len(self.im_lists[x]) for x in self.categories]
-        #self.lib_size = len(self.im_list)
 
     def __call__(self,num_samples,sequential=False):
-
         image_data = np.zeros([self.num_categories*num_samples,self.new_size[0],self.new_size[1],1],dtype=np.float32)
-
-        # y_vals = np.tile(np.arange(self.num_categories),(num_samples,1)).T.flatten()
-        # y_vals = y_vals.astype(np.float32)
 
         y_vals = np.zeros([num_samples*self.num_categories,self.num_categories],np.float32)
 
@@ -90,4 +81,3 @@ class Image_Library_Supervised (object):
                 image_data[index,:,:,0] = np.array(im,dtype=np.float32)
 
         return y_vals, image_data
-

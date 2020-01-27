@@ -20,9 +20,9 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-from base_schema import PopTypes
-import property_schema_ver0 as v0
-import property_schema_ver1 as v1
+from .base_schema import PopTypes
+from . import property_schema_ver0 as v0
+from . import property_schema_ver1 as v1
 
 DefaultPropertySchema = v1.PropertySchema()
 AIPropertySchema = v0.PropertySchema()
