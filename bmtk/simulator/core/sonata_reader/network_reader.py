@@ -33,6 +33,12 @@ class SonataNodes(NodesReader):
     def adaptor(self):
         return self._adaptor
 
+    def n_nodes(self):
+        return len(self._node_pop)
+
+    def nodes_df(self, **params):
+        return self._node_pop.to_dataframe(**params)
+
     def initialize(self, network):
         # Determine the various mode-types available in the Node Population, whether or not a population of nodes
         # contains virtual/external nodes, internal nodes, or a mix of both affects how to nodes are built

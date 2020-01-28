@@ -33,7 +33,7 @@ def convert_filters(src_dir, tgt_dir):
     for file_name in os.listdir(src_dir):
         if not pickle_regex.match(file_name) is None:
             
-            print 'Converting: %s' % file_name
+            print('Converting: %s' % file_name)
             
             full_path_to_src_file = os.path.join(src_dir, file_name)
             full_path_to_tgt_file = os.path.join(tgt_dir, file_name).replace('.pkl', '.nwb')
@@ -66,6 +66,6 @@ def convert_filters(src_dir, tgt_dir):
                 f.close()
                 
             except:
-                print '    Conversion failed: %s' % file_name
+                print ('    Conversion failed: %s' % file_name)
 
 

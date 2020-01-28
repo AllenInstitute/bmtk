@@ -24,7 +24,6 @@ def convert_edges(edges_file, edge_types_file, **params):
     is_new_h5 = False
     try:
         h5file = h5py.File(edges_file, 'r')
-        print
         if 'edges' in h5file:
             is_new_h5 = True
         elif 'num_syns' in h5file:
@@ -185,7 +184,7 @@ def edges_csv2h5(edges_file, edge_types_file, src_network, src_nodes, src_node_t
     edge_types_df = edge_types_df.set_index(['node_type_id', 'target_label', 'source_label'])
     ten_percent = int(n_targets*.1)  # for keepting track of progress
     index = 0  # keeping track of row index
-    for trg_gid in xrange(n_targets):
+    for trg_gid in range(n_targets):
         # for the target find value node_type_id and target_label
         nodes_row = trg_nodes_df.loc[trg_gid]
         model_id = nodes_row['model_id']
@@ -208,7 +207,7 @@ def edges_csv2h5(edges_file, edge_types_file, src_network, src_nodes, src_node_t
     # Create the target_gid table
     print('Creating target_gid dataset')
     trg_gids = np.zeros(n_edges)
-    for trg_gid in xrange(n_targets):
+    for trg_gid in range(n_targets):
         idx_begin = edges_h5['indptr'][trg_gid]
         idx_end = edges_h5['indptr'][trg_gid+1]
         trg_gids[idx_begin:idx_end] = [trg_gid]*(idx_end - idx_begin)
@@ -255,7 +254,7 @@ def create_index(node_ids_ds, output_grp, index_type=INDEX_TARGET):
 
     edge_nodes = np.append(edge_nodes, [-1])
     n_targets = np.max(edge_nodes)
-    ranges_list = [[] for _ in xrange(n_targets + 1)]
+    ranges_list = [[] for _ in range(n_targets + 1)]
 
     n_ranges = 0
     begin_index = 0

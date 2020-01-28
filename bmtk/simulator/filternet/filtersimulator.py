@@ -42,7 +42,18 @@ class FilterSimulator(Simulator):
             raise NotImplementedError
 
         elif movie_type == 'full_field_flash':
-            raise NotImplementedError
+            init_params = FilterSimulator.find_params(['row_size', 'col_size', 't_on', 't_off', 'max_intensity',
+                                                       'frame_rate'], **params)
+            init_params['row_range'] = range(init_params['row_size'])
+            del init_params['row_size']
+            init_params['col_range'] = range(init_params['col_size'])
+            del init_params['col_size']
+            init_params['t_on'] = init_params['t_on']/1000.0
+            init_params['t_off'] = init_params['t_off']/1000.0
+
+            ffm = FullFieldFlashMovie(**init_params)
+            mv = ffm.full(t_max=self._tstop)
+            self._movies.append(mv)
 
         elif movie_type == 'graiting':
             init_params = FilterSimulator.find_params(['row_size', 'col_size', 'frame_rate'], **params)
@@ -51,6 +62,13 @@ class FilterSimulator(Simulator):
             gm = GratingMovie(**init_params)
             graiting_movie = gm.create_movie(t_min=0.0, t_max=self._tstop, **create_params)
             self._movies.append(graiting_movie)
+
+        elif movie_type == 'looming':
+            init_params = FilterSimulator.find_params(['row_size', 'col_size', 'frame_rate'], **params)
+            movie_params = FilterSimulator.find_params(['t_looming', 'gray_sceen_dur'], **params)
+            lm = LoomingMovie(**init_params)
+            looming_movie = lm.create_movie(**movie_params)
+            self._movies.append(looming_movie)
 
         else:
             raise Exception('Unknown movie type {}'.format(movie_type))
@@ -70,7 +88,7 @@ class FilterSimulator(Simulator):
                 ts, f_rates = cell.lgn_cell_obj.evaluate(movie, **options)
 
                 for mod in self._sim_mods:
-                    mod.save(self, cell.gid, ts, f_rates)
+                    mod.save(self, cell, ts, f_rates)
 
         io.log_info('Done.')
         for mod in self._sim_mods:

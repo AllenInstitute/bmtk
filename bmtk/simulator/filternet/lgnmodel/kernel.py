@@ -1,15 +1,10 @@
-#from matplotlib import _cntr as cntr
 import matplotlib as mpl
-from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
-import scipy.interpolate as spinterp
-import h5py
 import numpy as np
-import bisect
 import matplotlib.pyplot as plt
 
-def find_l_r_in_t_range(t_range, t):
 
+def find_l_r_in_t_range(t_range, t):
     for tl in range(len(t_range)-1):
         tr = tl+1        
         test_val = (t_range[tl]-t)*(t_range[tr]-t)
@@ -24,48 +19,37 @@ def find_l_r_in_t_range(t_range, t):
             t_range[tl], t_range[tr], t
             return tl, tr    
 
+
 def get_contour(X, Y, Z, c):
     contour_obj = plt.contour(X, Y, Z)
-    #contour_obj = cntr.Cntr(X, Y, Z)
     res = contour_obj.trace(c)
     nseg = len(res) // 2
     if nseg > 0:
         seg = res[:nseg][0]
-        return seg[:,0], seg[:,1]
+        return seg[:, 0], seg[:, 1]
     else:
-        return [],[]
-    
+        return [], []
+
+
 def plot_single_contour(ax, x_contour, y_contour, t, color):
     t_contour = t+np.zeros_like(x_contour)
     ax.plot(x_contour, t_contour, y_contour, zdir='z', color=color)
     
 
 class Kernel1D(object):
-    
-    def rescale(self):
-        #self.kernel /= np.abs(self.kernel).sum()
-        if np.abs(self.kernel.sum())!=0:
-            self.kernel /= np.abs(self.kernel.sum())
-    
-    def normalize(self):
-#        self.kernel /= np.abs(self.kernel).sum()
-        self.kernel /= np.abs(self.kernel.sum())
-#        self.kernel /= self.kernel.sum()
-         
-
     def __init__(self, t_range, kernel_array, threshold=0., reverse=False):
         assert len(t_range) == len(kernel_array)
 
         kernel_array = np.array(kernel_array)
         inds_to_keep = np.where(np.abs(kernel_array) > threshold)
 
-        if reverse == True:
+        if reverse:
             self.t_range = -np.array(t_range)[::-1]
-            
+
             t_inds_tmp = inds_to_keep[0]
             max_t_ind = t_inds_tmp.max()
             reversed_t_inds = max_t_ind - t_inds_tmp
-            self.t_inds = reversed_t_inds - max_t_ind - 1 # Had an off by one error here should be "- 1" nhc 14 Apr '17 change made in cursor evalutiate too
+            self.t_inds = reversed_t_inds - max_t_ind - 1  # Had an off by one error here should be "- 1" nhc 14 Apr '17 change made in cursor evalutiate too
 
         else:
             self.t_range = np.array(t_range)
@@ -73,33 +57,43 @@ class Kernel1D(object):
 
         self.kernel = kernel_array[inds_to_keep]
         assert len(self.t_inds) == len(self.kernel)
+
+    def rescale(self):
+        if np.abs(self.kernel.sum())!=0:
+            self.kernel /= np.abs(self.kernel.sum())
+    
+    def normalize(self):
+        self.kernel /= np.abs(self.kernel.sum())
     
     def __len__(self):
         return len(self.kernel)
         
-    def imshow(self, ax=None, show=True, save_file_name=None, ylim=None, xlim=None,color='b'):
+    def imshow(self, ax=None, show=True, save_file_name=None, ylim=None, xlim=None, color='b', reverse=True):
         
         if ax is None:
-            _, ax = plt.subplots(1,1)
+            _, ax = plt.subplots(1, 1)
         
         t_vals = self.t_range[self.t_inds]
+        kernel_data = self.kernel
+        if reverse:
+            kernel_data = self.kernel[-1::-1]
 
-        ax.plot(t_vals, self.kernel, color)
+        ax.plot(t_vals, kernel_data, color)
         ax.set_xlabel('Time (Seconds)')
         
-        if not ylim is None:
+        if ylim is not None:
             ax.set_ylim(ylim)
             
-        if not xlim is None:
+        if xlim is not None:
             ax.set_xlim(xlim)
         else:
-            a,b=(t_vals[0], t_vals[-1])
-            ax.set_xlim(min(a,b), max(a,b))
+            a, b = (t_vals[0], t_vals[-1])
+            ax.set_xlim(min(a, b), max(a, b))
         
-        if not save_file_name is None:
+        if save_file_name is not None:
             ax.savefig(save_file_name, transparent=True)
-        
-        if show == True:
+
+        if show:
             plt.show()
         
         return ax, (t_vals, self.kernel)
@@ -108,27 +102,34 @@ class Kernel1D(object):
         data = np.zeros(len(self.t_range))
         data[self.t_inds] = self.kernel
 
-
-        if truncate_t == True:
+        if truncate_t:
             ind_min = np.where(np.abs(data) > 0)[0].min()
             return data[ind_min:]
         else:
             return data
 
-
-
         return data
 
+
 class Kernel2D(object):
-    
+    def __init__(self, row_range, col_range, row_inds, col_inds, kernel):
+
+        self.col_range = np.array(col_range)
+        self.row_range = np.array(row_range)
+        self.row_inds = np.array(row_inds)
+        self.col_inds = np.array(col_inds)
+
+        self.kernel = np.array(kernel)
+
+        assert len(self.row_inds) == len(self.col_inds)
+        assert len(self.row_inds) == len(self.kernel)
+
     def rescale(self):
-        #self.kernel /= np.abs(self.kernel).sum()
-        if np.abs(self.kernel.sum())!=0:
+        if np.abs(self.kernel.sum()) != 0:
             self.kernel /= np.abs(self.kernel.sum())
     
     def normalize(self):
-#        self.kernel /= np.abs(self.kernel).sum()
-        self.kernel /= np.abs(self.kernel.sum()) 
+        self.kernel /= np.abs(self.kernel.sum())
             
     @classmethod
     def from_dense(cls, row_range, col_range, kernel_array, threshold=0.):
@@ -152,29 +153,12 @@ class Kernel2D(object):
                    instance.col_inds.copy(),
                    instance.kernel.copy())
 
-        
-    def __init__(self, row_range, col_range, row_inds, col_inds, kernel):
-        
-        
-        self.col_range = np.array(col_range)
-        self.row_range = np.array(row_range)
-        self.row_inds = np.array(row_inds)
-        self.col_inds = np.array(col_inds)
-
-        self.kernel = np.array(kernel)
-        
-        assert len(self.row_inds) == len(self.col_inds)
-        assert len(self.row_inds) == len(self.kernel)
-        
     def __mul__(self, constant):
-        
         new_copy = Kernel2D.copy(self)
         new_copy.kernel *= constant
         return new_copy
     
     def __add__(self, other):
-        
-        
         if len(other) == 0:
             return self
 
@@ -218,26 +202,28 @@ class Kernel2D(object):
         from mpl_toolkits.axes_grid1 import make_axes_locatable
         
         if ax is None:
-            _, ax = plt.subplots(1,1)
+            _, ax = plt.subplots(1, 1)
         
-        if colorbar == True:
+        if colorbar:
             divider = make_axes_locatable(ax)
-            cax = divider.append_axes("right", size = "5%", pad = 0.05)
+            cax = divider.append_axes("right", size="5%", pad=0.05)
         
         data = self.full()
 
-        if not clim is None:
-            im = ax.imshow(data, extent=(self.col_range[0], self.col_range[-1], self.row_range[0], self.row_range[-1]),  origin='lower', clim=clim, interpolation='none')
+        if clim is not None:
+            im = ax.imshow(data, extent=(self.col_range[0], self.col_range[-1], self.row_range[0], self.row_range[-1]),
+                           origin='lower', clim=clim, interpolation='none')
         else:
-            im = ax.imshow(data, extent=(self.col_range[0], self.col_range[-1], self.row_range[0], self.row_range[-1]),  origin='lower', interpolation='none')
+            im = ax.imshow(data, extent=(self.col_range[0], self.col_range[-1], self.row_range[0], self.row_range[-1]),
+                           origin='lower', interpolation='none')
         
-        if colorbar == True:
-            plt.colorbar(im,cax=cax)
+        if colorbar:
+            plt.colorbar(im, cax=cax)
 
-        if not save_file_name is None:
+        if save_file_name is not None:
             plt.savefig(save_file_name, transparent=True)
 
-        if show == True: 
+        if show:
             plt.show()
             
         return ax, data
@@ -245,20 +231,15 @@ class Kernel2D(object):
     def __len__(self):
         return len(self.kernel)
 
+
 class Kernel3D(object):
-    
     def rescale(self):
-        #self.kernel /= np.abs(self.kernel).sum()
-        if np.abs(self.kernel.sum())!=0:
+        if np.abs(self.kernel.sum()) != 0:
             self.kernel /= np.abs(self.kernel.sum())
     
     def normalize(self):
-        #self.kernel /= np.abs(self.kernel).sum()
-#        print self.kernel.sum()
         self.kernel /= (self.kernel.sum())*np.sign(self.kernel.sum())
-#        print self.kernel.sum()
-#        sys.exit()
-    
+
     @classmethod
     def copy(cls, instance):
         return cls(instance.row_range.copy(),
@@ -295,8 +276,6 @@ class Kernel3D(object):
         self.kernel = self.kernel[inds_to_keep]
         
     def __add__(self, other):
-        
-        
         if len(other) == 0:
             return self
 
@@ -383,21 +362,13 @@ class Kernel3D(object):
         data = np.zeros((len(self.t_range), len(self.row_range), len(self.col_range)))
         data[self.t_inds, self.row_inds, self.col_inds] = self.kernel
 
-        if truncate_t == True:
+        if truncate_t:
             ind_max = np.where(np.abs(data) > 0)[0].min()
             return data[ind_max:, :, :]
         else:
             return data
 
-
-        # if truncate_t == True:
-        #     ind_min = np.where(np.abs(data) > 0)[0].min()
-        #     return data[ind_min:]
-        # else:
-        #     return data
-
     def imshow(self, ax=None, t_range=None, cmap=cm.bwr, N=10, show=True, save_file_name=None, kvals=None):
-        
         if ax is None:
             fig = plt.figure()
             ax = fig.gca(projection='3d')
@@ -437,39 +408,34 @@ class Kernel3D(object):
         ax.set_ylim(self.t_range[0], self.t_range[-1])
         ax.set_xlim(self.col_range[0], self.col_range[-1])
         
-        if not save_file_name is None:
+        if save_file_name is not None:
             plt.savefig(save_file_name, transparent=True)
         
-        if show == True:
+        if show:
             plt.show() 
         
         return ax, contour_dict
-        
+
+
 def merge_spatial_temporal(spatial_kernel, temporal_kernel, threshold=0):
-    
         t_range = temporal_kernel.t_range
 
-        spatiotemporal_kernel = np.ones(( len(temporal_kernel), len(spatial_kernel)))
+        spatiotemporal_kernel = np.ones((len(temporal_kernel), len(spatial_kernel)))
         spatiotemporal_kernel *= spatial_kernel.kernel[None, :]
-        spatiotemporal_kernel *= temporal_kernel.kernel[:,None]
+        spatiotemporal_kernel *= temporal_kernel.kernel[:, None]
         spatiotemporal_kernel = spatiotemporal_kernel.reshape((np.prod(spatiotemporal_kernel.shape)))
          
-        spatial_coord_array = np.empty((len(spatial_kernel),2))
-        spatial_coord_array[:,0] = spatial_kernel.col_inds
-        spatial_coord_array[:,1] = spatial_kernel.row_inds
+        spatial_coord_array = np.empty((len(spatial_kernel), 2))
+        spatial_coord_array[:, 0] = spatial_kernel.col_inds
+        spatial_coord_array[:, 1] = spatial_kernel.row_inds
          
-        spatiiotemporal_coord_array = np.zeros((len(spatial_kernel)*len(temporal_kernel),3))
-        spatiiotemporal_coord_array[:,0:2] = np.kron(np.ones((len(temporal_kernel),1)),spatial_coord_array)
-        spatiiotemporal_coord_array[:,2] = np.kron(temporal_kernel.t_inds, np.ones(len(spatial_kernel)))
+        spatiiotemporal_coord_array = np.zeros((len(spatial_kernel)*len(temporal_kernel), 3))
+        spatiiotemporal_coord_array[:, 0:2] = np.kron(np.ones((len(temporal_kernel), 1)), spatial_coord_array)
+        spatiiotemporal_coord_array[:, 2] = np.kron(temporal_kernel.t_inds, np.ones(len(spatial_kernel)))
         
-        col_inds, row_inds, t_inds = map(lambda x:x.astype(np.int),spatiiotemporal_coord_array.T)
-        kernel = Kernel3D(spatial_kernel.row_range, spatial_kernel.col_range, t_range, row_inds, col_inds, t_inds, spatiotemporal_kernel)
+        col_inds, row_inds, t_inds = map(lambda x: x.astype(np.int), spatiiotemporal_coord_array.T)
+        kernel = Kernel3D(spatial_kernel.row_range, spatial_kernel.col_range, t_range, row_inds, col_inds, t_inds,
+                          spatiotemporal_kernel)
         kernel.apply_threshold(threshold)
         
         return kernel
-    
-
-
-# Candidate for print
-# for ri, ci, ti, k in zip(kernel.row_inds, kernel.col_inds, kernel.t_inds, kernel.kernel):
-#     print ri, ci, ti, k

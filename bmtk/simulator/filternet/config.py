@@ -2,9 +2,16 @@ import os
 import json
 
 from bmtk.simulator.core.config import ConfigDict
+from bmtk.simulator.filternet.io_tools import io
 
 
 class Config(ConfigDict):
+    @property
+    def io(self):
+        if self._io is None:
+            self._io = io
+        return self._io
+
     @property
     def jitter(self):
         conds = self.conditions

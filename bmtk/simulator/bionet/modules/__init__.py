@@ -25,3 +25,4 @@ from .record_cellvars import MembraneReport, SomaReport
 from .record_spikes import SpikesMod
 from .xstim import XStimMod
 from .save_synapses import SaveSynapses
+from .record_netcons import NetconReport

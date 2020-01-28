@@ -122,7 +122,7 @@ class Population(object):
         else:
             tmp_index = pd.DataFrame()
             # TODO: Need to check the memory overhead, especially for edges. See if an iterative search is just as fast
-            tmp_index['grp_id'] = pd.Series(self._group_id_ds, dtype=self._group_id_ds.dtype)
+            tmp_index['grp_id'] = pd.Series(self._group_id_ds[()], dtype=self._group_id_ds.dtype)
             tmp_index['row_indx'] = pd.Series(range_itr(self._nrows), dtype=np.uint32)
             if build_cache:
                 # save all indicies as arrays
@@ -236,8 +236,18 @@ class NodePopulation(Population):
         self._gid_lookup_fnc = lambda row_indx: self._index_row2gid.loc[row_indx]['gid']
         self._has_gids = True
 
-    def to_dataframe(self):
-        raise NotImplementedError
+    def to_dataframe(self, index_by_id=True):
+        if len(self.groups) == 1:
+            ret_df = self.get_group(self.group_ids[0]).to_dataframe()
+        else:
+            ret_df = pd.DataFrame()
+            for grp_id in self.group_ids:
+                ret_df = ret_df.append(self.get_group(grp_id).to_dataframe(), sort=False)
+
+        if index_by_id:
+            ret_df = ret_df.set_index('node_id')
+
+        return ret_df
 
     def get_row(self, row_indx):
         # TODO: Use helper function so we don't have to lookup gid/node_id twice
@@ -400,11 +410,19 @@ class EdgePopulation(Population):
         return self._types_table
 
     def to_dataframe(self):
-        raise NotImplementedError
+        raise NotImplementedError()
+
 
     def build_indicies(self):
-        if 'indicies' in self._pop_group:
-            indicies_grp = self._pop_group['indicies']
+        indicies_grp = None
+        for grp_name in ['indices', 'indicies']:
+            if grp_name in self._pop_group:
+                indicies_grp = self._pop_group[grp_name]
+                break
+
+        # if 'indicies' in self._pop_group:
+        if indicies_grp is not None:
+            # indicies_grp = self._pop_group['indicies']
             for index_name, index_grp in indicies_grp.items():
                 # TODO: Let __IndexStruct build the indicies
                 # Make sure subgroup has the correct datasets
@@ -439,7 +457,10 @@ class EdgePopulation(Population):
     def _build_group(self, group_id, group_h5):
         return EdgeGroup(group_id, group_h5, self)
 
-    def group_indicies(self, group_id, build_cache=False):
+    def group_indicies(self, group_id, build_cache=False, as_list=False):
+        if as_list:
+            return super(EdgePopulation, self).group_indicies(group_id, build_cache)
+
         # For nodes it's safe to just keep a list of all indicies that map onto a given group. For edges bc there are
         # many more rows (and typically a lot less groups), We want to build an index like for source/target ids
         if len(self._group_map) == 1:
@@ -499,7 +520,14 @@ class EdgePopulation(Population):
             del filter_props['edge_type_id']
             types_filter = True
 
-        selected_groups = set(self._group_map.keys())  # list of grp_id's that will be used
+        if 'group_id' in filter_props:
+            grp_id = filter_props['group_id']
+            grp_id = [grp_id] if np.isscalar(grp_id) else grp_id
+            selected_groups = set(grp_id)
+            del filter_props['group_id']
+        else:
+            selected_groups = set(self._group_map.keys())  # list of grp_id's that will be used
+
         group_prop_filter = {}  # list of actual query statements
         group_filter = False  # do we need to filter results by group_id
 

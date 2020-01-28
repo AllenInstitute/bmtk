@@ -52,7 +52,7 @@ class _PyFunctions(object):
             self.__syn_weights[name] = func
 
     @property
-    def synaptic_weight(self):
+    def synaptic_weights(self):
         """return list of the names of all available synaptic weight functions"""
         return self.__syn_weights.keys()
 
@@ -91,7 +91,6 @@ class _PyFunctions(object):
 
     def synapse_model(self, name):
         return self.__synapse_models[name]
-
 
     @property
     def cell_processors(self):

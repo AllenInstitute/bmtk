@@ -16,8 +16,16 @@ class SonataBaseEdge(object):
         return self._edge.source_node_id
 
     @property
+    def source_population(self):
+        return self._edge.source_population
+
+    @property
     def target_node_id(self):
         return self._edge.target_node_id
+
+    @property
+    def target_population(self):
+        return self._edge.target_population
 
     @property
     def dynamics_params(self):

@@ -1,7 +1,8 @@
 import os
 import glob
 import pandas as pd
-from bmtk.utils.io.cell_vars import CellVarRecorder
+from bmtk.utils.reports import CompartmentReport
+# from bmtk.utils.io.cell_vars import CellVarRecorder
 from bmtk.simulator.pointnet.io_tools import io
 
 import nest
@@ -46,16 +47,19 @@ class MultimeterMod(object):
         self._gids = None
         self._nest_ids = None
         self._multimeter = None
+        self._population = None
 
         self._min_delay = 1.0  # Required for calculating steps recorded
 
         self.__output_label = os.path.join(self._output_dir, '__bmtk_nest_{}'.format(os.path.basename(self._file_name)))
-        self._var_recorder = CellVarRecorder(self._file_name, self._output_dir, self._variable_name, buffer_data=False)
+        self._var_recorder = None  # CellVarRecorder(self._file_name, self._output_dir, self._variable_name, buffer_data=False)
 
     def initialize(self, sim):
-        self._gids = list(sim.net.get_node_set(self._node_set).gids())
-        self._nest_ids = [sim.net._gid2nestid[gid] for gid in self._gids]
+        node_set = sim.net.get_node_set(self._node_set)
 
+        self._gids =  list(set(node_set.gids()))
+        self._population = node_set.population_names()[0]
+        self._nest_ids = list(sim.net.gid_map.get_gids(name=self._population, node_ids=self._gids))
         self._tstart = self._tstart or sim.tstart
         self._tstop = self._tstop or sim.tstop
         self._interval = self._interval or sim.dt
@@ -74,32 +78,39 @@ class MultimeterMod(object):
         # min_delay needs to be fetched after simulation otherwise the value will be off. There also seems to be some
         # MPI barrier inside GetKernelStatus
         self._min_delay = nest.GetKernelStatus('min_delay')
-        # print self._min_delay
         if self._to_h5 and MPI_RANK == 0:
-            for gid in self._gids:
-                self._var_recorder.add_cell(gid, sec_list=[0], seg_list=[0.0])
-
             # Initialize hdf5 file including preallocated data block of recorded variables
             #   Unfortantely with NEST the final time-step recorded can't be calculated in advanced, and even with the
             # same min/max_delay can be different. We need to read the output-file to get n_steps
             def get_var_recorder(node_recording_df):
-                if not self._var_recorder.is_initialized:
-                    self._var_recorder.tstart = node_recording_df['time'].min()
-                    self._var_recorder.tstop = node_recording_df['time'].max()
-                    self._var_recorder.dt = self._interval
-                    self._var_recorder.initialize(len(node_recording_df))
+                if self._var_recorder is None:
+                    self._var_recorder = CompartmentReport(self._file_name, mode='w', variable=self._variable_name[0],
+                                                           default_population=self._population,
+                                                           tstart=node_recording_df['time'].min(),
+                                                           tstop=node_recording_df['time'].max(),
+                                                           dt=self._interval,
+                                                           n_steps=len(node_recording_df),
+                                                           mpi_size=1)
+                    if self._to_h5 and MPI_RANK == 0:
+                        for gid in self._gids:
+                            self._var_recorder.add_cell(gid, element_ids=[0], element_pos=[0.0],
+                                                        population=self._population)
+
+                    self._var_recorder.initialize()
 
                 return self._var_recorder
 
-            gid_map = sim.net._nestid2gid
+            # gid_map = sim.net._nestid2gid
+            gid_map = sim.net.gid_map
             for nest_file in glob.glob('{}*'.format(self.__output_label)):
                 report_df = pd.read_csv(nest_file, index_col=False, names=['nest_id', 'time']+self._variable_name,
                                         sep='\t')
                 for grp_id, grp_df in report_df.groupby(by='nest_id'):
-                    gid = gid_map[grp_id]
+                    pop_id = gid_map.get_pool_id(grp_id)
                     vr = get_var_recorder(grp_df)
                     for var_name in self._variable_name:
-                        vr.record_cell_block(gid, var_name, grp_df[var_name])
+                        vr.record_cell_block(node_id=pop_id.node_id, vals=grp_df[var_name], beg_step=0,
+                                             end_step=vr[pop_id.population].n_steps(), population=pop_id.population)
 
                 if self._delete_dat:
                     # remove csv file created by nest

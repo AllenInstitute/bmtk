@@ -27,6 +27,8 @@ import h5py
 import time
 import uuid
 import tempfile
+from six import text_type
+
 from bmtk.analyzer.visualization.widgets import PlotWidget, MovieWidget
 
 __version__ = '0.1.0'
@@ -98,8 +100,7 @@ class DtScale(object):
     def __eq__(self, other):
         d = self.dimension == other.dimension
         u = self.unit == other.unit
-        s = np.allclose(self.scale_range, other.scale_range)
-        return d and u and s
+        return d and u
     
     @ property
     def data(self):
@@ -116,6 +117,8 @@ class NullScale(object):
 
 
 class Data(object):
+    group = None
+
     def __init__(self, data, dimension, unit, scales, metadata):
         assert dimension in allowed_dimensions
         assert unit in allowed_dimensions[dimension]
@@ -124,7 +127,7 @@ class Data(object):
             scales = (scales,)
         
         for key in metadata.iterkeys():
-            assert isinstance(key, (str, unicode))
+            assert isinstance(key, (str, text_type))
         for ii, scale in enumerate(scales):
             if isinstance(scale, Scale):
                 assert len(scale.scale_range) == data.shape[ii]

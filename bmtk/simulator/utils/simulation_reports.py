@@ -236,6 +236,12 @@ class MultimeterReport(MembraneReport):
         return ['multimeter', 'multimeter_report']
 
 
+@SimReport.register_module
+class NetconReport(MembraneReport):
+    @staticmethod
+    def avail_modules():
+        return ['netcon_report']
+
 
 def from_config(cfg):
     SimReport.default_dir = cfg.output_dir

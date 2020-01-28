@@ -26,7 +26,6 @@ import ast
 import numpy as np
 
 from bmtk.simulator.core.config import ConfigDict
-#import config as cfg
 from bmtk.simulator.utils.property_maps import NodePropertyMap, EdgePropertyMap
 from bmtk.utils import sonata
 from bmtk.simulator.core.io_tools import io
@@ -318,9 +317,9 @@ class SimGraph(object):
                 model_types -= set(['virtual'])
                 if model_types:
                     # We'll allow a population to have virtual and non-virtual nodes but it is not ideal
-                    self.io.log_warning('Node population {} contains both virtual and non-virtual nodes which can ' +
+                    self.io.log_warning('Node population {} contains both virtual and non-virtual nodes which can '.format(pop_name) +
                                         'cause memory and build-time inefficency. Consider separating virtual nodes ' +
-                                        'into their own population'.format(pop_name))
+                                        'into their own population')
 
             if model_types:
                 self._internal_populations_map[pop_name] = node_pop

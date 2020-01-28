@@ -31,6 +31,7 @@ from bmtk.simulator.core.node_sets import NodeSet
 import bmtk.simulator.utils.simulation_reports as reports
 import bmtk.simulator.utils.simulation_inputs as inputs
 from bmtk.utils.io import spike_trains
+from bmtk.utils.reports.spike_trains import SpikeTrains
 
 
 pc = h.ParallelContext()    # object to access MPI methods
@@ -45,6 +46,7 @@ class BioSimulator(Simulator):
         self._start_from_state = start_from_state
         self.dt = dt
         self.tstop = tstop
+        self.tstart = 0.0
 
         self._v_init = v_init
         self._celsius = celsius
@@ -145,6 +147,17 @@ class BioSimulator(Simulator):
         # return self.net.get
         return self.net.local_gids
 
+    def simulation_time(self, units='ms'):
+        units_lc = units.lower()
+        time_ms = self.tstop - self.tstart
+        if units_lc == 'ms':
+            return time_ms
+        elif units_lc == 's':
+            return time_ms/1000.0
+
+        else:
+            raise AttributeError('Uknown unit type {}'.format(units))
+
     def __elapsed_time(self, time_s):
         if time_s < 120:
             return '{:.4} seconds'.format(time_s)
@@ -179,10 +192,11 @@ class BioSimulator(Simulator):
             self._spikes[gid] = tvec
 
     def attach_current_clamp(self, amplitude, delay, duration, gids=None):
-        # TODO: verify current clamp works with MPI
+
         # TODO: Create appropiate module
-        if gids is None:
-            gids = self.gids['biophysical']
+        if gids is None or gids=='all':
+            gids = self.biophysical_gids
+
         if isinstance(gids, int):
             gids = [gids]
         elif isinstance(gids, string_types):
@@ -192,9 +206,14 @@ class BioSimulator(Simulator):
 
 
         gids = list(set(self.local_gids) & set(gids))
-        for gid in gids:
+        
+        if len(gids)!=len(amplitude):
+            amplitude = amplitude * len(gids)
+
+        for idx,gid in enumerate(gids):
             cell = self.net.get_cell_gid(gid)
-            Ic = IClamp(amplitude, delay, duration)
+            Ic = IClamp(amplitude[idx], delay, duration)
+            
             Ic.attach_current(cell)
             self._iclamps.append(Ic)
 
@@ -283,20 +302,43 @@ class BioSimulator(Simulator):
 
         # TODO: Need to create a gid selector
         for sim_input in inputs.from_config(config):
+            try:
+                network.get_node_set(sim_input.node_set)
+            except:
+                print("Parameter node_set must be given in inputs module of simulation_config file. If unsure of what node_set should be, set it to 'all'.")
             node_set = network.get_node_set(sim_input.node_set)
             if sim_input.input_type == 'spikes':
                 io.log_info('Building virtual cell stimulations for {}'.format(sim_input.name))
-                spikes = spike_trains.SpikesInput.load(name=sim_input.name, module=sim_input.module,
-                                                       input_type=sim_input.input_type, params=sim_input.params)
+                path = sim_input.params['input_file']
+                spikes = SpikeTrains.load(path=path, file_type=sim_input.module, **sim_input.params)
+                #exit()
+                #spikes = spike_trains.SpikesInput.load(name=sim_input.name, module=sim_input.module,
+                #                                       input_type=sim_input.input_type, params=sim_input.params)
                 network.add_spike_trains(spikes, node_set)
 
             elif sim_input.module == 'IClamp':
                 # TODO: Parse from csv file
+                try: 
+                    len(sim_input.params['amp'])
+                except:
+                    sim_input.params['amp']=[float(sim_input.params['amp'])]
+                if len(sim_input.params['amp'])>1:
+                    sim_input.params['amp']=[float(i) for i in sim_input.params['amp']]
+
                 amplitude = sim_input.params['amp']
                 delay = sim_input.params['delay']
                 duration = sim_input.params['duration']
-                gids = sim_input.params['node_set']
-                sim.attach_current_clamp(amplitude, delay, duration, node_set)
+                
+                try:
+                    sim_input.params['gids']
+                except:
+                    sim_input.params['gids'] = None
+                if sim_input.params['gids'] is not None:
+                    gids = sim_input.params['gids']
+                else:
+                    gids = list(node_set.gids())
+
+                sim.attach_current_clamp(amplitude, delay, duration, gids)
 
             elif sim_input.module == 'xstim':
                 sim.add_mod(mods.XStimMod(**sim_input.params))
@@ -309,6 +351,9 @@ class BioSimulator(Simulator):
         for report in sim_reports:
             if isinstance(report, reports.SpikesReport):
                 mod = mods.SpikesMod(**report.params)
+
+            elif report.module == 'netcon_report':
+                mod = mods.NetconReport(**report.params)
 
             elif isinstance(report, reports.MembraneReport):
                 if report.params['sections'] == 'soma':
@@ -327,6 +372,8 @@ class BioSimulator(Simulator):
             elif report.module == 'save_synapses':
                 mod = mods.SaveSynapses(**report.params)
 
+
+
             else:
                 # TODO: Allow users to register customized modules using pymodules
                 io.log_warning('Unrecognized module {}, skipping.'.format(report.module))
@@ -335,3 +382,4 @@ class BioSimulator(Simulator):
             sim.add_mod(mod)
 
         return sim
+

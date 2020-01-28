@@ -20,8 +20,9 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-#from tabular_network_v1 import TabularNetwork
-#from tabular_network_v0 import TabularNetwork as TabularNetwork_AI
+
 
 def log_warning(message):
     pass
+
+from .ioutils import bmtk_world_comm

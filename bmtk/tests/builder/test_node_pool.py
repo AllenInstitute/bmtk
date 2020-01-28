@@ -78,4 +78,5 @@ def test_failed_search():
     assert(len(node_pool) == 0)
 
 
-test_failed_search()
+if __name__ == '__main__':
+    test_multi_search()

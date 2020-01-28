@@ -61,7 +61,9 @@ def get_filter_temporal_params(N, X_grids, Y_grids, model):
     tOFF_fn = os.path.join(basepath, 'tOFF_TF8_4.222_-2.404_8.545_23.019_0.0_ic.pkl')  # best chosen fit for tOFF 8 Hz
     sON_fn = os.path.join(basepath, 'sON_TF4_3.5_-2.0_30.0_60.0_25.0_ic.pkl')  # best chosen fit for sON 4 Hz
 
-    sOFF_prs = pickle.load(open(sOFF_fn, 'rb'))
+    #print(open(sOFF_fn))
+    sOFF_prs = pickle.load(open(sOFF_fn, 'rb')) #, encoding='latin1')
+    #print(sOFF_prs)
     tOFF_prs = pickle.load(open(tOFF_fn, 'rb'))
     sON_prs = pickle.load(open(sON_fn, 'rb'))
 
@@ -237,14 +239,19 @@ for params in lgn_models:
                   x=positions[:, 0],
                   y=positions[:, 1],
                   spatial_size=filter_sizes,
-                  kpeaks_dom_0=filter_params[:, 0],
-                  kpeaks_dom_1=filter_params[:, 1],
-                  weight_dom_0=filter_params[:, 2],
-                  weight_dom_1=filter_params[:, 3],
-                  delay_dom_0=filter_params[:, 4],
-                  delay_dom_1=filter_params[:, 5],
-                  kpeaks_non_dom_0=filter_params[:, 6],
-                  kpeaks_non_dom_1=filter_params[:, 7],
+                  # kpeaks_dom_0=filter_params[:, 0],
+                  # kpeaks_dom_1=filter_params[:, 1],
+                  kpeaks=filter_params[:, 0:2],
+                  #weight_dom_0=filter_params[:, 2],
+                  #weight_dom_1=filter_params[:, 3],
+                  weights=filter_params[:, 2:4],
+                  #delay_dom_0=filter_params[:, 4],
+                  #delay_dom_1=filter_params[:, 5],
+                  delays=filter_params[:, 4:6],
+
+                  #kpeaks_non_dom_0=filter_params[:, 6],
+                  # kpeaks_non_dom_1=filter_params[:, 7],
+                  kpeaks_non_dom=filter_params[:, 6:8],
                   weight_non_dom_0=filter_params[:, 8],
                   weight_non_dom_1=filter_params[:, 9],
                   delay_non_dom_0=filter_params[:, 10],

@@ -8,6 +8,7 @@ import pandas as pd
 from bmtk.simulator.core.sonata_reader import NodeAdaptor, SonataBaseNode, EdgeAdaptor, SonataBaseEdge
 from bmtk.simulator.pointnet.io_tools import io
 from bmtk.simulator.pointnet.pyfunction_cache import py_modules
+from bmtk.simulator.pointnet.glif_utils import convert_aibs2nest
 
 
 def all_null(node_group, column_name):
@@ -142,6 +143,20 @@ class PointNodeAdaptor(NodeAdaptor):
                 for nt_id in ntids_counter]
 
     @staticmethod
+    def preprocess_node_types(network, node_population):
+        NodeAdaptor.preprocess_node_types(network, node_population)
+        node_types_table = node_population.types_table
+        if 'model_template' in node_types_table.columns and 'dynamics_params' in node_types_table.columns:
+            node_type_ids = np.unique(node_population.type_ids)
+            for nt_id in node_type_ids:
+                node_type_attrs = node_types_table[nt_id]
+                mtemplate = node_type_attrs['model_template']
+                dyn_params = node_type_attrs['dynamics_params']
+                if mtemplate.startswith('nest:glif') and dyn_params.get('type', None) == 'GLIF':
+                    node_type_attrs['dynamics_params'] = convert_aibs2nest(mtemplate, dyn_params)
+
+
+    @staticmethod
     def patch_adaptor(adaptor, node_group, network):
         node_adaptor = NodeAdaptor.patch_adaptor(adaptor, node_group, network)
 
@@ -174,11 +189,15 @@ class PointEdge(SonataBaseEdge):
     @property
     def nest_params(self):
         if self.model_template in py_modules.synapse_models:
+            src_node = self._prop_adaptor._network.get_node_id(self.source_population, self.source_node_id)
+            trg_node = self._prop_adaptor._network.get_node_id(self.target_population, self.target_node_id)
             syn_model_fnc = py_modules.synapse_model(self.model_template)
         else:
+            src_node = None
+            trg_node = None
             syn_model_fnc = py_modules.synapse_models('default')
 
-        return syn_model_fnc(self)
+        return syn_model_fnc(self, src_node, trg_node)
 
 
 class PointEdgeBatched(object):
@@ -222,64 +241,118 @@ class PointEdgeAdaptor(EdgeAdaptor):
     def get_edge(self, sonata_node):
         return PointEdge(sonata_node, self)
 
+    @staticmethod
+    def preprocess_edge_types(network, edge_population):
+        # Fix for sonata/300_pointneurons
+        EdgeAdaptor.preprocess_edge_types(network, edge_population)
+        edge_types_table = edge_population.types_table
+        edge_type_ids = np.unique(edge_population.type_ids)
+
+        for et_id in edge_type_ids:
+            edge_type = edge_types_table[et_id]
+            if 'model_template' in edge_types_table.columns:
+                model_template = edge_type['model_template']
+                if model_template.startswith('nest'):
+                    edge_type['model_template'] = model_template[5:]
+                    # print edge_type['model_template']
+
 
     def get_batches(self, edge_group):
         src_ids = {}
         trg_ids = {}
+
         edge_types_table = edge_group.parent.edge_types_table
 
-        edge_type_ids = edge_group.node_type_ids()
+        edge_type_ids = edge_group.edge_type_ids
         et_id_counter = Counter(edge_type_ids)
-        tmp_df = pd.DataFrame({'etid': edge_type_ids, 'src_nids': edge_group.src_node_ids(),
-                               'trg_nids': edge_group.trg_node_ids()})
+        tmp_df = pd.DataFrame({'etid': edge_type_ids, 'src_nids': edge_group.src_node_ids,
+                               'trg_nids': edge_group.trg_node_ids})
 
-        for et_id, grp_vals in tmp_df.groupby('etid'):
-            src_ids[et_id] = np.array(grp_vals['src_nids'])
-            trg_ids[et_id] = np.array(grp_vals['trg_nids'])
+        if 'nsyns' in edge_group.columns:
+            tmp_df['nsyns'] = edge_group.get_dataset('nsyns')
 
-        # selected_etids = np.unique(edge_type_ids)
-        type_params = {et_id: {} for et_id in et_id_counter.keys()}
-        for et_id, p_dict in type_params.items():
-            p_dict.update(edge_types_table[et_id]['dynamics_params'])
-            if 'model_template' in edge_types_table[et_id]:
-                p_dict['model'] = edge_types_table[et_id]['model_template']
+        if 'syn_weight' in edge_group.columns:
+            tmp_df['syn_weight'] = edge_group.get_dataset('syn_weight')
 
         if 'delay' in edge_group.columns:
-            raise NotImplementedError
-        elif 'delay' in edge_types_table.columns:
-            for et_id, p_dict in type_params.items():
-                p_dict['delay'] = edge_types_table[et_id]['delay']
+            tmp_df['delay'] = edge_group.get_dataset('delay')
 
-        scalar_syn_weight = 'syn_weight' not in edge_group.columns
-        scalar_nsyns = 'nsyns' not in edge_group.columns
+        #for et_id, grp_vals in tmp_df.groupby('etid'):
+        #    src_ids[et_id] = np.array(grp_vals['src_nids'])
+        #    trg_ids[et_id] = np.array(grp_vals['trg_nids'])
 
-        if scalar_syn_weight and scalar_nsyns:
-            for et_id, p_dict in type_params.items():
-                et_dict = edge_types_table[et_id]
-                p_dict['weight'] = et_dict['nsyns']*et_dict['syn_weight']
+        type_params = {edge_id: {} for edge_id in et_id_counter.keys()}
+        src_pop = edge_group.parent.source_population
+        trg_pop = edge_group.parent.target_population
 
-        else:
-            if not scalar_nsyns and not scalar_syn_weight:
-                tmp_df['nsyns'] = edge_group.get_dataset('nsyns')
-                tmp_df['syn_weight'] = edge_group.get_dataset('syn_weight')
-                for et_id, grp_vals in tmp_df.groupby('etid'):
-                    type_params[et_id]['weight'] = np.array(grp_vals['nsyns'])*np.array(grp_vals['syn_weight'])
+        grp_df = None
+        src_nodes_df = None
+        trg_nodes_df = None
+        for edge_id, grp_vals in tmp_df.groupby('etid'):
+            edge_props = edge_types_table[edge_id]
 
-            elif scalar_nsyns:
-                tmp_df['syn_weight'] = edge_group.get_dataset('syn_weight')
-                for et_id, grp_vals in tmp_df.groupby('etid'):
-                    type_params[et_id]['weight'] = edge_types_table[et_id].get('nsyns', 1) * np.array(grp_vals['syn_weight'])
+            # Get the model type
+            type_params[edge_id]['model'] = edge_props['model_template']
 
-            elif scalar_syn_weight:
-                tmp_df['nsyns'] = edge_group.get_dataset('nsyns')
-                for et_id, grp_vals in tmp_df.groupby('etid'):
-                    type_params[et_id]['weight'] = np.array(grp_vals['nsyns']) * edge_types_table[et_id]['syn_weight']
+            # Add dynamics params
+            # TODO: Add to dataframe and if a part of hdf5 we can return any dynamics params as a list
+            type_params[edge_id].update(edge_props['dynamics_params'])
 
+            # get the delay parameter
+            if 'delay' in grp_vals.columns:
+                type_params[edge_id]['delay'] = grp_vals['delay']
+            elif 'delay' in edge_props.keys():
+                type_params[edge_id]['delay'] = edge_props['delay']
+
+            weight_function = edge_types_table[edge_id].get('weight_function', None)
+            if weight_function is not None:
+                if grp_df is None:
+                    grp_df = edge_group.to_dataframe()
+                    src_nodes_df = self._network.get_nodes_df(src_pop)
+                    trg_nodes_df = self._network.get_nodes_df(trg_pop)
+                edges = grp_df[grp_df['edge_type_id'] == edge_id]
+                target_nodes = trg_nodes_df.loc[edges['target_node_id'].values]
+                source_nodes = src_nodes_df.loc[edges['source_node_id'].values]
+                weight_fnc = py_modules.synaptic_weight(weight_function)
+                type_params[edge_id]['weight'] = weight_fnc(edges, source_nodes, target_nodes)
+
+            else:
+                # Get nsyns as either an array or a constant. If not explcitiy specified assume nsyns = 1
+                if 'nsyns' in grp_vals.columns:
+                    nsyns = grp_vals['nsyns'].values
+                else:
+                    nsyns = edge_props.get('nsyns', 1)
+
+                # get syn_weight as either an array or constant. If not explicity stated throw an error
+                if 'syn_weight' in grp_vals.columns:
+                    syn_weight = grp_vals['syn_weight'].values
+                elif 'syn_weight' in edge_props.keys():
+                    syn_weight = edge_props['syn_weight']
+                else:
+                    # TODO: Make more explicity. Or default to syn_weight of 0
+                    raise Exception('Could not find syn_weight value')
+
+                # caluclate weight
+                type_params[edge_id]['weight'] = nsyns * syn_weight
+
+            yield PointEdgeBatched(source_nids=grp_vals['src_nids'].values, target_nids=grp_vals['trg_nids'].values,
+                                   nest_params=type_params[edge_id])
+
+            #print(type_params[edge_id])
+            #print(src_ids[edge_id])
+            #print(grp_vals['src_nids'].values)
+            #print(trg_ids[edge_id])
+            #print(grp_vals['trg_nids'].values)
+            #exit()
+
+
+        '''
         batched_edges = []
         for et_id in et_id_counter.keys():
             batched_edges.append(PointEdgeBatched(src_ids[et_id], trg_ids[et_id], type_params[et_id]))
 
         return batched_edges
+        '''
 
     @staticmethod
     def patch_adaptor(adaptor, edge_group):
@@ -287,6 +360,9 @@ class PointEdgeAdaptor(EdgeAdaptor):
 
         if 'weight_function' not in edge_group.all_columns and 'syn_weight' in edge_group.all_columns:
             adaptor.syn_weight = types.MethodType(point_syn_weight, adaptor)
+
+        #else:
+        #    edge_adaptor.batch_process = False
 
         return edge_adaptor
 
