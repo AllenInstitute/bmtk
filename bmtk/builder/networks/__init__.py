@@ -21,7 +21,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 from .dm_network import DenseNetwork
-NetworkBuilder = dm_network.DenseNetwork
+NetworkBuilder = DenseNetwork
 
 try:
     # If mpi4py is installed let users access MPIBuilder for parallel building networks

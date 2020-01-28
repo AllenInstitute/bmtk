@@ -23,12 +23,12 @@
 import numpy as np
 import sys
 import json
-from S1_Layer import S1_Layer
-from C_Layer import C_Layer
-from S_Layer import S_Layer
-from Sb_Layer import Sb_Layer
-from ViewTunedLayer import ViewTunedLayer
-from Readout_Layer import Readout_Layer
+from .S1_Layer import S1_Layer
+from .C_Layer import C_Layer
+from .S_Layer import S_Layer
+from .Sb_Layer import Sb_Layer
+from .ViewTunedLayer import ViewTunedLayer
+from .Readout_Layer import Readout_Layer
 import tensorflow as tf
 import os
 import h5py
@@ -150,7 +150,7 @@ class hmax (object):
                 node_type = Readout_Layer
                 K = node_dict['K']
                 input_nodes = self.nodes[input_node]
-                weight_file = os.path.join(config_dir,node_dict['weight_file'])
+                weight_file = os.path.join(self.config_dir, node_dict['weight_file'])
                 if weight_file=='':  weight_file=None
                 alt_image_dir = node_dict['alt_image_dir']
                 lam = node_dict['lam']

@@ -20,10 +20,13 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+import os
 import numpy as np
 import tensorflow as tf
-from S_Layer import S_Layer
 import pandas as pd
+
+from .S_Layer import S_Layer
+
 
 class Sb_Layer (object):
     def __init__(self,node_name,C_Layer_input,grid_size,pool_size,K_per_subband,file_name=None):
@@ -35,7 +38,7 @@ class Sb_Layer (object):
         self.input = C_Layer_input.input
 
         self.num_sublayers = len(grid_size)
-        self.K = K_per_subband*self.num_sublayers  #number of features will be number of sub bands times the K per subband
+        self.K = K_per_subband*self.num_sublayers  # number of features will be number of sub bands times the K per subband
         self.pool_size = pool_size
         self.grid_size = grid_size
 
@@ -55,8 +58,6 @@ class Sb_Layer (object):
                 sub_band_list = []
                 for i in range(self.num_sublayers):
                     sub_band_list += [self.sublayers[i].band_output[band]]
-
-
 
                     #gather sub_layer outputs and stack them for each band
                 self.band_output[band] = tf.concat(sub_band_list, 3)
@@ -134,48 +135,48 @@ class Sb_Layer (object):
 
 
 def test_S2b_Layer():
-
-    from S1_Layer import S1_Layer
     import matplotlib.pyplot as plt
-    from C_Layer import C_Layer
+    from .S1_Layer import S1_Layer
+    from .C_Layer import C_Layer
 
     fig_dir = 'Figures'
     # First we need an S1 Layer
     # these parameters are taken from Serre, et al PNAS for HMAX
-    freq_channel_params = [ [7,2.8,3.5],
-                            [9,3.6,4.6],
-                            [11,4.5,5.6],
-                            [13,5.4,6.8],
-                            [15,6.3,7.9],
-                            [17,7.3,9.1],
-                            [19,8.2,10.3],
-                            [21,9.2,11.5],
-                            [23,10.2,12.7],
-                            [25,11.3,14.1],
-                            [27,12.3,15.4],
-                            [29,13.4,16.8],
-                            [31,14.6,18.2],
-                            [33,15.8,19.7],
-                            [35,17.0,21.2],
-                            [37,18.2,22.8],
-                            [39,19.5,24.4]]
+    freq_channel_params = [[7, 2.8, 3.5],
+                           [9, 3.6, 4.6],
+                           [11, 4.5, 5.6],
+                           [13, 5.4, 6.8],
+                           [15, 6.3, 7.9],
+                           [17, 7.3, 9.1],
+                           [19, 8.2, 10.3],
+                           [21, 9.2, 11.5],
+                           [23, 10.2, 12.7],
+                           [25, 11.3, 14.1],
+                           [27, 12.3, 15.4],
+                           [29, 13.4, 16.8],
+                           [31, 14.6, 18.2],
+                           [33, 15.8, 19.7],
+                           [35, 17.0, 21.2],
+                           [37, 18.2, 22.8],
+                           [39, 19.5, 24.4]]
 
     orientations = np.arange(4)*np.pi/4
 
     input_shape = (128,192)
-    s1 = S1_Layer(input_shape,freq_channel_params,orientations)
+    s1 = S1_Layer(node_name='S1', input_shape=input_shape, freq_channel_params=freq_channel_params,
+                  orientations=orientations)
 
     # Now we need to define a C1 Layer
-    bands = [   [[0,1], 8, 3],
-                [[2,3], 10, 5],
-                [[4,5], 12, 7],
-                [[6,7], 14, 8],
-                [[8,9], 16, 10],
-                [[10,11], 18, 12],
-                [[12,13], 20, 13],
-                [[14,15,16], 22, 15]]
+    bands = [[[0, 1], 8, 3],
+             [[2, 3], 10, 5],
+             [[4, 5], 12, 7],
+             [[6, 7], 14, 8],
+             [[8, 9], 16, 10],
+             [[10, 11], 18, 12],
+             [[12, 13], 20, 13],
+             [[14, 15, 16], 22, 15]]
 
-    c1 = C_Layer(s1,bands)
+    c1 = C_Layer('C1', s1, bands)
 
     print("s1 shape:  ", s1.band_shape)
     print("c1 shape:  ", c1.band_shape)
@@ -184,19 +185,19 @@ def test_S2b_Layer():
     pool_size = 10
     K = 10
 
-    s2b = Sb_Layer(c1,grid_size,pool_size,K)
+    s2b = Sb_Layer('S2b', c1,grid_size,pool_size,K)
 
     print("s2b shape:  ", s2b.band_shape)
 
-    c2b_bands = [    [[0,1,2,3,4,5,6,7],40,40]]
+    c2b_bands = [[[0, 1, 2, 3, 4, 5, 6, 7], 40, 40]]
 
-    c2b = C_Layer(s2b,c2b_bands)
+    c2b = C_Layer('c2b', s2b,c2b_bands)
 
 
     print("c2b shape:  ", c2b.band_shape)
     #print c2b.band_output.keys()
     # Test s2 on an image
-    from Image_Library import Image_Library
+    from ..Image_Library import Image_Library
 
     image_dir = '/Users/michaelbu/Code/HCOMP/SampleImages'
 
@@ -205,7 +206,7 @@ def test_S2b_Layer():
     image_data = im_lib(1)
 
     fig, ax = plt.subplots(1)
-    ax.imshow(image_data[0,:,:,0],cmap='gray')
+    ax.imshow(image_data[0,:,:, 0], cmap='gray')
 
     fig,ax = plt.subplots(8,10)
 
@@ -231,12 +232,8 @@ def test_S2b_Layer():
         ax[b,k].axis('off')
 
     fig.savefig(os.path.join(fig_dir,'c2b_layer.tiff'))
+    s2b.train(image_dir,batch_size=10,image_shape=input_shape) # ,save_file_prefix='test_S2b_weights')
 
-
-    #plt.show()
-
-    s2b.train(image_dir,batch_size=10,image_shape=input_shape,save_file_prefix='test_S2b_weights')
 
 if __name__=='__main__':
-
     test_S2b_Layer()

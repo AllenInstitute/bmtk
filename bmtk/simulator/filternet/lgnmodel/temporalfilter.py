@@ -6,6 +6,10 @@ from .kernel import Kernel1D
 
 
 class TemporalFilter(object):
+    def __init__(self):
+        self.t_support = []
+        self.kernel_data = None
+
     def imshow(self, t_range=None, threshold=0, reverse=False, rescale=False, **kwargs):
         return self.get_kernel(t_range, threshold, reverse, rescale).imshow(**kwargs)
         
@@ -21,6 +25,7 @@ class TemporalFilter(object):
         
         if len(self.t_support) == 1:
             k = Kernel1D(self.t_support, self.kernel_data, threshold=threshold, reverse=reverse)
+
         else:
             interpolation_function = spinterp.interp1d(self.t_support, self.kernel_data, fill_value=0,
                                                        bounds_error=False, assume_sorted=True)

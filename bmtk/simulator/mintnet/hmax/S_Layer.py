@@ -324,9 +324,9 @@ class S_Layer (object):
 
 def test_S_Layer_ouput():
 
-    from S1_Layer import S1_Layer
+    from .S1_Layer import S1_Layer
     import matplotlib.pyplot as plt
-    from C_Layer import C_Layer
+    from .C_Layer import C_Layer
 
     fig_dir = 'Figures'
     # First we need an S1 Layer
@@ -352,7 +352,7 @@ def test_S_Layer_ouput():
     orientations = np.arange(4)*np.pi/4
 
     input_shape = (128,192)
-    s1 = S1_Layer(input_shape,freq_channel_params,orientations)
+    s1 = S1_Layer('S1', input_shape, freq_channel_params, orientations)
 
     # Now we need to define a C1 Layer
     bands = [   [[0,1], 8, 3],
@@ -364,7 +364,7 @@ def test_S_Layer_ouput():
                 [[12,13], 20, 13],
                 [[14,15,16], 22, 15]]
 
-    c1 = C_Layer(s1,bands)
+    c1 = C_Layer('c1', s1, bands)
 
     grid_size = 3
     pool_size = 10

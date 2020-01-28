@@ -24,25 +24,17 @@ import numpy as np
 import os
 from PIL import Image
 
-# Image_Batch
-#   .data (image_data)
-#   .image_dir, .new_size
-
 
 # add seed for random
 # call should return indices into im_list
 class Image_Experiment(object):
+    def __init__(self, **kwargs):
 
-    def __init__(self,stuff):
-
-        self.image_dir
-        self.new_size
-        self.sample_indices
-        self.im_list
+        self.image_dir = None
+        self.new_size = None
+        self.sample_indices = None
+        self.im_list = None
         # creating of pandas table, template
-
-
-
 
 
 class Image_Library (object):
@@ -62,11 +54,10 @@ class Image_Library (object):
 
         self.im_list = im_list
 
-        self.current_location = 0 # used for sequential samples
+        self.current_location = 0   # used for sequential samples
         self.lib_size = len(self.im_list)
 
     def __call__(self,num_samples, sequential=False):
-
         image_data = np.zeros([num_samples,self.new_size[0],self.new_size[1],1],dtype=np.float32)
 
         if sequential:
@@ -88,18 +79,17 @@ class Image_Library (object):
         return image_data
 
     def create_experiment(self):
-
         data = self()
-        return Image_Experiment(stuff)
+        return Image_Experiment()
 
     def experiment_from_table(self,table):
         pass
 
-    def to_h5(self,sample_indices=None):
+    def to_h5(self, sample_indices=None):
         pass
 
     def template(self):
         pass
 
-    def table(self,*params):
+    def table(self, *params):
         pass

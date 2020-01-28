@@ -20,9 +20,4 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-import S_Layer
-import S1_Layer
-import Sb_Layer
-import C_Layer
-import ViewTunedLayer
-import hmax
+from . import S_Layer, S1_Layer, Sb_Layer, C_Layer, ViewTunedLayer, hmax

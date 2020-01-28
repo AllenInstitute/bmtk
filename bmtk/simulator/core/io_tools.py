@@ -2,6 +2,7 @@ import os
 import sys
 import shutil
 import logging
+from six import text_type
 
 
 class IOUtils(object):
@@ -56,7 +57,7 @@ class IOUtils(object):
         if isinstance(loglevel, int):
             self._log_level = loglevel
 
-        elif isinstance(loglevel, (str, unicode)):
+        elif isinstance(loglevel, (str, text_type)):
             self._log_level = logging.getLevelName(loglevel)
 
         else:

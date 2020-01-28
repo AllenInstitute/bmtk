@@ -194,7 +194,7 @@ def S1_Layer_test():
     orientations = np.arange(4)*np.pi/4
 
     input_shape = (128,192)
-    s1 = S1_Layer(input_shape,freq_channel_params,orientations)
+    s1 = S1_Layer('S1', input_shape, freq_channel_params, orientations)
 
     #plot filters, make sure they are correct
     fig, ax = plt.subplots(len(orientations),len(freq_channel_params))

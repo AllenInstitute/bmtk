@@ -141,12 +141,14 @@ class NaturalScenes (object):
         return new_ns
 
     @classmethod
-    def with_new_stimulus_from_dataframe(cls, image_dir, new_size=(64,112), mode='L', dtype=np.float32, start_time=0, trial_length=250, add_channels=False):
+    def with_new_stimulus_from_dataframe(cls, image_dir, new_size=(64, 112), mode='L', dtype=np.float32, start_time=0,
+                                         trial_length=250, add_channels=False):
         '''image_dir should contain a folder of images called 'images' and an hdf5 file with a
         dataframe called 'label_dataframe.h5' with the frame stored in the key 'labels'.
         dataframe should have columns ['relative_image_path','label_1', 'label_2', ...]'''
 
-        new_ns = cls(new_size=new_size, mode=mode, dtype=dtype, start_time=start_time, trial_length=trial_length, add_channels=add_channels)
+        new_ns = cls(new_size=new_size, mode=mode, dtype=dtype, start_time=start_time, trial_length=trial_length,
+                     add_channels=add_channels)
 
         image_path = os.path.join(image_dir,'images')
         label_dataframe = pd.read_hdf(os.path.join(image_dir,'label_dataframe.h5'),'labels')
@@ -177,7 +179,7 @@ class NaturalScenes (object):
         if add_channels:
             t,y,x,_ = new_ns.stim_template.shape
         else:
-            t,y,x = new_new.stim_template.shape
+            t,y,x = new_ns.stim_template.shape
         new_ns.new_size = (y,x)
 
         new_ns.trial_length = trial_length

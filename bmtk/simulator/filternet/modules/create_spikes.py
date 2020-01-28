@@ -92,9 +92,9 @@ def f_rate_to_spike_train(t, f_rate, random_seed, t_window_start, t_window_end, 
             t_bin = 1.0 * delta_t / N_bins
             p_spike_bin = 1.0 * av_N_spikes / N_bins
             for i_bin in six.moves.range(0, N_bins):
-                rand_tmp = random()
+                rand_tmp = random.random()
                 if rand_tmp < p_spike_bin:
-                    spike_t = t_base + random() * t_bin
+                    spike_t = t_base + random.random() * t_bin
                     spike_times.append(spike_t)
 
                 t_base += t_bin

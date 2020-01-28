@@ -21,7 +21,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import h5py
+import numpy as np
+
 from ..network import Network
+
 
 def write_edges_to_h5(network, filename, synapse_key=None, verbose=True):
     assert(isinstance(network, Network))
@@ -62,5 +65,5 @@ def write_edges_to_h5(network, filename, synapse_key=None, verbose=True):
     with h5py.File(filename, 'w') as hf:
         hf.create_dataset('indptr', data=indptr_table)
         hf.create_dataset('nsyns', data=nsyns_table)
-        hf.create_dataset('src_gids', data=src_gids_table, dtype=int32)
+        hf.create_dataset('src_gids', data=src_gids_table, dtype=np.int)
         hf.attrs["shape"] = (network.nnodes, network.nnodes)

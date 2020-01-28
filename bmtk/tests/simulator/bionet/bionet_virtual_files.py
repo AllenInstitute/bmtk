@@ -1,15 +1,13 @@
 import numpy as np
 
-from bmtk.utils.io import tabular_network as tn
 
-
-class NodeRow(tn.NodeRow):
+class NodeRow(object):
     @property
     def with_dynamics_params(self):
         return False
 
 
-class EdgeRow(tn.EdgeRow):
+class EdgeRow(object):
     @property
     def with_dynamics_params(self):
         return False
@@ -106,7 +104,7 @@ class NodesFile(object):
             return self._node_types_table[104]
 
 
-class EdgesFile(tn.EdgesFile):
+class EdgesFile(object):
     def __init__(self, target_nodes, source_nodes):
         self._target_nodes = target_nodes
         self._source_nodes = source_nodes

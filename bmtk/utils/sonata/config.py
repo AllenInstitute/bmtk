@@ -25,6 +25,7 @@ import json
 import re
 import copy
 import datetime
+from six import string_types
 
 
 class SonataConfig(dict):
@@ -178,7 +179,7 @@ def from_json(config_file, validator=None):
     """
     if isinstance(config_file, file):
         conf = json.load(config_file)
-    elif isinstance(config_file, basestring):
+    elif isinstance(config_file, string_types):
         conf = json.load(open(config_file, 'r'))
     else:
         raise Exception('{} is not a file or file path.'.format(config_file))
