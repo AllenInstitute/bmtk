@@ -3,16 +3,12 @@ import pandas as pd
 import h5py
 
 
-# from bmtk.analyzer.visualization.spikes import plot_spikes as raster_plot
-# from bmtk.analyzer.visualization.spikes import plot_rates as rates_plot
-# from .io_tools import load_config
 import matplotlib.pyplot as plt
 
 
-from bmtk.simulator.utils.config import ConfigDict
+from bmtk.utils.sonata.config import SonataConfig as ConfigDict
 from bmtk.utils.reports import SpikeTrains
 from bmtk.utils.reports.spike_trains import plotting
-from bmtk.utils.sonata import File
 
 
 def load_spikes_file(config_file=None, spikes_file=None):
