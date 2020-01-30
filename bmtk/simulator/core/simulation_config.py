@@ -20,6 +20,8 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+import os
+import json
 import warnings
 
 from bmtk.utils.sonata.config import SonataConfig, copy_config
@@ -47,6 +49,26 @@ class SimulationConfig(SonataConfig):
     @io.setter
     def io(self, io):
         self._io = io
+
+    @property
+    def validator(self):
+        if self._validator is None:
+            from .simulation_config_validator import SimulationConfigValidator
+
+            json_schema = os.path.join(os.path.dirname(__file__), 'sonata_schemas', 'config_schema.json')
+            with open(json_schema, 'r') as f:
+                config_schema = json.load(f)
+                self._validator = SimulationConfigValidator(schema=config_schema)
+
+        return self._validator
+
+    def validate(self):
+        try:
+            return super(SimulationConfig, self).validate()
+        except Exception as exc:
+            # Capture the output into our log file before raising the error
+            msg = 'SimulationConfig ValidationError: {}'.format(str(exc))
+            self.io.log_exception(msg)
 
     def copy_to_output(self):
         copy_config(self)
@@ -85,4 +107,3 @@ def from_dict(config_dict, validator=None, **opts):
 def from_json(config_file, validator=None, **opts):
     warnings.warn('Deprecated: Pleas use SimulationConfig.from_json() instead.', DeprecationWarning)
     return SimulationConfig.from_json(config_file, validator, **opts)
-

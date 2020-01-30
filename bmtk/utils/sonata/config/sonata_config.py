@@ -84,15 +84,54 @@ class SonataConfig(dict):
         * ${configdir} - location of the current json file
         * ${workingdir} - directory where the code/simulator is being ran
         * ${datetime} - date-time string in Y-M-d_H-M-S format
+
+    Validating the json file:
+        You can check if the schema is valid, making suring certain section variables that are required actually exists
+        in the config and is of the right type:
+            cfg = SonataConfig.from_json('config.json')
+            try:
+                is_valid = cfg.valid()
+            catch Exception e:
+                is_valid = False
+
+        If a section (eg. 'run', 'components', 'output', etc) is missing then it will be skipped, meaning if valid()
+        returns true it may still be missing parts of the config to run a complete simulation.
+
+        You can also add your own schema validator, just as long as it's a class instance that has a validate(cfg)
+        method. The easiest way to do this is by using jsonschema:
+            from jsonschema import Draft4Validator
+            validator = Drafter4Validator('/path/to/schema.json')
+
+            cfg = Sonata.from_json('config.json')
+            cfg.validator = validator
+            cfg.validate()
     """
 
     def __init__(self, *args, **kwargs):
         super(SonataConfig, self).__init__(*args, **kwargs)
+        self._validator = None
         self._set_class_props()
 
     @property
-    def is_valid(self):
-        raise NotImplementedError()
+    def validator(self):
+        if self._validator is None:
+            from jsonschema import Draft4Validator
+
+            json_schema = os.path.join(os.path.dirname(__file__), 'config_schema.json')
+            with open(json_schema, 'r') as f:
+                config_schema = json.load(f)
+                self._validator = Draft4Validator(schema=config_schema)
+
+        return self._validator
+
+    @validator.setter
+    def validator(self, v):
+        assert(hasattr(v, 'validate'))
+        self._validator = v
+
+    def validate(self):
+        self.validator.validate(self)
+        return True
 
     @classmethod
     def from_json(cls, config_file, validator=None, **opts):
@@ -176,7 +215,7 @@ def from_dict(config_dict, validator=None, **opts):
     :param opts:
     :return:
     """
-    warnings.warn('Deprecated: Pleas use SonataConfig.from_dict() instead.', DeprecationWarning)
+    warnings.warn('Deprecated: Please use SonataConfig.from_dict() instead.', DeprecationWarning)
     return SonataConfig.from_dict(config_dict, validator, **opts)
 
 
@@ -188,7 +227,7 @@ def from_json(config_file, validator=None, **opts):
     :param opts:
     :return: A dictionary, verified against json validator and with manifest variables resolved.
     """
-    warnings.warn('Deprecated: Pleas use SonataConfig.from_json() instead.', DeprecationWarning)
+    warnings.warn('Deprecated: Please use SonataConfig.from_json() instead.', DeprecationWarning)
     return SonataConfig.from_json(config_file, validator, **opts)
 
 

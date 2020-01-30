@@ -1,0 +1,180 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+
+  "properties": {
+    "target_simulator": {
+      "$ref": "#/definitions/target_simulator"
+    },
+    "target_simulator_version": {
+      "$ref": "#/definitions/target_simulator_version"
+    },
+    "node_sets_file": {
+      "type": "string"
+    },
+    "run": {
+      "$ref": "#/definitions/run"
+    },
+    "conditions": {
+      "$ref": "#/definitions/conditions"
+    },
+    "components": {
+      "$ref": "#/definitions/components"
+    },
+    "networks": {
+      "type": "object",
+      "properties": {
+        "nodes": {
+          "$ref": "#/definitions/nodes"
+        },
+        "edges": {
+          "$ref": "#/definitions/edges"
+        }
+      }
+    },
+    "output": {
+      "$ref": "#/definitions/output"
+    },
+
+    "inputs": {
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {"$ref": "#/definitions/inputs"}
+      }
+    },
+
+    "reports": {
+      "type": "object",
+      "patternProperties": {
+        "^.*$": {"$ref": "#/definitions/reports"}
+      }
+    }
+  },
+
+  "definitions": {
+    "target_simulator": {
+      "type": "string"
+    },
+
+    "target_simulator_version": {
+      "anyOf": [
+        {"type": "string"},
+        {"type": "number"}
+      ]
+    },
+
+    "run": {
+      "type": "object",
+      "properties": {
+        "tstop": {"type": "number", "minimum": 0},
+        "tstart": {"type": "number", "minimum": 0},
+        "dt": {"type": "number", "minimum": 0},
+        "dL": {"type": "number", "minimum": 0},
+        "spike_threshold": {"type": "number"},
+        "nsteps_block": {"type": "integer", "minimum": 0}
+      },
+      "required": ["tstop"]
+    },
+
+    "conditions": {
+      "type": "object",
+      "properties": {
+        "celsius": {"type": "number"},
+        "v_init": {"type": "number"}
+      }
+    },
+
+    "components": {
+      "type": "object",
+      "properties": {
+        "synaptic_models_dir": {"type": "string"},
+        "morphologies_dir": {"type": "string"},
+        "biophysical_neuron_models_dir": {"type": "string"},
+        "point_neuron_models_dir": {"type": "string"},
+        "templates_dir": {"type": "string"}
+      }
+    },
+
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+
+        "properties": {
+          "nodes_file": {"type": "string"},
+          "node_types_file": {"type": "string"}
+        },
+        "required": ["nodes_file", "node_types_file"]
+      }
+    },
+
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properites": {
+          "edges_file": {"type": "string"},
+          "edge_types_file": {"type": "string"}
+        },
+        "required": ["edges_file", "edge_types_file"]
+      }
+    },
+
+    "output": {
+      "type": "object",
+      "properties": {
+        "log_file": {"type": "string"},
+        "spikes_file": {
+          "anyOf": [
+            {"type": "string"},
+            {"type": "null"}
+          ]
+        },
+        "output_dir": {"type": "string"},
+        "overwrite_output_dir": {"type": "bool"}
+      },
+      "required": ["output_dir", "spikes_file"]
+    },
+
+    "inputs": {
+      "type": "object",
+      "properties": {
+        "input_type": {"type": "string"},
+        "input_file": {"type": "string"},
+        "trial": {"type": "string"},
+        "module": {"type": "string"},
+        "electrode_file": {"type": "string"},
+        "node_set": {"type": "string"},
+        "random_seed": {
+          "anyOf": [
+            {"type": "string"},
+            {"type": "number"}
+          ]
+        }
+      },
+      "required": ["input_type"]
+    },
+
+    "reports": {
+      "type": "object",
+      "properties": {
+        "cells": {"type": "string"},
+        "start_time": {"type": "number"},
+        "format": {"type": "string"},
+        "variable_name": {"type": "string"},
+        "dt": {"type": "number"},
+        "end_time": {"type": "number"},
+        "sections": {"type": "string"},
+        "electrode_channels": {
+          "anyOf": [
+            {"type": "string"},
+            {"type": "number"}
+          ]
+        },
+        "unit": {"type": "string"},
+        "file_name": {"type": "string"}
+      },
+      "required": ["input_type"]
+    }
+  }
+}
