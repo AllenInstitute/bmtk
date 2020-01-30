@@ -27,19 +27,18 @@ from jsonschema.exceptions import ValidationError
 import pandas as pd
 
 
-class SimConfigValidator(Draft4Validator):
-    """
-    A JSON Schema validator class that will store a schema (passed into the constructor) and validate a json file.
-        It has all the functionality of the JSONSchema format, plus includes special types and parameters like making
-        sure a value is a file or directory type, checking csv files, etc.
+class SimulationConfigValidator(Draft4Validator):
+    """A JSON Schema validator class that will store a schema (passed into the constructor) and validate a json file.
+    It has all the functionality of the JSONSchema format, plus includes special types and parameters like making
+    sure a value is a file or directory type, checking csv files, etc.
 
-        To Use:
+    To Use:
         validator = SimConfigValidator(json_schema.json)
         validator.validate(file.json)
     """
 
     def __init__(self, schema, types=(), resolver=None, format_checker=None, file_formats=()):
-        super(SimConfigValidator, self).__init__(schema, types, resolver, format_checker)
+        super(SimulationConfigValidator, self).__init__(schema, types, resolver, format_checker)
 
         # custom parameter
         self.VALIDATORS["exists"] = self._check_path
@@ -58,7 +57,7 @@ class SimConfigValidator(Draft4Validator):
             return self._is_file_type(instance)
 
         else:
-            return super(SimConfigValidator, self).is_type(instance, dtype)
+            return super(SimulationConfigValidator, self).is_type(instance, dtype)
 
     def _is_directory_type(self, instance):
         """Check if instance value is a valid directory file path name

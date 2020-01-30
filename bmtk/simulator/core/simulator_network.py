@@ -3,7 +3,7 @@ import numpy as np
 
 from bmtk.simulator.core.io_tools import io
 #from bmtk.simulator.core.config import ConfigDict
-from bmtk.simulator.utils.config import ConfigDict
+from .simulation_config import SimulationConfig
 from bmtk.simulator.core.node_sets import NodeSet, NodeSetAll
 from bmtk.simulator.core import sonata_reader
 
@@ -203,11 +203,11 @@ class SimNetwork(object):
 
         # The simulation run script should create a config-dict since it's likely to vary based on the simulator engine,
         # however in the case the user doesn't we will try a generic conversion from dict/json to ConfigDict
-        if isinstance(conf, ConfigDict):
+        if isinstance(conf, SimulationConfig):
             config = conf
         else:
             try:
-                config = ConfigDict.load(conf)
+                config = SimulationConfig.load(conf)
             except Exception as e:
                 network.io.log_exception('Could not convert {} (type "{}") to json.'.format(conf, type(conf)))
 
