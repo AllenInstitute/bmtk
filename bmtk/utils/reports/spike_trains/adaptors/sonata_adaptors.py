@@ -4,6 +4,7 @@ import h5py
 import pandas as pd
 import numpy as np
 from collections import defaultdict
+import sys
 
 from ..core import SortOrder, STReader
 from ..core import col_node_ids, col_timestamps, col_population, pop_na, find_conversion, csv_headers
@@ -26,34 +27,103 @@ sorting_attrs = {
 }
 
 
-def write_sonata(path, spiketrain_reader, mode='a', sort_order=SortOrder.none, units='ms',
+def write_sonata(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, units='ms',
                  population_renames=None, **kwargs):
+    rank = bmtk_world_comm.MPI_rank
+
     path_dir = os.path.dirname(path)
-    if path_dir and not os.path.exists(path_dir):
+    if bmtk_world_comm == 0 and path_dir and not os.path.exists(path_dir):
         os.makedirs(path_dir)
 
-    conv_factor = find_conversion(spiketrain_reader.units, units)
-    with h5py.File(path, mode=mode) as h5:
+    spiketrain_reader.flush()
+
+    bmtk_world_comm.barrier()
+
+    adaptor = spiketrain_reader._adaptor
+    metrics = spiketrain_reader.metrics(on_rank='all')
+    print(metrics)
+    # print(list(metrics.keys()))
+    h5 = None
+    if rank == 0:
+        h5 = h5py.File(path, mode=mode)
         add_hdf5_magic(h5)
         add_hdf5_version(h5)
-        # Even if there is no spikes (thus no populations to report), still create the /spikes group.
         spikes_root = h5.create_group('/spikes')
-        population_renames = population_renames or {}
-        for pop_name in spiketrain_reader.populations:
-            n_spikes = spiketrain_reader.n_spikes(pop_name)
-            if n_spikes <= 0:
-                continue
 
-            spikes_grp = spikes_root.create_group('{}'.format(population_renames.get(pop_name, pop_name)))
+    for pop_name in metrics.keys():
+        pop_df = adaptor.to_dataframe(populations=pop_name, with_population_col=False)
+        if rank == 0:
+            spikes_pop_grp = spikes_root.create_group(pop_name)
             if sort_order != SortOrder.unknown:
-                spikes_grp.attrs['sorting'] = sort_order.value
+                spikes_pop_grp.attrs['sorting'] = sort_order.value
 
-            timestamps_ds = spikes_grp.create_dataset('timestamps', shape=(n_spikes,), dtype=np.float64)
-            timestamps_ds.attrs['units'] = units
-            node_ids_ds = spikes_grp.create_dataset('node_ids', shape=(n_spikes,), dtype=np.uint64)
-            for i, spk in enumerate(spiketrain_reader.spikes(populations=pop_name, sort_order=sort_order)):
-                timestamps_ds[i] = spk[0]*conv_factor
-                node_ids_ds[i] = spk[2]
+            spikes_pop_grp.create_dataset('timestamps', data=pop_df['timestamps'])
+            spikes_pop_grp.create_dataset('node_ids', data=pop_df['node_ids'])
+    bmtk_world_comm.barrier()
+
+    # # print(adaptor.populations)
+    # metrics = spiketrain_reader.metrics(on_rank='root')
+    #
+    # df = spiketrain_reader.to_dataframe(sort_order=sort_order)
+    #
+    # if bmtk_world_comm.MPI_rank == 0:
+    #     print(len(df))
+    #     sys.stdout.flush()
+    #     with h5py.File(path, mode=mode) as h5:
+    #         add_hdf5_magic(h5)
+    #         add_hdf5_version(h5)
+    #
+    #         spikes_root = h5.create_group('/spikes')
+    #         for pop_name in ['v1']:
+    #             pop_data = df
+    #         #for pop_name, pop_data in df.groupby('population'):
+    #             spikes_pop_grp = spikes_root.create_group(pop_name)
+    #             if sort_order != SortOrder.unknown:
+    #                 spikes_pop_grp.attrs['sorting'] = sort_order.value
+    #
+    #             spikes_pop_grp.create_dataset('timestamps', data=pop_data['timestamps'])
+    #             spikes_pop_grp.create_dataset('node_ids', data=pop_data['node_ids'])
+    #
+    # bmtk_world_comm.barrier()
+    # # df[['timestamps', 'population', 'node_ids']].to_csv(path, header=include_header, index=False, sep=' ')
+
+
+
+def write_sonata_old(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, units='ms',
+                 population_renames=None, **kwargs):
+    path_dir = os.path.dirname(path)
+    if bmtk_world_comm.MPI_rank == 0 and path_dir and not os.path.exists(path_dir):
+        os.makedirs(path_dir)
+
+    spiketrain_reader.flush()
+    bmtk_world_comm.barrier()
+
+    if bmtk_world_comm.MPI_rank == 0:
+        conv_factor = find_conversion(spiketrain_reader.units, units)
+        with h5py.File(path, mode=mode) as h5:
+            add_hdf5_magic(h5)
+            add_hdf5_version(h5)
+            # Even if there is no spikes (thus no populations to report), still create the /spikes group.
+            spikes_root = h5.create_group('/spikes')
+            population_renames = population_renames or {}
+            for pop_name in spiketrain_reader.populations:
+                n_spikes = spiketrain_reader.n_spikes(pop_name)
+                if n_spikes <= 0:
+                    continue
+
+                spikes_grp = spikes_root.create_group('{}'.format(population_renames.get(pop_name, pop_name)))
+                if sort_order != SortOrder.unknown:
+                    spikes_grp.attrs['sorting'] = sort_order.value
+
+                timestamps_ds = spikes_grp.create_dataset('timestamps', shape=(n_spikes,), dtype=np.float64)
+                timestamps_ds.attrs['units'] = units
+                node_ids_ds = spikes_grp.create_dataset('node_ids', shape=(n_spikes,), dtype=np.uint64)
+                for i, spk in enumerate(spiketrain_reader.spikes(populations=pop_name, sort_order=sort_order)):
+                    timestamps_ds[i] = spk[0]*conv_factor
+                    node_ids_ds[i] = spk[2]
+
+    bmtk_world_comm.barrier()
+    # spiketrain_reader.close()
 
 
 def load_sonata_file(path, version=None, **kwargs):

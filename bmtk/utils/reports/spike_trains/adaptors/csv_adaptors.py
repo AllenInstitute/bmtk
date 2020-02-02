@@ -3,38 +3,83 @@ import csv
 import six
 import pandas as pd
 import numpy as np
+from mpi4py import MPI
+import sys
 
 from ..core import STReader, SortOrder, find_conversion
 from ..core import csv_headers, col_population, pop_na, col_timestamps, col_node_ids
+from bmtk.utils.io import bmtk_world_comm
+
+comm = MPI.COMM_WORLD
 
 # TODO: BMTK won't work with a non-population column csv file. Update so that if there is no populations then it will
 #   do a lookup by node_id only.
 
-
 def write_csv(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, include_header=True,
               include_population=True, units='ms', **kwargs):
     path_dir = os.path.dirname(path)
-    if path_dir and not os.path.exists(path_dir):
+    if bmtk_world_comm.MPI_rank == 0 and path_dir and not os.path.exists(path_dir):
         os.makedirs(path_dir)
 
+    # print(spiketrain_reader.metrics())
+    # exit()
+
+    #print(spiketrain_reader.populations)
+    #exit()
+
+    # print(spiketrain_reader.get_data())
+
+
+    # print(spiketrain_reader.metrics())
+    # print(spiketrain_reader.gather_spikes())
+    # print(type(spiketrain_reader._adaptor))
+    df = spiketrain_reader.to_dataframe(sort_order=sort_order)
+    #print(bmtk_world_comm.MPI_rank)
+    #print('HERE')
+    #exit()
+
+    if bmtk_world_comm.MPI_rank == 0:
+        df[['timestamps', 'population', 'node_ids']].to_csv(path, header=include_header, index=False, sep=' ')
+
+    bmtk_world_comm.barrier()
+
+
+def write_csv_old(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, include_header=True,
+              include_population=True, units='ms', **kwargs):
+    path_dir = os.path.dirname(path)
+    if bmtk_world_comm.MPI_rank == 0 and path_dir and not os.path.exists(path_dir):
+        os.makedirs(path_dir)
+
+    #exit()
+
     conv_factor = find_conversion(spiketrain_reader.units, units)
-    with open(path, mode=mode) as f:
-        if include_population:
-            # Saves the Population column
-            csv_writer = csv.writer(f, delimiter=' ')
-            if include_header:
-                csv_writer.writerow(csv_headers)
-            for spk in spiketrain_reader.spikes(sort_order=sort_order):
-                csv_writer.writerow([spk[0]*conv_factor, spk[1], spk[2]])
+    if bmtk_world_comm.MPI_rank == 0:
+        #import traceback
+        #traceback.print_stack()
+        #print('called', bmtk_world_comm.MPI_rank)
+        with open(path, mode=mode) as f:
+            if include_population:
+                # Saves the Population column
+                csv_writer = csv.writer(f, delimiter=' ')
+                if include_header:
+                    csv_writer.writerow(csv_headers)
+                for spk in spiketrain_reader.spikes(sort_order=sort_order):
+                    csv_writer.writerow([spk[0]*conv_factor, spk[1], spk[2]])
 
-        else:
-            # Don't write the Population column
-            csv_writer = csv.writer(f, delimiter=' ')
-            if include_header:
-                csv_writer.writerow([c for c in csv_headers if c != col_population])
-            for spk in spiketrain_reader.spikes(sort_order=sort_order):
-                csv_writer.writerow([spk[0]*conv_factor, spk[2]])
+            else:
+                # Don't write the Population column
+                csv_writer = csv.writer(f, delimiter=' ')
+                if include_header:
+                    csv_writer.writerow([c for c in csv_headers if c != col_population])
+                for spk in spiketrain_reader.spikes(sort_order=sort_order):
+                    csv_writer.writerow([spk[0]*conv_factor, spk[2]])
+            # print('Written')
+            # spiketrain_reader.close()
+    #print('blah >', comm.Get_rank())
+    #sys.stdout.flush()
 
+    bmtk_world_comm.barrier()
+    #exit()
 
 class CSVSTReader(STReader):
     def __init__(self, path, sep=' ', **kwargs):

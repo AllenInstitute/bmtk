@@ -104,17 +104,22 @@ class SpikeTrains(object):
     def close(self):
         self.write_adaptor.close()
 
+    def metrics(self, **kwargs):
+        return self.write_adaptor.metrics(**kwargs)
+
     def to_csv(self, path, mode='w', sort_order=sort_order.none, **kwargs):
         # self._write_adaptor.flush()
-        if bmtk_world_comm.MPI_rank == 0:
-            write_csv(path=path, spiketrain_reader=self.read_adaptor, mode=mode, sort_order=sort_order, **kwargs)
+        #if bmtk_world_comm.MPI_rank == 0:
+        write_csv(path=path, spiketrain_reader=self.read_adaptor, mode=mode, sort_order=sort_order, **kwargs)
+        # self.write_adaptor.write_csv(path=path, spiketrain_reader=self.read_adaptor, mode=mode, sort_order=sort_order, **kwargs)
 
     def to_sonata(self, path, mode='a', sort_order=sort_order.none, **kwargs):
-        if isinstance(self.write_adaptor, STBuffer):
-            self.write_adaptor.flush()
-        if bmtk_world_comm.MPI_rank == 0:
-            write_sonata(path=path, spiketrain_reader=self.read_adaptor, mode=mode, sort_order=sort_order, **kwargs)
-        bmtk_world_comm.barrier()
+        write_sonata(path=path, spiketrain_reader=self.read_adaptor, mode=mode, sort_order=sort_order, **kwargs)
+        # if isinstance(self.write_adaptor, STBuffer):
+        #     self.write_adaptor.flush()
+        # if bmtk_world_comm.MPI_rank == 0:
+        #     write_sonata(path=path, spiketrain_reader=self.read_adaptor, mode=mode, sort_order=sort_order, **kwargs)
+        # bmtk_world_comm.barrier()
 
     def is_equal(self, other, populations=None, err=0.00001, time_window=None):
         if populations is None:

@@ -3,6 +3,7 @@ import pytest
 import numpy as np
 import pandas as pd
 import h5py
+import tempfile
 
 from bmtk.utils.reports.spike_trains import SpikeTrains, sort_order, pop_na
 from bmtk.utils.reports.spike_trains import write_csv
@@ -79,9 +80,9 @@ def test_csv_writer_multipop(input_path):
                          ])
 def test_sonata_writer_onepop(input_path, pop_name):
     spikes = load_spike_trains(input_path)
-    output_path = 'output/tmpspikes.h5'
-    write_sonata(path=output_path, spiketrain_reader=spikes, sort_order=sort_order.by_time)
-    spikes_h5 = h5py.File(output_path, 'r')
+    output_path = tempfile.NamedTemporaryFile(suffix='h5')
+    write_sonata(path=output_path.name, spiketrain_reader=spikes, sort_order=sort_order.by_time)
+    spikes_h5 = h5py.File(output_path.name, 'r')
     spikes_grp = spikes_h5['/spikes/{}'.format(pop_name)]
     assert(spikes_grp.attrs['sorting'] == 'by_time')
     timestamps = spikes_grp['timestamps'][()]
@@ -89,10 +90,10 @@ def test_sonata_writer_onepop(input_path, pop_name):
     assert(np.all(np.diff(timestamps) >= 0))
     node_ids = spikes_grp['node_ids'][()]
     assert(len(node_ids) == 124)
-    os.remove(output_path)
 
-    write_sonata(path=output_path, spiketrain_reader=spikes, sort_order=sort_order.by_id)
-    spikes_h5 = h5py.File(output_path, 'r')
+    output_path = tempfile.NamedTemporaryFile(suffix='h5')
+    write_sonata(path=output_path.name, spiketrain_reader=spikes, sort_order=sort_order.by_id)
+    spikes_h5 = h5py.File(output_path.name, 'r')
     spikes_grp = spikes_h5['/spikes/{}'.format(pop_name)]
     assert(spikes_grp.attrs['sorting'] == 'by_id')
     timestamps = spikes_grp['timestamps'][()]
@@ -100,7 +101,6 @@ def test_sonata_writer_onepop(input_path, pop_name):
     node_ids = spikes_grp['node_ids'][()]
     assert(np.all(np.diff(node_ids) >= 0))
     assert(len(node_ids) == 124)
-    os.remove(output_path)
 
 
 @pytest.mark.parametrize('input_path',
@@ -110,9 +110,9 @@ def test_sonata_writer_onepop(input_path, pop_name):
                          ])
 def test_sonata_writer_multipop(input_path):
     spikes = load_spike_trains(input_path)
-    output_path = 'output/tmpspikes.h5'
-    write_sonata(path=output_path, spiketrain_reader=spikes, sort_order=sort_order.by_time)
-    spikes_h5 = h5py.File(output_path, 'r')
+    output_path = tempfile.NamedTemporaryFile(suffix='h5')
+    write_sonata(path=output_path.name, spiketrain_reader=spikes, sort_order=sort_order.by_time)
+    spikes_h5 = h5py.File(output_path.name, 'r')
     lgn_spikes = spikes_h5['/spikes/lgn']
     lgn_timestamps = lgn_spikes['timestamps'][()]
     assert(len(lgn_timestamps) == 123356)
@@ -120,10 +120,10 @@ def test_sonata_writer_multipop(input_path):
     assert(len(lgn_spikes['node_ids']) == 123356)
     assert(len(spikes_h5['/spikes/tw/timestamps']) == 21078)
     assert(len(spikes_h5['/spikes/tw/node_ids']) == 21078)
-    os.remove(output_path)
 
-    write_sonata(path=output_path, spiketrain_reader=spikes, sort_order=sort_order.by_id)
-    spikes_h5 = h5py.File(output_path, 'r')
+    output_path = tempfile.NamedTemporaryFile(suffix='h5')
+    write_sonata(path=output_path.name, spiketrain_reader=spikes, sort_order=sort_order.by_id)
+    spikes_h5 = h5py.File(output_path.name, 'r')
     lgn_spikes = spikes_h5['/spikes/lgn']
     lgn_node_ids = lgn_spikes['node_ids'][()]
     assert(len(lgn_node_ids) == 123356)
@@ -131,7 +131,6 @@ def test_sonata_writer_multipop(input_path):
     assert(len(lgn_spikes['timestamps']) == 123356)
     assert(len(spikes_h5['/spikes/tw/timestamps']))
     assert(len(spikes_h5['/spikes/tw/node_ids']))
-    os.remove(output_path)
 
 
 def update(n=14):
