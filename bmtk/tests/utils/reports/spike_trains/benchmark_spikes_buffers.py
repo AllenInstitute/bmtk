@@ -23,7 +23,7 @@ rank = comm.Get_rank()
 size = comm.Get_size()
 
 
-N = 50000#00
+N = 500000#0
 n_spikes_avg = 90
 n_spikes_std = 40
 

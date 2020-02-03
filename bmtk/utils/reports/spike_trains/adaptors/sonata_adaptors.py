@@ -40,18 +40,17 @@ def write_sonata(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, u
     bmtk_world_comm.barrier()
 
     adaptor = spiketrain_reader._adaptor
-    metrics = spiketrain_reader.metrics(on_rank='all')
-    print(metrics)
-    # print(list(metrics.keys()))
-    h5 = None
+    # metrics = spiketrain_reader.metrics(on_rank='all')
+    populations = spiketrain_reader.populations
+    spikes_root = None
     if rank == 0:
         h5 = h5py.File(path, mode=mode)
         add_hdf5_magic(h5)
         add_hdf5_version(h5)
         spikes_root = h5.create_group('/spikes')
 
-    for pop_name in metrics.keys():
-        pop_df = adaptor.to_dataframe(populations=pop_name, with_population_col=False)
+    for pop_name in populations: # metrics.keys():
+        pop_df = adaptor.to_dataframe(populations=pop_name, with_population_col=False, on_rank='root')
         if rank == 0:
             spikes_pop_grp = spikes_root.create_group(pop_name)
             if sort_order != SortOrder.unknown:
@@ -60,33 +59,6 @@ def write_sonata(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, u
             spikes_pop_grp.create_dataset('timestamps', data=pop_df['timestamps'])
             spikes_pop_grp.create_dataset('node_ids', data=pop_df['node_ids'])
     bmtk_world_comm.barrier()
-
-    # # print(adaptor.populations)
-    # metrics = spiketrain_reader.metrics(on_rank='root')
-    #
-    # df = spiketrain_reader.to_dataframe(sort_order=sort_order)
-    #
-    # if bmtk_world_comm.MPI_rank == 0:
-    #     print(len(df))
-    #     sys.stdout.flush()
-    #     with h5py.File(path, mode=mode) as h5:
-    #         add_hdf5_magic(h5)
-    #         add_hdf5_version(h5)
-    #
-    #         spikes_root = h5.create_group('/spikes')
-    #         for pop_name in ['v1']:
-    #             pop_data = df
-    #         #for pop_name, pop_data in df.groupby('population'):
-    #             spikes_pop_grp = spikes_root.create_group(pop_name)
-    #             if sort_order != SortOrder.unknown:
-    #                 spikes_pop_grp.attrs['sorting'] = sort_order.value
-    #
-    #             spikes_pop_grp.create_dataset('timestamps', data=pop_data['timestamps'])
-    #             spikes_pop_grp.create_dataset('node_ids', data=pop_data['node_ids'])
-    #
-    # bmtk_world_comm.barrier()
-    # # df[['timestamps', 'population', 'node_ids']].to_csv(path, header=include_header, index=False, sep=' ')
-
 
 
 def write_sonata_old(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, units='ms',
@@ -170,8 +142,6 @@ def to_list(v):
 
 
 class SonataSTReader(STReader):
-    # TODO: Split into multi-children so we can handle reading different version
-
     def __init__(self, path, **kwargs):
         self._path = path
         self._h5_handle = h5py.File(self._path, 'r')
@@ -188,7 +158,6 @@ class SonataSTReader(STReader):
             raise Exception('Could not find /{} root'.format(GRP_spikes_root))
         else:
             self._spikes_root = self._h5_handle[GRP_spikes_root]
-
 
         if 'population' in kwargs:
             pop_filter = to_list(kwargs['population'])
@@ -248,7 +217,6 @@ class SonataSTReader(STReader):
                 indx_beg = 0
                 last_id = node_ids_ds[0]
                 for indx, cur_id in enumerate(node_ids_ds):
-                    # print cur_id
                     if cur_id != last_id:
                         # nodes_indices[last_id] = np.arange(indx_beg, indx)
                         nodes_indices[last_id] = slice(indx_beg, indx)
@@ -504,7 +472,6 @@ class EmptySonataReader(STReader):
     def populations(self):
         return []
 
-
     def nodes(self, populations=None):
         return []
 
@@ -522,5 +489,3 @@ class EmptySonataReader(STReader):
 
     def spikes(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
         return []
-
-

@@ -6,7 +6,7 @@ from mpi4py import MPI
 from array import array
 import fcntl
 
-from .core import pop_na, STReader, STBuffer
+from .core import pop_na, STReader, STWriter
 from .core import SortOrder
 from bmtk.utils.io import bmtk_world_comm
 
@@ -41,7 +41,7 @@ def _create_filter(populations, time_window):
         return partial(_spikes_filter1, populations=populations, time_window=time_window)
 
 
-class STMemoryBuffer(STBuffer, STReader):
+class STMemoryBuffer(STWriter, STReader):
     """ A Class for creating, storing and reading multi-population spike-trains - especially for saving the spikes of a
     large scale network simulation. Keeps a running tally of the (timestamp, population-name, node_id) for each
     individual spike.
@@ -110,6 +110,8 @@ class STMemoryBuffer(STBuffer, STReader):
 
     def node_ids(self, population=None):
         population = population if population is not None else self._default_population
+        if population not in self._pops:
+            return []
         return np.unique(self._pops[population]['node_ids']).astype(np.uint)
 
     @property
@@ -122,6 +124,8 @@ class STMemoryBuffer(STBuffer, STReader):
 
     def n_spikes(self, population=None):
         population = population if population is not None else self._default_population
+        if population not in self._pops:
+            return 0
         return len(self._pops[population]['timestamps'])
 
     def get_times(self, node_id, population=None, time_window=None, **kwargs):
@@ -145,7 +149,7 @@ class STMemoryBuffer(STBuffer, STReader):
 
         ret_df = None
         for pop_name in selelectd_pops:
-            pop_data = self._pops[pop_name]
+            pop_data = self._pops.get(pop_name, {'node_ids': [], 'timestamps': []})
             pop_df = pd.DataFrame({
                 'node_ids': pop_data['node_ids'],
                 'timestamps': pop_data['timestamps']
@@ -172,7 +176,7 @@ class STMemoryBuffer(STBuffer, STReader):
             populations = [populations]
 
         for pop_name in populations:
-            pop_data = self._pops[pop_name]
+            pop_data = self._pops.get(pop_name, {'node_ids': [], 'timestamps': []})
             timestamps = pop_data['timestamps']
             node_ids = pop_data['node_ids']
 
@@ -236,185 +240,396 @@ class STMPIBuffer(STMemoryBuffer):
             else:
                 return None
 
-        # print(local_metrics)
-        # exit()
-        #
-        #
-        # metrics_data = comm.allgather(self._pop_counts)
-        # all_metrics = metrics_data[0]
-        # for rank_dict in metrics_data[1:]:
-        #     for pop, pop_count in rank_dict.items():
-        #         if pop in all_metrics:
-        #             all_metrics[pop] += pop_count
-        #         else:
-        #             all_metrics[pop] = pop_count
-        #
-        # return all_metrics
+    # def _dataframe_Allgatherv(self, population):
+    #     comm = bmtk_world_comm.comm
+    #     size = bmtk_world_comm.MPI_size
+    #     rank = bmtk_world_comm.MPI_rank
+    #     #print(population)
+    #     #exit()
+    #
+    #     local_n_spikes = super(STMPIBuffer, self).n_spikes(population)
+    #     sizes = comm.allgather(local_n_spikes)
+    #     offsets = np.zeros(size, dtype=np.int)
+    #     offsets[1:] = np.cumsum(sizes)[:-1]
+    #     all_n_spikes = np.sum(sizes)
+    #
+    #     # local_node_ids = np.array(self._node_ids, dtype=np.uint64)
+    #     local_node_ids = np.array(self._pops[population]['node_ids'], dtype=np.uint64)
+    #     all_node_ids = np.zeros(all_n_spikes, dtype=np.uint64)
+    #     comm.Gatherv(local_node_ids, [all_node_ids, sizes, offsets, MPI.UINT64_T], root=0)
+    #     # comm.Allgatherv(local_node_ids, [all_node_ids, sizes, offsets, MPI.UINT64_T])
+    #     print(rank, all_node_ids)
+    #     exit()
+    #
+    #     # local_timestamps = np.array(self._timestamps, dtype=np.double)
+    #     local_timestamps = np.array(self._pops[population]['timestamps'], dtype=np.double)
+    #     all_timestamps = np.zeros(all_n_spikes, dtype=np.double)
+    #     comm.Gatherv(local_timestamps, [all_timestamps, sizes, offsets, MPI.DOUBLE])
+    #
+    #     if rank == 0:
+    #         return pd.DataFrame({
+    #             #'population': 'v1',
+    #             'node_ids': all_node_ids,
+    #             'timestamps': all_timestamps
+    #         })
+    #     else:
+    #         return None
 
-    def _dataframe_Allgatherv(self, population):
+    def _gatherv(self, population, on_all_ranks=True):
         comm = bmtk_world_comm.comm
         size = bmtk_world_comm.MPI_size
         rank = bmtk_world_comm.MPI_rank
 
-        local_n_spikes = super(STMPIBuffer, self).n_spikes('v1')
+        local_n_spikes = super(STMPIBuffer, self).n_spikes(population)
         sizes = comm.allgather(local_n_spikes)
         offsets = np.zeros(size, dtype=np.int)
         offsets[1:] = np.cumsum(sizes)[:-1]
         all_n_spikes = np.sum(sizes)
 
-        # local_node_ids = np.array(self._node_ids, dtype=np.uint64)
-        local_node_ids = np.array(self._pops[population]['node_ids'], dtype=np.uint64)
+        local_population = self._pops.get(population, {'node_ids': [], 'timestamps': []})  # if pop not on rank
+        local_node_ids = np.array(local_population['node_ids'], dtype=np.uint64)
         all_node_ids = np.zeros(all_n_spikes, dtype=np.uint64)
-        comm.Gatherv(local_node_ids, [all_node_ids, sizes, offsets, MPI.UINT64_T])
+        if on_all_ranks:
+            comm.Allgatherv(local_node_ids, [all_node_ids, sizes, offsets, MPI.UINT64_T])
+        else:
+            comm.Gatherv(local_node_ids, [all_node_ids, sizes, offsets, MPI.UINT64_T], root=0)
+            if rank != 0:
+                all_node_ids = None
 
-        # local_timestamps = np.array(self._timestamps, dtype=np.double)
-        local_timestamps = np.array(self._pops[population]['timestamps'], dtype=np.double)
+        # local_timestamps = np.array(self._pops[population]['timestamps'], dtype=np.double)
+        local_timestamps = np.array(local_population['timestamps'], dtype=np.double)
         all_timestamps = np.zeros(all_n_spikes, dtype=np.double)
-        comm.Gatherv(local_timestamps, [all_timestamps, sizes, offsets, MPI.DOUBLE])
-
-        if rank == 0:
-            return pd.DataFrame({
-                #'population': 'v1',
-                'node_ids': all_node_ids,
-                'timestamps': all_timestamps
-            })
+        if on_all_ranks:
+            comm.Allgatherv(local_timestamps, [all_timestamps, sizes, offsets, MPI.DOUBLE])
         else:
-            return None
+            comm.Gatherv(local_timestamps, [all_timestamps, sizes, offsets, MPI.DOUBLE], root=0)
+            if rank != 0:
+                all_timestamps = None
 
-    def _dataframe_gather(self):
-        comm = bmtk_world_comm.comm
-        rank = bmtk_world_comm.MPI_rank
+        return all_node_ids, all_timestamps
 
-        spikes_df = pd.DataFrame({
-            'node_ids': self._node_ids,
-            'timestamps': self._timestamps
-        })
-        data = comm.gather(spikes_df, root=0)
 
-        if bmtk_world_comm.MPI_rank == 0:
-            #print('gather_')
-            all_spikes_df = data[0]
-            for df in data[1:]:
-                all_spikes_df = all_spikes_df.append(df)
+    # def _dataframe_gather(self):
+    #     comm = bmtk_world_comm.comm
+    #     rank = bmtk_world_comm.MPI_rank
+    #
+    #     spikes_df = pd.DataFrame({
+    #         'node_ids': self._node_ids,
+    #         'timestamps': self._timestamps
+    #     })
+    #     data = comm.gather(spikes_df, root=0)
+    #
+    #     if bmtk_world_comm.MPI_rank == 0:
+    #         #print('gather_')
+    #         all_spikes_df = data[0]
+    #         for df in data[1:]:
+    #             all_spikes_df = all_spikes_df.append(df)
+    #
+    #         all_spikes_df['population'] = 'v1'
+    #     else:
+    #         all_spikes_df = None
+    #
+    #     return all_spikes_df
 
-            all_spikes_df['population'] = 'v1'
+    def to_dataframe(self, populations=None, sort_order=SortOrder.none, with_population_col=True, on_rank='all',
+                     **kwargs):
+        comm.barrier()
+        if on_rank == 'local':
+            return super(STMPIBuffer, self).to_dataframe(populations=populations, sort_order=sort_order,
+                                                         with_population_col=with_population_col, **kwargs)
+
+        if on_rank not in ['local', 'all', 'root']:
+            raise ValueError('Invalid option "{}" for mpi on_rank parameter'.format(on_rank))
+
+        if populations is None:
+            selelectd_pops = list(self.get_populations(on_rank='all'))
+        elif np.isscalar(populations):
+            selelectd_pops = [populations]
         else:
-            all_spikes_df = None
+            selelectd_pops = populations
 
-        return all_spikes_df
+        # Make sure the list of populations is exactly the same (including order) across all ranks so that
+        # _gatherv is called in the same sequence across all ranks.
+        selelectd_pops.sort()
+
+        # print(selelectd_pops)
+        ret_df = None
+        for pop_name in selelectd_pops:
+            if on_rank == 'all':
+                node_ids, timestamps = self._gatherv(population=pop_name, on_all_ranks=True)
+                pop_df = pd.DataFrame({
+                    'node_ids': node_ids,
+                    'timestamps':timestamps
+                })
+
+                # print(bmtk_world_comm.MPI_rank, pop_name, len(pop_df))
+
+                if with_population_col:
+                     pop_df['population'] = pop_name
+
+                if sort_order == SortOrder.by_id:
+                    pop_df = pop_df.sort_values('node_ids')
+                elif sort_order == SortOrder.by_time:
+                    pop_df = pop_df.sort_values('timestamps')
+
+                if ret_df is None:
+                    ret_df = pop_df
+                else:
+                    ret_df = ret_df.append(pop_df)
+
+            elif on_rank == 'root':
+                node_ids, timestamps = self._gatherv(population=pop_name, on_all_ranks=False)
+                if bmtk_world_comm.MPI_rank != 0:
+                    continue
+
+                pop_df = pd.DataFrame({
+                    'node_ids': node_ids,
+                    'timestamps': timestamps
+                })
+
+                if with_population_col:
+                    pop_df['population'] = pop_name
+
+                if sort_order == SortOrder.by_id:
+                    pop_df = pop_df.sort_values('node_ids')
+                elif sort_order == SortOrder.by_time:
+                    pop_df = pop_df.sort_values('timestamps')
+
+                if ret_df is None:
+                    ret_df = pop_df
+                else:
+                    ret_df = ret_df.append(pop_df)
 
 
-    def to_dataframe(self, populations=None, sort_order=SortOrder.none, with_population_col=True, **kwargs):
-        # collected_df = self._dataframe_gather()
-        collected_df = self._dataframe_Allgatherv(populations)
+            # pop_data = self._pops[pop_name]
+            #
+            # if with_population_col:
+            #     pop_df['population'] = pop_name
+            #
+            # if sort_order == SortOrder.by_id:
+            #     pop_df = pop_df.sort_values('node_ids')
+            # elif sort_order == SortOrder.by_time:
+            #     pop_df = pop_df.sort_values('timestamps')
+            #
+            # if ret_df is None:
+            #     ret_df = pop_df
+            # else:
+            #     ret_df = ret_df.append(pop_df)
 
-        # if sort_order == SortOrder.by_id:
-        #     collected_df = collected_df.sort_values('node_ids')
-        # elif sort_order == SortOrder.by_time:
-        #     collected_df = collected_df.sort_values('timestamps')
-
-        return collected_df
+            # elif on:
 
 
+        #exit()
+        #populations = populations is not None or [self._default_population]
 
-    def gather_spikes(self):
-        comm = bmtk_world_comm.comm
-        data = comm.allgather(self.to_dataframe())
-        #metrics_data = comm.allgather(self._pop_counts)
-        #print(metrics_data)
-        all_spikes_df = data[0]
-        for df in data[1:]:
-            all_spikes_df = all_spikes_df.append(df)
 
-        print(len(all_spikes_df))
-        # print(data[0])
-        exit()
+        #collected_df = self._dataframe_Allgatherv(populations)
+        comm.barrier()
+        return ret_df
+
+    # def gather_spikes(self):
+    #     comm = bmtk_world_comm.comm
+    #     data = comm.allgather(self.to_dataframe())
+    #     all_spikes_df = data[0]
+    #     for df in data[1:]:
+    #         all_spikes_df = all_spikes_df.append(df)
+    #
+    #     print(len(all_spikes_df))
+    #     exit()
 
     @property
     def populations(self):
-        print(self._pop_counts)
-        exit()
+        return self.get_populations(on_rank='all')
 
-        self._gather()
-        return list(self._pop_counts.keys())
+    def get_populations(self, on_rank='all'):
+        local_pops = list(super(STMPIBuffer, self).populations)
+        if on_rank == 'local':
+            return local_pops
 
-    def n_spikes(self, population=None):
-        comm = bmtk_world_comm.comm
-        n = super(STMPIBuffer, self).n_spikes(population)
-        return comm.allreduce(n, MPI.SUM)
-
-    def _gather(self):
-        self._pop_counts = {}
-        for fn in self._all_cached_files():
-            if not os.path.exists(fn):
-                continue
-            with open(fn, 'r') as csvfile:
-                csv_reader = csv.reader(csvfile, delimiter=' ')
-                for row in csv_reader:
-                    pop = row[1]
-                    self._pop_counts[pop] = self._pop_counts.get(pop, 0) + 1
-
-    def spikes(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
-        self.flush()
-
-        filter = _create_filter(populations, time_window)
-        if sort_order == SortOrder.by_time or sort_order == SortOrder.by_id:
-            for file_name in self._all_cached_files():
-                if not os.path.exists(file_name):
-                    continue
-
-                self._sort_buffer_file(file_name, sort_order)
-
-            return self._sorted_itr(filter, 0 if sort_order == SortOrder.by_time else 2)
+        if on_rank == 'all':
+            gathered_pops = comm.allgather(local_pops)
+        elif on_rank == 'root':
+            gathered_pops = comm.gather(local_pops, 0)
         else:
-            return self._unsorted_itr(filter)
+            raise ValueError('Invalid option "{}" for mpi on_rank parameter'.format(on_rank))
 
-    def _unsorted_itr(self, filter):
-        for fn in self._all_cached_files():
-            if not os.path.exists(fn):
+        if gathered_pops is None:
+            return None
+        else:
+            all_populations = set()
+            for pops in gathered_pops:
+                all_populations |= set(pops)
+
+            # WARNING: For a number of parallel applications it's important that the list of populations returned
+            # is the same across all ranks (eg ranks don't iterate through each population in different sequences)
+            all_populations = list(all_populations)
+            all_populations.sort()
+
+            return all_populations
+
+    def node_ids(self, population=None, on_rank='all'):
+        local_node_ids = super(STMPIBuffer, self).node_ids(population)
+        if on_rank == 'local':
+            return local_node_ids
+
+        if on_rank == 'all':
+            gathered_nodes = comm.allgather(local_node_ids)
+        elif on_rank == 'root':
+            gathered_nodes = comm.gather(local_node_ids, 0)
+        else:
+            raise ValueError('Invalid option "{}" for mpi on_rank parameter'.format(on_rank))
+
+        if gathered_nodes is None:
+            return None
+        else:
+            return np.unique(np.concatenate(gathered_nodes)).astype(np.uint)
+
+    def n_spikes(self, population=None, on_rank='all'):
+        comm = bmtk_world_comm.comm
+        local_n = super(STMPIBuffer, self).n_spikes(population)
+        if on_rank == 'local':
+            return local_n
+        elif on_rank == 'all':
+            return comm.allreduce(local_n, MPI.SUM)
+        elif on_rank == 'root':
+            return comm.reduce(local_n, MPI.SUM)
+        else:
+            raise ValueError('Invalid option "{}" for mpi on_rank parameter'.format(on_rank))
+
+    def get_times(self, node_id, population=None, time_window=None, on_rank='all', **kwargs):
+        local_times = super(STMPIBuffer, self).get_times(node_id=node_id, population=population,
+                                                         time_window=time_window, **kwargs)
+
+        if on_rank == 'local':
+            return local_times
+        elif on_rank == 'all':
+            all_times = comm.allgather(local_times)
+        elif on_rank == 'root':
+            all_times = comm.gather(local_times, 0)
+        else:
+            raise ValueError('Invalid option "{}" for mpi on_rank parameter'.format(on_rank))
+
+        if all_times is not None:
+            return np.sort(np.concatenate(all_times))
+        else:
+            return None
+
+        # population = population if population is not None else self._default_population
+        # pop = self._pops[population]
+        #
+        # # filter by node_id and (if specified) by time.
+        # mask = np.array(pop['node_ids']) == node_id
+        # ts = np.array(pop['timestamps'])
+        # if time_window:
+        #     mask &= (time_window[0] <= ts) & (ts <= time_window[1])
+        # return ts[mask]
+
+    # def _gather(self):
+    #     self._pop_counts = {}
+    #     for fn in self._all_cached_files():
+    #         if not os.path.exists(fn):
+    #             continue
+    #         with open(fn, 'r') as csvfile:
+    #             csv_reader = csv.reader(csvfile, delimiter=' ')
+    #             for row in csv_reader:
+    #                 pop = row[1]
+    #                 self._pop_counts[pop] = self._pop_counts.get(pop, 0) + 1
+
+    def spikes(self, populations=None, time_window=None, sort_order=SortOrder.none, on_rank='all', **kwargs):
+        if on_rank == 'local':
+            for i in super(STMPIBuffer, self).spikes(populations=populations, time_window=time_window,
+                                                     sort_order=sort_order, **kwargs):
+                yield i
+            return
+
+        if populations is None:
+            populations = self.populations
+        elif np.isscalar(populations):
+            populations = [populations]
+
+        populations.sort()
+        for pop_name in populations:
+            #pop_data = self._pops[pop_name]
+            #timestamps = pop_data['timestamps']
+            #node_ids = pop_data['node_ids']
+            node_ids, timestamps = self._gatherv(pop_name, on_all_ranks=(on_rank == 'all'))
+            if node_ids is None:
                 continue
 
-            with open(fn, 'r') as csvfile:
-                csv_reader = csv.reader(csvfile, delimiter=' ')
-                for row in csv_reader:
-                    t = float(row[0])
-                    p = row[1]
-                    if filter(p=p, t=t):
-                        yield t, p, int(row[2])
+            if sort_order == SortOrder.by_id:
+                sort_indx = np.argsort(node_ids)
+            elif sort_order == SortOrder.by_time:
+                sort_indx = np.argsort(timestamps)
+            else:
+                sort_indx = range(len(timestamps))
 
-        return
+            filter = _create_filter(populations, time_window)
+            for i in sort_indx:
+                t = timestamps[i]
+                p = pop_name
+                if filter(p=p, t=t):
+                    yield t, p, node_ids[i]
 
-    def _sorted_itr(self, filter, sort_col):
-        """Iterates through all the spikes on each rank, returning them in the specified order"""
-        import heapq
+        # self.flush()
+        #
+        # filter = _create_filter(populations, time_window)
+        # if sort_order == SortOrder.by_time or sort_order == SortOrder.by_id:
+        #     for file_name in self._all_cached_files():
+        #         if not os.path.exists(file_name):
+        #             continue
+        #
+        #         self._sort_buffer_file(file_name, sort_order)
+        #
+        #     return self._sorted_itr(filter, 0 if sort_order == SortOrder.by_time else 2)
+        # else:
+        #     return self._unsorted_itr(filter)
 
-        def next_row(csv_reader):
-            try:
-                rn = next(csv_reader)
-                row = [float(rn[0]), rn[1], int(rn[2])]
-                return row[sort_col], row, csv_reader
-            except StopIteration:
-                return None
+    # def _unsorted_itr(self, filter):
+    #     for fn in self._all_cached_files():
+    #         if not os.path.exists(fn):
+    #             continue
+    #
+    #         with open(fn, 'r') as csvfile:
+    #             csv_reader = csv.reader(csvfile, delimiter=' ')
+    #             for row in csv_reader:
+    #                 t = float(row[0])
+    #                 p = row[1]
+    #                 if filter(p=p, t=t):
+    #                     yield t, p, int(row[2])
+    #
+    #     return
+    #
+    # def _sorted_itr(self, filter, sort_col):
+    #     """Iterates through all the spikes on each rank, returning them in the specified order"""
+    #     import heapq
+    #
+    #     def next_row(csv_reader):
+    #         try:
+    #             rn = next(csv_reader)
+    #             row = [float(rn[0]), rn[1], int(rn[2])]
+    #             return row[sort_col], row, csv_reader
+    #         except StopIteration:
+    #             return None
+    #
+    #     # Assumes all the ranked cached files have already been sorted. Pop the top row off of each rank onto the
+    #     # heap, pull next spike off the heap and replace. Repeat until all spikes on all ranks have been poped.
+    #     h = []
+    #     readers = [next_row(csv.reader(open(fn, 'r'), delimiter=' ')) for fn in self._all_cached_files()]
+    #     for r in readers:
+    #         if r is not None:  # Some ranks may not have produced any spikes
+    #             heapq.heappush(h, r)
+    #
+    #     while h:
+    #         v, row, csv_reader = heapq.heappop(h)
+    #         n = next_row(csv_reader)
+    #         if n:
+    #             heapq.heappush(h, n)
+    #
+    #         if filter(row[1], row[2]):
+    #             yield row
 
-        # Assumes all the ranked cached files have already been sorted. Pop the top row off of each rank onto the
-        # heap, pull next spike off the heap and replace. Repeat until all spikes on all ranks have been poped.
-        h = []
-        readers = [next_row(csv.reader(open(fn, 'r'), delimiter=' ')) for fn in self._all_cached_files()]
-        for r in readers:
-            if r is not None:  # Some ranks may not have produced any spikes
-                heapq.heappush(h, r)
 
-        while h:
-            v, row, csv_reader = heapq.heappop(h)
-            n = next_row(csv_reader)
-            if n:
-                heapq.heappush(h, n)
-
-            if filter(row[1], row[2]):
-                yield row
-
-
-class STCSVBuffer(STBuffer, STReader):
+class STCSVBuffer(STWriter, STReader):
     """ A Class for creating, storing and reading multi-population spike-trains - especially for saving the spikes of a
     large scale network simulation. Keeps a running tally of the (timestamp, population-name, node_id) for each
     individual spike.
@@ -433,14 +648,7 @@ class STCSVBuffer(STBuffer, STReader):
         self._cache_name = cache_name
         self._buffer_filename = self._cache_fname(self._cache_dir)
         self._buffer_handle = open(self._buffer_filename, 'w')
-        # fcntl.lockf(self._buffer_handle, fcntl.LOCK_EX)
-
-        # print(self._default_population)
-        #self._pop_counts = {} #{self._default_population: 0}
-        #self._pop_node_ids = {}
-        #self._nspikes = 0
         self._units = kwargs.get('units', 'ms')
-
         self._pop_metadata = {}
 
     def _cache_fname(self, cache_dir):
@@ -462,11 +670,6 @@ class STCSVBuffer(STBuffer, STReader):
             self._pop_metadata[population] = {'node_ids': set(), 'n_spikes': 0}
         self._pop_metadata[population]['node_ids'].add(node_id)
         self._pop_metadata[population]['n_spikes'] += 1
-
-        #self._nspikes += 1
-        #self._pop_counts[population] = self._pop_counts.get(population, 0) + 1
-        #self._pop_node_ids[population] = self._pop_node_ids.get(population, [])
-
 
     def add_spikes(self, node_ids, timestamps, population=None, **kwargs):
         if np.isscalar(node_ids):
@@ -490,10 +693,14 @@ class STCSVBuffer(STBuffer, STReader):
 
     def node_ids(self, population=None):
         population = population if population is not None else self._default_population
+        if population not in self._pop_metadata:
+            return []
         return list(self._pop_metadata[population]['node_ids'])
 
     def n_spikes(self, population=None):
         population = population if population is not None else self._default_population
+        if population not in self._pop_metadata:
+            return 0
         return self._pop_metadata[population]['n_spikes']
 
     def time_range(self, populations=None):
@@ -571,6 +778,8 @@ class STCSVMPIBuffer(STCSVBuffer):
         self.mpi_rank = kwargs.get('MPI_rank', bmtk_world_comm.MPI_rank)
         self.mpi_size = kwargs.get('MPI_size', bmtk_world_comm.MPI_size)
         self._cache_name = cache_name
+        self._all_ranks_data = {}
+
         super(STCSVMPIBuffer, self).__init__(cache_dir, default_population=default_population, **kwargs)
 
     def _cache_fname(self, cache_dir):
@@ -584,17 +793,8 @@ class STCSVMPIBuffer(STCSVBuffer):
     def _all_cached_files(self):
         return [os.path.join(self._cache_dir, '.bmtk.{}.cache.node{}.csv'.format(self._cache_name, r)) for r in range(bmtk_world_comm.MPI_size)]
 
-    @property
-    def populations(self):
-        self._gather()
-        return list(self._pop_counts.keys())
-
-    def n_spikes(self, population=None):
-        self._gather()
-        return self._pop_counts.get(population, 0)
-
     def _gather(self):
-        self._pop_counts = {}
+        self._all_ranks_data = {}
         for fn in self._all_cached_files():
             if not os.path.exists(fn):
                 continue
@@ -602,11 +802,145 @@ class STCSVMPIBuffer(STCSVBuffer):
                 csv_reader = csv.reader(csvfile, delimiter=' ')
                 for row in csv_reader:
                     pop = row[1]
-                    self._pop_counts[pop] = self._pop_counts.get(pop, 0) + 1
+                    if pop not in self._all_ranks_data:
+                        self._all_ranks_data[pop] = {'n_spikes': 0, 'node_ids': set()}
 
-    def spikes(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
+                    self._all_ranks_data[pop]['n_spikes'] += 1 # self._all_ranks_data.get(pop, 0) + 1
+                    self._all_ranks_data[pop]['node_ids'].add(int(row[2]))
+
+
+    def _gather_times(self, node_id, population):
+        timestamps = []
+        for fn in self._all_cached_files():
+            if not os.path.exists(fn):
+                continue
+            with open(fn, 'r') as csvfile:
+                csv_reader = csv.reader(csvfile, delimiter=' ')
+                for row in csv_reader:
+                    pop = row[1]
+                    nid = int(row[2])
+                    if nid == node_id and pop == population:
+                        timestamps.append(float(row[0]))
+        return timestamps
+
+
+    @property
+    def populations(self):
+        return self.get_populations(on_rank='all')
+
+    def get_populations(self, on_rank='all'):
+        if on_rank == 'local':
+            pops = super(STCSVMPIBuffer, self).populations
+            pops.sort()  # import populations are in the same order on all ranks
+            return pops
+
         self.flush()
+        comm.barrier()
+        pops = None
+        if on_rank == 'all':
+            self._gather()
+            pops = list(self._all_ranks_data.keys())
 
+        elif on_rank == 'root':
+            if bmtk_world_comm.MPI_rank == 0:
+                self._gather()
+                pops = list(self._all_ranks_data.keys())
+
+        if pops is not None:
+            pops.sort()
+
+        return pops
+
+    def n_spikes(self, population=None, on_rank='all'):
+        if on_rank == 'local':
+            return super(STCSVMPIBuffer, self).n_spikes(population=population)
+
+        population = population if population is not None else self._default_population
+        self.flush()
+        comm.barrier()
+
+        if on_rank == 'all':
+            self._gather()
+            return self._all_ranks_data[population]['n_spikes'] if population in self._all_ranks_data else 0
+
+        elif on_rank == 'root':
+            if bmtk_world_comm.MPI_rank == 0:
+                self._gather()
+                return self._all_ranks_data[population]['n_spikes'] if population in self._all_ranks_data else 0
+            else:
+                return None
+
+        else:
+            raise ValueError('Invalid option "{}" for mpi on_rank parameter'.format(on_rank))
+
+        # self.flush()
+        # comm.barrier()
+        # return self._all_ranks_data[population]['n_spikes'] if population in self._all_ranks_data else 0
+
+    def node_ids(self, population=None, on_rank='all'):
+        if on_rank == 'local':
+            return super(STCSVMPIBuffer, self).node_ids(population=population)
+
+        population = population if population is not None else self._default_population
+        self.flush()
+        comm.barrier()
+
+        if on_rank == 'all':
+            self._gather()
+            return list(self._all_ranks_data[population]['node_ids']) if population in self._all_ranks_data else []
+
+        elif on_rank == 'root':
+            if bmtk_world_comm.MPI_rank == 0:
+                self._gather()
+                return list(self._all_ranks_data[population]['node_ids']) if population in self._all_ranks_data else []
+            else:
+                return None
+
+        else:
+            raise ValueError('Invalid option "{}" for mpi on_rank parameter'.format(on_rank))
+
+
+    def get_times(self, node_id, population=None, time_window=None, on_rank='all', **kwargs):
+        # population = population if population is not None else self._default_population
+        if on_rank == 'local':
+            # calling super.get_times() will fail since it relies on spikes()
+            return np.array([t[0] for t in super(STCSVMPIBuffer, self).spikes(
+                populations=population, time_window=time_window) if t[2] == node_id])
+
+
+        population = population if population is not None else self._default_population
+        self.flush()
+        comm.barrier()
+
+        if on_rank == 'all':
+            timestamps = self._gather_times(node_id=node_id, population=population)
+
+        elif on_rank == 'root':
+            timestamps = self._gather_times(node_id, population) if bmtk_world_comm.MPI_rank == 0 else None
+
+        if time_window is not None:
+            timestamps = [t for t in timestamps if time_window[0] <= t <= time_window[1]]
+
+        # print(timestamps)
+        return timestamps
+
+    def spikes(self, populations=None, time_window=None, sort_order=SortOrder.none, on_rank='all', **kwargs):
+        if on_rank == 'local':
+            return super(STCSVMPIBuffer, self).spikes(populations=populations, time_window=time_window,
+                                                      sort_order=sort_order, **kwargs)
+        self.flush()
+        comm.barrier()
+
+        if on_rank == 'all':
+            return self._sort_helper(populations, time_window, sort_order)
+        elif on_rank == 'root':
+            if bmtk_world_comm.MPI_rank == 0:
+                return self._sort_helper(populations, time_window, sort_order)
+            else:
+                return []
+
+
+    def _sort_helper(self, populations, time_window, sort_order):
         filter = _create_filter(populations, time_window)
         if sort_order == SortOrder.by_time or sort_order == SortOrder.by_id:
             for file_name in self._all_cached_files():
@@ -669,18 +1003,62 @@ class STCSVMPIBuffer(STCSVBuffer):
                 yield row
 
 class STCSVMPIBufferV2(STCSVMPIBuffer):
-    def to_dataframe(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
-        final_df = None
+    def to_dataframe(self, populations=None, sort_order=SortOrder.none, with_population_col=True, on_rank='all',
+                     **kwargs):
+        if on_rank == 'local':
+            return super(STCSVMPIBufferV2, self).to_dataframe(populations=populations, sort_order=populations,
+                                                              with_population_col=with_population_col, **kwargs)
 
-        if bmtk_world_comm.MPI_rank == 0:
-            for file_name in self._all_cached_files():
-                if not os.path.exists(file_name):
-                    continue
+        if np.isscalar(populations):
+            populations = [populations]  # so we can use dataframe.isin() later
 
-                df = pd.read_csv(file_name, sep=' ', names=['timestamps', 'population', 'node_ids'])
-                if final_df is None:
-                    final_df = df
-                else:
-                    final_df = final_df.append(df)
+        ret_df = None
+        self.flush()
+        comm.barrier()
+        if on_rank == 'all':
+            cached_files = self._all_cached_files()
+        elif on_rank == 'root':
+            cached_files = self._all_cached_files() if bmtk_world_comm.MPI_rank == 0 else []
+        else:
+            raise ValueError('Invalid option "{}" for mpi on_rank parameter'.format(on_rank))
 
-        return final_df
+        for file_name in cached_files:
+            if not os.path.exists(file_name):
+                continue
+
+            df = pd.read_csv(file_name, sep=' ', names=['timestamps', 'population', 'node_ids'])
+            if populations is not None:
+                df = df[df['population'].isin(populations)]
+
+            if not with_population_col:
+                df.drop('population', axis=1)
+            ret_df = df if ret_df is None else ret_df.append(df)
+
+
+        if ret_df is not None:
+            if sort_order == SortOrder.by_time:
+                ret_df = ret_df.sort_values('timestamps')
+            elif sort_order == SortOrder.by_id:
+                ret_df = ret_df.sort_values('node_ids')
+
+        return ret_df
+
+
+
+
+
+
+        # final_df = None
+        #
+        # if bmtk_world_comm.MPI_rank == 0:
+        #     for file_name in self._all_cached_files():
+        #         if not os.path.exists(file_name):
+        #             continue
+        #
+        #         df = pd.read_csv(file_name, sep=' ', names=['timestamps', 'population', 'node_ids'])
+        #         if final_df is None:
+        #             final_df = df
+        #         else:
+        #             final_df = final_df.append(df)
+        #
+        # return final_df

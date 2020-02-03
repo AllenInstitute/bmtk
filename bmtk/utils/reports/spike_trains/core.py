@@ -96,7 +96,6 @@ class STReader(object):
         :param kwargs:
         :return: list of spike times [float]
         """
-
         raise NotImplementedError()
 
     def to_dataframe(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
@@ -109,7 +108,7 @@ class STReader(object):
         return len(self.to_dataframe())
 
 
-class STBuffer(object):
+class STWriter(object):
     def add_spike(self, node_id, timestamp, population=None, **kwargs):
         raise NotImplementedError()
 

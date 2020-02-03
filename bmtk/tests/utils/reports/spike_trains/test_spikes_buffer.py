@@ -11,7 +11,7 @@ from six import string_types
 from bmtk.utils.reports.spike_trains import SpikeTrains, PoissonSpikeGenerator, pop_na
 from bmtk.utils.reports.spike_trains import sort_order
 from bmtk.utils.reports.spike_trains import spike_train_buffer
-from bmtk.utils.reports.spike_trains.spike_train_buffer import STMemoryBuffer, STCSVBuffer
+from bmtk.utils.reports.spike_trains.spike_train_buffer import STMemoryBuffer, STCSVBuffer, STMPIBuffer
 
 try:
     from mpi4py import MPI
@@ -26,9 +26,10 @@ except:
 @pytest.mark.parametrize('spiketrain_buffer', [
     STMemoryBuffer(default_population='V1', store_type='list'),
     STMemoryBuffer(default_population='V1', store_type='array'),
+    STMPIBuffer(default_population='V1'),
     STCSVBuffer(default_population='V1', cache_dir=tempfile.mkdtemp())
 ])
-def test_add_spike(spiketrain_buffer): #spiketrain_buffer=STCSVBuffer(default_population='V1', cache_dir=tempfile.mkdtemp())):
+def test_add_spike(spiketrain_buffer):
     st = spiketrain_buffer
     for ts in np.linspace(0.0, 3000.0, 12, endpoint=False):
         st.add_spike(node_id=0, timestamp=ts)
@@ -56,6 +57,7 @@ def test_add_spike(spiketrain_buffer): #spiketrain_buffer=STCSVBuffer(default_po
 @pytest.mark.parametrize('spiketrain_buffer', [
     STMemoryBuffer(default_population='V1', store_type='list'),
     STMemoryBuffer(default_population='V1', store_type='array'),
+    STMPIBuffer(default_population='V1'),
     STCSVBuffer(default_population='V1', cache_dir=tempfile.mkdtemp())
 ])
 def test_add_spikes(spiketrain_buffer):
@@ -78,6 +80,7 @@ def test_add_spikes(spiketrain_buffer):
 @pytest.mark.parametrize('spiketrain_buffer', [
     STMemoryBuffer(default_population='V1', store_type='list'),
     STMemoryBuffer(default_population='V1', store_type='array'),
+    STMPIBuffer(default_population='V1'),
     STCSVBuffer(default_population='V1', cache_dir=tempfile.mkdtemp())
 ])
 def test_to_dataframe(spiketrain_buffer):
@@ -111,6 +114,7 @@ def test_to_dataframe(spiketrain_buffer):
 @pytest.mark.parametrize('spiketrain_buffer', [
     STMemoryBuffer(default_population='V1', store_type='list'),
     STMemoryBuffer(default_population='V1', store_type='array'),
+    STMPIBuffer(default_population='V1'),
     STCSVBuffer(default_population='V1', cache_dir=tempfile.mkdtemp())
 ])
 def test_iterator(spiketrain_buffer):
@@ -123,11 +127,9 @@ def test_iterator(spiketrain_buffer):
 
     all_spikes = list(st.spikes())
     assert(len(all_spikes) == 36)
-    #print(all_spikes)
-    #print(type(all_spikes[0][0]))
     assert(isinstance(all_spikes[0][0], (np.double, np.float)))
     assert(isinstance(all_spikes[0][1], string_types))
-    assert(isinstance(all_spikes[0][2], np.int))
+    assert(isinstance(all_spikes[0][2], (np.int, np.uint)))
 
     assert(len(list(st.spikes(populations=['V1', 'V2']))) == 36)
     assert(len(list(st.spikes(populations='V2'))) == 10)
@@ -137,6 +139,19 @@ def test_iterator(spiketrain_buffer):
 
     v1_node_times = [i[0] for i in st.spikes(sort_order=sort_order.by_time, populations=['V1'])]
     assert(np.all(np.diff(v1_node_times) >= 0))
+
+
+@pytest.mark.parametrize('spiketrain_buffer', [
+    STMemoryBuffer(default_population='V1', store_type='list'),
+    STMemoryBuffer(default_population='V1', store_type='array'),
+    STMPIBuffer(default_population='V1'),
+    STCSVBuffer(default_population='V1', cache_dir=tempfile.mkdtemp())
+])
+def test_invalid_pop(spiketrain_buffer):
+    st = spiketrain_buffer
+    st.add_spikes(node_ids=np.full(10, 0, dtype=np.uint), timestamps=np.linspace(0.1, 1.0, 10, endpoint=True))
+    assert(st.n_spikes(population='INVALID') == 0)
+    assert(len(st.node_ids(population='INVALID')) == 0)
 
 @pytest.mark.skip()
 @pytest.mark.parametrize('adaptor_cls', [
@@ -213,6 +228,7 @@ def test_psg_fixed():
         spikes = psg.get_times(i)
         assert(np.max(spikes) > 0.1)
 
+
 @pytest.mark.skip()
 def test_psg_variable():
     times = np.linspace(0.0, 10.0, 1000)
@@ -229,6 +245,7 @@ def test_psg_variable():
         assert(len(spikes) > 0)
         assert(1.0 < np.min(spikes))
         assert(np.max(spikes) < 9.0)
+
 
 '''
 def multi_proc():
@@ -264,10 +281,14 @@ if __name__ == '__main__':
     # test_add_spike(STMemoryBuffer(default_population='V1', store_type='list'))
     # test_add_spikes(STMemoryBuffer(default_population='V1', store_type='array'))
     # test_add_spikes(STCSVBuffer(default_population='V1', cache_dir=tempfile.mkdtemp()))
+    # test_add_spikes(STMPIBuffer(default_population='V1'))
+    # test_add_spike(STMPIBuffer(default_population='V1'))
     # test_to_dataframe(STMemoryBuffer(default_population='V1', store_type='array'))
     # test_to_dataframe(STCSVBuffer(default_population='V1', cache_dir=tempfile.mkdtemp()))
+    # test_to_dataframe(STMPIBuffer(default_population='V1'))
     # test_iterator(STMemoryBuffer(default_population='V1', store_type='list'))
-    test_iterator(STCSVBuffer(default_population='V1', cache_dir=tempfile.mkdtemp()))
-    #else:
-    #    pass
-    #    #multi_proc()
+    # test_iterator(STCSVBuffer(default_population='V1', cache_dir=tempfile.mkdtemp()))
+    test_iterator(STMPIBuffer(default_population='V1'))
+    # else:
+    #     pass
+    #     #multi_proc()

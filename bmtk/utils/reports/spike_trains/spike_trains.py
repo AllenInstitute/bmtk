@@ -2,7 +2,6 @@ import numpy as np
 from six import string_types
 
 from .core import SortOrder as sort_order
-from .core import STBuffer
 from .adaptors import CSVSTReader, write_csv
 from .adaptors import load_sonata_file, write_sonata
 from .adaptors import NWBSTReader
