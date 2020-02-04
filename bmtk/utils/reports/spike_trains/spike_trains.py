@@ -68,8 +68,8 @@ class SpikeTrains(object):
         elif file_type == 'csv':
             return cls.from_csv(path, **kwargs)
 
-    def nodes(self, populations=None):
-        return self.read_adaptor.nodes(populations=populations)
+    def node_ids(self, population=None):
+        return self.read_adaptor.node_ids(population=population)
 
     def n_spikes(self, population=None):
         return self.read_adaptor.n_spikes(population=population)
@@ -204,6 +204,12 @@ class PoissonSpikeGenerator(SpikeTrains):
             self._build_fixed_fr(node_ids, population, firing_rate, times)
         elif isinstance(firing_rate, (list, np.ndarray)):
             self._build_inhomegeous_fr(node_ids, population, firing_rate, times)
+
+    def time_range(self, population=None):
+        df = self.to_dataframe(populations=population, with_population_col=False)
+        timestamps = df['timestamps']
+        return np.min(timestamps), np.max(timestamps)
+
 
     def _build_fixed_fr(self, node_ids, population, fr, times):
         if np.isscalar(times) and times > 0.0:

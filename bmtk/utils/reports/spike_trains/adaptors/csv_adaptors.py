@@ -33,7 +33,7 @@ def write_csv(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, incl
     # print(spiketrain_reader.metrics())
     # print(spiketrain_reader.gather_spikes())
     # print(type(spiketrain_reader._adaptor))
-    df = spiketrain_reader.to_dataframe(sort_order=sort_order)
+    df = spiketrain_reader.to_dataframe(sort_order=sort_order, on_rank='root')
     #print(bmtk_world_comm.MPI_rank)
     #print('HERE')
     #exit()
@@ -44,7 +44,66 @@ def write_csv(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, incl
     bmtk_world_comm.barrier()
 
 
-def write_csv_old(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, include_header=True,
+def write_csv_itr(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, include_header=True,
+                  include_population=True, units='ms', **kwargs):
+    path_dir = os.path.dirname(path)
+    if bmtk_world_comm.MPI_rank == 0 and path_dir and not os.path.exists(path_dir):
+        os.makedirs(path_dir)
+
+    # exit()
+
+    conv_factor = find_conversion(spiketrain_reader.units, units)
+    cols_to_print = csv_headers if include_population else [c for c in csv_headers if c != col_population]
+    if bmtk_world_comm.MPI_rank == 0:
+        f = open(path, mode=mode)
+        csv_writer = csv.writer(f, delimiter=' ')
+        if include_header:
+            csv_writer.writerow(cols_to_print)
+
+    for spk in spiketrain_reader.spikes(sort_order=sort_order):
+        if bmtk_world_comm.MPI_rank == 0:
+            ts = spk[0]*conv_factor
+            c_data = [ts, spk[1], spk[2]] if include_population else [ts, spk[2]]
+            csv_writer.writerow(c_data)
+
+
+    #     csv_writer = csv.writer(f, delimiter=' ')
+    #     if include_header:
+    #         csv_writer.writerow(csv_headers)
+    #     for spk in spiketrain_reader.spikes(sort_order=sort_order):
+    #         csv_writer.writerow([spk[0] * conv_factor, spk[1], spk[2]])
+    #
+    # bmtk_world_comm.comm.barrier()
+    #
+    #     # import traceback
+    #     # traceback.print_stack()
+    #     # print('called', bmtk_world_comm.MPI_rank)
+    #     with open(path, mode=mode) as f:
+    #         if include_population:
+    #             # Saves the Population column
+    #             csv_writer = csv.writer(f, delimiter=' ')
+    #             if include_header:
+    #                 csv_writer.writerow(csv_headers)
+    #             for spk in spiketrain_reader.spikes(sort_order=sort_order):
+    #                 csv_writer.writerow([spk[0] * conv_factor, spk[1], spk[2]])
+    #
+    #         else:
+    #             # Don't write the Population column
+    #             csv_writer = csv.writer(f, delimiter=' ')
+    #             if include_header:
+    #                 csv_writer.writerow([c for c in csv_headers if c != col_population])
+    #             for spk in spiketrain_reader.spikes(sort_order=sort_order):
+    #                 csv_writer.writerow([spk[0] * conv_factor, spk[2]])
+    #         # print('Written')
+    #         # spiketrain_reader.close()
+    # # print('blah >', comm.Get_rank())
+    # # sys.stdout.flush()
+
+    bmtk_world_comm.barrier()
+    # exit()
+
+
+def write_csv_OLD(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, include_header=True,
               include_population=True, units='ms', **kwargs):
     path_dir = os.path.dirname(path)
     if bmtk_world_comm.MPI_rank == 0 and path_dir and not os.path.exists(path_dir):
@@ -54,6 +113,7 @@ def write_csv_old(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, 
 
     conv_factor = find_conversion(spiketrain_reader.units, units)
     if bmtk_world_comm.MPI_rank == 0:
+
         #import traceback
         #traceback.print_stack()
         #print('called', bmtk_world_comm.MPI_rank)
@@ -81,8 +141,9 @@ def write_csv_old(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, 
     bmtk_world_comm.barrier()
     #exit()
 
+
 class CSVSTReader(STReader):
-    def __init__(self, path, sep=' ', **kwargs):
+    def __init__(self, path, sep=' ', default_population=None, **kwargs):
         self._n_spikes = None
         self._populations = None
 
@@ -99,9 +160,13 @@ class CSVSTReader(STReader):
         if not has_headers:
             self._spikes_df.columns = csv_headers[0::2]
 
+        self._defaul_population = default_population if default_population is not None else self._spikes_df[col_population][0]
+
         if col_population not in self._spikes_df.columns:
-            pop_name = kwargs.get(col_population, pop_na)
+            pop_name = kwargs.get(col_population, self._defaul_population)
             self._spikes_df[col_population] = pop_name
+
+
 
         # TODO: Check all the necessary columns exits
         self._spikes_df = self._spikes_df[csv_headers]
@@ -113,7 +178,7 @@ class CSVSTReader(STReader):
 
         return self._populations
 
-    def to_dataframe(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
+    def to_dataframe(self, populations=None, sort_order=SortOrder.none, with_population_col=True, **kwargs):
         selected = self._spikes_df.copy()
 
         mask = True
@@ -123,13 +188,6 @@ class CSVSTReader(STReader):
             else:
                 mask &= selected[col_population].isin(populations)
 
-        if node_ids is not None:
-            node_ids = [node_ids] if np.isscalar(node_ids) else node_ids
-            mask &= selected[col_node_ids].isin(node_ids)
-
-        if time_window is not None:
-            mask &= (selected[col_timestamps] >= time_window[0]) & (selected[col_timestamps] <= time_window[1])
-
         if isinstance(mask, pd.Series):
             selected = selected[mask]
 
@@ -137,6 +195,9 @@ class CSVSTReader(STReader):
             selected.sort_values(by=col_timestamps, inplace=True)
         elif sort_order == SortOrder.by_id:
             selected.sort_values(by=col_node_ids, inplace=True)
+
+        if not with_population_col:
+            selected = selected.drop(col_population, axis=1)
 
         selected.index = pd.RangeIndex(len(selected.index))
         return selected
@@ -153,20 +214,24 @@ class CSVSTReader(STReader):
 
         return np.array(self._spikes_df[mask][col_timestamps])
 
-    def nodes(self, populations=None):
-        selected = self._spikes_df.copy()
-        mask = True
-        if populations is not None:
-            if isinstance(populations, six.string_types) or np.isscalar(populations):
-                mask = selected[col_population] == populations
-            else:
-                mask = selected[col_population].isin(populations)
+    def node_ids(self, population=None):
+        population = population if population is not None else self._defaul_population
 
-        if isinstance(mask, pd.Series):
-            selected = selected[mask]
-        return list(selected.groupby(by=[col_population, col_node_ids]).indices.keys())
+        # selected = self._spikes_df.copy()
+        # mask = True
+        # if populations is not None:
+        #     if isinstance(populations, six.string_types) or np.isscalar(populations):
+        #         mask = selected[col_population] == populations
+        #     else:
+        #         mask = selected[col_population].isin(populations)
+        #
+        # if isinstance(mask, pd.Series):
+        #     selected = selected[mask]
+        # return list(selected.groupby(by=[col_population, col_node_ids]).indices.keys())
+        return np.unique(self._spikes_df[self._spikes_df[col_population] == population][col_node_ids])
 
     def n_spikes(self, population=None):
+        population = population if population is not None else self._defaul_population
         return len(self.to_dataframe(populations=population))
 
     def time_range(self, populations=None):

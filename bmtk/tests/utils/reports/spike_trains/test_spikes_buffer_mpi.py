@@ -23,7 +23,7 @@ def tmpdir():
 
 
 
-@pytest.mark.skipif(MPI_size < 2, reason='Can only run test using mpi')
+#@pytest.mark.skipif(MPI_size < 2, reason='Can only run test using mpi')
 @pytest.mark.parametrize('st', [
     STMPIBuffer(default_population='V1'),
     STCSVMPIBufferV2(cache_dir=tmpdir())
@@ -46,9 +46,9 @@ def test_basic(st):
     assert(np.all(np.sort(st.node_ids('V1')) == np.arange(MPI_size)))
     assert(np.all(np.sort(st.node_ids('V1', on_rank='all')) == np.arange(MPI_size)))
     assert(np.all(st.node_ids('V1', on_rank='local') == [MPI_rank]))
-    assert(np.all(st.node_ids('V2') == [2]))
-    assert(np.all(st.node_ids('V2', on_rank='all') == [2]))
-    assert(np.all(st.node_ids('V2', on_rank='local') == [2]))
+    assert(np.all(st.node_ids('V2') == [MPI_size]))
+    assert(np.all(st.node_ids('V2', on_rank='all') == [MPI_size]))
+    assert(np.all(st.node_ids('V2', on_rank='local') == [MPI_size]))
 
     assert(np.allclose(st.get_times(population='V1', node_id=0), [0.0]*5))
     assert(np.allclose(st.get_times(population='V1', node_id=0, on_rank='all'), [0.0]*5))
@@ -62,7 +62,7 @@ def test_basic(st):
     assert(np.allclose(st.get_times(population='V2', node_id=MPI_size, on_rank='local'), [float(MPI_rank)]))
 
 
-@pytest.mark.skipif(MPI_size < 2, reason='Can only run test using mpi')
+#@pytest.mark.skipif(MPI_size < 2, reason='Can only run test using mpi')
 @pytest.mark.parametrize('st', [
     STMPIBuffer(default_population='V1'),
     STCSVMPIBufferV2(cache_dir=tmpdir())
@@ -88,7 +88,7 @@ def test_basic_root(st):
         assert(timestamps is None)
 
 
-@pytest.mark.skipif(MPI_size < 2, reason='Can only run test using mpi')
+#@pytest.mark.skipif(MPI_size < 2, reason='Can only run test using mpi')
 @pytest.mark.parametrize('st', [
     STMPIBuffer(default_population='V1'),
     STCSVMPIBufferV2(cache_dir=tmpdir())
@@ -112,7 +112,7 @@ def test_split_ids(st):
         assert(df is None)
 
 
-@pytest.mark.skipif(MPI_size < 2, reason='Can only run test using mpi')
+#@pytest.mark.skipif(MPI_size < 2, reason='Can only run test using mpi')
 @pytest.mark.parametrize('st', [
     STMPIBuffer(default_population='V1'),
     STCSVMPIBufferV2(cache_dir=tmpdir())
@@ -140,7 +140,7 @@ def test_to_dataframe(st):
         assert(df is None)
 
 
-@pytest.mark.skipif(MPI_size < 2, reason='Can only run test using mpi')
+#@pytest.mark.skipif(MPI_size < 2, reason='Can only run test using mpi')
 @pytest.mark.parametrize('st', [
     STMPIBuffer(default_population='V1'),
     STCSVMPIBufferV2(cache_dir=tmpdir())
@@ -171,8 +171,8 @@ def test_iterator(st):
 
 
 if __name__ == '__main__':
-    # test_basic(STMPIBuffer(default_population='V1'))
-    # test_basic(STCSVMPIBufferV2(cache_dir=tmpdir()))
+    test_basic(STMPIBuffer(default_population='V1'))
+    test_basic(STCSVMPIBufferV2(cache_dir=tmpdir()))
 
     # test_basic_root(STMPIBuffer(default_population='V1'))
     # test_basic_root(STCSVMPIBufferV2(cache_dir=tmpdir()))
@@ -184,4 +184,4 @@ if __name__ == '__main__':
     # test_to_dataframe(STCSVMPIBufferV2(cache_dir=tmpdir()))
 
     # test_iterator(STMPIBuffer(default_population='V1'))
-    test_iterator(STCSVMPIBufferV2(cache_dir=tmpdir()))
+    # test_iterator(STCSVMPIBufferV2(cache_dir=tmpdir()))
