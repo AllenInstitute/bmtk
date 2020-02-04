@@ -7,8 +7,6 @@ from ..core import STReader, SortOrder
 from ..core import pop_na, col_timestamps, col_population, col_node_ids
 
 
-# TODO: Get rid of population filters,
-
 class NWBSTReader(STReader):
     def __init__(self, path, **kwargs):
         self._path = path

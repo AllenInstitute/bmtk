@@ -38,8 +38,6 @@ def write_sonata(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, u
     spiketrain_reader.flush()
     bmtk_world_comm.barrier()
 
-    # adaptor = spiketrain_reader._adaptor
-    # metrics = spiketrain_reader.metrics(on_rank='all')
     populations = spiketrain_reader.populations
     spikes_root = None
     if rank == 0:
@@ -107,47 +105,6 @@ def write_sonata_itr(path, spiketrain_reader, mode='w', sort_order=SortOrder.non
                 node_ids_ds[i] = spk[2]
 
     bmtk_world_comm.barrier()
-    # spiketrain_reader.close()
-
-
-def write_sonata_OLD(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, units='ms',
-                 population_renames=None, **kwargs):
-    path_dir = os.path.dirname(path)
-    if bmtk_world_comm.MPI_rank == 0 and path_dir and not os.path.exists(path_dir):
-        os.makedirs(path_dir)
-
-    spiketrain_reader.flush()
-    bmtk_world_comm.barrier()
-
-    if bmtk_world_comm.MPI_rank == 0:
-        conv_factor = find_conversion(spiketrain_reader.units, units)
-        with h5py.File(path, mode=mode) as h5:
-            add_hdf5_magic(h5)
-            add_hdf5_version(h5)
-            # Even if there is no spikes (thus no populations to report), still create the /spikes group.
-            spikes_root = h5.create_group('/spikes') if '/spikes' not in h5 else h5['/spikes']
-            population_renames = population_renames or {}
-            for pop_name in spiketrain_reader.populations:
-                n_spikes = spiketrain_reader.n_spikes(pop_name)
-                if n_spikes <= 0:
-                    continue
-
-                # if pop_name in spikes_root:
-                #     raise ValueError('sonata file {} already contains a spikes group {}, '.format(path, pop_name) +
-                #                      'skiping(use option mode="w" to overwrite)')
-                spikes_grp = spikes_root.create_group('{}'.format(population_renames.get(pop_name, pop_name)))
-                if sort_order != SortOrder.unknown:
-                    spikes_grp.attrs['sorting'] = sort_order.value
-
-                timestamps_ds = spikes_grp.create_dataset('timestamps', shape=(n_spikes,), dtype=np.float64)
-                timestamps_ds.attrs['units'] = units
-                node_ids_ds = spikes_grp.create_dataset('node_ids', shape=(n_spikes,), dtype=np.uint64)
-                for i, spk in enumerate(spiketrain_reader.spikes(populations=pop_name, sort_order=sort_order)):
-                    timestamps_ds[i] = spk[0]*conv_factor
-                    node_ids_ds[i] = spk[2]
-
-    bmtk_world_comm.barrier()
-    # spiketrain_reader.close()
 
 
 def load_sonata_file(path, version=None, **kwargs):
@@ -310,24 +267,8 @@ class SonataSTReader(STReader):
         pop_grp = self._population_map[population]
         return np.unique(pop_grp[self._DATASET_node_ids][()])
 
-        # if populations is None:
-        #    populations = [self._default_pop]
-        #
-        # if isinstance(populations, six.string_types) or np.isscalar(populations):
-        #     populations = [populations]
-        # node_list = []
-        # for pop_name, pop_grp in self._population_map.items():
-        #     if pop_name in populations:
-        #         # TODO: Check memory profile, may be better to iterate node_ids than convert entire set
-        #         node_list.extend((pop_name, node_id) for node_id in np.unique(pop_grp[self._DATASET_node_ids][()]))
-        #
-        # return node_list
-
     def n_spikes(self, population=None):
         population = population if population is not None else self._default_pop
-        #if population not in self._population_map:
-        #    return 0
-
         return len(self._population_map[population][DATASET_timestamps])
 
     def time_range(self, populations=None):
@@ -353,33 +294,10 @@ class SonataSTReader(STReader):
 
     def to_dataframe(self, populations=None, sort_order=SortOrder.none, with_population_col=True, **kwargs):
         populations = populations if populations is not None else self.populations
-        # if populations is None:
-        #     populations = [self._default_pop]
-
         if isinstance(populations, six.string_types) or np.isscalar(populations):
             populations = [populations]
 
-        # def build_mask(selected_df):
-        #     mask = True
-        #     if node_ids is not None:
-        #         if np.isscalar(node_ids):
-        #             mask &= (selected_df[col_node_ids] == node_ids)
-        #         else:
-        #             mask &= (selected_df[col_node_ids].isin(node_ids))
-        #
-        #     if time_window is not None:
-        #         min_time, max_time = time_window
-        #         mask &= (min_time <= selected_df[col_timestamps]) & (selected_df[col_timestamps] <= max_time)
-        #
-        #     return mask
-
-        # ret_df = pd.DataFrame({
-        #     col_timestamps: pd.Series(dtype=np.float),
-        #     col_population: pd.Series(dtype=np.string_),
-        #     col_node_ids: pd.Series(dtype=np.uint64)
-        # })
         ret_df = None
-
         for pop_name, pop_grp in self._population_map.items():
             if pop_name in populations:
                 pop_df = pd.DataFrame({
@@ -395,12 +313,6 @@ class SonataSTReader(STReader):
                     pop_df = pop_df.sort_values('node_ids')
                 elif sort_order == SortOrder.by_time:
                     pop_df = pop_df.sort_values('timestamps')
-
-
-
-                # mask = build_mask(pop_df)
-                # if isinstance(mask, pd.Series):
-                #     pop_df = pop_df[mask]
 
                 ret_df = pop_df if ret_df is None else ret_df.append(pop_df)
 

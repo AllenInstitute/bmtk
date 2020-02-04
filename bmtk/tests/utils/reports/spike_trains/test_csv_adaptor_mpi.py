@@ -69,11 +69,11 @@ def test_write_csv(st_cls, write_fnc):
 
 @pytest.mark.parametrize('st_cls', [
     STMPIBuffer,
-    # STCSVMPIBufferV2
+    STCSVMPIBufferV2
 ])
 @pytest.mark.parametrize('write_fnc', [
     write_csv,
-    # write_csv_itr
+    write_csv_itr
 ])
 def test_write_csv_byid(st_cls, write_fnc):
     st = create_st_buffer_mpi(st_cls)

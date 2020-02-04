@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from bmtk.utils.reports.spike_trains import SpikeTrains, PoissonSpikeGenerator, pop_na
+from bmtk.utils.reports.spike_trains import PoissonSpikeGenerator
 
 
 def test_psg_fixed():

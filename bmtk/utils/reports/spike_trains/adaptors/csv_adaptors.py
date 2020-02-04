@@ -10,10 +10,9 @@ from ..core import STReader, SortOrder, find_conversion
 from ..core import csv_headers, col_population, pop_na, col_timestamps, col_node_ids
 from bmtk.utils.io import bmtk_world_comm
 
+
 comm = MPI.COMM_WORLD
 
-# TODO: BMTK won't work with a non-population column csv file. Update so that if there is no populations then it will
-#   do a lookup by node_id only.
 
 def write_csv(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, include_header=True,
               include_population=True, units='ms', **kwargs):
@@ -21,22 +20,7 @@ def write_csv(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, incl
     if bmtk_world_comm.MPI_rank == 0 and path_dir and not os.path.exists(path_dir):
         os.makedirs(path_dir)
 
-    # print(spiketrain_reader.metrics())
-    # exit()
-
-    #print(spiketrain_reader.populations)
-    #exit()
-
-    # print(spiketrain_reader.get_data())
-
-
-    # print(spiketrain_reader.metrics())
-    # print(spiketrain_reader.gather_spikes())
-    # print(type(spiketrain_reader._adaptor))
     df = spiketrain_reader.to_dataframe(sort_order=sort_order, on_rank='root')
-    #print(bmtk_world_comm.MPI_rank)
-    #print('HERE')
-    #exit()
 
     if bmtk_world_comm.MPI_rank == 0:
         df[['timestamps', 'population', 'node_ids']].to_csv(path, header=include_header, index=False, sep=' ')
@@ -49,8 +33,6 @@ def write_csv_itr(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, 
     path_dir = os.path.dirname(path)
     if bmtk_world_comm.MPI_rank == 0 and path_dir and not os.path.exists(path_dir):
         os.makedirs(path_dir)
-
-    # exit()
 
     conv_factor = find_conversion(spiketrain_reader.units, units)
     cols_to_print = csv_headers if include_population else [c for c in csv_headers if c != col_population]
@@ -66,80 +48,46 @@ def write_csv_itr(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, 
             c_data = [ts, spk[1], spk[2]] if include_population else [ts, spk[2]]
             csv_writer.writerow(c_data)
 
-
-    #     csv_writer = csv.writer(f, delimiter=' ')
-    #     if include_header:
-    #         csv_writer.writerow(csv_headers)
-    #     for spk in spiketrain_reader.spikes(sort_order=sort_order):
-    #         csv_writer.writerow([spk[0] * conv_factor, spk[1], spk[2]])
-    #
-    # bmtk_world_comm.comm.barrier()
-    #
-    #     # import traceback
-    #     # traceback.print_stack()
-    #     # print('called', bmtk_world_comm.MPI_rank)
-    #     with open(path, mode=mode) as f:
-    #         if include_population:
-    #             # Saves the Population column
-    #             csv_writer = csv.writer(f, delimiter=' ')
-    #             if include_header:
-    #                 csv_writer.writerow(csv_headers)
-    #             for spk in spiketrain_reader.spikes(sort_order=sort_order):
-    #                 csv_writer.writerow([spk[0] * conv_factor, spk[1], spk[2]])
-    #
-    #         else:
-    #             # Don't write the Population column
-    #             csv_writer = csv.writer(f, delimiter=' ')
-    #             if include_header:
-    #                 csv_writer.writerow([c for c in csv_headers if c != col_population])
-    #             for spk in spiketrain_reader.spikes(sort_order=sort_order):
-    #                 csv_writer.writerow([spk[0] * conv_factor, spk[2]])
-    #         # print('Written')
-    #         # spiketrain_reader.close()
-    # # print('blah >', comm.Get_rank())
-    # # sys.stdout.flush()
-
     bmtk_world_comm.barrier()
-    # exit()
 
 
-def write_csv_OLD(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, include_header=True,
-              include_population=True, units='ms', **kwargs):
-    path_dir = os.path.dirname(path)
-    if bmtk_world_comm.MPI_rank == 0 and path_dir and not os.path.exists(path_dir):
-        os.makedirs(path_dir)
-
-    #exit()
-
-    conv_factor = find_conversion(spiketrain_reader.units, units)
-    if bmtk_world_comm.MPI_rank == 0:
-
-        #import traceback
-        #traceback.print_stack()
-        #print('called', bmtk_world_comm.MPI_rank)
-        with open(path, mode=mode) as f:
-            if include_population:
-                # Saves the Population column
-                csv_writer = csv.writer(f, delimiter=' ')
-                if include_header:
-                    csv_writer.writerow(csv_headers)
-                for spk in spiketrain_reader.spikes(sort_order=sort_order):
-                    csv_writer.writerow([spk[0]*conv_factor, spk[1], spk[2]])
-
-            else:
-                # Don't write the Population column
-                csv_writer = csv.writer(f, delimiter=' ')
-                if include_header:
-                    csv_writer.writerow([c for c in csv_headers if c != col_population])
-                for spk in spiketrain_reader.spikes(sort_order=sort_order):
-                    csv_writer.writerow([spk[0]*conv_factor, spk[2]])
-            # print('Written')
-            # spiketrain_reader.close()
-    #print('blah >', comm.Get_rank())
-    #sys.stdout.flush()
-
-    bmtk_world_comm.barrier()
-    #exit()
+# def write_csv_OLD(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, include_header=True,
+#               include_population=True, units='ms', **kwargs):
+#     path_dir = os.path.dirname(path)
+#     if bmtk_world_comm.MPI_rank == 0 and path_dir and not os.path.exists(path_dir):
+#         os.makedirs(path_dir)
+#
+#     #exit()
+#
+#     conv_factor = find_conversion(spiketrain_reader.units, units)
+#     if bmtk_world_comm.MPI_rank == 0:
+#
+#         #import traceback
+#         #traceback.print_stack()
+#         #print('called', bmtk_world_comm.MPI_rank)
+#         with open(path, mode=mode) as f:
+#             if include_population:
+#                 # Saves the Population column
+#                 csv_writer = csv.writer(f, delimiter=' ')
+#                 if include_header:
+#                     csv_writer.writerow(csv_headers)
+#                 for spk in spiketrain_reader.spikes(sort_order=sort_order):
+#                     csv_writer.writerow([spk[0]*conv_factor, spk[1], spk[2]])
+#
+#             else:
+#                 # Don't write the Population column
+#                 csv_writer = csv.writer(f, delimiter=' ')
+#                 if include_header:
+#                     csv_writer.writerow([c for c in csv_headers if c != col_population])
+#                 for spk in spiketrain_reader.spikes(sort_order=sort_order):
+#                     csv_writer.writerow([spk[0]*conv_factor, spk[2]])
+#             # print('Written')
+#             # spiketrain_reader.close()
+#     #print('blah >', comm.Get_rank())
+#     #sys.stdout.flush()
+#
+#     bmtk_world_comm.barrier()
+#     #exit()
 
 
 class CSVSTReader(STReader):
@@ -165,8 +113,6 @@ class CSVSTReader(STReader):
         if col_population not in self._spikes_df.columns:
             pop_name = kwargs.get(col_population, self._defaul_population)
             self._spikes_df[col_population] = pop_name
-
-
 
         # TODO: Check all the necessary columns exits
         self._spikes_df = self._spikes_df[csv_headers]
@@ -216,35 +162,23 @@ class CSVSTReader(STReader):
 
     def node_ids(self, population=None):
         population = population if population is not None else self._defaul_population
-
-        # selected = self._spikes_df.copy()
-        # mask = True
-        # if populations is not None:
-        #     if isinstance(populations, six.string_types) or np.isscalar(populations):
-        #         mask = selected[col_population] == populations
-        #     else:
-        #         mask = selected[col_population].isin(populations)
-        #
-        # if isinstance(mask, pd.Series):
-        #     selected = selected[mask]
-        # return list(selected.groupby(by=[col_population, col_node_ids]).indices.keys())
         return np.unique(self._spikes_df[self._spikes_df[col_population] == population][col_node_ids])
 
     def n_spikes(self, population=None):
         population = population if population is not None else self._defaul_population
         return len(self.to_dataframe(populations=population))
 
-    def time_range(self, populations=None):
-        selected = self._spikes_df.copy()
-        if populations is not None:
-            if isinstance(populations, six.string_types) or np.isscalar(populations):
-                mask = selected[col_population] == populations
-            else:
-                mask = selected[col_population].isin(populations)
-
-            selected = selected[mask]
-
-        return selected[col_timestamps].agg([np.min, np.max]).values
+    # def time_range(self, populations=None):
+    #     selected = self._spikes_df.copy()
+    #     if populations is not None:
+    #         if isinstance(populations, six.string_types) or np.isscalar(populations):
+    #             mask = selected[col_population] == populations
+    #         else:
+    #             mask = selected[col_population].isin(populations)
+    #
+    #         selected = selected[mask]
+    #
+    #     return selected[col_timestamps].agg([np.min, np.max]).values
 
     def spikes(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
         selected = self._spikes_df.copy()

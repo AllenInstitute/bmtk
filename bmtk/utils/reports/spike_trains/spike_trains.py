@@ -22,8 +22,6 @@ class SpikeTrains(object):
         else:
             self._adaptor = adaptor
 
-        #self._read_adaptor = self._write_adaptor = self._adaptor
-
     @property
     def write_adaptor(self):
         return self._adaptor
@@ -56,7 +54,6 @@ class SpikeTrains(object):
     @classmethod
     def from_nwb(cls, path, **kwargs):
         return cls(adaptor=NWBSTReader(path, **kwargs))
-        # return NWBSTReader(path, **kwargs)
 
     @classmethod
     def load(cls, path, file_type=None, **kwargs):
@@ -107,18 +104,10 @@ class SpikeTrains(object):
         return self.write_adaptor.metrics(**kwargs)
 
     def to_csv(self, path, mode='w', sort_order=sort_order.none, **kwargs):
-        # self._write_adaptor.flush()
-        #if bmtk_world_comm.MPI_rank == 0:
         write_csv(path=path, spiketrain_reader=self.read_adaptor, mode=mode, sort_order=sort_order, **kwargs)
-        # self.write_adaptor.write_csv(path=path, spiketrain_reader=self.read_adaptor, mode=mode, sort_order=sort_order, **kwargs)
 
     def to_sonata(self, path, mode='a', sort_order=sort_order.none, **kwargs):
         write_sonata(path=path, spiketrain_reader=self.read_adaptor, mode=mode, sort_order=sort_order, **kwargs)
-        # if isinstance(self.write_adaptor, STBuffer):
-        #     self.write_adaptor.flush()
-        # if bmtk_world_comm.MPI_rank == 0:
-        #     write_sonata(path=path, spiketrain_reader=self.read_adaptor, mode=mode, sort_order=sort_order, **kwargs)
-        # bmtk_world_comm.barrier()
 
     def is_equal(self, other, populations=None, err=0.00001, time_window=None):
         if populations is None:
@@ -138,13 +127,13 @@ class SpikeTrains(object):
             if time_window is None:
                 # check that each SpikeTrains contain the same number and ids of nodes so we don't have to iterate
                 # through each spike. This won't always work if the user limits the time-window.
-                self_nodes = sorted([n[1] for n in self.nodes(populations=p)])
-                other_nodes = sorted([n[1] for n in other.nodes(populations=p)])
+                self_nodes = sorted([n[1] for n in self.node_ids(population=p)])
+                other_nodes = sorted([n[1] for n in other.node_ids(population=p)])
                 if not np.all(self_nodes == other_nodes):
                     return False
             else:
                 # If the time-window being checked is restricted
-                self_nodes = set([n[1] for n in self.nodes(p)]) & set([n[1] for n in other.nodes(p)])
+                self_nodes = set([n[1] for n in self.node_ids(p)]) & set([n[1] for n in other.nodes(p)])
 
             for node_id in self_nodes:
                 self_ts = self.get_times(node_id=node_id, population=p, time_window=time_window)
@@ -209,7 +198,6 @@ class PoissonSpikeGenerator(SpikeTrains):
         df = self.to_dataframe(populations=population, with_population_col=False)
         timestamps = df['timestamps']
         return np.min(timestamps), np.max(timestamps)
-
 
     def _build_fixed_fr(self, node_ids, population, fr, times):
         if np.isscalar(times) and times > 0.0:
