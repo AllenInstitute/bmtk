@@ -45,8 +45,8 @@ def write_sonata(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, u
     bmtk_world_comm.barrier()
 
 
-def write_sonata_itr(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, units='ms',
-                 population_renames=None, **kwargs):
+def write_sonata_itr(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, units='ms', population_renames=None,
+                     **kwargs):
     path_dir = os.path.dirname(path)
     if bmtk_world_comm.MPI_rank == 0 and path_dir and not os.path.exists(path_dir):
         os.makedirs(path_dir)
@@ -66,10 +66,6 @@ def write_sonata_itr(path, spiketrain_reader, mode='w', sort_order=SortOrder.non
         n_spikes = spiketrain_reader.n_spikes(pop_name)
         if n_spikes <= 0:
             continue
-
-        # if pop_name in spikes_root:
-        #     raise ValueError('sonata file {} already contains a spikes group {}, '.format(path, pop_name) +
-        #                      'skiping(use option mode="w" to overwrite)')
 
         if bmtk_world_comm.MPI_rank == 0:
             spikes_grp = spikes_root.create_group('{}'.format(population_renames.get(pop_name, pop_name)))

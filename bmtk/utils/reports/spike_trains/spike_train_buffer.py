@@ -63,6 +63,11 @@ def _create_filter(populations, time_window):
         return partial(_spikes_filter1, populations=populations, time_window=time_window)
 
 
+def _create_empty_df(with_population_col=True):
+    columns = ['timestamps', 'population', 'node_ids'] if with_population_col else ['timestamps', 'node_ids']
+    return pd.DataFrame(columns=columns)
+
+
 class STMemoryBuffer(SpikeTrainsAPI):
     """ A Class for creating, storing and reading multi-population spike-trains - especially for saving the spikes of a
     large scale network simulation. Keeps a running tally of the (timestamp, population-name, node_id) for each
@@ -188,6 +193,9 @@ class STMemoryBuffer(SpikeTrainsAPI):
                 ret_df = pop_df
             else:
                 ret_df = ret_df.append(pop_df)
+
+        # Make sure ret_df is not None
+        ret_df = _create_empty_df(with_population_col) if ret_df is None else ret_df
 
         return ret_df
 
@@ -327,6 +335,10 @@ class STMPIBuffer(STMemoryBuffer):
                     ret_df = ret_df.append(pop_df)
 
         comm.barrier()
+        if on_rank == 'all' or bmtk_world_comm.MPI_rank == 0:
+            # If using 'all' or on rank 0 a dataframe is expected even if there are no spikes
+            ret_df = _create_empty_df(with_population_col) if ret_df is None else ret_df
+
         return ret_df
 
     @property

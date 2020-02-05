@@ -199,6 +199,23 @@ def test_root_spikesonly(st):
     assert(st.to_dataframe(on_rank='local').shape == (0 if MPI_rank != 0 else 5, 3))
 
 
+@pytest.mark.parametrize('st', [
+    STMPIBuffer(default_population='V1'),
+    STCSVMPIBufferV2(cache_dir=tmpdir())
+])
+def test_no_spikes(st):
+    # Make sure it still works even if there are no spikes
+    assert(len(st.populations) == 0)
+    assert(st.to_dataframe(on_rank='all').shape == (0, 3))
+    assert(st.to_dataframe(on_rank='local').shape == (0, 3))
+    df = st.to_dataframe(on_rank='root')
+    assert(df is None if MPI_rank != 0 else df.shape == (0, 3))
+
+    assert(list(st.spikes(on_rank='all')) == [])
+    assert(list(st.spikes(on_rank='all')) == [])
+    assert(list(st.spikes('all')) == [])
+
+
 if __name__ == '__main__':
     # test_basic(STMPIBuffer(default_population='V1'))
     # test_basic(STCSVMPIBufferV2(cache_dir=tmpdir()))
@@ -215,5 +232,8 @@ if __name__ == '__main__':
     # test_iterator(STMPIBuffer(default_population='V1'))
     # test_iterator(STCSVMPIBufferV2(cache_dir=tmpdir()))
 
-    test_no_root_spikes(STMPIBuffer(default_population='V1'))
+    # test_no_root_spikes(STMPIBuffer(default_population='V1'))
     # test_root_spikesonly(STCSVMPIBufferV2(cache_dir=tmpdir()))
+
+    test_no_spikes(STMPIBuffer(default_population='V1'))
+    # test_no_spikes(STCSVMPIBufferV2(cache_dir=tmpdir()))

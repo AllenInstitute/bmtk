@@ -145,6 +145,19 @@ def test_invalid_pop(spiketrain_buffer):
     assert(len(st.node_ids(population='INVALID')) == 0)
 
 
+@pytest.mark.parametrize('spiketrain_buffer', [
+    STMemoryBuffer(default_population='V1', store_type='list'),
+    STMemoryBuffer(default_population='V1', store_type='array'),
+    STCSVBuffer(default_population='V1', cache_dir=tempfile.mkdtemp())
+])
+def test_no_spikes(spiketrain_buffer):
+    st = spiketrain_buffer
+
+    assert(len(st.populations) == 0)
+    assert(st.to_dataframe().shape == (0, 3))
+    assert(list(st.spikes()) == [])
+
+
 if __name__ == '__main__':
     # if MPI_size == 1:
     #     #single_proc(spike_train_buffer.STCSVBuffer)
@@ -155,7 +168,7 @@ if __name__ == '__main__':
     # test_add_spike(STMemoryBuffer(default_population='V1', store_type='list'))
     # test_add_spikes(STMemoryBuffer(default_population='V1', store_type='array'))
     # test_add_spikes(STCSVBuffer(default_population='V1', cache_dir=tempfile.mkdtemp()))
-    test_add_spikes(STMPIBuffer(default_population='V1'))
+    # test_add_spikes(STMPIBuffer(default_population='V1'))
     # test_add_spike(STMPIBuffer(default_population='V1'))
     # test_to_dataframe(STMemoryBuffer(default_population='V1', store_type='array'))
     # test_to_dataframe(STCSVBuffer(default_population='V1', cache_dir=tempfile.mkdtemp()))
@@ -163,6 +176,7 @@ if __name__ == '__main__':
     # test_iterator(STMemoryBuffer(default_population='V1', store_type='list'))
     # test_iterator(STCSVBuffer(default_population='V1', cache_dir=tempfile.mkdtemp()))
     # test_iterator(STMPIBuffer(default_population='V1'))
-    # else:
-    #     pass
-    #     #multi_proc()
+
+    # test_no_spikes(STMemoryBuffer(default_population='V1', store_type='list'))
+    test_no_spikes(STCSVBuffer(default_population='V1', cache_dir=tempfile.mkdtemp()))
+    # test_no_spikes(STMemoryBuffer(default_population='V1', store_type='list'))

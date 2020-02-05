@@ -110,10 +110,30 @@ def test_write_csv_bytime(st_cls, write_fnc):
     assert(np.all(df['population'].unique() == ['V1']))
     assert(np.all(np.diff(df['timestamps']) > 0))
 
+
+@pytest.mark.parametrize('st_cls', [
+    STMPIBuffer,
+    STCSVMPIBufferV2
+])
+@pytest.mark.parametrize('write_fnc', [
+    write_csv,
+    write_csv_itr
+])
+def test_write_csv_empty(st_cls, write_fnc):
+    st = create_st_buffer_mpi(st_cls)
+
+    tmp_csv = tmpfile()
+    write_fnc(tmp_csv, st, sort_order=sort_order.by_time)
+
+    df = pd.read_csv(tmp_csv, sep=' ')
+    assert(df.shape == (0, 3))
+
 if __name__ == '__main__':
-    test_write_csv(STMPIBuffer, write_csv_itr)
-    test_write_csv(STMPIBuffer, write_csv)
+    # test_write_csv(STMPIBuffer, write_csv_itr)
+    # test_write_csv(STMPIBuffer, write_csv)
 
     # test_write_csv_byid(STMPIBuffer, write_csv)
     # test_write_csv_bytime(STMPIBuffer, write_csv)
+
+    test_write_csv_empty(STMPIBuffer, write_csv)
 

@@ -119,8 +119,30 @@ def test_write_sonata_bytime(st_cls, write_fnc):
             assert(np.all(np.diff(h5['/spikes/V1']['timestamps'][()]) > 0))
 
 
+@pytest.mark.parametrize('st_cls', [
+    STMPIBuffer,
+    STCSVMPIBufferV2
+])
+@pytest.mark.parametrize('write_fnc', [
+    write_sonata,
+    write_sonata_itr
+])
+def test_write_sonata_empty(st_cls, write_fnc):
+    st = create_st_buffer_mpi(st_cls)
+
+    tmp_h5 = tmpfile()
+    write_fnc(tmp_h5, st)
+
+    if MPI_rank == 0:
+        with h5py.File(tmp_h5, 'r') as h5:
+            assert(check_magic(h5))
+            assert(get_version(h5) is not None)
+            assert('/spikes' in h5)
+
+
 if __name__ == '__main__':
     # test_write_sonata(STMPIBuffer, write_sonata)
     # test_write_sonata(STMPIBuffer, write_sonata_itr)
     # test_write_sonata_byid(STMPIBuffer, write_sonata)
-    test_write_sonata_bytime(STMPIBuffer, write_sonata)
+    # test_write_sonata_bytime(STMPIBuffer, write_sonata)
+    test_write_sonata_empty(STMPIBuffer, write_sonata)
