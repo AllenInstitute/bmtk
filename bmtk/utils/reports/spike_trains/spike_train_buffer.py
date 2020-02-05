@@ -1,3 +1,25 @@
+# Copyright 2020. Allen Institute. All rights reserved
+#
+# Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
+# following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following
+# disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following
+# disclaimer in the documentation and/or other materials provided with the distribution.
+#
+# 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote
+# products derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+# INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+# WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
 import os
 import numpy as np
 import pandas as pd
@@ -5,8 +27,9 @@ import csv
 from mpi4py import MPI
 from array import array
 
-from .core import pop_na, STReader, STWriter
-from .core import SortOrder
+
+from .core import SortOrder, pop_na
+from .spike_trains_api import SpikeTrainsAPI
 from bmtk.utils.io import bmtk_world_comm
 
 
@@ -40,7 +63,7 @@ def _create_filter(populations, time_window):
         return partial(_spikes_filter1, populations=populations, time_window=time_window)
 
 
-class STMemoryBuffer(STWriter, STReader):
+class STMemoryBuffer(SpikeTrainsAPI):
     """ A Class for creating, storing and reading multi-population spike-trains - especially for saving the spikes of a
     large scale network simulation. Keeps a running tally of the (timestamp, population-name, node_id) for each
     individual spike.
@@ -114,11 +137,11 @@ class STMemoryBuffer(STWriter, STReader):
         return np.unique(self._pops[population]['node_ids']).astype(np.uint)
 
     @property
-    def units(self):
+    def units(self, population=None):
         return self._units
 
     @units.setter
-    def units(self, v):
+    def units(self, v, population=None):
         self._units = v
 
     def n_spikes(self, population=None):
@@ -195,11 +218,6 @@ class STMemoryBuffer(STWriter, STReader):
 
         return
 
-    def metrics(self, **kwargs):
-        metrics_dict = {}
-        for p in self.populations.keys():
-            metrics_dict[p] = self.n_spikes(p)
-
     def __len__(self):
         return len(self.to_dataframe())
 
@@ -209,35 +227,6 @@ class STMPIBuffer(STMemoryBuffer):
         self.mpi_rank = kwargs.get('MPI_rank', bmtk_world_comm.MPI_rank)
         self.mpi_size = kwargs.get('MPI_size', bmtk_world_comm.MPI_size)
         super(STMPIBuffer, self).__init__(default_population=default_population, store_type=store_type, **kwargs)
-
-    def metrics(self, on_rank='all'):
-        comm = bmtk_world_comm.comm
-
-        def collect_metrics(metrics_data):
-            all_metrics = metrics_data[0]
-            for rank_dict in metrics_data[1:]:
-                for pop, pop_count in rank_dict.items():
-                    if pop in all_metrics:
-                        all_metrics[pop] += pop_count
-                    else:
-                        all_metrics[pop] = pop_count
-            return all_metrics
-
-        local_metrics = {p: len(v['timestamps']) for p, v in self._pops.items()}
-
-        if on_rank == 'local':
-            return local_metrics
-
-        elif on_rank == 'all':
-            metrics_data = comm.allgather(local_metrics)
-            return collect_metrics(metrics_data)
-
-        elif on_rank == 'root':
-            metrics_data = comm.gather(local_metrics, root=0)
-            if bmtk_world_comm.MPI_rank == 0:
-                return collect_metrics(metrics_data)
-            else:
-                return None
 
     def _gatherv(self, population, on_all_ranks=True):
         comm = bmtk_world_comm.comm
@@ -292,17 +281,14 @@ class STMPIBuffer(STMemoryBuffer):
         # Make sure the list of populations is exactly the same (including order) across all ranks so that
         # _gatherv is called in the same sequence across all ranks.
         selelectd_pops.sort()
-
         ret_df = None
         for pop_name in selelectd_pops:
             if on_rank == 'all':
                 node_ids, timestamps = self._gatherv(population=pop_name, on_all_ranks=True)
                 pop_df = pd.DataFrame({
                     'node_ids': node_ids,
-                    'timestamps':timestamps
+                    'timestamps': timestamps
                 })
-
-                # print(bmtk_world_comm.MPI_rank, pop_name, len(pop_df))
 
                 if with_population_col:
                      pop_df['population'] = pop_name
@@ -453,7 +439,7 @@ class STMPIBuffer(STMemoryBuffer):
                     yield t, p, node_ids[i]
 
 
-class STCSVBuffer(STWriter, STReader):
+class STCSVBuffer(SpikeTrainsAPI):
     """ A Class for creating, storing and reading multi-population spike-trains - especially for saving the spikes of a
     large scale network simulation. Keeps a running tally of the (timestamp, population-name, node_id) for each
     individual spike.
@@ -507,12 +493,12 @@ class STCSVBuffer(STWriter, STReader):
         return list(self._pop_metadata.keys())
 
     @property
-    def units(self):
+    def units(self, population=None):
         return self._units
 
     @units.setter
-    def units(self, v):
-        self._units = v
+    def units(self, u, population=None):
+        self._units = u
 
     def node_ids(self, population=None):
         population = population if population is not None else self._default_population
@@ -557,6 +543,8 @@ class STCSVBuffer(STWriter, STReader):
         if not with_population_col:
             ret_df = ret_df.drop('population', axis=1)
 
+        ret_df = ret_df.astype({'timestamps': np.float, 'node_ids': np.int})
+
         return ret_df
 
     def flush(self):
@@ -571,13 +559,13 @@ class STCSVBuffer(STWriter, STReader):
         self.flush()
 
         self._sort_buffer_file(self._buffer_filename, sort_order)
-        filter = _create_filter(populations, time_window)
+        filter_fnc = _create_filter(populations, time_window)
         with open(self._buffer_filename, 'r') as csvfile:
             csv_reader = csv.reader(csvfile, delimiter=' ')
             for row in csv_reader:
                 t = float(row[0])
                 p = row[1]
-                if filter(p=p, t=t):
+                if filter_fnc(p=p, t=t):
                     yield t, p, int(row[2])
 
         return
@@ -593,7 +581,6 @@ class STCSVBuffer(STWriter, STReader):
         tmp_spikes_ds = pd.read_csv(file_name, sep=' ', names=['time', 'population', 'node'])
         tmp_spikes_ds = tmp_spikes_ds.sort_values(by=sort_col)
         tmp_spikes_ds.to_csv(file_name, sep=' ', index=False, header=False)
-
 
 
 class STCSVMPIBuffer(STCSVBuffer):
@@ -628,7 +615,7 @@ class STCSVMPIBuffer(STCSVBuffer):
                     if pop not in self._all_ranks_data:
                         self._all_ranks_data[pop] = {'n_spikes': 0, 'node_ids': set()}
 
-                    self._all_ranks_data[pop]['n_spikes'] += 1 # self._all_ranks_data.get(pop, 0) + 1
+                    self._all_ranks_data[pop]['n_spikes'] += 1  # self._all_ranks_data.get(pop, 0) + 1
                     self._all_ranks_data[pop]['node_ids'].add(int(row[2]))
 
     def _gather_times(self, node_id, population):
@@ -644,7 +631,6 @@ class STCSVMPIBuffer(STCSVBuffer):
                     if nid == node_id and pop == population:
                         timestamps.append(float(row[0]))
         return timestamps
-
 
     @property
     def populations(self):
@@ -755,9 +741,8 @@ class STCSVMPIBuffer(STCSVBuffer):
             else:
                 return []
 
-
     def _sort_helper(self, populations, time_window, sort_order):
-        filter = _create_filter(populations, time_window)
+        filter_fnc = _create_filter(populations, time_window)
         if sort_order == SortOrder.by_time or sort_order == SortOrder.by_id:
             for file_name in self._all_cached_files():
                 if not os.path.exists(file_name):
@@ -765,11 +750,11 @@ class STCSVMPIBuffer(STCSVBuffer):
 
                 self._sort_buffer_file(file_name, sort_order)
 
-            return self._sorted_itr(filter, 0 if sort_order == SortOrder.by_time else 2)
+            return self._sorted_itr(filter_fnc, 0 if sort_order == SortOrder.by_time else 2)
         else:
-            return self._unsorted_itr(filter)
+            return self._unsorted_itr(filter_fnc)
 
-    def _unsorted_itr(self, filter):
+    def _unsorted_itr(self, filter_fnc):
         for fn in self._all_cached_files():
             if not os.path.exists(fn):
                 continue
@@ -779,12 +764,12 @@ class STCSVMPIBuffer(STCSVBuffer):
                 for row in csv_reader:
                     t = float(row[0])
                     p = row[1]
-                    if filter(p=p, t=t):
+                    if filter_fnc(p=p, t=t):
                         yield t, p, int(row[2])
 
         return
 
-    def _sorted_itr(self, filter, sort_col):
+    def _sorted_itr(self, filter_fnc, sort_col):
         """Iterates through all the spikes on each rank, returning them in the specified order"""
         import heapq
 
@@ -813,7 +798,7 @@ class STCSVMPIBuffer(STCSVBuffer):
             if n:
                 heapq.heappush(h, n)
 
-            if filter(row[1], row[2]):
+            if filter_fnc(row[1], row[2]):
                 yield row
 
 
@@ -850,6 +835,9 @@ class STCSVMPIBufferV2(STCSVMPIBuffer):
             ret_df = df if ret_df is None else ret_df.append(df)
 
         if ret_df is not None:
+            # pandas doesn't always do a good job of reading in the correct dtype for each column
+            ret_df = ret_df.astype({'timestamps': np.float, 'node_ids': np.int})
+
             if sort_order == SortOrder.by_time:
                 ret_df = ret_df.sort_values('timestamps')
             elif sort_order == SortOrder.by_id:

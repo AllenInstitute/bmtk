@@ -169,9 +169,39 @@ def test_iterator(st):
         assert(len(root_spikes) == 0)
 
 
+@pytest.mark.skipif(MPI_size < 2, reason='Can only run test using mpi')
+@pytest.mark.parametrize('st', [
+    STMPIBuffer(default_population='V1'),
+    STCSVMPIBufferV2(cache_dir=tmpdir())
+])
+def test_no_root_spikes(st):
+    # An issue we've had before where one of the ranks doesn't have any spiking neurons
+    if MPI_rank > 0:
+        st.add_spikes(population='R{}'.format(MPI_rank), node_ids=MPI_rank, timestamps=np.linspace(0.0, 1.0, 5))
+
+    assert(set(st.populations)  == {'R{}'.format(r) for r in range(1, MPI_size)})
+    assert(st.to_dataframe(on_rank='all').shape == ((MPI_size-1)*5, 3))
+    assert(st.to_dataframe(on_rank='local').shape == (0 if MPI_rank == 0 else 5, 3))
+
+
+# @pytest.mark.skipif(MPI_size < 2, reason='Can only run test using mpi')
+@pytest.mark.parametrize('st', [
+    STMPIBuffer(default_population='V1'),
+    STCSVMPIBufferV2(cache_dir=tmpdir())
+])
+def test_root_spikesonly(st):
+    # Similar to above except only rank 0 has spikes
+    if MPI_rank == 0:
+        st.add_spikes(population='R{}'.format(MPI_rank), node_ids=MPI_rank, timestamps=np.linspace(0.0, 1.0, 5))
+
+    assert(st.populations == ['R0'])
+    assert(st.to_dataframe(on_rank='all').shape == (5, 3))
+    assert(st.to_dataframe(on_rank='local').shape == (0 if MPI_rank != 0 else 5, 3))
+
+
 if __name__ == '__main__':
-    test_basic(STMPIBuffer(default_population='V1'))
-    test_basic(STCSVMPIBufferV2(cache_dir=tmpdir()))
+    # test_basic(STMPIBuffer(default_population='V1'))
+    # test_basic(STCSVMPIBufferV2(cache_dir=tmpdir()))
 
     # test_basic_root(STMPIBuffer(default_population='V1'))
     # test_basic_root(STCSVMPIBufferV2(cache_dir=tmpdir()))
@@ -184,3 +214,6 @@ if __name__ == '__main__':
 
     # test_iterator(STMPIBuffer(default_population='V1'))
     # test_iterator(STCSVMPIBufferV2(cache_dir=tmpdir()))
+
+    test_no_root_spikes(STMPIBuffer(default_population='V1'))
+    # test_root_spikesonly(STCSVMPIBufferV2(cache_dir=tmpdir()))

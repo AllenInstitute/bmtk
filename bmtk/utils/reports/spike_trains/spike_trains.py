@@ -1,59 +1,53 @@
 import numpy as np
 from six import string_types
 
-from .core import SortOrder as sort_order
-from .adaptors import CSVSTReader, write_csv
-from .adaptors import load_sonata_file, write_sonata
-from .adaptors import NWBSTReader
-from .adaptors import find_file_type
-from .spike_train_buffer import STMemoryBuffer, STCSVBuffer, STMPIBuffer
+from .core import find_file_type
+from .spike_train_readers import load_sonata_file, CSVSTReader, NWBSTReader
+from .spike_train_buffer import STMemoryBuffer, STCSVBuffer, STMPIBuffer, STCSVMPIBufferV2
 
 from bmtk.utils.sonata.utils import get_node_ids
 from bmtk.utils.io import bmtk_world_comm
 
 
+MPI_size = bmtk_world_comm.MPI_size
+
+
 class SpikeTrains(object):
-    def __init__(self, adaptor=None, **kwargs):
-        if adaptor is None:
-            if bmtk_world_comm.MPI_size > 1:
-                self._adaptor = STMPIBuffer(**kwargs)
-            else:
-                self._adaptor = STCSVBuffer(**kwargs)
+    """A class for creating and reading spike files.
+
+    """
+    def __init__(self, spikes_adaptor=None, **kwargs):
+        # There are a number of strategies for reading and writing spike trains, depending on memory limitations, if
+        #  MPI is being used, or if there if read-only from disk. I'm using a decorator/adaptor pattern and moving
+        #  the actual functionality to the Buffered/ReadOnly classes that implement SpikeTrainsAPI.
+        if spikes_adaptor is not None:
+            self.adaptor = spikes_adaptor
         else:
-            self._adaptor = adaptor
+            # TODO: Check that comm has gather, reduce, etc methods; if not can't use STMPIBuffer
+            use_mpi = MPI_size > 1
+            cache_to_disk = 'cache_dir' in kwargs
 
-    @property
-    def write_adaptor(self):
-        return self._adaptor
-
-    @property
-    def read_adaptor(self):
-        return self._adaptor
-
-    @property
-    def populations(self):
-        return self.read_adaptor.populations
-
-    @property
-    def units(self):
-        return self.read_adaptor.units
-
-    @units.setter
-    def units(self, v):
-        self.read_adaptor.units = v
+            if use_mpi and cache_to_disk:
+                self.adaptor = STCSVMPIBufferV2(**kwargs)
+            elif cache_to_disk:
+                self.adaptor = STCSVBuffer(**kwargs)
+            elif use_mpi:
+                self.adaptor = STMPIBuffer(**kwargs)
+            else:
+                self.adaptor = STMemoryBuffer(**kwargs)
 
     @classmethod
     def from_csv(cls, path, **kwargs):
-        return cls(adaptor=CSVSTReader(path, **kwargs))
+        return cls(spikes_adaptor=CSVSTReader(path, **kwargs))
 
     @classmethod
     def from_sonata(cls, path, **kwargs):
         sonata_adaptor = load_sonata_file(path, **kwargs)
-        return cls(adaptor=sonata_adaptor)
+        return cls(spikes_adaptor=sonata_adaptor)
 
     @classmethod
     def from_nwb(cls, path, **kwargs):
-        return cls(adaptor=NWBSTReader(path, **kwargs))
+        return cls(spikes_adaptor=NWBSTReader(path, **kwargs))
 
     @classmethod
     def load(cls, path, file_type=None, **kwargs):
@@ -65,97 +59,35 @@ class SpikeTrains(object):
         elif file_type == 'csv':
             return cls.from_csv(path, **kwargs)
 
-    def node_ids(self, population=None):
-        return self.read_adaptor.node_ids(population=population)
+    def __getattr__(self, item):
+        return getattr(self.adaptor, item)
 
-    def n_spikes(self, population=None):
-        return self.read_adaptor.n_spikes(population=population)
-
-    def time_range(self, populations=None):
-        return self.read_adaptor.time_range(populations=populations)
-
-    def get_times(self, node_id, population=None, time_window=None, **kwargs):
-        return self.read_adaptor.get_times(node_id=node_id, population=population, time_window=time_window, **kwargs)
-
-    def to_dataframe(self, node_ids=None, populations=None, time_window=None, sort_order=sort_order.none, **kwargs):
-        return self.read_adaptor.to_dataframe(node_ids=node_ids, populations=populations, time_window=time_window,
-                                              sort_order=sort_order, **kwargs)
-
-    def spikes(self, node_ids=None, populations=None, time_window=None, sort_order=sort_order.none, **kwargs):
-        return self.read_adaptor.spikes(node_ids=node_ids, populations=populations, time_window=time_window,
-                                        sort_order=sort_order, **kwargs)
-
-    def add_spike(self, node_id, timestamp, population=None, **kwargs):
-        return self.write_adaptor.add_spike(node_id=node_id, timestamp=timestamp, population=population, **kwargs)
-
-    def add_spikes(self, node_ids, timestamps, population=None, **kwargs):
-        return self.write_adaptor.add_spikes(node_ids=node_ids, timestamps=timestamps, population=population, **kwargs)
-
-    def import_spikes(self, obj, **kwargs):
-        raise NotImplementedError()
-
-    def flush(self):
-        self.write_adaptor.flush()
-
-    def close(self):
-        self.write_adaptor.close()
-
-    def metrics(self, **kwargs):
-        return self.write_adaptor.metrics(**kwargs)
-
-    def to_csv(self, path, mode='w', sort_order=sort_order.none, **kwargs):
-        write_csv(path=path, spiketrain_reader=self.read_adaptor, mode=mode, sort_order=sort_order, **kwargs)
-
-    def to_sonata(self, path, mode='a', sort_order=sort_order.none, **kwargs):
-        write_sonata(path=path, spiketrain_reader=self.read_adaptor, mode=mode, sort_order=sort_order, **kwargs)
-
-    def is_equal(self, other, populations=None, err=0.00001, time_window=None):
-        if populations is None:
-            # Both must contain the same populations
-            populations = self.populations
-            if set(other.populations) != set(populations):
-                return False
+    def __setattr__(self, key, value):
+        if key == 'adaptor':
+            self.__dict__[key] = value
         else:
-            # Comparing only a subset of the node populations, make sure both files contains them (or both files don't
-            # contain the populations
-            populations = [populations] if np.isscalar(populations) else populations
-            for p in populations:
-                if (p in self.populations) != (p in other.populations):
-                    return False
-
-        for p in populations:
-            if time_window is None:
-                # check that each SpikeTrains contain the same number and ids of nodes so we don't have to iterate
-                # through each spike. This won't always work if the user limits the time-window.
-                self_nodes = sorted([n[1] for n in self.node_ids(population=p)])
-                other_nodes = sorted([n[1] for n in other.node_ids(population=p)])
-                if not np.all(self_nodes == other_nodes):
-                    return False
-            else:
-                # If the time-window being checked is restricted
-                self_nodes = set([n[1] for n in self.node_ids(p)]) & set([n[1] for n in other.nodes(p)])
-
-            for node_id in self_nodes:
-                self_ts = self.get_times(node_id=node_id, population=p, time_window=time_window)
-                other_ts = other.get_times(node_id=node_id, population=p, time_window=time_window)
-
-                if len(self_ts) != len(other_ts):
-                    return False
-
-                for t0, t1 in zip(self_ts, other_ts):
-                    if abs(t1 - t0) > err:
-                        return False
-
-        return True
-
-    def to_nwb(self, path, **kwargs):
-        raise NotImplementedError()
+            self.adaptor.__dict__[key] = value
 
     def __len__(self):
-        return len(self.read_adaptor)
+        return self.adaptor.__len__()
 
     def __eq__(self, other):
-        return self.is_equal(other)
+        return self.adaptor.__eq__(other)
+
+    def __lt__(self, other):
+        return self.adaptor.__lt__(other)
+
+    def __le__(self, other):
+        return self.adaptor.__le__(other)
+
+    def __gt__(self, other):
+        return self.adaptor.__gt__(other)
+
+    def __ge__(self, other):
+        return self.adaptor.__ge__(other)
+
+    def __ne__(self, other):
+        return self.adaptor.__ne__(other)
 
 
 class PoissonSpikeGenerator(SpikeTrains):
@@ -165,19 +97,19 @@ class PoissonSpikeGenerator(SpikeTrains):
     """
     max_spikes_per_node = 10000000
 
-    def __init__(self, buffer_dir=None, population=None, seed=None, **kwargs):
+    def __init__(self, population=None, seed=None, **kwargs):
         if population is not None and 'default_population' not in kwargs:
             kwargs['default_population'] = population
 
         if seed:
             np.random.seed(seed)
 
-        if buffer_dir is not None:
-            adaptor = STCSVBuffer(cache_dir=buffer_dir, **kwargs)
-        else:
-            adaptor = STMemoryBuffer(**kwargs)
+        # if buffer_dir is not None:
+        #     adaptor = STCSVBuffer(cache_dir=buffer_dir, **kwargs)
+        # else:
+        #     adaptor = STMemoryBuffer(**kwargs)
 
-        super(PoissonSpikeGenerator, self).__init__(adaptor=adaptor)
+        super(PoissonSpikeGenerator, self).__init__(**kwargs)
         self.units = 's'
 
     def add(self, node_ids, firing_rate, population=None, times=(0.0, 1.0)):

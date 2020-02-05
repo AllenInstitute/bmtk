@@ -6,8 +6,9 @@ from six import string_types
 
 from bmtk.utils.reports.spike_trains.spike_train_buffer import STMemoryBuffer, STCSVBuffer
 from bmtk.utils.reports.spike_trains import sort_order, pop_na
-from bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors import write_sonata, write_sonata_itr, load_sonata_file
-from bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors import SonataSTReader, SonataOldReader, EmptySonataReader
+from bmtk.utils.reports.spike_trains.spike_train_readers import load_sonata_file, SonataSTReader, SonataOldReader, EmptySonataReader
+from bmtk.utils.reports.spike_trains.spikes_file_writers import write_sonata, write_sonata_itr
+# from bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors import SonataSTReader, SonataOldReader, EmptySonataReader
 from bmtk.utils.sonata.utils import check_magic, get_version, add_hdf5_magic, add_hdf5_version
 
 

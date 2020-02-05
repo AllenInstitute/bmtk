@@ -2,6 +2,7 @@ import pytest
 import numpy as np
 
 from bmtk.utils.reports.spike_trains import PoissonSpikeGenerator
+from bmtk.utils.reports.spike_trains import SpikeTrains
 
 
 def test_psg_fixed():
@@ -39,6 +40,41 @@ def test_psg_variable():
     assert(np.allclose(psg.get_times(node_id=9), [0.729, 0.885, 1.047, 1.276, 1.543, 1.669, 1.881], atol=1.0e-3))
 
 
+def test_equals():
+    st1 = SpikeTrains()
+    st1.add_spikes(node_ids=0, population='V1', timestamps=[0.1, 0.2, 0.3, 0.4])
+    st1.add_spikes(node_ids=1, population='V1', timestamps=[1.0])
+
+    st2 = SpikeTrains()
+    st2.add_spikes(node_ids=1, population='V1', timestamps=[1.0])
+    st2.add_spikes(node_ids=0, population='V1', timestamps=[0.3, 0.2, 0.1, 0.4])
+
+    assert(st1 == st2)
+    assert(st1 <= st2)
+    assert(st1 >= st2)
+    assert(not st1 != st2)
+
+
+def test_subset():
+    st1 = SpikeTrains()
+    st1.add_spikes(node_ids=0, population='V1', timestamps=[0.1, 0.2, 0.3, 0.4])
+    st1.add_spikes(node_ids=1, population='V1', timestamps=[1.0])
+
+    st2 = SpikeTrains()
+    st2.add_spikes(node_ids=1, population='V1', timestamps=[1.0])
+    st2.add_spikes(node_ids=0, population='V1', timestamps=[0.3, 0.2, 0.1, 0.4, 0.5])
+    st2.add_spike(node_id=2, population='V1', timestamp=0.5)
+    st2.add_spikes(node_ids=0, population='V2', timestamps=np.linspace(0.0, 1.0, 11))
+
+    assert(st1 != st2)
+    assert(st1 < st2)
+    assert(st2 > st1)
+    assert(st1 <= st2)
+    assert(st2 >= st1)
+
+
 if __name__ == '__main__':
-    test_psg_fixed()
-    test_psg_variable()
+    # test_psg_fixed()
+    # test_psg_variable()
+    test_equals()
+    test_subset()

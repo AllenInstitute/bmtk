@@ -4,7 +4,8 @@ import pandas as pd
 import tempfile
 
 from bmtk.utils.reports.spike_trains.spike_train_buffer import STMPIBuffer, STCSVMPIBufferV2
-from bmtk.utils.reports.spike_trains.adaptors.csv_adaptors import write_csv, write_csv_itr
+# from bmtk.utils.reports.spike_trains.adaptors.csv_adaptors import write_csv, write_csv_itr
+from bmtk.utils.reports.spike_trains.spikes_file_writers import write_csv, write_csv_itr
 from bmtk.utils.reports.spike_trains import sort_order
 
 try:

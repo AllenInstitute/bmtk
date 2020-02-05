@@ -4,7 +4,8 @@ import h5py
 import tempfile
 
 from bmtk.utils.reports.spike_trains.spike_train_buffer import STMPIBuffer, STCSVMPIBufferV2
-from bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors import write_sonata, write_sonata_itr
+# from bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors import write_sonata, write_sonata_itr
+from bmtk.utils.reports.spike_trains.spikes_file_writers import write_sonata, write_sonata_itr
 from bmtk.utils.sonata.utils import check_magic, get_version
 from bmtk.utils.reports.spike_trains import sort_order
 

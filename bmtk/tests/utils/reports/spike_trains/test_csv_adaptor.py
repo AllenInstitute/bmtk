@@ -5,7 +5,8 @@ import pandas as pd
 from six import string_types
 
 from bmtk.utils.reports.spike_trains.spike_train_buffer import STMemoryBuffer, STCSVBuffer
-from bmtk.utils.reports.spike_trains.adaptors.csv_adaptors import write_csv, write_csv_itr, CSVSTReader
+from bmtk.utils.reports.spike_trains.spike_train_readers import CSVSTReader
+from bmtk.utils.reports.spike_trains.spikes_file_writers import write_csv, write_csv_itr
 from bmtk.utils.reports.spike_trains import sort_order
 
 
