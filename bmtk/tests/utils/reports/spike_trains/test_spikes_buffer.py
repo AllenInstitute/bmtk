@@ -121,7 +121,7 @@ def test_iterator(spiketrain_buffer):
     assert(len(all_spikes) == 36)
     assert(isinstance(all_spikes[0][0], (np.double, np.float)))
     assert(isinstance(all_spikes[0][1], string_types))
-    assert(isinstance(all_spikes[0][2], (np.int, np.uint)))
+    assert(isinstance(all_spikes[0][2], (np.int, np.uint, np.long)))
 
     assert(len(list(st.spikes(populations=['V1', 'V2']))) == 36)
     assert(len(list(st.spikes(populations='V2'))) == 10)

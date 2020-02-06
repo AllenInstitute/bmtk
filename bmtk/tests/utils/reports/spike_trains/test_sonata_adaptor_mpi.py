@@ -12,6 +12,7 @@ from bmtk.utils.reports.spike_trains import sort_order
 try:
     from mpi4py import MPI
     comm = MPI.COMM_WORLD
+    bcast = comm.bcast
     MPI_rank = comm.Get_rank()
     MPI_size = comm.Get_size()
 except:
@@ -63,7 +64,7 @@ def test_write_sonata(st_cls, write_fnc):
         with h5py.File(tmp_h5, 'r') as h5:
             assert(check_magic(h5))
             assert(get_version(h5) is not None)
-            assert(h5['/spikes'].keys() >= {'R{}'.format(r) for r in range(MPI_size)} | {'V1', 'V2'})
+            assert(set(h5['/spikes'].keys()) >= {'R{}'.format(r) for r in range(MPI_size)} | {'V1', 'V2'})
             assert(set(h5['/spikes/V1']['node_ids'][()]) == {i for i in range(MPI_size)})
             assert(set(h5['/spikes/V2']['timestamps'][()]) == {float(i) for i in range(MPI_size)})
             for r in range(MPI_size):

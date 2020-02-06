@@ -161,7 +161,7 @@ def test_write_sonata_byid(st_cls, write_fnc):
 def test_sonata_reader():
     # Test ability to read an existing sonata file
     tmp_h5 = tempfile.NamedTemporaryFile(suffix='.h5')
-    with h5py.File(tmp_h5, 'w') as h5:
+    with h5py.File(tmp_h5.name, 'w') as h5:
         add_hdf5_magic(h5)
         add_hdf5_version(h5)
         h5.create_dataset('/spikes/V1/node_ids', data=[0, 0, 0, 0, 2, 1, 2], dtype=np.uint)
@@ -203,7 +203,7 @@ def test_sonata_reader():
 def test_oldsonata_reader():
     # A special reader for an older version of the spikes format
     tmp_h5 = tempfile.NamedTemporaryFile(suffix='.h5')
-    with h5py.File(tmp_h5, 'w') as h5:
+    with h5py.File(tmp_h5.name, 'w') as h5:
         add_hdf5_magic(h5)
         add_hdf5_version(h5)
         h5.create_dataset('/spikes/gids', data=[0, 0, 0, 0, 2, 1, 2], dtype=np.uint)
@@ -229,7 +229,7 @@ def test_oldsonata_reader():
 def test_load_sonata():
     # Sonata adaptor's factory method
     tmp_sonata = tempfile.NamedTemporaryFile(suffix='.h5')
-    with h5py.File(tmp_sonata, 'w') as h5:
+    with h5py.File(tmp_sonata.name, 'w') as h5:
         add_hdf5_magic(h5)
         add_hdf5_version(h5)
         h5.create_dataset('/spikes/V1/node_ids', data=[0, 0, 0, 0, 2, 1, 2], dtype=np.uint)
@@ -239,25 +239,25 @@ def test_load_sonata():
         h5.create_group('/spikes/V3')
 
     tmp_sonata_old = tempfile.NamedTemporaryFile(suffix='.h5')
-    with h5py.File(tmp_sonata_old, 'w') as h5:
+    with h5py.File(tmp_sonata_old.name, 'w') as h5:
         add_hdf5_magic(h5)
         add_hdf5_version(h5)
         h5.create_dataset('/spikes/gids', data=[0, 0, 0, 0, 2, 1, 2], dtype=np.uint)
         h5.create_dataset('/spikes/timestamps', data=[0.25, 0.5, 0.75, 1.0, 3.0, 0.001, 2.0], dtype=np.double)
 
     tmp_sonata_empty = tempfile.NamedTemporaryFile(suffix='.h5')
-    with h5py.File(tmp_sonata_empty, 'w') as h5:
+    with h5py.File(tmp_sonata_empty.name, 'w') as h5:
         add_hdf5_magic(h5)
         add_hdf5_version(h5)
         h5.create_group('/spikes/')
 
-    sr = load_sonata_file(tmp_sonata)
+    sr = load_sonata_file(tmp_sonata.name)
     assert(isinstance(sr, SonataSTReader))
 
-    sr = load_sonata_file(tmp_sonata_old)
+    sr = load_sonata_file(tmp_sonata_old.name)
     assert(isinstance(sr, SonataOldReader))
 
-    sr = load_sonata_file(tmp_sonata_empty)
+    sr = load_sonata_file(tmp_sonata_empty.name)
     assert(isinstance(sr, EmptySonataReader))
 
 
