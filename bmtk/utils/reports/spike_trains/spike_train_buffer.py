@@ -24,16 +24,11 @@ import os
 import numpy as np
 import pandas as pd
 import csv
-from mpi4py import MPI
 from array import array
 
-
-from .core import SortOrder, pop_na
+from .core import SortOrder, pop_na, comm, MPI_size, MPI_rank, comm_barrier
+from .core import col_node_ids, col_population, col_timestamps
 from .spike_trains_api import SpikeTrainsAPI
-from bmtk.utils.io import bmtk_world_comm
-
-
-comm = MPI.COMM_WORLD
 
 
 def _spikes_filter1(p, t, time_window, populations):
@@ -64,7 +59,7 @@ def _create_filter(populations, time_window):
 
 
 def _create_empty_df(with_population_col=True):
-    columns = ['timestamps', 'population', 'node_ids'] if with_population_col else ['timestamps', 'node_ids']
+    columns = [col_timestamps, col_population, col_node_ids] if with_population_col else [col_timestamps, col_node_ids]
     return pd.DataFrame(columns=columns)
 
 
@@ -88,8 +83,8 @@ class STMemoryBuffer(SpikeTrainsAPI):
 
         if population not in self._pops:
             self._create_store(population)
-        self._pops[population]['node_ids'].append(node_id)
-        self._pops[population]['timestamps'].append(timestamp)
+        self._pops[population][col_node_ids].append(node_id)
+        self._pops[population][col_timestamps].append(timestamp)
 
     def add_spikes(self, node_ids, timestamps, population=None, **kwargs):
         population = population or self._default_population
@@ -102,8 +97,8 @@ class STMemoryBuffer(SpikeTrainsAPI):
         if population not in self._pops:
             self._create_store(population)
         pop_data = self._pops[population]
-        pop_data['node_ids'].extend(node_ids)
-        pop_data['timestamps'].extend(timestamps)
+        pop_data[col_node_ids].extend(node_ids)
+        pop_data[col_timestamps].extend(timestamps)
 
     def _create_store(self, population):
         """Helper for creating storage data struct of a population, so add_spike/add_spikes is consistent."""
@@ -114,10 +109,10 @@ class STMemoryBuffer(SpikeTrainsAPI):
         #   (> 100 million spikes) use array since the amount of memory can required can exceed amount available. But
         #   if memory is not an issue use list.
         if self._store_type == 'list':
-            self._pops[population] = {'node_ids': [], 'timestamps': []}
+            self._pops[population] = {col_node_ids: [], col_timestamps: []}
 
         elif self._store_type == 'array':
-            self._pops[population] = {'node_ids': array('I'), 'timestamps': array('d')}
+            self._pops[population] = {col_node_ids: array('I'), col_timestamps: array('d')}
 
         else:
             raise AttributeError('Uknown store type {} for SpikeTrains'.format(self._store_type))
@@ -139,7 +134,7 @@ class STMemoryBuffer(SpikeTrainsAPI):
         population = population if population is not None else self._default_population
         if population not in self._pops:
             return []
-        return np.unique(self._pops[population]['node_ids']).astype(np.uint)
+        return np.unique(self._pops[population][col_node_ids]).astype(np.uint)
 
     @property
     def units(self, population=None):
@@ -153,15 +148,15 @@ class STMemoryBuffer(SpikeTrainsAPI):
         population = population if population is not None else self._default_population
         if population not in self._pops:
             return 0
-        return len(self._pops[population]['timestamps'])
+        return len(self._pops[population][col_timestamps])
 
     def get_times(self, node_id, population=None, time_window=None, **kwargs):
         population = population if population is not None else self._default_population
         pop = self._pops[population]
 
         # filter by node_id and (if specified) by time.
-        mask = np.array(pop['node_ids']) == node_id
-        ts = np.array(pop['timestamps'])
+        mask = np.array(pop[col_node_ids]) == node_id
+        ts = np.array(pop[col_timestamps])
         if time_window:
             mask &= (time_window[0] <= ts) & (ts <= time_window[1])
         return ts[mask]
@@ -176,18 +171,18 @@ class STMemoryBuffer(SpikeTrainsAPI):
 
         ret_df = None
         for pop_name in selelectd_pops:
-            pop_data = self._pops.get(pop_name, {'node_ids': [], 'timestamps': []})
+            pop_data = self._pops.get(pop_name, {col_node_ids: [], col_timestamps: []})
             pop_df = pd.DataFrame({
-                'node_ids': pop_data['node_ids'],
-                'timestamps': pop_data['timestamps']
+                col_node_ids: pop_data[col_node_ids],
+                col_timestamps: pop_data[col_timestamps]
             })
             if with_population_col:
-                pop_df['population'] = pop_name
+                pop_df[col_population] = pop_name
 
             if sort_order == SortOrder.by_id:
-                pop_df = pop_df.sort_values('node_ids')
+                pop_df = pop_df.sort_values(col_node_ids)
             elif sort_order == SortOrder.by_time:
-                pop_df = pop_df.sort_values('timestamps')
+                pop_df = pop_df.sort_values(col_timestamps)
 
             if ret_df is None:
                 ret_df = pop_df
@@ -206,9 +201,9 @@ class STMemoryBuffer(SpikeTrainsAPI):
             populations = [populations]
 
         for pop_name in populations:
-            pop_data = self._pops.get(pop_name, {'node_ids': [], 'timestamps': []})
-            timestamps = pop_data['timestamps']
-            node_ids = pop_data['node_ids']
+            pop_data = self._pops.get(pop_name, {col_node_ids: [], col_timestamps: []})
+            timestamps = pop_data[col_timestamps]
+            node_ids = pop_data[col_node_ids]
 
             if sort_order == SortOrder.by_id:
                 sort_indx = np.argsort(node_ids)
@@ -232,46 +227,43 @@ class STMemoryBuffer(SpikeTrainsAPI):
 
 class STMPIBuffer(STMemoryBuffer):
     def __init__(self, default_population=None, store_type='array', **kwargs):
-        self.mpi_rank = kwargs.get('MPI_rank', bmtk_world_comm.MPI_rank)
-        self.mpi_size = kwargs.get('MPI_size', bmtk_world_comm.MPI_size)
+        self.mpi_rank = kwargs.get('MPI_rank', MPI_rank)
+        self.mpi_size = kwargs.get('MPI_size', MPI_size)
         super(STMPIBuffer, self).__init__(default_population=default_population, store_type=store_type, **kwargs)
 
     def _gatherv(self, population, on_all_ranks=True):
-        comm = bmtk_world_comm.comm
-        size = bmtk_world_comm.MPI_size
-        rank = bmtk_world_comm.MPI_rank
+        from mpi4py import MPI
 
         local_n_spikes = super(STMPIBuffer, self).n_spikes(population)
         sizes = comm.allgather(local_n_spikes)
-        offsets = np.zeros(size, dtype=np.int)
+        offsets = np.zeros(MPI_size, dtype=np.int)
         offsets[1:] = np.cumsum(sizes)[:-1]
         all_n_spikes = np.sum(sizes)
 
-        local_population = self._pops.get(population, {'node_ids': [], 'timestamps': []})  # if pop not on rank
-        local_node_ids = np.array(local_population['node_ids'], dtype=np.uint64)
+        local_population = self._pops.get(population, {col_node_ids: [], col_timestamps: []})  # if pop not on rank
+        local_node_ids = np.array(local_population[col_node_ids], dtype=np.uint64)
         all_node_ids = np.zeros(all_n_spikes, dtype=np.uint64)
         if on_all_ranks:
             comm.Allgatherv(local_node_ids, [all_node_ids, sizes, offsets, MPI.UINT64_T])
         else:
             comm.Gatherv(local_node_ids, [all_node_ids, sizes, offsets, MPI.UINT64_T], root=0)
-            if rank != 0:
+            if MPI_rank != 0:
                 all_node_ids = None
 
-        # local_timestamps = np.array(self._pops[population]['timestamps'], dtype=np.double)
-        local_timestamps = np.array(local_population['timestamps'], dtype=np.double)
+        local_timestamps = np.array(local_population[col_timestamps], dtype=np.double)
         all_timestamps = np.zeros(all_n_spikes, dtype=np.double)
         if on_all_ranks:
             comm.Allgatherv(local_timestamps, [all_timestamps, sizes, offsets, MPI.DOUBLE])
         else:
             comm.Gatherv(local_timestamps, [all_timestamps, sizes, offsets, MPI.DOUBLE], root=0)
-            if rank != 0:
+            if MPI_rank != 0:
                 all_timestamps = None
 
         return all_node_ids, all_timestamps
 
     def to_dataframe(self, populations=None, sort_order=SortOrder.none, with_population_col=True, on_rank='all',
                      **kwargs):
-        comm.barrier()
+        comm_barrier()
         if on_rank == 'local':
             return super(STMPIBuffer, self).to_dataframe(populations=populations, sort_order=sort_order,
                                                          with_population_col=with_population_col, **kwargs)
@@ -294,17 +286,17 @@ class STMPIBuffer(STMemoryBuffer):
             if on_rank == 'all':
                 node_ids, timestamps = self._gatherv(population=pop_name, on_all_ranks=True)
                 pop_df = pd.DataFrame({
-                    'node_ids': node_ids,
-                    'timestamps': timestamps
+                    col_node_ids: node_ids,
+                    col_timestamps: timestamps
                 })
 
                 if with_population_col:
-                     pop_df['population'] = pop_name
+                    pop_df[col_population] = pop_name
 
                 if sort_order == SortOrder.by_id:
-                    pop_df = pop_df.sort_values('node_ids')
+                    pop_df = pop_df.sort_values(col_node_ids)
                 elif sort_order == SortOrder.by_time:
-                    pop_df = pop_df.sort_values('timestamps')
+                    pop_df = pop_df.sort_values(col_timestamps)
 
                 if ret_df is None:
                     ret_df = pop_df
@@ -313,29 +305,29 @@ class STMPIBuffer(STMemoryBuffer):
 
             elif on_rank == 'root':
                 node_ids, timestamps = self._gatherv(population=pop_name, on_all_ranks=False)
-                if bmtk_world_comm.MPI_rank != 0:
+                if MPI_rank != 0:
                     continue
 
                 pop_df = pd.DataFrame({
-                    'node_ids': node_ids,
-                    'timestamps': timestamps
+                    col_node_ids: node_ids,
+                    col_timestamps: timestamps
                 })
 
                 if with_population_col:
-                    pop_df['population'] = pop_name
+                    pop_df[col_population] = pop_name
 
                 if sort_order == SortOrder.by_id:
-                    pop_df = pop_df.sort_values('node_ids')
+                    pop_df = pop_df.sort_values(col_node_ids)
                 elif sort_order == SortOrder.by_time:
-                    pop_df = pop_df.sort_values('timestamps')
+                    pop_df = pop_df.sort_values(col_timestamps)
 
                 if ret_df is None:
                     ret_df = pop_df
                 else:
                     ret_df = ret_df.append(pop_df)
 
-        comm.barrier()
-        if on_rank == 'all' or bmtk_world_comm.MPI_rank == 0:
+        comm_barrier()
+        if on_rank == 'all' or MPI_rank == 0:
             # If using 'all' or on rank 0 a dataframe is expected even if there are no spikes
             ret_df = _create_empty_df(with_population_col) if ret_df is None else ret_df
 
@@ -389,7 +381,8 @@ class STMPIBuffer(STMemoryBuffer):
             return np.unique(np.concatenate(gathered_nodes)).astype(np.uint)
 
     def n_spikes(self, population=None, on_rank='all'):
-        comm = bmtk_world_comm.comm
+        from mpi4py import MPI
+
         local_n = super(STMPIBuffer, self).n_spikes(population)
         if on_rank == 'local':
             return local_n
@@ -536,26 +529,26 @@ class STCSVBuffer(SpikeTrainsAPI):
     def to_dataframe(self, populations=None, sort_order=SortOrder.none, with_population_col=True, **kwargs):
         self.flush()
 
-        sorting_cols = ['population']
+        sorting_cols = [col_population]
         if sort_order == SortOrder.by_time:
-            sorting_cols = ['population', 'timestamps']
+            sorting_cols = [col_population, col_timestamps]
         elif sort_order == SortOrder.by_id:
-            sorting_cols = ['population', 'node_ids']
+            sorting_cols = [col_population, col_node_ids]
 
         ret_df = pd.read_csv(
-            self._buffer_filename, sep=' ', names=['timestamps', 'population', 'node_ids']
+            self._buffer_filename, sep=' ', names=[col_timestamps, col_population, col_node_ids]
         ).sort_values(sorting_cols)
 
         # filter by population
         if np.isscalar(populations):
-            ret_df = ret_df[ret_df['population'] == populations]
+            ret_df = ret_df[ret_df[col_population] == populations]
         elif populations is not None:
-            ret_df = ret_df[ret_df['population'].isin(populations)]
+            ret_df = ret_df[ret_df[col_population].isin(populations)]
 
         if not with_population_col:
-            ret_df = ret_df.drop('population', axis=1)
+            ret_df = ret_df.drop(col_population, axis=1)
 
-        ret_df = ret_df.astype({'timestamps': np.float, 'node_ids': np.int})
+        ret_df = ret_df.astype({col_timestamps: np.float, col_node_ids: np.int})
 
         return ret_df
 
@@ -583,6 +576,8 @@ class STCSVBuffer(SpikeTrainsAPI):
         return
 
     def _sort_buffer_file(self, file_name, sort_order):
+        # sort a spikes cache file
+        # Currently we just read "file_name" into a dataframe, sort it, and resave it to the file
         if sort_order == SortOrder.by_time:
             sort_col = 'time'
         elif sort_order == SortOrder.by_id:
@@ -597,8 +592,8 @@ class STCSVBuffer(SpikeTrainsAPI):
 
 class STCSVMPIBuffer(STCSVBuffer):
     def __init__(self, cache_dir=None, default_population=None, cache_name='spikes', **kwargs):
-        self.mpi_rank = kwargs.get('MPI_rank', bmtk_world_comm.MPI_rank)
-        self.mpi_size = kwargs.get('MPI_size', bmtk_world_comm.MPI_size)
+        self.mpi_rank = kwargs.get('MPI_rank', MPI_rank)
+        self.mpi_size = kwargs.get('MPI_size', MPI_size)
         self._cache_name = cache_name
         self._all_ranks_data = {}
 
@@ -608,12 +603,13 @@ class STCSVMPIBuffer(STCSVBuffer):
         if self.mpi_rank == 0:
             if not os.path.exists(self._cache_dir):
                 os.makedirs(self._cache_dir)
-        bmtk_world_comm.barrier()
+        comm_barrier()
 
         return os.path.join(self._cache_dir, '.bmtk.{}.cache.node{}.csv'.format(self._cache_name, self.mpi_rank))
 
     def _all_cached_files(self):
-        return [os.path.join(self._cache_dir, '.bmtk.{}.cache.node{}.csv'.format(self._cache_name, r)) for r in range(bmtk_world_comm.MPI_size)]
+        return [os.path.join(self._cache_dir, '.bmtk.{}.cache.node{}.csv'.format(self._cache_name, r))
+                for r in range(MPI_size)]
 
     def _gather(self):
         self._all_ranks_data = {}
@@ -655,14 +651,14 @@ class STCSVMPIBuffer(STCSVBuffer):
             return pops
 
         self.flush()
-        comm.barrier()
+        comm_barrier()
         pops = None
         if on_rank == 'all':
             self._gather()
             pops = list(self._all_ranks_data.keys())
 
         elif on_rank == 'root':
-            if bmtk_world_comm.MPI_rank == 0:
+            if MPI_rank == 0:
                 self._gather()
                 pops = list(self._all_ranks_data.keys())
 
@@ -677,14 +673,14 @@ class STCSVMPIBuffer(STCSVBuffer):
 
         population = population if population is not None else self._default_population
         self.flush()
-        comm.barrier()
+        comm_barrier()
 
         if on_rank == 'all':
             self._gather()
             return self._all_ranks_data[population]['n_spikes'] if population in self._all_ranks_data else 0
 
         elif on_rank == 'root':
-            if bmtk_world_comm.MPI_rank == 0:
+            if MPI_rank == 0:
                 self._gather()
                 return self._all_ranks_data[population]['n_spikes'] if population in self._all_ranks_data else 0
             else:
@@ -699,14 +695,14 @@ class STCSVMPIBuffer(STCSVBuffer):
 
         population = population if population is not None else self._default_population
         self.flush()
-        comm.barrier()
+        comm_barrier()
 
         if on_rank == 'all':
             self._gather()
             return list(self._all_ranks_data[population]['node_ids']) if population in self._all_ranks_data else []
 
         elif on_rank == 'root':
-            if bmtk_world_comm.MPI_rank == 0:
+            if MPI_rank == 0:
                 self._gather()
                 return list(self._all_ranks_data[population]['node_ids']) if population in self._all_ranks_data else []
             else:
@@ -724,12 +720,12 @@ class STCSVMPIBuffer(STCSVBuffer):
 
         population = population if population is not None else self._default_population
         self.flush()
-        comm.barrier()
+        comm_barrier()
 
         if on_rank == 'all':
             timestamps = self._gather_times(node_id=node_id, population=population)
         elif on_rank == 'root':
-            timestamps = self._gather_times(node_id, population) if bmtk_world_comm.MPI_rank == 0 else None
+            timestamps = self._gather_times(node_id, population) if MPI_rank == 0 else None
         else:
             raise ValueError('Invalid option "{}" for mpi on_rank parameter'.format(on_rank))
 
@@ -743,12 +739,12 @@ class STCSVMPIBuffer(STCSVBuffer):
             return super(STCSVMPIBuffer, self).spikes(populations=populations, time_window=time_window,
                                                       sort_order=sort_order, **kwargs)
         self.flush()
-        comm.barrier()
+        comm_barrier()
 
         if on_rank == 'all':
             return self._sort_helper(populations, time_window, sort_order)
         elif on_rank == 'root':
-            if bmtk_world_comm.MPI_rank == 0:
+            if MPI_rank == 0:
                 return self._sort_helper(populations, time_window, sort_order)
             else:
                 return []
@@ -826,11 +822,11 @@ class STCSVMPIBufferV2(STCSVMPIBuffer):
 
         ret_df = None
         self.flush()
-        comm.barrier()
+        comm_barrier()
         if on_rank == 'all':
             cached_files = self._all_cached_files()
         elif on_rank == 'root':
-            cached_files = self._all_cached_files() if bmtk_world_comm.MPI_rank == 0 else []
+            cached_files = self._all_cached_files() if MPI_rank == 0 else []
         else:
             raise ValueError('Invalid option "{}" for mpi on_rank parameter'.format(on_rank))
 
@@ -838,21 +834,21 @@ class STCSVMPIBufferV2(STCSVMPIBuffer):
             if not os.path.exists(file_name):
                 continue
 
-            df = pd.read_csv(file_name, sep=' ', names=['timestamps', 'population', 'node_ids'])
+            df = pd.read_csv(file_name, sep=' ', names=[col_timestamps, col_population, col_node_ids])
             if populations is not None:
-                df = df[df['population'].isin(populations)]
+                df = df[df[col_population].isin(populations)]
 
             if not with_population_col:
-                df.drop('population', axis=1)
+                df.drop(col_population, axis=1)
             ret_df = df if ret_df is None else ret_df.append(df)
 
         if ret_df is not None:
             # pandas doesn't always do a good job of reading in the correct dtype for each column
-            ret_df = ret_df.astype({'timestamps': np.float, 'node_ids': np.int})
+            ret_df = ret_df.astype({col_timestamps: np.float, col_node_ids: np.int})
 
             if sort_order == SortOrder.by_time:
-                ret_df = ret_df.sort_values('timestamps')
+                ret_df = ret_df.sort_values(col_timestamps)
             elif sort_order == SortOrder.by_id:
-                ret_df = ret_df.sort_values('node_ids')
+                ret_df = ret_df.sort_values(col_node_ids)
 
         return ret_df

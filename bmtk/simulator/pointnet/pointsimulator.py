@@ -28,11 +28,9 @@ from six import moves
 
 from bmtk.simulator.core.simulator import Simulator
 from bmtk.simulator.pointnet.config import Config
-#import bmtk.simulator.pointnet.config as cfg
 from bmtk.simulator.pointnet.io_tools import io
 import bmtk.simulator.utils.simulation_reports as reports
 import bmtk.simulator.utils.simulation_inputs as inputs
-# from bmtk.utils.io import spike_trains
 from bmtk.utils.reports.spike_trains import SpikeTrains
 from . import modules as mods
 from bmtk.simulator.core.node_sets import NodeSet
