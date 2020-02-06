@@ -160,7 +160,8 @@ class SpikesReport(SimReport):
             'spikes_file_csv': output_dict.get('spikes_file_csv', None),
             'spikes_file_nwb': output_dict.get('spikes_file_nwb', None),
             'spikes_sort_order': output_dict.get('spikes_sort_order', None),
-            'tmp_dir': output_dict.get('output_dir', cls.default_dir)
+            'tmp_dir': output_dict.get('output_dir', cls.default_dir),
+            'cache_to_disk': output_dict.get('cache_to_disk', True)
         }
         if not (params['spikes_file'] or params['spikes_file_csv'] or params['spikes_file_nwb']):
             # User hasn't specified any spikes file

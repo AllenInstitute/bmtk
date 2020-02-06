@@ -38,7 +38,8 @@ class SpikesMod(object):
 
     """
 
-    def __init__(self, tmp_dir, spikes_file_csv=None, spikes_file=None, spikes_file_nwb=None, spikes_sort_order=None):
+    def __init__(self, tmp_dir, spikes_file_csv=None, spikes_file=None, spikes_file_nwb=None, spikes_sort_order=None,
+                 cache_to_disk=True):
         def _get_path(file_name):
             # Unless file-name is an absolute path then it should be placed in the $OUTPUT_DIR
             if file_name is None:
@@ -53,7 +54,7 @@ class SpikesMod(object):
         self._tmp_file_base = 'tmp_spike_times'
         self._spike_labels = os.path.join(self._tmp_dir, self._tmp_file_base)
 
-        self._spike_writer = SpikeTrains(cache_dir=tmp_dir)
+        self._spike_writer = SpikeTrains(cache_dir=tmp_dir, cache_to_disk=cache_to_disk)
         # self._spike_writer = SpikeTrainWriter(tmp_dir=tmp_dir, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)
         self._spike_writer.delimiter = '\t'
         self._spike_writer.gid_col = 0

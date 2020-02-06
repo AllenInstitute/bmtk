@@ -37,7 +37,8 @@ class SpikesMod(SimulatorMod):
 
     """
 
-    def __init__(self, tmp_dir, spikes_file_csv=None, spikes_file=None, spikes_file_nwb=None, spikes_sort_order=None, mode='a'):
+    def __init__(self, tmp_dir, spikes_file_csv=None, spikes_file=None, spikes_file_nwb=None, cache_to_disk=True,
+                 spikes_sort_order=None, mode='a'):
         # TODO: Have option to turn off caching spikes to csv.
         def _file_path(file_name):
             if file_name is None:
@@ -58,7 +59,8 @@ class SpikesMod(SimulatorMod):
         self._sort_order = sort_order_lu.get(spikes_sort_order, sort_order.none)
 
         cache_name = os.path.basename(self._h5_fname or self._csv_fname or self._nwb_fname)
-        self._spike_writer = SpikeTrains(cache_dir=tmp_dir, cache_name=cache_name)
+        self._spike_writer = SpikeTrains(cache_dir=tmp_dir, cache_name=cache_name, cache_to_disk=cache_to_disk)
+
         self._gid_map = None
 
     def initialize(self, sim):
@@ -78,6 +80,7 @@ class SpikesMod(SimulatorMod):
         sim.set_spikes_recording()  # reset recording vector
 
     def finalize(self, sim):
+        # TODO: Get ride of flush/barrier calls, spike_trains should take care of it
         self._spike_writer.flush()
         pc.barrier()
 
