@@ -132,7 +132,7 @@ def _get_labels(labels):
 def _find_time_window(spike_trains, populations):
     """Use the spike-train(s) to find the time-window to plot"""
 
-    if isinstance(spike_trains, (SpikeTrains, STReader)):
+    if isinstance(spike_trains, (SpikeTrains)):
         return spike_trains.time_range(populations=populations)
 
     else:

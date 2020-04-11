@@ -13,4 +13,7 @@ def main(config_file):
 
 
 if __name__ == '__main__':
-    main('config.json')
+    if __file__ != sys.argv[-1]:
+        main(sys.argv[-1])
+    else:
+        main('config.json')
