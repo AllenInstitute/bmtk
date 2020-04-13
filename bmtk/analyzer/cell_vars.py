@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from .io_tools import load_config
 from .utils import listify
 # from bmtk.utils.cell_vars import CellVarsFile
-from bmtk.simulator.utils.config import ConfigDict
+from bmtk.utils.sonata.config import SonataConfig as ConfigDict
 from bmtk.utils.reports import CompartmentReport
 
 # In the case reports are missing units, try to guess based on

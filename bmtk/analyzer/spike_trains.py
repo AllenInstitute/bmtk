@@ -17,7 +17,7 @@ def load_spikes_file(config_file=None, spikes_file=None):
 
     elif config_file is not None:
         config = ConfigDict.from_json(config_file)
-        return SpikeTrains.load(config.spikes_file)
+        return SpikeTrains.load(config['output']['spikes_file'])
 
 
 def to_dataframe(config_file, spikes_file=None):
