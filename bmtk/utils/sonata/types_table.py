@@ -56,7 +56,7 @@ class TypesTable(object):
 
     @property
     def type_ids(self):
-        return self._index_typeid2df.keys()
+        return list(self._index_typeid2df.keys())
 
     @property
     def columns(self):
