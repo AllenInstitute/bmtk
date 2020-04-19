@@ -26,6 +26,7 @@ import six
 from collections import defaultdict
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
+from matplotlib import cm
 
 from .spike_trains import SpikeTrains
 from .spike_trains_api import SpikeTrainsAPI
@@ -201,7 +202,7 @@ def _build_labels_lu(labels, spike_trains_file):
     return labels
 
 
-def plot_raster(spike_trains, population=None, time_window=None, node_ids=None, ts_units=None, overlapping=False,
+def plot_raster(spike_trains, population=None, time_window=None, node_ids=None, ts_units='ms', overlapping=False,
                 with_histogram=True,
                 show_plot=True, save_as=None, with_labels=True,
                 nodes_file=None, node_types_file=None, group_by=None):
@@ -228,7 +229,6 @@ def plot_raster(spike_trains, population=None, time_window=None, node_ids=None, 
     '''
 
     groups = _create_grouping(nodes_file, node_types_file, population, group_by, node_ids)
-
     n_rasters = len(spike_trains_l)
     '''
     if overlapping and n_rasters > 1:
@@ -250,13 +250,15 @@ def plot_raster(spike_trains, population=None, time_window=None, node_ids=None, 
 
     for i, spikes in enumerate(spike_trains_l):
         gs_i = raster_gs[i]
+        ax1 = plt.subplot(gs_i)
         for grp_label, grp_nodes in groups:
-            spikes_df = spikes.to_dataframe(populations=population, time_window=time_window, node_ids=grp_nodes)
-            ax1 = plt.subplot(gs_i)
-            ax1.scatter(spikes_df['timestamps'], spikes_df['node_ids'], lw=0, s=5, label=grp_label or labels[i])
+            spikes_df = spikes.to_dataframe(populations=population, time_window=time_window)
+            spikes_df = spikes_df[spikes_df['node_ids'].isin(grp_nodes)]
+            plt.scatter(spikes_df['timestamps'], spikes_df['node_ids'], lw=0, s=8, label=grp_label or labels[i])
             ax1.legend(loc=1, prop={'size': 10})
             ax1.set_xlim([time_window[0], time_window[1]])
             ax1.set_ylabel('node_id')
+
         if gs_i != last_gs:
             ax1.set_xticks([])
         else:
