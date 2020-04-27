@@ -253,9 +253,11 @@ def plot_raster(spike_trains, population=None, time_window=None, node_ids=None, 
         ax1 = plt.subplot(gs_i)
         for grp_label, grp_nodes in groups:
             spikes_df = spikes.to_dataframe(populations=population, time_window=time_window)
-            spikes_df = spikes_df[spikes_df['node_ids'].isin(grp_nodes)]
+            if grp_nodes is not None:
+                spikes_df = spikes_df[spikes_df['node_ids'].isin(grp_nodes)]
             plt.scatter(spikes_df['timestamps'], spikes_df['node_ids'], lw=0, s=8, label=grp_label or labels[i])
-            ax1.legend(loc=1, prop={'size': 10})
+            if len(groups) > 1:
+                ax1.legend(loc=1, prop={'size': 10})
             ax1.set_xlim([time_window[0], time_window[1]])
             ax1.set_ylabel('node_id')
 
