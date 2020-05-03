@@ -180,8 +180,12 @@ class PointNetwork(SimNetwork):
                     virt_gid_map.add_nestids(name=node_pop.name, nest_ids=nest_ids, node_ids=node.node_ids)
                     for node_id, nest_id in zip(node.node_ids, nest_ids):
                         virt_node_map[node_id] = nest_id
-                        nest.SetStatus([nest_id],
-                                       {'spike_times': np.array(spike_trains.get_times(node_id=node_id))})
+
+                        st = np.array(spike_trains.get_times(node_id=node_id))
+                        if len(st) == 0:
+                            continue
+                        st.sort()
+                        nest.SetStatus([nest_id], {'spike_times': st})
 
             elif node_pop.mixed_nodes:
                 for node in node_pop.get_nodes():
