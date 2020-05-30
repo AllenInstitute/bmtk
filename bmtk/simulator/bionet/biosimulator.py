@@ -211,7 +211,7 @@ class BioSimulator(Simulator):
 
         for idx,gid in enumerate(gids):
             cell = self.net.get_cell_gid(gid)
-            Ic = IClamp(amplitude[idx], delay, duration)
+            Ic = IClamp(amplitude[idx], delay[idx], duration[idx])
             
             Ic.attach_current(cell)
             self._iclamps.append(Ic)
@@ -321,6 +321,20 @@ class BioSimulator(Simulator):
                 if len(sim_input.params['amp'])>1:
                     sim_input.params['amp']=[float(i) for i in sim_input.params['amp']]
 
+                try: 
+                    len(sim_input.params['delay'])
+                except:
+                    sim_input.params['delay']=[float(sim_input.params['delay'])]
+                if len(sim_input.params['delay'])>1:
+                    sim_input.params['delay']=[float(i) for i in sim_input.params['delay']]
+                
+                try: 
+                    len(sim_input.params['duration'])
+                except:
+                    sim_input.params['duration']=[float(sim_input.params['duration'])]
+                if len(sim_input.params['duration'])>1:
+                    sim_input.params['duration']=[float(i) for i in sim_input.params['duration']]
+                    
                 amplitude = sim_input.params['amp']
                 delay = sim_input.params['delay']
                 duration = sim_input.params['duration']

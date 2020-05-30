@@ -384,8 +384,8 @@ class EnvBuilder(object):
             "node_set": "all",
             "gids": current_param['gids'],
             "amp": current_param['amp'],
-            "delay": float(current_param['delay']),
-            "duration": float(current_param['duration'])
+            "delay": current_param['delay'],
+            "duration": current_param['duration']
         }
 
         if 'inputs' not in self._simulation_config:
