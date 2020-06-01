@@ -24,8 +24,8 @@ import os
 from neuron import h
 
 from bmtk.simulator.core.simulator_network import SimNetwork
-from bmtk.simulator.bionet.biocell import BioCell
-from bmtk.simulator.bionet.pointprocesscell import PointProcessCell
+from bmtk.simulator.bionet.biocell import BioCell, BioCellSpontSyn
+from bmtk.simulator.bionet.pointprocesscell import PointProcessCell, PointProcessCellSpontSyns
 from bmtk.simulator.bionet.pointsomacell import PointSomaCell
 from bmtk.simulator.bionet.virtualcell import VirtualCell
 from bmtk.simulator.bionet.morphology import Morphology
@@ -73,6 +73,10 @@ class BioNetwork(SimNetwork):
 
         self._gid_pool = GidPool()
 
+        self.has_spont_syns = False
+        self.spont_syns_filter = None
+        self.spont_syns_times = None
+
     @property
     def gid_pool(self):
         return self._gid_pool
@@ -80,6 +84,18 @@ class BioNetwork(SimNetwork):
     @property
     def py_function_caches(self):
         return nrn
+
+    def set_spont_syn_activity(self, precell_filter, timestamps):
+        self._model_type_map = {
+            'biophysical': BioCellSpontSyn,
+            'point_process': PointProcessCellSpontSyns,
+            'point_soma': PointSomaCell,
+            'virtual': VirtualCell
+        }
+
+        self.has_spont_syns = True
+        self.spont_syns_filter = precell_filter
+        self.spont_syns_times = timestamps
 
     def get_node_id(self, population, node_id):
         if node_id in self._rank_node_ids[population]:

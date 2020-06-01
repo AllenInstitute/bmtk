@@ -285,6 +285,7 @@ class BioSimulator(Simulator):
     @classmethod
     def from_config(cls, config, network, set_recordings=True):
         # TODO: convert from json to sonata config if necessary
+        simulation_inputs = inputs.from_config(config)
 
         sim = cls(network=network,
                   dt=config.dt,
@@ -293,6 +294,13 @@ class BioSimulator(Simulator):
                   celsius=config.celsius,
                   nsteps_block=config.block_step)
 
+        # Special case for setting synapses to spontaneously (for a given set of pre-synaptic cell-types). Using this
+        # input will change the way the network builds cells/connections and thus needs to be set first.
+        for sim_input in simulation_inputs:
+            if sim_input.input_type == 'syn_activity':
+                network.set_spont_syn_activity(precell_filter=sim_input.params['precell_filter'],
+                                               timestamps=sim_input.params['timestamps'])
+
         network.io.log_info('Building cells.')
         network.build_nodes()
 
@@ -300,7 +308,7 @@ class BioSimulator(Simulator):
         network.build_recurrent_edges()
 
         # TODO: Need to create a gid selector
-        for sim_input in inputs.from_config(config):
+        for sim_input in simulation_inputs:
             try:
                 network.get_node_set(sim_input.node_set)
             except:
@@ -353,6 +361,9 @@ class BioSimulator(Simulator):
             elif sim_input.module == 'xstim':
                 sim.add_mod(mods.XStimMod(**sim_input.params))
 
+            elif sim_input.module == 'syn_activity':
+                pass
+
             else:
                 io.log_exception('Can not parse input format {}'.format(sim_input.name))
 
@@ -381,8 +392,6 @@ class BioSimulator(Simulator):
 
             elif report.module == 'save_synapses':
                 mod = mods.SaveSynapses(**report.params)
-
-
 
             else:
                 # TODO: Allow users to register customized modules using pymodules
