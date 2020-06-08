@@ -25,12 +25,13 @@ from six import string_types
 from neuron import h
 from bmtk.simulator.core.simulator import Simulator
 from bmtk.simulator.bionet.io_tools import io
-from bmtk.simulator.bionet.iclamp import IClamp
+from bmtk.simulator.bionet.iclamp import IClamp, FileIClamp
 from bmtk.simulator.bionet import modules as mods
 from bmtk.simulator.core.node_sets import NodeSet
 import bmtk.simulator.utils.simulation_reports as reports
 import bmtk.simulator.utils.simulation_inputs as inputs
 from bmtk.utils.reports.spike_trains import SpikeTrains
+import h5py
 
 
 pc = h.ParallelContext()    # object to access MPI methods
@@ -70,6 +71,7 @@ class BioSimulator(Simulator):
                
         h.pysim = self  # use this objref to be able to call postFadvance from proc advance in advance.hoc
         self._iclamps = []
+        self._f_iclamps = []
 
         self._output_dir = 'output'
         self._log_file = 'output/log.txt'
@@ -216,6 +218,43 @@ class BioSimulator(Simulator):
             Ic.attach_current(cell)
             self._iclamps.append(Ic)
 
+    def attach_file_current_clamp(self, input_file):
+        file = h5py.File(input_file,'r')
+
+        if "gids" not in list(file.keys()) or file["gids"].value == 'all':
+            gids = self.biophysical_gids
+        else:
+            gids = file["gids"].value
+
+        if isinstance(gids, int):
+            gids = [gids]
+        elif isinstance(gids, string_types):
+            gids = [int(gids)]
+        elif isinstance(gids, NodeSet):
+            gids = gids.gids()
+
+        gids = list(set(self.local_gids) & set(gids))
+
+        amplitudes = file["amplitudes"].value
+
+        if "dts" not in list(file.keys()):
+            dts = [1 for i in range(len(amplitudes))]#Automatically sets dt to 1 ms if it is not present in the config.
+        else:
+            dts = file["dts"].value
+
+        file.close()
+        
+        for idx,gid in enumerate(gids):
+            cell = self.net.get_cell_gid(gid)
+
+            if len(amplitudes) != 1:
+                Ic = FileIClamp(amplitudes[idx], dts[idx])
+            else:
+                Ic = FileIClamp(amplitudes[0], dts[0])#This makes it so that if there are multiple gids and only one array of amplitudes, that one array is used for all gids.
+
+            Ic.attach_current(cell)
+            self._f_iclamps.append(Ic)
+
     def add_mod(self, module):
         self._sim_mods.append(module)
 
@@ -311,6 +350,9 @@ class BioSimulator(Simulator):
                 path = sim_input.params['input_file']
                 spikes = SpikeTrains.load(path=path, file_type=sim_input.module, **sim_input.params)
                 network.add_spike_trains(spikes, node_set)
+
+            elif sim_input.module == "FileIClamp":
+                sim.attach_file_current_clamp(sim_input.params["input_file"])
 
             elif sim_input.module == 'IClamp':
                 # TODO: Parse from csv file

@@ -36,3 +36,23 @@ class IClamp(object):
         self._stim.dur = self._iclamp_dur
         self._stim.amp = self._iclamp_amp
         return self._stim
+
+
+class FileIClamp(object):
+    def __init__(self, amplitudes, dt):
+        self._iclamp_amps = amplitudes
+        self._iclamp_dt = dt
+        self._stim = None
+
+    def attach_current(self, cell):
+        self._stim = h.IClamp(cell.hobj.soma[0](0.5))
+
+        #Listed as necessary values in the docs to use play() with an IClamp.
+        self._stim.delay = 0
+        self._stim.dur = 1e9
+
+        self._vect_stim = h.Vector(self._iclamp_amps)
+        self._vect_stim.play(self._stim._ref_amp, self._iclamp_dt)  #Plays the amps to the IClamp amp variable with a given dt.
+
+        return self._stim
+
