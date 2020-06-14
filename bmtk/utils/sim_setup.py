@@ -393,6 +393,24 @@ class EnvBuilder(object):
 
         self._simulation_config['inputs']['current_clamp'] = iclamp_config
 
+    def _add_file_current_clamp(self, current_param):
+        if current_param is None:
+            return
+
+        amp_file = os.path.abspath(current_param["input_file"])
+
+        f_iclamp_config = {
+            "input_type": "current_clamp",
+            "module": "FileIClamp",
+            "node_set": "all",
+            "input_file": amp_file
+        }
+
+        if 'inputs' not in self._simulation_config:
+            self._simulation_config['inputs'] = {}
+
+        self._simulation_config['inputs']['file_current_clamp'] = f_iclamp_config
+
     def _add_spikes_inputs(self, spikes_inputs):
         inputs_dict = {}
         for s in spikes_inputs:
@@ -426,7 +444,7 @@ class EnvBuilder(object):
         shutil.copy(os.path.join(self.examples_dir, run_script), os.path.join(self.base_dir, run_script))
 
     def build(self, include_examples=False, use_relative_paths=True, report_vars=[],
-              report_nodes=None, current_clamp=None, spikes_inputs=None, **run_args):
+              report_nodes=None, current_clamp=None, file_current_clamp=None, spikes_inputs=None, **run_args):
         self._parse_network_dir(self.network_dir)
         self._create_components_dir(self.components_dir, with_examples=include_examples)
         if use_relative_paths:
@@ -447,6 +465,10 @@ class EnvBuilder(object):
                 current_clamp['gids']='all'
 
         self._add_current_clamp(current_clamp)
+
+        if file_current_clamp is not None:
+            self._add_file_current_clamp(file_current_clamp)
+
         if spikes_inputs!=None:
             self._add_spikes_inputs(spikes_inputs)
         if use_relative_paths:
@@ -543,6 +565,7 @@ def build_env_bionet(base_dir='.', network_dir=None, components_dir=None, node_s
                      v_init=-80.0, celsius=34.0,
                      report_vars=[], report_nodes=None,
                      current_clamp=None,
+                     file_current_clamp=None,
                      spikes_inputs=None,
                      compile_mechanisms=False,
                      use_relative_paths=True):
@@ -551,7 +574,7 @@ def build_env_bionet(base_dir='.', network_dir=None, components_dir=None, node_s
 
     env_builder.build(include_examples=include_examples, use_relative_paths=use_relative_paths,
                       report_vars=report_vars, report_nodes=report_nodes, current_clamp=current_clamp,
-                      spikes_inputs=spikes_inputs,
+                      file_current_clamp=file_current_clamp, spikes_inputs=spikes_inputs,
                       tstart=tstart, tstop=tstop, dt=dt, dL=dL, spikes_threshold=spikes_threshold,
                       nsteps_block=nsteps_block, v_init=v_init, celsius=celsius)
 
