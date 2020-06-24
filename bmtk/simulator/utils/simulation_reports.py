@@ -171,6 +171,39 @@ class SpikesReport(SimReport):
 
 
 @SimReport.register_module
+class ClampReport(SimReport):
+    def __init__(self, report_name, module, params):
+        super(ClampReport, self).__init__(report_name, module, params)
+
+    @staticmethod
+    def avail_modules():
+        return 'clamp_report'
+
+    @property
+    def node_set(self):
+        return 'all'
+
+    def _set_defaults(self):        
+        for var_name, default_val in self._get_defaults():
+            if var_name not in self.params:
+                self.params[var_name] = default_val
+
+    def _get_defaults(self):
+        # directory for saving temporary files created during simulation
+        tmp_dir = self.default_dir
+
+        # Find the report file name. Either look for "file_name" parameter, or else it is <report-name>.h5
+        if 'file_name' in self.params:
+            file_name = self.params['file_name']
+        elif self.report_name.endswith('.h5') or self.report_name.endswith('.hdf') \
+                or self.report_name.endswith('.hdf5'):
+            file_name = self.report_name  # Check for case report.h5.h5
+        else:
+            file_name = '{}.h5'.format(self.report_name)
+
+        return [('file_name', file_name), ('tmp_dir', tmp_dir)]
+
+@SimReport.register_module
 class SEClampReport(SimReport):
     def __init__(self, report_name, module, params):
         super(SEClampReport, self).__init__(report_name, module, params)
