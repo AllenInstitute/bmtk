@@ -26,6 +26,7 @@ from neuron import h
 from bmtk.simulator.core.simulator import Simulator
 from bmtk.simulator.bionet.io_tools import io
 from bmtk.simulator.bionet.iclamp import IClamp, FileIClamp
+from bmtk.simulator.bionet.seclamp import SEClamp
 from bmtk.simulator.bionet import modules as mods
 from bmtk.simulator.core.node_sets import NodeSet
 import bmtk.simulator.utils.simulation_reports as reports
@@ -72,6 +73,7 @@ class BioSimulator(Simulator):
         h.pysim = self  # use this objref to be able to call postFadvance from proc advance in advance.hoc
         self._iclamps = []
         self._f_iclamps = []
+        self._seclamps = []
 
         self._output_dir = 'output'
         self._log_file = 'output/log.txt'
@@ -255,6 +257,54 @@ class BioSimulator(Simulator):
             Ic.attach_current(cell)
             self._f_iclamps.append(Ic)
 
+    def attach_se_voltage_clamp(self, amplitudes, durations, gids, rs):
+        if gids is None or gids=='all':
+            gids = self.biophysical_gids
+
+        if isinstance(gids, int):
+            gids = [gids]
+        elif isinstance(gids, string_types):
+            gids = [int(gids)]
+        elif isinstance(gids, NodeSet):
+            gids = gids.gids()
+
+        all_gids = list(gids).copy()
+        gids = list(set(self.local_gids) & set(gids))
+        
+        if len(all_gids)!=len(amplitudes):
+            if len(amplitudes) != 1:
+                raise AttributeError("SEClamp must either have amplitudes for each gid or only one set of amplitudes. " 
+            + "gids: "+ str(all_gids) + ',amps: ' + str(amplitudes) + 'durs,' + str(durations))
+            elif len(durations) != 1:
+                raise AttributeError("SEClamp must either have durations for each gid or only one set of durations. "
+            + "gids: "+ str(all_gids) + ',amps: ' + str(amplitudes) + 'durs,' + str(durations))
+            else:
+                amplitudes = list(amplitudes) * len(gids)
+                durations = list(durations) * len(gids)
+
+        for idx,gid in enumerate(all_gids):
+            if gid in gids:
+                cell = self.net.get_cell_gid(gid)
+
+                try:
+                    length = len(amplitudes[idx])
+                    if length!=3:
+                        raise AttributeError("SEClamp amplitudes must be a non-list or a list of length 3.")
+                except:
+                    amplitudes[idx] = [amplitudes[idx] for i in range(3)]
+
+                try:
+                    length = len(durations[idx])
+                    if length!=3:
+                        raise AttributeError("SEClamp durations must be a non-list or a list of length 3.")
+                except:
+                    durations[idx] = [durations[idx] for i in range(3)]
+
+                SEvc = SEClamp(amplitudes[idx], durations[idx], rs=rs[idx])
+                
+                SEvc.attach_current(cell)
+                self._seclamps.append(SEvc)
+
     def add_mod(self, module):
         self._sim_mods.append(module)
 
@@ -264,7 +314,15 @@ class BioSimulator(Simulator):
         if continuing from the saved state, then will use h.continuerun() 
         """
         for mod in self._sim_mods:
-            mod.initialize(self)
+            if isinstance(mod, mods.ClampReport):
+                if mod.variable == "se":
+                    mod.initialize(self, self._seclamps)
+                elif mod.variable == "ic":
+                    mod.initialize(self, self._iclamps)
+                elif mod.variable == "f_ic":
+                    mod.initialize(self, self._f_iclamps)
+            else:
+                mod.initialize(self)
 
         self.start_time = h.startsw()
         s_time = time.time()
@@ -392,6 +450,41 @@ class BioSimulator(Simulator):
 
                 sim.attach_current_clamp(amplitude, delay, duration, gids)
 
+            elif sim_input.module == "SEClamp":
+                try: 
+                    len(sim_input.params['amps'])
+                except:
+                    sim_input.params['amps']=[float(sim_input.params['amps'])]
+                
+                try: 
+                    len(sim_input.params['durations'])
+                except:
+                    sim_input.params['durations']=[float(sim_input.params['durations'])]
+                    
+                amplitudes = sim_input.params['amps']
+                durations = sim_input.params['durations']
+                rs = None
+
+                if "rs" in sim_input.params.keys():
+                    try: 
+                        len(sim_input.params['rs'])
+                    except:
+                        sim_input.params['rs']=[float(sim_input.params['rs'])]
+                    if len(sim_input.params['rs'])>1:
+                        sim_input.params['rs']=[float(i) for i in sim_input.params['rs']]
+                    rs = sim_input.params["rs"]
+                                   
+                try:
+                    sim_input.params['gids']
+                except:
+                    sim_input.params['gids'] = None
+                if sim_input.params['gids'] is not None:
+                    gids = sim_input.params['gids']
+                else:
+                    gids = list(node_set.gids())
+
+                sim.attach_se_voltage_clamp(amplitudes, durations, gids, rs)
+
             elif sim_input.module == 'xstim':
                 sim.add_mod(mods.XStimMod(**sim_input.params))
 
@@ -413,6 +506,8 @@ class BioSimulator(Simulator):
 
                 else:
                     mod = mods.MembraneReport(**report.params)
+            elif isinstance(report, reports.ClampReport):
+                mod = mods.ClampReport(**report.params)
 
             elif isinstance(report, reports.ECPReport):
                 mod = mods.EcpMod(**report.params)

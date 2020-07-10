@@ -362,6 +362,24 @@ class EnvBuilder(object):
 
         self._simulation_config['reports'].update(report_config)
 
+    def _add_clamp_reports(self, clamp_reports):
+        if isinstance(clamp_reports, six.string_types):
+            clamp_reports = [clamp_reports]
+
+        for c in clamp_reports:
+            logger.info("Adding clamp report for {} clamp.".format(c))
+
+        report_config = {
+            '{}_clamp_report'.format(c): {
+                'variable_name': c,
+                'module': 'clamp_report'
+            } for c in clamp_reports}
+
+        if 'reports' not in self._simulation_config:
+            self._simulation_config['reports'] = {}
+
+        self._simulation_config['reports'].update(report_config)
+
     def _add_output_section(self):
         output_section = {
             'log_file': 'log.txt',
@@ -411,6 +429,28 @@ class EnvBuilder(object):
 
         self._simulation_config['inputs']['file_current_clamp'] = f_iclamp_config
 
+    def _add_se_voltage_clamp(self, clamp_param):
+        seclamp_config = {
+            "input_type": "voltage_clamp",
+            "module": "SEClamp",
+            "node_set": "all",
+            "gids": clamp_param['gids'],
+            "amps": clamp_param['amps'],
+            "durations": clamp_param["durations"]
+        }
+
+        if "rs" in clamp_param.keys():
+            seclamp_config["rs"] = clamp_param["rs"]
+
+        if 'inputs' not in self._simulation_config:
+            self._simulation_config['inputs'] = {}
+
+        name = 'se_voltage_clamp'
+        if 'name' in clamp_param.keys():
+            name = clamp_param['name']
+
+        self._simulation_config['inputs'][name] = seclamp_config
+
     def _add_spikes_inputs(self, spikes_inputs):
         inputs_dict = {}
         for s in spikes_inputs:
@@ -444,7 +484,9 @@ class EnvBuilder(object):
         shutil.copy(os.path.join(self.examples_dir, run_script), os.path.join(self.base_dir, run_script))
 
     def build(self, include_examples=False, use_relative_paths=True, report_vars=[],
-              report_nodes=None, current_clamp=None, file_current_clamp=None, spikes_inputs=None, **run_args):
+              report_nodes=None, clamp_reports=[], current_clamp=None, file_current_clamp=None,
+               se_voltage_clamp=None,
+              spikes_inputs=None, **run_args):
         self._parse_network_dir(self.network_dir)
         self._create_components_dir(self.components_dir, with_examples=include_examples)
         if use_relative_paths:
@@ -453,6 +495,7 @@ class EnvBuilder(object):
 
         selected_ns = self._create_node_sets_file(report_nodes)
         self._add_reports(report_vars, selected_ns)
+        self._add_clamp_reports(clamp_reports)
         self._add_output_section()
         self._simulation_config['target_simulator'] = self.target_simulator
         self._simulation_config['network'] = os.path.join(self.base_dir, 'circuit_config.json')
@@ -468,6 +511,14 @@ class EnvBuilder(object):
 
         if file_current_clamp is not None:
             self._add_file_current_clamp(file_current_clamp)
+
+        if se_voltage_clamp is not None:
+            try:
+                se_voltage_clamp['gids']
+            except:
+                se_voltage_clamp['gids']='all'
+
+            self._add_se_voltage_clamp(se_voltage_clamp)
 
         if spikes_inputs!=None:
             self._add_spikes_inputs(spikes_inputs)
@@ -564,8 +615,10 @@ def build_env_bionet(base_dir='.', network_dir=None, components_dir=None, node_s
                      tstart=0.0, tstop=1000.0, dt=0.001, dL=20.0, spikes_threshold=-15.0, nsteps_block=5000,
                      v_init=-80.0, celsius=34.0,
                      report_vars=[], report_nodes=None,
+                     clamp_reports=[],
                      current_clamp=None,
                      file_current_clamp=None,
+                     se_voltage_clamp=None,
                      spikes_inputs=None,
                      compile_mechanisms=False,
                      use_relative_paths=True):
@@ -573,8 +626,9 @@ def build_env_bionet(base_dir='.', network_dir=None, components_dir=None, node_s
                                    node_sets_file=node_sets_file)
 
     env_builder.build(include_examples=include_examples, use_relative_paths=use_relative_paths,
-                      report_vars=report_vars, report_nodes=report_nodes, current_clamp=current_clamp,
-                      file_current_clamp=file_current_clamp, spikes_inputs=spikes_inputs,
+                      report_vars=report_vars, report_nodes=report_nodes, clamp_reports=clamp_reports,
+                       current_clamp=current_clamp,
+                      file_current_clamp=file_current_clamp, se_voltage_clamp=se_voltage_clamp, spikes_inputs=spikes_inputs,
                       tstart=tstart, tstop=tstop, dt=dt, dL=dL, spikes_threshold=spikes_threshold,
                       nsteps_block=nsteps_block, v_init=v_init, celsius=celsius)
 

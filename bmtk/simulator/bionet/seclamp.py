@@ -20,10 +20,28 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-from .ecp import EcpMod
-from .record_cellvars import MembraneReport, SomaReport
-from .record_spikes import SpikesMod
-from .xstim import XStimMod
-from .save_synapses import SaveSynapses
-from .record_netcons import NetconReport
-from .record_clamp import ClampReport
+from neuron import h
+
+
+class SEClamp(object):
+    def __init__(self, amplitudes, durations, rs=None):
+        self._seclamp_amps = amplitudes
+        self._seclamp_durs = durations
+        self._seclamp_rs = rs
+        self._stim = None
+
+    def attach_current(self, cell):
+        self._stim = h.SEClamp(cell.hobj.soma[0](0.5))
+        self._stim.dur1 = self._seclamp_durs[0]
+        self._stim.dur2 = self._seclamp_durs[1]
+        self._stim.dur3 = self._seclamp_durs[2]
+
+        self._stim.amp1 = self._seclamp_amps[0]
+        self._stim.amp2 = self._seclamp_amps[1]
+        self._stim.amp3 = self._seclamp_amps[2]
+
+        if self._seclamp_rs != None:
+            self._stim.rs = self._seclamp_rs
+
+        return self._stim
+        
