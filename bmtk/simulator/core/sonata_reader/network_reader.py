@@ -180,6 +180,10 @@ class SonataEdges(EdgesReader):
         for edge in self._edge_pop.get_target(node_id):
             yield self._edge_adaptors[edge.group_id].get_edge(edge)
 
+    def get_source(self, node_id):
+        for edge in self._edge_pop.get_source(node_id):
+            yield self._edge_adaptors[edge.group_id].get_edge(edge)
+
     def get_edges(self):
         for edge_group in self._edge_pop.groups:
             edge_adaptor = self._edge_adaptors[edge_group.group_id]

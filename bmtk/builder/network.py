@@ -59,6 +59,11 @@ class Network (object):
         self._node_type_id_gen = IDGenerator(100)
         self._edge_type_id_gen = IDGenerator(100)
 
+        try:
+            self._gj_id_gen = IDGenerator(network_props["gj_id_start"])
+        except:
+            self._gj_id_gen = IDGenerator()
+
         #self._connection_table = []
         #self._source_networks = []
         #self._target_networks = []
@@ -129,6 +134,14 @@ class Network (object):
         self._add_node_type(node_properties)
         self._node_sets.append(NodeSet(N, node_params, node_properties))
 
+    def add_gap_junctions(self, source=None, target=None, iterator='one_to_one', resistance=1, target_sections=['somatic'],
+                            connection_rule=1, connection_params=None):
+        if target_sections != None:
+            print("Warning: For gap junctions, the target sections variable is used for both the source and target sections.")
+        return self.add_edges(source=source, target=target, iterator=iterator, distance_range=[0.0,300.0],
+                    syn_weight=resistance, is_gap_junction=True, target_sections=target_sections,
+                    connection_rule=connection_rule, connection_params=connection_params)
+
     def add_edges(self, source=None, target=None, connection_rule=1, connection_params=None, iterator='one_to_one',
                   **edge_type_properties):
         # TODO: check edge_type_properties for 'edge_type_id' and make sure there isn't a collision. Otherwise create
@@ -138,6 +151,12 @@ class Network (object):
 
         if not isinstance(target, NodePool):
             target = NodePool(self, **target or {})
+
+        try:
+            if is_gap_junction and source.network_name != target.network_name:
+                raise Exception("Gap junctions must consist of two cells on the same network.")
+        except:
+            is_gap_junction = False
 
         self._network_conns.add((source.network_name, target.network_name))
         self._connected_networks[source.network_name] = source.network
@@ -391,6 +410,8 @@ class Network (object):
         if not os.path.exists(output_dir):
             os.mkdir(output_dir)
 
+        self._save_gap_junctions(os.path.join(output_dir, self._network_name + '_gap_juncs.h5'))
+
         for p in network_params:
             if p[3] is not None:
                 self._save_edge_types(os.path.join(output_dir, p[3]), p[0], p[1])
@@ -418,6 +439,9 @@ class Network (object):
                                for cname in cols])
 
     def _save_edges(self, edges_file_name, src_network, trg_network):
+        raise NotImplementedError
+
+    def _save_gap_junctions(self, gj_file_name):
         raise NotImplementedError
 
     def _initialize(self):

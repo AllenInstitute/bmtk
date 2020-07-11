@@ -21,6 +21,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import os
+import numpy as np
 from neuron import h
 
 from bmtk.simulator.core.simulator_network import SimNetwork
@@ -220,6 +221,32 @@ class BioNetwork(SimNetwork):
                 cell.init_connections()
             self._connections_initialized = True
 
+    def get_gj_id(self, network, src_nid, trg_nid, source_gap):
+        '''
+        Returns the gap junction id for the given nodes on a given network.
+
+        :param source_gap: whether to return the id of the gap junction on the source node or the target node.
+        '''
+        if src_nid == trg_nid:
+            raise Exception("Cells cannot have gap junctions with themselves.")
+
+        gap_ids = self._gap_juncs[network]
+
+        loc = np.where(np.logical_and(gap_ids["source_ids"] == src_nid, gap_ids["target_ids"] == trg_nid))[0]
+
+        if len(loc) > 1:
+            raise Exception("The gap junction file has more than one gap junction with the same ids.")
+        elif len(loc) == 0:
+            raise Exception("The gap junction file does not contain a gap junction with source id " +
+             str(src_nid) + " and target id " + str(trg_nid) + " on network " + network)
+
+        ids = [gap_ids["src_gap_ids"][loc[0]], gap_ids["trg_gap_ids"][loc[0]]]
+
+        if not source_gap:
+            ids.reverse()
+        
+        return ids
+
     def build_recurrent_edges(self):
         recurrent_edge_pops = [ep for ep in self._edge_populations if not ep.virtual_connections]
         if not recurrent_edge_pops:
@@ -232,7 +259,25 @@ class BioNetwork(SimNetwork):
                 for trg_nid, trg_cell in self._rank_node_ids[edge_pop.target_nodes].items():
                     for edge in edge_pop.get_target(trg_nid):
                         src_node = self.get_node_id(source_population, edge.source_node_id)
-                        trg_cell.set_syn_connection(edge, src_node)
+
+                        if edge.is_gap_junction:
+                            if source_population != edge_pop.target_nodes:
+                                raise Exception("Gap junctions must be from the same network builder")
+                            gj_ids = self.get_gj_id(source_population, edge.source_node_id, trg_nid, False)
+                            trg_cell.set_syn_connection(edge, src_node, gj_ids=gj_ids)
+                        else:
+                            trg_cell.set_syn_connection(edge, src_node)
+                for src_nid, src_cell in self._rank_node_ids[source_population].items():
+                    for edge in edge_pop.get_source(src_nid):
+                        if edge.is_gap_junction:
+                            if source_population != edge_pop.target_nodes:
+                                raise Exception("Gap junctions must be from the same network builder")
+
+                            trg_node = self.get_node_id(edge_pop.target_nodes, edge.target_node_id)
+
+                            gj_ids = self.get_gj_id(source_population, src_nid, edge.target_node_id, True)
+
+                            src_cell.set_syn_connection(edge, trg_node, gj_ids=gj_ids)
 
             elif edge_pop.mixed_connections:
                 # When dealing with edges that contain both virtual and recurrent edges we have to check every source

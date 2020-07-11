@@ -218,6 +218,42 @@ class DenseNetwork(Network):
 
         self.__edges_tables.append(edge_table)
 
+
+    def _save_gap_junctions(self, gj_file_name):
+        source_ids = []
+        target_ids = []
+        src_gap_ids = []
+        trg_gap_ids = []
+
+        for et in self.__edges_tables:
+            try:
+                is_gap = et['edge_types']['is_gap_junction']
+            except:
+                continue
+            if is_gap:
+                if et['source_network'] != et['target_network']:
+                    raise Exception("All gap junctions must be two cells in the same network builder.")
+                
+                table = et['syn_table']
+                junc_table = table.nsyn_table
+                locs = np.where(junc_table > 0)
+                for i in range(len(locs[0])):
+                    source_ids.append(table.source_ids[locs[0][i]])
+                    target_ids.append(table.target_ids[locs[1][i]])
+                    src_gap_ids.append(self._gj_id_gen.next())
+                    trg_gap_ids.append(self._gj_id_gen.next())
+            else:
+                continue
+        
+        if len(source_ids) > 0:
+            with h5py.File(gj_file_name, 'w') as f:
+                add_hdf5_attrs(f)
+                f.create_dataset('source_ids', data=np.array(source_ids))
+                f.create_dataset('target_ids', data=np.array(target_ids))
+                f.create_dataset('src_gap_ids', data=np.array(src_gap_ids))
+                f.create_dataset('trg_gap_ids', data=np.array(trg_gap_ids))
+
+
     def _save_edges(self, edges_file_name, src_network, trg_network, name=None):
         groups = {}
         group_dtypes = {}  # TODO: this should be stored in PropertyTable

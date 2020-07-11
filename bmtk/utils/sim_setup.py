@@ -149,6 +149,7 @@ class EnvBuilder(object):
         logger.info('Parsing {} for SONATA network files'.format(network_dir))
         net_nodes = {}
         net_edges = {}
+        net_gaps = {}
         for root, dirs, files in os.walk(network_dir):
             for f in files:
                 if not os.path.isfile(os.path.join(network_dir, f)) or f.startswith('.'):
@@ -181,7 +182,14 @@ class EnvBuilder(object):
                     edges_dict['edge_types_file'] = os.path.abspath(os.path.join(root, f))
                     net_edges[net_name] = edges_dict
                     logger.info('  Adding edge types file: {}'.format(edges_dict['edge_types_file']))
-
+                
+                elif '_gap_juncs' in f:
+                    net_name = f[:f.find('_gap_juncs')]
+                    gaps_dict = net_gaps.get(net_name, {})
+                    gaps_dict['gap_juncs_file'] = os.path.abspath(os.path.join(root, f))
+                    net_gaps[net_name] = gaps_dict
+                    logger.info('  Adding gap junctions file: {}'.format(gaps_dict['gap_juncs_file']))
+                    
                 else:
                     logger.info(
                         '  Skipping file (could not categorize): {}'.format(os.path.abspath(os.path.join(root, f))))
@@ -189,12 +197,15 @@ class EnvBuilder(object):
         if not (net_nodes or net_edges):
             logger.info('  Could not find any sonata nodes or edges file(s).')
 
-        network_config = {'nodes': [], 'edges': []}
+        network_config = {'nodes': [], 'edges': [], 'gap_juncs': []}
         for _, sect in net_nodes.items():
             network_config['nodes'].append(sect)
 
         for _, sect in net_edges.items():
             network_config['edges'].append(sect)
+
+        for _, sect in net_gaps.items():
+            network_config['gap_juncs'].append(sect)
 
         self._circuit_config['networks'] = network_config
 
