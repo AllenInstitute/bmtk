@@ -66,7 +66,7 @@ class BioSimulator(Simulator):
 
         h.runStopAt = h.tstop
         h.steps_per_ms = 1/h.dt
-
+        pc.setup_transfer()#Sets up gap junctions.
         self._set_init_conditions()  # call to save state
         h.cvode.cache_efficient(1)
                
@@ -383,18 +383,20 @@ class BioSimulator(Simulator):
     def from_config(cls, config, network, set_recordings=True):
         # TODO: convert from json to sonata config if necessary
 
+        #The network must be built before initializing the simulator because
+        #gap junctions must be set up before the simulation is initialized.
+        network.io.log_info('Building cells.')
+        network.build_nodes()
+
+        network.io.log_info('Building recurrent connections')
+        network.build_recurrent_edges()
+
         sim = cls(network=network,
                   dt=config.dt,
                   tstop=config.tstop,
                   v_init=config.v_init,
                   celsius=config.celsius,
                   nsteps_block=config.block_step)
-
-        network.io.log_info('Building cells.')
-        network.build_nodes()
-
-        network.io.log_info('Building recurrent connections')
-        network.build_recurrent_edges()
 
         # TODO: Need to create a gid selector
         for sim_input in inputs.from_config(config):

@@ -30,11 +30,12 @@ from neuron import h
 pc = h.ParallelContext()    # object to access MPI methods
 
 class ConnectionStruct(object):
-    def __init__(self, edge_prop, src_node, syn, nc, is_virtual=False):
+    def __init__(self, edge_prop, src_node, syn, connector, is_virtual=False, is_gap_junc=False):
         self._src_node = src_node
         self._edge_prop = edge_prop
         self._syn = syn
-        self._nc = nc
+        self._connector = connector
+        self._is_gj = is_gap_junc
         self._is_virtual = is_virtual
 
     @property
@@ -42,16 +43,26 @@ class ConnectionStruct(object):
         return self._is_virtual
 
     @property
+    def is_gap_junc(self):
+        return self._is_gj
+
+    @property
     def source_node(self):
         return self._src_node
 
     @property
     def syn_weight(self):
-        return self._nc.weight[0]
+        if self.is_gap_junc:
+            return self._connector.g
+        else:
+            return self._connector.weight[0]
 
     @syn_weight.setter
     def syn_weight(self, val):
-        self._nc.weight[0] = val
+        if self.is_gap_junc:
+            self._connector.g = val
+        else:
+            self._connector.weight[0] = val
 
 
 class BioCell(Cell):
@@ -76,6 +87,7 @@ class BioCell(Cell):
 
         self._save_conn = False  # bionetwork.save_connection
         self._synapses = []
+        self._gap_juncs = []
         self._syn_src_net = []
         self._src_gids = []
         self._syn_seg_ix = []
@@ -173,17 +185,100 @@ class BioCell(Cell):
 
         self._secs = np.array(secs)
 
-    def set_syn_connection(self, edge_prop, src_node, stim=None):
+    def set_syn_connection(self, edge_prop, src_node, stim=None, gj_ids=None):
         syn_weight = edge_prop.syn_weight(src_node=src_node, trg_node=self._node)
 
-        if edge_prop.preselected_targets:
+        if edge_prop.is_gap_junction:
+            if gj_ids == None:
+                raise Exception("Gap junctions must have a gap junction id passed to set_syn_connection.")
+
             self._edge_props.append(edge_prop)
             self._src_gids.append(src_node.node_id)
-            return self._set_connection_preselected(edge_prop, src_node, syn_weight, stim)
+
+            if edge_prop.preselected_targets:
+                return self._set_gap_junc_preselected(edge_prop, src_node, syn_weight, gj_ids)
+            else:
+                return self._set_gap_junc(edge_prop, src_node, syn_weight, gj_ids)
         else:
-            self._edge_props += [edge_prop]*edge_prop.nsyns
-            self._src_gids += [src_node.node_id]*edge_prop.nsyns
-            return self._set_connections(edge_prop, src_node, syn_weight, stim)
+            if edge_prop.preselected_targets:
+                self._edge_props.append(edge_prop)
+                self._src_gids.append(src_node.node_id)
+                return self._set_connection_preselected(edge_prop, src_node, syn_weight, stim)
+            else:
+                self._edge_props += [edge_prop]*edge_prop.nsyns
+                self._src_gids += [src_node.node_id]*edge_prop.nsyns
+                return self._set_connections(edge_prop, src_node, syn_weight, stim)
+
+    def _set_gap_junc_preselected(self, edge_prop, src_node, syn_weight, gj_ids):
+        if edge_prop.nsyns < 1:
+            return 1
+
+        sec_x = edge_prop['sec_x']
+        sec_id = edge_prop['sec_id']
+        section = self._secs_by_id[sec_id]
+
+        #Sets up the section to be connected to the gap junction.
+        pc.source_var(section(0.5)._ref_v, gj_ids[1], sec=section)
+
+        #Creates gap junction.
+        try:
+            gap_junc = h.Gap(0.5, sec=section)
+        except:
+            raise Exception("You need the gap.mod file to create gap junctions.")
+
+        #Attaches the source section to the gap junction.
+        pc.target_var(gap_junc, gap_junc._ref_vgap, gj_ids[0])
+
+        gap_junc.g = syn_weight
+
+        self._connections.append(ConnectionStruct(edge_prop, src_node, gap_junc, gap_junc, False, True))
+
+        self._gap_juncs.append(gap_junc)
+        self._edge_type_ids.append(edge_prop.edge_type_id)
+
+        if self._save_conn:
+            self._save_connection(src_gid=src_node.gid, src_net=src_node.network, sec_x=sec_x, seg_ix=sec_id,
+                                  edge_type_id=edge_prop.edge_type_id)
+
+        return 1
+
+    def _set_gap_junc(self, edge_prop, src_node, syn_weight, gj_ids):
+        if edge_prop.nsyns < 1:
+            return 1
+
+        tar_seg_ix, tar_seg_prob = self._morph.get_target_segments(edge_prop)
+        nsyns = 1
+
+        # choose nsyn elements from seg_ix with probability proportional to segment area
+        seg_ix = self.prng.choice(tar_seg_ix, nsyns, p=tar_seg_prob)[0]
+        sec = self._secs[seg_ix]  # section where synapases connect
+        x = self._morph.seg_prop['x'][seg_ix]  # distance along the section where synapse connects, i.e., seg_x
+
+        if edge_prop.nsyns > 1:
+            print("Warning: The number of synapses passed in was greater than 1, but only one gap junction will be made.")
+
+        #Sets up the section to be connected to the gap junction.
+        pc.source_var(sec(0.5)._ref_v, gj_ids[1], sec=sec)
+
+        #Creates gap junction.
+        try:
+            gap_junc = h.Gap(0.5, sec=sec)
+        except:
+            raise Exception("You need the gap.mod file to create gap junctions.")
+
+        #Attaches the source section to the gap junction.
+        pc.target_var(gap_junc, gap_junc._ref_vgap, gj_ids[0])
+
+        gap_junc.g = syn_weight
+
+        self._connections.append(ConnectionStruct(edge_prop, src_node, gap_junc, gap_junc, False, True))
+
+        self._gap_juncs.append(gap_junc)
+        self._edge_type_ids.append(edge_prop.edge_type_id)
+
+        if self._save_conn:
+            self._save_connection(src_gid=src_node.gid, src_net=src_node.network, sec_x=x, seg_ix=sec_ix,
+                                  edge_type_id=edge_prop.edge_type_id)
 
     def _set_connection_preselected(self, edge_prop, src_node, syn_weight, stim=None):
         # TODO: synapses should be loaded by edge_prop.load_synapse

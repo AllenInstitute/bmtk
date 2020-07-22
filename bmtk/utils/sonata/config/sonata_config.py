@@ -178,6 +178,7 @@ class SonataConfig(dict):
 
         self.nodes = self.networks.get('nodes', [])
         self.edges = self.networks.get('edges', [])
+        self.gap_juncs = self.networks.get('gap_juncs', [])
         self.with_networks = 'networks' in self and len(self.nodes) > 0
         self.spike_threshold = self.run.get('spike_threshold', -15.0)
         self.dL = self.run.get('dL', 20.0)

@@ -1,5 +1,7 @@
 from six import string_types
 import numpy as np
+import os
+import h5py
 
 from bmtk.simulator.core.io_tools import io
 #from bmtk.simulator.core.config import ConfigDict
@@ -21,6 +23,8 @@ class SimNetwork(object):
         self._node_sets = {}
 
         self._edge_populations = []
+
+        self._gap_juncs = {}
 
     @property
     def io(self):
@@ -178,6 +182,17 @@ class SimNetwork(object):
                                             trg_pop = self._node_populations[trg_pop_name])
         self._edge_populations.append(edge_population)
 
+    def load_gap_junc_files(self, gj_dic):
+        for p in gj_dic:
+            path = p['gap_juncs_file']
+            f_name = os.path.basename(path)
+            network = f_name[:f_name.find("_gap_juncs.h5")]
+            self._gap_juncs[network] = {}
+
+            with h5py.File(path, 'r') as f:
+                for key in ['source_ids', 'target_ids', 'src_gap_ids', 'trg_gap_ids']:
+                    self._gap_juncs[network][key] = f[key][()]
+
     def build(self):
         self.build_nodes()
         self.build_recurrent_edges()
@@ -243,6 +258,8 @@ class SimNetwork(object):
                                              adaptor=edge_adaptor)
             for edge_pop in edges:
                 network.add_edges(edge_pop)
+
+        network.load_gap_junc_files(config.gap_juncs)
 
         # Add nodeset section
         network.add_node_set('all', NodeSetAll(network))
