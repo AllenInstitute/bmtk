@@ -170,6 +170,7 @@ class EcpMod(SimulatorMod):
 
     def _delete_tmp_files(self):
         if os.path.exists(self._tmp_ecp_file):
+            self._tmp_ecp_handle.close()
             os.remove(self._tmp_ecp_file)
 
     def initialize(self, sim):
