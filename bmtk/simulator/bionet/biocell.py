@@ -156,8 +156,8 @@ class BioCell(Cell):
         self._morph = morphology_obj
 
     def get_sections(self):
-        #return self._secs_by_id
-        return self._secs
+        return self._secs_by_id
+        #return self._secs
 
     def get_sections_id(self):
         return self._secs_by_id
@@ -167,7 +167,7 @@ class BioCell(Cell):
 
     def store_segments(self):
         self._segments = []
-        for sec in self._secs:
+        for sec in self._secs_by_id:
             for seg in sec:
                 self._segments.append(seg)
 
