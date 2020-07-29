@@ -32,13 +32,79 @@ from .node_set import NodeSet
 from .id_generator import IDGenerator
 
 
-class Network (object):
+class Network(object):
+    """The Network class is used for building and saving a brain network/circuit. By default it will save to SONATA
+    format for running network simulations using BioNet, PointNet, PopNet or FilterNet bmtk modules, however it can
+    be generalized to build any time of network for any time of simulation.
+
+    Building the network
+    ====================
+    For the general use-case building a network consists of 4 steps, each with a corresponding method:
+    1. Initialize the network
+    ```python
+        net = Network("network_name")
+    ```
+
+    2. Create nodes (ie cells) using the **add_nodes()** method
+    ```python
+        net.add_nodes(N=80, model_type='Biophysical', ei='exc')
+        net.add_nodes(N=20, model_type='IntFire', exi='inh')
+        ...
+    ```
+
+    3. Create Connection rules between different subsets of nodes using **add_edges()** method
+    ```python
+        net.add_edges(source={'ei': 'exc'}, target={'ei': 'inh'}, connection_rule=my_conn_func, synaptic_model='e2i')
+        ...
+    ```
+
+    4. Finally **build** the network and **save** the files
+    ```python
+        net.build()
+        net.save(output_dir='network_path')
+    ```
+
+    See the bmtk documentation, or the method doc-strings for more advanced functionality
+
+
+    Network Accessor methods
+    ========================
+    **nodes()**
+    Will return a iterable of Node objects for each node created. The Node objects can be used like dictionaries to
+    fetch their properties. By default returns all nodes in the network, but you can filter out a given subset by
+    passing in property/values pairs.
+    ```python
+        for node in net.nodes(model_type='Biophysical', ei='exc'):
+            assert(node['ei'] == 'exc')
+            ...
+    ```
+
+    **edges()**
+    Like the nodes() methods, but insteads returns a list of Edge type objects. It too can be filtered by an edge
+    property:
+    ```python
+        for edge in net.edges(synaptic_model='exp2'):
+            ...
+    ```
+
+    One can also pass in a list of source (or target) to filter out only those edges which belong to a specific subet
+    of cells
+    ```python
+        for edge in net.edges(target_nodes=net.nodes(ei='exc')):
+            ...
+
+    Network Properties
+    ==================
+    **name** - name of the network
+    **nnodes** - number of nodes (cells) in the network.
+    **nedges** - number of edges. Will be zero if build() method hasn't been called
+    """
+
     def __init__(self, name, **network_props):
-        if len(name) == 0:
-            raise Exception('Network name missing.')
+        if name is None or len(name) == 0:
+            raise ValueError('Network name missing.')
 
         self._network_name = name
-
         self._nnodes = 0
         self._nodes_built = False
         self._nedges = 0
@@ -49,24 +115,15 @@ class Network (object):
         self.__node_id_counter = 0
 
         self._node_types_properties = {}
-        self._node_types_columns = set(['node_type_id'])
-        # self._edge_type_properties = {}
-        # self._edge_types_columns = set(['edge_type_id'])
+        self._node_types_columns = {'node_type_id'}
         self._connection_maps = []
-        #self._connection_maps = ConnectionTable()
 
         self._node_id_gen = IDGenerator()
         self._node_type_id_gen = IDGenerator(100)
         self._edge_type_id_gen = IDGenerator(100)
 
-        try:
-            self._gj_id_gen = IDGenerator(network_props["gj_id_start"])
-        except:
-            self._gj_id_gen = IDGenerator()
+        self._gj_id_gen = IDGenerator(network_props.get('gj_id_start', 0))
 
-        #self._connection_table = []
-        #self._source_networks = []
-        #self._target_networks = []
         self._network_conns = set()
         self._connected_networks = {}
 
@@ -106,6 +163,28 @@ class Network (object):
         self._node_types_properties[node_type_id] = props
 
     def add_nodes(self, N=1, **properties):
+        """Used to add nodes (eg cells) to a network. User should specify the number of Nodes (N) and can use any
+        properties/attributes they require to define the nodes. By default all individual cells will be assigned a
+        unique 'node_id' to identify each node in the network and a 'node_type_id' to identify each group of nodes.
+
+        If a property is a singluar value then said property will be shared by all the nodes in the group. If a value
+        is a list of length N then each property will be uniquly assigned the each node. In the below example a group
+        of 100 nodes is created, all share the same 'model_type' parameter but the pos_x values will be different for
+        each node:
+        ```python
+            net.add_nodes(N=100, pos_x=np.random.rand(100), model_type='intfire1', ...)
+        ```
+
+        You can use a tuple to store property values (in which the SONATA hdf5 will save it as a dataset with multiple
+        columns). For example to have one property 'positions' which keeps track of the x/y/z coordinates of each cell:
+        ```python
+            net.add_nodes(N=100, positions=[(rand(), rand(), rand()) for _ in range(100)], ...)
+        ```
+
+        :param N: number of nodes in this group
+        :param properties: Individual and group properties of given nodes
+        """
+
         self._clear()
 
         # categorize properties as either a node-params (for nodes file) or node-type-property (for node_types files)
@@ -134,16 +213,102 @@ class Network (object):
         self._add_node_type(node_properties)
         self._node_sets.append(NodeSet(N, node_params, node_properties))
 
-    def add_gap_junctions(self, source=None, target=None, iterator='one_to_one', resistance=1, target_sections=['somatic'],
-                            connection_rule=1, connection_params=None):
-        if target_sections != None:
-            print("Warning: For gap junctions, the target sections variable is used for both the source and target sections.")
-        return self.add_edges(source=source, target=target, iterator=iterator, distance_range=[0.0,300.0],
-                    syn_weight=resistance, is_gap_junction=True, target_sections=target_sections,
-                    connection_rule=connection_rule, connection_params=connection_params)
-
     def add_edges(self, source=None, target=None, connection_rule=1, connection_params=None, iterator='one_to_one',
                   **edge_type_properties):
+        """Used to create the connectivity matrix between subsets of nodes. The actually connections will not be
+        created until the build() method is called, using the 'connection_rule.
+
+        Node Selection
+        --------------
+        To specify what subset of nodes will be used for the pre- and post-synaptic one can use a dictionary to filter
+        the nodes. In the following all inh nodes will be used for the pre-synaptic neurons, but only exc
+        fast-spiking neurons will be used in the post-synaptic neurons (If target or source is not specified all neurons
+        will be used).
+        ```python
+            net.add_edges(source={'ei': 'inh'}, target={'ei': 'exc', 'etype': 'fast-spiking'},
+                          dyanmic_params='i2e.json', synaptic_model='alpha', ...)
+        ```
+
+        In the above code there is one connection between each source/target pair of nodes, but to create a multi-graph
+        with N connections between each pair use 'connection_rule' parameter with an integer value
+        ```python
+            net.add_edges(source={'ei': 'inh'}, target={'ei': 'exc', 'etype': 'fast-spiking'}, connection_rule=M, ...)
+        ```
+
+        Connection rules
+        ----------------
+        However usually the 'connection_rule' parameter will be the name of a function that takes in source-node and
+        target-node object (which can be treated like dictionaries, and returns the number of connections (ie
+        synapses, 0 or None if no synapses should exists) between the source and target cell:
+        ```python
+            def my_conn_fnc(source_node, target_node):
+                src_pos = source_node['positon']
+                trg_pos = target_node['position']
+                ...
+                return N_syns
+
+            net.add_edges(source={'ei': 'exc'}, target={'ei': 'inh'}, connection_rule=my_conn_fnc, **opt_edge_attrs)
+        ```
+
+        If the connection_rule function requires addition arguments use the 'connection_params' option:
+        ```python
+            def my_conn_fnc(source_node, target_node, min_edges, max_edges)
+                ...
+
+            net.add_edges(connection_rule=my_conn_fnc, connection_params={'min_edges': 0, 'max_edges': 20}, ...)
+        ```
+
+        Sometimes it may be more efficient or even a requirement that multiple connections are created at the same
+        time. For example a post-synaptic neuron may only be targeted by a limited number of sources which couldn't
+        be done by the previous connection_rule function. But by setting property 'iterator' to value 'all_to_one'
+        the connection_rule function now takes in as a value a list of N source neurons, a single target, and should
+        return a list of size N:
+        ```python
+            def bulk_conn_fnc(sources, target):
+                syn_list = np.zeros(len(sources))
+                for source in sources:
+                    ....
+                return syn_list
+
+            net.add_edges(connection_rule=bulk_conn_fnc, iterator='all_to_one', ...)
+        ```
+        There is also a 'all_to_one' iterator option that will pair each source node with a list of all available
+        target nodes.
+
+        Edge Properties
+        ---------------
+        Normally the properties used when creating a given type of edge will be shared by all the indvidual
+        connections. To create unique values for each edge, the add_edges() method returns a ConnectionMap object:
+        ```python
+            def set_syn_weight_by_dist(source, target):
+                src_pos, trg_pos = source['postion'], target['postion']
+                ....
+                return syn_weight
+
+
+            cm = net.add_edges(connection_rule=my_conn_fnc, model_template='Exp2Syn', ...)
+                            delay=2.0)
+            cm.add_properties('syn_weight', rule=set_syn_weight_by_dist)
+            cm.add_properties('delay', rule=lambda *_: np.random.rand(0.01, 0.50))
+        ```
+        In this case the 'model_template' property has a value for all connections of this given type of edge. The
+        'syn_weight' and 'delay' properties will (most likely) be unique values. See ConnectionMap documentation for
+        more info.
+
+        :param source: A dictionary or list of Node objects (see nodes() method). Used to filter out pre-synaptic
+            subset of nodes.
+        :param target: A dictionary or list of Node objects). Used to filter out post-synaptic subset of nodes
+        :param connection_rule: Integer or a function that returns integer(s). Rule to determine number of connections
+            between each source and target node
+        :param connection_params: A dictionary, used when the 'connection_rule' is a function that requires additional
+            argments
+        :param iterator: 'one_to_one', 'all_to_one', 'one_to_all'. When 'connection_rule' is a function this sets
+            how the subsets of source/target nodes are passed in. By default (one-to-one) the connection_rule is
+            called for every source/target pair. 'all-to-one' will pass in a list of all possible source nodes for
+            each target, and 'all-to-one' will pass in a list of all possible targets for each source.
+        :param edge_type_properties: properties/attributes of the given edge type
+        :return: A ConnectionMap object
+        """
         # TODO: check edge_type_properties for 'edge_type_id' and make sure there isn't a collision. Otherwise create
         #       a new id.
         if not isinstance(source, NodePool):
@@ -152,11 +317,8 @@ class Network (object):
         if not isinstance(target, NodePool):
             target = NodePool(self, **target or {})
 
-        try:
-            if is_gap_junction and source.network_name != target.network_name:
-                raise Exception("Gap junctions must consist of two cells on the same network.")
-        except:
-            is_gap_junction = False
+        if edge_type_properties.get('is_gap_junction', False) and source.network_name != target.network_name:
+            raise Exception("Gap junctions must consist of two cells on the same network.")
 
         self._network_conns.add((source.network_name, target.network_name))
         self._connected_networks[source.network_name] = source.network
@@ -179,13 +341,41 @@ class Network (object):
             connection_rule = edge_type_properties['nsyns']
             del edge_type_properties['nsyns']
 
-        # self._edge_types_columns.update(edge_type_properties.keys())
         connection = ConnectionMap(source, target, connection_rule, connection_params, iterator, edge_type_properties)
         self._connection_maps.append(connection)
-        # self._connection_maps.add(source.network_name, target.network_name, connection)
         return connection
 
+    def add_gap_junctions(self, source=None, target=None, iterator='one_to_one', resistance=1,
+                          target_sections=['somatic'], connection_rule=1, connection_params=None):
+        """A special function for marking a edge group as gap junctions. Just a wrapper for add_edges"""
+        if target_sections is not None:
+            print("Warning: For gap junctions, the target sections variable is used for both the source and target"
+                  " sections.")
+
+        return self.add_edges(
+            source=source, target=target, iterator=iterator, distance_range=[0.0, 300.0], syn_weight=resistance,
+            is_gap_junction=True, target_sections=target_sections, connection_rule=connection_rule,
+            connection_params=connection_params
+        )
+
     def nodes(self, **properties):
+        """Returns an iterator of Node (glorified dictionary) objects, filtered by parameters.
+
+        To get all nodes on a network:
+        ```python
+            for node in net.nodes():
+                ...
+        ```
+
+        To only get those nodes with properties that match a given list of parameter values
+        ```python
+            for nod in net.nodes(param1=value1, param2=value2, ...):
+                ...
+        ```
+
+        :param properties:
+        :return: An iterator of Node objects
+        """
         if not self.nodes_built:
             self._build_nodes()
 
@@ -198,10 +388,14 @@ class Network (object):
         """Returns a list of dictionary-like Edge objects, given filter parameters.
 
         To get all edges from a network
+        ```python
            edges = net.edges()
+        ```
 
         To specify the target and/or source node-set
+        ```python
           edges = net.edges(target_nodes=net.nodes(type='biophysical'), source_nodes=net.nodes(ei='i'))
+        ```
 
         To only get edges with a given edge_property
           edges = net.edges(weight=100, syn_type='AMPA_Exc2Exc')
@@ -316,7 +510,7 @@ class Network (object):
         self._edges_built = True
 
     def build(self, force=False):
-        """ Builds nodes (assigns gids) and edges.
+        """ Builds nodes and edges.
 
         Args:
             force (bool): set true to force complete rebuilding of nodes and edges, if nodes() or save_nodes() has been
@@ -426,7 +620,7 @@ class Network (object):
                        if c.source_network_name == src_network and c.target_network_name == trg_network]
 
         # Get edge-type properties that are only relevant for this source-target network pair
-        cols = ['edge_type_id', 'target_query', 'source_query']  #  manditory and should come first
+        cols = ['edge_type_id', 'target_query', 'source_query']  # manditory and should come first
         merged_keys = [k for et in matching_et for k in et.keys() if k not in cols]
         cols += list(set(merged_keys))
 
@@ -438,7 +632,7 @@ class Network (object):
                 csvw.writerow([edge_type.get(cname, 'NULL') if edge_type.get(cname, 'NULL') is not None else 'NULL'
                                for cname in cols])
 
-    def _save_edges(self, edges_file_name, src_network, trg_network):
+    def _save_edges(self, edges_file_name, src_network, trg_network, **opts):
         raise NotImplementedError
 
     def _save_gap_junctions(self, gj_file_name):
@@ -455,48 +649,3 @@ class Network (object):
 
     def _clear(self):
         raise NotImplementedError
-
-    """
-    def _edges_iter(targets=None, sources=None):
-        raise NotImplementedError
-    """
-
-"""
-class ConnectionTable(object):
-    def __init__(self):
-        self.__targets = {}
-        self.__sources = {}
-        self.__connections = []
-
-    def add(self, source_network, target_network, connection_map):
-        # TODO: If the source/target are network objects we can get the network_name
-        assert(isinstance(source_network, basestring))
-        assert(isinstance(target_network, basestring))
-        assert(isinstance(connection_map, ConnectionMap))
-
-        if source_network not in self.__sources:
-            self.__sources[source_network] = []
-        if target_network not in self.__targets:
-            self.__targets[target_network] = []
-
-        cm_index = len(self.__connections)
-        self.__connections.append(connection_map)
-        self.__sources[source_network].append(cm_index)
-        self.__targets[target_network].append(cm_index)
-
-    def get(self, source_network=None, target_network=None):
-        # TODO: Add warning if source/target network is not found
-        cm_indicies = set(range(len(self.__connections)))
-        if source_network is not None:
-            cm_indicies &= set(self.__sources.get(source_network, []))
-
-        if target_network is not None:
-            cm_indicies &= set(self.__targets.get(target_network, []))
-
-        return self.__connections[cm_indicies]
-"""
-
-
-
-
-
