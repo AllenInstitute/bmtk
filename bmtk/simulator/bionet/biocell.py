@@ -128,7 +128,7 @@ class BioCell(Cell):
         #  Need someone with graphics experience to check they are being done correctly (I'm not sure atm).
         RotX = utils.rotation_matrix([1, 0, 0], phi_x)
         RotY = utils.rotation_matrix([0, 1, 0], phi_y)  # rotate segments around yaxis normal to pia
-        RotZ = utils.rotation_matrix([0, 0, 1], -phi_z)  # rotate segments around zaxis to get a proper orientation
+        RotZ = utils.rotation_matrix([0, 0, 1], phi_z)  # rotate segments around zaxis to get a proper orientation
         RotXYZ = np.dot(RotX, RotY.dot(RotZ))
 
         # rotated coordinates around z axis first then shift relative to the soma
