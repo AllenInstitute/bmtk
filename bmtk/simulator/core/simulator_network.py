@@ -4,7 +4,6 @@ import os
 import h5py
 
 from bmtk.simulator.core.io_tools import io
-#from bmtk.simulator.core.config import ConfigDict
 from .simulation_config import SimulationConfig
 from bmtk.simulator.core.node_sets import NodeSet, NodeSetAll
 from bmtk.simulator.core import sonata_reader

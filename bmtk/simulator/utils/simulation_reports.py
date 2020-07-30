@@ -2,6 +2,21 @@ import os
 
 
 class SimReport(object):
+    """Used for parsing reports section from a SONATA configuration file. It will take care of implicit and default
+    values.
+
+    Use the build() method to convert a "reports" section dictionary to a SimReport object. The SimReport object has
+    properties that can be used to instantiate a simualtion report, particular properties **module** and **params**
+
+    ```python
+        report = SimReport.build(
+            report_name='my_report',
+            params = {'module': 'my_mod', ...})
+        ...
+        MyReport(**report.params)
+    ```
+    """
+
     default_dir = '.'
     registry = {}  # Used by factory to keep track of subclasses
 
@@ -203,6 +218,7 @@ class ClampReport(SimReport):
 
         return [('file_name', file_name), ('tmp_dir', tmp_dir)]
 
+
 @SimReport.register_module
 class SEClampReport(SimReport):
     def __init__(self, report_name, module, params):
@@ -290,6 +306,9 @@ def from_config(cfg):
             continue
 
         report = SimReport.build(report_name, report_params)
+
+        if isinstance(report, SpikesReport):
+            has_spikes_report = True
 
         if isinstance(report, MembraneReport):
             # When possible for membrane reports combine multiple reports into one module if all the parameters
