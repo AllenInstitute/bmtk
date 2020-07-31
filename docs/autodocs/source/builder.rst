@@ -347,6 +347,10 @@ SONATA format, so more indepth descriptions may be found here [LINK]. Opening th
 like HDFView, or a library like h5py. You can also use pySONATA [LINK] or libSONATA [LINK] which are API’s for reading
 in SONATA files
 
+.. figure:: _static/images/sonata_structure.jpg
+   :scale: 90%
+
+
 
 Advanced Features
 -----------------

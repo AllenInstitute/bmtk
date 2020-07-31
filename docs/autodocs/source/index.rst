@@ -15,6 +15,7 @@ Welcome to the Brain Modeling Toolkit
    Installation Guide <installation>
    Building Networks <builder>
    simulators
+   analyzer
    Tutorials <https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb>
    Github Profile <https://github.com/AllenInstitute/bmtk.git>
    contributors

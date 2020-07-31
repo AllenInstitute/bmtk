@@ -11,6 +11,9 @@ Simulation Engines
    filternet
 
 
+.. figure:: _static/images/bmtk_architecture_simulator_highlight.jpg
+   :scale: 40%
+
 The ``bmtk.simulator`` module contains classes for simulating a network under a variety of different simulators. BMTK
 doesn't actually do the simulation itself, but processes the inputs and passes it off to an existing engine. At the
 moment there are four different simulation engines for running a network at different levels-of-resolution:
@@ -66,7 +69,7 @@ component files, thus it would make sense to move the *components* directory to 
 all simulations. As described below the location of the directories and files are specified in the configuration files.
 
 Creating the environment
-++++++++++++++++++
+++++++++++++++++++++++++
 A good way to create a working simulation directory is to copy an existing one and make modifications as needed. The
 bmtk [LINK] and SONATA [link] github page contains multiple examples.
 
@@ -90,7 +93,7 @@ The sim_setup script also contains many extra options, see the help menu for ful
    $ python -m bmtk.utils.sim_setup -h
 
 Configuration Files
-------------------------
+-------------------
 Under most circumstances setting up and/or modifying a simulation involves adding and altering values within the JSON
 configuration files. The SONATA standard specifies two configuration files; a circuit_config.json containing information
 about the network and component files. And a simulation_config.json used for actually running the full circuit. BMTK
@@ -162,7 +165,7 @@ of SONATA)
    }
 
 components
-+++++++++
+++++++++++
 links to external directories and files required to fully instantiate all the models and parameters of the network,
 see [LINK] for a full description
 
@@ -216,7 +219,7 @@ well as the log_file. By default bmtk will always record and save the spikes of 
    }
 
 inputs
-+++++
+++++++
 Contains different inputs that will drive the simulation. In BioNet and PointNet usually the inputs involves either
 spike trains injected into the network using external “virtual” nodes, or the use of current clamps. The following
 example does both:
@@ -248,7 +251,7 @@ only certain engines; like extracellular potentiation in BioNet or movies in Fil
 
 
 reports
-+++++
++++++++
 Contains information about what variables will be recorded during the simulation. For example to record membrane
 potential in all the biophysically detailed cells in the V1 population:
 
@@ -272,7 +275,7 @@ part of the full simulation time or record from a subset of all cells.
 
 
 node_sets
-+++++++
++++++++++
 “node_sets” [LINK to SONATA doc] are filters for specific nodes within the circuit, mainly used to determine which cells
 to apply an “input” or “report” to. For example say we want to split the spike-train output of V1’s pvalb and pyramidal
 cells into different reports
@@ -314,7 +317,7 @@ population. You may also reference individual nodes by their “node_id” - ``"
 
 
 Running a Simulation
---------------------------
+--------------------
 To run a simulation, open a command line and execute the run_<simulation>.py script:
 
 .. code:: bash
@@ -334,5 +337,4 @@ For BioNet NEURON requires a slightly different way:
 .. code:: bash
 
    $ mpirun -np <N> nrniv -mpi -python run_simulation.py simulation_config.json
-
 

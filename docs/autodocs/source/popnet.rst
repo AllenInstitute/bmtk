@@ -1,6 +1,10 @@
 PopNet
 ======
 
+.. figure:: _static/images/bmtk_architecture_popnet_highlight.jpg
+   :scale: 40%
+
+
 The PopNet simulation engine uses the `DiPDE simulator <http://alleninstitute.github.io/dipde/>`_ to simulate firing
 rate dynamics of connected population of cells. You can use networks of populations "nodes", or take an existing
 network of individual cell models and PopNet will cluster them into populations.

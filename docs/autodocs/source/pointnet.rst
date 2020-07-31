@@ -1,51 +1,92 @@
 PointNet
 ========
 
-Pointnet is a simulation engine that utilizes `NEST <http://www.nest-simulator.org/>`_ to run large-scale point
-neuron network models.
+.. figure:: _static/images/bmtk_architecture_pointnet_highlight.jpg
+   :scale: 40%
 
-Features
---------
+Pointnet is a simulation engine that utilizes `NEST <http://www.nest-simulator.org/>`_ to run large-scale point
+neuron network models. Features including:
+
 * Run the same simulation on a single core or in parallel on an HPC cluster with no extra programming required.
 * Supports any spiking neuron models (rates models in development) available in NEST or with user contributed modules.
 * Records neuron spiking, multi-meter recorded variables into the optimized SONATA data format.
 
+Inputs
+------
+Inputs can be specified in the “inputs” sections of the simulation config [LINK], following the rules specified in the
+SONATA Data format [LINK].
 
-Installation
-------------
-PointNet supports both Python 2.7 or Python 3.6+, and also requires NEST 2.11+ to be installed. See our
-`Installation instructions <installation>`_ for help on installing NEST and the BMTK.
+Spike-Trains
+++++++++++++
+Cells with ``model_type`` value ``virtual`` are equivalent to NEST’s spike_generator models which will play a
+pre-recorded series of spikes throughout the simulation. You may use either a SONATA Spike-Train file [LINK], an NWB
+file, or a space-separated csv file with columns “node_id”, “population”, and “timestamps”. The following shows some
+examples of how to generate spike-train files using bmtk [LINK].
+
+.. code:: json
+
+    {
+        "LGN_spikes": {
+            "input_type": "spikes",
+            "module": "sonata",
+            "input_file": "./inputs/lgn_spikes.h5",
+            "node_set": {"population": "lgn"}
+        }
+    }
+
+* module:  either sonata, hdf5, csv, or nwb: depending on the format of the spikes file
+* node_set [LINK]: used to filter which cells will receive the inputs
+* input_file: path to file contain spike-trains for one or mode node
+
+Current-Clamps
+++++++++++++++
+May use one step current clamp on multiple nodes, or have one node receive multiple current injections.
+
+.. code:: json
+
+    {
+        "current_clamp_1": {
+            "input_type": "current_clamp",
+            "module": "IClamp",
+            "node_set": "biophys_cells",
+            "amp": 0.1500,
+            "delay": 500.0,
+            "duration": 500.0
+        }
+    }
+
+* module:  Always IClamp
+* node_set [LINK]: used to filter which cells will receive the inputs
+* amp: injection in pA
+* delay: onset of current injection in ms
+* duration: duration of current injection in ms
 
 
+Outputs
+-------
 
-Documentation and Tutorials
----------------------------
-Our `github page <https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial>`__ contains a number of jupyter-notebook
-tutorials for using the BMTK in general and PointNet specific examples for:
-* `Building and simulating a multi-population, heterogeneous point networks <https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/05_pointnet_modeling.ipynb>`_.
-
-
-
-Previous Materials
-++++++++++++++++++
-The following are from previous tutorials, workshops, and presentations; and may not work with the latest version of the BMTK.
-* CNS 2018 Workshop: `notebooks <https://github.com/AllenInstitute/CNS_2018_Tutorial/tree/master/bmtk>`__
-* Summer Workshop on the Dynamic Brain 2018: `notebooks <https://github.com/AllenInstitute/SWDB_2018/tree/master/DynamicBrain/Modeling>`__.
+Spikes
+++++++
+By default all non-virtual cells in the circuit will have all their spikes at the soma recorded.
 
 
-Examples
---------
-The AllenInstitute/bmtk repo contains a number of PointNet examples, many with pre-built networks and can be immediately ran. These
-tutorials will have the folder prefix *point_* and to run them in the command-line simply call::
+Membrane and Intracellular Variables
+++++++++++++++++++++++++++++++++++++
+Used to record the time trace of specific cell variables, usually the membrane potential (v). This is equivalent to NEST’s multimeter object.
 
-  $ python run_pointnet.py config.json
+.. code:: json
 
-or to run them on multiple-cores::
+    {
+        "membrane_potential": {
+            "module": "multimeter_report",
+            "cells": {"population": "V1"},
+            "variable_name": "V_m"
+            "file_name": "cai_traces.h5"
+        }
+    }
 
-  $ mpirun -n $NCORES python run_pointnet.py config.json
-
-Current examples
-++++++++++++++++
-* `point_120cells <https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/point_120cells>`_ - A small network of 120 recurrently connected point neurons receiving synaptic input from an external network of "virtual" cells (i.e. spike-generators).
-* `point_450cells <https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/point_450cells>`_ - A modest heterogeneous network of 450 cells (sampled from a much large network of a mouse cortex L4).
-
+* module: either mutlimeter_report or membrane_report, both the same
+* variable_name: name of variable being recorded, will depend on the nest cell model.
+* cells: a node_set [LINK] to filter out what cells to record.
+* file_name: name of file where traces will be recorded, under the “output_dir”. If not specified the the report title
+ will be used, eg “calcium_concentration.h5” and “membrane_potential.h5”
