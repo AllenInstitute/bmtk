@@ -73,6 +73,7 @@ class Morphology(object):
         p05 = np.zeros((3, self.nseg))
         d0 = np.zeros(self.nseg)
         d1 = np.zeros(self.nseg)
+        d05 = np.zeros(self.nseg)
 
         for sec in self.hobj.all:
             n3d = int(h.n3d())  # get number of n3d points in each section
@@ -98,6 +99,7 @@ class Morphology(object):
                 l0[iseg] = seg.x - 0.5*1/nseg   # x (normalized distance along the section) for the beginning of the segment
                 l1[iseg] = seg.x + 0.5*1/nseg   # x for the end of the segment
                 l05[iseg] = seg.x
+                d05[ix+iseg] = seg.diam
 
             p0[0, ix:ix+nseg] = np.interp(l0, l3d, p3d[0, :])
             p0[1, ix:ix+nseg] = np.interp(l0, l3d, p3d[1, :])
@@ -123,6 +125,7 @@ class Morphology(object):
 
         self.seg_coords['d0'] = d0
         self.seg_coords['d1'] = d1
+        self.seg_coords['d05'] = d05
 
         return self.seg_coords
 
