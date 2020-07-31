@@ -25,34 +25,12 @@ import json
 import numpy as np
 
 from bmtk.simulator.core.simulator_network import SimNetwork
-#from bmtk.simulator.core.graph import SimGraph
-#from property_schemas import PopTypes, DefaultPropertySchema
-#from popnode import InternalNode, ExternalPopulation
-#from popedge import PopEdge
 from bmtk.simulator.popnet import utils as poputils
 from bmtk.simulator.popnet.sonata_adaptors import PopEdgeAdaptor
 
 from dipde.internals.internalpopulation import InternalPopulation
 from dipde.internals.externalpopulation import ExternalPopulation
 from dipde.internals.connection import Connection
-
-'''
-class PopNode(object):
-    def __init__(self, node, property_map, graph):
-        self._node = node
-        self._property_map = property_map
-        self._graph = graph
-
-    @property
-    def dynamics_params(self):
-        # TODO: Use propert map
-        return self._node['dynamics_params']
-
-    @property
-    def node_id(self):
-        # TODO: Use property map
-        return self._node.node_id
-'''
 
 
 class Population(object):
@@ -175,12 +153,9 @@ class PopNetwork(SimNetwork):
         self._source_edges = {}
 
         self._params_cache = {}
-        #self._params_column = property_schema.get_params_column()
         self._dipde_pops = {}
         self._external_pop = {}
         self._all_populations = []
-        # self._loaded_external_pops = {}
-
         self._nodeid2pop_map = {}
 
         self._connections = {}
@@ -214,7 +189,6 @@ class PopNetwork(SimNetwork):
             if node_pop.internal_nodes_only:
                 nid2pop_map = {}
                 for node in node_pop.get_nodes():
-                    #pnode = PopNode(node, prop_maps[node.group_id], self)
                     pop = Population(node.node_id)
                     pop.add_node(node)
                     pop.build()
@@ -224,23 +198,6 @@ class PopNetwork(SimNetwork):
                     nid2pop_map[node.node_id] = pop
 
                 self._nodeid2pop_map[node_pop.name] = nid2pop_map
-
-        """
-        for node_pop in self._internal_populations_map.values():
-            prop_maps = self._node_property_maps[node_pop.name]
-            nid2pop_map = {}
-            for node in node_pop:
-                pnode = PopNode(node, prop_maps[node.group_id], self)
-                pop = Population(node.node_id)
-                pop.add_node(pnode)
-                pop.build()
-
-                self._dipde_pops[node.node_id] = pop
-                self._all_populations.append(pop)
-                nid2pop_map[node.node_id] = pop
-
-            self._nodeid2pop_map[node_pop.name] = nid2pop_map
-        """
 
     def _build_nodes_grouped(self):
         # Organize every single sonata-node into a given population.
@@ -262,28 +219,6 @@ class PopNetwork(SimNetwork):
 
             for dpop in self._dipde_pops.values():
                 dpop.build()
-
-        """
-        for node_pop in self._internal_populations_map.values():
-            prop_maps = self._node_property_maps[node_pop.name]
-            nid2pop_map = {}
-            for node in node_pop:
-                pop_key = node[self._group_key]
-                pnode = PopNode(node, prop_maps[node.group_id], self)
-                if pop_key not in self._dipde_pops:
-                    pop = Population(pop_key)
-                    self._dipde_pops[pop_key] = pop
-                    self._all_populations.append(pop)
-
-                pop = self._dipde_pops[pop_key]
-                pop.add_node(pnode)
-                nid2pop_map[node.node_id] = pop
-
-            self._nodeid2pop_map[node_pop.name] = nid2pop_map
-
-        for dpop in self._dipde_pops.values():
-            dpop.build()
-        """
 
     def build_recurrent_edges(self):
         recurrent_edge_pops = [ep for ep in self._edge_populations if not ep.virtual_connections]
@@ -308,29 +243,6 @@ class PopNetwork(SimNetwork):
 
         for conn in self._connections.values():
             conn.build()
-
-        """
-        recurrent_edges = [edge_pop for _, edge_list in self._recurrent_edges.items() for edge_pop in edge_list]
-        for edge_pop in recurrent_edges:
-            prop_maps = self._edge_property_maps[edge_pop.name]
-            src_pop_maps = self._nodeid2pop_map[edge_pop.source_population]
-            trg_pop_maps = self._nodeid2pop_map[edge_pop.target_population]
-            for edge in edge_pop:
-                src_pop = src_pop_maps[edge.source_node_id]
-                trg_pop = trg_pop_maps[edge.target_node_id]
-                conn_key = (src_pop, trg_pop)
-                if conn_key not in self._connections:
-                    conn = PopConnection(src_pop, trg_pop)
-                    self._connections[conn_key] = conn
-                    self._all_connections.append(conn)
-
-                pop_edge = PopEdge(edge, prop_maps[edge.group_id], self)
-                self._connections[conn_key].add_edge(pop_edge)
-
-        for conn in self._connections.values():
-            conn.build()
-        # print len(self._connections)
-        """
 
     def find_edges(self, source_nodes=None, target_nodes=None):
         # TODO: Move to parent
@@ -394,76 +306,6 @@ class PopNetwork(SimNetwork):
 
             for pedge in unbuilt_connections:
                 pedge.build()
-        #exit()
-
-        """
-            print node_pop.name
-
-
-            exit()
-            if node_pop.name in self._virtual_ids_map:
-                 continue
-
-            virt_node_map = {}
-            if node_pop.virtual_nodes_only:
-                print 'HERE'
-                exit()
-
-
-        for pop_name, node_pop in self._virtual_populations_map.items():
-            if pop_name not in spike_trains.populations:
-                continue
-
-            # Build external population if it already hasn't been built
-            if pop_name not in self._external_pop:
-                prop_maps = self._node_property_maps[pop_name]
-                external_pop_map = {}
-                src_pop_map = {}
-                for node in node_pop:
-                    pop_key = node[self._group_key]
-                    pnode = PopNode(node, prop_maps[node.group_id], self)
-                    if pop_key not in external_pop_map:
-                        pop = ExtPopulation(pop_key)
-                        external_pop_map[pop_key] = pop
-                        self._all_populations.append(pop)
-
-                    pop = external_pop_map[pop_key]
-                    pop.add_node(pnode)
-                    src_pop_map[node.node_id] = pop
-
-                self._nodeid2pop_map[pop_name] = src_pop_map
-
-                firing_rates = poputils.get_firing_rates(external_pop_map.values(), spike_trains)
-                self._external_pop[pop_name] = external_pop_map
-                for dpop in external_pop_map.values():
-                    dpop.build(firing_rates[dpop.pop_id])
-
-            else:
-                # TODO: Throw error spike trains should only be called once per source population
-                # external_pop_map = self._external_pop[pop_name]
-                src_pop_map = self._nodeid2pop_map[pop_name]
-
-            unbuilt_connections = []
-            for node_pop in self._internal_populations_map.values():
-                trg_pop_map = self._nodeid2pop_map[node_pop.name]
-                for edge_pop in self.external_edge_populations(src_pop=pop_name, trg_pop=node_pop.name):
-                    for edge in edge_pop:
-                        src_pop = src_pop_map[edge.source_node_id]
-                        trg_pop = trg_pop_map[edge.target_node_id]
-                        conn_key = (src_pop, trg_pop)
-                        if conn_key not in self._external_connections:
-                            pconn = PopConnection(src_pop, trg_pop)
-                            self._external_connections[conn_key] = pconn
-                            unbuilt_connections.append(pconn)
-                            self._all_connections.append(pconn)
-
-                        pop_edge = PopEdge(edge, prop_maps[edge.group_id], self)
-                        self._external_connections[conn_key].add_edge(pop_edge)
-
-            for pedge in unbuilt_connections:
-                pedge.build()
-        """
-
 
     def add_rates(self, rates, node_set):
         if self._group_key == 'node_id':
@@ -520,72 +362,6 @@ class PopNetwork(SimNetwork):
             for pedge in unbuilt_connections:
                 pedge.build()
 
-        """
-        for pop_name, node_pop in self._virtual_populations_map.items():
-            if pop_name not in rates.populations:
-                continue
-
-            # Build external population if it already hasn't been built
-            if pop_name not in self._external_pop:
-                prop_maps = self._node_property_maps[pop_name]
-                external_pop_map = {}
-                src_pop_map = {}
-                for node in node_pop:
-                    pop_key = id_lookup(node)
-                    #pop_key = node[self._group_key]
-                    pnode = PopNode(node, prop_maps[node.group_id], self)
-                    if pop_key not in external_pop_map:
-                        pop = ExtPopulation(pop_key)
-                        external_pop_map[pop_key] = pop
-                        self._all_populations.append(pop)
-
-                    pop = external_pop_map[pop_key]
-                    pop.add_node(pnode)
-                    src_pop_map[node.node_id] = pop
-
-                self._nodeid2pop_map[pop_name] = src_pop_map
-
-                firing_rate = rates.get_rate(pop_key)
-                self._external_pop[pop_name] = external_pop_map
-                for dpop in external_pop_map.values():
-                    dpop.build(firing_rate)
-
-            else:
-                # TODO: Throw error spike trains should only be called once per source population
-                # external_pop_map = self._external_pop[pop_name]
-                src_pop_map = self._nodeid2pop_map[pop_name]
-        """
-
-    '''
-    def _add_node(self, node, network):
-        pops = self._networks[network]
-        pop_key = node[self._group_key]
-        if pop_key in pops:
-            pop = pops[pop_key]
-            pop.add_gid(node.gid)
-            self._gid_table[network][node.gid] = pop
-        else:
-            model_class = self.property_schema.get_pop_type(node)
-            if model_class == PopTypes.Internal:
-                pop = InternalNode(pop_key, self, network, node)
-                pop.add_gid(node.gid)
-                pop.model_params = self.__get_params(node)
-                self._add_internal_node(pop, network)
-
-            elif model_class == PopTypes.External:
-                # TODO: See if we can get firing rate from dynamics_params
-                pop = ExternalPopulation(pop_key, self, network, node)
-                pop.add_gid(node.gid)
-                self._add_external_node(pop, network)
-
-            else:
-                raise Exception('Unknown model type')
-
-            if network not in self._gid_table:
-                self._gid_table[network] = {}
-            self._gid_table[network][node.gid] = pop
-    '''
-
     def __get_params(self, node_params):
         if node_params.with_dynamics_params:
             return node_params['dynamics_params']
@@ -633,30 +409,6 @@ class PopNetwork(SimNetwork):
                 except Exception:
                     # TODO: Check dynamics_params before
                     self.io.log_exception('Could not find node dynamics_params file {}.'.format(params_path))
-
-
-    '''
-    def add_edges(self, edges, target_network=None, source_network=None):
-        # super(PopGraph, self).add_edges(edges)
-
-        target_network = target_network if target_network is not None else edges.target_network
-        if target_network not in self._target_edges:
-            self._target_edges[target_network] = []
-
-        source_network = source_network if source_network is not None else edges.source_network
-        if source_network not in self._source_edges:
-            self._source_edges[source_network] = []
-
-        target_pops = self.get_populations(target_network)
-        source_pops = self.get_populations(source_network)
-        source_gid_table = self._gid_table[source_network]
-
-        for target_pop in target_pops:
-            for target_gid in target_pop.get_gids():
-                for edge in edges.edges_itr(target_gid):
-                    source_pop = source_gid_table[edge.source_gid]
-                    self._add_edge(source_pop, target_pop, edge)
-    '''
 
     def _add_edge(self, source_pop, target_pop, edge):
         src_id = source_pop.node_id

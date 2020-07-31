@@ -1,7 +1,7 @@
 
 class SimInput(object):
     """A helper class for parsing the "inputs" section of a SONATA config file. Separate the actual parameters needed
-    to instatiate a module from the metadata parameters (eg, name, module, input_type)
+    to instantiate a module from the metadata parameters (eg, name, module, input_type)
 
     Use the build() method to parse the json/dictionary of a section of input, then **params** to get a dictionary
     of the values used to instantiate.
@@ -10,7 +10,7 @@ class SimInput(object):
                   'spikes_inputs',
                   {'module': 'spikes', 'input_type': 'hdf5', input_file: 'my_spikes.h5', 'time_scale': 'ms'}
         )
-        ...
+
         if input.module == 'spike':
             SpikesInput(**params)
             ...

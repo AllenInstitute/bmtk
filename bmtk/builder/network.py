@@ -37,8 +37,7 @@ class Network(object):
     format for running network simulations using BioNet, PointNet, PopNet or FilterNet bmtk modules, however it can
     be generalized to build any time of network for any time of simulation.
 
-    Building the network
-    ====================
+    Building the network:
     For the general use-case building a network consists of 4 steps, each with a corresponding method:
     1. Initialize the network
     ```python
@@ -48,7 +47,7 @@ class Network(object):
     2. Create nodes (ie cells) using the **add_nodes()** method
     ```python
         net.add_nodes(N=80, model_type='Biophysical', ei='exc')
-        net.add_nodes(N=20, model_type='IntFire', exi='inh')
+        net.add_nodes(N=20, model_type='IntFire', ei='inh')
         ...
     ```
 
@@ -226,7 +225,7 @@ class Network(object):
         will be used).
         ```python
             net.add_edges(source={'ei': 'inh'}, target={'ei': 'exc', 'etype': 'fast-spiking'},
-                          dyanmic_params='i2e.json', synaptic_model='alpha', ...)
+                          dynamic_params='i2e.json', synaptic_model='alpha', ...)
         ```
 
         In the above code there is one connection between each source/target pair of nodes, but to create a multi-graph
@@ -237,12 +236,12 @@ class Network(object):
 
         Connection rules
         ----------------
-        However usually the 'connection_rule' parameter will be the name of a function that takes in source-node and
+        Usually the 'connection_rule' parameter will be the name of a function that takes in source-node and
         target-node object (which can be treated like dictionaries, and returns the number of connections (ie
         synapses, 0 or None if no synapses should exists) between the source and target cell:
         ```python
             def my_conn_fnc(source_node, target_node):
-                src_pos = source_node['positon']
+                src_pos = source_node['position']
                 trg_pos = target_node['position']
                 ...
                 return N_syns
@@ -281,7 +280,7 @@ class Network(object):
         connections. To create unique values for each edge, the add_edges() method returns a ConnectionMap object:
         ```python
             def set_syn_weight_by_dist(source, target):
-                src_pos, trg_pos = source['postion'], target['postion']
+                src_pos, trg_pos = source['position'], target['position']
                 ....
                 return syn_weight
 
