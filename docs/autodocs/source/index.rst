@@ -44,9 +44,7 @@ The BMTK was developed and is supported at the `Allen Institute for Brain Scienc
 released under a BSD 3-clause license. We encourage others to use the BMTK for their own research, and suggestions and
 contributions to the BMTK are welcome.
 
-The latest release, previous releases, and current development can be found at::
-
-  https://github.com/AllenInstitute/bmtk
+The latest release, previous releases, and current development can be found at `<https://github.com/AllenInstitute/bmtk>`_
 
 
 The BMTK Workflow and architecture
@@ -63,19 +61,20 @@ recordings (see Allen Brain Observatory).
 Unlike other simulators, BMTK separates the process of building, simulating, and analyzing the results. First a fully
 instantiated base-line version of the model is built and saved to a file so each time a simulation is ran it takes only
 a small fraction of the time to instantiate the simulation. Results are also automatically saved to a disk. BMTK and
-the format it uses [SONATA, see below] makes it easy to dynamically adjust cell and synaptic parameters so that multiple
+the format it uses (SONATA, see below) makes it easy to dynamically adjust cell and synaptic parameters so that multiple
 iterations of a simulation be done as fast as possible
 
 As such BMTK can be broken into three major components:
 
-* The Network Builder [``bmtk.builder``] - Used to build network models
-* The Simulation Engines [``bmtk.simulator``] - Interfaces for simulating the network
-* Analysis and Visualization Tools [``bmtk.analyzer``] - Python functions for analyzing and visualizing the network and simulation results
+* The Network Builder [:py:mod:`bmtk.builder`] - Used to build network models
+* The Simulation Engines [:py:mod:`bmtk.simulator`] - Interfaces for simulating the network
+* Analysis and Visualization Tools [:py:mod:`bmtk.analyzer`] - Python functions for analyzing and visualizing the
+   network and simulation results
 
 .. figure:: _static/images/bmtk_architecture.jpg
    :scale: 45%
 
-The components can be as one workflow or separately by themselves. BMTK utilizes the SONATA Dataformat (See next section)
+The components can be as one workflow or separately by themselves. BMTK utilizes the SONATA Data format (see next section)
 to allow sharing of large-scale network data. As such, it is possible to use the Network Builder to build the model but
 another tool to run the model. Or if another model has been built by someone else and saved in SONATA format BMTK will
 be able to simulate it.
@@ -85,7 +84,8 @@ SONATA
 ------
 SONATA is a multi-institutional developed standardized, cross-platform data format for storing large scale networks and
 simulation results. The BMTK utilizes SONATA when building and simulating networks, so much of what is being described
-in the documentation and tutorials will be based on SONATA. For more information see the `SONATA github page <https://github.com/AllenInstitute/sonata>`_.
+in the documentation and tutorials will be based on SONATA. For more information see the
+`SONATA github page <https://github.com/AllenInstitute/sonata>`_.
 
 
 Acknowledgements

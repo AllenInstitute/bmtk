@@ -4,7 +4,7 @@ PointNet
 .. figure:: _static/images/bmtk_architecture_pointnet_highlight.jpg
    :scale: 40%
 
-Pointnet is a simulation engine that utilizes `NEST <http://www.nest-simulator.org/>`_ to run large-scale point
+PointNet is a simulation engine that utilizes `NEST <http://www.nest-simulator.org/>`_ to run large-scale point
 neuron network models. Features including:
 
 * Run the same simulation on a single core or in parallel on an HPC cluster with no extra programming required.
@@ -13,15 +13,17 @@ neuron network models. Features including:
 
 Inputs
 ------
-Inputs can be specified in the “inputs” sections of the simulation config [LINK], following the rules specified in the
-SONATA Data format [LINK].
+Inputs can be specified in the "inputs" sections of the `simulation config <simulators.html#configuration-files>`_,
+following the rules specified in the
+`SONATA Data format <https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#simulation-input---stimuli>`_.
 
 Spike-Trains
 ++++++++++++
 Cells with ``model_type`` value ``virtual`` are equivalent to NEST’s spike_generator models which will play a
-pre-recorded series of spikes throughout the simulation. You may use either a SONATA Spike-Train file [LINK], an NWB
-file, or a space-separated csv file with columns “node_id”, “population”, and “timestamps”. The following shows some
-examples of how to generate spike-train files using bmtk [LINK].
+pre-recorded series of spikes throughout the simulation. You may use either a
+`SONATA spike-train file <./analyzer.html#spike-trains>`_, an NWB file, or a space-separated csv file with columns
+**node_id**, **population**, and **timestamps**. Examples of how to create your own spike-train files can be found
+`here <./analyzer.html#creating-spike-trains>`_.
 
 .. code:: json
 
@@ -35,7 +37,7 @@ examples of how to generate spike-train files using bmtk [LINK].
     }
 
 * module:  either sonata, hdf5, csv, or nwb: depending on the format of the spikes file
-* node_set [LINK]: used to filter which cells will receive the inputs
+* `node_set <./simulators.html#node-sets>`_: used to filter which cells will receive the inputs
 * input_file: path to file contain spike-trains for one or mode node
 
 Current-Clamps
@@ -56,7 +58,7 @@ May use one step current clamp on multiple nodes, or have one node receive multi
     }
 
 * module:  Always IClamp
-* node_set [LINK]: used to filter which cells will receive the inputs
+* `node_set <./simulators.html#node-sets>`_: used to filter which cells will receive the inputs
 * amp: injection in pA
 * delay: onset of current injection in ms
 * duration: duration of current injection in ms
@@ -87,6 +89,6 @@ Used to record the time trace of specific cell variables, usually the membrane p
 
 * module: either mutlimeter_report or membrane_report, both the same
 * variable_name: name of variable being recorded, will depend on the nest cell model.
-* cells: a node_set [LINK] to filter out what cells to record.
+* cells: a `node_set <./simulators.html#node-sets>`_ filter out what cells to record.
 * file_name: name of file where traces will be recorded, under the “output_dir”. If not specified the the report title
- will be used, eg “calcium_concentration.h5” and “membrane_potential.h5”
+   will be used, eg “calcium_concentration.h5” and “membrane_potential.h5”

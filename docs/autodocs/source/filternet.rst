@@ -6,8 +6,9 @@ FilterNet
 
 FilterNet will simulate the effects of visual stimuli onto a receptive field. It uses LGNModel simulator as a backend, which
 uses neural-filters to simulate firing rates and spike-trains over a given time-course and stimuli. It is based on a
-linear-non-linear-poission casscade model [LINK] with options for choosing different types of spatial, temporal, or
-spatio-temporal units that have already been optimized to closely mimic mammialian thalamic cells:
+`linear-nonlinear-Poisson cascade model <https://en.wikipedia.org/wiki/Linear-nonlinear-Poisson_cascade_model>`_
+with options for choosing different types of spatial, temporal, or spatio-temporal units that have already been
+optimized to closely mimic mammalian thalamic cells:
 
 
 .. figure:: _static/images/lnp_model.jpg

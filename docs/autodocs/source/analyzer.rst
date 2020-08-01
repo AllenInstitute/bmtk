@@ -6,13 +6,14 @@ Analyzing the Results
 
 After a simulation has completed BMTK will automatically save the results to the output folder. It is possible to have
 BMTK read and analyze the results before the simulation has exited but usually not required. The type of results saved
-during the simulation is determined by the “reports” section of the simulation config [LINK]. But most commonly it is a
-spikes-trains file, a cell-variable report, an extracellular potential recording, and in the case of PopNet a report of
-the firing rate dynamics.
+during the simulation is determined by the “reports” section of the `simulation config <./simulators.html#configuration-files>`_.
+But most commonly it is a spikes-trains file, a cell-variable report, an extracellular potential recording, and in the
+case of PopNet a report of the firing rate dynamics.
 
-The output files follow the SONATA Data format [LINK], and tools like pySONATA [LINK] or libSONATA [link] can be used
-to read them. The following consists of a high-level overview of these different formats and how you can use BMTK to
-find the results.
+The output files follow the `SONATA Data format <https://github.com/AllenInstitute/sonata>`_, and tools like
+`pySONATA <https://github.com/AllenInstitute/sonata/tree/master/src/pysonata>`_  or
+`libSONATA <https://github.com/BlueBrain/libsonata>`_ can be used to read them. The following consists of a high-level
+overview of these different formats and how you can use BMTK to find the results.
 
 
 Spike-Trains
@@ -32,7 +33,8 @@ sorted (default none). There is also an optional attribute “units” for the t
 
 Reading
 +++++++
-You can use the SpikeTrains [LINK] class to load a sonata spikes files (or csv or nwb) into memory:
+You can use the :py:class:`SpikeTrains <bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI>` class to load
+a sonata spikes files (or csv or nwb) into memory:
 
 .. code:: python
 
@@ -44,14 +46,17 @@ You can use the SpikeTrains [LINK] class to load a sonata spikes files (or csv o
    print(spikes.n_spikes())
    print(spikes.node_ids())
 
-If you know what node you want use the ``get_times`` method to return an array of all spikes for a single node
+If you know what node you want use the :py:meth:`get_times() <bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.get_times>`
+method to return an array of all spikes for a single node
 
 .. code:: python
 
    node0_times = spikes.get_times(node_id=0)
    print(node0_times)
 
-Otherwise you can use the ``to_dataframe`` or ``spikes`` method to get a list of all node_ids + timestamps
+Otherwise you can use the :py:meth:`to_dataframe() <bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.to_dataframe>`
+or :py:meth:`spikes() <bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.spikes>`  method to get a list of
+all node_ids plus timestamps
 
 .. code:: python
 
@@ -77,7 +82,9 @@ Creating Spike Trains
 Commonly it’s necessary to generate spike-trains to use as inputs for a simulation. One option is to use FilterNet to
 generate inputs from external stimuli. You can also use the output of one simulation as the input to the next. But if
 you need to generate your own spike files, in property SONATA format, BMTK provides two ways of readily doing so. One
-is to user the ``SpikeTrains`` [LINK] class’s ``add_spikes`` or ``add_spike`` method:
+is to use the :py:class:`SpikeTrains <bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI>` class
+:py:meth:`add_spikes() <bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.add_spikes>` or
+:py:meth:`add_spike() <bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.add_spike>` method:
 
 .. code:: python
 
@@ -89,7 +96,7 @@ is to user the ``SpikeTrains`` [LINK] class’s ``add_spikes`` or ``add_spike`` 
                     timestamps=[0.5, 0.9, 1.0, 1.0])
 
 
-Or use the ``PoissonSpikeGenerator`` class
+Or use the :py:class:`PoissonSpikeGenerator <bmtk.utils.reports.spike_trains.spike_trains.PoissonSpikeGenerator>` class
 
 .. code:: python
 
@@ -128,11 +135,12 @@ used:
 
 Reading Cell Variables
 ++++++++++++++++++++++
-The ``CompartmentReport`` class should be used to pull data from a cell report.
+The :py:class:`CompartmentReport <bmtk.utils.reports.compartment.core.CompartmentReaderABC>` class should be used to
+pull data from a cell report.
 
 .. code:: python
 
-   bmtk.utils.reports.compartments import CompartmentReport
+   bmtk.utils.reports.compartment import CompartmentReport
 
    pop_name = ...
    report = CompartmentReport('output/membrane_vm.h5',

@@ -14,19 +14,20 @@ Simulation Engines
 .. figure:: _static/images/bmtk_architecture_simulator_highlight.jpg
    :scale: 40%
 
-The ``bmtk.simulator`` module contains classes for simulating a network under a variety of different simulators. BMTK
-doesn't actually do the simulation itself, but processes the inputs and passes it off to an existing engine. At the
+The :py:mod:`bmtk.simulator` module contains classes for simulating a network under a variety of different simulators.
+BMTK doesn't actually do the simulation itself, but processes the inputs and passes it off to an existing engine. At the
 moment there are four different simulation engines for running a network at different levels-of-resolution:
 
-* BioNet - Uses NEURON [LINK] to run biophysically realistic models
-* PointNet - Uses NEST [LINK] to run point-neuron based models
-* PopNet - Uses DiPDE to run population-based firing rate models.
-* FilterNet - Uses Filter based units, that uses a liner-nonlinear-poisson cascading models, base on the mammalian LGN, to convert inputs into spikes.
+* `BioNet <./bionet>`_ - Uses `NEURON <https://neuron.yale.edu>`_ to run biophysically realistic models
+* `PointNet <./pointnet>`_ - Uses `NEST <https://www.nest-simulator.org/>`_ to run point-neuron based models
+* `PopNet <./popnet>`_ - Uses `DiPDE <https://github.com/AllenInstitute/dipde>`_ to run population-based firing rate models.
+* `FilterNet <./filternet>`_ - Uses Filter based units, that uses a liner-nonlinear-poisson cascading models, base on the
+   mammalian LGN, to convert inputs into spikes.
 
 .. figure:: _static/images/brunel_comparisons.jpg
    :scale: 40%
 
-usually capture a neuron’s membrane potential trace (when the model_template supports it) that doesn’t isn’t possible on
+usually capture a neuron's membrane potential trace (when the model_template supports it) that doesn’t isn't possible on
 a population or filter-based level of resolution. And specific dynamics may occur at one level and not another. Thus it
 is important for the modeler to choose what levels they use. However running simulations across the different engines is
 done in the same way. The following sections provide a high level overview of how to set up and run network simulations
@@ -43,25 +44,27 @@ command-line script. The process for setting up and running a simulation usually
 3. Executing the simulation
 
 The Simulation Environment
------------------------------------
+--------------------------
 The standard BMTK directory structure for running one or more simulations will typically have all the necessary files
 contained within their own directory as such:
-
 
 .. figure:: _static/images/bmtk_sim_env.png
    :scale: 40%
 
-* network/ - directory containing the SONATA Network files, either built using the NetworkBuilder (See documentation) or provided to us from another source.
+* **network/** - directory containing the SONATA Network files, either built using the `NetworkBuilder <./builder.html>`_
+   or provided to us from another source.
 
-* components/ - Will usually contain neuron and synaptic parameter files, morphologies, NEURON hoc mechanisms. In general files, external files used to instantiate the nodes and edges of the network.
+* **components/** - Will usually contain neuron and synaptic parameter files, morphologies, NEURON hoc mechanisms.
+   In general files, external files used to instantiate the nodes and edges of the network.
 
-* inputs/ - Often contain spike-trains, movies, images and other stimuli to drive our network. May not always be required.
+* **inputs/** - Often contain spike-trains, movies, images and other stimuli to drive our network. Not always required.
 
-* circuit_config.json - configuration file containing information for instantiating the network.
+* **circuit_config.json** - configuration file containing information for instantiating the network.
 
-* simulation_config.json - configuration file with information on how to run the simulation, including the input and output of the simulation.
+* **simulation_config.json** - configuration file with information on how to run the simulation, including the input
+   and output of the simulation.
 
-* run_simulator.py - a python script that will actually run the simulation.
+* **run_simulation.py** - a python script that will actually run the simulation.
 
 The names of the files and folders can be changed as the modeler desires. Nor is it required or always beneficial that
 everything be contained within the same directory. For example different networks may share the same neuron/synaptic
@@ -71,26 +74,27 @@ all simulations. As described below the location of the directories and files ar
 Creating the environment
 ++++++++++++++++++++++++
 A good way to create a working simulation directory is to copy an existing one and make modifications as needed. The
-bmtk [LINK] and SONATA [link] github page contains multiple examples.
+`BMTK <https://github.com/AllenInstitute/bmtk>`_ and `SONATA <https://github.com/AllenInstitute/sonata>`_ github page
+contains multiple examples.
 
-BMTK also contains a script ``bmtk.utils.sim_setup`` that will automatically create a base-line simulation environment
-for you. To create the directory structure for a BioNet simulation called my_sim, including the necessary config and
-run scripts, run the following in the command-line:
-
+BMTK also contains a script :py:func:`bmtk.utils.sim_setup` that will automatically create a base-line simulation
+environment for you. To create the directory structure for a BioNet simulation called my_sim, including the necessary
+config and run scripts, run the following in the command-line:
 
 .. code:: bash
 
    $ python -m bmtk.utils.sim_setup bionet my_sim
 
-You may also replace *bionet* with either *pointnet*, *popnet*, or *filternet*. Once it my_sim/ directory has been
-created the modeler will need to move the necessary network, components, and input files to their correct place. Then
-modify the configuration, using a text editor, as required. And finally the network can be run [See below].
+You may also replace **bionet** with either **pointnet**, **popnet**, or **filternet**. Once it *my_sim/* directory has
+been created the modeler will need to move the necessary network, components, and input files to their correct place. Then
+modify the configuration, using a text editor, as required. And finally the network can be run. See below.
 
 The sim_setup script also contains many extra options, see the help menu for full list:
 
 .. code:: bash
 
    $ python -m bmtk.utils.sim_setup -h
+
 
 Configuration Files
 -------------------
@@ -99,7 +103,8 @@ configuration files. The SONATA standard specifies two configuration files; a ci
 about the network and component files. And a simulation_config.json used for actually running the full circuit. BMTK
 allows modelers to combine the two configs into one (but other SONATA support software may not).
 
-The following breaks down the different sections found in the SONATA configs. See the SONATA documentation [LINK] for
+The following breaks down the different sections found in the SONATA configs. See the
+`SONATA documentation <https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md>`_ for
 more details. Some simulation engines may allow for additional options that will be described in their respective docs.
 
 manifest
@@ -124,7 +129,7 @@ networks
 ++++++++
 contains locations of the node and edges files used to build the circuit, such that multiple node and edge files may be
 combined into one circuit. For example the following contains V1 network, with their recurrent connections
-(v1_v1_edges'*') plus input from LGN nodes (lgn_v1_edges*)
+(v1_v1_edges\*) plus input from LGN nodes (lgn_v1_edges\*)
 
 .. code:: json
 
@@ -167,7 +172,8 @@ of SONATA)
 components
 ++++++++++
 links to external directories and files required to fully instantiate all the models and parameters of the network,
-see [LINK] for a full description
+see `SONATA documentation <https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#tying-it-all-together---the-networkcircuit-config-file>`_
+for a full description
 
 .. code:: json
 
@@ -204,7 +210,7 @@ output
 ++++++
 Sections contain general information about where to output the results on the simulation. When the simulation starts
 the output_dir will be automatically created (and will overwrite existing output if overwrite_output_dir is true) as
-well as the log_file. By default bmtk will always record and save the spikes of all the nodes of the simulation
+well as the log_file. By default BMTK will always record and save the spikes of all the nodes of the simulation
 (see "reports" section for how to change this) into the "spikes_file".
 
 .. code:: json
@@ -221,7 +227,7 @@ well as the log_file. By default bmtk will always record and save the spikes of 
 inputs
 ++++++
 Contains different inputs that will drive the simulation. In BioNet and PointNet usually the inputs involves either
-spike trains injected into the network using external “virtual” nodes, or the use of current clamps. The following
+spike trains injected into the network using external **virtual** nodes, or the use of current clamps. The following
 example does both:
 
 .. code:: json
@@ -245,7 +251,7 @@ example does both:
       }
    }
 
-The *input_type* and *module* parameters for each input describes the method and type of input. The *node_set*,
+The ``input_type`` and ``module`` parameters for each input describes the method and type of input. The ``node_set``,
 described below, filters the cells for which the stimulus will be applied too. Other types of stimuli are specific to
 only certain engines; like extracellular potentiation in BioNet or movies in FilterNet.
 
@@ -269,16 +275,17 @@ potential in all the biophysically detailed cells in the V1 population:
       }
    }
 
-By default BMTK will record the spike-trains of all non-virtual cells as specified in the “outputs” section, so it is not
+By default BMTK will record the spike-trains of all non-virtual cells as specified in the ``outputs`` section, so it is not
 necessary to create a ``"module": "spike_trians"`` report. But you may if, for example, you only want to record for
 part of the full simulation time or record from a subset of all cells.
 
 
 node_sets
 +++++++++
-“node_sets” [LINK to SONATA doc] are filters for specific nodes within the circuit, mainly used to determine which cells
-to apply an “input” or “report” to. For example say we want to split the spike-train output of V1’s pvalb and pyramidal
-cells into different reports
+`node_sets <https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#node-sets-file>`_
+are filters for specific nodes within the circuit, mainly used to determine which cells to apply an "input" or a
+"report". For example say we want to split the spike-train output of V1’s pvalb and pyramidal cells into different
+reports
 
 .. code:: json
 
@@ -310,7 +317,7 @@ cells into different reports
       }
    }
 
-“node_sets” may also be a reference to an external json file.
+``node_sets`` may also be a reference to an external json file.
 
 If the node_set value is just a name, ie ``"cells": "V1"`` then it will automatically include cells in the “V1”
 population. You may also reference individual nodes by their “node_id” - ``"cells": [0, 1, 2]``
