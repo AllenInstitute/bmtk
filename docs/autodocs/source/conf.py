@@ -18,6 +18,9 @@
 #
 import os
 import sys
+import glob
+import shutil
+
 sys.path.insert(0, os.path.abspath('../../..'))
 
 
@@ -35,7 +38,8 @@ extensions = [
     'sphinx.ext.githubpages',
     'sphinx.ext.viewcode',
     'numpydoc',
-    'sphinx.ext.autosummary'
+    'sphinx.ext.autosummary',
+    'nbsphinx',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -46,7 +50,7 @@ templates_path = ['aibs_sphinx/templates']
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ['.rst', '.ipynb']
 
 # The master toctree document.
 master_doc = 'index'
@@ -185,4 +189,21 @@ texinfo_documents = [
 ]
 
 
+def copy_tutorials():
+    source_dir = os.path.dirname(os.path.abspath(__file__))
+    tutorials_dir = os.path.abspath('../tutorial')
+    tutorials = os.path.join(tutorials_dir, '*.ipynb')
 
+    for ipynb_file in glob.glob(tutorials):
+        tut_fname = os.path.basename(ipynb_file)
+        if ipynb_file.startswith('00'):
+            continue
+        elif tut_fname[:2].isnumeric():
+            tut_fname = tut_fname[3:]
+
+        tut_path = os.path.join(source_dir, 'tutorial_{}'.format(tut_fname))
+        shutil.copy(ipynb_file, tut_path)
+
+
+def setup(app):
+    copy_tutorials()
