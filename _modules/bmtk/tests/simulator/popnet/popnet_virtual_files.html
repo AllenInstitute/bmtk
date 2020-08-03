@@ -1,18 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.tests.simulator.popnet.popnet_virtual_files &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
   </head><body>
@@ -621,17 +624,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h1>Source code for bmtk.tests.simulator.popnet.popnet_virtual_files</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">bmtk.utils.io</span> <span class="k">import</span> <span class="n">tabular_network</span> <span class="k">as</span> <span class="n">tn</span>
 
-
-<div class="viewcode-block" id="NodeRow"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.popnet.html#bmtk.tests.simulator.popnet.popnet_virtual_files.NodeRow">[docs]</a><span class="k">class</span> <span class="nc">NodeRow</span><span class="p">(</span><span class="n">tn</span><span class="o">.</span><span class="n">NodeRow</span><span class="p">):</span>
+<div class="viewcode-block" id="NodeRow"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.popnet.html#bmtk.tests.simulator.popnet.popnet_virtual_files.NodeRow">[docs]</a><span class="k">class</span> <span class="nc">NodeRow</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">with_dynamics_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="NodesFile"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.popnet.html#bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile">[docs]</a><span class="k">class</span> <span class="nc">NodesFile</span><span class="p">(</span><span class="n">tn</span><span class="o">.</span><span class="n">NodesFile</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+<div class="viewcode-block" id="NodesFile"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.popnet.html#bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile">[docs]</a><span class="k">class</span> <span class="nc">NodesFile</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_network_name</span> <span class="o">=</span> <span class="s1">&#39;test_bionet&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_iter_index</span> <span class="o">=</span> <span class="mi">0</span>
@@ -682,10 +683,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="viewcode-block" id="NodesFile.get_node"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.popnet.html#bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile.get_node">[docs]</a>    <span class="k">def</span> <span class="nf">get_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gid</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span></div>
 
-    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N</span>
 
-    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_iter_index</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="bp">self</span>
 
@@ -697,7 +698,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_iter_index</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">node_row</span></div>
 
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gid</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gid</span><span class="p">):</span>
         <span class="n">node_props</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;positions&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="s1">&#39;rotation&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rot_delta</span><span class="o">*</span><span class="n">gid</span><span class="p">,</span> <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="mf">0.0001</span><span class="o">*</span><span class="n">gid</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">NodeRow</span><span class="p">(</span><span class="n">gid</span><span class="p">,</span> <span class="n">node_props</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_node_type_props</span><span class="p">(</span><span class="n">gid</span><span class="p">))</span>
 
@@ -710,14 +711,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_types_table</span><span class="p">[</span><span class="mi">103</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="EdgeRow"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.popnet.html#bmtk.tests.simulator.popnet.popnet_virtual_files.EdgeRow">[docs]</a><span class="k">class</span> <span class="nc">EdgeRow</span><span class="p">(</span><span class="n">tn</span><span class="o">.</span><span class="n">EdgeRow</span><span class="p">):</span>
+<div class="viewcode-block" id="EdgeRow"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.popnet.html#bmtk.tests.simulator.popnet.popnet_virtual_files.EdgeRow">[docs]</a><span class="k">class</span> <span class="nc">EdgeRow</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">with_dynamics_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="EdgesFile"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.popnet.html#bmtk.tests.simulator.popnet.popnet_virtual_files.EdgesFile">[docs]</a><span class="k">class</span> <span class="nc">EdgesFile</span><span class="p">(</span><span class="n">tn</span><span class="o">.</span><span class="n">EdgesFile</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_nodes</span><span class="p">,</span> <span class="n">source_nodes</span><span class="p">):</span>
+<div class="viewcode-block" id="EdgesFile"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.popnet.html#bmtk.tests.simulator.popnet.popnet_virtual_files.EdgesFile">[docs]</a><span class="k">class</span> <span class="nc">EdgesFile</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_nodes</span><span class="p">,</span> <span class="n">source_nodes</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_target_nodes</span> <span class="o">=</span> <span class="n">target_nodes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_source_nodes</span> <span class="o">=</span> <span class="n">source_nodes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_props</span> <span class="o">=</span> <span class="p">[</span>
@@ -771,7 +772,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">yield</span> <span class="n">EdgeRow</span><span class="p">(</span><span class="n">trg_node</span><span class="o">.</span><span class="n">gid</span><span class="p">,</span> <span class="n">src_node</span><span class="o">.</span><span class="n">gid</span><span class="p">,</span> <span class="n">edge_props</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_edge_type_prop</span><span class="p">(</span><span class="n">src_node</span><span class="p">,</span> <span class="n">trg_node</span><span class="p">))</span></div>
 
 
-    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_source_nodes</span><span class="p">)</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_target_nodes</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__get_edge_type_prop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_node</span><span class="p">,</span> <span class="n">target_node</span><span class="p">):</span>
@@ -780,6 +781,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_props</span><span class="p">[</span><span class="n">indx</span><span class="p">]</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -796,13 +798,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
@@ -811,17 +823,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

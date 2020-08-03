@@ -1,18 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.simulator.utils.simulation_reports &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
@@ -623,10 +626,25 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="SimReport"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.SimReport">[docs]</a><span class="k">class</span> <span class="nc">SimReport</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Used for parsing reports section from a SONATA configuration file. It will take care of implicit and default</span>
+<span class="sd">    values.</span>
+
+<span class="sd">    Use the build() method to convert a &quot;reports&quot; section dictionary to a SimReport object. The SimReport object has</span>
+<span class="sd">    properties that can be used to instantiate a simualtion report, particular properties **module** and **params**</span>
+
+<span class="sd">    ```python</span>
+<span class="sd">        report = SimReport.build(</span>
+<span class="sd">            report_name=&#39;my_report&#39;,</span>
+<span class="sd">            params = {&#39;module&#39;: &#39;my_mod&#39;, ...})</span>
+<span class="sd">        ...</span>
+<span class="sd">        MyReport(**report.params)</span>
+<span class="sd">    ```</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">default_dir</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span>
     <span class="n">registry</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Used by factory to keep track of subclasses</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="o">=</span> <span class="n">module</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
@@ -694,7 +712,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="MembraneReport"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.MembraneReport">[docs]</a><span class="nd">@SimReport</span><span class="o">.</span><span class="n">register_module</span>
 <span class="k">class</span> <span class="nc">MembraneReport</span><span class="p">(</span><span class="n">SimReport</span><span class="p">,</span> <span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">MembraneReport</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">report_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
         <span class="c1"># Want variable_name option to allow for singular of list of params</span>
         <span class="n">variables</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;variable_name&#39;</span><span class="p">]</span>
@@ -763,7 +781,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="SpikesReport"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.SpikesReport">[docs]</a><span class="nd">@SimReport</span><span class="o">.</span><span class="n">register_module</span>
 <span class="k">class</span> <span class="nc">SpikesReport</span><span class="p">(</span><span class="n">SimReport</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">SpikesReport</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">report_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SpikesReport.build"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.SpikesReport.build">[docs]</a>    <span class="nd">@classmethod</span>
@@ -781,7 +799,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="s1">&#39;spikes_file_csv&#39;</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_file_csv&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
             <span class="s1">&#39;spikes_file_nwb&#39;</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_file_nwb&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
             <span class="s1">&#39;spikes_sort_order&#39;</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_sort_order&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-            <span class="s1">&#39;tmp_dir&#39;</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;output_dir&#39;</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_dir</span><span class="p">)</span>
+            <span class="s1">&#39;tmp_dir&#39;</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;output_dir&#39;</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_dir</span><span class="p">),</span>
+            <span class="s1">&#39;cache_to_disk&#39;</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;cache_to_disk&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="p">}</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;spikes_file&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;spikes_file_csv&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;spikes_file_nwb&#39;</span><span class="p">]):</span>
             <span class="c1"># User hasn&#39;t specified any spikes file</span>
@@ -790,9 +809,43 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="s1">&#39;spikes_report&#39;</span><span class="p">,</span> <span class="s1">&#39;spikes_report&#39;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span></div></div>
 
 
+<div class="viewcode-block" id="ClampReport"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.ClampReport">[docs]</a><span class="nd">@SimReport</span><span class="o">.</span><span class="n">register_module</span>
+<span class="k">class</span> <span class="nc">ClampReport</span><span class="p">(</span><span class="n">SimReport</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ClampReport</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">report_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ClampReport.avail_modules"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.ClampReport.avail_modules">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">avail_modules</span><span class="p">():</span>
+        <span class="k">return</span> <span class="s1">&#39;clamp_report&#39;</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">node_set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;all&#39;</span>
+
+    <span class="k">def</span> <span class="nf">_set_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>        
+        <span class="k">for</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">default_val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_defaults</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">var_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">var_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">default_val</span>
+
+    <span class="k">def</span> <span class="nf">_get_defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># directory for saving temporary files created during simulation</span>
+        <span class="n">tmp_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_dir</span>
+
+        <span class="c1"># Find the report file name. Either look for &quot;file_name&quot; parameter, or else it is &lt;report-name&gt;.h5</span>
+        <span class="k">if</span> <span class="s1">&#39;file_name&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;file_name&#39;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.h5&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.hdf&#39;</span><span class="p">)</span> \
+                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.hdf5&#39;</span><span class="p">):</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">report_name</span>  <span class="c1"># Check for case report.h5.h5</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.h5&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">report_name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">[(</span><span class="s1">&#39;file_name&#39;</span><span class="p">,</span> <span class="n">file_name</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;tmp_dir&#39;</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="p">)]</span></div>
+
+
 <div class="viewcode-block" id="SEClampReport"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.SEClampReport">[docs]</a><span class="nd">@SimReport</span><span class="o">.</span><span class="n">register_module</span>
 <span class="k">class</span> <span class="nc">SEClampReport</span><span class="p">(</span><span class="n">SimReport</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">SEClampReport</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">report_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SEClampReport.avail_modules"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.SEClampReport.avail_modules">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -802,7 +855,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="ECPReport"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.ECPReport">[docs]</a><span class="nd">@SimReport</span><span class="o">.</span><span class="n">register_module</span>
 <span class="k">class</span> <span class="nc">ECPReport</span><span class="p">(</span><span class="n">SimReport</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ECPReport</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">report_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tmp_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_dir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">positions_file</span> <span class="o">=</span> <span class="kc">None</span>
@@ -841,7 +894,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="SaveSynapses"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.SaveSynapses">[docs]</a><span class="nd">@SimReport</span><span class="o">.</span><span class="n">register_module</span>
 <span class="k">class</span> <span class="nc">SaveSynapses</span><span class="p">(</span><span class="n">SimReport</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">report_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">SaveSynapses</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">report_name</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SaveSynapses.avail_modules"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_reports.SaveSynapses.avail_modules">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -878,6 +931,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="n">report</span> <span class="o">=</span> <span class="n">SimReport</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">report_name</span><span class="p">,</span> <span class="n">report_params</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">report</span><span class="p">,</span> <span class="n">SpikesReport</span><span class="p">):</span>
+            <span class="n">has_spikes_report</span> <span class="o">=</span> <span class="kc">True</span>
+
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">report</span><span class="p">,</span> <span class="n">MembraneReport</span><span class="p">):</span>
             <span class="c1"># When possible for membrane reports combine multiple reports into one module if all the parameters</span>
             <span class="c1"># except for the variable name differs.</span>
@@ -903,6 +959,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="k">return</span> <span class="n">reports_list</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -919,13 +976,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
@@ -934,17 +1001,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

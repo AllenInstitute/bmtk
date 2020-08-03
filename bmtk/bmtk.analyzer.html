@@ -1,18 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.analyzer package &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="bmtk.analyzer.visualization package" href="bmtk.analyzer.visualization.html" />
@@ -642,254 +645,231 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div>
 <div class="section" id="module-bmtk.analyzer.cell_vars">
 <span id="bmtk-analyzer-cell-vars-module"></span><h2>bmtk.analyzer.cell_vars module<a class="headerlink" href="#module-bmtk.analyzer.cell_vars" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.cell_vars.load_reports">
-<code class="descclassname">bmtk.analyzer.cell_vars.</code><code class="descname">load_reports</code><span class="sig-paren">(</span><em>config_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/cell_vars.html#load_reports"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.cell_vars.load_reports" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.cell_vars.</code><code class="sig-name descname">load_reports</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_file</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/cell_vars.html#load_reports"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.cell_vars.load_reports" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.cell_vars.plot_report">
-<code class="descclassname">bmtk.analyzer.cell_vars.</code><code class="descname">plot_report</code><span class="sig-paren">(</span><em>config_file=None</em>, <em>report_file=None</em>, <em>report_name=None</em>, <em>variables=None</em>, <em>node_ids=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/cell_vars.html#plot_report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.cell_vars.plot_report" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.cell_vars.</code><code class="sig-name descname">plot_report</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">report_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">report_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">variables</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/cell_vars.html#plot_report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.cell_vars.plot_report" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
 <div class="section" id="module-bmtk.analyzer.firing_rates">
 <span id="bmtk-analyzer-firing-rates-module"></span><h2>bmtk.analyzer.firing_rates module<a class="headerlink" href="#module-bmtk.analyzer.firing_rates" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.firing_rates.convert_rates">
-<code class="descclassname">bmtk.analyzer.firing_rates.</code><code class="descname">convert_rates</code><span class="sig-paren">(</span><em>rates_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/firing_rates.html#convert_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.firing_rates.convert_rates" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.firing_rates.</code><code class="sig-name descname">convert_rates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rates_file</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/firing_rates.html#convert_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.firing_rates.convert_rates" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.firing_rates.firing_rates_equal">
-<code class="descclassname">bmtk.analyzer.firing_rates.</code><code class="descname">firing_rates_equal</code><span class="sig-paren">(</span><em>rates_file1</em>, <em>rates_file2</em>, <em>err=0.0001</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/firing_rates.html#firing_rates_equal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.firing_rates.firing_rates_equal" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.firing_rates.</code><code class="sig-name descname">firing_rates_equal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rates_file1</span></em>, <em class="sig-param"><span class="n">rates_file2</span></em>, <em class="sig-param"><span class="n">err</span><span class="o">=</span><span class="default_value">0.0001</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/firing_rates.html#firing_rates_equal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.firing_rates.firing_rates_equal" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
 <div class="section" id="module-bmtk.analyzer.io_tools">
 <span id="bmtk-analyzer-io-tools-module"></span><h2>bmtk.analyzer.io_tools module<a class="headerlink" href="#module-bmtk.analyzer.io_tools" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.io_tools.load_config">
-<code class="descclassname">bmtk.analyzer.io_tools.</code><code class="descname">load_config</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/io_tools.html#load_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.io_tools.load_config" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.io_tools.</code><code class="sig-name descname">load_config</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/io_tools.html#load_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.io_tools.load_config" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
 <div class="section" id="module-bmtk.analyzer.spike_trains">
 <span id="bmtk-analyzer-spike-trains-module"></span><h2>bmtk.analyzer.spike_trains module<a class="headerlink" href="#module-bmtk.analyzer.spike_trains" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.spike_trains.load_spikes_file">
-<code class="descclassname">bmtk.analyzer.spike_trains.</code><code class="descname">load_spikes_file</code><span class="sig-paren">(</span><em>config_file=None</em>, <em>spikes_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spike_trains.html#load_spikes_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.load_spikes_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.spike_trains.</code><code class="sig-name descname">load_spikes_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">spikes_file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spike_trains.html#load_spikes_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.load_spikes_file" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.spike_trains.plot_raster">
-<code class="descclassname">bmtk.analyzer.spike_trains.</code><code class="descname">plot_raster</code><span class="sig-paren">(</span><em>config_file</em>, <em>spikes_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spike_trains.html#plot_raster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.plot_raster" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.spike_trains.</code><code class="sig-name descname">plot_raster</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_file</span></em>, <em class="sig-param"><span class="n">spikes_file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spike_trains.html#plot_raster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.plot_raster" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.spike_trains.plot_rates">
-<code class="descclassname">bmtk.analyzer.spike_trains.</code><code class="descname">plot_rates</code><span class="sig-paren">(</span><em>config_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spike_trains.html#plot_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.plot_rates" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.spike_trains.</code><code class="sig-name descname">plot_rates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_file</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spike_trains.html#plot_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.plot_rates" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.spike_trains.spike_statistics">
-<code class="descclassname">bmtk.analyzer.spike_trains.</code><code class="descname">spike_statistics</code><span class="sig-paren">(</span><em>spikes_file</em>, <em>simulation=None</em>, <em>simulation_time=None</em>, <em>groupby=None</em>, <em>network=None</em>, <em>**filterparams</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spike_trains.html#spike_statistics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.spike_statistics" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.spike_trains.</code><code class="sig-name descname">spike_statistics</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">spikes_file</span></em>, <em class="sig-param"><span class="n">simulation</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">simulation_time</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">groupby</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">network</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">filterparams</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spike_trains.html#spike_statistics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.spike_statistics" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.spike_trains.to_dataframe">
-<code class="descclassname">bmtk.analyzer.spike_trains.</code><code class="descname">to_dataframe</code><span class="sig-paren">(</span><em>config_file</em>, <em>spikes_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spike_trains.html#to_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.to_dataframe" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.spike_trains.</code><code class="sig-name descname">to_dataframe</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_file</span></em>, <em class="sig-param"><span class="n">spikes_file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spike_trains.html#to_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.to_dataframe" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
 <div class="section" id="module-bmtk.analyzer.spikes_analyzer">
 <span id="bmtk-analyzer-spikes-analyzer-module"></span><h2>bmtk.analyzer.spikes_analyzer module<a class="headerlink" href="#module-bmtk.analyzer.spikes_analyzer" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.spikes_analyzer.get_mean_firing_rates">
-<code class="descclassname">bmtk.analyzer.spikes_analyzer.</code><code class="descname">get_mean_firing_rates</code><span class="sig-paren">(</span><em>spike_gids</em>, <em>node_ids</em>, <em>tstop_msec</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spikes_analyzer.html#get_mean_firing_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spikes_analyzer.get_mean_firing_rates" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.spikes_analyzer.</code><code class="sig-name descname">get_mean_firing_rates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">spike_gids</span></em>, <em class="sig-param"><span class="n">node_ids</span></em>, <em class="sig-param"><span class="n">tstop_msec</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spikes_analyzer.html#get_mean_firing_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spikes_analyzer.get_mean_firing_rates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute mean firing rate over the duration of the simulation</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>spike_gids</strong> – gids of cells which spiked</li>
-<li><strong>node_ids</strong> – np.array of node_ids</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spike_gids</strong> – gids of cells which spiked</p></li>
+<li><p><strong>node_ids</strong> – np.array of node_ids</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Return mean_firing_rate:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body"><p class="first last">np.array mean firing rates</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Return mean_firing_rate</dt>
+<dd class="field-even"><p>np.array mean firing rates</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.spikes_analyzer.spike_files_equal">
-<code class="descclassname">bmtk.analyzer.spikes_analyzer.</code><code class="descname">spike_files_equal</code><span class="sig-paren">(</span><em>spikes_txt_1</em>, <em>spikes_txt_2</em>, <em>err=0.0001</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spikes_analyzer.html#spike_files_equal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spikes_analyzer.spike_files_equal" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.spikes_analyzer.</code><code class="sig-name descname">spike_files_equal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">spikes_txt_1</span></em>, <em class="sig-param"><span class="n">spikes_txt_2</span></em>, <em class="sig-param"><span class="n">err</span><span class="o">=</span><span class="default_value">0.0001</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spikes_analyzer.html#spike_files_equal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spikes_analyzer.spike_files_equal" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.spikes_analyzer.spikes2dict">
-<code class="descclassname">bmtk.analyzer.spikes_analyzer.</code><code class="descname">spikes2dict</code><span class="sig-paren">(</span><em>spikes_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spikes_analyzer.html#spikes2dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spikes_analyzer.spikes2dict" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.spikes_analyzer.</code><code class="sig-name descname">spikes2dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">spikes_file</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spikes_analyzer.html#spikes2dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spikes_analyzer.spikes2dict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.spikes_analyzer.spikes_equal_in_window">
-<code class="descclassname">bmtk.analyzer.spikes_analyzer.</code><code class="descname">spikes_equal_in_window</code><span class="sig-paren">(</span><em>spikes1</em>, <em>spikes2</em>, <em>twindow</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spikes_analyzer.html#spikes_equal_in_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spikes_analyzer.spikes_equal_in_window" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.spikes_analyzer.</code><code class="sig-name descname">spikes_equal_in_window</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">spikes1</span></em>, <em class="sig-param"><span class="n">spikes2</span></em>, <em class="sig-param"><span class="n">twindow</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spikes_analyzer.html#spikes_equal_in_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spikes_analyzer.spikes_equal_in_window" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compare spikes within a time window    
 :param spikes1: dict with “time” and “gid” arrays for raster 1
 :param spikes2: dict with “time” and “gid” arrays for raster 2
 :param twindow: [tstart,tend] time window</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return boolean:</th><td class="field-body">True if equal, False if different</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Return boolean</dt>
+<dd class="field-odd"><p>True if equal, False if different</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
 <div class="section" id="module-bmtk.analyzer.spikes_loader">
 <span id="bmtk-analyzer-spikes-loader-module"></span><h2>bmtk.analyzer.spikes_loader module<a class="headerlink" href="#module-bmtk.analyzer.spikes_loader" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.spikes_loader.load_spikes">
-<code class="descclassname">bmtk.analyzer.spikes_loader.</code><code class="descname">load_spikes</code><span class="sig-paren">(</span><em>file_name</em>, <em>trial_name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spikes_loader.html#load_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spikes_loader.load_spikes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.spikes_loader.</code><code class="sig-name descname">load_spikes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_name</span></em>, <em class="sig-param"><span class="n">trial_name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spikes_loader.html#load_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spikes_loader.load_spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads spikes from multiple file formats</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>file_name</strong> – name of spike file</li>
-<li><strong>trian_name</strong> – name of a trial within a spike file</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_name</strong> – name of spike file</p></li>
+<li><p><strong>trian_name</strong> – name of a trial within a spike file</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return spikes:</th><td class="field-body"><p class="first last">dict with spikes</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Return spikes</dt>
+<dd class="field-even"><p>dict with spikes</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.spikes_loader.load_spikes_from_h5">
-<code class="descclassname">bmtk.analyzer.spikes_loader.</code><code class="descname">load_spikes_from_h5</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spikes_loader.html#load_spikes_from_h5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spikes_loader.load_spikes_from_h5" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.spikes_loader.</code><code class="sig-name descname">load_spikes_from_h5</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spikes_loader.html#load_spikes_from_h5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spikes_loader.load_spikes_from_h5" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load spikes from the hdf5 file</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>file_name</strong> – name of spike file</li>
-<li><strong>trian_name</strong> – name of a trial within a spike file</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_name</strong> – name of spike file</p></li>
+<li><p><strong>trian_name</strong> – name of a trial within a spike file</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return spikes:</th><td class="field-body"><p class="first last">dict with spikes</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Return spikes</dt>
+<dd class="field-even"><p>dict with spikes</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.spikes_loader.load_spikes_from_nwb">
-<code class="descclassname">bmtk.analyzer.spikes_loader.</code><code class="descname">load_spikes_from_nwb</code><span class="sig-paren">(</span><em>file_name</em>, <em>trial_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spikes_loader.html#load_spikes_from_nwb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spikes_loader.load_spikes_from_nwb" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.spikes_loader.</code><code class="sig-name descname">load_spikes_from_nwb</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_name</span></em>, <em class="sig-param"><span class="n">trial_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spikes_loader.html#load_spikes_from_nwb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spikes_loader.load_spikes_from_nwb" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load spikes from the nwb file</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>file_name</strong> – name of spike file</li>
-<li><strong>trian_name</strong> – name of a trial within a spike file</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_name</strong> – name of spike file</p></li>
+<li><p><strong>trian_name</strong> – name of a trial within a spike file</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return spikes:</th><td class="field-body"><p class="first last">dict with spikes</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Return spikes</dt>
+<dd class="field-even"><p>dict with spikes</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.spikes_loader.load_spikes_from_txt">
-<code class="descclassname">bmtk.analyzer.spikes_loader.</code><code class="descname">load_spikes_from_txt</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spikes_loader.html#load_spikes_from_txt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spikes_loader.load_spikes_from_txt" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.spikes_loader.</code><code class="sig-name descname">load_spikes_from_txt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spikes_loader.html#load_spikes_from_txt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spikes_loader.load_spikes_from_txt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load spikes from the txt file</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>file_name</strong> – name of spike file</li>
-<li><strong>trian_name</strong> – name of a trial within a spike file</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_name</strong> – name of spike file</p></li>
+<li><p><strong>trian_name</strong> – name of a trial within a spike file</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return spikes:</th><td class="field-body"><p class="first last">dict with spikes</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Return spikes</dt>
+<dd class="field-even"><p>dict with spikes</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
 <div class="section" id="module-bmtk.analyzer.utils">
 <span id="bmtk-analyzer-utils-module"></span><h2>bmtk.analyzer.utils module<a class="headerlink" href="#module-bmtk.analyzer.utils" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.utils.listify">
-<code class="descclassname">bmtk.analyzer.utils.</code><code class="descname">listify</code><span class="sig-paren">(</span><em>files</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/utils.html#listify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.utils.listify" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.utils.</code><code class="sig-name descname">listify</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">files</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/utils.html#listify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.utils.listify" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
 <div class="section" id="module-bmtk.analyzer">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.analyzer" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.node_types_table">
-<code class="descclassname">bmtk.analyzer.</code><code class="descname">node_types_table</code><span class="sig-paren">(</span><em>node_types_file</em>, <em>population</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer.html#node_types_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.node_types_table" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.</code><code class="sig-name descname">node_types_table</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_types_file</span></em>, <em class="sig-param"><span class="n">population</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer.html#node_types_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.node_types_table" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.nodes_table">
-<code class="descclassname">bmtk.analyzer.</code><code class="descname">nodes_table</code><span class="sig-paren">(</span><em>nodes_file</em>, <em>population</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer.html#nodes_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.nodes_table" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.</code><code class="sig-name descname">nodes_table</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes_file</span></em>, <em class="sig-param"><span class="n">population</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer.html#nodes_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.nodes_table" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.plot_calcium">
-<code class="descclassname">bmtk.analyzer.</code><code class="descname">plot_calcium</code><span class="sig-paren">(</span><em>cell_vars_h5=None</em>, <em>config_file=None</em>, <em>gids=None</em>, <em>show_plot=True</em>, <em>save=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer.html#plot_calcium"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.plot_calcium" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.</code><code class="sig-name descname">plot_calcium</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cell_vars_h5</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">config_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">gids</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show_plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer.html#plot_calcium"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.plot_calcium" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.plot_calcium_hdf5">
-<code class="descclassname">bmtk.analyzer.</code><code class="descname">plot_calcium_hdf5</code><span class="sig-paren">(</span><em>cell_vars_h5</em>, <em>gids</em>, <em>title='Ca2+ influx'</em>, <em>show_plot=True</em>, <em>save_as=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer.html#plot_calcium_hdf5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.plot_calcium_hdf5" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.</code><code class="sig-name descname">plot_calcium_hdf5</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cell_vars_h5</span></em>, <em class="sig-param"><span class="n">gids</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">'Ca2+ influx'</span></em>, <em class="sig-param"><span class="n">show_plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_as</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer.html#plot_calcium_hdf5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.plot_calcium_hdf5" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.plot_potential">
-<code class="descclassname">bmtk.analyzer.</code><code class="descname">plot_potential</code><span class="sig-paren">(</span><em>cell_vars_h5=None</em>, <em>config_file=None</em>, <em>gids=None</em>, <em>show_plot=True</em>, <em>save=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer.html#plot_potential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.plot_potential" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.</code><code class="sig-name descname">plot_potential</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cell_vars_h5</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">config_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">gids</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show_plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer.html#plot_potential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.plot_potential" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.plot_potential_hdf5">
-<code class="descclassname">bmtk.analyzer.</code><code class="descname">plot_potential_hdf5</code><span class="sig-paren">(</span><em>cell_vars_h5</em>, <em>gids</em>, <em>title='membrane potential'</em>, <em>show_plot=True</em>, <em>save_as=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer.html#plot_potential_hdf5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.plot_potential_hdf5" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.</code><code class="sig-name descname">plot_potential_hdf5</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cell_vars_h5</span></em>, <em class="sig-param"><span class="n">gids</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">'membrane potential'</span></em>, <em class="sig-param"><span class="n">show_plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_as</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer.html#plot_potential_hdf5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.plot_potential_hdf5" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.analyzer.spikes_table">
-<code class="descclassname">bmtk.analyzer.</code><code class="descname">spikes_table</code><span class="sig-paren">(</span><em>config_file</em>, <em>spikes_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer.html#spikes_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spikes_table" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.</code><code class="sig-name descname">spikes_table</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_file</span></em>, <em class="sig-param"><span class="n">spikes_file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer.html#spikes_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spikes_table" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -906,13 +886,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
@@ -921,17 +911,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

@@ -1,19 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.simulator.filternet.lgnmodel.utilities &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
   </head><body>
@@ -621,13 +623,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             
   <h1>Source code for bmtk.simulator.filternet.lgnmodel.utilities</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">array</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">skimage.transform</span> <span class="k">as</span> <span class="nn">transform</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">scipy.integrate</span> <span class="k">as</span> <span class="nn">spi</span>
-<span class="kn">import</span> <span class="nn">scipy.optimize</span> <span class="k">as</span> <span class="nn">sopt</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">import</span> <span class="nn">scipy.interpolate</span> <span class="k">as</span> <span class="nn">sinterp</span>
+
 
 <div class="viewcode-block" id="get_vanhateren"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.utilities.get_vanhateren">[docs]</a><span class="k">def</span> <span class="nf">get_vanhateren</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">src_dir</span><span class="p">):</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
@@ -636,20 +634,22 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="n">arr</span><span class="o">.</span><span class="n">byteswap</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;uint16&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">1536</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="convert_tmin_tmax_framerate_to_trange"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.utilities.convert_tmin_tmax_framerate_to_trange">[docs]</a><span class="k">def</span> <span class="nf">convert_tmin_tmax_framerate_to_trange</span><span class="p">(</span><span class="n">t_min</span><span class="p">,</span><span class="n">t_max</span><span class="p">,</span><span class="n">frame_rate</span><span class="p">):</span>
+
+<div class="viewcode-block" id="convert_tmin_tmax_framerate_to_trange"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.utilities.convert_tmin_tmax_framerate_to_trange">[docs]</a><span class="k">def</span> <span class="nf">convert_tmin_tmax_framerate_to_trange</span><span class="p">(</span><span class="n">t_min</span><span class="p">,</span> <span class="n">t_max</span><span class="p">,</span> <span class="n">frame_rate</span><span class="p">):</span>
     <span class="n">duration</span> <span class="o">=</span> <span class="n">t_max</span><span class="o">-</span><span class="n">t_min</span>
     <span class="n">number_of_frames</span> <span class="o">=</span> <span class="n">duration</span><span class="o">*</span><span class="n">frame_rate</span>  <span class="c1"># Assumes t_min/t_max in same time units as frame_rate</span>
-    <span class="n">dt</span><span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="n">frame_rate</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="n">frame_rate</span>
     <span class="k">return</span> <span class="n">t_min</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">number_of_frames</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">dt</span></div>
 
+
 <div class="viewcode-block" id="get_rotation_matrix"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.utilities.get_rotation_matrix">[docs]</a><span class="k">def</span> <span class="nf">get_rotation_matrix</span><span class="p">(</span><span class="n">rotation</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Angle in degrees&#39;&#39;&#39;</span>
-    
+    <span class="sd">&quot;&quot;&quot;Angle in degrees&quot;&quot;&quot;</span>
     <span class="n">shift_y</span><span class="p">,</span> <span class="n">shift_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.</span>
     <span class="n">tf_rotate</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">SimilarityTransform</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">rotation</span><span class="p">))</span>
     <span class="n">tf_shift</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">SimilarityTransform</span><span class="p">(</span><span class="n">translation</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="n">shift_x</span><span class="p">,</span> <span class="o">-</span><span class="n">shift_y</span><span class="p">])</span>
     <span class="n">tf_shift_inv</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">SimilarityTransform</span><span class="p">(</span><span class="n">translation</span><span class="o">=</span><span class="p">[</span><span class="n">shift_x</span><span class="p">,</span> <span class="n">shift_y</span><span class="p">])</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">tf_shift</span> <span class="o">+</span> <span class="p">(</span><span class="n">tf_rotate</span> <span class="o">+</span> <span class="n">tf_shift_inv</span><span class="p">))</span></div>
+
 
 <div class="viewcode-block" id="get_translation_matrix"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.utilities.get_translation_matrix">[docs]</a><span class="k">def</span> <span class="nf">get_translation_matrix</span><span class="p">(</span><span class="n">translation</span><span class="p">):</span>
     <span class="n">shift_x</span><span class="p">,</span> <span class="n">shift_y</span> <span class="o">=</span> <span class="n">translation</span>
@@ -664,6 +664,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="n">tf_shift_inv</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">SimilarityTransform</span><span class="p">(</span><span class="n">translation</span><span class="o">=</span><span class="p">[</span><span class="n">shift_x</span><span class="p">,</span> <span class="n">shift_y</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">tf_shift</span> <span class="o">+</span> <span class="p">(</span><span class="n">tf_rotate</span> <span class="o">+</span> <span class="n">tf_shift_inv</span><span class="p">)</span></div>
 
+
 <div class="viewcode-block" id="apply_transformation_matrix"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.utilities.apply_transformation_matrix">[docs]</a><span class="k">def</span> <span class="nf">apply_transformation_matrix</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">matrix</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">transform</span><span class="o">.</span><span class="n">warp</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">matrix</span><span class="p">)</span></div>
 
@@ -672,8 +673,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     
     <span class="n">flipped_and_offset_t_inds</span> <span class="o">=</span> <span class="n">flipped_t_inds</span> <span class="o">+</span> <span class="n">curr_fi</span>
     
-    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span> <span class="n">flipped_and_offset_t_inds</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">):</span>
-    
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">flipped_and_offset_t_inds</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">):</span>
         <span class="c1"># No negative entries; still might be over the end though:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">flipped_and_offset_t_inds</span><span class="p">],</span> <span class="n">kernel</span><span class="p">)</span>
@@ -685,26 +685,16 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">valid_t_inds</span> <span class="o">=</span> <span class="n">flipped_and_offset_t_inds</span><span class="p">[</span><span class="n">indices_within_range</span><span class="p">]</span>
             <span class="n">valid_kernel</span> <span class="o">=</span> <span class="n">kernel</span><span class="p">[</span><span class="n">indices_within_range</span><span class="p">]</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">valid_t_inds</span><span class="p">],</span> <span class="n">valid_kernel</span><span class="p">)</span>
-    
     <span class="k">else</span><span class="p">:</span>
-        
-<span class="c1">#         # Some negative entries:    </span>
-<span class="c1">#         if np.all( flipped_and_offset_t_inds &lt; 0):</span>
-<span class="c1">#             </span>
-<span class="c1">#             # All are negative:</span>
-<span class="c1">#             return 0</span>
-<span class="c1">#         </span>
-<span class="c1">#         else:</span>
-            
         <span class="c1"># Only some are negative, so restrict:</span>
         <span class="n">indices_within_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">flipped_and_offset_t_inds</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
         <span class="n">valid_t_inds</span> <span class="o">=</span> <span class="n">flipped_and_offset_t_inds</span><span class="p">[</span><span class="n">indices_within_range</span><span class="p">]</span>
         <span class="n">valid_kernel</span> <span class="o">=</span> <span class="n">kernel</span><span class="p">[</span><span class="n">indices_within_range</span><span class="p">]</span>
          
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">valid_t_inds</span><span class="p">],</span> <span class="n">valid_kernel</span><span class="p">)</span></div>
-        
+
+
 <div class="viewcode-block" id="get_convolution"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.utilities.get_convolution">[docs]</a><span class="k">def</span> <span class="nf">get_convolution</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">frame_rate</span><span class="p">,</span> <span class="n">flipped_t_inds</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-    
     <span class="c1"># Get frame indices: </span>
     <span class="n">fi</span> <span class="o">=</span> <span class="n">frame_rate</span><span class="o">*</span><span class="nb">float</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
     <span class="n">fim</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">fi</span><span class="p">))</span>
@@ -718,33 +708,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="n">sm</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="p">(</span><span class="n">fi</span><span class="o">-</span><span class="n">fim</span><span class="p">))</span> <span class="o">+</span> <span class="n">sM</span><span class="o">*</span><span class="p">(</span><span class="n">fi</span><span class="o">-</span><span class="n">fim</span><span class="p">)</span>
     
     <span class="k">else</span><span class="p">:</span>
-        
         <span class="c1"># Requested time is exactly one piece of data:</span>
         <span class="k">return</span> <span class="n">get_convolution_ind</span><span class="p">(</span><span class="n">fim</span><span class="p">,</span> <span class="n">flipped_t_inds</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span></div>
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="k">pass</span>
-<span class="c1">#     print generate_poisson([0,1,2,3],[.5,1,2,3])</span>
-    
-    
-    
-<span class="c1">#     test_generate_poisson_function()</span>
-    
-<span class="c1">#     image = np.zeros((101,151))</span>
-<span class="c1">#     image[48:52+1]=1</span>
-<span class="c1">#     </span>
-<span class="c1">#     mr = get_rotation_matrix(30, image.shape)</span>
-<span class="c1">#     mt = get_translation_matrix((20,0))</span>
-<span class="c1">#     ms = get_scale_matrix((.5,1),image.shape)</span>
-<span class="c1">#     </span>
-<span class="c1">#     m = mr</span>
-<span class="c1">#     </span>
-<span class="c1">#     fig, ax = plt.subplots(2,1)</span>
-<span class="c1">#     ax[0].imshow(image)</span>
-<span class="c1">#     ax[1].imshow(apply_transformation_matrix(image, m))</span>
-<span class="c1">#     plt.show()</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -761,31 +729,40 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

@@ -1,0 +1,1098 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Using the Simulators &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+<script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
+<style>
+
+	/* the icon font-family definition and helper classes */
+	@font-face {
+	  font-family: 'portal_icon_font';
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
+	  font-weight: normal;
+	  font-style: normal;
+	}
+	 
+	 [class^="icon-"]:before, [class*=" icon-"]:before {
+	  font-family: "portal_icon_font";
+	  font-style: normal;
+	  font-weight: normal;
+	  speak: none;
+	 
+	  display: inline-block;
+	  text-decoration: inherit;
+	  width: 1em;
+	  margin-right: .2em;
+	  text-align: center;
+	  /* opacity: .8; */
+	 
+	  /* For safety - reset parent styles, that can break glyph codes*/
+	  font-variant: normal;
+	  text-transform: none;
+	     
+	  /* fix buttons height, for twitter bootstrap */
+	  line-height: 1em;
+	 
+	  /* Animation center compensation - margins should be symmetric */
+	  /* remove if not needed */
+	  margin-left: .2em;
+	
+	}
+	 
+	.icon-spin5:before { content: '\e806'; } /* '' */
+	.icon-left-open-1:before { content: '\e81e'; } /* '' */
+	.icon-plus-1:before { content: '\e801'; } /* '' */
+	.icon-facebook:before { content: '\e816'; } /* '' */
+	.icon-gplus:before { content: '\e818'; } /* '' */
+	.icon-linkedin-3:before { content: '\e815'; } /* '' */
+	.icon-twitter:before { content: '\e817'; } /* '' */
+	.icon-youtube-play:before { content: '\e805'; } /* '' */
+	.icon-plus-2:before { content: '\e809'; } /* '' */
+	.icon-record-1:before { content: '\e81c'; } /* '' */
+	.icon-cancel:before { content: '\e80b'; } /* '' */
+	.icon-search:before { content: '\e804'; } /* '' */
+	.icon-cancel-2:before { content: '\e80c'; } /* '' */
+	.icon-plus-4:before { content: '\e80d'; } /* '' */
+	.icon-cancel-3:before { content: '\e80e'; } /* '' */
+	.icon-plus:before { content: '\e808'; } /* '' */
+	.icon-down-open:before { content: '\e800'; } /* '' */
+	.icon-right-open:before { content: '\e802'; } /* '' */
+	.icon-up-open:before { content: '\e803'; } /* '' */
+	.icon-stop:before { content: '\e813'; } /* '' */
+	.icon-cancel-1:before { content: '\e820'; } /* '' */
+	.icon-plus-3:before { content: '\e80a'; } /* '' */
+	/* end icon font helpers */
+
+	/* icon font spin animation */
+	.animate-spin {
+	  -moz-animation: spin 2s infinite linear;
+	  -o-animation: spin 2s infinite linear;
+	  -webkit-animation: spin 2s infinite linear;
+	  animation: spin 2s infinite linear;
+	  display: inline-block;
+	}
+	@-moz-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-webkit-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-o-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-ms-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	/*  end spin animation */	
+
+	@font-face {
+	    font-family: 'bebas_neueregular';
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
+	    font-weight: normal;
+	    font-style: normal;
+	}
+
+	/* top chrome styles */
+	#top_chrome {
+
+		width:100%;
+		height:28px;
+		background-color:#163E65;
+	}
+
+	.chrome_link_block {
+
+		color:#fff !important;	
+		display:inline-block;
+		height:100%;
+		max-height:28px;
+	}
+
+	.chrome_link_block:hover {
+
+		background-color:#eee;
+		color:#0779BE !important;	
+		cursor:pointer;
+	}
+
+	#top_chrome a {
+
+		color:inherit !important;	
+		text-decoration:none;
+	}
+
+	#top_chrome a:hover {
+
+		color:inherit !important;	
+	}
+
+	#top_chrome_buttons {
+
+		float:right;
+		margin-right:50px;
+	}
+
+	.chrome_button {
+
+		font-family:arial,sans-serif;
+		font-weight:bold;
+		display:inline-block;
+		font-size:9px;
+		text-align:left;
+		text-decoration:none;
+		margin:9px 20px 10px 20px;
+	}
+
+	.chrome_active {
+
+		background-color:#1b7abd;
+		color:#fff;
+	}
+
+
+	/* header element styles*/
+	#header_content {
+
+		font-family: bebas_neueregular, arial, sans-serif;
+		font-size:22px;
+		color:#0779be;		
+		letter-spacing:0.03em;
+
+		position:relative;
+		width:calc(100% - 112px);
+		min-width:800px;
+		height:76px;
+		border-bottom:2px solid #A5A8AB;
+		margin-left:50px;
+		margin-right:50px;
+        z-index:9999; /* IT-9508 */
+	}
+
+	#portal_logo {
+
+		position:absolute;
+		top:20px;
+		left:0px;
+		width:236px;
+	}
+
+	#portal_tabs {
+
+		position: absolute;
+		bottom: 12px;
+		left: 0px;
+		margin-bottom: -12px;
+		display: block;
+	}
+
+	.horizontal_list
+	{
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		display: inline; 		
+	}
+
+	.horizontal_list li { 
+
+		display: inline; 	
+	}	
+
+	#portal_tab_menu_container {
+
+		display:none;
+	}
+
+	#portal_search_input_group {
+
+		position:absolute;
+		margin: 0;
+		padding: 0;
+		bottom:12px;
+		right:0px;
+		border:1px solid #DAD9D3;
+		color:#DAD9D3;
+	}
+
+	#portal_search_input_group input {
+
+		margin: 0;
+		padding: 0;
+		border:none;
+		width:110px;
+		color:#DAD9D3;
+		font-family:Helvetica,sans-serif;
+		font-size:12px;
+		height:28px;
+		margin-left:10px;
+
+		outline:none;
+	}
+
+	input::-ms-clear {
+		display: none;
+	}
+
+	#portal_search_input_group i {
+
+		font-size:0.8em;
+		cursor:pointer;
+	}
+
+	#pSiteSearchTextInput:focus {
+
+		color:#000;
+	}
+
+	.icon_menu_down {
+
+		font-size: 12px;
+		margin-left: 4px;
+		vertical-align: text-top;
+		padding-top: 4px;
+		display: inline-block;
+	}
+
+	.portal_tab_item {
+
+		background-color: #fff;
+		padding: 12px;
+		padding-left:20px;
+		padding-right:20px;
+		display: inline-block !important;		
+	}
+
+	.portal_tab_item a:hover {
+
+		color:#fbe300;	
+	}
+
+	.portal_tab_item:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}	
+
+
+	.portal_menu_active {
+
+		background-color: #EEEEEE;
+	}	
+
+	.portal_menu_item_active {
+
+		color:#fbe300 !important;	
+	}
+
+	.portal_tab_active {
+
+		color:#a5a8ab !important;
+	}
+
+	#header_content a {		
+
+		color:inherit !important;
+	}
+
+	#header_content a:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}
+
+	#header_content ul {
+
+		list-style: none;
+		position: relative;
+		top: 58px;
+		display: inline-table;
+	}
+
+	#header_content ul ul {
+		
+		display:none;
+		opacity:0;
+	}
+
+	/* the fly out menus */
+	#header_content ul li:hover > ul,
+	#header_content ul li.hover > ul {
+
+		position: absolute;
+		top: 48px;
+		z-index:999;
+
+		display: block;
+		width: 152px;
+		padding:0px;
+		padding-top:20px;
+		padding-bottom:10px;
+		font-size: 12px;
+		font-family: Arial,Sans-Serif;
+		font-weight: bold;
+		text-transform: uppercase;
+
+		background-color: rgba(8,122,191,0.98);
+		color: #fff !important;
+		opacity: 1;
+
+		-webkit-animation: fade 0.25s;
+		animation: fade 0.25s;
+	}
+
+	@-webkit-keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}
+	@keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}	
+
+	#header_content ul li:hover > ul li {
+
+		padding: 10px;
+		padding-top: 0px;
+		padding-left: 20px;
+		display: block;
+		opacity:1;
+	}
+
+	#header_content ul li:hover > ul a {
+
+		display: block;
+		opacity:1;
+		white-space:nowrap;
+	}
+
+	#portal_menu_start_list {
+
+		left: 81px;
+
+		/* IE sauce */
+		left:85px\9;
+
+		/* Safari sauce */
+		(;left:79px;);
+	}
+
+	#portal_menu_atlases_list {
+
+		left: 290px;
+		width: 210px !important;
+        height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 303px\9;
+        height: 225px\9;
+
+		/* Safari sauce */
+		(;left:279px;);
+	}
+
+	#portal_menu_tools_list {
+
+		left: 500px;
+		width: 172px !important;
+		height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 513px\9;
+		height:225px\9;
+
+		/* Safari sauce */
+		(;left:489px;);
+		(;height:227px;);
+	}
+
+	/* mozilla sauce */
+	@-moz-document url-prefix() {
+
+		#header_content {
+
+			height:107px;
+		}
+
+		#portal_menu_start_list {
+
+			left:85px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 302px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 512px;
+			height:236px;
+		}
+	}
+
+
+	/* make it look OK on iPad also */
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:portrait) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}  
+	}
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:landscape) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}	  
+	}
+
+	.portal_menu_list_heading {
+
+		color:#9ccae5;
+		border-bottom:1px solid #9ccae5;
+		padding-bottom:5px !important;
+	}
+
+	.portal_menu_list_heading + li {
+
+		padding-top:10px !important;
+	}
+
+	.portal_menu_list_heading li {
+
+		padding-bottom:0px;
+	}	
+
+	#portal_menu_atlases_list li:last-of-type {
+
+		padding-bottom:15px !important;
+	}
+
+	.icon-spin5 {
+
+		color:#000;
+	}
+</style>
+<div id="pHeader">
+<div id="top_chrome">
+	<div id="top_chrome_buttons">
+		<div class="chrome_link_block"><a href="http://www.alleninstitute.org" target="_blank" class="chrome_button">ALLEN INSTITUTE</a></div>
+	</div>
+</div>
+
+<div id="header_content">
+
+	<a href="http://AllenInstitute.github.io">
+		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/AIBS_Logo.png"/>
+	</a>
+</div>
+</div>
+
+<script>
+
+jQuery('#portal_tab_menu').bind('touchstart', function() {
+
+	if(window.console)
+		console.log("touchstart");
+});
+</script>
+<link rel="stylesheet" type="text/css" href="_static/external_assets/stylesheets/common_layout.css" />
+
+
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container,
+div.nbinput.container div.prompt,
+div.nbinput.container div.input_area,
+div.nbinput.container div[class*=highlight],
+div.nbinput.container div[class*=highlight] pre,
+div.nboutput.container,
+div.nboutput.container div.prompt,
+div.nboutput.container div.output_area,
+div.nboutput.container div[class*=highlight],
+div.nboutput.container div[class*=highlight] pre {
+    background: none;
+    border: none;
+    padding: 0 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    background: #f5f5f5;
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+</style>
+<div class="section" id="Using-the-Simulators">
+<h1>Using the Simulators<a class="headerlink" href="#Using-the-Simulators" title="Permalink to this headline">¶</a></h1>
+<p>The bmtk is capable of running a number of different neuronal simulators across various levels of resolutions.</p>
+<div class="line-block">
+<div class="line">BioNet - Biophysical neuronal simulation using BioNet</div>
+<div class="line">PointNet - Point neuron simulation using NEST</div>
+<div class="line">FilterNet - Filtering based models using LGNModel</div>
+<div class="line">PopNet - Population rate models using DiPDE</div>
+<div class="line">MintNet - Convolutional neural nets with TensorFlow</div>
+</div>
+<p>Different simulators will have different features and will require different parameters and options to run. But the bmtk uses the same framework for running the different types of simulators and producing output - utilizing the SONATA framework. The following will in general describe how to go about setting up and running one of the various simulators.</p>
+<div class="section" id="Building-a-network">
+<h2>Building a network<a class="headerlink" href="#Building-a-network" title="Permalink to this headline">¶</a></h2>
+<p>A main philosophy of the bmtk is to separate the processes of building a network model and running a simulation versus other simulators which use the same script to build a network and then immedietly run a simulation. The main advantages of doing so is so that: * Different parts of a network can be built independently by different teams. * Allows models to be shared. * Models can be readily ported from one simulator to another. * Faster to run a large pre-built network across multiple
+simulations without having to recalculate the connection matricies every time. * Easier to adjust and update parameters between simulations.</p>
+<p>The bmtk uses the SONATA format to store networks. See the <a class="reference external" href="NetworkBuilder_Intro.ipynb">previous tutorial for building networks</a> for more information.</p>
+</div>
+<div class="section" id="Setting-up-a-configuration-file">
+<h2>Setting up a configuration file<a class="headerlink" href="#Setting-up-a-configuration-file" title="Permalink to this headline">¶</a></h2>
+<p>To create the a configuration file and simulation enviornment you can either download and copy a simulator <a class="reference external" href="../environments">environment template directory</a>. Alternatively you can build it using the following:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m bmtk.utils.sim_setup -n network_dir/ &lt;options&gt; <span class="o">[</span>bionet<span class="p">|</span>pointnet<span class="p">|</span>popnet<span class="p">|</span>...<span class="o">]</span>
+</pre></div>
+</div>
+<p>All the parameters to setup and run a simulation is stored in the file <em>config.json</em>. More detail about the configuration file can be found in the <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#tying-it-all-together---the-networkcircuit-config-file">sonata documentation</a>, but we will provide a brief overview of the various sections:</p>
+<div class="section" id="The-mainfest">
+<h3>The mainfest<a class="headerlink" href="#The-mainfest" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;manifest&quot;: {
+    &quot;$BASE_DIR&quot;: &quot;${configdir}&quot;,
+    &quot;$OUTPUT_DIR&quot;: &quot;$BASE_DIR/output&quot;,
+    &quot;$INPUT_DIR&quot;: &quot;$BASE_DIR/../nwb_files&quot;,
+    ...
+},
+</pre></div>
+</div>
+<p>An optional section that allows users to create variables and references that can be used in other parts of the config.</p>
+</div>
+<div class="section" id="Run-time-and-conditions">
+<h3>Run-time and conditions<a class="headerlink" href="#Run-time-and-conditions" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;run&quot;: {
+    &quot;tstop&quot;: 3000.0,
+    &quot;dt&quot;: 0.1,
+    &quot;spike_threshold&quot;: -15,
+    &quot;nsteps_block&quot;: 5000,
+    &quot;dL&quot;: 20.0
+},
+
+&quot;conditions&quot;: {
+    &quot;celsius&quot;: 34.0,
+    &quot;v_init&quot;: -80
+},
+</pre></div>
+</div>
+<p>Parameters for how long a simulation will run (in milliseconds) and other simulation parameters and conditions - depending on the type of simulator.</p>
+</div>
+<div class="section" id="Components">
+<h3>Components<a class="headerlink" href="#Components" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;components&quot;: {
+    &quot;morphologies_dir&quot;: &quot;$COMPONENT_DIR/morphologies&quot;,
+    &quot;synaptic_models_dir&quot;: &quot;$COMPONENT_DIR/synaptic_models&quot;,
+    &quot;mechanisms_dir&quot;:&quot;$COMPONENT_DIR/mechanisms&quot;,
+    &quot;biophysical_neuron_models_dir&quot;: &quot;$COMPONENT_DIR/biophysical_neuron_templates&quot;,
+    &quot;point_neuron_models_dir&quot;: &quot;$COMPONENT_DIR/point_neuron_templates&quot;
+},
+</pre></div>
+</div>
+<p>List of directories contains model files for individual cells and synapses.</p>
+</div>
+<div class="section" id="Inputs">
+<h3>Inputs<a class="headerlink" href="#Inputs" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;inputs&quot;: {
+    &quot;spike_trains&quot;: {
+        &quot;input_type&quot;: &quot;spikes&quot;,
+        &quot;module&quot;: &quot;nwb&quot;,
+        &quot;input_file&quot;: &quot;$INPUT_DIR/lgn_spikes.nwb&quot;,
+        &quot;node_set&quot;: &quot;lgn&quot;
+    },
+    &quot;current_clamp&quot;: {
+        &quot;input_type&quot;: &quot;current_clamp&quot;,
+        &quot;module&quot;: &quot;IClamp&quot;,
+        &quot;node_set&quot;: [0, 1, 2, 3, 4],
+        &quot;amp&quot;: 200.1178,
+        &quot;delay&quot;: 100.0,
+        &quot;duration&quot;: 2000.0
+    }
+},
+</pre></div>
+</div>
+<p>Specifying the types of inputs the network will receive during the simulation. Including spike trains/rates for virtual or external cells, current clamp stimulation, extracellular stimulation, etc.</p>
+</div>
+<div class="section" id="Output-and-reports">
+<h3>Output and reports<a class="headerlink" href="#Output-and-reports" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;output&quot;:{
+    &quot;log_file&quot;: &quot;log.txt&quot;,
+    &quot;output_dir&quot;: &quot;$OUTPUT_DIR&quot;,
+    &quot;spikes_file&quot;: &quot;spikes.h5&quot;,
+    &quot;overwrite_output_dir&quot;: true
+},
+&quot;reports&quot;: {
+    &quot;calcium_concentration&quot;: {
+        &quot;cells&quot;: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+        &quot;variable_name&quot;: &quot;cai&quot;,
+        &quot;module&quot;: &quot;membrane_report&quot;,
+        &quot;file_name&quot;: &quot;cell_vars.h5&quot;,
+        &quot;sections&quot;: &quot;soma&quot;
+    },
+    &quot;ecp&quot;: {
+        &quot;cells&quot;: [0],
+        &quot;variable_name&quot;: &quot;v&quot;,
+        &quot;module&quot;: &quot;extracellular&quot;,
+        &quot;electrode_positions&quot;: &quot;$COMPONENT_DIR/recXelectrodes/linear_electrode.csv&quot;,
+        &quot;ecp_file&quot;: &quot;ecp.h5&quot;,
+        &quot;electrode_channels&quot;: &quot;all&quot;,
+        &quot;contributions_dir&quot;: &quot;ecp_contributions&quot;
+    }
+},
+</pre></div>
+</div>
+<p>The output section is used to specify the main directory where output is written to, as well as log file location and default outputs. Unless absolute paths are specified any file created during the simulation will be written into the directory specified in “output/output_dir”.</p>
+<p>The reports allows user to specify more advanced types of simulation reporting like, depending on the simulator, calcium concentration or local field potentials</p>
+</div>
+<div class="section" id="Networks">
+<h3>Networks<a class="headerlink" href="#Networks" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;networks&quot;: {
+    &quot;nodes&quot;: [
+    {
+        &quot;nodes_file&quot;: &quot;$NETWORK_DIR/v1_nodes.h5&quot;,
+        &quot;node_types_file&quot;: &quot;$NETWORK_DIR/v1_node_types.csv&quot;
+    },
+    {
+        &quot;nodes_file&quot;: &quot;$NETWORK_DIR/lgn_nodes.h5&quot;,
+        &quot;node_types_file&quot;: &quot;$NETWORK_DIR/lgn_node_types.csv&quot;
+    }
+    ],
+
+    &quot;edges&quot;: [
+    {
+        &quot;edges_file&quot;: &quot;$NETWORK_DIR/v1_v1_edges.h5&quot;,
+        &quot;edge_types_file&quot;: &quot;$NETWORK_DIR/v1_v1_edge_types.csv&quot;
+    },
+    {
+        &quot;edges_file&quot;: &quot;$NETWORK_DIR/lgn_v1_edges.h5&quot;,
+        &quot;edge_types_file&quot;: &quot;$NETWORK_DIR/lgn_v1_edge_types.csv&quot;
+    }
+    ]
+}
+</pre></div>
+</div>
+<p>Section to specify the different nodes and edges files used during the simulation</p>
+</div>
+</div>
+<div class="section" id="Running-the-simulation-file">
+<h2>Running the simulation file<a class="headerlink" href="#Running-the-simulation-file" title="Permalink to this headline">¶</a></h2>
+<p>Once you have setup your configuration and put the network and model files in their correct places the running a simulation can be done without any extra programming.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python run_simulator.py config.json
+</pre></div>
+</div>
+<p>The simulation will run and save the results in the files specified in the output and reports sections of the config. The bmtk also includes a small but growing list of tools for analyzing and graphing the output describe in future chapters.</p>
+<p>The bmtk also allows for users to develop custom python code that will executed during the simulation runtime. Including code to tell the simulator to load customized cell and synaptic models, or how to adjust connection weights before and during simulations. Theses options will vary from simulator to simulator and will be futher describe in each simulators documention.</p>
+<p>Some of the simulation engines, BioNet and PointNet, allow you to run a network across multple machines/nodes using MPI, but typically require slightly different commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ mpirun -n <span class="nv">$NNODES</span> nrniv nrniv -mpi -python run_bionet.py config.json
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ mpirun -n <span class="nv">$NNODES</span> python run_pointnet.py config.json
+</pre></div>
+</div>
+<p>If you’re running the simulations on a HPC cluster make sure to follow the instructions as required by the workload scheduler being used.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="index.html">Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="builder.html">Building Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html">Simulation Engines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filternet.html">FilterNet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.tests.html">bmtk.tests package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+    </div>
+<script type="text/javascript" src="_static/external_assets/javascript/portalFooter.js"></script>
+
+  </body>
+</html>

@@ -1,18 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.simulator.filternet.lgnmodel.temporalfilter &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
   </head><body>
@@ -620,73 +623,74 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             
   <h1>Source code for bmtk.simulator.filternet.lgnmodel.temporalfilter</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">fitfuns</span>
 <span class="kn">import</span> <span class="nn">scipy.interpolate</span> <span class="k">as</span> <span class="nn">spinterp</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">.kernel</span> <span class="k">import</span> <span class="n">Kernel1D</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">fitfuns</span>
+<span class="kn">from</span> <span class="nn">.kernel</span> <span class="kn">import</span> <span class="n">Kernel1D</span>
+
 
 <div class="viewcode-block" id="TemporalFilter"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter">[docs]</a><span class="k">class</span> <span class="nc">TemporalFilter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_support</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_data</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span> <span class="k">pass</span>
-    
 <div class="viewcode-block" id="TemporalFilter.imshow"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter.imshow">[docs]</a>    <span class="k">def</span> <span class="nf">imshow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_kernel</span><span class="p">(</span><span class="n">t_range</span><span class="p">,</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">reverse</span><span class="p">,</span> <span class="n">rescale</span><span class="p">)</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
         
-
 <div class="viewcode-block" id="TemporalFilter.to_dict"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:(</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)}</span></div>
-    
-<div class="viewcode-block" id="TemporalFilter.get_kernel"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter.get_kernel">[docs]</a>    <span class="k">def</span> <span class="nf">get_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)}</span></div>
 
+<div class="viewcode-block" id="TemporalFilter.get_default_t_grid"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter.get_default_t_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_default_t_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TemporalFilter.get_kernel"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilter.get_kernel">[docs]</a>    <span class="k">def</span> <span class="nf">get_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">t_range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">t_range</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default_t_grid</span><span class="p">()</span> 
         
-<span class="c1">#         print self.t_support</span>
-<span class="c1">#         print self.kernel_data</span>
-        
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_support</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">k</span> <span class="o">=</span> <span class="n">Kernel1D</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_support</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_data</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span>
+
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">interpolation_function</span> <span class="o">=</span> <span class="n">spinterp</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_support</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_data</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">assume_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">interpolation_function</span> <span class="o">=</span> <span class="n">spinterp</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_support</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_data</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                                       <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">assume_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">k</span> <span class="o">=</span> <span class="n">Kernel1D</span><span class="p">(</span><span class="n">t_range</span><span class="p">,</span> <span class="n">interpolation_function</span><span class="p">(</span><span class="n">t_range</span><span class="p">),</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">rescale</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">rescale</span><span class="p">:</span>
             <span class="n">k</span><span class="o">.</span><span class="n">rescale</span><span class="p">()</span>
-        
-        <span class="c1">#assert np.abs(np.abs(k.kernel).sum() - 1) &lt; 1e-14</span>
-            <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-14</span>
+            <span class="k">assert</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-14</span><span class="p">)</span>
         
         <span class="k">return</span> <span class="n">k</span></div></div>
 
+
 <div class="viewcode-block" id="ArrayTemporalFilter"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.ArrayTemporalFilter">[docs]</a><span class="k">class</span> <span class="nc">ArrayTemporalFilter</span><span class="p">(</span><span class="n">TemporalFilter</span><span class="p">):</span>
-    
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span><span class="n">t_support</span><span class="p">):</span>
-        
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">t_support</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ArrayTemporalFilter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">t_support</span> <span class="o">=</span> <span class="n">t_support</span>
-        
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_support</span><span class="p">)</span>
-        
+        <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_support</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nkt</span> <span class="o">=</span> <span class="mi">600</span>
-        
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        
         <span class="bp">self</span><span class="o">.</span><span class="n">kernel_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span>
-        <span class="c1">#self.t_support = np.arange(0, len(self.kernel_data)*.001, .001)</span>
-        <span class="c1">#assert len(self.t_support) == len(self.kernel_data) </span>
-        
+
 <div class="viewcode-block" id="ArrayTemporalFilter.get_default_t_grid"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.ArrayTemporalFilter.get_default_t_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_default_t_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nkt</span><span class="p">)</span><span class="o">*.</span><span class="mi">001</span></div></div>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nkt</span><span class="p">)</span><span class="o">*</span><span class="mf">0.001</span></div></div>
+
 
 <div class="viewcode-block" id="TemporalFilterCosineBump"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilterCosineBump">[docs]</a><span class="k">class</span> <span class="nc">TemporalFilterCosineBump</span><span class="p">(</span><span class="n">TemporalFilter</span><span class="p">):</span>
-    
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">kpeaks</span><span class="p">,</span> <span class="n">delays</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">kpeaks</span><span class="p">,</span> <span class="n">delays</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates a time-based filter function by combining two cosine-based peaks into a function for convoluting</span>
+<span class="sd">        the input with.</span>
 
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">kpeaks</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
-        <span class="k">assert</span> <span class="n">kpeaks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;</span><span class="n">kpeaks</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">assert</span> <span class="n">weights</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span>
-        <span class="k">assert</span> <span class="n">delays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">delays</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        
+<span class="sd">        :param weights: (float, float)the magntiude of both peaks, first weight must be positive</span>
+<span class="sd">        :param kpeaks: (float, float) the spread of each peak, first peak (0) must be sharper</span>
+<span class="sd">        :param delays: (float, float) the delay of both peaks, peak 0 must be positive occur first.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">kpeaks</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">kpeaks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">kpeaks</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">weights</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">delays</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">delays</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">TemporalFilterCosineBump</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ncos</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
 
         <span class="c1"># Not likely to change defaults:</span>
@@ -694,47 +698,40 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="o">.</span><span class="mi">3</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nkt</span> <span class="o">=</span> <span class="mi">600</span>
 
-        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        
         <span class="c1"># Parameters</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">weights</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kpeaks</span> <span class="o">=</span> <span class="n">kpeaks</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">delays</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">delays</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
 
-        <span class="c1"># Adapter code to get filters from Ram&#39;s code:</span>
-        <span class="n">kbasprs</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">kbasprs</span><span class="p">[</span><span class="s1">&#39;neye&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">neye</span>
-        <span class="n">kbasprs</span><span class="p">[</span><span class="s1">&#39;ncos&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncos</span>
-        <span class="n">kbasprs</span><span class="p">[</span><span class="s1">&#39;kpeaks&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kpeaks</span>
-        <span class="n">kbasprs</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span>
-        <span class="n">kbasprs</span><span class="p">[</span><span class="s1">&#39;delays&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delays</span>
+        <span class="c1"># Create two peak arrays (arr0 and arr1) using makeBasisStimKernel. Then merge them using dot product</span>
+        <span class="c1"># w0*arr0 + w1*arr1.</span>
+        <span class="n">kbasprs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;neye&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">neye</span><span class="p">,</span>
+            <span class="s1">&#39;ncos&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncos</span><span class="p">,</span>
+            <span class="s1">&#39;kpeaks&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">kpeaks</span><span class="p">,</span>
+            <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">,</span>
+            <span class="s1">&#39;delays&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">delays</span>
+        <span class="p">}</span>
         <span class="n">nkt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nkt</span>
-        <span class="c1">#kbasprs[&#39;bases&#39;] = fitfuns.makeBasis_StimKernel(kbasprs, nkt)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kernel_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">fitfuns</span><span class="o">.</span><span class="n">makeBasis_StimKernel</span><span class="p">(</span><span class="n">kbasprs</span><span class="p">,</span> <span class="n">nkt</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="c1">#        plt.figure()</span>
-<span class="c1">#        plt.plot(self.kernel_data)</span>
-<span class="c1">#        plt.show()</span>
-<span class="c1">#        sys.exit()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">t_support</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_data</span><span class="p">)</span><span class="o">*.</span><span class="mi">001</span><span class="p">,</span> <span class="o">.</span><span class="mi">001</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kbasprs</span> <span class="o">=</span> <span class="n">kbasprs</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_support</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_data</span><span class="p">)</span>
         
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolation_function</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
         
 <div class="viewcode-block" id="TemporalFilterCosineBump.get_default_t_grid"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilterCosineBump.get_default_t_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_default_t_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nkt</span><span class="p">)</span><span class="o">*.</span><span class="mi">001</span></div>
     
 <div class="viewcode-block" id="TemporalFilterCosineBump.to_dict"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilterCosineBump.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
-        <span class="n">param_dict</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
-        
-        <span class="n">param_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;weights&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
-                           <span class="s1">&#39;kpeaks&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">kpeaks</span><span class="p">})</span>
-        
+        <span class="n">param_dict</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">TemporalFilterCosineBump</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="n">param_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;weights&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="s1">&#39;kpeaks&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">kpeaks</span><span class="p">})</span>
         <span class="k">return</span> <span class="n">param_dict</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -751,13 +748,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
@@ -766,17 +773,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

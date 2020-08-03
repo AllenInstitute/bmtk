@@ -1,19 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.simulator.filternet.modules.create_spikes &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
   </head><body>
@@ -625,13 +627,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">six</span>
 
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">SimModule</span>
-<span class="kn">from</span> <span class="nn">bmtk.utils.reports.spike_trains</span> <span class="k">import</span> <span class="n">SpikeTrains</span><span class="p">,</span> <span class="n">pop_na</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.filternet.lgnmodel</span> <span class="k">import</span> <span class="n">poissongeneration</span> <span class="k">as</span> <span class="n">pg</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">SimModule</span>
+<span class="kn">from</span> <span class="nn">bmtk.utils.reports.spike_trains</span> <span class="kn">import</span> <span class="n">SpikeTrains</span><span class="p">,</span> <span class="n">pop_na</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.filternet.lgnmodel</span> <span class="kn">import</span> <span class="n">poissongeneration</span> <span class="k">as</span> <span class="n">pg</span>
 
 
 <div class="viewcode-block" id="SpikesGenerator"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.modules.html#bmtk.simulator.filternet.modules.create_spikes.SpikesGenerator">[docs]</a><span class="k">class</span> <span class="nc">SpikesGenerator</span><span class="p">(</span><span class="n">SimModule</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spikes_file_csv</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spikes_file_nwb</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="o">=</span><span class="s1">&#39;output&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spikes_file_csv</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spikes_file_nwb</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="o">=</span><span class="s1">&#39;output&#39;</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">_get_file_path</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">file_name</span>
@@ -652,7 +654,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="c1"># self._spike_writer = SpikeTrainWriter(tmp_dir=tmp_dir)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span> <span class="o">=</span> <span class="n">SpikeTrains</span><span class="p">(</span><span class="n">cache_dir</span><span class="o">=</span><span class="n">tmp_dir</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SpikesGenerator.save"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.modules.html#bmtk.simulator.filternet.modules.create_spikes.SpikesGenerator.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">gid</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">rates</span><span class="p">):</span>
+<div class="viewcode-block" id="SpikesGenerator.save"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.modules.html#bmtk.simulator.filternet.modules.create_spikes.SpikesGenerator.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">cell</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">rates</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">spike_trains</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">f_rate_to_spike_train</span><span class="p">(</span><span class="n">times</span><span class="o">*</span><span class="mf">1000.0</span><span class="p">,</span> <span class="n">rates</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10000</span><span class="p">),</span>
                                                           <span class="mf">1000.</span><span class="o">*</span><span class="nb">min</span><span class="p">(</span><span class="n">times</span><span class="p">),</span> <span class="mf">1000.</span><span class="o">*</span><span class="nb">max</span><span class="p">(</span><span class="n">times</span><span class="p">),</span> <span class="mf">0.1</span><span class="p">))</span>
@@ -662,7 +664,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                                                                             <span class="n">seed</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10000</span><span class="p">)))</span>
 
         <span class="c1"># self._spike_writer.add_spikes(times=spike_trains, gid=gid)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">add_spikes</span><span class="p">(</span><span class="n">node_ids</span><span class="o">=</span><span class="n">gid</span><span class="p">,</span> <span class="n">timestamps</span><span class="o">=</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">pop_na</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">add_spikes</span><span class="p">(</span><span class="n">node_ids</span><span class="o">=</span><span class="n">cell</span><span class="o">.</span><span class="n">gid</span><span class="p">,</span> <span class="n">timestamps</span><span class="o">=</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">cell</span><span class="o">.</span><span class="n">population</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SpikesGenerator.finalize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.modules.html#bmtk.simulator.filternet.modules.create_spikes.SpikesGenerator.finalize">[docs]</a>    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
@@ -685,10 +687,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="c1"># they are assumed to be of the same length and ordered with the time strictly increasing;</span>
     <span class="c1"># p_spike_max is the maximal probability of spiking that we allow within the time bin; it is used to decide on the size of the time bin; should be less than 1!</span>
 
-    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">f_rate</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">t</span><span class="p">))</span><span class="o">/</span><span class="mf">1000.</span> <span class="o">&gt;</span> <span class="mf">0.1</span><span class="p">:</span>   <span class="c1">#Divide by 1000 to convert to seconds</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Firing rate to high for time interval and will not estimate spike correctly. Spikes will &#39;</span> \
-            <span class="s1">&#39;be calculated with the slower inhomogenous poisson generating fucntion&#39;</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">()</span>
+    <span class="c1">#if np.max(f_rate) * np.max(np.diff(t))/1000. &gt; 0.1:   #Divide by 1000 to convert to seconds</span>
+    <span class="c1">#    print(&#39;Firing rate to high for time interval and will not estimate spike correctly. Spikes will &#39; \</span>
+    <span class="c1">#        &#39;be calculated with the slower inhomogenous poisson generating fucntion&#39;)</span>
+    <span class="c1">#    raise Exception()</span>
 
     <span class="n">spike_times</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -714,9 +716,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">t_bin</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">delta_t</span> <span class="o">/</span> <span class="n">N_bins</span>
             <span class="n">p_spike_bin</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="n">av_N_spikes</span> <span class="o">/</span> <span class="n">N_bins</span>
             <span class="k">for</span> <span class="n">i_bin</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">moves</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">N_bins</span><span class="p">):</span>
-                <span class="n">rand_tmp</span> <span class="o">=</span> <span class="n">random</span><span class="p">()</span>
+                <span class="n">rand_tmp</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">rand_tmp</span> <span class="o">&lt;</span> <span class="n">p_spike_bin</span><span class="p">:</span>
-                    <span class="n">spike_t</span> <span class="o">=</span> <span class="n">t_base</span> <span class="o">+</span> <span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="n">t_bin</span>
+                    <span class="n">spike_t</span> <span class="o">=</span> <span class="n">t_base</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="n">t_bin</span>
                     <span class="n">spike_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spike_t</span><span class="p">)</span>
 
                 <span class="n">t_base</span> <span class="o">+=</span> <span class="n">t_bin</span>
@@ -724,6 +726,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="k">return</span> <span class="n">spike_times</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -740,31 +743,40 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

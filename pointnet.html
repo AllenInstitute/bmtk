@@ -1,18 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PointNet &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="PopNet" href="popnet.html" />
@@ -622,55 +625,103 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             
   <div class="section" id="pointnet">
 <h1>PointNet<a class="headerlink" href="#pointnet" title="Permalink to this headline">¶</a></h1>
-<p>Pointnet is a simulation engine that utilizes <a class="reference external" href="http://www.nest-simulator.org/">NEST</a> to run large-scale point
-neuron network models.</p>
-<div class="section" id="features">
-<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-default">
+<a class="reference internal image-reference" href="_images/bmtk_architecture_pointnet_highlight.jpg"><img alt="_images/bmtk_architecture_pointnet_highlight.jpg" src="_images/bmtk_architecture_pointnet_highlight.jpg" style="width: 433.6px; height: 167.20000000000002px;" /></a>
+</div>
+<p>PointNet is a simulation engine that utilizes <a class="reference external" href="http://www.nest-simulator.org/">NEST</a> to run large-scale point
+neuron network models. Features including:</p>
 <ul class="simple">
-<li>Run the same simulation on a single core or in parallel on an HPC cluster with no extra programming required.</li>
-<li>Supports any spiking neuron models (rates models in development) available in NEST or with user contributed modules.</li>
-<li>Records neuron spiking, multi-meter recorded variables into the optimized SONATA data format.</li>
+<li><p>Run the same simulation on a single core or in parallel on an HPC cluster with no extra programming required.</p></li>
+<li><p>Supports any spiking neuron models (rates models in development) available in NEST or with user contributed modules.</p></li>
+<li><p>Records neuron spiking, multi-meter recorded variables into the optimized SONATA data format.</p></li>
+</ul>
+<div class="section" id="inputs">
+<h2>Inputs<a class="headerlink" href="#inputs" title="Permalink to this headline">¶</a></h2>
+<p>Inputs can be specified in the “inputs” sections of the <a class="reference external" href="simulators.html#configuration-files">simulation config</a>,
+following the rules specified in the
+<a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#simulation-input---stimuli">SONATA Data format</a>.</p>
+<div class="section" id="spike-trains">
+<h3>Spike-Trains<a class="headerlink" href="#spike-trains" title="Permalink to this headline">¶</a></h3>
+<p>Cells with <code class="docutils literal notranslate"><span class="pre">model_type</span></code> value <code class="docutils literal notranslate"><span class="pre">virtual</span></code> are equivalent to NEST’s spike_generator models which will play a
+pre-recorded series of spikes throughout the simulation. You may use either a
+<a class="reference external" href="./analyzer.html#spike-trains">SONATA spike-train file</a>, an NWB file, or a space-separated csv file with columns
+<strong>node_id</strong>, <strong>population</strong>, and <strong>timestamps</strong>. Examples of how to create your own spike-train files can be found
+<a class="reference external" href="./analyzer.html#creating-spike-trains">here</a>.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;sonata&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;input_file&quot;</span><span class="p">:</span> <span class="s2">&quot;./inputs/lgn_spikes.h5&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span> <span class="s2">&quot;lgn&quot;</span><span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>module:  either sonata, hdf5, csv, or nwb: depending on the format of the spikes file</p></li>
+<li><p><a class="reference external" href="./simulators.html#node-sets">node_set</a>: used to filter which cells will receive the inputs</p></li>
+<li><p>input_file: path to file contain spike-trains for one or mode node</p></li>
 </ul>
 </div>
-<div class="section" id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>PointNet supports both Python 2.7 or Python 3.6+, and also requires NEST 2.11+ to be installed. See our
-<a class="reference external" href="installation">Installation instructions</a> for help on installing NEST and the BMTK.</p>
-</div>
-<div class="section" id="documentation-and-tutorials">
-<h2>Documentation and Tutorials<a class="headerlink" href="#documentation-and-tutorials" title="Permalink to this headline">¶</a></h2>
-<p>Our <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial">github page</a> contains a number of jupyter-notebook
-tutorials for using the BMTK in general and PointNet specific examples for:
-* <a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/05_pointnet_modeling.ipynb">Building and simulating a multi-population, heterogeneous point networks</a>.</p>
-<div class="section" id="previous-materials">
-<h3>Previous Materials<a class="headerlink" href="#previous-materials" title="Permalink to this headline">¶</a></h3>
-<p>The following are from previous tutorials, workshops, and presentations; and may not work with the latest version of the BMTK.
-* CNS 2018 Workshop: <a class="reference external" href="https://github.com/AllenInstitute/CNS_2018_Tutorial/tree/master/bmtk">notebooks</a>
-* Summer Workshop on the Dynamic Brain 2018: <a class="reference external" href="https://github.com/AllenInstitute/SWDB_2018/tree/master/DynamicBrain/Modeling">notebooks</a>.</p>
-</div>
-</div>
-<div class="section" id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<p>The AllenInstitute/bmtk repo contains a number of PointNet examples, many with pre-built networks and can be immediately ran. These
-tutorials will have the folder prefix <em>point_</em> and to run them in the command-line simply call:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python run_pointnet.py config.json
+<div class="section" id="current-clamps">
+<h3>Current-Clamps<a class="headerlink" href="#current-clamps" title="Permalink to this headline">¶</a></h3>
+<p>May use one step current clamp on multiple nodes, or have one node receive multiple current injections.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;current_clamp_1&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="s2">&quot;biophys_cells&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;amp&quot;</span><span class="p">:</span> <span class="mf">0.1500</span><span class="p">,</span>
+        <span class="nt">&quot;delay&quot;</span><span class="p">:</span> <span class="mf">500.0</span><span class="p">,</span>
+        <span class="nt">&quot;duration&quot;</span><span class="p">:</span> <span class="mf">500.0</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<p>or to run them on multiple-cores:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ mpirun -n $NCORES python run_pointnet.py config.json
-</pre></div>
-</div>
-<div class="section" id="current-examples">
-<h3>Current examples<a class="headerlink" href="#current-examples" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/point_120cells">point_120cells</a> - A small network of 120 recurrently connected point neurons receiving synaptic input from an external network of “virtual” cells (i.e. spike-generators).</li>
-<li><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/point_450cells">point_450cells</a> - A modest heterogeneous network of 450 cells (sampled from a much large network of a mouse cortex L4).</li>
+<li><p>module:  Always IClamp</p></li>
+<li><p><a class="reference external" href="./simulators.html#node-sets">node_set</a>: used to filter which cells will receive the inputs</p></li>
+<li><p>amp: injection in pA</p></li>
+<li><p>delay: onset of current injection in ms</p></li>
+<li><p>duration: duration of current injection in ms</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="outputs">
+<h2>Outputs<a class="headerlink" href="#outputs" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="spikes">
+<h3>Spikes<a class="headerlink" href="#spikes" title="Permalink to this headline">¶</a></h3>
+<p>By default all non-virtual cells in the circuit will have all their spikes at the soma recorded.</p>
+</div>
+<div class="section" id="membrane-and-intracellular-variables">
+<h3>Membrane and Intracellular Variables<a class="headerlink" href="#membrane-and-intracellular-variables" title="Permalink to this headline">¶</a></h3>
+<p>Used to record the time trace of specific cell variables, usually the membrane potential (v). This is equivalent to NEST’s multimeter object.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;membrane_potential&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;multimeter_report&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;cells&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span> <span class="s2">&quot;V1&quot;</span><span class="p">},</span>
+        <span class="nt">&quot;variable_name&quot;</span><span class="p">:</span> <span class="s2">&quot;V_m&quot;</span>
+        <span class="s2">&quot;file_name&quot;</span><span class="p">:</span> <span class="s2">&quot;cai_traces.h5&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>module: either mutlimeter_report or membrane_report, both the same</p></li>
+<li><p>variable_name: name of variable being recorded, will depend on the nest cell model.</p></li>
+<li><p>cells: a <a class="reference external" href="./simulators.html#node-sets">node_set</a> filter out what cells to record.</p></li>
+<li><dl class="simple">
+<dt>file_name: name of file where traces will be recorded, under the “output_dir”. If not specified the the report title</dt><dd><p>will be used, eg “calcium_concentration.h5” and “membrane_potential.h5”</p>
+</dd>
+</dl>
+</li>
 </ul>
 </div>
 </div>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -687,13 +738,23 @@ tutorials will have the folder prefix <em>point_</em> and to run them in the com
 <li class="toctree-l2"><a class="reference internal" href="filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.utils.html">bmtk.utils package</a></li>
@@ -702,17 +763,15 @@ tutorials will have the folder prefix <em>point_</em> and to run them in the com
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

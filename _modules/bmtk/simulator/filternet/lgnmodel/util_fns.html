@@ -1,19 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.simulator.filternet.lgnmodel.util_fns &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
   </head><body>
@@ -622,12 +624,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h1>Source code for bmtk.simulator.filternet.lgnmodel.util_fns</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">matplotlib.mlab</span> <span class="k">as</span> <span class="nn">mlab</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">scipy.io</span> <span class="k">as</span> <span class="nn">sio</span>
-<span class="kn">from</span> <span class="nn">scipy.fftpack</span> <span class="k">import</span> <span class="n">fft</span>
+<span class="kn">from</span> <span class="nn">scipy.fftpack</span> <span class="kn">import</span> <span class="n">fft</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">.movie</span> <span class="k">import</span> <span class="n">Movie</span><span class="p">,</span> <span class="n">FullFieldFlashMovie</span>
+<span class="kn">from</span> <span class="nn">.movie</span> <span class="kn">import</span> <span class="n">Movie</span><span class="p">,</span> <span class="n">FullFieldFlashMovie</span>
 
 
 <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.width&#39;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
@@ -686,94 +687,97 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
     <span class="k">return</span> <span class="n">gr_mov_list</span></div>
 
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">##################################################</span>
+<span class="sd">metrics_dir = os.path.join(os.path.dirname(__file__), &#39;cell_metrics&#39;)</span>
+<span class="sd">def get_data_metrics_for_each_subclass(ctype):</span>
+<span class="sd">    # Load csv file into dataframe</span>
+<span class="sd">    if ctype.find(&#39;_sus&#39;) &gt;= 0:</span>
+<span class="sd">        prs_fn = os.path.join(metrics_dir, &#39;{}_cells_v3.csv&#39;.format(ctype))</span>
+<span class="sd">    else:</span>
+<span class="sd">        prs_fn = os.path.join(metrics_dir, &#39;{}_cell_data.csv&#39;.format(ctype))</span>
 
-<span class="c1">##################################################</span>
-<span class="n">metrics_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;cell_metrics&#39;</span><span class="p">)</span>
-<div class="viewcode-block" id="get_data_metrics_for_each_subclass"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.util_fns.get_data_metrics_for_each_subclass">[docs]</a><span class="k">def</span> <span class="nf">get_data_metrics_for_each_subclass</span><span class="p">(</span><span class="n">ctype</span><span class="p">):</span>
-    <span class="c1"># Load csv file into dataframe</span>
-    <span class="k">if</span> <span class="n">ctype</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;_sus&#39;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">prs_fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">metrics_dir</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_cells_v3.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ctype</span><span class="p">))</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">prs_fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">metrics_dir</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_cell_data.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ctype</span><span class="p">))</span>
+<span class="sd">    prs_df = pd.read_csv(prs_fn)</span>
+<span class="sd">    N_class, nmet = np.shape(prs_df)</span>
 
-    <span class="n">prs_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">prs_fn</span><span class="p">)</span>
-    <span class="n">N_class</span><span class="p">,</span> <span class="n">nmet</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">prs_df</span><span class="p">)</span>
+<span class="sd">    # Group data by subclasses based on max F0 vals</span>
+<span class="sd">    exp_df = prs_df.iloc[:, [13, 14, 17, 18, 28, 45, 46, 47, 48, 49, 50, 51, 52, 53,</span>
+<span class="sd">                             54]].copy()  # Bl_lat,Wh_lat,Bl_si, wh_si, spont, 5 F0s, 5 F1s</span>
+<span class="sd">    sub_df = exp_df.iloc[:, [5, 6, 7, 8, 9]]</span>
+<span class="sd">    exp_df[&#39;max_tf&#39;] = sub_df.idxmax(axis=1).values  # sub_df.idxmax(axis=1)</span>
 
-    <span class="c1"># Group data by subclasses based on max F0 vals</span>
-    <span class="n">exp_df</span> <span class="o">=</span> <span class="n">prs_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">13</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">46</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span> <span class="mi">48</span><span class="p">,</span> <span class="mi">49</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">52</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span>
-                             <span class="mi">54</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># Bl_lat,Wh_lat,Bl_si, wh_si, spont, 5 F0s, 5 F1s</span>
-    <span class="n">sub_df</span> <span class="o">=</span> <span class="n">exp_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]]</span>
-    <span class="n">exp_df</span><span class="p">[</span><span class="s1">&#39;max_tf&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sub_df</span><span class="o">.</span><span class="n">idxmax</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>  <span class="c1"># sub_df.idxmax(axis=1)</span>
+<span class="sd">    exp_means = exp_df.groupby([&#39;max_tf&#39;]).mean()</span>
+<span class="sd">    exp_std = exp_df.groupby([&#39;max_tf&#39;]).std()</span>
+<span class="sd">    exp_nsub = exp_df.groupby([&#39;max_tf&#39;]).size()</span>
 
-    <span class="n">exp_means</span> <span class="o">=</span> <span class="n">exp_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;max_tf&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-    <span class="n">exp_std</span> <span class="o">=</span> <span class="n">exp_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;max_tf&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
-    <span class="n">exp_nsub</span> <span class="o">=</span> <span class="n">exp_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;max_tf&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+<span class="sd">    max_ind_arr = np.where(exp_nsub == np.max(exp_nsub))</span>
+<span class="sd">    max_nsub_ind = max_ind_arr[0][0]</span>
 
-    <span class="n">max_ind_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">exp_nsub</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">exp_nsub</span><span class="p">))</span>
-    <span class="n">max_nsub_ind</span> <span class="o">=</span> <span class="n">max_ind_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="sd">    # Get means and std dev for subclasses</span>
+<span class="sd">    exp_prs_dict = {}</span>
+<span class="sd">    for scn in np.arange(len(exp_nsub)):</span>
+<span class="sd">        f0_exp = exp_means.iloc[scn, 5:10].values</span>
+<span class="sd">        f1_exp = exp_means.iloc[scn, 10:].values</span>
+<span class="sd">        spont_exp = exp_means.iloc[scn, 4:5].values</span>
+<span class="sd">        if ctype.find(&#39;OFF&#39;) &gt;= 0:</span>
+<span class="sd">            si_exp = exp_means.iloc[scn, 2:3].values</span>
+<span class="sd">            ttp_exp = exp_means.iloc[scn, 0:1].values</span>
+<span class="sd">        elif ctype.find(&#39;ON&#39;) &gt;= 0:</span>
+<span class="sd">            si_exp = exp_means.iloc[scn, 3:4].values</span>
+<span class="sd">            ttp_exp = exp_means.iloc[scn, 1:2].values</span>
+<span class="sd">        else:</span>
+<span class="sd">            si_exp = np.NaN * np.ones((1, 5))</span>
+<span class="sd">            ttp_exp = np.NaN * np.ones((1, 2))</span>
 
-    <span class="c1"># Get means and std dev for subclasses</span>
-    <span class="n">exp_prs_dict</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">scn</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">exp_nsub</span><span class="p">)):</span>
-        <span class="n">f0_exp</span> <span class="o">=</span> <span class="n">exp_means</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">scn</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-        <span class="n">f1_exp</span> <span class="o">=</span> <span class="n">exp_means</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">scn</span><span class="p">,</span> <span class="mi">10</span><span class="p">:]</span><span class="o">.</span><span class="n">values</span>
-        <span class="n">spont_exp</span> <span class="o">=</span> <span class="n">exp_means</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">scn</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-        <span class="k">if</span> <span class="n">ctype</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;OFF&#39;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">si_exp</span> <span class="o">=</span> <span class="n">exp_means</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">scn</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-            <span class="n">ttp_exp</span> <span class="o">=</span> <span class="n">exp_means</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">scn</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-        <span class="k">elif</span> <span class="n">ctype</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;ON&#39;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">si_exp</span> <span class="o">=</span> <span class="n">exp_means</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">scn</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-            <span class="n">ttp_exp</span> <span class="o">=</span> <span class="n">exp_means</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">scn</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">si_exp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">NaN</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-            <span class="n">ttp_exp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">NaN</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="sd">        nsub = exp_nsub.iloc[scn]</span>
+<span class="sd">        if nsub == 1:</span>
+<span class="sd">            f0_std = np.mean(exp_std.iloc[max_nsub_ind, 5:10].values) * np.ones((1, 5))</span>
+<span class="sd">            f1_std = np.mean(exp_std.iloc[max_nsub_ind, 10:].values) * np.ones((1, 5))</span>
+<span class="sd">            spont_std = np.mean(exp_std.iloc[max_nsub_ind, 4:5].values) * np.ones((1, 5))</span>
+<span class="sd">            if ctype.find(&#39;OFF&#39;) &gt;= 0:</span>
+<span class="sd">                si_std = np.mean(exp_std.iloc[max_nsub_ind, 2:3].values) * np.ones((1, 5))</span>
+<span class="sd">            elif ctype.find(&#39;ON&#39;) &gt;= 0:</span>
+<span class="sd">                si_std = np.mean(exp_std.iloc[max_nsub_ind, 3:4].values) * np.ones((1, 5))</span>
+<span class="sd">            else:</span>
+<span class="sd">                si_std = np.NaN * np.ones((1, 5))</span>
 
-        <span class="n">nsub</span> <span class="o">=</span> <span class="n">exp_nsub</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">scn</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">nsub</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">f0_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">exp_std</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">max_nsub_ind</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-            <span class="n">f1_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">exp_std</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">max_nsub_ind</span><span class="p">,</span> <span class="mi">10</span><span class="p">:]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-            <span class="n">spont_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">exp_std</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">max_nsub_ind</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-            <span class="k">if</span> <span class="n">ctype</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;OFF&#39;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">si_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">exp_std</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">max_nsub_ind</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-            <span class="k">elif</span> <span class="n">ctype</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;ON&#39;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">si_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">exp_std</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">max_nsub_ind</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">si_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">NaN</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="sd">        else:</span>
+<span class="sd">            f0_std = exp_std.iloc[scn, 5:10].values</span>
+<span class="sd">            f1_std = exp_std.iloc[scn, 10:].values</span>
+<span class="sd">            spont_std = exp_std.iloc[scn, 4:5].values</span>
+<span class="sd">            if ctype.find(&#39;OFF&#39;) &gt;= 0:</span>
+<span class="sd">                si_std = exp_std.iloc[scn, 2:3].values</span>
+<span class="sd">            elif ctype.find(&#39;ON&#39;) &gt;= 0:</span>
+<span class="sd">                si_std = exp_std.iloc[scn, 3:4].values</span>
+<span class="sd">            else:</span>
+<span class="sd">                si_std = np.NaN * np.ones((1, 5))</span>
 
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">f0_std</span> <span class="o">=</span> <span class="n">exp_std</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">scn</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-            <span class="n">f1_std</span> <span class="o">=</span> <span class="n">exp_std</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">scn</span><span class="p">,</span> <span class="mi">10</span><span class="p">:]</span><span class="o">.</span><span class="n">values</span>
-            <span class="n">spont_std</span> <span class="o">=</span> <span class="n">exp_std</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">scn</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-            <span class="k">if</span> <span class="n">ctype</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;OFF&#39;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">si_std</span> <span class="o">=</span> <span class="n">exp_std</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">scn</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-            <span class="k">elif</span> <span class="n">ctype</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;ON&#39;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">si_std</span> <span class="o">=</span> <span class="n">exp_std</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">scn</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">si_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">NaN</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="sd">        if ctype.find(&#39;t&#39;) &gt;= 0:</span>
+<span class="sd">            tcross = 40.</span>
+<span class="sd">            si_inf_exp = (si_exp - tcross / 200.) * (200. / (200. - tcross - 40.))</span>
+<span class="sd">        elif ctype.find(&#39;s&#39;) &gt;= 0:</span>
+<span class="sd">            tcross = 60.</span>
+<span class="sd">            si_inf_exp = (si_exp - tcross / 200.) * (200. / (200. - tcross - 40.))</span>
+<span class="sd">        else:</span>
+<span class="sd">            si_inf_exp = np.nan</span>
 
-        <span class="k">if</span> <span class="n">ctype</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;t&#39;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">tcross</span> <span class="o">=</span> <span class="mf">40.</span>
-            <span class="n">si_inf_exp</span> <span class="o">=</span> <span class="p">(</span><span class="n">si_exp</span> <span class="o">-</span> <span class="n">tcross</span> <span class="o">/</span> <span class="mf">200.</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">200.</span> <span class="o">/</span> <span class="p">(</span><span class="mf">200.</span> <span class="o">-</span> <span class="n">tcross</span> <span class="o">-</span> <span class="mf">40.</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="n">ctype</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">tcross</span> <span class="o">=</span> <span class="mf">60.</span>
-            <span class="n">si_inf_exp</span> <span class="o">=</span> <span class="p">(</span><span class="n">si_exp</span> <span class="o">-</span> <span class="n">tcross</span> <span class="o">/</span> <span class="mf">200.</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">200.</span> <span class="o">/</span> <span class="p">(</span><span class="mf">200.</span> <span class="o">-</span> <span class="n">tcross</span> <span class="o">-</span> <span class="mf">40.</span><span class="p">))</span>
+<span class="sd">        dict_key = exp_means.iloc[scn].name[3:]</span>
+<span class="sd">        exp_prs_dict[dict_key] = {}</span>
+<span class="sd">        exp_prs_dict[dict_key][&#39;f0_exp&#39;] = f0_exp</span>
+<span class="sd">        exp_prs_dict[dict_key][&#39;f1_exp&#39;] = f1_exp</span>
+<span class="sd">        exp_prs_dict[dict_key][&#39;spont_exp&#39;] = spont_exp</span>
+<span class="sd">        exp_prs_dict[dict_key][&#39;si_exp&#39;] = si_exp</span>
+<span class="sd">        exp_prs_dict[dict_key][&#39;si_inf_exp&#39;] = si_inf_exp</span>
+<span class="sd">        exp_prs_dict[dict_key][&#39;ttp_exp&#39;] = ttp_exp</span>
+<span class="sd">        exp_prs_dict[dict_key][&#39;f0_std&#39;] = f0_std</span>
+<span class="sd">        exp_prs_dict[dict_key][&#39;f1_std&#39;] = f1_std</span>
+<span class="sd">        exp_prs_dict[dict_key][&#39;spont_std&#39;] = spont_std</span>
+<span class="sd">        exp_prs_dict[dict_key][&#39;si_std&#39;] = si_std</span>
+<span class="sd">        exp_prs_dict[dict_key][&#39;nsub&#39;] = nsub</span>
+<span class="sd">        exp_prs_dict[dict_key][&#39;N_class&#39;] = N_class</span>
 
-        <span class="n">dict_key</span> <span class="o">=</span> <span class="n">exp_means</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">scn</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
-        <span class="n">exp_prs_dict</span><span class="p">[</span><span class="n">dict_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">exp_prs_dict</span><span class="p">[</span><span class="n">dict_key</span><span class="p">][</span><span class="s1">&#39;f0_exp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f0_exp</span>
-        <span class="n">exp_prs_dict</span><span class="p">[</span><span class="n">dict_key</span><span class="p">][</span><span class="s1">&#39;f1_exp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f1_exp</span>
-        <span class="n">exp_prs_dict</span><span class="p">[</span><span class="n">dict_key</span><span class="p">][</span><span class="s1">&#39;spont_exp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">spont_exp</span>
-        <span class="n">exp_prs_dict</span><span class="p">[</span><span class="n">dict_key</span><span class="p">][</span><span class="s1">&#39;si_exp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">si_exp</span>
-        <span class="n">exp_prs_dict</span><span class="p">[</span><span class="n">dict_key</span><span class="p">][</span><span class="s1">&#39;si_inf_exp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">si_inf_exp</span>
-        <span class="n">exp_prs_dict</span><span class="p">[</span><span class="n">dict_key</span><span class="p">][</span><span class="s1">&#39;ttp_exp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ttp_exp</span>
-        <span class="n">exp_prs_dict</span><span class="p">[</span><span class="n">dict_key</span><span class="p">][</span><span class="s1">&#39;f0_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f0_std</span>
-        <span class="n">exp_prs_dict</span><span class="p">[</span><span class="n">dict_key</span><span class="p">][</span><span class="s1">&#39;f1_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f1_std</span>
-        <span class="n">exp_prs_dict</span><span class="p">[</span><span class="n">dict_key</span><span class="p">][</span><span class="s1">&#39;spont_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">spont_std</span>
-        <span class="n">exp_prs_dict</span><span class="p">[</span><span class="n">dict_key</span><span class="p">][</span><span class="s1">&#39;si_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">si_std</span>
-        <span class="n">exp_prs_dict</span><span class="p">[</span><span class="n">dict_key</span><span class="p">][</span><span class="s1">&#39;nsub&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nsub</span>
-        <span class="n">exp_prs_dict</span><span class="p">[</span><span class="n">dict_key</span><span class="p">][</span><span class="s1">&#39;N_class&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">N_class</span>
-
-    <span class="k">return</span> <span class="n">exp_prs_dict</span></div>
+<span class="sd">    return exp_prs_dict</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 
 <span class="c1">##################################################</span>
@@ -802,16 +806,27 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="k">return</span> <span class="n">prm_on_bds</span></div>
 
 
+<div class="viewcode-block" id="cross_from_above"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.util_fns.cross_from_above">[docs]</a><span class="k">def</span> <span class="nf">cross_from_above</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the indices into *x* where *x* crosses some threshold from above.&quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">((</span><span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ind</span><span class="o">+</span><span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ind</span></div>
+
+
 <span class="c1">#######################################################</span>
 <div class="viewcode-block" id="get_tcross_from_temporal_kernel"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.util_fns.get_tcross_from_temporal_kernel">[docs]</a><span class="k">def</span> <span class="nf">get_tcross_from_temporal_kernel</span><span class="p">(</span><span class="n">temporal_kernel</span><span class="p">):</span>
     <span class="n">max_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">temporal_kernel</span><span class="p">)</span>
     <span class="n">min_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">temporal_kernel</span><span class="p">)</span>
 
-    <span class="n">temp_tcross_ind</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">cross_from_above</span><span class="p">(</span><span class="n">temporal_kernel</span><span class="p">[</span><span class="n">max_ind</span><span class="p">:</span><span class="n">min_ind</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">temp_tcross_ind</span> <span class="o">=</span> <span class="n">cross_from_above</span><span class="p">(</span><span class="n">temporal_kernel</span><span class="p">[</span><span class="n">max_ind</span><span class="p">:</span><span class="n">min_ind</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">)</span>
     <span class="n">tcross_ind</span> <span class="o">=</span> <span class="n">max_ind</span> <span class="o">+</span> <span class="n">temp_tcross_ind</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">tcross_ind</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -828,31 +843,40 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

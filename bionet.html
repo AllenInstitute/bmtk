@@ -1,18 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BioNet &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="PointNet" href="pointnet.html" />
@@ -622,65 +625,232 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             
   <div class="section" id="bionet">
 <h1>BioNet<a class="headerlink" href="#bionet" title="Permalink to this headline">¶</a></h1>
-<p>BioNet is a high-level interface to <a class="reference external" href="http://neuron.yale.edu/neuron/">NEURON</a> that facilitates simulations of large-scale
-networks of multicompartmental neurons. It is built on top of Python, but allows users to run simulations quickly
-often with little-to-no programming.</p>
-<div class="section" id="features">
-<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-default">
+<a class="reference internal image-reference" href="_images/bmtk_architecture_bionet_highlight.jpg"><img alt="_images/bmtk_architecture_bionet_highlight.jpg" src="_images/bmtk_architecture_bionet_highlight.jpg" style="width: 433.6px; height: 167.20000000000002px;" /></a>
+</div>
+<p>BioNet is a high-level interface to <a class="reference external" href="http://neuron.yale.edu/neuron/">NEURON</a> that facilitates simulations of
+large-scale networks of multicompartmental neurons. Some of its main features include:</p>
 <ul class="simple">
-<li>Automatically integrates MPI for parallel simulations without the need of extra coding.</li>
-<li>Supports models and morphologies from the Allen <a class="reference external" href="http://celltypes.brain-map.org/data">Cell-Types Database</a>, as well as custom hoc and NeuroML2 cell and synapse models.</li>
-<li>Use spike-trains, synaptic connections, current clamps or even extracellular stimulation to drive network firing.</li>
-<li>Can simulate extracelluarl field recordings.</li>
+<li><p>Automatically integrates MPI for parallel simulations without the need of extra coding.</p></li>
+<li><p>Supports models and morphologies from the Allen <a class="reference external" href="http://celltypes.brain-map.org/data">Cell-Types Database</a>, as well
+as custom hoc and NeuroML2 cell and synapse models.</p></li>
+<li><p>Use spike-trains, synaptic connections, current clamps or even extracellular stimulation to drive network firing.</p></li>
+<li><p>Can simulate extracellular field recordings.</p></li>
 </ul>
-</div>
-<div class="section" id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>BioNet supports both Python 2.7 or Python 3.6+, and also requires NEURON 7.4+ to be installed. See our
-<a class="reference external" href="installation">Installation instructions</a> for help on installing NEURON and the BMTK.</p>
-</div>
-<div class="section" id="documentation-and-tutorials">
-<h2>Documentation and Tutorials<a class="headerlink" href="#documentation-and-tutorials" title="Permalink to this headline">¶</a></h2>
-<p>Our <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial">github page</a> contains a number of jupyter-notebook
-tutorials for both building multi-compartmental neural networks and simulating them with BioNet, including ones specially
-how to:</p>
-<ol class="arabic simple">
-<li>Simulate cell(s) with a <a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/01_single_cell_clamped.ipynb">current clamp</a>.</li>
-<li>Use synaptic inputs to stimulate <a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/02_single_cell_syn.ipynb">single</a> and <a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/03_single_pop.ipynb">multi-cell</a> networks.</li>
-<li>Build and simulate <a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/04_multi_pop.ipynb">multi-population heterogeneous networks</a>.</li>
-</ol>
-<div class="section" id="previous-materials">
-<h3>Previous Materials<a class="headerlink" href="#previous-materials" title="Permalink to this headline">¶</a></h3>
-<p>The following are from previous tutorials, workshops, and presentations; and may not work with the latest version of the bmtk.
-* CNS 2018 Workshop: <a class="reference external" href="https://github.com/AllenInstitute/CNS_2018_Tutorial/tree/master/bmtk">notebooks</a>
-* Summer Workshop on the Dynamic Brain 2018: <a class="reference external" href="https://github.com/AllenInstitute/SWDB_2018/tree/master/DynamicBrain/Modeling">notebooks</a>.</p>
-</div>
-</div>
-<div class="section" id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<p>The AllenInstitute/bmtk repo contains a number of BioNet examples, many with pre-built networks and can be immediately ran. These
-tutorials will have the folder prefix <em>bio_</em> and to run them in the command-line simply call:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python run_bionet.py config.json
+<div class="section" id="inputs">
+<h2>Inputs<a class="headerlink" href="#inputs" title="Permalink to this headline">¶</a></h2>
+<p>Inputs can be specified in the “inputs” sections of the <a class="reference external" href="./simulators.html#configuration-files">simulation config</a>,
+following the rules specified in the <a class="reference external" href="https://github.com/AllenInstitute/sonata">SONATA Data format</a>.</p>
+<div class="section" id="spike-trains">
+<h3>Spike-Trains<a class="headerlink" href="#spike-trains" title="Permalink to this headline">¶</a></h3>
+<p>The modeler may wish to have certain cells in the circuit generate a pre-arranged series of spikes to drive the network.
+These cells must have <code class="docutils literal notranslate"><span class="pre">model_type</span></code> value <code class="docutils literal notranslate"><span class="pre">virtual</span></code> and are not actual cell objects (you can’t record from them). You
+may use either a <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#spike-file">SONATA spike file</a>,
+an NWB file, or a space-separated csv file with columns <strong>node_id</strong>, <strong>population</strong>, and <strong>timestamps</strong>. The following
+shows some examples of how to generate <a class="reference external" href="./analyzer.html#creating-spike-trains">spike-train files using bmtk</a>.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;sonata&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;input_file&quot;</span><span class="p">:</span> <span class="s2">&quot;./inputs/lgn_spikes.h5&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span> <span class="s2">&quot;lgn&quot;</span><span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<p>or to run them on multiple-cores:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ mpirun -n $NCORES nrniv -mpi -python run_bionet.py config.json
+<ul class="simple">
+<li><p>module:  either sonata, hdf5, csv, or nwb: depending on the format of the spikes file</p></li>
+<li><p><a class="reference external" href="./simulators.html#node-sets">node_set</a>: used to filter which cells will receive the inputs</p></li>
+<li><p>input_file: path to file contain spike-trains for one or mode node</p></li>
+</ul>
+</div>
+<div class="section" id="current-clamp">
+<h3>Current Clamp<a class="headerlink" href="#current-clamp" title="Permalink to this headline">¶</a></h3>
+<p>May use one step current clamp on multiple nodes, or have one node receive multiple current injections. Currently ;)
+only support injections at the soma.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;current_clamp_1&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="s2">&quot;biophys_cells&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;amp&quot;</span><span class="p">:</span> <span class="mf">0.1500</span><span class="p">,</span>
+        <span class="nt">&quot;delay&quot;</span><span class="p">:</span> <span class="mf">500.0</span><span class="p">,</span>
+        <span class="nt">&quot;duration&quot;</span><span class="p">:</span> <span class="mf">500.0</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<div class="section" id="current-examples">
-<h3>Current examples<a class="headerlink" href="#current-examples" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/bio_14cells">bio_14cells</a> - A small network of 14 recurrently connected multi-compartment and point-process cells receiving synaptic input from an external network of “virtual” cells (i.e. spike-trains).</li>
-<li><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/bio_450cells">bio_450cells</a> - A modest heterogeneous network of 450 cells (sampled from a much large network of a mouse cortex L4).</li>
-<li><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/bio_450cells_exact">bio_450cells_exact</a> - Similar to bio_450cells but with synaptic locations precisely stated (In the other examples the simulator will randomly assign synaptic locations at run-time given a predefined range).</li>
-<li><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/bio_stp_models">bio_stp_models</a> - An example using Allen Institute custom STP-based synapse models.</li>
-<li><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/bio_basic_features">bio_basic_features</a> - Examples how how to stimulate networks using a variety of methods.</li>
+<li><p>module:  Always IClamp</p></li>
+<li><p><a class="reference external" href="./simulators.html#node-sets">node_set</a>: used to filter which cells will receive the inputs</p></li>
+<li><p>amp: injection in pA</p></li>
+<li><p>delay: onset of current injection in ms</p></li>
+<li><p>duration: duration of current injection in ms</p></li>
 </ul>
+</div>
+<div class="section" id="voltage-clamp">
+<h3>Voltage Clamp<a class="headerlink" href="#voltage-clamp" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="extracellular-stimulation">
+<h3>Extracellular Stimulation<a class="headerlink" href="#extracellular-stimulation" title="Permalink to this headline">¶</a></h3>
+<p>Allows for a set of external electrodes to provide a continuous stimulation in the neuropil. Requires a space-separated csv file with one row for each electrode:</p>
+<div class="highlight-default notranslate" id="xstim-electrode-csv"><div class="highlight"><pre><span></span><span class="n">ip</span> <span class="n">pos_x</span> <span class="n">pos_y</span> <span class="n">pos_z</span> <span class="n">rotation_x</span> <span class="n">rotation_y</span> <span class="n">rotation_z</span>
+<span class="mi">0</span> <span class="mf">6.1803398874989481</span> <span class="mf">0.0</span> <span class="mf">19.021130325903069</span> <span class="mf">0.0</span> <span class="mf">0.0</span> <span class="mf">0.0</span>
+</pre></div>
+</div>
+<p>And in the configuration file</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;extra_stim&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;lfp&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;xstim&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;positions_file&quot;</span><span class="p">:</span> <span class="s2">&quot;./inputs/xstim_electrode.csv&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;waveform&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&quot;shape&quot;</span><span class="p">:</span> <span class="s2">&quot;sin&quot;</span><span class="p">,</span>
+            <span class="nt">&quot;del&quot;</span><span class="p">:</span> <span class="mf">1000.0</span><span class="p">,</span>
+            <span class="nt">&quot;amp&quot;</span><span class="p">:</span> <span class="mf">0.100</span><span class="p">,</span>
+            <span class="nt">&quot;dur&quot;</span><span class="p">:</span> <span class="mf">2000.0</span><span class="p">,</span>
+            <span class="nt">&quot;freq&quot;</span><span class="p">:</span> <span class="mf">8.0</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>module:  Always xstim</p></li>
+<li><p><a class="reference external" href="./simulators.html#node-sets">node_set</a>: used to filter which cells will receive the inputs</p></li>
+<li><p>positions_file: onset of current injection in ms</p></li>
+<li><p>waveform: form on the input, requires arguments “shape”, “amp” (in pA), “del” (delay in ms) and “dur” (duration in ms). Shape may either be “dc” or “sin” (with optional arguments “freq”, “phase” and “offset”)</p></li>
+</ul>
+</div>
+<div class="section" id="spontaneous-firing">
+<h3>Spontaneous Firing<a class="headerlink" href="#spontaneous-firing" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="outputs">
+<h2>Outputs<a class="headerlink" href="#outputs" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="spikes">
+<h3>Spikes<a class="headerlink" href="#spikes" title="Permalink to this headline">¶</a></h3>
+<p>By default all non-virtual cells in the circuit will have all their spikes at the soma recorded. The “spike_threadhold”
+parameter in the “run” block of the simulation config is used to determine what counts as a spike for a conductance model
+cell.</p>
+</div>
+<div class="section" id="membrane-and-intracellular-variables">
+<h3>Membrane and Intracellular Variables<a class="headerlink" href="#membrane-and-intracellular-variables" title="Permalink to this headline">¶</a></h3>
+<p>Used to record the time trace of specific cell variables, usually the membrane potential (v). For multi-compartmental
+cells the report can record from any segment that contains mechanics for the desired variable. See
+<a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#simulation-output---reports">SONATA docs</a>
+for more information about how multi-segment recordings are represented.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;calcium_concentration&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;membrane_report&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;cells&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span> <span class="s2">&quot;biophysical&quot;</span><span class="p">},</span>
+        <span class="nt">&quot;variable_name&quot;</span><span class="p">:</span> <span class="s2">&quot;cai&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;sections&quot;</span><span class="p">:</span> <span class="s2">&quot;soma&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;file_name&quot;</span><span class="p">:</span> <span class="s2">&quot;cai_traces.h5&quot;</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;membrane_potential&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;membrane_report&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;cells&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;node_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]},</span>
+        <span class="nt">&quot;variable_name&quot;</span><span class="p">:</span> <span class="s2">&quot;v&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;sections&quot;</span><span class="p">:</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;file_name&quot;</span><span class="p">:</span> <span class="s2">&quot;cai_traces.h5&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>variable_name: name of variable being recorded, will depend on the cell model</p></li>
+<li><p>cells: a <a class="reference external" href="./simulators.html#node-sets">node_set</a> to filter out what cells to record.</p></li>
+<li><p>sections: either “all”, “soma”, “basal” or “apical”</p></li>
+<li><p>file_name: name of file where traces will be recorded, under the “output_dir”. If not specified the the report title
+will be used, eg “calcium_concentration.h5” and “membrane_potential.h5”</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Disk space can be an issue when recording membrane variables. For large networks recording all segments or all cells, every for a 1 second simulation, can cause BMTK to try to write output files in the 100’s of GB or even TB.</p>
+</div>
+</div>
+<div class="section" id="extracellular-potential">
+<h3>Extracellular Potential<a class="headerlink" href="#extracellular-potential" title="Permalink to this headline">¶</a></h3>
+<p>Will simulate recording from an extracellular electrode placed in the neuropil. See
+<a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#extracellular-report">SONATA documentation</a>.
+Requires a space-separated csv file to specify the location of each recording channel:</p>
+<div class="highlight-default notranslate" id="components-xelectrode-linear-probe-csv"><div class="highlight"><pre><span></span><span class="n">channel</span> <span class="n">x_pos</span> <span class="n">y_pos</span> <span class="n">z_pos</span>
+<span class="mi">0</span> <span class="mf">10.0</span> <span class="mi">0</span> <span class="mf">5.0</span>
+<span class="mi">1</span> <span class="mf">10.0</span> <span class="o">-</span><span class="mi">10</span> <span class="mf">5.0</span>
+<span class="mi">2</span> <span class="mf">10.0</span> <span class="o">-</span><span class="mi">20</span> <span class="mf">5.0</span>
+<span class="mi">3</span> <span class="mf">10.0</span> <span class="o">-</span><span class="mi">30</span> <span class="mf">5.0</span>
+<span class="mi">4</span> <span class="mf">10.0</span> <span class="o">-</span><span class="mi">40</span> <span class="mf">5.0</span>
+</pre></div>
+</div>
+<p>And in the config</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;ecp&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;cells&quot;</span><span class="p">:</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;variable_name&quot;</span><span class="p">:</span> <span class="s2">&quot;v&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;extracellular&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;electrode_positions&quot;</span><span class="p">:</span> <span class="s2">&quot;components/xelectrode/linear_probe.csv&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;file_name&quot;</span><span class="p">:</span> <span class="s2">&quot;ecp.h5&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;contributions_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;ecp_contributions&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>cells: a <a class="reference external" href="./simulators.html#node-sets">node_set</a> to filter out what cells will contribute to the ecp.</p></li>
+<li><p>variable_name: name of contributing variable, v for membrane potential</p></li>
+<li><p>electrode_positions: name of electrode placement file</p></li>
+<li><p>contributions_dir: The output ecp file will contain the combined contributes from all cells and not possible to
+determine the ecp of each individual cell. But if “contributions_dir” is specified it will also record and save each
+individual cells’ ecp.</p></li>
+</ul>
+</div>
+<div class="section" id="synaptic-variables">
+<h3>Synaptic Variables<a class="headerlink" href="#synaptic-variables" title="Permalink to this headline">¶</a></h3>
+<p>Similar to recording from membrane potential, by setting <code class="docutils literal notranslate"><span class="pre">module</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">netcon_report</span></code> you can record the
+variables from a synapse. The output is similar to a
+<a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#frame-oriented-node-element-recordings">SONATA membrane report</a>,
+but instead of each column being a segment of a neuron, each column represents a different synapses.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="nt">&quot;syn_report&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;cells&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;model_type&quot;</span><span class="p">:</span> <span class="s2">&quot;biophysical&quot;</span><span class="p">},</span>
+        <span class="nt">&quot;variable_name&quot;</span><span class="p">:</span> <span class="s2">&quot;tau1&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;netcon_report&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;sections&quot;</span><span class="p">:</span> <span class="s2">&quot;soma&quot;</span><span class="p">,</span>
+        <span class="nt">&quot;syn_type&quot;</span><span class="p">:</span> <span class="s2">&quot;Exp2Syn&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="advanced-options">
+<h2>Advanced Options<a class="headerlink" href="#advanced-options" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="specifying-synapse-locations">
+<h3>Specifying Synapse locations<a class="headerlink" href="#specifying-synapse-locations" title="Permalink to this headline">¶</a></h3>
+<p>In SONATA the location of each synapse is determined by the
+<a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#edges---required-attributes">“afferent_section_id” and “afferent_section_pos”attributes</a>,
+which requires modelers to know how NEURON parses the morphology of each cell. If these parameters are specified in the edges file
+SONATA will use them to place a synapse on the target.</p>
+<p>Alternatively BMTK supports the option parameters “distance_range” and “target_sections”, which if present in the edges
+file, will direct BMTK to randomly choose a target synapse location under the limitations. Here “target_setions” refers
+to a neuronal area (somatic, axon, apical, basal) and “”istance_range” is the minimum and maximum arc-length distance
+(in um) from the soma to place the synapse. For example to specify synapses be created either at the soma or nearby
+basal dendrites:</p>
+<div class="highlight-default notranslate" id="edge-type-csv"><div class="highlight"><pre><span></span><span class="n">edge_type_id</span> <span class="n">distance_range</span> <span class="n">target_sections</span> <span class="o">...</span>
+<span class="mi">100</span> <span class="s2">&quot;[0.0, 100.0]&quot;</span> <span class="s2">&quot;[&#39;somatic&#39;, &#39;basal&#39;]&quot;</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>Using parameters “distance_range” and “target_sections” will speed up the instantiation by a bit. And has a benefit
+that the modeler doesn’t need to know the full details of the target_morphology. It may cause results to vary, but in
+our experience for large-networks usually doesn’t change the dynamics.</p>
 </div>
 </div>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -697,13 +867,23 @@ tutorials will have the folder prefix <em>bio_</em> and to run them in the comma
 <li class="toctree-l2"><a class="reference internal" href="filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.utils.html">bmtk.utils package</a></li>
@@ -712,17 +892,15 @@ tutorials will have the folder prefix <em>bio_</em> and to run them in the comma
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

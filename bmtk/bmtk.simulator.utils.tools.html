@@ -1,22 +1,25 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.simulator.utils.tools package &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="bmtk.tests package" href="bmtk.tests.html" />
-    <link rel="prev" title="bmtk.simulator.utils.stimulus package" href="bmtk.simulator.utils.stimulus.html" /> 
+    <link rel="prev" title="bmtk.simulator.utils package" href="bmtk.simulator.utils.html" /> 
   </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
 <style>
@@ -627,110 +630,81 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div>
 <div class="section" id="module-bmtk.simulator.utils.tools.process_spikes">
 <span id="bmtk-simulator-utils-tools-process-spikes-module"></span><h2>bmtk.simulator.utils.tools.process_spikes module<a class="headerlink" href="#module-bmtk.simulator.utils.tools.process_spikes" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.utils.tools.process_spikes.read_spk_h5">
-<code class="descclassname">bmtk.simulator.utils.tools.process_spikes.</code><code class="descname">read_spk_h5</code><span class="sig-paren">(</span><em>f_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/tools/process_spikes.html#read_spk_h5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.tools.process_spikes.read_spk_h5" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>f_name: string</strong></dt>
-<dd><p class="first last">Full path to a file containing cell IDs and spike times.</p>
+<code class="sig-prename descclassname">bmtk.simulator.utils.tools.process_spikes.</code><code class="sig-name descname">read_spk_h5</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/tools/process_spikes.html#read_spk_h5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.tools.process_spikes.read_spk_h5" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>f_name: string</strong></dt><dd><p>Full path to a file containing cell IDs and spike times.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>A dataframe containing two columns: spike times and cell IDs.</strong></dt>
-<dd></dd>
-<dt><strong>Usage:</strong></dt>
-<dd></dd>
-<dt><strong>x = read_spk_h5(‘output/spk.h5’)</strong></dt>
-<dd></dd>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>A dataframe containing two columns: spike times and cell IDs.</dt><dd></dd>
+<dt>Usage:</dt><dd></dd>
+<dt>x = read_spk_h5(‘output/spk.h5’)</dt><dd></dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.utils.tools.process_spikes.read_spk_txt">
-<code class="descclassname">bmtk.simulator.utils.tools.process_spikes.</code><code class="descname">read_spk_txt</code><span class="sig-paren">(</span><em>f_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/tools/process_spikes.html#read_spk_txt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.tools.process_spikes.read_spk_txt" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>f_name: string</strong></dt>
-<dd><p class="first last">Full path to a file containing cell IDs and spike times.</p>
+<code class="sig-prename descclassname">bmtk.simulator.utils.tools.process_spikes.</code><code class="sig-name descname">read_spk_txt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/tools/process_spikes.html#read_spk_txt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.tools.process_spikes.read_spk_txt" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>f_name: string</strong></dt><dd><p>Full path to a file containing cell IDs and spike times.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>A dataframe containing two columns: spike times and cell IDs.</strong></dt>
-<dd></dd>
-<dt><strong>Usage:</strong></dt>
-<dd></dd>
-<dt><strong>x = read_spk_txt(‘output/spk.dat’)</strong></dt>
-<dd></dd>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>A dataframe containing two columns: spike times and cell IDs.</dt><dd></dd>
+<dt>Usage:</dt><dd></dd>
+<dt>x = read_spk_txt(‘output/spk.dat’)</dt><dd></dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.utils.tools.process_spikes.spikes_to_mean_f_rate">
-<code class="descclassname">bmtk.simulator.utils.tools.process_spikes.</code><code class="descname">spikes_to_mean_f_rate</code><span class="sig-paren">(</span><em>cells_f</em>, <em>spk_f</em>, <em>t_window</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/tools/process_spikes.html#spikes_to_mean_f_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.tools.process_spikes.spikes_to_mean_f_rate" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>cells_f: string</strong></dt>
-<dd><p class="first last">Full path to a file containing information about all cells (in particular, all cell IDs,
+<code class="sig-prename descclassname">bmtk.simulator.utils.tools.process_spikes.</code><code class="sig-name descname">spikes_to_mean_f_rate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cells_f</span></em>, <em class="sig-param"><span class="n">spk_f</span></em>, <em class="sig-param"><span class="n">t_window</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/tools/process_spikes.html#spikes_to_mean_f_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.tools.process_spikes.spikes_to_mean_f_rate" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cells_f: string</strong></dt><dd><p>Full path to a file containing information about all cells (in particular, all cell IDs,
 and not just those that fired spikes in a simulation).</p>
 </dd>
-<dt><strong>spk_f: string</strong></dt>
-<dd><p class="first last">Full path to a file containing cell IDs and spike times.</p>
+<dt><strong>spk_f: string</strong></dt><dd><p>Full path to a file containing cell IDs and spike times.</p>
 </dd>
-<dt><strong>t_window: a tuple of two floats</strong></dt>
-<dd><p class="first last">Start and stop time for the window within which the firing rate is computed.</p>
+<dt><strong>t_window: a tuple of two floats</strong></dt><dd><p>Start and stop time for the window within which the firing rate is computed.</p>
 </dd>
-<dt><strong>**kwargs</strong></dt>
-<dd></dd>
-<dt><strong>spk_f_type: string with accepted values ‘txt’ or ‘h5’</strong></dt>
-<dd><p class="first last">Type of the file from which spike times should be extracted.</p>
+<dt><strong>**kwargs</strong></dt><dd></dd>
+<dt><strong>spk_f_type: string with accepted values ‘txt’ or ‘h5’</strong></dt><dd><p>Type of the file from which spike times should be extracted.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>A dataframe containing a column of cell IDs and a column of corresponding</strong></dt>
-<dd></dd>
-<dt><strong>average firing rates.</strong></dt>
-<dd></dd>
-<dt><strong>Usage:</strong></dt>
-<dd></dd>
-<dt><strong>x = spikes_to_mean_f_rate(‘../network_model/cells.csv’, ‘output/spk.dat’, (500.0, 3000.0))</strong></dt>
-<dd></dd>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>A dataframe containing a column of cell IDs and a column of corresponding</dt><dd></dd>
+<dt>average firing rates.</dt><dd></dd>
+<dt>Usage:</dt><dd></dd>
+<dt>x = spikes_to_mean_f_rate(‘../network_model/cells.csv’, ‘output/spk.dat’, (500.0, 3000.0))</dt><dd></dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
 <div class="section" id="module-bmtk.simulator.utils.tools.spatial">
 <span id="bmtk-simulator-utils-tools-spatial-module"></span><h2>bmtk.simulator.utils.tools.spatial module<a class="headerlink" href="#module-bmtk.simulator.utils.tools.spatial" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.utils.tools.spatial.example">
-<code class="descclassname">bmtk.simulator.utils.tools.spatial.</code><code class="descname">example</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/tools/spatial.html#example"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.tools.spatial.example" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.utils.tools.spatial.</code><code class="sig-name descname">example</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/tools/spatial.html#example"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.tools.spatial.example" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -740,6 +714,7 @@ and not just those that fired spikes in a simulation).</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -756,13 +731,23 @@ and not just those that fired spikes in a simulation).</p>
 <li class="toctree-l2"><a class="reference internal" href="../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
@@ -771,17 +756,15 @@ and not just those that fired spikes in a simulation).</p>
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

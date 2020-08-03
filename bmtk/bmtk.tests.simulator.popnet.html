@@ -1,21 +1,24 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.tests.simulator.popnet package &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="bmtk.tests.simulator.utils package" href="bmtk.tests.simulator.utils.html" />
+    <link rel="next" title="bmtk.utils package" href="bmtk.utils.html" />
     <link rel="prev" title="bmtk.tests.simulator.pointnet package" href="bmtk.tests.simulator.pointnet.html" /> 
   </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
@@ -627,95 +630,94 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div>
 <div class="section" id="module-bmtk.tests.simulator.popnet.popnet_virtual_files">
 <span id="bmtk-tests-simulator-popnet-popnet-virtual-files-module"></span><h2>bmtk.tests.simulator.popnet.popnet_virtual_files module<a class="headerlink" href="#module-bmtk.tests.simulator.popnet.popnet_virtual_files" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="bmtk.tests.simulator.popnet.popnet_virtual_files.EdgeRow">
-<em class="property">class </em><code class="descclassname">bmtk.tests.simulator.popnet.popnet_virtual_files.</code><code class="descname">EdgeRow</code><span class="sig-paren">(</span><em>trg_gid</em>, <em>src_gid</em>, <em>edge_props={}</em>, <em>edge_type_props={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/popnet/popnet_virtual_files.html#EdgeRow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.EdgeRow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.tabular_network.EdgeRow" title="bmtk.utils.io.tabular_network.EdgeRow"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.tabular_network.EdgeRow</span></code></a></p>
-<dl class="attribute">
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.tests.simulator.popnet.popnet_virtual_files.</code><code class="sig-name descname">EdgeRow</code><a class="reference internal" href="../_modules/bmtk/tests/simulator/popnet/popnet_virtual_files.html#EdgeRow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.EdgeRow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
 <dt id="bmtk.tests.simulator.popnet.popnet_virtual_files.EdgeRow.with_dynamics_params">
-<code class="descname">with_dynamics_params</code><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.EdgeRow.with_dynamics_params" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">with_dynamics_params</code><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.EdgeRow.with_dynamics_params" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="bmtk.tests.simulator.popnet.popnet_virtual_files.EdgesFile">
-<em class="property">class </em><code class="descclassname">bmtk.tests.simulator.popnet.popnet_virtual_files.</code><code class="descname">EdgesFile</code><span class="sig-paren">(</span><em>target_nodes</em>, <em>source_nodes</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/popnet/popnet_virtual_files.html#EdgesFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.EdgesFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.tabular_network.EdgesFile" title="bmtk.utils.io.tabular_network.EdgesFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.tabular_network.EdgesFile</span></code></a></p>
-<dl class="method">
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.tests.simulator.popnet.popnet_virtual_files.</code><code class="sig-name descname">EdgesFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target_nodes</span></em>, <em class="sig-param"><span class="n">source_nodes</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/popnet/popnet_virtual_files.html#EdgesFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.EdgesFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
 <dt id="bmtk.tests.simulator.popnet.popnet_virtual_files.EdgesFile.edges_itr">
-<code class="descname">edges_itr</code><span class="sig-paren">(</span><em>target_gid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/popnet/popnet_virtual_files.html#EdgesFile.edges_itr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.EdgesFile.edges_itr" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">edges_itr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target_gid</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/popnet/popnet_virtual_files.html#EdgesFile.edges_itr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.EdgesFile.edges_itr" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.tests.simulator.popnet.popnet_virtual_files.EdgesFile.load">
-<code class="descname">load</code><span class="sig-paren">(</span><em>edges_file</em>, <em>edge_types_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/popnet/popnet_virtual_files.html#EdgesFile.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.EdgesFile.load" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edges_file</span></em>, <em class="sig-param"><span class="n">edge_types_file</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/popnet/popnet_virtual_files.html#EdgesFile.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.EdgesFile.load" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.tests.simulator.popnet.popnet_virtual_files.EdgesFile.source_network">
-<code class="descname">source_network</code><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.EdgesFile.source_network" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">source_network</code><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.EdgesFile.source_network" title="Permalink to this definition">¶</a></dt>
 <dd><p>Name of network containing the source gids</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.tests.simulator.popnet.popnet_virtual_files.EdgesFile.target_network">
-<code class="descname">target_network</code><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.EdgesFile.target_network" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">target_network</code><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.EdgesFile.target_network" title="Permalink to this definition">¶</a></dt>
 <dd><p>Name of network containing the target gids</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="bmtk.tests.simulator.popnet.popnet_virtual_files.NodeRow">
-<em class="property">class </em><code class="descclassname">bmtk.tests.simulator.popnet.popnet_virtual_files.</code><code class="descname">NodeRow</code><span class="sig-paren">(</span><em>gid</em>, <em>node_props</em>, <em>types_props</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/popnet/popnet_virtual_files.html#NodeRow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.NodeRow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.tabular_network.NodeRow" title="bmtk.utils.io.tabular_network.NodeRow"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.tabular_network.NodeRow</span></code></a></p>
-<dl class="attribute">
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.tests.simulator.popnet.popnet_virtual_files.</code><code class="sig-name descname">NodeRow</code><a class="reference internal" href="../_modules/bmtk/tests/simulator/popnet/popnet_virtual_files.html#NodeRow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.NodeRow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
 <dt id="bmtk.tests.simulator.popnet.popnet_virtual_files.NodeRow.with_dynamics_params">
-<code class="descname">with_dynamics_params</code><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.NodeRow.with_dynamics_params" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set to true if dynamics_params subgroup attached to HDF5 properities</p>
-</dd></dl>
+<em class="property">property </em><code class="sig-name descname">with_dynamics_params</code><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.NodeRow.with_dynamics_params" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile">
-<em class="property">class </em><code class="descclassname">bmtk.tests.simulator.popnet.popnet_virtual_files.</code><code class="descname">NodesFile</code><span class="sig-paren">(</span><em>N</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/popnet/popnet_virtual_files.html#NodesFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.utils.io.html#bmtk.utils.io.tabular_network.NodesFile" title="bmtk.utils.io.tabular_network.NodesFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.tabular_network.NodesFile</span></code></a></p>
-<dl class="method">
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.tests.simulator.popnet.popnet_virtual_files.</code><code class="sig-name descname">NodesFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">N</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/popnet/popnet_virtual_files.html#NodesFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
 <dt id="bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile.get_node">
-<code class="descname">get_node</code><span class="sig-paren">(</span><em>gid</em>, <em>cache=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/popnet/popnet_virtual_files.html#NodesFile.get_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile.get_node" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_node</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gid</span></em>, <em class="sig-param"><span class="n">cache</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/popnet/popnet_virtual_files.html#NodesFile.get_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile.get_node" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile.gids">
-<code class="descname">gids</code><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile.gids" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">gids</code><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile.gids" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile.load">
-<code class="descname">load</code><span class="sig-paren">(</span><em>nodes_file</em>, <em>node_types_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/popnet/popnet_virtual_files.html#NodesFile.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile.load" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes_file</span></em>, <em class="sig-param"><span class="n">node_types_file</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/popnet/popnet_virtual_files.html#NodesFile.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile.load" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile.name">
-<code class="descname">name</code><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile.name" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">name</code><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile.name" title="Permalink to this definition">¶</a></dt>
 <dd><p>name of network containing these nodes</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile.next">
-<code class="descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/popnet/popnet_virtual_files.html#NodesFile.next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile.next" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">next</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/popnet/popnet_virtual_files.html#NodesFile.next"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile.next" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile.node_types_table">
-<code class="descname">node_types_table</code><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile.node_types_table" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">node_types_table</code><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile.node_types_table" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile.version">
-<code class="descname">version</code><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile.version" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">version</code><a class="headerlink" href="#bmtk.tests.simulator.popnet.popnet_virtual_files.NodesFile.version" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -723,9 +725,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div>
 <div class="section" id="module-bmtk.tests.simulator.popnet.test_popgraph">
 <span id="bmtk-tests-simulator-popnet-test-popgraph-module"></span><h2>bmtk.tests.simulator.popnet.test_popgraph module<a class="headerlink" href="#module-bmtk.tests.simulator.popnet.test_popgraph" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.tests.simulator.popnet.test_popgraph.test_add_nodes">
-<code class="descclassname">bmtk.tests.simulator.popnet.test_popgraph.</code><code class="descname">test_add_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/popnet/test_popgraph.html#test_add_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.popnet.test_popgraph.test_add_nodes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.tests.simulator.popnet.test_popgraph.</code><code class="sig-name descname">test_add_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/popnet/test_popgraph.html#test_add_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.popnet.test_popgraph.test_add_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -735,6 +737,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -751,13 +754,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
@@ -766,17 +779,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

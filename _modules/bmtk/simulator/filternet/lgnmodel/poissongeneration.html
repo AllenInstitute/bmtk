@@ -1,18 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.simulator.filternet.lgnmodel.poissongeneration &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
   </head><body>
@@ -626,6 +629,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">import</span> <span class="nn">scipy.optimize</span> <span class="k">as</span> <span class="nn">sopt</span>
 <span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">sps</span>
 
+
 <div class="viewcode-block" id="generate_renewal_process"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_renewal_process">[docs]</a><span class="k">def</span> <span class="nf">generate_renewal_process</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="n">renewal_distribution</span><span class="p">):</span>
     <span class="n">last_event_time</span> <span class="o">=</span> <span class="n">t0</span>
     <span class="n">curr_interevent_time</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">renewal_distribution</span><span class="p">())</span>
@@ -637,12 +641,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         
     <span class="k">return</span> <span class="n">event_time_list</span> </div>
 
+
 <div class="viewcode-block" id="generate_poisson_process"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_poisson_process">[docs]</a><span class="k">def</span> <span class="nf">generate_poisson_process</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="n">rate</span><span class="p">):</span>
-    
-    <span class="k">if</span> <span class="n">rate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Rate cannot be None&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">rate</span> <span class="o">&gt;</span> <span class="mi">10000</span><span class="p">:</span> <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Very high rate encountered: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">rate</span><span class="p">)</span>
-    
-        
+    <span class="k">if</span> <span class="n">rate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Rate cannot be None&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">rate</span> <span class="o">&gt;</span> <span class="mi">10000</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Very high rate encountered: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">rate</span><span class="p">)</span>
+
     <span class="k">try</span><span class="p">:</span> 
         <span class="k">assert</span> <span class="n">rate</span> <span class="o">&gt;=</span> <span class="mi">0</span>
     <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span> 
@@ -652,17 +657,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">assert</span> <span class="n">rate</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
     <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span> 
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Rate (</span><span class="si">%s</span><span class="s1">) must be finite&#39;</span> <span class="o">%</span> <span class="n">rate</span><span class="p">)</span> 
-    
-    
-    
-    
-            
-    
-    
+
     <span class="k">if</span> <span class="n">rate</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">generate_renewal_process</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="n">sps</span><span class="o">.</span><span class="n">expon</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">1.</span><span class="o">/</span><span class="n">rate</span><span class="p">)</span><span class="o">.</span><span class="n">rvs</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">generate_renewal_process</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="n">sps</span><span class="o">.</span><span class="n">expon</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.</span><span class="o">/</span><span class="n">rate</span><span class="p">)</span><span class="o">.</span><span class="n">rvs</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="generate_inhomogenous_poisson"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_inhomogenous_poisson">[docs]</a><span class="k">def</span> <span class="nf">generate_inhomogenous_poisson</span><span class="p">(</span><span class="n">t_range</span><span class="p">,</span> <span class="n">y_range</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">seed</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span> 
@@ -671,22 +671,16 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">spike_list</span> <span class="o">+=</span> <span class="n">generate_poisson_process</span><span class="p">(</span><span class="n">tl</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> 
     <span class="k">return</span> <span class="n">spike_list</span></div>
 
-    
-    
 
 <div class="viewcode-block" id="generate_poisson_rescaling"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_poisson_rescaling">[docs]</a><span class="k">def</span> <span class="nf">generate_poisson_rescaling</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
     <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">y</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">f</span> <span class="o">=</span>  <span class="n">sinterp</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">y</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">sinterp</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">generate_poisson_rescaling_function</span><span class="p">(</span><span class="k">lambda</span> <span class="n">y</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span></div>
-    
     
 
 <div class="viewcode-block" id="generate_poisson_rescaling_function"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_poisson_rescaling_function">[docs]</a><span class="k">def</span> <span class="nf">generate_poisson_rescaling_function</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">t_min</span><span class="p">,</span> <span class="n">t_max</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    
-    
-    
     <span class="k">def</span> <span class="nf">integrator</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">spi</span><span class="o">.</span><span class="n">odeint</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">])[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
     
@@ -696,6 +690,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="n">spike_train</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">while</span> <span class="n">t_min</span> <span class="o">&lt;</span> <span class="n">t_max</span><span class="p">:</span>
         <span class="n">e0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">exponential</span><span class="p">()</span>
+
         <span class="k">def</span> <span class="nf">root_function</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">e0</span> <span class="o">-</span> <span class="n">integrator</span><span class="p">(</span><span class="n">t_min</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
         
@@ -709,22 +704,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">break</span>
 
-
-
-        
         <span class="n">t_min</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">spike_train</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t_min</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">spike_train</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="test_generate_poisson_function"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.poissongeneration.test_generate_poisson_function">[docs]</a><span class="k">def</span> <span class="nf">test_generate_poisson_function</span><span class="p">():</span>
-
-    <span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">y</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span><span class="mi">10</span>
-
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">generate_poisson_function</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">seed</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span> <span class="o">==</span> <span class="mi">12</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -741,13 +727,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
@@ -756,17 +752,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

@@ -1,18 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.simulator.bionet.config &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
@@ -644,44 +647,18 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">json</span>
 
-<span class="kn">from</span> <span class="nn">neuron</span> <span class="k">import</span> <span class="n">h</span>
+<span class="kn">from</span> <span class="nn">neuron</span> <span class="kn">import</span> <span class="n">h</span>
 
-<span class="c1">#import bmtk.simulator.utils.config as msdk_config</span>
-<span class="c1">#from bmtk.utils.sonata.config import SonataConfig</span>
-<span class="c1">#from bmtk.simulator.core.config import ConfigDict</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.utils.config</span> <span class="k">import</span> <span class="n">ConfigDict</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.utils.sim_validator</span> <span class="k">import</span> <span class="n">SimConfigValidator</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.io_tools</span> <span class="k">import</span> <span class="n">io</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">nrn</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.core.simulation_config</span> <span class="kn">import</span> <span class="n">SimulationConfig</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.io_tools</span> <span class="kn">import</span> <span class="n">io</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">nrn</span>
+
 
 <span class="n">pc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">ParallelContext</span><span class="p">()</span>    <span class="c1"># object to access MPI methods</span>
 <span class="n">MPI_Rank</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pc</span><span class="o">.</span><span class="n">id</span><span class="p">())</span>
 
 
-<span class="c1"># load the configuration schema</span>
-<span class="n">schema_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;schemas&#39;</span><span class="p">)</span>
-<span class="n">config_schema_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">schema_folder</span><span class="p">,</span> <span class="s1">&#39;config_schema.json&#39;</span><span class="p">)</span>
-
-<span class="c1"># json schemas (but not real jsonschema) to describe the various input file formats</span>
-<span class="n">file_formats</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">(</span><span class="s2">&quot;csv:nodes_internal&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">schema_folder</span><span class="p">,</span> <span class="s1">&#39;csv_nodes_internal.json&#39;</span><span class="p">)),</span>
-    <span class="p">(</span><span class="s2">&quot;csv:node_types_internal&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">schema_folder</span><span class="p">,</span> <span class="s1">&#39;csv_node_types_internal.json&#39;</span><span class="p">)),</span>
-    <span class="p">(</span><span class="s2">&quot;csv:edge_types&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">schema_folder</span><span class="p">,</span> <span class="s1">&#39;csv_edge_types.json&#39;</span><span class="p">)),</span>
-    <span class="p">(</span><span class="s2">&quot;csv:nodes_external&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">schema_folder</span><span class="p">,</span> <span class="s1">&#39;csv_nodes_external.json&#39;</span><span class="p">)),</span>
-    <span class="p">(</span><span class="s2">&quot;csv:node_types_external&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">schema_folder</span><span class="p">,</span> <span class="s1">&#39;csv_node_types_external.json&#39;</span><span class="p">))</span>
-<span class="p">]</span>
-
-<span class="c1"># Create a config and input file validator for Bionet</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_schema_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">config_schema</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-<span class="n">bionet_validator</span> <span class="o">=</span> <span class="n">SimConfigValidator</span><span class="p">(</span><span class="n">config_schema</span><span class="p">,</span> <span class="n">file_formats</span><span class="o">=</span><span class="n">file_formats</span><span class="p">)</span>
-
-
-<div class="viewcode-block" id="Config"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.config.Config">[docs]</a><span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="n">ConfigDict</span><span class="p">):</span>
-<div class="viewcode-block" id="Config.get_validator"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.config.Config.get_validator">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_validator</span><span class="p">():</span>
-        <span class="k">return</span> <span class="n">bionet_validator</span></div>
-
+<div class="viewcode-block" id="Config"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.config.Config">[docs]</a><span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="n">SimulationConfig</span><span class="p">):</span>
 <div class="viewcode-block" id="Config.create_output_dir"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.config.Config.create_output_dir">[docs]</a>    <span class="k">def</span> <span class="nf">create_output_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">io</span><span class="o">.</span><span class="n">setup_output_dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_file</span><span class="p">)</span></div>
 
@@ -699,6 +676,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">load_nrn_modules</span><span class="p">()</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -715,13 +693,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
@@ -730,17 +718,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

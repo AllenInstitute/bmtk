@@ -1,18 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configuration file &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
   </head><body>
@@ -625,7 +628,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <h2>Manifest<a class="headerlink" href="#manifest" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><blockquote>
-<div>Includes custom path variables that may be used to build full paths to files. The special variable “${configdir}” in the “$BASE_DIR” stands for the directory where configuration file is located. Users may specify any valid directory for “$BASE_DIR” as well.</div></blockquote>
+<div><p>Includes custom path variables that may be used to build full paths to files. The special variable “${configdir}” in the “$BASE_DIR” stands for the directory where configuration file is located. Users may specify any valid directory for “$BASE_DIR” as well.</p>
+</div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;manifest&quot;</span><span class="p">:</span> <span class="p">{</span>
       <span class="s2">&quot;$BASE_DIR&quot;</span><span class="p">:</span>    <span class="s2">&quot;$</span><span class="si">{configdir}</span><span class="s2">&quot;</span><span class="p">,</span>
       <span class="s2">&quot;$OUTPUT_DIR&quot;</span><span class="p">:</span>  <span class="s2">&quot;$BASE_DIR/output&quot;</span><span class="p">,</span>
@@ -641,7 +645,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <h2>Run<a class="headerlink" href="#run" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><blockquote>
-<div>Includes run time parameters</div></blockquote>
+<div><p>Includes run time parameters</p>
+</div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;run&quot;</span><span class="p">:</span> <span class="p">{</span>
       <span class="s2">&quot;tstop&quot;</span><span class="p">:</span><span class="mf">3000.0</span><span class="p">,</span>                 <span class="c1"># run time (ms)</span>
       <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>                      <span class="c1"># time step (ms)</span>
@@ -660,7 +665,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <h2>Conditions<a class="headerlink" href="#conditions" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><blockquote>
-<div>Includes information about the initial conditions:</div></blockquote>
+<div><p>Includes information about the initial conditions:</p>
+</div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="p">{</span>
       <span class="s2">&quot;celsius&quot;</span><span class="p">:</span> <span class="mf">34.0</span><span class="p">,</span>        <span class="c1"># temperature (C)</span>
       <span class="s2">&quot;v_init&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">80</span>           <span class="c1"># initial membrane voltage (mV)</span>
@@ -673,7 +679,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <h2>Node_id selections<a class="headerlink" href="#node-id-selections" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><blockquote>
-<div>Defines selections of cells. For example, this way can specify the cells (node_ids) for which variables will be saved</div></blockquote>
+<div><p>Defines selections of cells. For example, this way can specify the cells (node_ids) for which variables will be saved</p>
+</div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;node_id_selections&quot;</span><span class="p">:</span> <span class="p">{</span>
       <span class="s2">&quot;save_cell_vars&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">100</span><span class="p">]</span>
 <span class="p">},</span>
@@ -685,7 +692,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><blockquote>
-<div>Defines spike_trains for the the external inputs</div></blockquote>
+<div><p>Defines spike_trains for the the external inputs</p>
+</div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="p">[</span>
       <span class="p">{</span>
         <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;external_spikes&quot;</span><span class="p">,</span>
@@ -704,7 +712,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><blockquote>
-<div>Defines file names for the output</div></blockquote>
+<div><p>Defines file names for the output</p>
+</div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="p">{</span>
       <span class="s2">&quot;log_file&quot;</span><span class="p">:</span>             <span class="s2">&quot;$OUTPUT_DIR/log.txt&quot;</span><span class="p">,</span>          <span class="c1"># log file</span>
       <span class="s2">&quot;spikes_ascii_file&quot;</span><span class="p">:</span>    <span class="s2">&quot;$OUTPUT_DIR/spikes.txt&quot;</span><span class="p">,</span>       <span class="c1"># file for spikes in ascii format</span>
@@ -747,7 +756,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="section" id="networks">
 <h2>Networks<a class="headerlink" href="#networks" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div>Includes files defining nodes and edges:</div></blockquote>
+<div><p>Includes files defining nodes and edges:</p>
+</div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;networks&quot;</span><span class="p">:</span> <span class="p">{</span>
       <span class="s2">&quot;nodes&quot;</span><span class="p">:</span> <span class="p">[</span>
         <span class="p">{</span>
@@ -774,6 +784,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -790,13 +801,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.utils.html">bmtk.utils package</a></li>
@@ -805,17 +826,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

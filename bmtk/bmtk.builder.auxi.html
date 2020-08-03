@@ -1,18 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.builder.auxi package &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="bmtk.builder.bionet package" href="bmtk.builder.bionet.html" />
@@ -627,37 +630,76 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div>
 <div class="section" id="module-bmtk.builder.auxi.edge_connectors">
 <span id="bmtk-builder-auxi-edge-connectors-module"></span><h2>bmtk.builder.auxi.edge_connectors module<a class="headerlink" href="#module-bmtk.builder.auxi.edge_connectors" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.builder.auxi.edge_connectors.connect_random">
-<code class="descclassname">bmtk.builder.auxi.edge_connectors.</code><code class="descname">connect_random</code><span class="sig-paren">(</span><em>source</em>, <em>target</em>, <em>nsyn_min=0</em>, <em>nsyn_max=10</em>, <em>distribution=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/auxi/edge_connectors.html#connect_random"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.auxi.edge_connectors.connect_random" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.builder.auxi.edge_connectors.</code><code class="sig-name descname">connect_random</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">nsyn_min</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">nsyn_max</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">distribution</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/auxi/edge_connectors.html#connect_random"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.auxi.edge_connectors.connect_random" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.builder.auxi.edge_connectors.distance_connector">
-<code class="descclassname">bmtk.builder.auxi.edge_connectors.</code><code class="descname">distance_connector</code><span class="sig-paren">(</span><em>source</em>, <em>target</em>, <em>d_weight_min</em>, <em>d_weight_max</em>, <em>d_max</em>, <em>nsyn_min</em>, <em>nsyn_max</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/auxi/edge_connectors.html#distance_connector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.auxi.edge_connectors.distance_connector" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.builder.auxi.edge_connectors.</code><code class="sig-name descname">distance_connector</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">d_weight_min</span></em>, <em class="sig-param"><span class="n">d_weight_max</span></em>, <em class="sig-param"><span class="n">d_max</span></em>, <em class="sig-param"><span class="n">nsyn_min</span></em>, <em class="sig-param"><span class="n">nsyn_max</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/auxi/edge_connectors.html#distance_connector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.auxi.edge_connectors.distance_connector" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
 <div class="section" id="module-bmtk.builder.auxi.node_params">
 <span id="bmtk-builder-auxi-node-params-module"></span><h2>bmtk.builder.auxi.node_params module<a class="headerlink" href="#module-bmtk.builder.auxi.node_params" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.builder.auxi.node_params.positions_columinar">
-<code class="descclassname">bmtk.builder.auxi.node_params.</code><code class="descname">positions_columinar</code><span class="sig-paren">(</span><em>N=1, center=[0.0, 50.0, 0.0], height=100.0, min_radius=0.0, max_radius=1.0, distribution='uniform'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/auxi/node_params.html#positions_columinar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.auxi.node_params.positions_columinar" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-prename descclassname">bmtk.builder.auxi.node_params.</code><code class="sig-name descname">positions_columinar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">N</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">center</span><span class="o">=</span><span class="default_value">[0.0, 50.0, 0.0]</span></em>, <em class="sig-param"><span class="n">height</span><span class="o">=</span><span class="default_value">100.0</span></em>, <em class="sig-param"><span class="n">min_radius</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">max_radius</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">distribution</span><span class="o">=</span><span class="default_value">'uniform'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/auxi/node_params.html#positions_columinar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.auxi.node_params.positions_columinar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a set of random x,y,z coordinates within a given sphere. Height is given as the y (index 1) coordates</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>N</strong> – Number of points to return</p></li>
+<li><p><strong>center</strong> – center of sphere</p></li>
+<li><p><strong>height</strong> – maximum length of sphere (y coord)</p></li>
+<li><p><strong>min_radius</strong> – minimum horizontal radius on x-z plane</p></li>
+<li><p><strong>max_radius</strong> – maximum horizontal radius on x-z plane</p></li>
+<li><p><strong>distribution</strong> – Not yet implementd</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A (N, 3) matrix</p>
+</dd>
+</dl>
+</dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.builder.auxi.node_params.positions_cuboid">
-<code class="descclassname">bmtk.builder.auxi.node_params.</code><code class="descname">positions_cuboid</code><span class="sig-paren">(</span><em>N=1, center=[0.0, 0.0, 0.0], height=100.0, xside_length=100.0, yside_length=100.0, min_dist=20.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/auxi/node_params.html#positions_cuboid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.auxi.node_params.positions_cuboid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-prename descclassname">bmtk.builder.auxi.node_params.</code><code class="sig-name descname">positions_cuboid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">N</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">center</span><span class="o">=</span><span class="default_value">[0.0, 0.0, 0.0]</span></em>, <em class="sig-param"><span class="n">height</span><span class="o">=</span><span class="default_value">100.0</span></em>, <em class="sig-param"><span class="n">xside_length</span><span class="o">=</span><span class="default_value">100.0</span></em>, <em class="sig-param"><span class="n">yside_length</span><span class="o">=</span><span class="default_value">100.0</span></em>, <em class="sig-param"><span class="n">min_dist</span><span class="o">=</span><span class="default_value">20.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/auxi/node_params.html#positions_cuboid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.auxi.node_params.positions_cuboid" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function distributes the cells in a 3D cuboid (x,y,z sides may have different lengths). The method used
+assures cells cannot be placed too close to one another (must be &gt; min_dist apart)
+WARNING: If cell density is high and there is more than 1 population of cells, there is a high chance cells will be
+placed on top of one another. You can use positions_list() to avoid this…</p>
+<p>Written by Ben Latimer at University of Missouri (<a class="reference external" href="mailto:latimerb&#37;&#52;&#48;missouri&#46;edu">latimerb<span>&#64;</span>missouri<span>&#46;</span>edu</a>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A (N, 3) matrix</p>
+</dd>
+</dl>
+</dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.builder.auxi.node_params.positions_list">
-<code class="descclassname">bmtk.builder.auxi.node_params.</code><code class="descname">positions_list</code><span class="sig-paren">(</span><em>positions=array([[0, 0, 0],        [0, 0, 1]])</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/auxi/node_params.html#positions_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.auxi.node_params.positions_list" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-prename descclassname">bmtk.builder.auxi.node_params.</code><code class="sig-name descname">positions_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">positions</span><span class="o">=</span><span class="default_value">array([[0, 0, 0], [0, 0, 1]])</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/auxi/node_params.html#positions_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.auxi.node_params.positions_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is designed to be used with an externally supplied array of x,y,z coordinates. It is useful to
+avoid cell overlap in high density situations or to make some unique geometry. After you create each population,
+delete those positions from the “master” list of coordinates. This will assure that no cells are placed on top of
+one another.</p>
+<p>Written by Ben Latimer at University of Missouri (<a class="reference external" href="mailto:latimerb&#37;&#52;&#48;missouri&#46;edu">latimerb<span>&#64;</span>missouri<span>&#46;</span>edu</a>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>positions</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.builder.auxi.node_params.xiter_random">
-<code class="descclassname">bmtk.builder.auxi.node_params.</code><code class="descname">xiter_random</code><span class="sig-paren">(</span><em>N=1</em>, <em>min_x=0.0</em>, <em>max_x=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/auxi/node_params.html#xiter_random"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.auxi.node_params.xiter_random" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.builder.auxi.node_params.</code><code class="sig-name descname">xiter_random</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">N</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">min_x</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">max_x</span><span class="o">=</span><span class="default_value">1.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/auxi/node_params.html#xiter_random"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.auxi.node_params.xiter_random" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -667,6 +709,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -683,13 +726,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
@@ -698,17 +751,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

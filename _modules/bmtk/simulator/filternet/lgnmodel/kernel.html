@@ -1,18 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.simulator.filternet.lgnmodel.kernel &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
   </head><body>
@@ -619,18 +622,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <h1>Source code for bmtk.simulator.filternet.lgnmodel.kernel</h1><div class="highlight"><pre>
-<span></span><span class="c1">#from matplotlib import _cntr as cntr</span>
-<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
-<span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d</span> <span class="k">import</span> <span class="n">Axes3D</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="k">import</span> <span class="n">cm</span>
-<span class="kn">import</span> <span class="nn">scipy.interpolate</span> <span class="k">as</span> <span class="nn">spinterp</span>
-<span class="kn">import</span> <span class="nn">h5py</span>
+<span></span><span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">cm</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">bisect</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
-<div class="viewcode-block" id="find_l_r_in_t_range"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.find_l_r_in_t_range">[docs]</a><span class="k">def</span> <span class="nf">find_l_r_in_t_range</span><span class="p">(</span><span class="n">t_range</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
 
+<div class="viewcode-block" id="find_l_r_in_t_range"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.find_l_r_in_t_range">[docs]</a><span class="k">def</span> <span class="nf">find_l_r_in_t_range</span><span class="p">(</span><span class="n">t_range</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">tl</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t_range</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
         <span class="n">tr</span> <span class="o">=</span> <span class="n">tl</span><span class="o">+</span><span class="mi">1</span>        
         <span class="n">test_val</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_range</span><span class="p">[</span><span class="n">tl</span><span class="p">]</span><span class="o">-</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">t_range</span><span class="p">[</span><span class="n">tr</span><span class="p">]</span><span class="o">-</span><span class="n">t</span><span class="p">)</span>
@@ -645,48 +643,37 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">t_range</span><span class="p">[</span><span class="n">tl</span><span class="p">],</span> <span class="n">t_range</span><span class="p">[</span><span class="n">tr</span><span class="p">],</span> <span class="n">t</span>
             <span class="k">return</span> <span class="n">tl</span><span class="p">,</span> <span class="n">tr</span>    </div>
 
+
 <div class="viewcode-block" id="get_contour"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.get_contour">[docs]</a><span class="k">def</span> <span class="nf">get_contour</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
     <span class="n">contour_obj</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">)</span>
-    <span class="c1">#contour_obj = cntr.Cntr(X, Y, Z)</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">contour_obj</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
     <span class="n">nseg</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
     <span class="k">if</span> <span class="n">nseg</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">seg</span> <span class="o">=</span> <span class="n">res</span><span class="p">[:</span><span class="n">nseg</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">seg</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">seg</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">seg</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">seg</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">[],[]</span></div>
-    
+        <span class="k">return</span> <span class="p">[],</span> <span class="p">[]</span></div>
+
+
 <div class="viewcode-block" id="plot_single_contour"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.plot_single_contour">[docs]</a><span class="k">def</span> <span class="nf">plot_single_contour</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">x_contour</span><span class="p">,</span> <span class="n">y_contour</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
     <span class="n">t_contour</span> <span class="o">=</span> <span class="n">t</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x_contour</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_contour</span><span class="p">,</span> <span class="n">t_contour</span><span class="p">,</span> <span class="n">y_contour</span><span class="p">,</span> <span class="n">zdir</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span></div>
     
 
 <div class="viewcode-block" id="Kernel1D"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel1D">[docs]</a><span class="k">class</span> <span class="nc">Kernel1D</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    
-<div class="viewcode-block" id="Kernel1D.rescale"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel1D.rescale">[docs]</a>    <span class="k">def</span> <span class="nf">rescale</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1">#self.kernel /= np.abs(self.kernel).sum()</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="o">!=</span><span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span></div>
-    
-<div class="viewcode-block" id="Kernel1D.normalize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel1D.normalize">[docs]</a>    <span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="c1">#        self.kernel /= np.abs(self.kernel).sum()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span></div>
-<span class="c1">#        self.kernel /= self.kernel.sum()</span>
-         
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t_range</span><span class="p">,</span> <span class="n">kernel_array</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t_range</span><span class="p">,</span> <span class="n">kernel_array</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">t_range</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">kernel_array</span><span class="p">)</span>
 
         <span class="n">kernel_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kernel_array</span><span class="p">)</span>
         <span class="n">inds_to_keep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">kernel_array</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">reverse</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">reverse</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">t_range</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t_range</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            
+
             <span class="n">t_inds_tmp</span> <span class="o">=</span> <span class="n">inds_to_keep</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">max_t_ind</span> <span class="o">=</span> <span class="n">t_inds_tmp</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
             <span class="n">reversed_t_inds</span> <span class="o">=</span> <span class="n">max_t_ind</span> <span class="o">-</span> <span class="n">t_inds_tmp</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">t_inds</span> <span class="o">=</span> <span class="n">reversed_t_inds</span> <span class="o">-</span> <span class="n">max_t_ind</span> <span class="o">-</span> <span class="mi">1</span> <span class="c1"># Had an off by one error here should be &quot;- 1&quot; nhc 14 Apr &#39;17 change made in cursor evalutiate too</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">t_inds</span> <span class="o">=</span> <span class="n">reversed_t_inds</span> <span class="o">-</span> <span class="n">max_t_ind</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># Had an off by one error here should be &quot;- 1&quot; nhc 14 Apr &#39;17 change made in cursor evalutiate too</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">t_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t_range</span><span class="p">)</span>
@@ -694,33 +681,43 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">=</span> <span class="n">kernel_array</span><span class="p">[</span><span class="n">inds_to_keep</span><span class="p">]</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_inds</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Kernel1D.rescale"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel1D.rescale">[docs]</a>    <span class="k">def</span> <span class="nf">rescale</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="o">!=</span><span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span></div>
     
-    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Kernel1D.normalize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel1D.normalize">[docs]</a>    <span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span></div>
+    
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">)</span>
         
-<div class="viewcode-block" id="Kernel1D.imshow"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel1D.imshow">[docs]</a>    <span class="k">def</span> <span class="nf">imshow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="Kernel1D.imshow"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel1D.imshow">[docs]</a>    <span class="k">def</span> <span class="nf">imshow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         
         <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">_</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         
         <span class="n">t_vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">t_inds</span><span class="p">]</span>
+        <span class="n">kernel_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span>
+        <span class="k">if</span> <span class="n">reverse</span><span class="p">:</span>
+            <span class="n">kernel_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_vals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t_vals</span><span class="p">,</span> <span class="n">kernel_data</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time (Seconds)&#39;</span><span class="p">)</span>
         
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">ylim</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ylim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ylim</span><span class="p">)</span>
             
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">xlim</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">xlim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xlim</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="p">(</span><span class="n">t_vals</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">t_vals</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">))</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_vals</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">t_vals</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
         
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">save_file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">save_file_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_file_name</span><span class="p">,</span> <span class="n">transparent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        
-        <span class="k">if</span> <span class="n">show</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
         
         <span class="k">return</span> <span class="n">ax</span><span class="p">,</span> <span class="p">(</span><span class="n">t_vals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">)</span></div>
@@ -729,27 +726,34 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_range</span><span class="p">))</span>
         <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">t_inds</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span>
 
-
-        <span class="k">if</span> <span class="n">truncate_t</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">truncate_t</span><span class="p">:</span>
             <span class="n">ind_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="n">ind_min</span><span class="p">:]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">data</span>
 
-
-
         <span class="k">return</span> <span class="n">data</span></div></div>
 
+
 <div class="viewcode-block" id="Kernel2D"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D">[docs]</a><span class="k">class</span> <span class="nc">Kernel2D</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_range</span><span class="p">,</span> <span class="n">col_range</span><span class="p">,</span> <span class="n">row_inds</span><span class="p">,</span> <span class="n">col_inds</span><span class="p">,</span> <span class="n">kernel</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">col_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">col_range</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">row_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">row_range</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">row_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">row_inds</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">col_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">col_inds</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kernel</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">row_inds</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">col_inds</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">row_inds</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">)</span>
+
 <div class="viewcode-block" id="Kernel2D.rescale"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.rescale">[docs]</a>    <span class="k">def</span> <span class="nf">rescale</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1">#self.kernel /= np.abs(self.kernel).sum()</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="o">!=</span><span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span></div>
     
 <div class="viewcode-block" id="Kernel2D.normalize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.normalize">[docs]</a>    <span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="c1">#        self.kernel /= np.abs(self.kernel).sum()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> </div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span></div>
             
 <div class="viewcode-block" id="Kernel2D.from_dense"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.from_dense">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_dense</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">row_range</span><span class="p">,</span> <span class="n">col_range</span><span class="p">,</span> <span class="n">kernel_array</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.</span><span class="p">):</span>
@@ -773,29 +777,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                    <span class="n">instance</span><span class="o">.</span><span class="n">col_inds</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
                    <span class="n">instance</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span></div>
 
-        
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_range</span><span class="p">,</span> <span class="n">col_range</span><span class="p">,</span> <span class="n">row_inds</span><span class="p">,</span> <span class="n">col_inds</span><span class="p">,</span> <span class="n">kernel</span><span class="p">):</span>
-        
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">col_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">col_range</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">row_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">row_range</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">row_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">row_inds</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">col_inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">col_inds</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kernel</span><span class="p">)</span>
-        
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">row_inds</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">col_inds</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">row_inds</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">)</span>
-        
-    <span class="k">def</span> <span class="nf">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constant</span><span class="p">):</span>
-        
+    <span class="k">def</span> <span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constant</span><span class="p">):</span>
         <span class="n">new_copy</span> <span class="o">=</span> <span class="n">Kernel2D</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">new_copy</span><span class="o">.</span><span class="n">kernel</span> <span class="o">*=</span> <span class="n">constant</span>
         <span class="k">return</span> <span class="n">new_copy</span>
     
-    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        
-        
+    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span>
 
@@ -836,50 +823,47 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         
 <div class="viewcode-block" id="Kernel2D.imshow"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel2D.imshow">[docs]</a>    <span class="k">def</span> <span class="nf">imshow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">clim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         
-        <span class="kn">from</span> <span class="nn">mpl_toolkits.axes_grid1</span> <span class="k">import</span> <span class="n">make_axes_locatable</span>
+        <span class="kn">from</span> <span class="nn">mpl_toolkits.axes_grid1</span> <span class="kn">import</span> <span class="n">make_axes_locatable</span>
         
         <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">_</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         
-        <span class="k">if</span> <span class="n">colorbar</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">colorbar</span><span class="p">:</span>
             <span class="n">divider</span> <span class="o">=</span> <span class="n">make_axes_locatable</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
-            <span class="n">cax</span> <span class="o">=</span> <span class="n">divider</span><span class="o">.</span><span class="n">append_axes</span><span class="p">(</span><span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="s2">&quot;5%&quot;</span><span class="p">,</span> <span class="n">pad</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">)</span>
+            <span class="n">cax</span> <span class="o">=</span> <span class="n">divider</span><span class="o">.</span><span class="n">append_axes</span><span class="p">(</span><span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="s2">&quot;5%&quot;</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
         
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">full</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">clim</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">col_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_range</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">row_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">row_range</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>  <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">clim</span><span class="o">=</span><span class="n">clim</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">clim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">col_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_range</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">row_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">row_range</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
+                           <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">clim</span><span class="o">=</span><span class="n">clim</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">col_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_range</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">row_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">row_range</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>  <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">col_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_range</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">row_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">row_range</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
+                           <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">)</span>
         
-        <span class="k">if</span> <span class="n">colorbar</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span><span class="n">cax</span><span class="o">=</span><span class="n">cax</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">colorbar</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">cax</span><span class="o">=</span><span class="n">cax</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">save_file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">save_file_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_file_name</span><span class="p">,</span> <span class="n">transparent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">show</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span> 
+        <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
             
         <span class="k">return</span> <span class="n">ax</span><span class="p">,</span> <span class="n">data</span></div>
         
-    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">)</span></div>
 
+
 <div class="viewcode-block" id="Kernel3D"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D">[docs]</a><span class="k">class</span> <span class="nc">Kernel3D</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    
 <div class="viewcode-block" id="Kernel3D.rescale"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.rescale">[docs]</a>    <span class="k">def</span> <span class="nf">rescale</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1">#self.kernel /= np.abs(self.kernel).sum()</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="o">!=</span><span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span></div>
     
 <div class="viewcode-block" id="Kernel3D.normalize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.normalize">[docs]</a>    <span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1">#self.kernel /= np.abs(self.kernel).sum()</span>
-<span class="c1">#        print self.kernel.sum()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">/=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span></div>
-<span class="c1">#        print self.kernel.sum()</span>
-<span class="c1">#        sys.exit()</span>
-    
+
 <div class="viewcode-block" id="Kernel3D.copy"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.copy">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">row_range</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
@@ -890,10 +874,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                    <span class="n">instance</span><span class="o">.</span><span class="n">t_inds</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>  
                    <span class="n">instance</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span></div>
         
-    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">)</span>
     
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_range</span><span class="p">,</span> <span class="n">col_range</span><span class="p">,</span> <span class="n">t_range</span><span class="p">,</span> <span class="n">row_inds</span><span class="p">,</span> <span class="n">col_inds</span><span class="p">,</span> <span class="n">t_inds</span><span class="p">,</span> <span class="n">kernel</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_range</span><span class="p">,</span> <span class="n">col_range</span><span class="p">,</span> <span class="n">t_range</span><span class="p">,</span> <span class="n">row_inds</span><span class="p">,</span> <span class="n">col_inds</span><span class="p">,</span> <span class="n">t_inds</span><span class="p">,</span> <span class="n">kernel</span><span class="p">):</span>
         
         <span class="bp">self</span><span class="o">.</span><span class="n">col_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">col_range</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">row_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">row_range</span><span class="p">)</span>
@@ -915,9 +899,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">t_inds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_inds</span><span class="p">[</span><span class="n">inds_to_keep</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span><span class="p">[</span><span class="n">inds_to_keep</span><span class="p">]</span></div>
         
-    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
-        
-        
+    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span>
 
@@ -959,7 +941,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         
         <span class="k">return</span> <span class="n">Kernel3D</span><span class="p">(</span><span class="n">row_range</span><span class="p">,</span> <span class="n">col_range</span><span class="p">,</span> <span class="n">t_range</span><span class="p">,</span> <span class="n">row_inds</span><span class="p">,</span> <span class="n">col_inds</span><span class="p">,</span> <span class="n">t_inds</span><span class="p">,</span> <span class="n">kernel</span><span class="p">)</span>
     
-    <span class="k">def</span> <span class="nf">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constant</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constant</span><span class="p">):</span>
         
         <span class="n">new_copy</span> <span class="o">=</span> <span class="n">Kernel3D</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="n">new_copy</span><span class="o">.</span><span class="n">kernel</span> <span class="o">*=</span> <span class="n">constant</span>
@@ -1004,21 +986,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_range</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">row_range</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">col_range</span><span class="p">)))</span>
         <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">t_inds</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">row_inds</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_inds</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span>
 
-        <span class="k">if</span> <span class="n">truncate_t</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">truncate_t</span><span class="p">:</span>
             <span class="n">ind_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="n">ind_max</span><span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">data</span></div>
 
-
-        <span class="c1"># if truncate_t == True:</span>
-        <span class="c1">#     ind_min = np.where(np.abs(data) &gt; 0)[0].min()</span>
-        <span class="c1">#     return data[ind_min:]</span>
-        <span class="c1"># else:</span>
-        <span class="c1">#     return data</span>
-
 <div class="viewcode-block" id="Kernel3D.imshow"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.Kernel3D.imshow">[docs]</a>    <span class="k">def</span> <span class="nf">imshow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">t_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cm</span><span class="o">.</span><span class="n">bwr</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kvals</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        
         <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
             <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">gca</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
@@ -1058,44 +1032,40 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_range</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">col_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_range</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
         
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">save_file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">save_file_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_file_name</span><span class="p">,</span> <span class="n">transparent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         
-        <span class="k">if</span> <span class="n">show</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span> 
         
         <span class="k">return</span> <span class="n">ax</span><span class="p">,</span> <span class="n">contour_dict</span></div></div>
-        
+
+
 <div class="viewcode-block" id="merge_spatial_temporal"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.kernel.merge_spatial_temporal">[docs]</a><span class="k">def</span> <span class="nf">merge_spatial_temporal</span><span class="p">(</span><span class="n">spatial_kernel</span><span class="p">,</span> <span class="n">temporal_kernel</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    
         <span class="n">t_range</span> <span class="o">=</span> <span class="n">temporal_kernel</span><span class="o">.</span><span class="n">t_range</span>
 
-        <span class="n">spatiotemporal_kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span> <span class="nb">len</span><span class="p">(</span><span class="n">temporal_kernel</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">spatial_kernel</span><span class="p">)))</span>
+        <span class="n">spatiotemporal_kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">temporal_kernel</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">spatial_kernel</span><span class="p">)))</span>
         <span class="n">spatiotemporal_kernel</span> <span class="o">*=</span> <span class="n">spatial_kernel</span><span class="o">.</span><span class="n">kernel</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
-        <span class="n">spatiotemporal_kernel</span> <span class="o">*=</span> <span class="n">temporal_kernel</span><span class="o">.</span><span class="n">kernel</span><span class="p">[:,</span><span class="kc">None</span><span class="p">]</span>
+        <span class="n">spatiotemporal_kernel</span> <span class="o">*=</span> <span class="n">temporal_kernel</span><span class="o">.</span><span class="n">kernel</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
         <span class="n">spatiotemporal_kernel</span> <span class="o">=</span> <span class="n">spatiotemporal_kernel</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">spatiotemporal_kernel</span><span class="o">.</span><span class="n">shape</span><span class="p">)))</span>
          
-        <span class="n">spatial_coord_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">spatial_kernel</span><span class="p">),</span><span class="mi">2</span><span class="p">))</span>
-        <span class="n">spatial_coord_array</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">spatial_kernel</span><span class="o">.</span><span class="n">col_inds</span>
-        <span class="n">spatial_coord_array</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">spatial_kernel</span><span class="o">.</span><span class="n">row_inds</span>
+        <span class="n">spatial_coord_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">spatial_kernel</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">spatial_coord_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">spatial_kernel</span><span class="o">.</span><span class="n">col_inds</span>
+        <span class="n">spatial_coord_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">spatial_kernel</span><span class="o">.</span><span class="n">row_inds</span>
          
-        <span class="n">spatiiotemporal_coord_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">spatial_kernel</span><span class="p">)</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">temporal_kernel</span><span class="p">),</span><span class="mi">3</span><span class="p">))</span>
-        <span class="n">spatiiotemporal_coord_array</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">temporal_kernel</span><span class="p">),</span><span class="mi">1</span><span class="p">)),</span><span class="n">spatial_coord_array</span><span class="p">)</span>
-        <span class="n">spatiiotemporal_coord_array</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">temporal_kernel</span><span class="o">.</span><span class="n">t_inds</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">spatial_kernel</span><span class="p">)))</span>
+        <span class="n">spatiiotemporal_coord_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">spatial_kernel</span><span class="p">)</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">temporal_kernel</span><span class="p">),</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="n">spatiiotemporal_coord_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">temporal_kernel</span><span class="p">),</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">spatial_coord_array</span><span class="p">)</span>
+        <span class="n">spatiiotemporal_coord_array</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">temporal_kernel</span><span class="o">.</span><span class="n">t_inds</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">spatial_kernel</span><span class="p">)))</span>
         
-        <span class="n">col_inds</span><span class="p">,</span> <span class="n">row_inds</span><span class="p">,</span> <span class="n">t_inds</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">),</span><span class="n">spatiiotemporal_coord_array</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-        <span class="n">kernel</span> <span class="o">=</span> <span class="n">Kernel3D</span><span class="p">(</span><span class="n">spatial_kernel</span><span class="o">.</span><span class="n">row_range</span><span class="p">,</span> <span class="n">spatial_kernel</span><span class="o">.</span><span class="n">col_range</span><span class="p">,</span> <span class="n">t_range</span><span class="p">,</span> <span class="n">row_inds</span><span class="p">,</span> <span class="n">col_inds</span><span class="p">,</span> <span class="n">t_inds</span><span class="p">,</span> <span class="n">spatiotemporal_kernel</span><span class="p">)</span>
+        <span class="n">col_inds</span><span class="p">,</span> <span class="n">row_inds</span><span class="p">,</span> <span class="n">t_inds</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">),</span> <span class="n">spatiiotemporal_coord_array</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">kernel</span> <span class="o">=</span> <span class="n">Kernel3D</span><span class="p">(</span><span class="n">spatial_kernel</span><span class="o">.</span><span class="n">row_range</span><span class="p">,</span> <span class="n">spatial_kernel</span><span class="o">.</span><span class="n">col_range</span><span class="p">,</span> <span class="n">t_range</span><span class="p">,</span> <span class="n">row_inds</span><span class="p">,</span> <span class="n">col_inds</span><span class="p">,</span> <span class="n">t_inds</span><span class="p">,</span>
+                          <span class="n">spatiotemporal_kernel</span><span class="p">)</span>
         <span class="n">kernel</span><span class="o">.</span><span class="n">apply_threshold</span><span class="p">(</span><span class="n">threshold</span><span class="p">)</span>
         
         <span class="k">return</span> <span class="n">kernel</span></div>
-    
-
-
-<span class="c1"># Candidate for print</span>
-<span class="c1"># for ri, ci, ti, k in zip(kernel.row_inds, kernel.col_inds, kernel.t_inds, kernel.kernel):</span>
-<span class="c1">#     print ri, ci, ti, k</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1112,13 +1082,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
@@ -1127,17 +1107,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

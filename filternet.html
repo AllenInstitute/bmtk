@@ -1,21 +1,24 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FilterNet &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Contributors" href="contributors.html" />
+    <link rel="next" title="Analyzing the Results" href="analyzer.html" />
     <link rel="prev" title="PopNet" href="popnet.html" /> 
   </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
@@ -622,48 +625,127 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             
   <div class="section" id="filternet">
 <h1>FilterNet<a class="headerlink" href="#filternet" title="Permalink to this headline">¶</a></h1>
+<div class="figure align-default">
+<a class="reference internal image-reference" href="_images/bmtk_architecture_filternet_highlight.jpg"><img alt="_images/bmtk_architecture_filternet_highlight.jpg" src="_images/bmtk_architecture_filternet_highlight.jpg" style="width: 433.6px; height: 167.20000000000002px;" /></a>
+</div>
 <p>FilterNet will simulate the effects of visual stimuli onto a receptive field. It uses LGNModel simulator as a backend, which
-uses neural-filters to simulate firing rates and spike-trains over a given time-course and stimuli.</p>
-<div class="section" id="features">
-<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>Supports a number of stimuli inputs including:</li>
-</ul>
-<blockquote>
-<div><ul class="simple">
-<li>Static and moving grating</li>
-<li>Full field flashes</li>
-<li>Static images</li>
-<li>Short movies.</li>
-</ul>
-</div></blockquote>
+uses neural-filters to simulate firing rates and spike-trains over a given time-course and stimuli. It is based on a
+<a class="reference external" href="https://en.wikipedia.org/wiki/Linear-nonlinear-Poisson_cascade_model">linear-nonlinear-Poisson cascade model</a>
+with options for choosing different types of spatial, temporal, or spatio-temporal units that have already been
+optimized to closely mimic mammalian thalamic cells:</p>
+<div class="figure align-default">
+<a class="reference internal image-reference" href="_images/lnp_model.jpg"><img alt="_images/lnp_model.jpg" src="_images/lnp_model.jpg" style="width: 768.6px; height: 204.6px;" /></a>
 </div>
-<div class="section" id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>Filter supports both Python 2.7 or Python 3.6+, see our <a class="reference external" href="installation">Installation instructions</a>.</p>
-</div>
-<div class="section" id="documentation-and-tutorials">
-<h2>Documentation and Tutorials<a class="headerlink" href="#documentation-and-tutorials" title="Permalink to this headline">¶</a></h2>
-<p>For more information about FilterNet and LGNModel in particular, please contact the main developers Ram Iyer (rami at alleninstitute dot org)
-and Yazan Billeh (yazanb at alleninstitute dot org).</p>
-</div>
-<div class="section" id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<p>The AllenInstitute/bmtk repo contains a number of FilterNet examples, many with pre-built networks and can be immediately ran. These
-tutorials will have the folder prefix <em>filter_</em> and to run them in the command-line simply call:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python run_filternet.py config.json
+<p>FilterNet is very useful for generating spike-trains that will be used as the inputs for simulations running in BioNet,
+PointNet, or PopNet. The procedure is as follows:</p>
+<ol class="arabic simple">
+<li><p>Generate the receptive field network.</p></li>
+<li><p>Use FilterNet to play images and movies against the receptive field and generate responses of each unit.</p></li>
+<li><p>Connect the receptive field network created in step #1 to some higher-level cortical circuit.</p></li>
+<li><p>Use the spike-trains generated in Step #2 to see how the high-level cortical circuit would respond to different stimuli.</p></li>
+</ol>
+<div class="section" id="inputs">
+<h2>Inputs<a class="headerlink" href="#inputs" title="Permalink to this headline">¶</a></h2>
+<p>Currently FilterNet allows for a number of different types of custom and pre-alligned type of stimuli. To change the
+type of stimuli requires updating the inputs section in the simulation_config.json file like above.</p>
+<div class="section" id="movie">
+<h3>Movie<a class="headerlink" href="#movie" title="Permalink to this headline">¶</a></h3>
+<p>Allows playing a custom movie file in the form of a three-dimension matrix saved in a npy file.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="nt">&quot;movie_input&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;movie&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;movie&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;data_file&quot;</span><span class="p">:</span> <span class="s2">&quot;/path/to/my/movie.npy&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span> <span class="mf">30.0</span>
+   <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<div class="section" id="current-examples">
-<h3>Current examples<a class="headerlink" href="#current-examples" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/filter_graitings">filter_graitings</a> - An example of a 2 second static grating stimuli on the LGN receptive field.</li>
+<li><p>movie: Link to a 3-dimensional (x, y, time) matrix representing a movie</p></li>
+<li><p>frame_rate: frames per second</p></li>
+</ul>
+</div>
+<div class="section" id="grating">
+<h3>Grating<a class="headerlink" href="#grating" title="Permalink to this headline">¶</a></h3>
+<p>Plays a drifting grating across the screen</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="nt">&quot;gratings_input&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;movie&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;graiting&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;row_size&quot;</span><span class="p">:</span> <span class="mi">120</span><span class="p">,</span>
+      <span class="nt">&quot;col_size&quot;</span><span class="p">:</span> <span class="mi">240</span><span class="p">,</span>
+      <span class="nt">&quot;gray_screen_dur&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+      <span class="nt">&quot;cpd&quot;</span><span class="p">:</span> <span class="mf">0.04</span><span class="p">,</span>
+      <span class="nt">&quot;temporal_f&quot;</span><span class="p">:</span> <span class="mf">4.0</span><span class="p">,</span>
+      <span class="nt">&quot;contrast&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span>
+      <span class="nt">&quot;theta&quot;</span><span class="p">:</span> <span class="mf">45.0</span><span class="p">,</span>
+      <span class="nt">&quot;phase&quot;</span><span class="p">:</span> <span class="mf">0.0</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>row_size, col_size: width and heigth dimensions of screen in pixels.</p></li>
+<li><p>grapy_screen_dur: displays an optional gray screen for a number of seconds before the grating starts. (default: 0)</p></li>
+<li><p>cpd: spatial frequncy represented as cycles per degree. (default: 0.05)</p></li>
+<li><p>temporal_f: temporal frequency in Hz. (default: 4.0)</p></li>
+<li><p>theta: orientation angle, in degrees (default: 45.0)</p></li>
+<li><p>phase: temporal phase, in degrees (default: 0.0)</p></li>
+<li><p>contrast: the maximum constrast, must be between 0 and 1.0 (default: 1.0)</p></li>
+</ul>
+</div>
+<div class="section" id="full-field-flash">
+<h3>Full Field Flash<a class="headerlink" href="#full-field-flash" title="Permalink to this headline">¶</a></h3>
+<p>Creates a bright (or dark) flash on a gray screen for a limited number of seconds</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="nt">&quot;full_field_flash&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;movie&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;full_field_flash&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;row_size&quot;</span><span class="p">:</span> <span class="mi">120</span><span class="p">,</span>
+      <span class="nt">&quot;col_size&quot;</span><span class="p">:</span> <span class="mi">240</span><span class="p">,</span>
+      <span class="nt">&quot;t_on&quot;</span><span class="p">:</span> <span class="mf">1000.0</span><span class="p">,</span>
+      <span class="nt">&quot;t_off&quot;</span><span class="p">:</span> <span class="mf">2000.0</span><span class="p">,</span>
+      <span class="nt">&quot;max_intensity&quot;</span><span class="p">:</span> <span class="mf">20.0</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>row_size, col_size: width and heigth dimensions of screen in pixels.</p></li>
+<li><p>t_on: time (ms) from the beginning on when to start the flash</p></li>
+<li><p>t_off: length (ms) of flash</p></li>
+<li><p>max_intensity: intensity of screen during flash (&gt;0.0 is brighter, &lt;0.0 is darker) compared to gray screen.</p></li>
+</ul>
+</div>
+<div class="section" id="looming">
+<h3>Looming<a class="headerlink" href="#looming" title="Permalink to this headline">¶</a></h3>
+<p>Creates a spreading black field originating from the center.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="nt">&quot;looming_input&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;movie&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;looming&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;row_size&quot;</span><span class="p">:</span> <span class="mi">120</span><span class="p">,</span>
+      <span class="nt">&quot;col_size&quot;</span><span class="p">:</span> <span class="mi">240</span><span class="p">,</span>
+      <span class="nt">&quot;frame_rate&quot;</span><span class="p">:</span> <span class="mf">1000.0</span><span class="p">,</span>
+      <span class="nt">&quot;gray_screen_dur&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+      <span class="nt">&quot;t_looming&quot;</span><span class="p">:</span> <span class="mf">1.0</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>row_size, col_size: width and heigth dimensions of screen in pixels.</p></li>
+<li><p>frame_rate: frames per second</p></li>
+<li><p>gray_screen_dur: durating of initial grey screen (seconds)</p></li>
+<li><p>t_looming: time of looming movie (seconds).</p></li>
 </ul>
 </div>
 </div>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -680,13 +762,23 @@ tutorials will have the folder prefix <em>filter_</em> and to run them in the co
 <li class="toctree-l2 current"><a class="current reference internal" href="#">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.utils.html">bmtk.utils package</a></li>
@@ -695,17 +787,15 @@ tutorials will have the folder prefix <em>filter_</em> and to run them in the co
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

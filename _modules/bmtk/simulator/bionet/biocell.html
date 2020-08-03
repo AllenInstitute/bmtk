@@ -1,18 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.simulator.bionet.biocell &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
@@ -642,20 +645,21 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c1">#</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet</span> <span class="k">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">nrn</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.cell</span> <span class="k">import</span> <span class="n">Cell</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">nrn</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.cell</span> <span class="kn">import</span> <span class="n">Cell</span>
 <span class="kn">import</span> <span class="nn">six</span>
 
-<span class="kn">from</span> <span class="nn">neuron</span> <span class="k">import</span> <span class="n">h</span>
+<span class="kn">from</span> <span class="nn">neuron</span> <span class="kn">import</span> <span class="n">h</span>
 
 <span class="n">pc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">ParallelContext</span><span class="p">()</span>    <span class="c1"># object to access MPI methods</span>
 
 <div class="viewcode-block" id="ConnectionStruct"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biocell.ConnectionStruct">[docs]</a><span class="k">class</span> <span class="nc">ConnectionStruct</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">syn</span><span class="p">,</span> <span class="n">nc</span><span class="p">,</span> <span class="n">is_virtual</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">syn</span><span class="p">,</span> <span class="n">connector</span><span class="p">,</span> <span class="n">is_virtual</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">is_gap_junc</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_src_node</span> <span class="o">=</span> <span class="n">src_node</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_edge_prop</span> <span class="o">=</span> <span class="n">edge_prop</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_syn</span> <span class="o">=</span> <span class="n">syn</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_nc</span> <span class="o">=</span> <span class="n">nc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connector</span> <span class="o">=</span> <span class="n">connector</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_gj</span> <span class="o">=</span> <span class="n">is_gap_junc</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_virtual</span> <span class="o">=</span> <span class="n">is_virtual</span>
 
     <span class="nd">@property</span>
@@ -663,23 +667,33 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_virtual</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_gap_junc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_gj</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">source_node</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_src_node</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">syn_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nc</span><span class="o">.</span><span class="n">weight</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_gap_junc</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connector</span><span class="o">.</span><span class="n">g</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connector</span><span class="o">.</span><span class="n">weight</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="nd">@syn_weight</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">syn_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_nc</span><span class="o">.</span><span class="n">weight</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_gap_junc</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connector</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connector</span><span class="o">.</span><span class="n">weight</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span></div>
 
 
 <div class="viewcode-block" id="BioCell"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biocell.BioCell">[docs]</a><span class="k">class</span> <span class="nc">BioCell</span><span class="p">(</span><span class="n">Cell</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Implemntation of a morphologically and biophysically detailed type cell.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">bionetwork</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">bionetwork</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">BioCell</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 
         <span class="c1"># Set up netcon object that can be used to detect and communicate cell spikes.</span>
@@ -697,6 +711,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_save_conn</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># bionetwork.save_connection</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_synapses</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gap_juncs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_syn_src_net</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_src_gids</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_syn_seg_ix</span> <span class="o">=</span> <span class="p">[]</span>
@@ -765,8 +780,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_morph</span> <span class="o">=</span> <span class="n">morphology_obj</span></div>
 
 <div class="viewcode-block" id="BioCell.get_sections"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biocell.BioCell.get_sections">[docs]</a>    <span class="k">def</span> <span class="nf">get_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1">#return self._secs_by_id</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_secs</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_secs_by_id</span></div>
+        <span class="c1">#return self._secs</span>
 
 <div class="viewcode-block" id="BioCell.get_sections_id"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biocell.BioCell.get_sections_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_sections_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_secs_by_id</span></div>
@@ -776,7 +791,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="BioCell.store_segments"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biocell.BioCell.store_segments">[docs]</a>    <span class="k">def</span> <span class="nf">store_segments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_segments</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_secs</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_secs_by_id</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">sec</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg</span><span class="p">)</span></div>
 
@@ -794,17 +809,100 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_secs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">secs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BioCell.set_syn_connection"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biocell.BioCell.set_syn_connection">[docs]</a>    <span class="k">def</span> <span class="nf">set_syn_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="BioCell.set_syn_connection"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biocell.BioCell.set_syn_connection">[docs]</a>    <span class="k">def</span> <span class="nf">set_syn_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gj_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">syn_weight</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">syn_weight</span><span class="p">(</span><span class="n">src_node</span><span class="o">=</span><span class="n">src_node</span><span class="p">,</span> <span class="n">trg_node</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">preselected_targets</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">is_gap_junction</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">gj_ids</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Gap junctions must have a gap junction id passed to set_syn_connection.&quot;</span><span class="p">)</span>
+
             <span class="bp">self</span><span class="o">.</span><span class="n">_edge_props</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_src_gids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">src_node</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_connection_preselected</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">,</span> <span class="n">stim</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">preselected_targets</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_gap_junc_preselected</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">,</span> <span class="n">gj_ids</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_gap_junc</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">,</span> <span class="n">gj_ids</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_edge_props</span> <span class="o">+=</span> <span class="p">[</span><span class="n">edge_prop</span><span class="p">]</span><span class="o">*</span><span class="n">edge_prop</span><span class="o">.</span><span class="n">nsyns</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_src_gids</span> <span class="o">+=</span> <span class="p">[</span><span class="n">src_node</span><span class="o">.</span><span class="n">node_id</span><span class="p">]</span><span class="o">*</span><span class="n">edge_prop</span><span class="o">.</span><span class="n">nsyns</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_connections</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">,</span> <span class="n">stim</span><span class="p">)</span></div>
+            <span class="k">if</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">preselected_targets</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_edge_props</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_src_gids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">src_node</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_connection_preselected</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">,</span> <span class="n">stim</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_edge_props</span> <span class="o">+=</span> <span class="p">[</span><span class="n">edge_prop</span><span class="p">]</span><span class="o">*</span><span class="n">edge_prop</span><span class="o">.</span><span class="n">nsyns</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_src_gids</span> <span class="o">+=</span> <span class="p">[</span><span class="n">src_node</span><span class="o">.</span><span class="n">node_id</span><span class="p">]</span><span class="o">*</span><span class="n">edge_prop</span><span class="o">.</span><span class="n">nsyns</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_connections</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">,</span> <span class="n">stim</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_set_gap_junc_preselected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">,</span> <span class="n">gj_ids</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">nsyns</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span>
+
+        <span class="n">sec_x</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="p">[</span><span class="s1">&#39;sec_x&#39;</span><span class="p">]</span>
+        <span class="n">sec_id</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="p">[</span><span class="s1">&#39;sec_id&#39;</span><span class="p">]</span>
+        <span class="n">section</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_secs_by_id</span><span class="p">[</span><span class="n">sec_id</span><span class="p">]</span>
+
+        <span class="c1">#Sets up the section to be connected to the gap junction.</span>
+        <span class="n">pc</span><span class="o">.</span><span class="n">source_var</span><span class="p">(</span><span class="n">section</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">_ref_v</span><span class="p">,</span> <span class="n">gj_ids</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sec</span><span class="o">=</span><span class="n">section</span><span class="p">)</span>
+
+        <span class="c1">#Creates gap junction.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">gap_junc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">Gap</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">section</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;You need the gap.mod file to create gap junctions.&quot;</span><span class="p">)</span>
+
+        <span class="c1">#Attaches the source section to the gap junction.</span>
+        <span class="n">pc</span><span class="o">.</span><span class="n">target_var</span><span class="p">(</span><span class="n">gap_junc</span><span class="p">,</span> <span class="n">gap_junc</span><span class="o">.</span><span class="n">_ref_vgap</span><span class="p">,</span> <span class="n">gj_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">gap_junc</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">syn_weight</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ConnectionStruct</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">gap_junc</span><span class="p">,</span> <span class="n">gap_junc</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gap_juncs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gap_junc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge_prop</span><span class="o">.</span><span class="n">edge_type_id</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_conn</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_save_connection</span><span class="p">(</span><span class="n">src_gid</span><span class="o">=</span><span class="n">src_node</span><span class="o">.</span><span class="n">gid</span><span class="p">,</span> <span class="n">src_net</span><span class="o">=</span><span class="n">src_node</span><span class="o">.</span><span class="n">network</span><span class="p">,</span> <span class="n">sec_x</span><span class="o">=</span><span class="n">sec_x</span><span class="p">,</span> <span class="n">seg_ix</span><span class="o">=</span><span class="n">sec_id</span><span class="p">,</span>
+                                  <span class="n">edge_type_id</span><span class="o">=</span><span class="n">edge_prop</span><span class="o">.</span><span class="n">edge_type_id</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">_set_gap_junc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">,</span> <span class="n">gj_ids</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">nsyns</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span>
+
+        <span class="n">tar_seg_ix</span><span class="p">,</span> <span class="n">tar_seg_prob</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morph</span><span class="o">.</span><span class="n">get_target_segments</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">)</span>
+        <span class="n">nsyns</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># choose nsyn elements from seg_ix with probability proportional to segment area</span>
+        <span class="n">seg_ix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">tar_seg_ix</span><span class="p">,</span> <span class="n">nsyns</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">tar_seg_prob</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">sec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_secs</span><span class="p">[</span><span class="n">seg_ix</span><span class="p">]</span>  <span class="c1"># section where synapases connect</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morph</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">][</span><span class="n">seg_ix</span><span class="p">]</span>  <span class="c1"># distance along the section where synapse connects, i.e., seg_x</span>
+
+        <span class="k">if</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">nsyns</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: The number of synapses passed in was greater than 1, but only one gap junction will be made.&quot;</span><span class="p">)</span>
+
+        <span class="c1">#Sets up the section to be connected to the gap junction.</span>
+        <span class="n">pc</span><span class="o">.</span><span class="n">source_var</span><span class="p">(</span><span class="n">sec</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">_ref_v</span><span class="p">,</span> <span class="n">gj_ids</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
+
+        <span class="c1">#Creates gap junction.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">gap_junc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">Gap</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;You need the gap.mod file to create gap junctions.&quot;</span><span class="p">)</span>
+
+        <span class="c1">#Attaches the source section to the gap junction.</span>
+        <span class="n">pc</span><span class="o">.</span><span class="n">target_var</span><span class="p">(</span><span class="n">gap_junc</span><span class="p">,</span> <span class="n">gap_junc</span><span class="o">.</span><span class="n">_ref_vgap</span><span class="p">,</span> <span class="n">gj_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">gap_junc</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">syn_weight</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ConnectionStruct</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">gap_junc</span><span class="p">,</span> <span class="n">gap_junc</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gap_juncs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gap_junc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge_prop</span><span class="o">.</span><span class="n">edge_type_id</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_conn</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_save_connection</span><span class="p">(</span><span class="n">src_gid</span><span class="o">=</span><span class="n">src_node</span><span class="o">.</span><span class="n">gid</span><span class="p">,</span> <span class="n">src_net</span><span class="o">=</span><span class="n">src_node</span><span class="o">.</span><span class="n">network</span><span class="p">,</span> <span class="n">sec_x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">seg_ix</span><span class="o">=</span><span class="n">sec_ix</span><span class="p">,</span>
+                                  <span class="n">edge_type_id</span><span class="o">=</span><span class="n">edge_prop</span><span class="o">.</span><span class="n">edge_type_id</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_set_connection_preselected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># TODO: synapses should be loaded by edge_prop.load_synapse</span>
@@ -951,6 +1049,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="n">rstr</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -967,13 +1066,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
@@ -982,17 +1091,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

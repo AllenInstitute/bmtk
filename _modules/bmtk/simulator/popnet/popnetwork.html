@@ -1,18 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.simulator.popnet.popnetwork &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
@@ -645,39 +648,17 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">bmtk.simulator.core.simulator_network</span> <span class="k">import</span> <span class="n">SimNetwork</span>
-<span class="c1">#from bmtk.simulator.core.graph import SimGraph</span>
-<span class="c1">#from property_schemas import PopTypes, DefaultPropertySchema</span>
-<span class="c1">#from popnode import InternalNode, ExternalPopulation</span>
-<span class="c1">#from popedge import PopEdge</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.popnet</span> <span class="k">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">poputils</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.popnet.sonata_adaptors</span> <span class="k">import</span> <span class="n">PopEdgeAdaptor</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.core.simulator_network</span> <span class="kn">import</span> <span class="n">SimNetwork</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.popnet</span> <span class="kn">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">poputils</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.popnet.sonata_adaptors</span> <span class="kn">import</span> <span class="n">PopEdgeAdaptor</span>
 
-<span class="kn">from</span> <span class="nn">dipde.internals.internalpopulation</span> <span class="k">import</span> <span class="n">InternalPopulation</span>
-<span class="kn">from</span> <span class="nn">dipde.internals.externalpopulation</span> <span class="k">import</span> <span class="n">ExternalPopulation</span>
-<span class="kn">from</span> <span class="nn">dipde.internals.connection</span> <span class="k">import</span> <span class="n">Connection</span>
-
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">class PopNode(object):</span>
-<span class="sd">    def __init__(self, node, property_map, graph):</span>
-<span class="sd">        self._node = node</span>
-<span class="sd">        self._property_map = property_map</span>
-<span class="sd">        self._graph = graph</span>
-
-<span class="sd">    @property</span>
-<span class="sd">    def dynamics_params(self):</span>
-<span class="sd">        # TODO: Use propert map</span>
-<span class="sd">        return self._node[&#39;dynamics_params&#39;]</span>
-
-<span class="sd">    @property</span>
-<span class="sd">    def node_id(self):</span>
-<span class="sd">        # TODO: Use property map</span>
-<span class="sd">        return self._node.node_id</span>
-<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">from</span> <span class="nn">dipde.internals.internalpopulation</span> <span class="kn">import</span> <span class="n">InternalPopulation</span>
+<span class="kn">from</span> <span class="nn">dipde.internals.externalpopulation</span> <span class="kn">import</span> <span class="n">ExternalPopulation</span>
+<span class="kn">from</span> <span class="nn">dipde.internals.connection</span> <span class="kn">import</span> <span class="n">Connection</span>
 
 
 <div class="viewcode-block" id="Population"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.popnetwork.Population">[docs]</a><span class="k">class</span> <span class="nc">Population</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pop_id</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pop_id</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pop_id</span> <span class="o">=</span> <span class="n">pop_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_params</span> <span class="o">=</span> <span class="kc">None</span>
@@ -709,18 +690,18 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">node</span><span class="o">.</span><span class="n">node_id</span></div>
 
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_params</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
-    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pop_id</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ExtPopulation"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.popnetwork.ExtPopulation">[docs]</a><span class="k">class</span> <span class="nc">ExtPopulation</span><span class="p">(</span><span class="n">Population</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pop_id</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pop_id</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ExtPopulation</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pop_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_firing_rate</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -744,7 +725,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="PopEdge"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.popnetwork.PopEdge">[docs]</a><span class="k">class</span> <span class="nc">PopEdge</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">property_map</span><span class="p">,</span> <span class="n">graph</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">property_map</span><span class="p">,</span> <span class="n">graph</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_edge</span> <span class="o">=</span> <span class="n">edge</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_prop_map</span> <span class="o">=</span> <span class="n">property_map</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span> <span class="o">=</span> <span class="n">graph</span>
@@ -764,7 +745,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="PopConnection"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.popnetwork.PopConnection">[docs]</a><span class="k">class</span> <span class="nc">PopConnection</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_pop</span><span class="p">,</span> <span class="n">trg_pop</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_pop</span><span class="p">,</span> <span class="n">trg_pop</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_src_pop</span> <span class="o">=</span> <span class="n">src_pop</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_trg_pop</span> <span class="o">=</span> <span class="n">trg_pop</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_edges</span> <span class="o">=</span> <span class="p">[]</span>
@@ -785,7 +766,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="PopNetwork"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.popnetwork.PopNetwork">[docs]</a><span class="k">class</span> <span class="nc">PopNetwork</span><span class="p">(</span><span class="n">SimNetwork</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">properties</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">properties</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">PopNetwork</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__all_edges</span> <span class="o">=</span> <span class="p">[]</span>
@@ -796,12 +777,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_source_edges</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_params_cache</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="c1">#self._params_column = property_schema.get_params_column()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dipde_pops</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_external_pop</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_all_populations</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="c1"># self._loaded_external_pops = {}</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_nodeid2pop_map</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span> <span class="o">=</span> <span class="p">{}</span>
@@ -835,7 +813,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">if</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">internal_nodes_only</span><span class="p">:</span>
                 <span class="n">nid2pop_map</span> <span class="o">=</span> <span class="p">{}</span>
                 <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">():</span>
-                    <span class="c1">#pnode = PopNode(node, prop_maps[node.group_id], self)</span>
                     <span class="n">pop</span> <span class="o">=</span> <span class="n">Population</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span>
                     <span class="n">pop</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
                     <span class="n">pop</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
@@ -845,23 +822,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                     <span class="n">nid2pop_map</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">pop</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">_nodeid2pop_map</span><span class="p">[</span><span class="n">node_pop</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">nid2pop_map</span>
-
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        for node_pop in self._internal_populations_map.values():</span>
-<span class="sd">            prop_maps = self._node_property_maps[node_pop.name]</span>
-<span class="sd">            nid2pop_map = {}</span>
-<span class="sd">            for node in node_pop:</span>
-<span class="sd">                pnode = PopNode(node, prop_maps[node.group_id], self)</span>
-<span class="sd">                pop = Population(node.node_id)</span>
-<span class="sd">                pop.add_node(pnode)</span>
-<span class="sd">                pop.build()</span>
-
-<span class="sd">                self._dipde_pops[node.node_id] = pop</span>
-<span class="sd">                self._all_populations.append(pop)</span>
-<span class="sd">                nid2pop_map[node.node_id] = pop</span>
-
-<span class="sd">            self._nodeid2pop_map[node_pop.name] = nid2pop_map</span>
-<span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_build_nodes_grouped</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Organize every single sonata-node into a given population.</span>
@@ -883,28 +843,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
             <span class="k">for</span> <span class="n">dpop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dipde_pops</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="n">dpop</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        for node_pop in self._internal_populations_map.values():</span>
-<span class="sd">            prop_maps = self._node_property_maps[node_pop.name]</span>
-<span class="sd">            nid2pop_map = {}</span>
-<span class="sd">            for node in node_pop:</span>
-<span class="sd">                pop_key = node[self._group_key]</span>
-<span class="sd">                pnode = PopNode(node, prop_maps[node.group_id], self)</span>
-<span class="sd">                if pop_key not in self._dipde_pops:</span>
-<span class="sd">                    pop = Population(pop_key)</span>
-<span class="sd">                    self._dipde_pops[pop_key] = pop</span>
-<span class="sd">                    self._all_populations.append(pop)</span>
-
-<span class="sd">                pop = self._dipde_pops[pop_key]</span>
-<span class="sd">                pop.add_node(pnode)</span>
-<span class="sd">                nid2pop_map[node.node_id] = pop</span>
-
-<span class="sd">            self._nodeid2pop_map[node_pop.name] = nid2pop_map</span>
-
-<span class="sd">        for dpop in self._dipde_pops.values():</span>
-<span class="sd">            dpop.build()</span>
-<span class="sd">        &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="PopNetwork.build_recurrent_edges"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.popnetwork.PopNetwork.build_recurrent_edges">[docs]</a>    <span class="k">def</span> <span class="nf">build_recurrent_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">recurrent_edge_pops</span> <span class="o">=</span> <span class="p">[</span><span class="n">ep</span> <span class="k">for</span> <span class="n">ep</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_populations</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">ep</span><span class="o">.</span><span class="n">virtual_connections</span><span class="p">]</span>
@@ -928,30 +866,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">conn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="n">conn</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        recurrent_edges = [edge_pop for _, edge_list in self._recurrent_edges.items() for edge_pop in edge_list]</span>
-<span class="sd">        for edge_pop in recurrent_edges:</span>
-<span class="sd">            prop_maps = self._edge_property_maps[edge_pop.name]</span>
-<span class="sd">            src_pop_maps = self._nodeid2pop_map[edge_pop.source_population]</span>
-<span class="sd">            trg_pop_maps = self._nodeid2pop_map[edge_pop.target_population]</span>
-<span class="sd">            for edge in edge_pop:</span>
-<span class="sd">                src_pop = src_pop_maps[edge.source_node_id]</span>
-<span class="sd">                trg_pop = trg_pop_maps[edge.target_node_id]</span>
-<span class="sd">                conn_key = (src_pop, trg_pop)</span>
-<span class="sd">                if conn_key not in self._connections:</span>
-<span class="sd">                    conn = PopConnection(src_pop, trg_pop)</span>
-<span class="sd">                    self._connections[conn_key] = conn</span>
-<span class="sd">                    self._all_connections.append(conn)</span>
-
-<span class="sd">                pop_edge = PopEdge(edge, prop_maps[edge.group_id], self)</span>
-<span class="sd">                self._connections[conn_key].add_edge(pop_edge)</span>
-
-<span class="sd">        for conn in self._connections.values():</span>
-<span class="sd">            conn.build()</span>
-<span class="sd">        # print len(self._connections)</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
+            <span class="n">conn</span><span class="o">.</span><span class="n">build</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="PopNetwork.find_edges"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.popnetwork.PopNetwork.find_edges">[docs]</a>    <span class="k">def</span> <span class="nf">find_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># TODO: Move to parent</span>
@@ -1014,77 +929,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                         <span class="bp">self</span><span class="o">.</span><span class="n">_external_connections</span><span class="p">[</span><span class="n">conn_key</span><span class="p">]</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">pedge</span> <span class="ow">in</span> <span class="n">unbuilt_connections</span><span class="p">:</span>
-                <span class="n">pedge</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-        <span class="c1">#exit()</span>
-
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            print node_pop.name</span>
-
-
-<span class="sd">            exit()</span>
-<span class="sd">            if node_pop.name in self._virtual_ids_map:</span>
-<span class="sd">                 continue</span>
-
-<span class="sd">            virt_node_map = {}</span>
-<span class="sd">            if node_pop.virtual_nodes_only:</span>
-<span class="sd">                print &#39;HERE&#39;</span>
-<span class="sd">                exit()</span>
-
-
-<span class="sd">        for pop_name, node_pop in self._virtual_populations_map.items():</span>
-<span class="sd">            if pop_name not in spike_trains.populations:</span>
-<span class="sd">                continue</span>
-
-<span class="sd">            # Build external population if it already hasn&#39;t been built</span>
-<span class="sd">            if pop_name not in self._external_pop:</span>
-<span class="sd">                prop_maps = self._node_property_maps[pop_name]</span>
-<span class="sd">                external_pop_map = {}</span>
-<span class="sd">                src_pop_map = {}</span>
-<span class="sd">                for node in node_pop:</span>
-<span class="sd">                    pop_key = node[self._group_key]</span>
-<span class="sd">                    pnode = PopNode(node, prop_maps[node.group_id], self)</span>
-<span class="sd">                    if pop_key not in external_pop_map:</span>
-<span class="sd">                        pop = ExtPopulation(pop_key)</span>
-<span class="sd">                        external_pop_map[pop_key] = pop</span>
-<span class="sd">                        self._all_populations.append(pop)</span>
-
-<span class="sd">                    pop = external_pop_map[pop_key]</span>
-<span class="sd">                    pop.add_node(pnode)</span>
-<span class="sd">                    src_pop_map[node.node_id] = pop</span>
-
-<span class="sd">                self._nodeid2pop_map[pop_name] = src_pop_map</span>
-
-<span class="sd">                firing_rates = poputils.get_firing_rates(external_pop_map.values(), spike_trains)</span>
-<span class="sd">                self._external_pop[pop_name] = external_pop_map</span>
-<span class="sd">                for dpop in external_pop_map.values():</span>
-<span class="sd">                    dpop.build(firing_rates[dpop.pop_id])</span>
-
-<span class="sd">            else:</span>
-<span class="sd">                # TODO: Throw error spike trains should only be called once per source population</span>
-<span class="sd">                # external_pop_map = self._external_pop[pop_name]</span>
-<span class="sd">                src_pop_map = self._nodeid2pop_map[pop_name]</span>
-
-<span class="sd">            unbuilt_connections = []</span>
-<span class="sd">            for node_pop in self._internal_populations_map.values():</span>
-<span class="sd">                trg_pop_map = self._nodeid2pop_map[node_pop.name]</span>
-<span class="sd">                for edge_pop in self.external_edge_populations(src_pop=pop_name, trg_pop=node_pop.name):</span>
-<span class="sd">                    for edge in edge_pop:</span>
-<span class="sd">                        src_pop = src_pop_map[edge.source_node_id]</span>
-<span class="sd">                        trg_pop = trg_pop_map[edge.target_node_id]</span>
-<span class="sd">                        conn_key = (src_pop, trg_pop)</span>
-<span class="sd">                        if conn_key not in self._external_connections:</span>
-<span class="sd">                            pconn = PopConnection(src_pop, trg_pop)</span>
-<span class="sd">                            self._external_connections[conn_key] = pconn</span>
-<span class="sd">                            unbuilt_connections.append(pconn)</span>
-<span class="sd">                            self._all_connections.append(pconn)</span>
-
-<span class="sd">                        pop_edge = PopEdge(edge, prop_maps[edge.group_id], self)</span>
-<span class="sd">                        self._external_connections[conn_key].add_edge(pop_edge)</span>
-
-<span class="sd">            for pedge in unbuilt_connections:</span>
-<span class="sd">                pedge.build()</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
-
+                <span class="n">pedge</span><span class="o">.</span><span class="n">build</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="PopNetwork.add_rates"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.popnetwork.PopNetwork.add_rates">[docs]</a>    <span class="k">def</span> <span class="nf">add_rates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rates</span><span class="p">,</span> <span class="n">node_set</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_group_key</span> <span class="o">==</span> <span class="s1">&#39;node_id&#39;</span><span class="p">:</span>
@@ -1139,73 +984,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                         <span class="bp">self</span><span class="o">.</span><span class="n">_external_connections</span><span class="p">[</span><span class="n">conn_key</span><span class="p">]</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">pedge</span> <span class="ow">in</span> <span class="n">unbuilt_connections</span><span class="p">:</span>
-                <span class="n">pedge</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        for pop_name, node_pop in self._virtual_populations_map.items():</span>
-<span class="sd">            if pop_name not in rates.populations:</span>
-<span class="sd">                continue</span>
-
-<span class="sd">            # Build external population if it already hasn&#39;t been built</span>
-<span class="sd">            if pop_name not in self._external_pop:</span>
-<span class="sd">                prop_maps = self._node_property_maps[pop_name]</span>
-<span class="sd">                external_pop_map = {}</span>
-<span class="sd">                src_pop_map = {}</span>
-<span class="sd">                for node in node_pop:</span>
-<span class="sd">                    pop_key = id_lookup(node)</span>
-<span class="sd">                    #pop_key = node[self._group_key]</span>
-<span class="sd">                    pnode = PopNode(node, prop_maps[node.group_id], self)</span>
-<span class="sd">                    if pop_key not in external_pop_map:</span>
-<span class="sd">                        pop = ExtPopulation(pop_key)</span>
-<span class="sd">                        external_pop_map[pop_key] = pop</span>
-<span class="sd">                        self._all_populations.append(pop)</span>
-
-<span class="sd">                    pop = external_pop_map[pop_key]</span>
-<span class="sd">                    pop.add_node(pnode)</span>
-<span class="sd">                    src_pop_map[node.node_id] = pop</span>
-
-<span class="sd">                self._nodeid2pop_map[pop_name] = src_pop_map</span>
-
-<span class="sd">                firing_rate = rates.get_rate(pop_key)</span>
-<span class="sd">                self._external_pop[pop_name] = external_pop_map</span>
-<span class="sd">                for dpop in external_pop_map.values():</span>
-<span class="sd">                    dpop.build(firing_rate)</span>
-
-<span class="sd">            else:</span>
-<span class="sd">                # TODO: Throw error spike trains should only be called once per source population</span>
-<span class="sd">                # external_pop_map = self._external_pop[pop_name]</span>
-<span class="sd">                src_pop_map = self._nodeid2pop_map[pop_name]</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
-
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    def _add_node(self, node, network):</span>
-<span class="sd">        pops = self._networks[network]</span>
-<span class="sd">        pop_key = node[self._group_key]</span>
-<span class="sd">        if pop_key in pops:</span>
-<span class="sd">            pop = pops[pop_key]</span>
-<span class="sd">            pop.add_gid(node.gid)</span>
-<span class="sd">            self._gid_table[network][node.gid] = pop</span>
-<span class="sd">        else:</span>
-<span class="sd">            model_class = self.property_schema.get_pop_type(node)</span>
-<span class="sd">            if model_class == PopTypes.Internal:</span>
-<span class="sd">                pop = InternalNode(pop_key, self, network, node)</span>
-<span class="sd">                pop.add_gid(node.gid)</span>
-<span class="sd">                pop.model_params = self.__get_params(node)</span>
-<span class="sd">                self._add_internal_node(pop, network)</span>
-
-<span class="sd">            elif model_class == PopTypes.External:</span>
-<span class="sd">                # TODO: See if we can get firing rate from dynamics_params</span>
-<span class="sd">                pop = ExternalPopulation(pop_key, self, network, node)</span>
-<span class="sd">                pop.add_gid(node.gid)</span>
-<span class="sd">                self._add_external_node(pop, network)</span>
-
-<span class="sd">            else:</span>
-<span class="sd">                raise Exception(&#39;Unknown model type&#39;)</span>
-
-<span class="sd">            if network not in self._gid_table:</span>
-<span class="sd">                self._gid_table[network] = {}</span>
-<span class="sd">            self._gid_table[network][node.gid] = pop</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+                <span class="n">pedge</span><span class="o">.</span><span class="n">build</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">__get_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_params</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">node_params</span><span class="o">.</span><span class="n">with_dynamics_params</span><span class="p">:</span>
@@ -1255,30 +1034,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                     <span class="c1"># TODO: Check dynamics_params before</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;Could not find node dynamics_params file </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">params_path</span><span class="p">))</span>
 
-
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    def add_edges(self, edges, target_network=None, source_network=None):</span>
-<span class="sd">        # super(PopGraph, self).add_edges(edges)</span>
-
-<span class="sd">        target_network = target_network if target_network is not None else edges.target_network</span>
-<span class="sd">        if target_network not in self._target_edges:</span>
-<span class="sd">            self._target_edges[target_network] = []</span>
-
-<span class="sd">        source_network = source_network if source_network is not None else edges.source_network</span>
-<span class="sd">        if source_network not in self._source_edges:</span>
-<span class="sd">            self._source_edges[source_network] = []</span>
-
-<span class="sd">        target_pops = self.get_populations(target_network)</span>
-<span class="sd">        source_pops = self.get_populations(source_network)</span>
-<span class="sd">        source_gid_table = self._gid_table[source_network]</span>
-
-<span class="sd">        for target_pop in target_pops:</span>
-<span class="sd">            for target_gid in target_pop.get_gids():</span>
-<span class="sd">                for edge in edges.edges_itr(target_gid):</span>
-<span class="sd">                    source_pop = source_gid_table[edge.source_gid]</span>
-<span class="sd">                    self._add_edge(source_pop, target_pop, edge)</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-
     <span class="k">def</span> <span class="nf">_add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_pop</span><span class="p">,</span> <span class="n">target_pop</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
         <span class="n">src_id</span> <span class="o">=</span> <span class="n">source_pop</span><span class="o">.</span><span class="n">node_id</span>
         <span class="n">trg_id</span> <span class="o">=</span> <span class="n">target_pop</span><span class="o">.</span><span class="n">node_id</span>
@@ -1316,6 +1071,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">pc</span><span class="o">.</span><span class="n">build</span><span class="p">()</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1332,13 +1088,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
@@ -1347,17 +1113,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

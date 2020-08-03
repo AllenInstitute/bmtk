@@ -1,18 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.simulator.bionet.default_setters package &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="bmtk.simulator.bionet.modules package" href="bmtk.simulator.bionet.modules.html" />
@@ -627,289 +630,261 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div>
 <div class="section" id="module-bmtk.simulator.bionet.default_setters.cell_models">
 <span id="bmtk-simulator-bionet-default-setters-cell-models-module"></span><h2>bmtk.simulator.bionet.default_setters.cell_models module<a class="headerlink" href="#module-bmtk.simulator.bionet.default_setters.cell_models" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.cell_models.Biophys1">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">Biophys1</code><span class="sig-paren">(</span><em>cell</em>, <em>template_name</em>, <em>dynamic_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#Biophys1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.Biophys1" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="sig-name descname">Biophys1</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cell</span></em>, <em class="sig-param"><span class="n">template_name</span></em>, <em class="sig-param"><span class="n">dynamic_params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#Biophys1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.Biophys1" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads a biophysical NEURON hoc object using Cell-Types database objects.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.cell_models.Biophys1_dict">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">Biophys1_dict</code><span class="sig-paren">(</span><em>cell</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#Biophys1_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.Biophys1_dict" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="sig-name descname">Biophys1_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cell</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#Biophys1_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.Biophys1_dict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set parameters for cells from the Allen Cell Types database Prior to setting parameters will replace the
 axon with the stub</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.cell_models.Biophys1_nml">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">Biophys1_nml</code><span class="sig-paren">(</span><em>json_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#Biophys1_nml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.Biophys1_nml" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="sig-name descname">Biophys1_nml</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">json_file</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#Biophys1_nml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.Biophys1_nml" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.cell_models.IntFire1">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">IntFire1</code><span class="sig-paren">(</span><em>cell</em>, <em>template_name</em>, <em>dynamics_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#IntFire1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.IntFire1" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="sig-name descname">IntFire1</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cell</span></em>, <em class="sig-param"><span class="n">template_name</span></em>, <em class="sig-param"><span class="n">dynamics_params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#IntFire1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.IntFire1" title="Permalink to this definition">¶</a></dt>
 <dd><p>Loads a point integrate and fire neuron</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.cell_models.NMLLoad">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">NMLLoad</code><span class="sig-paren">(</span><em>cell</em>, <em>template_name</em>, <em>dynamic_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#NMLLoad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.NMLLoad" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="sig-name descname">NMLLoad</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cell</span></em>, <em class="sig-param"><span class="n">template_name</span></em>, <em class="sig-param"><span class="n">dynamic_params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#NMLLoad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.NMLLoad" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a NEUROML file to a NEURON hoc cell object.</p>
 <p>Current limitations:
 * Ignores nml morphology section. You must pass in a swc file
 * Only for biophysically detailed cell biophysical components. All properties must be assigned to a segment group.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cell</strong> – </li>
-<li><strong>template_name</strong> – </li>
-<li><strong>dynamic_params</strong> – </li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cell</strong> – </p></li>
+<li><p><strong>template_name</strong> – </p></li>
+<li><p><strong>dynamic_params</strong> – </p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="bmtk.simulator.bionet.default_setters.cell_models.aibs_allactive">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">aibs_allactive</code><span class="sig-paren">(</span><em>hobj</em>, <em>cell</em>, <em>dynamics_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#aibs_allactive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.aibs_allactive" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="bmtk.simulator.bionet.default_setters.cell_models.aibs_allactive_directed">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">aibs_allactive_directed</code><span class="sig-paren">(</span><em>hobj</em>, <em>cell</em>, <em>dynamics_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#aibs_allactive_directed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.aibs_allactive_directed" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="bmtk.simulator.bionet.default_setters.cell_models.aibs_perisomatic">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">aibs_perisomatic</code><span class="sig-paren">(</span><em>hobj</em>, <em>cell</em>, <em>dynamics_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#aibs_perisomatic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.aibs_perisomatic" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="bmtk.simulator.bionet.default_setters.cell_models.aibs_perisomatic_directed">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">aibs_perisomatic_directed</code><span class="sig-paren">(</span><em>hobj</em>, <em>cell</em>, <em>dynamics_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#aibs_perisomatic_directed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.aibs_perisomatic_directed" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="bmtk.simulator.bionet.default_setters.cell_models.fix_axon_allactive">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">fix_axon_allactive</code><span class="sig-paren">(</span><em>hobj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#fix_axon_allactive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.fix_axon_allactive" title="Permalink to this definition">¶</a></dt>
-<dd><p>Replace reconstructed axon with a stub</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>hobj: instance of a Biophysical template</strong></dt>
-<dd><p class="first last">NEURON’s cell object</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
-<dl class="function">
-<dt id="bmtk.simulator.bionet.default_setters.cell_models.fix_axon_allactive_directed">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">fix_axon_allactive_directed</code><span class="sig-paren">(</span><em>hobj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#fix_axon_allactive_directed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.fix_axon_allactive_directed" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt id="bmtk.simulator.bionet.default_setters.cell_models.aibs_allactive">
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="sig-name descname">aibs_allactive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hobj</span></em>, <em class="sig-param"><span class="n">cell</span></em>, <em class="sig-param"><span class="n">dynamics_params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#aibs_allactive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.aibs_allactive" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
-<dt id="bmtk.simulator.bionet.default_setters.cell_models.fix_axon_peri">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">fix_axon_peri</code><span class="sig-paren">(</span><em>hobj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#fix_axon_peri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.fix_axon_peri" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt id="bmtk.simulator.bionet.default_setters.cell_models.aibs_allactive_directed">
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="sig-name descname">aibs_allactive_directed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hobj</span></em>, <em class="sig-param"><span class="n">cell</span></em>, <em class="sig-param"><span class="n">dynamics_params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#aibs_allactive_directed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.aibs_allactive_directed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="bmtk.simulator.bionet.default_setters.cell_models.aibs_perisomatic">
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="sig-name descname">aibs_perisomatic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hobj</span></em>, <em class="sig-param"><span class="n">cell</span></em>, <em class="sig-param"><span class="n">dynamics_params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#aibs_perisomatic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.aibs_perisomatic" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="bmtk.simulator.bionet.default_setters.cell_models.aibs_perisomatic_directed">
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="sig-name descname">aibs_perisomatic_directed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hobj</span></em>, <em class="sig-param"><span class="n">cell</span></em>, <em class="sig-param"><span class="n">dynamics_params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#aibs_perisomatic_directed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.aibs_perisomatic_directed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="bmtk.simulator.bionet.default_setters.cell_models.fix_axon_allactive">
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="sig-name descname">fix_axon_allactive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hobj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#fix_axon_allactive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.fix_axon_allactive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Replace reconstructed axon with a stub</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hobj</strong> – hoc object</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>hobj: instance of a Biophysical template</strong></dt><dd><p>NEURON’s cell object</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
+<dt id="bmtk.simulator.bionet.default_setters.cell_models.fix_axon_allactive_directed">
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="sig-name descname">fix_axon_allactive_directed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hobj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#fix_axon_allactive_directed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.fix_axon_allactive_directed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="bmtk.simulator.bionet.default_setters.cell_models.fix_axon_peri">
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="sig-name descname">fix_axon_peri</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hobj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#fix_axon_peri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.fix_axon_peri" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace reconstructed axon with a stub</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>hobj</strong> – hoc object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.cell_models.fix_axon_perisomatic_directed">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">fix_axon_perisomatic_directed</code><span class="sig-paren">(</span><em>hobj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#fix_axon_perisomatic_directed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.fix_axon_perisomatic_directed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="sig-name descname">fix_axon_perisomatic_directed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hobj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#fix_axon_perisomatic_directed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.fix_axon_perisomatic_directed" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.cell_models.get_axon_direction">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">get_axon_direction</code><span class="sig-paren">(</span><em>hobj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#get_axon_direction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.get_axon_direction" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="sig-name descname">get_axon_direction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hobj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#get_axon_direction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.get_axon_direction" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.cell_models.loadHOC">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">loadHOC</code><span class="sig-paren">(</span><em>cell</em>, <em>template_name</em>, <em>dynamics_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#loadHOC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.loadHOC" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="sig-name descname">loadHOC</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cell</span></em>, <em class="sig-param"><span class="n">template_name</span></em>, <em class="sig-param"><span class="n">dynamics_params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#loadHOC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.loadHOC" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.cell_models.set_extracellular">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">set_extracellular</code><span class="sig-paren">(</span><em>hobj</em>, <em>cell</em>, <em>dynamics_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#set_extracellular"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.set_extracellular" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="sig-name descname">set_extracellular</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hobj</span></em>, <em class="sig-param"><span class="n">cell</span></em>, <em class="sig-param"><span class="n">dynamics_params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#set_extracellular"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.set_extracellular" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.cell_models.set_params_allactive">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">set_params_allactive</code><span class="sig-paren">(</span><em>hobj</em>, <em>params_dict</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#set_params_allactive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.set_params_allactive" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="sig-name descname">set_params_allactive</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hobj</span></em>, <em class="sig-param"><span class="n">params_dict</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#set_params_allactive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.set_params_allactive" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.cell_models.set_params_peri">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="descname">set_params_peri</code><span class="sig-paren">(</span><em>hobj</em>, <em>biophys_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#set_params_peri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.set_params_peri" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.cell_models.</code><code class="sig-name descname">set_params_peri</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hobj</span></em>, <em class="sig-param"><span class="n">biophys_params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/cell_models.html#set_params_peri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.cell_models.set_params_peri" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set biophysical parameters for the cell</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>hobj</strong> – NEURON’s cell object</li>
-<li><strong>biophys_params</strong> – name of json file with biophys params for cell’s model which determine spiking behavior</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hobj</strong> – NEURON’s cell object</p></li>
+<li><p><strong>biophys_params</strong> – name of json file with biophys params for cell’s model which determine spiking behavior</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
 <div class="section" id="module-bmtk.simulator.bionet.default_setters.synapse_models">
 <span id="bmtk-simulator-bionet-default-setters-synapse-models-module"></span><h2>bmtk.simulator.bionet.default_setters.synapse_models module<a class="headerlink" href="#module-bmtk.simulator.bionet.default_setters.synapse_models" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.synapse_models.Exp2Syn">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="descname">Exp2Syn</code><span class="sig-paren">(</span><em>syn_params</em>, <em>sec_x</em>, <em>sec_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#Exp2Syn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.Exp2Syn" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="sig-name descname">Exp2Syn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">syn_params</span></em>, <em class="sig-param"><span class="n">sec_x</span></em>, <em class="sig-param"><span class="n">sec_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#Exp2Syn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.Exp2Syn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a list of exp2syn synapses</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>syn_params</strong> – parameters of a synapse</li>
-<li><strong>sec_x</strong> – normalized distance along the section</li>
-<li><strong>sec_id</strong> – target section</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn_params</strong> – parameters of a synapse</p></li>
+<li><p><strong>sec_x</strong> – normalized distance along the section</p></li>
+<li><p><strong>sec_id</strong> – target section</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">NEURON synapse object</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>NEURON synapse object</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.synapse_models.exp1isyn">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="descname">exp1isyn</code><span class="sig-paren">(</span><em>syn_params</em>, <em>xs</em>, <em>secs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#exp1isyn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.exp1isyn" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="sig-name descname">exp1isyn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">syn_params</span></em>, <em class="sig-param"><span class="n">xs</span></em>, <em class="sig-param"><span class="n">secs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#exp1isyn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.exp1isyn" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.synapse_models.exp1syn">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="descname">exp1syn</code><span class="sig-paren">(</span><em>syn_params</em>, <em>xs</em>, <em>secs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#exp1syn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.exp1syn" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="sig-name descname">exp1syn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">syn_params</span></em>, <em class="sig-param"><span class="n">xs</span></em>, <em class="sig-param"><span class="n">secs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#exp1syn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.exp1syn" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.synapse_models.exp2syn">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="descname">exp2syn</code><span class="sig-paren">(</span><em>syn_params</em>, <em>xs</em>, <em>secs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#exp2syn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.exp2syn" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="sig-name descname">exp2syn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">syn_params</span></em>, <em class="sig-param"><span class="n">xs</span></em>, <em class="sig-param"><span class="n">secs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#exp2syn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.exp2syn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a list of exp2syn synapses</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>syn_params</strong> – parameters of a synapse</li>
-<li><strong>xs</strong> – list of normalized distances along the section</li>
-<li><strong>secs</strong> – target sections</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn_params</strong> – parameters of a synapse</p></li>
+<li><p><strong>xs</strong> – list of normalized distances along the section</p></li>
+<li><p><strong>secs</strong> – target sections</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">list of NEURON synpase objects</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of NEURON synpase objects</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.synapse_models.expsyn">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="descname">expsyn</code><span class="sig-paren">(</span><em>syn_params</em>, <em>x</em>, <em>sec</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#expsyn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.expsyn" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="sig-name descname">expsyn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">syn_params</span></em>, <em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">sec</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#expsyn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.expsyn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a list of expsyn synapses</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>syn_params</strong> – parameters of a synapse (dict)</li>
-<li><strong>x</strong> – normalized distance along the section (float)</li>
-<li><strong>sec</strong> – target section (hoc object)</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>syn_params</strong> – parameters of a synapse (dict)</p></li>
+<li><p><strong>x</strong> – normalized distance along the section (float)</p></li>
+<li><p><strong>sec</strong> – target section (hoc object)</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">synapse objects</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>synapse objects</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.synapse_models.stp1syn">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="descname">stp1syn</code><span class="sig-paren">(</span><em>syn_params</em>, <em>xs</em>, <em>secs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#stp1syn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.stp1syn" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="sig-name descname">stp1syn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">syn_params</span></em>, <em class="sig-param"><span class="n">xs</span></em>, <em class="sig-param"><span class="n">secs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#stp1syn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.stp1syn" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.synapse_models.stp2syn">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="descname">stp2syn</code><span class="sig-paren">(</span><em>syn_params</em>, <em>x</em>, <em>sec</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#stp2syn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.stp2syn" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="sig-name descname">stp2syn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">syn_params</span></em>, <em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">sec</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#stp2syn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.stp2syn" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.synapse_models.stp3syn">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="descname">stp3syn</code><span class="sig-paren">(</span><em>syn_params</em>, <em>xs</em>, <em>secs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#stp3syn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.stp3syn" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="sig-name descname">stp3syn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">syn_params</span></em>, <em class="sig-param"><span class="n">xs</span></em>, <em class="sig-param"><span class="n">secs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#stp3syn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.stp3syn" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.synapse_models.stp4syn">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="descname">stp4syn</code><span class="sig-paren">(</span><em>syn_params</em>, <em>xs</em>, <em>secs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#stp4syn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.stp4syn" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="sig-name descname">stp4syn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">syn_params</span></em>, <em class="sig-param"><span class="n">xs</span></em>, <em class="sig-param"><span class="n">secs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#stp4syn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.stp4syn" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.synapse_models.stp5isyn">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="descname">stp5isyn</code><span class="sig-paren">(</span><em>syn_params</em>, <em>xs</em>, <em>secs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#stp5isyn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.stp5isyn" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="sig-name descname">stp5isyn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">syn_params</span></em>, <em class="sig-param"><span class="n">xs</span></em>, <em class="sig-param"><span class="n">secs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#stp5isyn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.stp5isyn" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.synapse_models.stp5syn">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="descname">stp5syn</code><span class="sig-paren">(</span><em>syn_params</em>, <em>x</em>, <em>sec</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#stp5syn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.stp5syn" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="sig-name descname">stp5syn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">syn_params</span></em>, <em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">sec</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#stp5syn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.stp5syn" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.synapse_models.tmgsyn">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="descname">tmgsyn</code><span class="sig-paren">(</span><em>syn_params</em>, <em>xs</em>, <em>secs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#tmgsyn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.tmgsyn" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.synapse_models.</code><code class="sig-name descname">tmgsyn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">syn_params</span></em>, <em class="sig-param"><span class="n">xs</span></em>, <em class="sig-param"><span class="n">secs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synapse_models.html#tmgsyn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synapse_models.tmgsyn" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
 <div class="section" id="module-bmtk.simulator.bionet.default_setters.synaptic_weights">
 <span id="bmtk-simulator-bionet-default-setters-synaptic-weights-module"></span><h2>bmtk.simulator.bionet.default_setters.synaptic_weights module<a class="headerlink" href="#module-bmtk.simulator.bionet.default_setters.synaptic_weights" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.synaptic_weights.default_weight_fnc">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.synaptic_weights.</code><code class="descname">default_weight_fnc</code><span class="sig-paren">(</span><em>edge_props</em>, <em>src_props</em>, <em>trg_props</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synaptic_weights.html#default_weight_fnc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synaptic_weights.default_weight_fnc" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.synaptic_weights.</code><code class="sig-name descname">default_weight_fnc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edge_props</span></em>, <em class="sig-param"><span class="n">src_props</span></em>, <em class="sig-param"><span class="n">trg_props</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synaptic_weights.html#default_weight_fnc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synaptic_weights.default_weight_fnc" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.synaptic_weights.gaussianLL">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.synaptic_weights.</code><code class="descname">gaussianLL</code><span class="sig-paren">(</span><em>edge_props</em>, <em>src_props</em>, <em>trg_props</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synaptic_weights.html#gaussianLL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synaptic_weights.gaussianLL" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.synaptic_weights.</code><code class="sig-name descname">gaussianLL</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edge_props</span></em>, <em class="sig-param"><span class="n">src_props</span></em>, <em class="sig-param"><span class="n">trg_props</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synaptic_weights.html#gaussianLL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synaptic_weights.gaussianLL" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.bionet.default_setters.synaptic_weights.wmax">
-<code class="descclassname">bmtk.simulator.bionet.default_setters.synaptic_weights.</code><code class="descname">wmax</code><span class="sig-paren">(</span><em>edge_props</em>, <em>src_props</em>, <em>trg_props</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synaptic_weights.html#wmax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synaptic_weights.wmax" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.bionet.default_setters.synaptic_weights.</code><code class="sig-name descname">wmax</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edge_props</span></em>, <em class="sig-param"><span class="n">src_props</span></em>, <em class="sig-param"><span class="n">trg_props</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/default_setters/synaptic_weights.html#wmax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.bionet.default_setters.synaptic_weights.wmax" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -919,6 +894,7 @@ axon with the stub</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -935,13 +911,23 @@ axon with the stub</p>
 <li class="toctree-l2"><a class="reference internal" href="../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
@@ -950,17 +936,15 @@ axon with the stub</p>
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

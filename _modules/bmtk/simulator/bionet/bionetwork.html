@@ -1,18 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.simulator.bionet.bionetwork &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
@@ -642,18 +645,19 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c1">#</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">neuron</span> <span class="k">import</span> <span class="n">h</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">neuron</span> <span class="kn">import</span> <span class="n">h</span>
 
-<span class="kn">from</span> <span class="nn">bmtk.simulator.core.simulator_network</span> <span class="k">import</span> <span class="n">SimNetwork</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.biocell</span> <span class="k">import</span> <span class="n">BioCell</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.pointprocesscell</span> <span class="k">import</span> <span class="n">PointProcessCell</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.pointsomacell</span> <span class="k">import</span> <span class="n">PointSomaCell</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.virtualcell</span> <span class="k">import</span> <span class="n">VirtualCell</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.morphology</span> <span class="k">import</span> <span class="n">Morphology</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.io_tools</span> <span class="k">import</span> <span class="n">io</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet</span> <span class="k">import</span> <span class="n">nrn</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.sonata_adaptors</span> <span class="k">import</span> <span class="n">BioNodeAdaptor</span><span class="p">,</span> <span class="n">BioEdgeAdaptor</span>
-<span class="kn">from</span> <span class="nn">.gids</span> <span class="k">import</span> <span class="n">GidPool</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.core.simulator_network</span> <span class="kn">import</span> <span class="n">SimNetwork</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.biocell</span> <span class="kn">import</span> <span class="n">BioCell</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.pointprocesscell</span> <span class="kn">import</span> <span class="n">PointProcessCell</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.pointsomacell</span> <span class="kn">import</span> <span class="n">PointSomaCell</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.virtualcell</span> <span class="kn">import</span> <span class="n">VirtualCell</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.morphology</span> <span class="kn">import</span> <span class="n">Morphology</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.io_tools</span> <span class="kn">import</span> <span class="n">io</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet</span> <span class="kn">import</span> <span class="n">nrn</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.sonata_adaptors</span> <span class="kn">import</span> <span class="n">BioNodeAdaptor</span><span class="p">,</span> <span class="n">BioEdgeAdaptor</span>
+<span class="kn">from</span> <span class="nn">.gids</span> <span class="kn">import</span> <span class="n">GidPool</span>
 
 <span class="c1"># TODO: leave this import, it will initialize some of the default functions for building neurons/synapses/weights.</span>
 <span class="kn">import</span> <span class="nn">bmtk.simulator.bionet.default_setters</span>
@@ -667,8 +671,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="viewcode-block" id="BioNetwork"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.bionetwork.BioNetwork">[docs]</a><span class="k">class</span> <span class="nc">BioNetwork</span><span class="p">(</span><span class="n">SimNetwork</span><span class="p">):</span>
     <span class="n">model_type_col</span> <span class="o">=</span> <span class="s1">&#39;model_type&#39;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># property_schema = property_schema if property_schema is not None else DefaultPropertySchema</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">BioNetwork</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_io</span> <span class="o">=</span> <span class="n">io</span>
 
@@ -841,6 +844,32 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="n">cell</span><span class="o">.</span><span class="n">init_connections</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_connections_initialized</span> <span class="o">=</span> <span class="kc">True</span>
 
+<div class="viewcode-block" id="BioNetwork.get_gj_id"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.bionetwork.BioNetwork.get_gj_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_gj_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">src_nid</span><span class="p">,</span> <span class="n">trg_nid</span><span class="p">,</span> <span class="n">source_gap</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the gap junction id for the given nodes on a given network.</span>
+
+<span class="sd">        :param source_gap: whether to return the id of the gap junction on the source node or the target node.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">src_nid</span> <span class="o">==</span> <span class="n">trg_nid</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Cells cannot have gap junctions with themselves.&quot;</span><span class="p">)</span>
+
+        <span class="n">gap_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gap_juncs</span><span class="p">[</span><span class="n">network</span><span class="p">]</span>
+
+        <span class="n">loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">gap_ids</span><span class="p">[</span><span class="s2">&quot;source_ids&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">src_nid</span><span class="p">,</span> <span class="n">gap_ids</span><span class="p">[</span><span class="s2">&quot;target_ids&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">trg_nid</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;The gap junction file has more than one gap junction with the same ids.&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;The gap junction file does not contain a gap junction with source id &quot;</span> <span class="o">+</span>
+             <span class="nb">str</span><span class="p">(</span><span class="n">src_nid</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; and target id &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">trg_nid</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; on network &quot;</span> <span class="o">+</span> <span class="n">network</span><span class="p">)</span>
+
+        <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">gap_ids</span><span class="p">[</span><span class="s2">&quot;src_gap_ids&quot;</span><span class="p">][</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">gap_ids</span><span class="p">[</span><span class="s2">&quot;trg_gap_ids&quot;</span><span class="p">][</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">]]]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">source_gap</span><span class="p">:</span>
+            <span class="n">ids</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+        
+        <span class="k">return</span> <span class="n">ids</span></div>
+
 <div class="viewcode-block" id="BioNetwork.build_recurrent_edges"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.bionetwork.BioNetwork.build_recurrent_edges">[docs]</a>    <span class="k">def</span> <span class="nf">build_recurrent_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">recurrent_edge_pops</span> <span class="o">=</span> <span class="p">[</span><span class="n">ep</span> <span class="k">for</span> <span class="n">ep</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_populations</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">ep</span><span class="o">.</span><span class="n">virtual_connections</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">recurrent_edge_pops</span><span class="p">:</span>
@@ -853,7 +882,25 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="k">for</span> <span class="n">trg_nid</span><span class="p">,</span> <span class="n">trg_cell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank_node_ids</span><span class="p">[</span><span class="n">edge_pop</span><span class="o">.</span><span class="n">target_nodes</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edge_pop</span><span class="o">.</span><span class="n">get_target</span><span class="p">(</span><span class="n">trg_nid</span><span class="p">):</span>
                         <span class="n">src_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_node_id</span><span class="p">(</span><span class="n">source_population</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">source_node_id</span><span class="p">)</span>
-                        <span class="n">trg_cell</span><span class="o">.</span><span class="n">set_syn_connection</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">src_node</span><span class="p">)</span>
+
+                        <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">is_gap_junction</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">source_population</span> <span class="o">!=</span> <span class="n">edge_pop</span><span class="o">.</span><span class="n">target_nodes</span><span class="p">:</span>
+                                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Gap junctions must be from the same network builder&quot;</span><span class="p">)</span>
+                            <span class="n">gj_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_gj_id</span><span class="p">(</span><span class="n">source_population</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">source_node_id</span><span class="p">,</span> <span class="n">trg_nid</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+                            <span class="n">trg_cell</span><span class="o">.</span><span class="n">set_syn_connection</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">gj_ids</span><span class="o">=</span><span class="n">gj_ids</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">trg_cell</span><span class="o">.</span><span class="n">set_syn_connection</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">src_node</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">src_nid</span><span class="p">,</span> <span class="n">src_cell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank_node_ids</span><span class="p">[</span><span class="n">source_population</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edge_pop</span><span class="o">.</span><span class="n">get_source</span><span class="p">(</span><span class="n">src_nid</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">is_gap_junction</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">source_population</span> <span class="o">!=</span> <span class="n">edge_pop</span><span class="o">.</span><span class="n">target_nodes</span><span class="p">:</span>
+                                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Gap junctions must be from the same network builder&quot;</span><span class="p">)</span>
+
+                            <span class="n">trg_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_node_id</span><span class="p">(</span><span class="n">edge_pop</span><span class="o">.</span><span class="n">target_nodes</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">target_node_id</span><span class="p">)</span>
+
+                            <span class="n">gj_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_gj_id</span><span class="p">(</span><span class="n">source_population</span><span class="p">,</span> <span class="n">src_nid</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">target_node_id</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+                            <span class="n">src_cell</span><span class="o">.</span><span class="n">set_syn_connection</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">trg_node</span><span class="p">,</span> <span class="n">gj_ids</span><span class="o">=</span><span class="n">gj_ids</span><span class="p">)</span>
 
             <span class="k">elif</span> <span class="n">edge_pop</span><span class="o">.</span><span class="n">mixed_connections</span><span class="p">:</span>
                 <span class="c1"># When dealing with edges that contain both virtual and recurrent edges we have to check every source</span>
@@ -899,6 +946,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -915,13 +963,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
@@ -930,17 +988,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

@@ -1,18 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.simulator.utils.simulation_inputs &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
@@ -621,9 +624,49 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h1>Source code for bmtk.simulator.utils.simulation_inputs</h1><div class="highlight"><pre>
 <span></span>
 <div class="viewcode-block" id="SimInput"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_inputs.SimInput">[docs]</a><span class="k">class</span> <span class="nc">SimInput</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A helper class for parsing the &quot;inputs&quot; section of a SONATA config file. Separate the actual parameters needed</span>
+<span class="sd">    to instantiate a module from the metadata parameters (eg, name, module, input_type)</span>
+
+<span class="sd">    Use the build() method to parse the json/dictionary of a section of input, then **params** to get a dictionary</span>
+<span class="sd">    of the values used to instantiate.</span>
+<span class="sd">    ```python</span>
+<span class="sd">        input = SimInput.Build(</span>
+<span class="sd">                  &#39;spikes_inputs&#39;,</span>
+<span class="sd">                  {&#39;module&#39;: &#39;spikes&#39;, &#39;input_type&#39;: &#39;hdf5&#39;, input_file: &#39;my_spikes.h5&#39;, &#39;time_scale&#39;: &#39;ms&#39;}</span>
+<span class="sd">        )</span>
+
+<span class="sd">        if input.module == &#39;spike&#39;:</span>
+<span class="sd">            SpikesInput(**params)</span>
+<span class="sd">            ...</span>
+<span class="sd">    ```</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ==========</span>
+<span class="sd">    **name** - str, name of module</span>
+<span class="sd">    **input_type** - str</span>
+<span class="sd">    **module** - str,</span>
+<span class="sd">    **params** - dictionary, all parameters (not including name, input_type, module)</span>
+
+<span class="sd">    Custom Modules</span>
+<span class="sd">    ==============</span>
+<span class="sd">    Sometimes certain input types may require extra steps in processing, like auto-conversion of filling in missing</span>
+<span class="sd">    parameters. In this case use the register module method:</span>
+<span class="sd">    ```python</span>
+<span class="sd">        class MyVClampInput(SimInput):</span>
+<span class="sd">            def avail_module():</span>
+<span class="sd">                return [&#39;vclamp&#39;, &#39;voltage_clamp&#39;]</span>
+
+<span class="sd">            def build():</span>
+<span class="sd">                ....</span>
+
+<span class="sd">        SimInput.registerModule(MyVClampInput)</span>
+<span class="sd">    ```</span>
+<span class="sd">    Then when SimInput.build() is called and the &#39;module_name&#39;==&#39;vclamp&#39; (or &#39;voltage_clamp&#39;) it will pass the parsing</span>
+<span class="sd">    to the MyVClampInput class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">registry</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># For factory function</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_name</span><span class="p">,</span> <span class="n">input_type</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_name</span><span class="p">,</span> <span class="n">input_type</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">input_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_type</span> <span class="o">=</span> <span class="n">input_type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="o">=</span> <span class="n">module</span>
@@ -637,7 +680,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="c1"># Special variable, not a part of standard but still want for ease of testing</span>
         <span class="k">if</span> <span class="s1">&#39;enabled&#39;</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;enabled&#39;</span><span class="p">]</span>
-            <span class="k">del</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;enabled&#39;</span><span class="p">]</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;enabled&#39;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -657,6 +700,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="SimInput.build"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_inputs.SimInput.build">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">input_name</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates a SimInput object with parsed out parameters</span>
+
+<span class="sd">        :param input_name: name of specific input</span>
+<span class="sd">        :param params: dictionary of input parameters</span>
+<span class="sd">        :return: SimInput object, or subclass that matches the specified &#39;module&#39; value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">if</span> <span class="s1">&#39;module&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;inputs setting </span><span class="si">{}</span><span class="s1"> does not specify the &quot;module&quot;.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">input_name</span><span class="p">))</span>
@@ -672,6 +721,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="SimInput.register_module"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_inputs.SimInput.register_module">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">register_module</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">subclass</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param subclass:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># For factory, register subclass based on the module name(s)</span>
         <span class="k">assert</span><span class="p">(</span><span class="nb">issubclass</span><span class="p">(</span><span class="n">subclass</span><span class="p">,</span> <span class="bp">cls</span><span class="p">))</span>
         <span class="n">mod_registry</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">registry</span>
@@ -686,6 +739,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="from_config"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.utils.html#bmtk.simulator.utils.simulation_inputs.from_config">[docs]</a><span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="n">cfg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Takes in a bmtk.utils.Config instance and will automatically parse each &quot;input&quot; in the config sections,</span>
+<span class="sd">    returning a list of SimInput objects. If an input has &quot;enabled&quot; = False then it will automatically be excluded.</span>
+
+<span class="sd">    :param cfg: A SONATAConfig object</span>
+<span class="sd">    :return: A list of SimInput modules corresponding to the parsed inputs of a config.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">inputs_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">input_name</span><span class="p">,</span> <span class="n">input_params</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">input_setting</span> <span class="o">=</span> <span class="n">SimInput</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">input_name</span><span class="p">,</span> <span class="n">input_params</span><span class="p">)</span>
@@ -698,6 +757,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -714,13 +774,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
@@ -729,17 +799,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

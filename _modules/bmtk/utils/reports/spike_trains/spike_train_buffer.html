@@ -1,18 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.utils.reports.spike_trains.spike_train_buffer &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
   </head><body>
@@ -619,147 +622,38 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <h1>Source code for bmtk.utils.reports.spike_trains.spike_train_buffer</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="c1"># Copyright 2020. Allen Institute. All rights reserved</span>
+<span class="c1">#</span>
+<span class="c1"># Redistribution and use in source and binary forms, with or without modification, are permitted provided that the</span>
+<span class="c1"># following conditions are met:</span>
+<span class="c1">#</span>
+<span class="c1"># 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following</span>
+<span class="c1"># disclaimer.</span>
+<span class="c1">#</span>
+<span class="c1"># 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following</span>
+<span class="c1"># disclaimer in the documentation and/or other materials provided with the distribution.</span>
+<span class="c1">#</span>
+<span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
+<span class="c1"># products derived from this software without specific prior written permission.</span>
+<span class="c1">#</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
+<span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="c1"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
+<span class="c1"># SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</span>
+<span class="c1"># SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,</span>
+<span class="c1"># WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</span>
+<span class="c1"># OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">six</span>
 <span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">from</span> <span class="nn">array</span> <span class="kn">import</span> <span class="n">array</span>
 
-<span class="kn">from</span> <span class="nn">.core</span> <span class="k">import</span> <span class="n">pop_na</span><span class="p">,</span> <span class="n">STReader</span><span class="p">,</span> <span class="n">STBuffer</span>
-<span class="kn">from</span> <span class="nn">.core</span> <span class="k">import</span> <span class="n">SortOrder</span>
-<span class="kn">from</span> <span class="nn">.core</span> <span class="k">import</span> <span class="n">csv_headers</span>
-<span class="kn">from</span> <span class="nn">bmtk.utils.io</span> <span class="k">import</span> <span class="n">bmtk_world_comm</span>
+<span class="kn">from</span> <span class="nn">.core</span> <span class="kn">import</span> <span class="n">SortOrder</span><span class="p">,</span> <span class="n">pop_na</span><span class="p">,</span> <span class="n">comm</span><span class="p">,</span> <span class="n">MPI_size</span><span class="p">,</span> <span class="n">MPI_rank</span><span class="p">,</span> <span class="n">comm_barrier</span>
+<span class="kn">from</span> <span class="nn">.core</span> <span class="kn">import</span> <span class="n">col_node_ids</span><span class="p">,</span> <span class="n">col_population</span><span class="p">,</span> <span class="n">col_timestamps</span>
+<span class="kn">from</span> <span class="nn">.spike_trains_api</span> <span class="kn">import</span> <span class="n">SpikeTrainsAPI</span>
 
-
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">class DiskBuffer(object):</span>
-<span class="sd">    def __init__(self, cache_dir, **kwargs):</span>
-<span class="sd">        self.cache_dir = cache_dir</span>
-<span class="sd">        self.mpi_rank = kwargs.get(&#39;MPI_rank&#39;, MPI_rank)</span>
-<span class="sd">        self.mpi_size = kwargs.get(&#39;MPI_size&#39;, MPI_size)</span>
-<span class="sd">        self.cached_fname = os.path.join(self.cache_dir, &#39;.spikes.cache.node{}.csv&#39;.format(self.mpi_rank))</span>
-
-<span class="sd">        if self.mpi_rank == 0:</span>
-<span class="sd">            if not os.path.exists(cache_dir):</span>
-<span class="sd">                os.makedirs(cache_dir)</span>
-<span class="sd">        barrier()</span>
-
-<span class="sd">        self.cached_fhandle = open(self.cached_fname, &#39;w&#39;)</span>
-<span class="sd">        self._csv_reader = None</span>
-
-<span class="sd">    def append(self, timestamp, population, node_id):</span>
-<span class="sd">        self.cached_fhandle.write(&#39;{} {} {}\n&#39;.format(timestamp, population, node_id))</span>
-
-<span class="sd">    def extend(self, timestamps, population, node_id):</span>
-<span class="sd">        pass</span>
-
-<span class="sd">    def __iter__(self):</span>
-<span class="sd">        self.cached_fhandle.flush()</span>
-<span class="sd">        barrier()</span>
-<span class="sd">        self._csv_reader = csv.reader(open(self.cached_fname, &#39;r&#39;), delimiter=&#39; &#39;)</span>
-<span class="sd">        return self</span>
-
-<span class="sd">    def __next__(self):</span>
-<span class="sd">        #try:</span>
-<span class="sd">        r = next(self._csv_reader)</span>
-<span class="sd">        return [np.float64(r[0]), r[1], np.uint64(r[2])]</span>
-<span class="sd">        #except StopIteration:</span>
-<span class="sd">        #    return StopIteration</span>
-<span class="sd">        #exit()</span>
-<span class="sd">        #return next(self._csv_reader)</span>
-
-<span class="sd">    next = __next__</span>
-
-
-<span class="sd">class MemoryBuffer(object):</span>
-<span class="sd">    pass</span>
-
-
-<span class="sd">class STBufferedWriter(STBuffer, STReader):</span>
-<span class="sd">    def __init__(self, buffer_dir=None, default_pop=None, **kwargs):</span>
-<span class="sd">        if default_pop is None or isinstance(default_pop, six.string_types) or np.isscalar(default_pop):</span>
-<span class="sd">            self.default_pop = pop_na</span>
-<span class="sd">        elif len(default_pop) == 1:</span>
-<span class="sd">            self.default_pop = default_pop[0]</span>
-<span class="sd">        else:</span>
-<span class="sd">            self.default_pop = Exception</span>
-
-<span class="sd">        self._buffer = DiskBuffer(&#39;cache&#39;)</span>
-
-<span class="sd">        # self._populations = set([default_pop])</span>
-<span class="sd">        self._populations_counts = {self.default_pop: 0}</span>
-<span class="sd">        self._units = kwargs.get(&#39;units&#39;, &#39;ms&#39;)</span>
-
-<span class="sd">    def add_spike(self, node_id, timestamp, population=None):</span>
-<span class="sd">        if population is None:</span>
-<span class="sd">            population = self.default_pop</span>
-
-<span class="sd">        if population not in self._populations_counts:</span>
-<span class="sd">            self._populations_counts[population] = 0</span>
-<span class="sd">        self._populations_counts[population] += 1</span>
-<span class="sd">        # self._populations.add(population)</span>
-<span class="sd">        self._buffer.write(timestamp=timestamp, population=population, node_id=node_id)</span>
-
-<span class="sd">    def add_spikes(self, node_ids, timestamps, population=None, **kwargs):</span>
-<span class="sd">        if population is None:</span>
-<span class="sd">            population = self.default_pop</span>
-
-<span class="sd">        if np.isscalar(node_ids):</span>
-<span class="sd">            for ts in timestamps:</span>
-<span class="sd">                self.add_spike(node_ids, ts, population)</span>
-<span class="sd">        else:</span>
-<span class="sd">            if len(node_ids) != len(timestamps):</span>
-<span class="sd">                raise Exception(&#39;timestamps and node_ids must be of the same length.&#39;)</span>
-
-<span class="sd">            for node_id, ts in zip(node_ids, timestamps):</span>
-<span class="sd">                self.add_spike(node_id, ts, population)</span>
-
-<span class="sd">    def import_spikes(self, obj):</span>
-<span class="sd">        pass</span>
-
-<span class="sd">    def flush(self):</span>
-<span class="sd">        pass</span>
-
-<span class="sd">    @property</span>
-<span class="sd">    def populations(self):</span>
-<span class="sd">        return list(self._populations_counts.keys())</span>
-
-<span class="sd">    @property</span>
-<span class="sd">    def units(self):</span>
-<span class="sd">        return self._units</span>
-
-<span class="sd">    @units.setter</span>
-<span class="sd">    def units(self, v):</span>
-<span class="sd">        self._units = v</span>
-
-<span class="sd">    def nodes(self, populations=None):</span>
-<span class="sd">        raise NotImplementedError()</span>
-
-<span class="sd">    def n_spikes(self, population=None):</span>
-<span class="sd">        return self._populations_counts[population]</span>
-
-<span class="sd">    def time_range(self, populations=None):</span>
-<span class="sd">        raise NotImplementedError()</span>
-
-<span class="sd">    def get_times(self, node_id, population=None, time_window=None, **kwargs):</span>
-<span class="sd">        raise NotImplementedError()</span>
-
-<span class="sd">    def to_dataframe(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):</span>
-<span class="sd">        raise NotImplementedError()</span>
-
-<span class="sd">    def spikes(self, node_ids=None, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):</span>
-<span class="sd">        if sort_order == SortOrder.by_time or sort_order == SortOrder.by_time:</span>
-<span class="sd">            raise Exception(&quot;Can&#39;t sort by time or node-id&quot;)</span>
-
-<span class="sd">        for n in self._buffer:</span>
-<span class="sd">            if n[1] == populations:</span>
-<span class="sd">                yield n</span>
-
-<span class="sd">        raise StopIteration</span>
-
-<span class="sd">    def __len__(self):</span>
-<span class="sd">        return len(self.to_dataframe())</span>
-<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="k">def</span> <span class="nf">_spikes_filter1</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">time_window</span><span class="p">,</span> <span class="n">populations</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">populations</span> <span class="ow">and</span> <span class="n">time_window</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">t</span> <span class="o">&lt;=</span> <span class="n">time_window</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
@@ -774,7 +668,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <span class="k">def</span> <span class="nf">_create_filter</span><span class="p">(</span><span class="n">populations</span><span class="p">,</span> <span class="n">time_window</span><span class="p">):</span>
-    <span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
+    <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 
     <span class="k">if</span> <span class="n">populations</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">time_window</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="kc">True</span>
@@ -788,7 +682,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">_spikes_filter1</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="n">populations</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="n">time_window</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="STMemoryBuffer"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer">[docs]</a><span class="k">class</span> <span class="nc">STMemoryBuffer</span><span class="p">(</span><span class="n">STBuffer</span><span class="p">,</span> <span class="n">STReader</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_create_empty_df</span><span class="p">(</span><span class="n">with_population_col</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">col_timestamps</span><span class="p">,</span> <span class="n">col_population</span><span class="p">,</span> <span class="n">col_node_ids</span><span class="p">]</span> <span class="k">if</span> <span class="n">with_population_col</span> <span class="k">else</span> <span class="p">[</span><span class="n">col_timestamps</span><span class="p">,</span> <span class="n">col_node_ids</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="STMemoryBuffer"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer">[docs]</a><span class="k">class</span> <span class="nc">STMemoryBuffer</span><span class="p">(</span><span class="n">SpikeTrainsAPI</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; A Class for creating, storing and reading multi-population spike-trains - especially for saving the spikes of a</span>
 <span class="sd">    large scale network simulation. Keeps a running tally of the (timestamp, population-name, node_id) for each</span>
 <span class="sd">    individual spike.</span>
@@ -796,31 +695,51 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">    The spikes are stored in memory and very large and/or epiletic simulations may run into memory issues. Not designed</span>
 <span class="sd">    to work with parallel simulations.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">store_type</span><span class="o">=</span><span class="s1">&#39;array&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_default_population</span> <span class="o">=</span> <span class="n">default_population</span> <span class="ow">or</span> <span class="n">pop_na</span>
-
-        <span class="c1"># look into storing data using numpy arrays or pandas series.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_node_ids</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_timestamps</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_populations</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pop_counts</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_default_population</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>  <span class="c1"># A count of spikes per population</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_store_type</span> <span class="o">=</span> <span class="n">store_type</span>
+        <span class="c1"># self._pop_counts = {self._default_population: 0}  # A count of spikes per population</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">)</span>  <span class="c1"># for backwards compatability default to milliseconds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pops</span> <span class="o">=</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="STMemoryBuffer.add_spike"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.add_spike">[docs]</a>    <span class="k">def</span> <span class="nf">add_spike</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">population</span> <span class="o">=</span> <span class="n">population</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_population</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_node_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_timestamps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">timestamp</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_populations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pop_counts</span><span class="p">[</span><span class="n">population</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">population</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span></div>
+        <span class="k">if</span> <span class="n">population</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pops</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_store</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pops</span><span class="p">[</span><span class="n">population</span><span class="p">][</span><span class="n">col_node_ids</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pops</span><span class="p">[</span><span class="n">population</span><span class="p">][</span><span class="n">col_timestamps</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">timestamp</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="STMemoryBuffer.add_spikes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.add_spikes">[docs]</a>    <span class="k">def</span> <span class="nf">add_spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">,</span> <span class="n">timestamps</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">population</span> <span class="o">=</span> <span class="n">population</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_population</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">node_ids</span><span class="p">):</span>
             <span class="n">node_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">node_ids</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">timestamps</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">node_ids</span><span class="p">,</span> <span class="n">timestamps</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add_spike</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">population</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_ids</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">timestamps</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;node_ids and timestamps must by of the same length&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">population</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pops</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_create_store</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
+        <span class="n">pop_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pops</span><span class="p">[</span><span class="n">population</span><span class="p">]</span>
+        <span class="n">pop_data</span><span class="p">[</span><span class="n">col_node_ids</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">node_ids</span><span class="p">)</span>
+        <span class="n">pop_data</span><span class="p">[</span><span class="n">col_timestamps</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">timestamps</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_create_store</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Helper for creating storage data struct of a population, so add_spike/add_spikes is consistent.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Benchmark Notes:</span>
+        <span class="c1">#   Tested with numpy, lists and arrays. np.concate/append is too slow to consider. regular list is ~2-3x</span>
+        <span class="c1">#   faster than array, but require 2-4x the amount of memory. For larger and parallelized applications</span>
+        <span class="c1">#   (&gt; 100 million spikes) use array since the amount of memory can required can exceed amount available. But</span>
+        <span class="c1">#   if memory is not an issue use list.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_store_type</span> <span class="o">==</span> <span class="s1">&#39;list&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pops</span><span class="p">[</span><span class="n">population</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">col_node_ids</span><span class="p">:</span> <span class="p">[],</span> <span class="n">col_timestamps</span><span class="p">:</span> <span class="p">[]}</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_store_type</span> <span class="o">==</span> <span class="s1">&#39;array&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pops</span><span class="p">[</span><span class="n">population</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">col_node_ids</span><span class="p">:</span> <span class="n">array</span><span class="p">(</span><span class="s1">&#39;I&#39;</span><span class="p">),</span> <span class="n">col_timestamps</span><span class="p">:</span> <span class="n">array</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">)}</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;Uknown store type </span><span class="si">{}</span><span class="s1"> for SpikeTrains&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_store_type</span><span class="p">))</span>
 
 <div class="viewcode-block" id="STMemoryBuffer.import_spikes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.import_spikes">[docs]</a>    <span class="k">def</span> <span class="nf">import_spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">pass</span></div>
@@ -833,65 +752,323 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">populations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pop_counts</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pops</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
-<div class="viewcode-block" id="STMemoryBuffer.nodes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.nodes">[docs]</a>    <span class="k">def</span> <span class="nf">nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_node_ids</span><span class="p">))</span></div>
+<div class="viewcode-block" id="STMemoryBuffer.node_ids"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.node_ids">[docs]</a>    <span class="k">def</span> <span class="nf">node_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">population</span> <span class="o">=</span> <span class="n">population</span> <span class="k">if</span> <span class="n">population</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_population</span>
+        <span class="k">if</span> <span class="n">population</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pops</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pops</span><span class="p">[</span><span class="n">population</span><span class="p">][</span><span class="n">col_node_ids</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">units</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units</span>
 
     <span class="nd">@units</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="o">=</span> <span class="n">v</span>
 
 <div class="viewcode-block" id="STMemoryBuffer.n_spikes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.n_spikes">[docs]</a>    <span class="k">def</span> <span class="nf">n_spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">population</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="STMemoryBuffer.time_range"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.time_range">[docs]</a>    <span class="k">def</span> <span class="nf">time_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_timestamps</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_timestamps</span><span class="p">)</span></div>
+        <span class="n">population</span> <span class="o">=</span> <span class="n">population</span> <span class="k">if</span> <span class="n">population</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_population</span>
+        <span class="k">if</span> <span class="n">population</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pops</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pops</span><span class="p">[</span><span class="n">population</span><span class="p">][</span><span class="n">col_timestamps</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="STMemoryBuffer.get_times"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.get_times">[docs]</a>    <span class="k">def</span> <span class="nf">get_times</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">population</span> <span class="o">=</span> <span class="n">population</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_population</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_node_ids</span><span class="p">)</span> <span class="o">==</span> <span class="n">node_id</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_populations</span><span class="p">)</span> <span class="o">==</span> <span class="n">population</span><span class="p">)</span>
-        <span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_timestamps</span><span class="p">)</span>
+        <span class="n">population</span> <span class="o">=</span> <span class="n">population</span> <span class="k">if</span> <span class="n">population</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_population</span>
+        <span class="n">pop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pops</span><span class="p">[</span><span class="n">population</span><span class="p">]</span>
+
+        <span class="c1"># filter by node_id and (if specified) by time.</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pop</span><span class="p">[</span><span class="n">col_node_ids</span><span class="p">])</span> <span class="o">==</span> <span class="n">node_id</span>
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pop</span><span class="p">[</span><span class="n">col_timestamps</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">time_window</span><span class="p">:</span>
             <span class="n">mask</span> <span class="o">&amp;=</span> <span class="p">(</span><span class="n">time_window</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">ts</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">ts</span> <span class="o">&lt;=</span> <span class="n">time_window</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-
         <span class="k">return</span> <span class="n">ts</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="STMemoryBuffer.to_dataframe"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.to_dataframe">[docs]</a>    <span class="k">def</span> <span class="nf">to_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">none</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="c1"># raise NotImplementedError()</span>
-        <span class="n">populations</span> <span class="o">=</span> <span class="n">populations</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_population</span>
-        <span class="c1"># TODO: Filter by population, node-id and time</span>
-        <span class="c1"># TODO: Sort dataframe if needed</span>
-        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;node_id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_ids</span><span class="p">,</span> <span class="s1">&#39;population&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_populations</span><span class="p">,</span> <span class="s1">&#39;timestamps&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timestamps</span><span class="p">})</span></div>
-
-
-<div class="viewcode-block" id="STMemoryBuffer.spikes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.spikes">[docs]</a>    <span class="k">def</span> <span class="nf">spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">none</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_time</span><span class="p">:</span>
-            <span class="n">sort_indx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_timestamps</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_time</span><span class="p">:</span>
-            <span class="n">sort_indx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_node_ids</span><span class="p">)</span>
+<div class="viewcode-block" id="STMemoryBuffer.to_dataframe"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.to_dataframe">[docs]</a>    <span class="k">def</span> <span class="nf">to_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">none</span><span class="p">,</span> <span class="n">with_population_col</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">populations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">selelectd_pops</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">populations</span><span class="p">):</span>
+            <span class="n">selelectd_pops</span> <span class="o">=</span> <span class="p">[</span><span class="n">populations</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">sort_indx</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_timestamps</span><span class="p">))</span>
+            <span class="n">selelectd_pops</span> <span class="o">=</span> <span class="n">populations</span>
 
-        <span class="nb">filter</span> <span class="o">=</span> <span class="n">_create_filter</span><span class="p">(</span><span class="n">populations</span><span class="p">,</span> <span class="n">time_window</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sort_indx</span><span class="p">:</span>
-            <span class="n">t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timestamps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_populations</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">filter</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">):</span>
-                <span class="k">yield</span> <span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">ret_df</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">pop_name</span> <span class="ow">in</span> <span class="n">selelectd_pops</span><span class="p">:</span>
+            <span class="n">pop_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pops</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pop_name</span><span class="p">,</span> <span class="p">{</span><span class="n">col_node_ids</span><span class="p">:</span> <span class="p">[],</span> <span class="n">col_timestamps</span><span class="p">:</span> <span class="p">[]})</span>
+            <span class="n">pop_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+                <span class="n">col_node_ids</span><span class="p">:</span> <span class="n">pop_data</span><span class="p">[</span><span class="n">col_node_ids</span><span class="p">],</span>
+                <span class="n">col_timestamps</span><span class="p">:</span> <span class="n">pop_data</span><span class="p">[</span><span class="n">col_timestamps</span><span class="p">]</span>
+            <span class="p">})</span>
+            <span class="k">if</span> <span class="n">with_population_col</span><span class="p">:</span>
+                <span class="n">pop_df</span><span class="p">[</span><span class="n">col_population</span><span class="p">]</span> <span class="o">=</span> <span class="n">pop_name</span>
+
+            <span class="k">if</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_id</span><span class="p">:</span>
+                <span class="n">pop_df</span> <span class="o">=</span> <span class="n">pop_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">col_node_ids</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_time</span><span class="p">:</span>
+                <span class="n">pop_df</span> <span class="o">=</span> <span class="n">pop_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">col_timestamps</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">ret_df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">ret_df</span> <span class="o">=</span> <span class="n">pop_df</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ret_df</span> <span class="o">=</span> <span class="n">ret_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pop_df</span><span class="p">)</span>
+
+        <span class="c1"># Make sure ret_df is not None</span>
+        <span class="n">ret_df</span> <span class="o">=</span> <span class="n">_create_empty_df</span><span class="p">(</span><span class="n">with_population_col</span><span class="p">)</span> <span class="k">if</span> <span class="n">ret_df</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">ret_df</span>
+
+        <span class="k">return</span> <span class="n">ret_df</span></div>
+
+<div class="viewcode-block" id="STMemoryBuffer.spikes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.spikes">[docs]</a>    <span class="k">def</span> <span class="nf">spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">none</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">populations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">populations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span>
+        <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">populations</span><span class="p">):</span>
+            <span class="n">populations</span> <span class="o">=</span> <span class="p">[</span><span class="n">populations</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">pop_name</span> <span class="ow">in</span> <span class="n">populations</span><span class="p">:</span>
+            <span class="n">pop_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pops</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pop_name</span><span class="p">,</span> <span class="p">{</span><span class="n">col_node_ids</span><span class="p">:</span> <span class="p">[],</span> <span class="n">col_timestamps</span><span class="p">:</span> <span class="p">[]})</span>
+            <span class="n">timestamps</span> <span class="o">=</span> <span class="n">pop_data</span><span class="p">[</span><span class="n">col_timestamps</span><span class="p">]</span>
+            <span class="n">node_ids</span> <span class="o">=</span> <span class="n">pop_data</span><span class="p">[</span><span class="n">col_node_ids</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_id</span><span class="p">:</span>
+                <span class="n">sort_indx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">node_ids</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_time</span><span class="p">:</span>
+                <span class="n">sort_indx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">timestamps</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sort_indx</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">timestamps</span><span class="p">))</span>
+
+            <span class="nb">filter</span> <span class="o">=</span> <span class="n">_create_filter</span><span class="p">(</span><span class="n">populations</span><span class="p">,</span> <span class="n">time_window</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sort_indx</span><span class="p">:</span>
+                <span class="n">t</span> <span class="o">=</span> <span class="n">timestamps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">pop_name</span>
+                <span class="k">if</span> <span class="nb">filter</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">):</span>
+                    <span class="k">yield</span> <span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
 
         <span class="k">return</span></div>
-        <span class="c1">#raise StopIteration</span>
 
-    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">())</span></div>
 
 
-<div class="viewcode-block" id="STCSVBuffer"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer">[docs]</a><span class="k">class</span> <span class="nc">STCSVBuffer</span><span class="p">(</span><span class="n">STBuffer</span><span class="p">,</span> <span class="n">STReader</span><span class="p">):</span>
+<div class="viewcode-block" id="STMPIBuffer"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer">[docs]</a><span class="k">class</span> <span class="nc">STMPIBuffer</span><span class="p">(</span><span class="n">STMemoryBuffer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">store_type</span><span class="o">=</span><span class="s1">&#39;array&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mpi_rank</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;MPI_rank&#39;</span><span class="p">,</span> <span class="n">MPI_rank</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mpi_size</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;MPI_size&#39;</span><span class="p">,</span> <span class="n">MPI_size</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">STMPIBuffer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">default_population</span><span class="o">=</span><span class="n">default_population</span><span class="p">,</span> <span class="n">store_type</span><span class="o">=</span><span class="n">store_type</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_gatherv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">on_all_ranks</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">mpi4py</span> <span class="kn">import</span> <span class="n">MPI</span>
+
+        <span class="n">local_n_spikes</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">STMPIBuffer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">n_spikes</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
+        <span class="n">sizes</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">allgather</span><span class="p">(</span><span class="n">local_n_spikes</span><span class="p">)</span>
+        <span class="n">offsets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">MPI_size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+        <span class="n">offsets</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">sizes</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">all_n_spikes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">sizes</span><span class="p">)</span>
+
+        <span class="n">local_population</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pops</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">population</span><span class="p">,</span> <span class="p">{</span><span class="n">col_node_ids</span><span class="p">:</span> <span class="p">[],</span> <span class="n">col_timestamps</span><span class="p">:</span> <span class="p">[]})</span>  <span class="c1"># if pop not on rank</span>
+        <span class="n">local_node_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">local_population</span><span class="p">[</span><span class="n">col_node_ids</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span>
+        <span class="n">all_node_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">all_n_spikes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">on_all_ranks</span><span class="p">:</span>
+            <span class="n">comm</span><span class="o">.</span><span class="n">Allgatherv</span><span class="p">(</span><span class="n">local_node_ids</span><span class="p">,</span> <span class="p">[</span><span class="n">all_node_ids</span><span class="p">,</span> <span class="n">sizes</span><span class="p">,</span> <span class="n">offsets</span><span class="p">,</span> <span class="n">MPI</span><span class="o">.</span><span class="n">UINT64_T</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">comm</span><span class="o">.</span><span class="n">Gatherv</span><span class="p">(</span><span class="n">local_node_ids</span><span class="p">,</span> <span class="p">[</span><span class="n">all_node_ids</span><span class="p">,</span> <span class="n">sizes</span><span class="p">,</span> <span class="n">offsets</span><span class="p">,</span> <span class="n">MPI</span><span class="o">.</span><span class="n">UINT64_T</span><span class="p">],</span> <span class="n">root</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">MPI_rank</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">all_node_ids</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">local_timestamps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">local_population</span><span class="p">[</span><span class="n">col_timestamps</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">)</span>
+        <span class="n">all_timestamps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">all_n_spikes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">on_all_ranks</span><span class="p">:</span>
+            <span class="n">comm</span><span class="o">.</span><span class="n">Allgatherv</span><span class="p">(</span><span class="n">local_timestamps</span><span class="p">,</span> <span class="p">[</span><span class="n">all_timestamps</span><span class="p">,</span> <span class="n">sizes</span><span class="p">,</span> <span class="n">offsets</span><span class="p">,</span> <span class="n">MPI</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">comm</span><span class="o">.</span><span class="n">Gatherv</span><span class="p">(</span><span class="n">local_timestamps</span><span class="p">,</span> <span class="p">[</span><span class="n">all_timestamps</span><span class="p">,</span> <span class="n">sizes</span><span class="p">,</span> <span class="n">offsets</span><span class="p">,</span> <span class="n">MPI</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">],</span> <span class="n">root</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">MPI_rank</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">all_timestamps</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">all_node_ids</span><span class="p">,</span> <span class="n">all_timestamps</span>
+
+<div class="viewcode-block" id="STMPIBuffer.to_dataframe"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer.to_dataframe">[docs]</a>    <span class="k">def</span> <span class="nf">to_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">none</span><span class="p">,</span> <span class="n">with_population_col</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">on_rank</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span>
+                     <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">comm_barrier</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;local&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">STMPIBuffer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">(</span><span class="n">populations</span><span class="o">=</span><span class="n">populations</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">sort_order</span><span class="p">,</span>
+                                                         <span class="n">with_population_col</span><span class="o">=</span><span class="n">with_population_col</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">on_rank</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;local&#39;</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="s1">&#39;root&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid option &quot;</span><span class="si">{}</span><span class="s1">&quot; for mpi on_rank parameter&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">on_rank</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">populations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">selelectd_pops</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_populations</span><span class="p">(</span><span class="n">on_rank</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">populations</span><span class="p">):</span>
+            <span class="n">selelectd_pops</span> <span class="o">=</span> <span class="p">[</span><span class="n">populations</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">selelectd_pops</span> <span class="o">=</span> <span class="n">populations</span>
+
+        <span class="c1"># Make sure the list of populations is exactly the same (including order) across all ranks so that</span>
+        <span class="c1"># _gatherv is called in the same sequence across all ranks.</span>
+        <span class="n">selelectd_pops</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="n">ret_df</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">pop_name</span> <span class="ow">in</span> <span class="n">selelectd_pops</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+                <span class="n">node_ids</span><span class="p">,</span> <span class="n">timestamps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gatherv</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="n">pop_name</span><span class="p">,</span> <span class="n">on_all_ranks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">pop_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+                    <span class="n">col_node_ids</span><span class="p">:</span> <span class="n">node_ids</span><span class="p">,</span>
+                    <span class="n">col_timestamps</span><span class="p">:</span> <span class="n">timestamps</span>
+                <span class="p">})</span>
+
+                <span class="k">if</span> <span class="n">with_population_col</span><span class="p">:</span>
+                    <span class="n">pop_df</span><span class="p">[</span><span class="n">col_population</span><span class="p">]</span> <span class="o">=</span> <span class="n">pop_name</span>
+
+                <span class="k">if</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_id</span><span class="p">:</span>
+                    <span class="n">pop_df</span> <span class="o">=</span> <span class="n">pop_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">col_node_ids</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_time</span><span class="p">:</span>
+                    <span class="n">pop_df</span> <span class="o">=</span> <span class="n">pop_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">col_timestamps</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">ret_df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">ret_df</span> <span class="o">=</span> <span class="n">pop_df</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">ret_df</span> <span class="o">=</span> <span class="n">ret_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pop_df</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;root&#39;</span><span class="p">:</span>
+                <span class="n">node_ids</span><span class="p">,</span> <span class="n">timestamps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gatherv</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="n">pop_name</span><span class="p">,</span> <span class="n">on_all_ranks</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">MPI_rank</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="n">pop_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+                    <span class="n">col_node_ids</span><span class="p">:</span> <span class="n">node_ids</span><span class="p">,</span>
+                    <span class="n">col_timestamps</span><span class="p">:</span> <span class="n">timestamps</span>
+                <span class="p">})</span>
+
+                <span class="k">if</span> <span class="n">with_population_col</span><span class="p">:</span>
+                    <span class="n">pop_df</span><span class="p">[</span><span class="n">col_population</span><span class="p">]</span> <span class="o">=</span> <span class="n">pop_name</span>
+
+                <span class="k">if</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_id</span><span class="p">:</span>
+                    <span class="n">pop_df</span> <span class="o">=</span> <span class="n">pop_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">col_node_ids</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_time</span><span class="p">:</span>
+                    <span class="n">pop_df</span> <span class="o">=</span> <span class="n">pop_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">col_timestamps</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">ret_df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">ret_df</span> <span class="o">=</span> <span class="n">pop_df</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">ret_df</span> <span class="o">=</span> <span class="n">ret_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pop_df</span><span class="p">)</span>
+
+        <span class="n">comm_barrier</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span> <span class="ow">or</span> <span class="n">MPI_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># If using &#39;all&#39; or on rank 0 a dataframe is expected even if there are no spikes</span>
+            <span class="n">ret_df</span> <span class="o">=</span> <span class="n">_create_empty_df</span><span class="p">(</span><span class="n">with_population_col</span><span class="p">)</span> <span class="k">if</span> <span class="n">ret_df</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">ret_df</span>
+
+        <span class="k">return</span> <span class="n">ret_df</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">populations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_populations</span><span class="p">(</span><span class="n">on_rank</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="STMPIBuffer.get_populations"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer.get_populations">[docs]</a>    <span class="k">def</span> <span class="nf">get_populations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">on_rank</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+        <span class="n">local_pops</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">super</span><span class="p">(</span><span class="n">STMPIBuffer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">populations</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;local&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">local_pops</span>
+
+        <span class="k">if</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="n">gathered_pops</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">allgather</span><span class="p">(</span><span class="n">local_pops</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;root&#39;</span><span class="p">:</span>
+            <span class="n">gathered_pops</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">local_pops</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid option &quot;</span><span class="si">{}</span><span class="s1">&quot; for mpi on_rank parameter&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">on_rank</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">gathered_pops</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">all_populations</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">pops</span> <span class="ow">in</span> <span class="n">gathered_pops</span><span class="p">:</span>
+                <span class="n">all_populations</span> <span class="o">|=</span> <span class="nb">set</span><span class="p">(</span><span class="n">pops</span><span class="p">)</span>
+
+            <span class="c1"># WARNING: For a number of parallel applications it&#39;s important that the list of populations returned</span>
+            <span class="c1"># is the same across all ranks (eg ranks don&#39;t iterate through each population in different sequences)</span>
+            <span class="n">all_populations</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">all_populations</span><span class="p">)</span>
+            <span class="n">all_populations</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="n">all_populations</span></div>
+
+<div class="viewcode-block" id="STMPIBuffer.node_ids"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer.node_ids">[docs]</a>    <span class="k">def</span> <span class="nf">node_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">on_rank</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+        <span class="n">local_node_ids</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">STMPIBuffer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">node_ids</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;local&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">local_node_ids</span>
+
+        <span class="k">if</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="n">gathered_nodes</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">allgather</span><span class="p">(</span><span class="n">local_node_ids</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;root&#39;</span><span class="p">:</span>
+            <span class="n">gathered_nodes</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">local_node_ids</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid option &quot;</span><span class="si">{}</span><span class="s1">&quot; for mpi on_rank parameter&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">on_rank</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">gathered_nodes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">gathered_nodes</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="STMPIBuffer.n_spikes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer.n_spikes">[docs]</a>    <span class="k">def</span> <span class="nf">n_spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">on_rank</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">mpi4py</span> <span class="kn">import</span> <span class="n">MPI</span>
+
+        <span class="n">local_n</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">STMPIBuffer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">n_spikes</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;local&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">local_n</span>
+        <span class="k">elif</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">comm</span><span class="o">.</span><span class="n">allreduce</span><span class="p">(</span><span class="n">local_n</span><span class="p">,</span> <span class="n">MPI</span><span class="o">.</span><span class="n">SUM</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;root&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">comm</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">local_n</span><span class="p">,</span> <span class="n">MPI</span><span class="o">.</span><span class="n">SUM</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid option &quot;</span><span class="si">{}</span><span class="s1">&quot; for mpi on_rank parameter&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">on_rank</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="STMPIBuffer.get_times"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer.get_times">[docs]</a>    <span class="k">def</span> <span class="nf">get_times</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">on_rank</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">local_times</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">STMPIBuffer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_times</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span>
+                                                         <span class="n">time_window</span><span class="o">=</span><span class="n">time_window</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;local&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">local_times</span>
+        <span class="k">elif</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="n">all_times</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">allgather</span><span class="p">(</span><span class="n">local_times</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;root&#39;</span><span class="p">:</span>
+            <span class="n">all_times</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">local_times</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid option &quot;</span><span class="si">{}</span><span class="s1">&quot; for mpi on_rank parameter&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">on_rank</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">all_times</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">all_times</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="STMPIBuffer.spikes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer.spikes">[docs]</a>    <span class="k">def</span> <span class="nf">spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">none</span><span class="p">,</span> <span class="n">on_rank</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;local&#39;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">super</span><span class="p">(</span><span class="n">STMPIBuffer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">spikes</span><span class="p">(</span><span class="n">populations</span><span class="o">=</span><span class="n">populations</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="n">time_window</span><span class="p">,</span>
+                                                     <span class="n">sort_order</span><span class="o">=</span><span class="n">sort_order</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">i</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">populations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">populations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span>
+        <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">populations</span><span class="p">):</span>
+            <span class="n">populations</span> <span class="o">=</span> <span class="p">[</span><span class="n">populations</span><span class="p">]</span>
+
+        <span class="n">populations</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">pop_name</span> <span class="ow">in</span> <span class="n">populations</span><span class="p">:</span>
+            <span class="n">node_ids</span><span class="p">,</span> <span class="n">timestamps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gatherv</span><span class="p">(</span><span class="n">pop_name</span><span class="p">,</span> <span class="n">on_all_ranks</span><span class="o">=</span><span class="p">(</span><span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">node_ids</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_id</span><span class="p">:</span>
+                <span class="n">sort_indx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">node_ids</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_time</span><span class="p">:</span>
+                <span class="n">sort_indx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">timestamps</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sort_indx</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">timestamps</span><span class="p">))</span>
+
+            <span class="nb">filter</span> <span class="o">=</span> <span class="n">_create_filter</span><span class="p">(</span><span class="n">populations</span><span class="p">,</span> <span class="n">time_window</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sort_indx</span><span class="p">:</span>
+                <span class="n">t</span> <span class="o">=</span> <span class="n">timestamps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">pop_name</span>
+                <span class="k">if</span> <span class="nb">filter</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">):</span>
+                    <span class="k">yield</span> <span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="STCSVBuffer"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer">[docs]</a><span class="k">class</span> <span class="nc">STCSVBuffer</span><span class="p">(</span><span class="n">SpikeTrainsAPI</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; A Class for creating, storing and reading multi-population spike-trains - especially for saving the spikes of a</span>
 <span class="sd">    large scale network simulation. Keeps a running tally of the (timestamp, population-name, node_id) for each</span>
 <span class="sd">    individual spike.</span>
@@ -902,7 +1079,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">    If running parallel simulations should use the STMPIBuffer adaptor instead.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cache_name</span><span class="o">=</span><span class="s1">&#39;spikes&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cache_name</span><span class="o">=</span><span class="s1">&#39;spikes&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_default_population</span> <span class="o">=</span> <span class="n">default_population</span> <span class="ow">or</span> <span class="n">pop_na</span>
 
         <span class="c1"># Keep a file handle open for writing spike information</span>
@@ -910,10 +1087,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache_name</span> <span class="o">=</span> <span class="n">cache_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache_fname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_dir</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_handle</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer_filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pop_counts</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_default_population</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_nspikes</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pop_metadata</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">def</span> <span class="nf">_cache_fname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_dir</span><span class="p">):</span>
         <span class="c1"># TODO: Potential problem if multiple SpikeTrains are opened at the same time, add salt to prevent collisions</span>
@@ -922,14 +1097,17 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s1">&#39;.bmtk.</span><span class="si">{}</span><span class="s1">.cache.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_name</span><span class="p">))</span>
 
 <div class="viewcode-block" id="STCSVBuffer.add_spike"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.add_spike">[docs]</a>    <span class="k">def</span> <span class="nf">add_spike</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">population</span> <span class="o">=</span> <span class="n">population</span> <span class="ow">or</span> <span class="n">pop_na</span>
+        <span class="n">population</span> <span class="o">=</span> <span class="n">population</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_population</span>
 
         <span class="c1"># NOTE: I looked into using a in-memory buffer to save data and caching only when they reached a threshold,</span>
         <span class="c1"># however on my computer it was actually slower than just calling file.write() each time. Likely the python</span>
         <span class="c1"># file writer is more efficent than what I could write. However still would like to benchmark on a NSF.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_handle</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">timestamp</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">node_id</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_nspikes</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pop_counts</span><span class="p">[</span><span class="n">population</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">population</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span></div>
+
+        <span class="k">if</span> <span class="n">population</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_metadata</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pop_metadata</span><span class="p">[</span><span class="n">population</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="nb">set</span><span class="p">(),</span> <span class="s1">&#39;n_spikes&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pop_metadata</span><span class="p">[</span><span class="n">population</span><span class="p">][</span><span class="s1">&#39;node_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pop_metadata</span><span class="p">[</span><span class="n">population</span><span class="p">][</span><span class="s1">&#39;n_spikes&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
 <div class="viewcode-block" id="STCSVBuffer.add_spikes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.add_spikes">[docs]</a>    <span class="k">def</span> <span class="nf">add_spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">,</span> <span class="n">timestamps</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">node_ids</span><span class="p">):</span>
@@ -941,30 +1119,62 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">populations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pop_counts</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pop_metadata</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">units</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units</span>
 
     <span class="nd">@units</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="k">def</span> <span class="nf">units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="o">=</span> <span class="n">u</span>
 
-<div class="viewcode-block" id="STCSVBuffer.nodes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.nodes">[docs]</a>    <span class="k">def</span> <span class="nf">nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_node_ids</span><span class="p">))</span></div>
+<div class="viewcode-block" id="STCSVBuffer.node_ids"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.node_ids">[docs]</a>    <span class="k">def</span> <span class="nf">node_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">population</span> <span class="o">=</span> <span class="n">population</span> <span class="k">if</span> <span class="n">population</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_population</span>
+        <span class="k">if</span> <span class="n">population</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_metadata</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pop_metadata</span><span class="p">[</span><span class="n">population</span><span class="p">][</span><span class="s1">&#39;node_ids&#39;</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="STCSVBuffer.n_spikes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.n_spikes">[docs]</a>    <span class="k">def</span> <span class="nf">n_spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">population</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+        <span class="n">population</span> <span class="o">=</span> <span class="n">population</span> <span class="k">if</span> <span class="n">population</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_population</span>
+        <span class="k">if</span> <span class="n">population</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_metadata</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_metadata</span><span class="p">[</span><span class="n">population</span><span class="p">][</span><span class="s1">&#39;n_spikes&#39;</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="STCSVBuffer.time_range"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.time_range">[docs]</a>    <span class="k">def</span> <span class="nf">time_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_timestamps</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_timestamps</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># TODO: keep track of largest and smallest values</span></div>
+        <span class="c1"># return np.min(self._timestamps), np.max(self._timestamps)</span>
 
 <div class="viewcode-block" id="STCSVBuffer.get_times"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.get_times">[docs]</a>    <span class="k">def</span> <span class="nf">get_times</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">spikes</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="n">time_window</span><span class="p">)</span> <span class="k">if</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">node_id</span><span class="p">])</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="n">population</span> <span class="o">=</span> <span class="n">population</span> <span class="k">if</span> <span class="n">population</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_population</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">spikes</span><span class="p">(</span><span class="n">populations</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="n">time_window</span><span class="p">)</span> <span class="k">if</span> <span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="n">node_id</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="STCSVBuffer.to_dataframe"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.to_dataframe">[docs]</a>    <span class="k">def</span> <span class="nf">to_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">none</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+<div class="viewcode-block" id="STCSVBuffer.to_dataframe"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.to_dataframe">[docs]</a>    <span class="k">def</span> <span class="nf">to_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">none</span><span class="p">,</span> <span class="n">with_population_col</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="n">sorting_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">col_population</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_time</span><span class="p">:</span>
+            <span class="n">sorting_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">col_population</span><span class="p">,</span> <span class="n">col_timestamps</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_id</span><span class="p">:</span>
+            <span class="n">sorting_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">col_population</span><span class="p">,</span> <span class="n">col_node_ids</span><span class="p">]</span>
+
+        <span class="n">ret_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_filename</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="n">col_timestamps</span><span class="p">,</span> <span class="n">col_population</span><span class="p">,</span> <span class="n">col_node_ids</span><span class="p">]</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">sorting_cols</span><span class="p">)</span>
+
+        <span class="c1"># filter by population</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">populations</span><span class="p">):</span>
+            <span class="n">ret_df</span> <span class="o">=</span> <span class="n">ret_df</span><span class="p">[</span><span class="n">ret_df</span><span class="p">[</span><span class="n">col_population</span><span class="p">]</span> <span class="o">==</span> <span class="n">populations</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">populations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ret_df</span> <span class="o">=</span> <span class="n">ret_df</span><span class="p">[</span><span class="n">ret_df</span><span class="p">[</span><span class="n">col_population</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">populations</span><span class="p">)]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">with_population_col</span><span class="p">:</span>
+            <span class="n">ret_df</span> <span class="o">=</span> <span class="n">ret_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">col_population</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">ret_df</span> <span class="o">=</span> <span class="n">ret_df</span><span class="o">.</span><span class="n">astype</span><span class="p">({</span><span class="n">col_timestamps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">,</span> <span class="n">col_node_ids</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">ret_df</span></div>
 
 <div class="viewcode-block" id="STCSVBuffer.flush"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.flush">[docs]</a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_handle</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
@@ -974,22 +1184,24 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer_filename</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer_filename</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="STCSVBuffer.spikes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.spikes">[docs]</a>    <span class="k">def</span> <span class="nf">spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">none</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="STCSVBuffer.spikes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.spikes">[docs]</a>    <span class="k">def</span> <span class="nf">spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">none</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_sort_buffer_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer_filename</span><span class="p">,</span> <span class="n">sort_order</span><span class="p">)</span>
-        <span class="nb">filter</span> <span class="o">=</span> <span class="n">_create_filter</span><span class="p">(</span><span class="n">populations</span><span class="p">,</span> <span class="n">time_window</span><span class="p">)</span>
+        <span class="n">filter_fnc</span> <span class="o">=</span> <span class="n">_create_filter</span><span class="p">(</span><span class="n">populations</span><span class="p">,</span> <span class="n">time_window</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer_filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
             <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
                 <span class="n">t</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="n">p</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                <span class="k">if</span> <span class="nb">filter</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">filter_fnc</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">):</span>
                     <span class="k">yield</span> <span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 
         <span class="k">return</span></div>
-        <span class="c1">#raise StopIteration</span>
 
     <span class="k">def</span> <span class="nf">_sort_buffer_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">sort_order</span><span class="p">):</span>
+        <span class="c1"># sort a spikes cache file</span>
+        <span class="c1"># Currently we just read &quot;file_name&quot; into a dataframe, sort it, and resave it to the file</span>
         <span class="k">if</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_time</span><span class="p">:</span>
             <span class="n">sort_col</span> <span class="o">=</span> <span class="s1">&#39;time&#39;</span>
         <span class="k">elif</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_id</span><span class="p">:</span>
@@ -1002,36 +1214,29 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">tmp_spikes_ds</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="STMPIBuffer"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer">[docs]</a><span class="k">class</span> <span class="nc">STMPIBuffer</span><span class="p">(</span><span class="n">STCSVBuffer</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cache_name</span><span class="o">=</span><span class="s1">&#39;spikes&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mpi_rank</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;MPI_rank&#39;</span><span class="p">,</span> <span class="n">bmtk_world_comm</span><span class="o">.</span><span class="n">MPI_rank</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mpi_size</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;MPI_size&#39;</span><span class="p">,</span> <span class="n">bmtk_world_comm</span><span class="o">.</span><span class="n">MPI_size</span><span class="p">)</span>
+<div class="viewcode-block" id="STCSVMPIBuffer"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBuffer">[docs]</a><span class="k">class</span> <span class="nc">STCSVMPIBuffer</span><span class="p">(</span><span class="n">STCSVBuffer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default_population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cache_name</span><span class="o">=</span><span class="s1">&#39;spikes&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mpi_rank</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;MPI_rank&#39;</span><span class="p">,</span> <span class="n">MPI_rank</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mpi_size</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;MPI_size&#39;</span><span class="p">,</span> <span class="n">MPI_size</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache_name</span> <span class="o">=</span> <span class="n">cache_name</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">STMPIBuffer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="n">default_population</span><span class="o">=</span><span class="n">default_population</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_all_ranks_data</span> <span class="o">=</span> <span class="p">{}</span>
 
+        <span class="nb">super</span><span class="p">(</span><span class="n">STCSVMPIBuffer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="n">default_population</span><span class="o">=</span><span class="n">default_population</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_cache_fname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_dir</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpi_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_dir</span><span class="p">):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_dir</span><span class="p">)</span>
-        <span class="n">bmtk_world_comm</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
+        <span class="n">comm_barrier</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_dir</span><span class="p">,</span> <span class="s1">&#39;.bmtk.</span><span class="si">{}</span><span class="s1">.cache.node</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpi_rank</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_all_cached_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_dir</span><span class="p">,</span> <span class="s1">&#39;.bmtk.</span><span class="si">{}</span><span class="s1">.cache.node</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_name</span><span class="p">,</span> <span class="n">r</span><span class="p">))</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">bmtk_world_comm</span><span class="o">.</span><span class="n">MPI_size</span><span class="p">)]</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">populations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_gather</span><span class="p">()</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pop_counts</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-
-<div class="viewcode-block" id="STMPIBuffer.n_spikes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer.n_spikes">[docs]</a>    <span class="k">def</span> <span class="nf">n_spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_gather</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">population</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_dir</span><span class="p">,</span> <span class="s1">&#39;.bmtk.</span><span class="si">{}</span><span class="s1">.cache.node</span><span class="si">{}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cache_name</span><span class="p">,</span> <span class="n">r</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">MPI_size</span><span class="p">)]</span>
 
     <span class="k">def</span> <span class="nf">_gather</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pop_counts</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_all_ranks_data</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_cached_files</span><span class="p">():</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
                 <span class="k">continue</span>
@@ -1039,12 +1244,137 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
                     <span class="n">pop</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_pop_counts</span><span class="p">[</span><span class="n">pop</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="n">pop</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_ranks_data</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_all_ranks_data</span><span class="p">[</span><span class="n">pop</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;n_spikes&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="nb">set</span><span class="p">()}</span>
 
-<div class="viewcode-block" id="STMPIBuffer.spikes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer.spikes">[docs]</a>    <span class="k">def</span> <span class="nf">spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">none</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_all_ranks_data</span><span class="p">[</span><span class="n">pop</span><span class="p">][</span><span class="s1">&#39;n_spikes&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># self._all_ranks_data.get(pop, 0) + 1</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_all_ranks_data</span><span class="p">[</span><span class="n">pop</span><span class="p">][</span><span class="s1">&#39;node_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+
+    <span class="k">def</span> <span class="nf">_gather_times</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="p">):</span>
+        <span class="n">timestamps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_cached_files</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+                <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
+                    <span class="n">pop</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">nid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">nid</span> <span class="o">==</span> <span class="n">node_id</span> <span class="ow">and</span> <span class="n">pop</span> <span class="o">==</span> <span class="n">population</span><span class="p">:</span>
+                        <span class="n">timestamps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">timestamps</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">populations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_populations</span><span class="p">(</span><span class="n">on_rank</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="STCSVMPIBuffer.get_populations"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBuffer.get_populations">[docs]</a>    <span class="k">def</span> <span class="nf">get_populations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">on_rank</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;local&#39;</span><span class="p">:</span>
+            <span class="n">pops</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">STCSVMPIBuffer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">populations</span>
+            <span class="n">pops</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>  <span class="c1"># import populations are in the same order on all ranks</span>
+            <span class="k">return</span> <span class="n">pops</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="n">comm_barrier</span><span class="p">()</span>
+        <span class="n">pops</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gather</span><span class="p">()</span>
+            <span class="n">pops</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_ranks_data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
-        <span class="nb">filter</span> <span class="o">=</span> <span class="n">_create_filter</span><span class="p">(</span><span class="n">populations</span><span class="p">,</span> <span class="n">time_window</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;root&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">MPI_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_gather</span><span class="p">()</span>
+                <span class="n">pops</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_ranks_data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="n">pops</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pops</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">pops</span></div>
+
+<div class="viewcode-block" id="STCSVMPIBuffer.n_spikes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBuffer.n_spikes">[docs]</a>    <span class="k">def</span> <span class="nf">n_spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">on_rank</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;local&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">STCSVMPIBuffer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">n_spikes</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">)</span>
+
+        <span class="n">population</span> <span class="o">=</span> <span class="n">population</span> <span class="k">if</span> <span class="n">population</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_population</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="n">comm_barrier</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gather</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_ranks_data</span><span class="p">[</span><span class="n">population</span><span class="p">][</span><span class="s1">&#39;n_spikes&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_ranks_data</span> <span class="k">else</span> <span class="mi">0</span>
+
+        <span class="k">elif</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;root&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">MPI_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_gather</span><span class="p">()</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_ranks_data</span><span class="p">[</span><span class="n">population</span><span class="p">][</span><span class="s1">&#39;n_spikes&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_ranks_data</span> <span class="k">else</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid option &quot;</span><span class="si">{}</span><span class="s1">&quot; for mpi on_rank parameter&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">on_rank</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="STCSVMPIBuffer.node_ids"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBuffer.node_ids">[docs]</a>    <span class="k">def</span> <span class="nf">node_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">on_rank</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;local&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">STCSVMPIBuffer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">node_ids</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">)</span>
+
+        <span class="n">population</span> <span class="o">=</span> <span class="n">population</span> <span class="k">if</span> <span class="n">population</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_population</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="n">comm_barrier</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gather</span><span class="p">()</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_ranks_data</span><span class="p">[</span><span class="n">population</span><span class="p">][</span><span class="s1">&#39;node_ids&#39;</span><span class="p">])</span> <span class="k">if</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_ranks_data</span> <span class="k">else</span> <span class="p">[]</span>
+
+        <span class="k">elif</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;root&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">MPI_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_gather</span><span class="p">()</span>
+                <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_ranks_data</span><span class="p">[</span><span class="n">population</span><span class="p">][</span><span class="s1">&#39;node_ids&#39;</span><span class="p">])</span> <span class="k">if</span> <span class="n">population</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_ranks_data</span> <span class="k">else</span> <span class="p">[]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid option &quot;</span><span class="si">{}</span><span class="s1">&quot; for mpi on_rank parameter&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">on_rank</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="STCSVMPIBuffer.get_times"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBuffer.get_times">[docs]</a>    <span class="k">def</span> <span class="nf">get_times</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">on_rank</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># population = population if population is not None else self._default_population</span>
+        <span class="k">if</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;local&#39;</span><span class="p">:</span>
+            <span class="c1"># calling super.get_times() will fail since it relies on spikes()</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">super</span><span class="p">(</span><span class="n">STCSVMPIBuffer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">spikes</span><span class="p">(</span>
+                <span class="n">populations</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="n">time_window</span><span class="p">)</span> <span class="k">if</span> <span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="n">node_id</span><span class="p">])</span>
+
+        <span class="n">population</span> <span class="o">=</span> <span class="n">population</span> <span class="k">if</span> <span class="n">population</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_population</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="n">comm_barrier</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="n">timestamps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gather_times</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;root&#39;</span><span class="p">:</span>
+            <span class="n">timestamps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gather_times</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="p">)</span> <span class="k">if</span> <span class="n">MPI_rank</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid option &quot;</span><span class="si">{}</span><span class="s1">&quot; for mpi on_rank parameter&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">on_rank</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">time_window</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">timestamps</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">timestamps</span> <span class="k">if</span> <span class="n">time_window</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">t</span> <span class="o">&lt;=</span> <span class="n">time_window</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+
+        <span class="k">return</span> <span class="n">timestamps</span></div>
+
+<div class="viewcode-block" id="STCSVMPIBuffer.spikes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBuffer.spikes">[docs]</a>    <span class="k">def</span> <span class="nf">spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">none</span><span class="p">,</span> <span class="n">on_rank</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;local&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">STCSVMPIBuffer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">spikes</span><span class="p">(</span><span class="n">populations</span><span class="o">=</span><span class="n">populations</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="n">time_window</span><span class="p">,</span>
+                                                      <span class="n">sort_order</span><span class="o">=</span><span class="n">sort_order</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="n">comm_barrier</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sort_helper</span><span class="p">(</span><span class="n">populations</span><span class="p">,</span> <span class="n">time_window</span><span class="p">,</span> <span class="n">sort_order</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;root&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">MPI_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sort_helper</span><span class="p">(</span><span class="n">populations</span><span class="p">,</span> <span class="n">time_window</span><span class="p">,</span> <span class="n">sort_order</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[]</span></div>
+
+    <span class="k">def</span> <span class="nf">_sort_helper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="p">,</span> <span class="n">time_window</span><span class="p">,</span> <span class="n">sort_order</span><span class="p">):</span>
+        <span class="n">filter_fnc</span> <span class="o">=</span> <span class="n">_create_filter</span><span class="p">(</span><span class="n">populations</span><span class="p">,</span> <span class="n">time_window</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_time</span> <span class="ow">or</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_id</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">file_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_cached_files</span><span class="p">():</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
@@ -1052,11 +1382,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">_sort_buffer_file</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">sort_order</span><span class="p">)</span>
 
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sorted_itr</span><span class="p">(</span><span class="nb">filter</span><span class="p">,</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_time</span> <span class="k">else</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sorted_itr</span><span class="p">(</span><span class="n">filter_fnc</span><span class="p">,</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_time</span> <span class="k">else</span> <span class="mi">2</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unsorted_itr</span><span class="p">(</span><span class="nb">filter</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unsorted_itr</span><span class="p">(</span><span class="n">filter_fnc</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_unsorted_itr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">filter</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_unsorted_itr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_fnc</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_cached_files</span><span class="p">():</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
                 <span class="k">continue</span>
@@ -1066,13 +1396,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
                     <span class="n">t</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                     <span class="n">p</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                    <span class="k">if</span> <span class="nb">filter</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">filter_fnc</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">t</span><span class="p">):</span>
                         <span class="k">yield</span> <span class="n">t</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 
         <span class="k">return</span>
-        <span class="c1">#raise StopIteration</span>
 
-    <span class="k">def</span> <span class="nf">_sorted_itr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="n">sort_col</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_sorted_itr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_fnc</span><span class="p">,</span> <span class="n">sort_col</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Iterates through all the spikes on each rank, returning them in the specified order&quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">heapq</span>
 
@@ -1083,6 +1412,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="k">return</span> <span class="n">row</span><span class="p">[</span><span class="n">sort_col</span><span class="p">],</span> <span class="n">row</span><span class="p">,</span> <span class="n">csv_reader</span>
             <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">ie</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">ie</span><span class="p">)</span>
+                <span class="n">exit</span><span class="p">()</span>
 
         <span class="c1"># Assumes all the ranked cached files have already been sorted. Pop the top row off of each rank onto the</span>
         <span class="c1"># heap, pull next spike off the heap and replace. Repeat until all spikes on all ranks have been poped.</span>
@@ -1098,10 +1430,55 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">if</span> <span class="n">n</span><span class="p">:</span>
                 <span class="n">heapq</span><span class="o">.</span><span class="n">heappush</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="nb">filter</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="n">filter_fnc</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
                 <span class="k">yield</span> <span class="n">row</span></div>
+
+
+<div class="viewcode-block" id="STCSVMPIBufferV2"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBufferV2">[docs]</a><span class="k">class</span> <span class="nc">STCSVMPIBufferV2</span><span class="p">(</span><span class="n">STCSVMPIBuffer</span><span class="p">):</span>
+<div class="viewcode-block" id="STCSVMPIBufferV2.to_dataframe"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBufferV2.to_dataframe">[docs]</a>    <span class="k">def</span> <span class="nf">to_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">none</span><span class="p">,</span> <span class="n">with_population_col</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">on_rank</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span>
+                     <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;local&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">STCSVMPIBufferV2</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">(</span><span class="n">populations</span><span class="o">=</span><span class="n">populations</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">populations</span><span class="p">,</span>
+                                                              <span class="n">with_population_col</span><span class="o">=</span><span class="n">with_population_col</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">populations</span><span class="p">):</span>
+            <span class="n">populations</span> <span class="o">=</span> <span class="p">[</span><span class="n">populations</span><span class="p">]</span>  <span class="c1"># so we can use dataframe.isin() later</span>
+
+        <span class="n">ret_df</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="n">comm_barrier</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="n">cached_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_cached_files</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">on_rank</span> <span class="o">==</span> <span class="s1">&#39;root&#39;</span><span class="p">:</span>
+            <span class="n">cached_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_cached_files</span><span class="p">()</span> <span class="k">if</span> <span class="n">MPI_rank</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid option &quot;</span><span class="si">{}</span><span class="s1">&quot; for mpi on_rank parameter&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">on_rank</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">file_name</span> <span class="ow">in</span> <span class="n">cached_files</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="n">col_timestamps</span><span class="p">,</span> <span class="n">col_population</span><span class="p">,</span> <span class="n">col_node_ids</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">populations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">col_population</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">populations</span><span class="p">)]</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">with_population_col</span><span class="p">:</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">col_population</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">ret_df</span> <span class="o">=</span> <span class="n">df</span> <span class="k">if</span> <span class="n">ret_df</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">ret_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ret_df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># pandas doesn&#39;t always do a good job of reading in the correct dtype for each column</span>
+            <span class="n">ret_df</span> <span class="o">=</span> <span class="n">ret_df</span><span class="o">.</span><span class="n">astype</span><span class="p">({</span><span class="n">col_timestamps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">,</span> <span class="n">col_node_ids</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">})</span>
+
+            <span class="k">if</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_time</span><span class="p">:</span>
+                <span class="n">ret_df</span> <span class="o">=</span> <span class="n">ret_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">col_timestamps</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_id</span><span class="p">:</span>
+                <span class="n">ret_df</span> <span class="o">=</span> <span class="n">ret_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">col_node_ids</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ret_df</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1118,13 +1495,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
@@ -1133,17 +1520,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

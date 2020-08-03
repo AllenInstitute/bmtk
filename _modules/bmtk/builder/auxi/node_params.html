@@ -1,18 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.builder.auxi.node_params &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
@@ -645,7 +648,18 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">import</span> <span class="nn">math</span>
 
 
-<div class="viewcode-block" id="positions_columinar"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.auxi.html#bmtk.builder.auxi.node_params.positions_columinar">[docs]</a><span class="k">def</span> <span class="nf">positions_columinar</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">min_radius</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_radius</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">distribution</span><span class="o">=</span><span class="s1">&#39;uniform&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="positions_columinar"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.auxi.html#bmtk.builder.auxi.node_params.positions_columinar">[docs]</a><span class="k">def</span> <span class="nf">positions_columinar</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">min_radius</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_radius</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                        <span class="n">distribution</span><span class="o">=</span><span class="s1">&#39;uniform&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a set of random x,y,z coordinates within a given sphere. Height is given as the y (index 1) coordates</span>
+
+<span class="sd">    :param N: Number of points to return</span>
+<span class="sd">    :param center: center of sphere</span>
+<span class="sd">    :param height: maximum length of sphere (y coord)</span>
+<span class="sd">    :param min_radius: minimum horizontal radius on x-z plane</span>
+<span class="sd">    :param max_radius: maximum horizontal radius on x-z plane</span>
+<span class="sd">    :param distribution: Not yet implementd</span>
+<span class="sd">    :return: A (N, 3) matrix</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">phi</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="n">N</span><span class="p">])</span>
     <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">min_radius</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">max_radius</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">([</span><span class="n">N</span><span class="p">])</span> <span class="o">+</span> <span class="n">max_radius</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
@@ -654,41 +668,51 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span></div>
 
-<span class="c1"># This function distributes the cells in a 3D cuboid (x,y,z sides may have different lengths). </span>
-<span class="c1"># The method used assures cells cannot be placed too close to one another (must be &gt; min_dist apart)</span>
-<span class="c1"># WARNING: If cell density is high and there is more than 1 population of cells, there is a high chance...</span>
-<span class="c1"># ... cells will be placed on top of one another. You can use positions_list() to avoid this...</span>
-<span class="c1"># ... but you must create your own array of cell positions</span>
-<span class="c1"># Written by Ben Latimer at University of Missouri (latimerb@missouri.edu)</span>
+
 <div class="viewcode-block" id="positions_cuboid"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.auxi.html#bmtk.builder.auxi.node_params.positions_cuboid">[docs]</a><span class="k">def</span> <span class="nf">positions_cuboid</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">height</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">xside_length</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">yside_length</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span> <span class="n">min_dist</span><span class="o">=</span><span class="mf">20.0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This function distributes the cells in a 3D cuboid (x,y,z sides may have different lengths). The method used</span>
+<span class="sd">    assures cells cannot be placed too close to one another (must be &gt; min_dist apart)</span>
+<span class="sd">    WARNING: If cell density is high and there is more than 1 population of cells, there is a high chance cells will be</span>
+<span class="sd">    placed on top of one another. You can use positions_list() to avoid this...</span>
+
+<span class="sd">    Written by Ben Latimer at University of Missouri (latimerb@missouri.edu)</span>
+
+<span class="sd">    :return: A (N, 3) matrix</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="c1"># Create the possible x,y,z coordinates</span>
-    <span class="n">x_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">xside_length</span><span class="o">+</span><span class="n">min_dist</span><span class="p">,</span><span class="n">min_dist</span><span class="p">)</span>
-    <span class="n">y_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">yside_length</span><span class="o">+</span><span class="n">min_dist</span><span class="p">,</span><span class="n">min_dist</span><span class="p">)</span>
-    <span class="n">z_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">center</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">height</span><span class="o">+</span><span class="n">min_dist</span><span class="p">,</span><span class="n">min_dist</span><span class="p">)</span>
+    <span class="n">x_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xside_length</span><span class="o">+</span><span class="n">min_dist</span><span class="p">,</span> <span class="n">min_dist</span><span class="p">)</span>
+    <span class="n">y_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">yside_length</span><span class="o">+</span><span class="n">min_dist</span><span class="p">,</span> <span class="n">min_dist</span><span class="p">)</span>
+    <span class="n">z_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">center</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">height</span><span class="o">+</span><span class="n">min_dist</span><span class="p">,</span> <span class="n">min_dist</span><span class="p">)</span>
     <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x_grid</span><span class="p">,</span> <span class="n">y_grid</span><span class="p">,</span> <span class="n">z_grid</span><span class="p">)</span>
     <span class="n">positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">xx</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">yy</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">zz</span><span class="o">.</span><span class="n">ravel</span><span class="p">()])</span><span class="o">.</span><span class="n">T</span>
 
     <span class="c1"># Pick N indices for the positions matrix randomly, without replacement (so coordinates are unique)</span>
-    <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span><span class="mi">0</span><span class="p">)),</span><span class="n">N</span><span class="p">,</span><span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">N</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="c1"># Assign positions</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">inds</span><span class="p">][:,</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">inds</span><span class="p">][:,</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">z</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">inds</span><span class="p">][:,</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">inds</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">inds</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">inds</span><span class="p">][:,</span> <span class="mi">2</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span></div>
 
-<span class="c1"># This function is designed to be used with an externally supplied array of x,y,z coordinates. </span>
-<span class="c1"># It is useful to avoid cell overlap in high density situations or to make some unique geometry.</span>
-<span class="c1"># After you create each population, delete those positions from the &quot;master&quot; list of coordinates.</span>
-<span class="c1"># This will assure that no cells are placed on top of one another. </span>
-<span class="c1"># Written by Ben Latimer at University of Missouri (latimerb@missouri.edu)</span>
-<div class="viewcode-block" id="positions_list"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.auxi.html#bmtk.builder.auxi.node_params.positions_list">[docs]</a><span class="k">def</span> <span class="nf">positions_list</span><span class="p">(</span><span class="n">positions</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)])):</span>
+
+<div class="viewcode-block" id="positions_list"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.auxi.html#bmtk.builder.auxi.node_params.positions_list">[docs]</a><span class="k">def</span> <span class="nf">positions_list</span><span class="p">(</span><span class="n">positions</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])):</span>
+    <span class="sd">&quot;&quot;&quot;This function is designed to be used with an externally supplied array of x,y,z coordinates. It is useful to</span>
+<span class="sd">    avoid cell overlap in high density situations or to make some unique geometry. After you create each population,</span>
+<span class="sd">    delete those positions from the &quot;master&quot; list of coordinates. This will assure that no cells are placed on top of</span>
+<span class="sd">    one another.</span>
+
+<span class="sd">    Written by Ben Latimer at University of Missouri (latimerb@missouri.edu)</span>
+
+<span class="sd">    :param positions:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="n">x</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">z</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
 
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span></div>
 
@@ -698,6 +722,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="o">=</span><span class="n">min_x</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="n">max_x</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">N</span><span class="p">,))</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -714,13 +739,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
@@ -729,17 +764,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

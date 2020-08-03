@@ -1,0 +1,829 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyzing the Results &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tutorials" href="tutorials.html" />
+    <link rel="prev" title="FilterNet" href="filternet.html" /> 
+  </head><body>
+<script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
+<style>
+
+	/* the icon font-family definition and helper classes */
+	@font-face {
+	  font-family: 'portal_icon_font';
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
+	  font-weight: normal;
+	  font-style: normal;
+	}
+	 
+	 [class^="icon-"]:before, [class*=" icon-"]:before {
+	  font-family: "portal_icon_font";
+	  font-style: normal;
+	  font-weight: normal;
+	  speak: none;
+	 
+	  display: inline-block;
+	  text-decoration: inherit;
+	  width: 1em;
+	  margin-right: .2em;
+	  text-align: center;
+	  /* opacity: .8; */
+	 
+	  /* For safety - reset parent styles, that can break glyph codes*/
+	  font-variant: normal;
+	  text-transform: none;
+	     
+	  /* fix buttons height, for twitter bootstrap */
+	  line-height: 1em;
+	 
+	  /* Animation center compensation - margins should be symmetric */
+	  /* remove if not needed */
+	  margin-left: .2em;
+	
+	}
+	 
+	.icon-spin5:before { content: '\e806'; } /* '' */
+	.icon-left-open-1:before { content: '\e81e'; } /* '' */
+	.icon-plus-1:before { content: '\e801'; } /* '' */
+	.icon-facebook:before { content: '\e816'; } /* '' */
+	.icon-gplus:before { content: '\e818'; } /* '' */
+	.icon-linkedin-3:before { content: '\e815'; } /* '' */
+	.icon-twitter:before { content: '\e817'; } /* '' */
+	.icon-youtube-play:before { content: '\e805'; } /* '' */
+	.icon-plus-2:before { content: '\e809'; } /* '' */
+	.icon-record-1:before { content: '\e81c'; } /* '' */
+	.icon-cancel:before { content: '\e80b'; } /* '' */
+	.icon-search:before { content: '\e804'; } /* '' */
+	.icon-cancel-2:before { content: '\e80c'; } /* '' */
+	.icon-plus-4:before { content: '\e80d'; } /* '' */
+	.icon-cancel-3:before { content: '\e80e'; } /* '' */
+	.icon-plus:before { content: '\e808'; } /* '' */
+	.icon-down-open:before { content: '\e800'; } /* '' */
+	.icon-right-open:before { content: '\e802'; } /* '' */
+	.icon-up-open:before { content: '\e803'; } /* '' */
+	.icon-stop:before { content: '\e813'; } /* '' */
+	.icon-cancel-1:before { content: '\e820'; } /* '' */
+	.icon-plus-3:before { content: '\e80a'; } /* '' */
+	/* end icon font helpers */
+
+	/* icon font spin animation */
+	.animate-spin {
+	  -moz-animation: spin 2s infinite linear;
+	  -o-animation: spin 2s infinite linear;
+	  -webkit-animation: spin 2s infinite linear;
+	  animation: spin 2s infinite linear;
+	  display: inline-block;
+	}
+	@-moz-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-webkit-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-o-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-ms-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	/*  end spin animation */	
+
+	@font-face {
+	    font-family: 'bebas_neueregular';
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
+	    font-weight: normal;
+	    font-style: normal;
+	}
+
+	/* top chrome styles */
+	#top_chrome {
+
+		width:100%;
+		height:28px;
+		background-color:#163E65;
+	}
+
+	.chrome_link_block {
+
+		color:#fff !important;	
+		display:inline-block;
+		height:100%;
+		max-height:28px;
+	}
+
+	.chrome_link_block:hover {
+
+		background-color:#eee;
+		color:#0779BE !important;	
+		cursor:pointer;
+	}
+
+	#top_chrome a {
+
+		color:inherit !important;	
+		text-decoration:none;
+	}
+
+	#top_chrome a:hover {
+
+		color:inherit !important;	
+	}
+
+	#top_chrome_buttons {
+
+		float:right;
+		margin-right:50px;
+	}
+
+	.chrome_button {
+
+		font-family:arial,sans-serif;
+		font-weight:bold;
+		display:inline-block;
+		font-size:9px;
+		text-align:left;
+		text-decoration:none;
+		margin:9px 20px 10px 20px;
+	}
+
+	.chrome_active {
+
+		background-color:#1b7abd;
+		color:#fff;
+	}
+
+
+	/* header element styles*/
+	#header_content {
+
+		font-family: bebas_neueregular, arial, sans-serif;
+		font-size:22px;
+		color:#0779be;		
+		letter-spacing:0.03em;
+
+		position:relative;
+		width:calc(100% - 112px);
+		min-width:800px;
+		height:76px;
+		border-bottom:2px solid #A5A8AB;
+		margin-left:50px;
+		margin-right:50px;
+        z-index:9999; /* IT-9508 */
+	}
+
+	#portal_logo {
+
+		position:absolute;
+		top:20px;
+		left:0px;
+		width:236px;
+	}
+
+	#portal_tabs {
+
+		position: absolute;
+		bottom: 12px;
+		left: 0px;
+		margin-bottom: -12px;
+		display: block;
+	}
+
+	.horizontal_list
+	{
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		display: inline; 		
+	}
+
+	.horizontal_list li { 
+
+		display: inline; 	
+	}	
+
+	#portal_tab_menu_container {
+
+		display:none;
+	}
+
+	#portal_search_input_group {
+
+		position:absolute;
+		margin: 0;
+		padding: 0;
+		bottom:12px;
+		right:0px;
+		border:1px solid #DAD9D3;
+		color:#DAD9D3;
+	}
+
+	#portal_search_input_group input {
+
+		margin: 0;
+		padding: 0;
+		border:none;
+		width:110px;
+		color:#DAD9D3;
+		font-family:Helvetica,sans-serif;
+		font-size:12px;
+		height:28px;
+		margin-left:10px;
+
+		outline:none;
+	}
+
+	input::-ms-clear {
+		display: none;
+	}
+
+	#portal_search_input_group i {
+
+		font-size:0.8em;
+		cursor:pointer;
+	}
+
+	#pSiteSearchTextInput:focus {
+
+		color:#000;
+	}
+
+	.icon_menu_down {
+
+		font-size: 12px;
+		margin-left: 4px;
+		vertical-align: text-top;
+		padding-top: 4px;
+		display: inline-block;
+	}
+
+	.portal_tab_item {
+
+		background-color: #fff;
+		padding: 12px;
+		padding-left:20px;
+		padding-right:20px;
+		display: inline-block !important;		
+	}
+
+	.portal_tab_item a:hover {
+
+		color:#fbe300;	
+	}
+
+	.portal_tab_item:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}	
+
+
+	.portal_menu_active {
+
+		background-color: #EEEEEE;
+	}	
+
+	.portal_menu_item_active {
+
+		color:#fbe300 !important;	
+	}
+
+	.portal_tab_active {
+
+		color:#a5a8ab !important;
+	}
+
+	#header_content a {		
+
+		color:inherit !important;
+	}
+
+	#header_content a:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}
+
+	#header_content ul {
+
+		list-style: none;
+		position: relative;
+		top: 58px;
+		display: inline-table;
+	}
+
+	#header_content ul ul {
+		
+		display:none;
+		opacity:0;
+	}
+
+	/* the fly out menus */
+	#header_content ul li:hover > ul,
+	#header_content ul li.hover > ul {
+
+		position: absolute;
+		top: 48px;
+		z-index:999;
+
+		display: block;
+		width: 152px;
+		padding:0px;
+		padding-top:20px;
+		padding-bottom:10px;
+		font-size: 12px;
+		font-family: Arial,Sans-Serif;
+		font-weight: bold;
+		text-transform: uppercase;
+
+		background-color: rgba(8,122,191,0.98);
+		color: #fff !important;
+		opacity: 1;
+
+		-webkit-animation: fade 0.25s;
+		animation: fade 0.25s;
+	}
+
+	@-webkit-keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}
+	@keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}	
+
+	#header_content ul li:hover > ul li {
+
+		padding: 10px;
+		padding-top: 0px;
+		padding-left: 20px;
+		display: block;
+		opacity:1;
+	}
+
+	#header_content ul li:hover > ul a {
+
+		display: block;
+		opacity:1;
+		white-space:nowrap;
+	}
+
+	#portal_menu_start_list {
+
+		left: 81px;
+
+		/* IE sauce */
+		left:85px\9;
+
+		/* Safari sauce */
+		(;left:79px;);
+	}
+
+	#portal_menu_atlases_list {
+
+		left: 290px;
+		width: 210px !important;
+        height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 303px\9;
+        height: 225px\9;
+
+		/* Safari sauce */
+		(;left:279px;);
+	}
+
+	#portal_menu_tools_list {
+
+		left: 500px;
+		width: 172px !important;
+		height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 513px\9;
+		height:225px\9;
+
+		/* Safari sauce */
+		(;left:489px;);
+		(;height:227px;);
+	}
+
+	/* mozilla sauce */
+	@-moz-document url-prefix() {
+
+		#header_content {
+
+			height:107px;
+		}
+
+		#portal_menu_start_list {
+
+			left:85px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 302px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 512px;
+			height:236px;
+		}
+	}
+
+
+	/* make it look OK on iPad also */
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:portrait) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}  
+	}
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:landscape) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}	  
+	}
+
+	.portal_menu_list_heading {
+
+		color:#9ccae5;
+		border-bottom:1px solid #9ccae5;
+		padding-bottom:5px !important;
+	}
+
+	.portal_menu_list_heading + li {
+
+		padding-top:10px !important;
+	}
+
+	.portal_menu_list_heading li {
+
+		padding-bottom:0px;
+	}	
+
+	#portal_menu_atlases_list li:last-of-type {
+
+		padding-bottom:15px !important;
+	}
+
+	.icon-spin5 {
+
+		color:#000;
+	}
+</style>
+<div id="pHeader">
+<div id="top_chrome">
+	<div id="top_chrome_buttons">
+		<div class="chrome_link_block"><a href="http://www.alleninstitute.org" target="_blank" class="chrome_button">ALLEN INSTITUTE</a></div>
+	</div>
+</div>
+
+<div id="header_content">
+
+	<a href="http://AllenInstitute.github.io">
+		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/AIBS_Logo.png"/>
+	</a>
+</div>
+</div>
+
+<script>
+
+jQuery('#portal_tab_menu').bind('touchstart', function() {
+
+	if(window.console)
+		console.log("touchstart");
+});
+</script>
+<link rel="stylesheet" type="text/css" href="_static/external_assets/stylesheets/common_layout.css" />
+
+
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="analyzing-the-results">
+<h1>Analyzing the Results<a class="headerlink" href="#analyzing-the-results" title="Permalink to this headline">¶</a></h1>
+<div class="figure align-default">
+<a class="reference internal image-reference" href="_images/bmtk_architecture_analyzer_highlight.jpg"><img alt="_images/bmtk_architecture_analyzer_highlight.jpg" src="_images/bmtk_architecture_analyzer_highlight.jpg" style="width: 433.6px; height: 167.20000000000002px;" /></a>
+</div>
+<p>After a simulation has completed BMTK will automatically save the results to the output folder. It is possible to have
+BMTK read and analyze the results before the simulation has exited but usually not required. The type of results saved
+during the simulation is determined by the “reports” section of the <a class="reference external" href="./simulators.html#configuration-files">simulation config</a>.
+But most commonly it is a spikes-trains file, a cell-variable report, an extracellular potential recording, and in the
+case of PopNet a report of the firing rate dynamics.</p>
+<p>The output files follow the <a class="reference external" href="https://github.com/AllenInstitute/sonata">SONATA Data format</a>, and tools like
+<a class="reference external" href="https://github.com/AllenInstitute/sonata/tree/master/src/pysonata">pySONATA</a>  or
+<a class="reference external" href="https://github.com/BlueBrain/libsonata">libSONATA</a> can be used to read them. The following consists of a high-level
+overview of these different formats and how you can use BMTK to find the results.</p>
+<div class="section" id="spike-trains">
+<h2>Spike-Trains<a class="headerlink" href="#spike-trains" title="Permalink to this headline">¶</a></h2>
+<p>Contains action-potentials/spikes for all the nodes within a given population. In the HDF5 the spikes are stored under
+/spikes/_&lt;population_name&gt;_/ and contains two data-sets:</p>
+<ul class="simple">
+<li><p>timestamps (size N): A list of all the spikes during the simulation</p></li>
+<li><p>node_ids (size N): A list of corresponding node_ids for each spike</p></li>
+</ul>
+<div class="figure align-default">
+<a class="reference internal image-reference" href="_images/spikes_report.png"><img alt="_images/spikes_report.png" src="_images/spikes_report.png" style="width: 511.20000000000005px; height: 273.6px;" /></a>
+</div>
+<p>The group may contain an attribute “sorting” with values none, by_id, and by_time to indicate if and how the spikes are
+sorted (default none). There is also an optional attribute “units” for the timestamps, but defaults to milliseconds.</p>
+<div class="section" id="reading">
+<h3>Reading<a class="headerlink" href="#reading" title="Permalink to this headline">¶</a></h3>
+<p>You can use the <a class="reference internal" href="bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI" title="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpikeTrains</span></code></a> class to load
+a sonata spikes files (or csv or nwb) into memory:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.utils.reports.spike_trains</span> <span class="kn">import</span> <span class="n">SpikeTrains</span>
+
+<span class="n">pop_name</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">spikes</span> <span class="o">=</span> <span class="n">SpikeTrains</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;output/spikes.h5&#39;</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">)</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">spikes</span><span class="o">.</span><span class="n">populations</span> <span class="o">=</span> <span class="p">[</span><span class="n">pop_name</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">spikes</span><span class="o">.</span><span class="n">n_spikes</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">spikes</span><span class="o">.</span><span class="n">node_ids</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>If you know what node you want use the <a class="reference internal" href="bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.get_times" title="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.get_times"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_times()</span></code></a>
+method to return an array of all spikes for a single node</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">node0_times</span> <span class="o">=</span> <span class="n">spikes</span><span class="o">.</span><span class="n">get_times</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node0_times</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Otherwise you can use the <a class="reference internal" href="bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.to_dataframe" title="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.to_dataframe"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_dataframe()</span></code></a>
+or <a class="reference internal" href="bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.spikes" title="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.spikes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">spikes()</span></code></a>  method to get a list of
+all node_ids plus timestamps</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">ts</span><span class="p">,</span> <span class="n">pop</span><span class="p">,</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="n">spikes</span><span class="p">():</span>
+   <span class="k">assert</span><span class="p">(</span><span class="n">pop</span> <span class="o">==</span> <span class="n">pop_name</span><span class="p">)</span>
+   <span class="o">...</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">spikes</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="plotting">
+<h3>Plotting<a class="headerlink" href="#plotting" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="analysis">
+<h3>Analysis<a class="headerlink" href="#analysis" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="creating-spike-trains">
+<h3>Creating Spike Trains<a class="headerlink" href="#creating-spike-trains" title="Permalink to this headline">¶</a></h3>
+<p>Commonly it’s necessary to generate spike-trains to use as inputs for a simulation. One option is to use FilterNet to
+generate inputs from external stimuli. You can also use the output of one simulation as the input to the next. But if
+you need to generate your own spike files, in property SONATA format, BMTK provides two ways of readily doing so. One
+is to use the <a class="reference internal" href="bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI" title="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpikeTrains</span></code></a> class
+<a class="reference internal" href="bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.add_spikes" title="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.add_spikes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_spikes()</span></code></a> or
+<a class="reference internal" href="bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.add_spike" title="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.add_spike"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_spike()</span></code></a> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.utils.reports.spike_trains</span> <span class="kn">import</span> <span class="n">SpikeTrains</span>
+
+<span class="n">spikes</span> <span class="o">=</span> <span class="n">SpikeTrains</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="s1">&#39;my_inputs&#39;</span><span class="p">)</span>
+<span class="n">spikes</span><span class="o">.</span><span class="n">add_spikes</span><span class="p">(</span><span class="n">node_ids</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">timestamps</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
+<span class="n">spikes</span><span class="o">.</span><span class="n">add_spike</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+                 <span class="n">timestamps</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Or use the <a class="reference internal" href="bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains.PoissonSpikeGenerator" title="bmtk.utils.reports.spike_trains.spike_trains.PoissonSpikeGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">PoissonSpikeGenerator</span></code></a> class</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bmtk.utils.reports.spike_trains</span> <span class="kn">import</span> <span class="n">PoissonSpikeGenerator</span>
+
+<span class="n">psg</span> <span class="o">=</span> <span class="n">PoissonSpikeGenerator</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="s1">&#39;thalamus&#39;</span><span class="p">)</span>
+<span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mi">100000</span><span class="p">)</span>
+<span class="n">frs</span> <span class="o">=</span> <span class="mi">10</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">times</span><span class="p">)</span> <span class="o">+</span> <span class="mf">5.0</span>
+<span class="n">psg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="n">firing_rate</span><span class="o">=</span><span class="n">frs</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">)</span>
+<span class="n">psg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="n">firing_rate</span><span class="o">=</span><span class="mf">15.0</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">))</span>
+<span class="n">psg</span><span class="o">.</span><span class="n">to_sonata</span><span class="p">(</span><span class="s1">&#39;./inputs/thamlamus_inputs.h5&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="cell-variable-report">
+<h2>Cell Variable Report<a class="headerlink" href="#cell-variable-report" title="Permalink to this headline">¶</a></h2>
+<p>Used to record the traces of intracellular and membrane variables over the course of the simulation, like membrane
+potential V. In the HDF5 cell-reports are stored under /report/&lt;population_name&gt;/ with the most relevant datasets:</p>
+<ul class="simple">
+<li><p>data (size T_times x N_segments): All the recorded values, each row a different step in time and each column a
+different segment/cell</p></li>
+<li><p>mapping/time (size 3 or T_times): For the exact times of each recording. If the simulation time steps are uniform then
+the dataset contains 3 values: start_time, stop_time, and time_step (all in ms). Otherwise the will be of size T_times
+for each recording time since start of simulation.</p></li>
+<li><p>node_ids: used to map each column to a specific cell</p></li>
+</ul>
+<div class="figure align-default">
+<a class="reference internal image-reference" href="_images/cell_reports.png"><img alt="_images/cell_reports.png" src="_images/cell_reports.png" style="width: 597.0px; height: 249.6px;" /></a>
+</div>
+<p>If recording is done on point-neurons or one is only recording from the soma, there will be one column in “data” for
+each node. If recording different sections from a multi-compartmental neuron then <em>mapping/index_pointers</em> should be
+used:</p>
+<div class="figure align-default">
+<a class="reference internal image-reference" href="_images/segmentation_indexing.jpg"><img alt="_images/segmentation_indexing.jpg" src="_images/segmentation_indexing.jpg" style="width: 712.8000000000001px; height: 256.8px;" /></a>
+</div>
+<div class="section" id="reading-cell-variables">
+<h3>Reading Cell Variables<a class="headerlink" href="#reading-cell-variables" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.core.CompartmentReaderABC" title="bmtk.utils.reports.compartment.core.CompartmentReaderABC"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompartmentReport</span></code></a> class should be used to
+pull data from a cell report.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bmtk</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">reports</span><span class="o">.</span><span class="n">compartment</span> <span class="kn">import</span> <span class="nn">CompartmentReport</span>
+
+<span class="n">pop_name</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">report</span> <span class="o">=</span> <span class="n">CompartmentReport</span><span class="p">(</span><span class="s1">&#39;output/membrane_vm.h5&#39;</span><span class="p">,</span>
+<span class="n">population</span><span class="o">=</span><span class="n">pop_name</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">variable</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">tstart</span><span class="p">(),</span> <span class="n">report</span><span class="o">.</span><span class="n">tstop</span><span class="p">(),</span> <span class="n">report</span><span class="o">.</span><span class="n">dt</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">element_ids</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">element_pos</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="extracellular-potential">
+<h2>Extracellular Potential<a class="headerlink" href="#extracellular-potential" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="rates">
+<h2>Rates<a class="headerlink" href="#rates" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="index.html">Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="builder.html">Building Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html">Simulation Engines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filternet.html">FilterNet</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.tests.html">bmtk.tests package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+    </div>
+<script type="text/javascript" src="_static/external_assets/javascript/portalFooter.js"></script>
+
+  </body>
+</html>

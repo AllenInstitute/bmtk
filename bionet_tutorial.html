@@ -1,18 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulating example networks with BioNet &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
   </head><body>
@@ -622,8 +625,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <h1>Simulating example networks with BioNet<a class="headerlink" href="#simulating-example-networks-with-bionet" title="Permalink to this headline">¶</a></h1>
 <p>To get started with running simulations with BioNet, we recommend to run network examples provided in the directory docs/examples/simulators/bionet:</p>
 <ul class="simple">
-<li>/14cells : network of 14 cell receiving an external input.</li>
-<li>/450cells : network of 450 cells receiving an external input</li>
+<li><p>/14cells : network of 14 cell receiving an external input.</p></li>
+<li><p>/450cells : network of 450 cells receiving an external input</p></li>
 </ul>
 <p>Working through the sections below, you will learn about contents of folders in each example and how to use them to run a simulation.</p>
 <div class="section" id="configuring-simulation">
@@ -640,58 +643,58 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <p><strong>Figure 1</strong>. Cells in the example network. Simulated network (V1) includes 14 cells: 10 biophysically detailed (depicted as morphological reconstructions) and 4 Leaky Integrate-and-fire (LIF) (showed as circles). Simulated V1 cells have recurrent connections (hollow arrow) as well as receive feedforward external input (solid arrows) in the form of spikes from the LGN (red circles) and TW cells (dark orange circles).</p>
 <p>A network can be viewed as a graph. Description of a graph needs to specify the properties of the nodes (cells) and edges (connections).  In BioNet (and more generally, in BMTK), each node (edge) belongs to a particular node (edge) type, thus possessing all the properties of that type, but also possessing properties specific to that individual node (edge) instance. Thus, properties of nodes are described using two files: node_file and node_type_file. Similarly edges are described using two files: edges_file, edge_types_file. For node_type_file and edge_type_file we use csv format, whereas for node_file and edge_file — HDF5 format.</p>
 <p><strong>Nodes files:</strong></p>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="38%" />
-<col width="27%" />
-<col width="35%" />
+<col style="width: 38%" />
+<col style="width: 27%" />
+<col style="width: 35%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Cells</th>
-<th class="head">Nodes</th>
-<th class="head">Node types</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>Cells</p></th>
+<th class="head"><p>Nodes</p></th>
+<th class="head"><p>Node types</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>V1 cells</td>
-<td>v1_nodes.h5</td>
-<td>v1_node_types.csv</td>
+<tbody>
+<tr class="row-even"><td><p>V1 cells</p></td>
+<td><p>v1_nodes.h5</p></td>
+<td><p>v1_node_types.csv</p></td>
 </tr>
-<tr class="row-odd"><td>LGN cells</td>
-<td>lgn_nodes.h5</td>
-<td>lgn_node_types.csv</td>
+<tr class="row-odd"><td><p>LGN cells</p></td>
+<td><p>lgn_nodes.h5</p></td>
+<td><p>lgn_node_types.csv</p></td>
 </tr>
-<tr class="row-even"><td>TW cells</td>
-<td>tw_nodes.h5</td>
-<td>tw_node_types.csv</td>
+<tr class="row-even"><td><p>TW cells</p></td>
+<td><p>tw_nodes.h5</p></td>
+<td><p>tw_node_types.csv</p></td>
 </tr>
 </tbody>
 </table>
 <p><strong>Edges files:</strong></p>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="38%" />
-<col width="27%" />
-<col width="35%" />
+<col style="width: 38%" />
+<col style="width: 27%" />
+<col style="width: 35%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Connections</th>
-<th class="head">Edges</th>
-<th class="head">Edge types</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>Connections</p></th>
+<th class="head"><p>Edges</p></th>
+<th class="head"><p>Edge types</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>V1 -&gt; V1 connections</td>
-<td>v1_v1_edges.h5</td>
-<td>v1_v1_edge_types.csv</td>
+<tbody>
+<tr class="row-even"><td><p>V1 -&gt; V1 connections</p></td>
+<td><p>v1_v1_edges.h5</p></td>
+<td><p>v1_v1_edge_types.csv</p></td>
 </tr>
-<tr class="row-odd"><td>LGN -&gt; V1 connections</td>
-<td>lgn_v1_edges.h5</td>
-<td>lgn_v1_edge_types.csv</td>
+<tr class="row-odd"><td><p>LGN -&gt; V1 connections</p></td>
+<td><p>lgn_v1_edges.h5</p></td>
+<td><p>lgn_v1_edge_types.csv</p></td>
 </tr>
-<tr class="row-even"><td>TW-&gt;V1 connections</td>
-<td>tw_v1_edges.h5</td>
-<td>tw_v1_edge_types.csv</td>
+<tr class="row-even"><td><p>TW-&gt;V1 connections</p></td>
+<td><p>tw_v1_edges.h5</p></td>
+<td><p>tw_v1_edge_types.csv</p></td>
 </tr>
 </tbody>
 </table>
@@ -728,10 +731,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <h2>Simulation output<a class="headerlink" href="#simulation-output" title="Permalink to this headline">¶</a></h2>
 <p>The output directory includes:</p>
 <ul class="simple">
-<li>spikes.h5 : HDF5 file containg the spikes of the simulated cells.</li>
-<li>cellvars/N.h5 : HDF5 file containing time series recordings of somatic variables  (e.g., somatic voltage, [Ca++]) for cell with node_id=N (there might be multiple such files, up to the number of cells in the model, or none at all, depending on the settings in the simulation config).</li>
-<li>config.json : a copy of configuration for record keeping</li>
-<li>log.txt : run log file including time-stamped information about the progress of a simulation.</li>
+<li><p>spikes.h5 : HDF5 file containg the spikes of the simulated cells.</p></li>
+<li><p>cellvars/N.h5 : HDF5 file containing time series recordings of somatic variables  (e.g., somatic voltage, [Ca++]) for cell with node_id=N (there might be multiple such files, up to the number of cells in the model, or none at all, depending on the settings in the simulation config).</p></li>
+<li><p>config.json : a copy of configuration for record keeping</p></li>
+<li><p>log.txt : run log file including time-stamped information about the progress of a simulation.</p></li>
 </ul>
 <p>Upon completion you may run the script plot_rasters.py to plot spike rasters of external (Figure 2) as well as simulated (Figure 3) cells:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">plot_rasters</span><span class="o">.</span><span class="n">py</span>
@@ -755,6 +758,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -771,13 +775,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.utils.html">bmtk.utils package</a></li>
@@ -786,17 +800,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

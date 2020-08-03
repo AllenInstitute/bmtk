@@ -1,18 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.simulator.bionet.modules.record_cellvars &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
   </head><body>
@@ -643,11 +646,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1">#</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">h5py</span>
-<span class="kn">from</span> <span class="nn">neuron</span> <span class="k">import</span> <span class="n">h</span>
+<span class="kn">from</span> <span class="nn">neuron</span> <span class="kn">import</span> <span class="n">h</span>
 
-<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.modules.sim_module</span> <span class="k">import</span> <span class="n">SimulatorMod</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.io_tools</span> <span class="k">import</span> <span class="n">io</span>
-<span class="kn">from</span> <span class="nn">bmtk.utils.reports</span> <span class="k">import</span> <span class="n">CompartmentReport</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.modules.sim_module</span> <span class="kn">import</span> <span class="n">SimulatorMod</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.io_tools</span> <span class="kn">import</span> <span class="n">io</span>
+<span class="kn">from</span> <span class="nn">bmtk.utils.reports</span> <span class="kn">import</span> <span class="n">CompartmentReport</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="c1"># Check to see if h5py is built to run in parallel</span>
@@ -676,7 +679,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="MembraneReport"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_cellvars.MembraneReport">[docs]</a><span class="k">class</span> <span class="nc">MembraneReport</span><span class="p">(</span><span class="n">SimulatorMod</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">,</span> <span class="n">cells</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">buffer_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">,</span> <span class="n">cells</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">buffer_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Module used for saving NEURON cell properities at each given step of the simulation.</span>
 
 <span class="sd">        :param tmp_dir:</span>
@@ -711,14 +714,17 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="c1">#self._var_recorder = MembraneRecorder(self._file_name, self._tmp_dir, self._all_variables,</span>
         <span class="c1">#                                      buffer_data=buffer_data, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_gid_list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of all gids that will have their variables saved</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gid_list</span> <span class="o">=</span> <span class="n">gids</span>  <span class="c1"># list of all gids that will have their variables saved</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># table of variable data indexed by [gid][variable]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_block_step</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># time step within a given block</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">_get_gids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
         <span class="c1"># get list of gids to save. Will only work for biophysical cells saved on the current MPI rank</span>
-        <span class="n">selected_gids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">get_node_set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_gids</span><span class="p">)</span><span class="o">.</span><span class="n">gids</span><span class="p">())</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid_list</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">selected_gids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gid_list</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">selected_gids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">get_node_set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_gids</span><span class="p">)</span><span class="o">.</span><span class="n">gids</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_local_gids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">biophysical_gids</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">selected_gids</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_save_sim_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
@@ -787,7 +793,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="SomaReport"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_cellvars.SomaReport">[docs]</a><span class="k">class</span> <span class="nc">SomaReport</span><span class="p">(</span><span class="n">MembraneReport</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Special case for when only needing to save the soma variable&quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">,</span> <span class="n">cells</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="s1">&#39;soma&#39;</span><span class="p">,</span> <span class="n">buffer_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">,</span> <span class="n">cells</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="s1">&#39;soma&#39;</span><span class="p">,</span> <span class="n">buffer_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">SomaReport</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">tmp_dir</span><span class="o">=</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="n">file_name</span><span class="p">,</span> <span class="n">variable_name</span><span class="o">=</span><span class="n">variable_name</span><span class="p">,</span> <span class="n">cells</span><span class="o">=</span><span class="n">cells</span><span class="p">,</span>
                                          <span class="n">sections</span><span class="o">=</span><span class="n">sections</span><span class="p">,</span> <span class="n">buffer_data</span><span class="o">=</span><span class="n">buffer_data</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -829,6 +835,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_block_step</span> <span class="o">+=</span> <span class="mi">1</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -845,13 +852,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
@@ -860,17 +877,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

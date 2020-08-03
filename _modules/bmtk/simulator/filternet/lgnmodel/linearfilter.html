@@ -1,18 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.simulator.filternet.lgnmodel.linearfilter &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../../../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
   </head><body>
@@ -620,135 +623,63 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             
   <h1>Source code for bmtk.simulator.filternet.lgnmodel.linearfilter</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">.kernel</span> <span class="k">import</span> <span class="n">Kernel3D</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">.kernel</span> <span class="kn">import</span> <span class="n">Kernel3D</span>
+
 
 <div class="viewcode-block" id="SpatioTemporalFilter"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.linearfilter.SpatioTemporalFilter">[docs]</a><span class="k">class</span> <span class="nc">SpatioTemporalFilter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spatial_filter</span><span class="p">,</span> <span class="n">temporal_filter</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mf">1.</span><span class="p">):</span>
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">spatial_filter</span>  <span class="o">=</span> <span class="n">spatial_filter</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spatial_filter</span><span class="p">,</span> <span class="n">temporal_filter</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mf">1.</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spatial_filter</span> <span class="o">=</span> <span class="n">spatial_filter</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">temporal_filter</span> <span class="o">=</span> <span class="n">temporal_filter</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span> <span class="o">=</span> <span class="n">amplitude</span>
 
 <div class="viewcode-block" id="SpatioTemporalFilter.get_spatiotemporal_kernel"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.linearfilter.SpatioTemporalFilter.get_spatiotemporal_kernel">[docs]</a>    <span class="k">def</span> <span class="nf">get_spatiotemporal_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_range</span><span class="p">,</span> <span class="n">col_range</span><span class="p">,</span> <span class="n">t_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-
+        <span class="c1"># TODO: Rename to get_kernel() to match with spatialfilter and temporalfilter</span>
         <span class="n">spatial_kernel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_filter</span><span class="o">.</span><span class="n">get_kernel</span><span class="p">(</span><span class="n">row_range</span><span class="p">,</span> <span class="n">col_range</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">temporal_kernel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">temporal_filter</span><span class="o">.</span><span class="n">get_kernel</span><span class="p">(</span><span class="n">t_range</span><span class="o">=</span><span class="n">t_range</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span>
 
         <span class="n">t_range</span> <span class="o">=</span> <span class="n">temporal_kernel</span><span class="o">.</span><span class="n">t_range</span>
                 
-        <span class="n">spatiotemporal_kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span> <span class="nb">len</span><span class="p">(</span><span class="n">temporal_kernel</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">spatial_kernel</span><span class="p">)))</span>
+        <span class="n">spatiotemporal_kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">temporal_kernel</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">spatial_kernel</span><span class="p">)))</span>
         <span class="n">spatiotemporal_kernel</span> <span class="o">*=</span> <span class="n">spatial_kernel</span><span class="o">.</span><span class="n">kernel</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
 
-        <span class="n">spatiotemporal_kernel</span> <span class="o">*=</span> <span class="n">temporal_kernel</span><span class="o">.</span><span class="n">kernel</span><span class="p">[:,</span><span class="kc">None</span><span class="p">]</span>
+        <span class="n">spatiotemporal_kernel</span> <span class="o">*=</span> <span class="n">temporal_kernel</span><span class="o">.</span><span class="n">kernel</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
         <span class="n">spatiotemporal_kernel</span> <span class="o">=</span> <span class="n">spatiotemporal_kernel</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">spatiotemporal_kernel</span><span class="o">.</span><span class="n">shape</span><span class="p">)))</span>
         
-        <span class="n">spatial_coord_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">spatial_kernel</span><span class="p">),</span><span class="mi">2</span><span class="p">))</span>
-        <span class="n">spatial_coord_array</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">spatial_kernel</span><span class="o">.</span><span class="n">col_inds</span>
-        <span class="n">spatial_coord_array</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">spatial_kernel</span><span class="o">.</span><span class="n">row_inds</span>
-         
-        <span class="n">spatiiotemporal_coord_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">spatial_kernel</span><span class="p">)</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">temporal_kernel</span><span class="p">),</span><span class="mi">3</span><span class="p">))</span>
-        <span class="n">spatiiotemporal_coord_array</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">temporal_kernel</span><span class="p">),</span><span class="mi">1</span><span class="p">)),</span><span class="n">spatial_coord_array</span><span class="p">)</span>
-        <span class="n">spatiiotemporal_coord_array</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">temporal_kernel</span><span class="o">.</span><span class="n">t_inds</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">spatial_kernel</span><span class="p">)))</span>
+        <span class="n">spatial_coord_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">spatial_kernel</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">spatial_coord_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">spatial_kernel</span><span class="o">.</span><span class="n">col_inds</span>
+        <span class="n">spatial_coord_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">spatial_kernel</span><span class="o">.</span><span class="n">row_inds</span>
+
+        <span class="n">spatiiotemporal_coord_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">spatial_kernel</span><span class="p">)</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">temporal_kernel</span><span class="p">),</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="n">spatiiotemporal_coord_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">temporal_kernel</span><span class="p">),</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">spatial_coord_array</span><span class="p">)</span>
+        <span class="n">spatiiotemporal_coord_array</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">temporal_kernel</span><span class="o">.</span><span class="n">t_inds</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">spatial_kernel</span><span class="p">)))</span>
         
-        <span class="n">col_inds</span><span class="p">,</span> <span class="n">row_inds</span><span class="p">,</span> <span class="n">t_inds</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">),</span><span class="n">spatiiotemporal_coord_array</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-        <span class="n">kernel</span> <span class="o">=</span> <span class="n">Kernel3D</span><span class="p">(</span><span class="n">spatial_kernel</span><span class="o">.</span><span class="n">row_range</span><span class="p">,</span> <span class="n">spatial_kernel</span><span class="o">.</span><span class="n">col_range</span><span class="p">,</span> <span class="n">t_range</span><span class="p">,</span> <span class="n">row_inds</span><span class="p">,</span> <span class="n">col_inds</span><span class="p">,</span> <span class="n">t_inds</span><span class="p">,</span> <span class="n">spatiotemporal_kernel</span><span class="p">)</span>
+        <span class="n">col_inds</span><span class="p">,</span> <span class="n">row_inds</span><span class="p">,</span> <span class="n">t_inds</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">),</span> <span class="n">spatiiotemporal_coord_array</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="n">kernel</span> <span class="o">=</span> <span class="n">Kernel3D</span><span class="p">(</span><span class="n">spatial_kernel</span><span class="o">.</span><span class="n">row_range</span><span class="p">,</span> <span class="n">spatial_kernel</span><span class="o">.</span><span class="n">col_range</span><span class="p">,</span> <span class="n">t_range</span><span class="p">,</span> <span class="n">row_inds</span><span class="p">,</span> <span class="n">col_inds</span><span class="p">,</span> <span class="n">t_inds</span><span class="p">,</span>
+                          <span class="n">spatiotemporal_kernel</span><span class="p">)</span>
         <span class="n">kernel</span><span class="o">.</span><span class="n">apply_threshold</span><span class="p">(</span><span class="n">threshold</span><span class="p">)</span>
-        
 
         <span class="n">kernel</span><span class="o">.</span><span class="n">kernel</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span>
-
-        
         <span class="k">return</span> <span class="n">kernel</span></div>
     
 <div class="viewcode-block" id="SpatioTemporalFilter.t_slice"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.linearfilter.SpatioTemporalFilter.t_slice">[docs]</a>    <span class="k">def</span> <span class="nf">t_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        
         <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_spatiotemporal_kernel</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">k</span><span class="o">.</span><span class="n">t_slice</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
     
 <div class="viewcode-block" id="SpatioTemporalFilter.show_temporal_filter"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.linearfilter.SpatioTemporalFilter.show_temporal_filter">[docs]</a>    <span class="k">def</span> <span class="nf">show_temporal_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">temporal_filter</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
             
 <div class="viewcode-block" id="SpatioTemporalFilter.show_spatial_filter"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.linearfilter.SpatioTemporalFilter.show_spatial_filter">[docs]</a>    <span class="k">def</span> <span class="nf">show_spatial_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        
         <span class="bp">self</span><span class="o">.</span><span class="n">spatial_filter</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
     
 <div class="viewcode-block" id="SpatioTemporalFilter.to_dict"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.linearfilter.SpatioTemporalFilter.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        
-        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:(</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span>
-                <span class="s1">&#39;spatial_filter&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">spatial_filter</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
-                <span class="s1">&#39;temporal_filter&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">temporal_filter</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
-                <span class="s1">&#39;amplitude&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span><span class="p">}</span></div></div>
-
-<span class="c1"># class OnOffSpatioTemporalFilter(SpatioTemporalFilter):</span>
-<span class="c1"># </span>
-<span class="c1">#     def __init__(self, on_spatiotemporal_filter, off_spatiotemporal_filter):</span>
-<span class="c1">#         </span>
-<span class="c1">#         self.on_spatiotemporal_filter = on_spatiotemporal_filter</span>
-<span class="c1">#         self.off_spatiotemporal_filter = off_spatiotemporal_filter</span>
-<span class="c1"># </span>
-<span class="c1">#     def get_spatiotemporal_kernel(self, col_range, row_range, t_range=None, threshold=0, reverse=False):</span>
-<span class="c1">#         </span>
-<span class="c1">#         on_kernel = self.on_spatiotemporal_filter.get_spatiotemporal_kernel(col_range, row_range, t_range, threshold, reverse)</span>
-<span class="c1">#         off_kernel = self.off_spatiotemporal_filter.get_spatiotemporal_kernel(col_range, row_range, t_range, threshold, reverse)</span>
-<span class="c1"># </span>
-<span class="c1">#         return on_kernel + off_kernel*(-1)</span>
-<span class="c1"># </span>
-<span class="c1">#     def to_dict(self):</span>
-<span class="c1">#         </span>
-<span class="c1">#         return {&#39;class&#39;:(__name__, self.__class__.__name__),</span>
-<span class="c1">#                 &#39;on_filter&#39;:self.on_spatiotemporal_filter.to_dict(),</span>
-<span class="c1">#                 &#39;off_filter&#39;:self.off_spatiotemporal_filter.to_dict()}</span>
-<span class="c1">#         </span>
-<span class="c1"># class TwoSubfieldLinearFilter(OnOffSpatioTemporalFilter):</span>
-<span class="c1"># </span>
-<span class="c1">#     def __init__(self, dominant_spatiotemporal_filter, nondominant_spatiotemporal_filter, subfield_separation=10, onoff_axis_angle=45, dominant_subfield_location=(30,40)):</span>
-<span class="c1">#         </span>
-<span class="c1">#         self.subfield_separation = subfield_separation</span>
-<span class="c1">#         self.onoff_axis_angle = onoff_axis_angle</span>
-<span class="c1">#         self.dominant_subfield_location = dominant_subfield_location</span>
-<span class="c1">#         self.dominant_spatiotemporal_filter = dominant_spatiotemporal_filter</span>
-<span class="c1">#         self.nondominant_spatiotemporal_filter = nondominant_spatiotemporal_filter</span>
-<span class="c1">#         </span>
-<span class="c1">#         dom_amp = dominant_spatiotemporal_filter.spatial_filter.amplitude</span>
-<span class="c1">#         nondom_amp = nondominant_spatiotemporal_filter.spatial_filter.amplitude</span>
-<span class="c1">#         if dom_amp &lt; 0 and nondom_amp &gt; 0:</span>
-<span class="c1">#             super(TwoSubfieldLinearFilter, self).__init__(self.nondominant_spatiotemporal_filter, self.dominant_spatiotemporal_filter)</span>
-<span class="c1">#         elif dom_amp &gt; 0 and nondom_amp &lt; 0:    </span>
-<span class="c1">#             super(TwoSubfieldLinearFilter, self).__init__(self.dominant_spatiotemporal_filter, self.nondominant_spatiotemporal_filter)</span>
-<span class="c1">#         else:</span>
-<span class="c1">#             raise ValueError(&#39;Subfields are not of opposite polarity&#39;)</span>
-<span class="c1">#         </span>
-<span class="c1">#         self.dominant_spatiotemporal_filter.spatial_filter.translate = self.dominant_subfield_location</span>
-<span class="c1">#         hor_offset = np.cos(self.onoff_axis_angle*np.pi/180.)*self.subfield_separation + self.dominant_subfield_location[0]</span>
-<span class="c1">#         vert_offset = np.sin(self.onoff_axis_angle*np.pi/180.)*self.subfield_separation+ self.dominant_subfield_location[1]</span>
-<span class="c1">#         rel_translation = (hor_offset,vert_offset)</span>
-<span class="c1">#         self.nondominant_spatiotemporal_filter.spatial_filter.translate = rel_translation</span>
-<span class="c1">#         self.nondominant_spatiotemporal_filter.spatial_filter.origin=self.dominant_spatiotemporal_filter.spatial_filter.origin</span>
-<span class="c1">#         </span>
-<span class="c1">#         </span>
-<span class="c1">#     def to_dict(self):</span>
-<span class="c1">#         </span>
-<span class="c1">#         raise NotImplementedError</span>
-<span class="c1">#         </span>
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span>
+                <span class="s1">&#39;spatial_filter&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_filter</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
+                <span class="s1">&#39;temporal_filter&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">temporal_filter</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span>
+                <span class="s1">&#39;amplitude&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">amplitude</span><span class="p">}</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -765,13 +696,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
@@ -780,17 +721,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

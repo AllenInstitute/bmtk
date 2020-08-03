@@ -15,101 +15,77 @@ Welcome to the Brain Modeling Toolkit
    Installation Guide <installation>
    Building Networks <builder>
    simulators
-   Tutorials <https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb>
+   analyzer
+   tutorials
    Github Profile <https://github.com/AllenInstitute/bmtk.git>
    contributors
    Source Documentation <bmtk/bmtk>
 
 
-The Brain Modeling Toolkit (BMTK) is a  python-based software package for creating and simulating large-scale neural network
-models. It supports building, simulation and analysis of models of different levels of resolution including:
-
-* Biophysically detailed networks.
-* Point neuron networks.
-* Filter models.
-* Population-level networks.
+The Brain Modeling Toolkit (BMTK) is a python-based software package for building, simulating and analyzing large-scale
+neural network models. It supports the building and simulation of models of varying levels-of-resolution; from
+multi-compartment biophysically detailed networks, to point-neuron models, to filter-based models, and even
+population-level firing rate models.
 
 
 .. figure:: _static/images/levels_of_resolution_noml.png
    :scale: 70%
 
+The BMTK is not itself a simulator and will utilize existing simulators, like NEURON and NEST, to run different types of
+models. What BMTK does provide:
+
+* A unified inteferce across different simulators, so that modelers can work with and study their own network models
+  across different simulators without having to learn how to use each tool.
+* An easy way to setup and initialize network simulations with little-to-no programming necessacary
+* Automatic integration of parallelization when running on HPC.
+* Extra built-in features which the native simulators may not support out-of-the-box.
+
 The BMTK was developed and is supported at the `Allen Institute for Brain Science <https://alleninstitute.org/>`_ and
 released under a BSD 3-clause license. We encourage others to use the BMTK for their own research, and suggestions and
 contributions to the BMTK are welcome.
 
-
-The latest release, previous releases, and current development can be found at::
-
-  https://github.com/AllenInstitute/bmtk
+The latest release, previous releases, and current development can be found at `<https://github.com/AllenInstitute/bmtk>`_
 
 
-Requirements
-------------
-The BMTK runs on Python 2.7 and 3.6+. To use the base features, including building and analyzing networks, the
-following numpy packages are required. When installing using anaconda, pypi or distutils these dependencies will be installed if
-not already:
+The BMTK Workflow and architecture
+----------------------------------
+BMTK can readily scale to run models of single neurons, and even single compartments, and for all different types of
+neuronal networks. However BMTK was designed for very-large, highly optimized mammalian cortical network models.
+Generating the connectivity matrix could take hours or even days to complete. Plus once we had the base-line model we
+wanted to run against a large variety of conditions and stimuli, so that we could directly compare with existing in-vivo
+recordings (see Allen Brain Observatory).
 
-* `numpy <http://www.numpy.org/>`_
-* `h5py <http://www.h5py.org/>`_
-* `pandas <http://pandas.pydata.org/>`_
-* `matplotlib <https://matplotlib.org/>`_
-* `jsonschema <https://pypi.python.org/pypi/jsonschema>`_
+.. figure:: _static/images/bmtk_workflow.jpg
+   :scale: 100%
 
-Optional dependencies:
+Unlike other simulators, BMTK separates the process of building, simulating, and analyzing the results. First a fully
+instantiated base-line version of the model is built and saved to a file so each time a simulation is ran it takes only
+a small fraction of the time to instantiate the simulation. Results are also automatically saved to a disk. BMTK and
+the format it uses (SONATA, see below) makes it easy to dynamically adjust cell and synaptic parameters so that multiple
+iterations of a simulation be done as fast as possible
 
-* `mpi4py <https://mpi4py.readthedocs.io/en/stable/>`_
-* `pytest <https://docs.pytest.org/en/latest/>`_
-* `lxml <https://lxml.de/>`_
+As such BMTK can be broken into three major components:
 
-For running network simulations BMTK uses existing software, which will differ depending on the type of simulation. As such
-there may be additional requirements.
+* The Network Builder [:py:mod:`bmtk.builder`] - Used to build network models
+* The Simulation Engines [:py:mod:`bmtk.simulator`] - Interfaces for simulating the network
+* Analysis and Visualization Tools [:py:mod:`bmtk.analyzer`] - Python functions for analyzing and visualizing the
+   network and simulation results
 
-  |neuron_icon| Biophysically detailed simulation with BioNet uses the `NEURON simulator (7.4+) <https://www.neuron.yale.edu/neuron/>`_
+.. figure:: _static/images/bmtk_architecture.jpg
+   :scale: 45%
 
-  |nest_icon| Point simulations with PointNet uses the `NEST simulator (2.11+) <http://www.nest-simulator.org/>`_
-
-  |dipde_icon| Population level firing rates simulation with PopNet uses `DiPDE <http://alleninstitute.github.io/dipde/>`_
-
-  **FilterNet** Filter models with LGNModel using built-in Python functions.
-
-.. |neuron_icon| image:: _static/images/neuron_icon.png
-   :scale: 23%
-
-.. |nest_icon| image:: _static/images/nest_icon.png
-   :scale: 20%
-
-.. |dipde_icon| image:: _static/images/dipde_icon.png
-   :scale: 15%
+The components can be as one workflow or separately by themselves. BMTK utilizes the SONATA Data format (see next section)
+to allow sharing of large-scale network data. As such, it is possible to use the Network Builder to build the model but
+another tool to run the model. Or if another model has been built by someone else and saved in SONATA format BMTK will
+be able to simulate it.
 
 
-See Installation page and individual simulator pages for further instructions.
-
-
-
-Additional Resources
---------------------
-
-**Tutorials** - Jupyter-notebook tutorials for using the BMTK can be found at https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb.
-
-**Examples** - A collection of examples for building and running simulations across different levels of resolution can be found at https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples.
-
-**Questions** - Any bugs, questions, or feature requests can be done from our github issue page at https://github.com/AllenInstitute/bmtk/issues.
-Or please feel free to contact Anton Arkhipov (antona at alleninstitute dot org) and Kael Dai (kaeld at alleninstitute dot org) regarding any questions
-
-
-Papers and Posters
-------------------
-* Paper about BMTK's BioNet simulator can be found on `PLOS ONE <https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0201630>`_
-
-
-SONATA Data Format
-------------------
-The SONATA data format was developed jointly by the Allen Institute and the Blue Brain Project as a standarized,
-cross-platform format for storing large scale networks and simulation results. The BMTK utilizes SONATA when building and
-simulating networks. Not only does this improve performance and file size, but it lets the BMTK interact with the growing
-list of software that supports the SONATA format.
-
-More information about the SONATA (and hence BMTK) data format can be found at the `SONATA github page <https://github.com/AllenInstitute/sonata>`_
+SONATA
+------
+SONATA is a multi-institutional developed standardized, cross-platform data format for storing large scale networks and
+simulation results. The BMTK utilizes SONATA when building and simulating networks, so much of what is being described
+in the documentation and tutorials will be based on SONATA. For more information see the
+`SONATA github page <https://github.com/AllenInstitute/sonata>`_.
 
 
 Acknowledgements

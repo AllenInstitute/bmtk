@@ -1,18 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Overview: module code &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
   </head><body>
@@ -638,7 +641,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li><a href="bmtk/builder/edge.html">bmtk.builder.edge</a></li>
 <li><a href="bmtk/builder/functor_cache.html">bmtk.builder.functor_cache</a></li>
 <li><a href="bmtk/builder/id_generator.html">bmtk.builder.id_generator</a></li>
-<li><a href="bmtk/builder/io.html">bmtk.builder.io</a></li>
 <li><a href="bmtk/builder/iterator.html">bmtk.builder.iterator</a></li>
 <li><a href="bmtk/builder/network.html">bmtk.builder.network</a></li>
 <li><a href="bmtk/builder/networks/dm_network.html">bmtk.builder.networks.dm_network</a></li>
@@ -661,6 +663,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li><a href="bmtk/simulator/bionet/io_tools.html">bmtk.simulator.bionet.io_tools</a></li>
 <li><a href="bmtk/simulator/bionet/modules/ecp.html">bmtk.simulator.bionet.modules.ecp</a></li>
 <li><a href="bmtk/simulator/bionet/modules/record_cellvars.html">bmtk.simulator.bionet.modules.record_cellvars</a></li>
+<li><a href="bmtk/simulator/bionet/modules/record_clamp.html">bmtk.simulator.bionet.modules.record_clamp</a></li>
 <li><a href="bmtk/simulator/bionet/modules/record_netcons.html">bmtk.simulator.bionet.modules.record_netcons</a></li>
 <li><a href="bmtk/simulator/bionet/modules/record_spikes.html">bmtk.simulator.bionet.modules.record_spikes</a></li>
 <li><a href="bmtk/simulator/bionet/modules/save_synapses.html">bmtk.simulator.bionet.modules.save_synapses</a></li>
@@ -673,35 +676,50 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li><a href="bmtk/simulator/bionet/pointprocesscell.html">bmtk.simulator.bionet.pointprocesscell</a></li>
 <li><a href="bmtk/simulator/bionet/pointsomacell.html">bmtk.simulator.bionet.pointsomacell</a></li>
 <li><a href="bmtk/simulator/bionet/pyfunction_cache.html">bmtk.simulator.bionet.pyfunction_cache</a></li>
+<li><a href="bmtk/simulator/bionet/seclamp.html">bmtk.simulator.bionet.seclamp</a></li>
 <li><a href="bmtk/simulator/bionet/sonata_adaptors.html">bmtk.simulator.bionet.sonata_adaptors</a></li>
 <li><a href="bmtk/simulator/bionet/utils.html">bmtk.simulator.bionet.utils</a></li>
 <li><a href="bmtk/simulator/bionet/virtualcell.html">bmtk.simulator.bionet.virtualcell</a></li>
 <li><a href="bmtk/simulator/core/edge_population.html">bmtk.simulator.core.edge_population</a></li>
-<li><a href="bmtk/simulator/core/graph.html">bmtk.simulator.core.graph</a></li>
 <li><a href="bmtk/simulator/core/io_tools.html">bmtk.simulator.core.io_tools</a></li>
 <li><a href="bmtk/simulator/core/network_reader.html">bmtk.simulator.core.network_reader</a></li>
 <li><a href="bmtk/simulator/core/node_population.html">bmtk.simulator.core.node_population</a></li>
 <li><a href="bmtk/simulator/core/node_sets.html">bmtk.simulator.core.node_sets</a></li>
+<li><a href="bmtk/simulator/core/simulation_config.html">bmtk.simulator.core.simulation_config</a></li>
+<li><a href="bmtk/simulator/core/simulation_config_validator.html">bmtk.simulator.core.simulation_config_validator</a></li>
 <li><a href="bmtk/simulator/core/simulator.html">bmtk.simulator.core.simulator</a></li>
 <li><a href="bmtk/simulator/core/simulator_network.html">bmtk.simulator.core.simulator_network</a></li>
 <li><a href="bmtk/simulator/core/sonata_reader/edge_adaptor.html">bmtk.simulator.core.sonata_reader.edge_adaptor</a></li>
 <li><a href="bmtk/simulator/core/sonata_reader/network_reader.html">bmtk.simulator.core.sonata_reader.network_reader</a></li>
 <li><a href="bmtk/simulator/core/sonata_reader/node_adaptor.html">bmtk.simulator.core.sonata_reader.node_adaptor</a></li>
+<li><a href="bmtk/simulator/filternet/cell.html">bmtk.simulator.filternet.cell</a></li>
 <li><a href="bmtk/simulator/filternet/config.html">bmtk.simulator.filternet.config</a></li>
+<li><a href="bmtk/simulator/filternet/default_setters/cell_loaders.html">bmtk.simulator.filternet.default_setters.cell_loaders</a></li>
 <li><a href="bmtk/simulator/filternet/filternetwork.html">bmtk.simulator.filternet.filternetwork</a></li>
+<li><a href="bmtk/simulator/filternet/filtersimulator.html">bmtk.simulator.filternet.filtersimulator</a></li>
+<li><a href="bmtk/simulator/filternet/io_tools.html">bmtk.simulator.filternet.io_tools</a></li>
+<li><a href="bmtk/simulator/filternet/lgnmodel/cellmetrics.html">bmtk.simulator.filternet.lgnmodel.cellmetrics</a></li>
+<li><a href="bmtk/simulator/filternet/lgnmodel/cellmodel.html">bmtk.simulator.filternet.lgnmodel.cellmodel</a></li>
+<li><a href="bmtk/simulator/filternet/lgnmodel/cursor.html">bmtk.simulator.filternet.lgnmodel.cursor</a></li>
 <li><a href="bmtk/simulator/filternet/lgnmodel/fitfuns.html">bmtk.simulator.filternet.lgnmodel.fitfuns</a></li>
 <li><a href="bmtk/simulator/filternet/lgnmodel/kernel.html">bmtk.simulator.filternet.lgnmodel.kernel</a></li>
+<li><a href="bmtk/simulator/filternet/lgnmodel/lattice_unit_constructor.html">bmtk.simulator.filternet.lgnmodel.lattice_unit_constructor</a></li>
 <li><a href="bmtk/simulator/filternet/lgnmodel/lgnmodel1.html">bmtk.simulator.filternet.lgnmodel.lgnmodel1</a></li>
 <li><a href="bmtk/simulator/filternet/lgnmodel/linearfilter.html">bmtk.simulator.filternet.lgnmodel.linearfilter</a></li>
+<li><a href="bmtk/simulator/filternet/lgnmodel/lnunit.html">bmtk.simulator.filternet.lgnmodel.lnunit</a></li>
+<li><a href="bmtk/simulator/filternet/lgnmodel/make_cell_list.html">bmtk.simulator.filternet.lgnmodel.make_cell_list</a></li>
+<li><a href="bmtk/simulator/filternet/lgnmodel/movie.html">bmtk.simulator.filternet.lgnmodel.movie</a></li>
 <li><a href="bmtk/simulator/filternet/lgnmodel/poissongeneration.html">bmtk.simulator.filternet.lgnmodel.poissongeneration</a></li>
+<li><a href="bmtk/simulator/filternet/lgnmodel/spatialfilter.html">bmtk.simulator.filternet.lgnmodel.spatialfilter</a></li>
 <li><a href="bmtk/simulator/filternet/lgnmodel/temporalfilter.html">bmtk.simulator.filternet.lgnmodel.temporalfilter</a></li>
 <li><a href="bmtk/simulator/filternet/lgnmodel/transferfunction.html">bmtk.simulator.filternet.lgnmodel.transferfunction</a></li>
+<li><a href="bmtk/simulator/filternet/lgnmodel/util_fns.html">bmtk.simulator.filternet.lgnmodel.util_fns</a></li>
+<li><a href="bmtk/simulator/filternet/lgnmodel/utilities.html">bmtk.simulator.filternet.lgnmodel.utilities</a></li>
+<li><a href="bmtk/simulator/filternet/modules/base.html">bmtk.simulator.filternet.modules.base</a></li>
+<li><a href="bmtk/simulator/filternet/modules/create_spikes.html">bmtk.simulator.filternet.modules.create_spikes</a></li>
+<li><a href="bmtk/simulator/filternet/modules/record_rates.html">bmtk.simulator.filternet.modules.record_rates</a></li>
 <li><a href="bmtk/simulator/filternet/pyfunction_cache.html">bmtk.simulator.filternet.pyfunction_cache</a></li>
 <li><a href="bmtk/simulator/filternet/sonata_adaptors.html">bmtk.simulator.filternet.sonata_adaptors</a></li>
-<li><a href="bmtk/simulator/mintnet/Image_Library.html">bmtk.simulator.mintnet.Image_Library</a></li>
-<li><a href="bmtk/simulator/mintnet/Image_Library_Supervised.html">bmtk.simulator.mintnet.Image_Library_Supervised</a></li>
-<li><a href="bmtk/simulator/mintnet/analysis/LocallySparseNoise.html">bmtk.simulator.mintnet.analysis.LocallySparseNoise</a></li>
-<li><a href="bmtk/simulator/mintnet/analysis/StaticGratings.html">bmtk.simulator.mintnet.analysis.StaticGratings</a></li>
 <li><a href="bmtk/simulator/pointnet/config.html">bmtk.simulator.pointnet.config</a></li>
 <li><a href="bmtk/simulator/pointnet/default_setters/synapse_models.html">bmtk.simulator.pointnet.default_setters.synapse_models</a></li>
 <li><a href="bmtk/simulator/pointnet/default_setters/synaptic_weights.html">bmtk.simulator.pointnet.default_setters.synaptic_weights</a></li>
@@ -720,18 +738,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li><a href="bmtk/simulator/popnet/popnetwork.html">bmtk.simulator.popnet.popnetwork</a></li>
 <li><a href="bmtk/simulator/popnet/popnetwork_OLD.html">bmtk.simulator.popnet.popnetwork_OLD</a></li>
 <li><a href="bmtk/simulator/popnet/popsimulator.html">bmtk.simulator.popnet.popsimulator</a></li>
+<li><a href="bmtk/simulator/popnet/property_schemas/base_schema.html">bmtk.simulator.popnet.property_schemas.base_schema</a></li>
+<li><a href="bmtk/simulator/popnet/property_schemas/property_schema_ver0.html">bmtk.simulator.popnet.property_schemas.property_schema_ver0</a></li>
+<li><a href="bmtk/simulator/popnet/property_schemas/property_schema_ver1.html">bmtk.simulator.popnet.property_schemas.property_schema_ver1</a></li>
 <li><a href="bmtk/simulator/popnet/sonata_adaptors.html">bmtk.simulator.popnet.sonata_adaptors</a></li>
 <li><a href="bmtk/simulator/popnet/utils.html">bmtk.simulator.popnet.utils</a></li>
-<li><a href="bmtk/simulator/utils/config.html">bmtk.simulator.utils.config</a></li>
-<li><a href="bmtk/simulator/utils/io.html">bmtk.simulator.utils.io</a></li>
-<li><a href="bmtk/simulator/utils/load_spikes.html">bmtk.simulator.utils.load_spikes</a></li>
-<li><a href="bmtk/simulator/utils/nwb.html">bmtk.simulator.utils.nwb</a></li>
 <li><a href="bmtk/simulator/utils/property_maps.html">bmtk.simulator.utils.property_maps</a></li>
-<li><a href="bmtk/simulator/utils/sim_validator.html">bmtk.simulator.utils.sim_validator</a></li>
 <li><a href="bmtk/simulator/utils/simulation_inputs.html">bmtk.simulator.utils.simulation_inputs</a></li>
 <li><a href="bmtk/simulator/utils/simulation_reports.html">bmtk.simulator.utils.simulation_reports</a></li>
-<li><a href="bmtk/simulator/utils/stimulus/NaturalScenes.html">bmtk.simulator.utils.stimulus.NaturalScenes</a></li>
-<li><a href="bmtk/simulator/utils/stimulus/StaticGratings.html">bmtk.simulator.utils.stimulus.StaticGratings</a></li>
 <li><a href="bmtk/simulator/utils/tools/process_spikes.html">bmtk.simulator.utils.tools.process_spikes</a></li>
 <li><a href="bmtk/simulator/utils/tools/spatial.html">bmtk.simulator.utils.tools.spatial</a></li>
 <li><a href="bmtk/tests/simulator/bionet/bionet_virtual_files.html">bmtk.tests.simulator.bionet.bionet_virtual_files</a></li>
@@ -745,32 +759,33 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li><a href="bmtk/tests/simulator/pointnet/test_pointgraph.html">bmtk.tests.simulator.pointnet.test_pointgraph</a></li>
 <li><a href="bmtk/tests/simulator/popnet/popnet_virtual_files.html">bmtk.tests.simulator.popnet.popnet_virtual_files</a></li>
 <li><a href="bmtk/tests/simulator/popnet/test_popgraph.html">bmtk.tests.simulator.popnet.test_popgraph</a></li>
-<li><a href="bmtk/tests/simulator/utils/test_config.html">bmtk.tests.simulator.utils.test_config</a></li>
+<li><a href="bmtk/utils/converters/sonata/edge_converters.html">bmtk.utils.converters.sonata.edge_converters</a></li>
+<li><a href="bmtk/utils/converters/sonata/node_converters.html">bmtk.utils.converters.sonata.node_converters</a></li>
 <li><a href="bmtk/utils/hdf5_helper.html">bmtk.utils.hdf5_helper</a></li>
 <li><a href="bmtk/utils/io.html">bmtk.utils.io</a></li>
 <ul><li><a href="bmtk/utils/io/cell_vars.html">bmtk.utils.io.cell_vars</a></li>
 <li><a href="bmtk/utils/io/firing_rates.html">bmtk.utils.io.firing_rates</a></li>
 <li><a href="bmtk/utils/io/ioutils.html">bmtk.utils.io.ioutils</a></li>
 <li><a href="bmtk/utils/io/spike_trains.html">bmtk.utils.io.spike_trains</a></li>
-<li><a href="bmtk/utils/io/tabular_network.html">bmtk.utils.io.tabular_network</a></li>
 </ul><li><a href="bmtk/utils/property_schema.html">bmtk.utils.property_schema</a></li>
 <li><a href="bmtk/utils/reports/compartment/compartment_reader.html">bmtk.utils.reports.compartment.compartment_reader</a></li>
 <li><a href="bmtk/utils/reports/compartment/compartment_report.html">bmtk.utils.reports.compartment.compartment_report</a></li>
 <li><a href="bmtk/utils/reports/compartment/compartment_writer.html">bmtk.utils.reports.compartment.compartment_writer</a></li>
 <li><a href="bmtk/utils/reports/compartment/core.html">bmtk.utils.reports.compartment.core</a></li>
-<li><a href="bmtk/utils/reports/spike_trains/adaptors.html">bmtk.utils.reports.spike_trains.adaptors</a></li>
-<ul><li><a href="bmtk/utils/reports/spike_trains/adaptors/csv_adaptors.html">bmtk.utils.reports.spike_trains.adaptors.csv_adaptors</a></li>
-<li><a href="bmtk/utils/reports/spike_trains/adaptors/nwb_adaptors.html">bmtk.utils.reports.spike_trains.adaptors.nwb_adaptors</a></li>
-<li><a href="bmtk/utils/reports/spike_trains/adaptors/sonata_adaptors.html">bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors</a></li>
-</ul><li><a href="bmtk/utils/reports/spike_trains/core.html">bmtk.utils.reports.spike_trains.core</a></li>
+<li><a href="bmtk/utils/reports/current_writer.html">bmtk.utils.reports.current_writer</a></li>
+<li><a href="bmtk/utils/reports/spike_trains/core.html">bmtk.utils.reports.spike_trains.core</a></li>
 <li><a href="bmtk/utils/reports/spike_trains/plotting.html">bmtk.utils.reports.spike_trains.plotting</a></li>
 <li><a href="bmtk/utils/reports/spike_trains/spike_train_buffer.html">bmtk.utils.reports.spike_trains.spike_train_buffer</a></li>
+<li><a href="bmtk/utils/reports/spike_trains/spike_train_readers.html">bmtk.utils.reports.spike_trains.spike_train_readers</a></li>
 <li><a href="bmtk/utils/reports/spike_trains/spike_trains.html">bmtk.utils.reports.spike_trains.spike_trains</a></li>
-<li><a href="bmtk/utils/reports/spike_trains/spike_trains_file.html">bmtk.utils.reports.spike_trains.spike_trains_file</a></li>
+<li><a href="bmtk/utils/reports/spike_trains/spike_trains_api.html">bmtk.utils.reports.spike_trains.spike_trains_api</a></li>
+<li><a href="bmtk/utils/reports/spike_trains/spikes_file_writers.html">bmtk.utils.reports.spike_trains.spikes_file_writers</a></li>
 <li><a href="bmtk/utils/reports/spike_trains/stats.html">bmtk.utils.reports.spike_trains.stats</a></li>
 <li><a href="bmtk/utils/sim_setup.html">bmtk.utils.sim_setup</a></li>
-<li><a href="bmtk/utils/sonata/column_property.html">bmtk.utils.sonata.column_property</a></li>
-<li><a href="bmtk/utils/sonata/config.html">bmtk.utils.sonata.config</a></li>
+<li><a href="bmtk/utils/sonata/builder.html">bmtk.utils.sonata.builder</a></li>
+<ul><li><a href="bmtk/utils/sonata/builder/dict_builder.html">bmtk.utils.sonata.builder.dict_builder</a></li>
+</ul><li><a href="bmtk/utils/sonata/column_property.html">bmtk.utils.sonata.column_property</a></li>
+<li><a href="bmtk/utils/sonata/config/sonata_config.html">bmtk.utils.sonata.config.sonata_config</a></li>
 <li><a href="bmtk/utils/sonata/edge.html">bmtk.utils.sonata.edge</a></li>
 <li><a href="bmtk/utils/sonata/file.html">bmtk.utils.sonata.file</a></li>
 <li><a href="bmtk/utils/sonata/file_root.html">bmtk.utils.sonata.file_root</a></li>
@@ -779,10 +794,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li><a href="bmtk/utils/sonata/population.html">bmtk.utils.sonata.population</a></li>
 <li><a href="bmtk/utils/sonata/types_table.html">bmtk.utils.sonata.types_table</a></li>
 <li><a href="bmtk/utils/sonata/utils.html">bmtk.utils.sonata.utils</a></li>
-<li><a href="bmtk/utils/spike_trains/spikes_csv.html">bmtk.utils.spike_trains.spikes_csv</a></li>
-<li><a href="bmtk/utils/spike_trains/spikes_file.html">bmtk.utils.spike_trains.spikes_file</a></li>
 </ul>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -799,13 +813,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
@@ -814,17 +838,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

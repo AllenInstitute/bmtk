@@ -1,22 +1,25 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.simulator.pointnet package &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="bmtk.simulator.pointnet.default_setters package" href="bmtk.simulator.pointnet.default_setters.html" />
-    <link rel="prev" title="bmtk.simulator.mintnet.hmax package" href="bmtk.simulator.mintnet.hmax.html" /> 
+    <link rel="prev" title="bmtk.simulator.filternet.modules package" href="bmtk.simulator.filternet.modules.html" /> 
   </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
 <style>
@@ -648,99 +651,99 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div>
 <div class="section" id="module-bmtk.simulator.pointnet.config">
 <span id="bmtk-simulator-pointnet-config-module"></span><h2>bmtk.simulator.pointnet.config module<a class="headerlink" href="#module-bmtk.simulator.pointnet.config" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="bmtk.simulator.pointnet.config.Config">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.pointnet.config.</code><code class="descname">Config</code><span class="sig-paren">(</span><em>) -&gt; new empty dictionary dict(mapping) -&gt; new dictionary initialized from a mapping object's (key</em>, <em>value) pairs dict(iterable) -&gt; new dictionary initialized as if via: d = {} for k</em>, <em>v in iterable: d[k] = v dict(**kwargs) -&gt; new dictionary initialized with the name=value pairs in the keyword argument list.  For example:  dict(one=1</em>, <em>two=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/config.html#Config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.config.Config" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.utils.html#bmtk.simulator.utils.config.ConfigDict" title="bmtk.simulator.utils.config.ConfigDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.utils.config.ConfigDict</span></code></a></p>
-<dl class="attribute">
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.pointnet.config.</code><code class="sig-name descname">Config</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dict_obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/config.html#Config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.config.Config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.simulation_config.SimulationConfig" title="bmtk.simulator.core.simulation_config.SimulationConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.simulation_config.SimulationConfig</span></code></a></p>
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.config.Config.io">
-<code class="descname">io</code><a class="headerlink" href="#bmtk.simulator.pointnet.config.Config.io" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">io</code><a class="headerlink" href="#bmtk.simulator.pointnet.config.Config.io" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.config.from_dict">
-<code class="descclassname">bmtk.simulator.pointnet.config.</code><code class="descname">from_dict</code><span class="sig-paren">(</span><em>config_file</em>, <em>validate=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/config.html#from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.config.from_dict" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.config.</code><code class="sig-name descname">from_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_file</span></em>, <em class="sig-param"><span class="n">validate</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/config.html#from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.config.from_dict" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.config.from_json">
-<code class="descclassname">bmtk.simulator.pointnet.config.</code><code class="descname">from_json</code><span class="sig-paren">(</span><em>config_file</em>, <em>validate=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/config.html#from_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.config.from_json" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.config.</code><code class="sig-name descname">from_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_file</span></em>, <em class="sig-param"><span class="n">validate</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/config.html#from_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.config.from_json" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
 <div class="section" id="module-bmtk.simulator.pointnet.gids">
 <span id="bmtk-simulator-pointnet-gids-module"></span><h2>bmtk.simulator.pointnet.gids module<a class="headerlink" href="#module-bmtk.simulator.pointnet.gids" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="bmtk.simulator.pointnet.gids.GidPool">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.pointnet.gids.</code><code class="descname">GidPool</code><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/gids.html#GidPool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.gids.GidPool" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.pointnet.gids.</code><code class="sig-name descname">GidPool</code><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/gids.html#GidPool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.gids.GidPool" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.gids.GidPool.add">
-<code class="descname">add</code><span class="sig-paren">(</span><em>name</em>, <em>node_id</em>, <em>gid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/gids.html#GidPool.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.gids.GidPool.add" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">node_id</span></em>, <em class="sig-param"><span class="n">gid</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/gids.html#GidPool.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.gids.GidPool.add" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.gids.GidPool.add_gids">
-<code class="descname">add_gids</code><span class="sig-paren">(</span><em>name</em>, <em>node_ids</em>, <em>gids</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/gids.html#GidPool.add_gids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.gids.GidPool.add_gids" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_gids</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">node_ids</span></em>, <em class="sig-param"><span class="n">gids</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/gids.html#GidPool.add_gids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.gids.GidPool.add_gids" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.gids.GidPool.add_nestids">
-<code class="descname">add_nestids</code><span class="sig-paren">(</span><em>name</em>, <em>node_ids</em>, <em>nest_ids</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/gids.html#GidPool.add_nestids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.gids.GidPool.add_nestids" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_nestids</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">node_ids</span></em>, <em class="sig-param"><span class="n">nest_ids</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/gids.html#GidPool.add_nestids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.gids.GidPool.add_nestids" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.gids.GidPool.create_pool">
-<code class="descname">create_pool</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/gids.html#GidPool.create_pool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.gids.GidPool.create_pool" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">create_pool</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/gids.html#GidPool.create_pool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.gids.GidPool.create_pool" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.gids.GidPool.get_gid">
-<code class="descname">get_gid</code><span class="sig-paren">(</span><em>name</em>, <em>node_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/gids.html#GidPool.get_gid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.gids.GidPool.get_gid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_gid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">node_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/gids.html#GidPool.get_gid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.gids.GidPool.get_gid" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.gids.GidPool.get_gids">
-<code class="descname">get_gids</code><span class="sig-paren">(</span><em>name</em>, <em>node_ids</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/gids.html#GidPool.get_gids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.gids.GidPool.get_gids" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_gids</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">node_ids</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/gids.html#GidPool.get_gids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.gids.GidPool.get_gids" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.gids.GidPool.get_nestids">
-<code class="descname">get_nestids</code><span class="sig-paren">(</span><em>name</em>, <em>node_ids</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/gids.html#GidPool.get_nestids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.gids.GidPool.get_nestids" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_nestids</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">node_ids</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/gids.html#GidPool.get_nestids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.gids.GidPool.get_nestids" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.gids.GidPool.get_pool_id">
-<code class="descname">get_pool_id</code><span class="sig-paren">(</span><em>gid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/gids.html#GidPool.get_pool_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.gids.GidPool.get_pool_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_pool_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gid</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/gids.html#GidPool.get_pool_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.gids.GidPool.get_pool_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.gids.GidPool.gids">
-<code class="descname">gids</code><a class="headerlink" href="#bmtk.simulator.pointnet.gids.GidPool.gids" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">gids</code><a class="headerlink" href="#bmtk.simulator.pointnet.gids.GidPool.gids" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.gids.GidPool.populations">
-<code class="descname">populations</code><a class="headerlink" href="#bmtk.simulator.pointnet.gids.GidPool.populations" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">populations</code><a class="headerlink" href="#bmtk.simulator.pointnet.gids.GidPool.populations" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="bmtk.simulator.pointnet.gids.PopulationID">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.pointnet.gids.</code><code class="descname">PopulationID</code><span class="sig-paren">(</span><em>node_id</em>, <em>population</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.pointnet.gids.PopulationID" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.pointnet.gids.</code><code class="sig-name descname">PopulationID</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_id</span></em>, <em class="sig-param"><span class="n">population</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.pointnet.gids.PopulationID" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.gids.PopulationID.node_id">
-<code class="descname">node_id</code><a class="headerlink" href="#bmtk.simulator.pointnet.gids.PopulationID.node_id" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">node_id</code><a class="headerlink" href="#bmtk.simulator.pointnet.gids.PopulationID.node_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 0</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.gids.PopulationID.population">
-<code class="descname">population</code><a class="headerlink" href="#bmtk.simulator.pointnet.gids.PopulationID.population" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">population</code><a class="headerlink" href="#bmtk.simulator.pointnet.gids.PopulationID.population" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 1</p>
 </dd></dl>
 
@@ -749,95 +752,89 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div>
 <div class="section" id="module-bmtk.simulator.pointnet.glif_utils">
 <span id="bmtk-simulator-pointnet-glif-utils-module"></span><h2>bmtk.simulator.pointnet.glif_utils module<a class="headerlink" href="#module-bmtk.simulator.pointnet.glif_utils" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.glif_utils.convert_aibs2nest">
-<code class="descclassname">bmtk.simulator.pointnet.glif_utils.</code><code class="descname">convert_aibs2nest</code><span class="sig-paren">(</span><em>model_template</em>, <em>dynamics_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#convert_aibs2nest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.convert_aibs2nest" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.glif_utils.</code><code class="sig-name descname">convert_aibs2nest</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_template</span></em>, <em class="sig-param"><span class="n">dynamics_params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#convert_aibs2nest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.convert_aibs2nest" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.glif_utils.lif_aibs_converter">
-<code class="descclassname">bmtk.simulator.pointnet.glif_utils.</code><code class="descname">lif_aibs_converter</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#lif_aibs_converter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.lif_aibs_converter" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>config</strong> – </td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.glif_utils.</code><code class="sig-name descname">lif_aibs_converter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#lif_aibs_converter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.lif_aibs_converter" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.glif_utils.lif_asc_aibs_converter">
-<code class="descclassname">bmtk.simulator.pointnet.glif_utils.</code><code class="descname">lif_asc_aibs_converter</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#lif_asc_aibs_converter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.lif_asc_aibs_converter" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>config</strong> – </td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.glif_utils.</code><code class="sig-name descname">lif_asc_aibs_converter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#lif_asc_aibs_converter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.lif_asc_aibs_converter" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.glif_utils.lif_asc_psc_aibs_converter">
-<code class="descclassname">bmtk.simulator.pointnet.glif_utils.</code><code class="descname">lif_asc_psc_aibs_converter</code><span class="sig-paren">(</span><em>config, syn_tau=[5.5, 8.5, 2.8, 5.8]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#lif_asc_psc_aibs_converter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.lif_asc_psc_aibs_converter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.glif_utils.</code><code class="sig-name descname">lif_asc_psc_aibs_converter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config</span></em>, <em class="sig-param"><span class="n">syn_tau</span><span class="o">=</span><span class="default_value">[5.5, 8.5, 2.8, 5.8]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#lif_asc_psc_aibs_converter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.lif_asc_psc_aibs_converter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a nest glif_lif_asc_psc object</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.glif_utils.lif_psc_aibs_converter">
-<code class="descclassname">bmtk.simulator.pointnet.glif_utils.</code><code class="descname">lif_psc_aibs_converter</code><span class="sig-paren">(</span><em>config, syn_tau=[5.5, 8.5, 2.8, 5.8]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#lif_psc_aibs_converter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.lif_psc_aibs_converter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.glif_utils.</code><code class="sig-name descname">lif_psc_aibs_converter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config</span></em>, <em class="sig-param"><span class="n">syn_tau</span><span class="o">=</span><span class="default_value">[5.5, 8.5, 2.8, 5.8]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#lif_psc_aibs_converter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.lif_psc_aibs_converter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a nest glif_lif_psc object</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.glif_utils.lif_r_aibs_converter">
-<code class="descclassname">bmtk.simulator.pointnet.glif_utils.</code><code class="descname">lif_r_aibs_converter</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#lif_r_aibs_converter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.lif_r_aibs_converter" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>config</strong> – </td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.glif_utils.</code><code class="sig-name descname">lif_r_aibs_converter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#lif_r_aibs_converter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.lif_r_aibs_converter" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>config</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.glif_utils.lif_r_asc_a_aibs_converter">
-<code class="descclassname">bmtk.simulator.pointnet.glif_utils.</code><code class="descname">lif_r_asc_a_aibs_converter</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#lif_r_asc_a_aibs_converter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.lif_r_asc_a_aibs_converter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.glif_utils.</code><code class="sig-name descname">lif_r_asc_a_aibs_converter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#lif_r_asc_a_aibs_converter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.lif_r_asc_a_aibs_converter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a nest glif_lif_r_asc_a object</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.glif_utils.lif_r_asc_a_psc_aibs_converter">
-<code class="descclassname">bmtk.simulator.pointnet.glif_utils.</code><code class="descname">lif_r_asc_a_psc_aibs_converter</code><span class="sig-paren">(</span><em>config, syn_tau=[5.5, 8.5, 2.8, 5.8]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#lif_r_asc_a_psc_aibs_converter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.lif_r_asc_a_psc_aibs_converter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.glif_utils.</code><code class="sig-name descname">lif_r_asc_a_psc_aibs_converter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config</span></em>, <em class="sig-param"><span class="n">syn_tau</span><span class="o">=</span><span class="default_value">[5.5, 8.5, 2.8, 5.8]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#lif_r_asc_a_psc_aibs_converter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.lif_r_asc_a_psc_aibs_converter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a nest glif_lif_r_asc_a_psc object</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.glif_utils.lif_r_asc_aibs_converter">
-<code class="descclassname">bmtk.simulator.pointnet.glif_utils.</code><code class="descname">lif_r_asc_aibs_converter</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#lif_r_asc_aibs_converter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.lif_r_asc_aibs_converter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.glif_utils.</code><code class="sig-name descname">lif_r_asc_aibs_converter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#lif_r_asc_aibs_converter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.lif_r_asc_aibs_converter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a nest glif_lif_r_asc object</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.glif_utils.lif_r_asc_psc_aibs_converter">
-<code class="descclassname">bmtk.simulator.pointnet.glif_utils.</code><code class="descname">lif_r_asc_psc_aibs_converter</code><span class="sig-paren">(</span><em>config, syn_tau=[5.5, 8.5, 2.8, 5.8]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#lif_r_asc_psc_aibs_converter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.lif_r_asc_psc_aibs_converter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.glif_utils.</code><code class="sig-name descname">lif_r_asc_psc_aibs_converter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config</span></em>, <em class="sig-param"><span class="n">syn_tau</span><span class="o">=</span><span class="default_value">[5.5, 8.5, 2.8, 5.8]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#lif_r_asc_psc_aibs_converter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.lif_r_asc_psc_aibs_converter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a nest glif_lif_r_asc_psc object</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.glif_utils.lif_r_psc_aibs_converter">
-<code class="descclassname">bmtk.simulator.pointnet.glif_utils.</code><code class="descname">lif_r_psc_aibs_converter</code><span class="sig-paren">(</span><em>config, syn_tau=[5.5, 8.5, 2.8, 5.8]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#lif_r_psc_aibs_converter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.lif_r_psc_aibs_converter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.glif_utils.</code><code class="sig-name descname">lif_r_psc_aibs_converter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config</span></em>, <em class="sig-param"><span class="n">syn_tau</span><span class="o">=</span><span class="default_value">[5.5, 8.5, 2.8, 5.8]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/glif_utils.html#lif_r_psc_aibs_converter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.glif_utils.lif_r_psc_aibs_converter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a nest glif_lif_r_psc object</p>
 </dd></dl>
 
@@ -845,52 +842,53 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="section" id="module-bmtk.simulator.pointnet.io_tools">
 <span id="bmtk-simulator-pointnet-io-tools-module"></span><h2>bmtk.simulator.pointnet.io_tools module<a class="headerlink" href="#module-bmtk.simulator.pointnet.io_tools" title="Permalink to this headline">¶</a></h2>
 <p>Functions for logging, writing and reading from file.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="bmtk.simulator.pointnet.io_tools.NestIOUtils">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.pointnet.io_tools.</code><code class="descname">NestIOUtils</code><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/io_tools.html#NestIOUtils"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.io_tools.NestIOUtils" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.pointnet.io_tools.</code><code class="sig-name descname">NestIOUtils</code><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/io_tools.html#NestIOUtils"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.io_tools.NestIOUtils" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.io_tools.IOUtils" title="bmtk.simulator.core.io_tools.IOUtils"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.io_tools.IOUtils</span></code></a></p>
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.io_tools.NestIOUtils.barrier">
-<code class="descname">barrier</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/io_tools.html#NestIOUtils.barrier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.io_tools.NestIOUtils.barrier" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">barrier</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/io_tools.html#NestIOUtils.barrier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.io_tools.NestIOUtils.barrier" title="Permalink to this definition">¶</a></dt>
 <dd><p>MPI Barrier call</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.io_tools.NestIOUtils.quiet_simulator">
-<code class="descname">quiet_simulator</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/io_tools.html#NestIOUtils.quiet_simulator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.io_tools.NestIOUtils.quiet_simulator" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">quiet_simulator</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/io_tools.html#NestIOUtils.quiet_simulator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.io_tools.NestIOUtils.quiet_simulator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Turns off logging/messages of the native simulator</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.io_tools.NestIOUtils.setup_output_dir">
-<code class="descname">setup_output_dir</code><span class="sig-paren">(</span><em>config_dir</em>, <em>log_file</em>, <em>overwrite=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/io_tools.html#NestIOUtils.setup_output_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.io_tools.NestIOUtils.setup_output_dir" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">setup_output_dir</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_dir</span></em>, <em class="sig-param"><span class="n">log_file</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/io_tools.html#NestIOUtils.setup_output_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.io_tools.NestIOUtils.setup_output_dir" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.io_tools.barrier">
-<code class="descclassname">bmtk.simulator.pointnet.io_tools.</code><code class="descname">barrier</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.pointnet.io_tools.barrier" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.io_tools.</code><code class="sig-name descname">barrier</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.pointnet.io_tools.barrier" title="Permalink to this definition">¶</a></dt>
 <dd><p>Barrier synchronization</p>
 </dd></dl>
 
-<dl class="data">
+<dl class="py data">
 <dt id="bmtk.simulator.pointnet.io_tools.io">
-<code class="descclassname">bmtk.simulator.pointnet.io_tools.</code><code class="descname">io</code><em class="property"> = &lt;bmtk.simulator.pointnet.io_tools.NestIOUtils object&gt;</em><a class="headerlink" href="#bmtk.simulator.pointnet.io_tools.io" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.io_tools.</code><code class="sig-name descname">io</code><em class="property"> = &lt;bmtk.simulator.pointnet.io_tools.NestIOUtils object&gt;</em><a class="headerlink" href="#bmtk.simulator.pointnet.io_tools.io" title="Permalink to this definition">¶</a></dt>
 <dd><p>def collect_gdf_files(gdf_dir, output_file, nest_id_map, overwrite=False):</p>
 <blockquote>
-<div><dl class="docutils">
-<dt>if n_nodes &gt; 0:</dt>
-<dd># Wait until all nodes are finished
-barrier()</dd>
-<dt>if rank != 0:</dt>
-<dd>return</dd>
+<div><dl class="simple">
+<dt>if n_nodes &gt; 0:</dt><dd><p># Wait until all nodes are finished
+barrier()</p>
+</dd>
+<dt>if rank != 0:</dt><dd><p>return</p>
+</dd>
 </dl>
 <p>log(“Saving spikes to file…”)
 spikes_out = output_file
 if os.path.exists(spikes_out) and not overwrite:</p>
 <blockquote>
-<div>return</div></blockquote>
+<div><p>return</p>
+</div></blockquote>
 <p>gdf_files_globs = ‘{}/<a href="#id1"><span class="problematic" id="id2">*</span></a>.gdf’.format(gdf_dir)
 gdf_files = glob.glob(gdf_files_globs)
 with open(spikes_out, ‘w’) as spikes_file:</p>
@@ -901,37 +899,36 @@ for gdffile in gdf_files:</p>
 <div><p>spikes_df = pd.read_csv(gdffile, names=[‘gid’, ‘time’, ‘nan’], sep=’        ‘)
 for _, row in spikes_df.iterrows():</p>
 <blockquote>
-<div>csv_writer.writerow([row[‘time’], nest_id_map[int(row[‘gid’])]])</div></blockquote>
+<div><p>csv_writer.writerow([row[‘time’], nest_id_map[int(row[‘gid’])]])</p>
+</div></blockquote>
 <p>os.remove(gdffile)</p>
 </div></blockquote>
 </div></blockquote>
 <p>log(“done.”)</p>
 </div></blockquote>
-<dl class="docutils">
-<dt>def setup_output_dir(config):</dt>
-<dd><dl class="first docutils">
-<dt>if rank == 0:</dt>
-<dd><dl class="first last docutils">
-<dt>try:</dt>
-<dd><p class="first">output_dir = config[‘output’][‘output_dir’]
+<dl>
+<dt>def setup_output_dir(config):</dt><dd><dl>
+<dt>if rank == 0:</dt><dd><dl>
+<dt>try:</dt><dd><p>output_dir = config[‘output’][‘output_dir’]
 if os.path.exists(output_dir):</p>
 <blockquote>
-<div>shutil.rmtree(output_dir)</div></blockquote>
+<div><p>shutil.rmtree(output_dir)</p>
+</div></blockquote>
 <p>os.makedirs(output_dir)</p>
-<dl class="last docutils">
-<dt>if ‘log_file’ in config[‘output’]:</dt>
-<dd>file_logger = logging.FileHandler(config[‘output’][‘log_file’])
+<dl class="simple">
+<dt>if ‘log_file’ in config[‘output’]:</dt><dd><p>file_logger = logging.FileHandler(config[‘output’][‘log_file’])
 file_logger.setFormatter(log_format)
 pointnet_logger.addHandler(file_logger)
-log(‘Created a log file’)</dd>
-</dl>
-</dd>
-<dt>except Exception as exc:</dt>
-<dd>print(exc)</dd>
-</dl>
+log(‘Created a log file’)</p>
 </dd>
 </dl>
-<p class="last">barrier()</p>
+</dd>
+<dt>except Exception as exc:</dt><dd><p>print(exc)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>barrier()</p>
 </dd>
 </dl>
 </dd></dl>
@@ -939,63 +936,63 @@ log(‘Created a log file’)</dd>
 </div>
 <div class="section" id="module-bmtk.simulator.pointnet.pointnetwork">
 <span id="bmtk-simulator-pointnet-pointnetwork-module"></span><h2>bmtk.simulator.pointnet.pointnetwork module<a class="headerlink" href="#module-bmtk.simulator.pointnet.pointnetwork" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="bmtk.simulator.pointnet.pointnetwork.PointNetwork">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.pointnet.pointnetwork.</code><code class="descname">PointNetwork</code><span class="sig-paren">(</span><em>**properties</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointnetwork.html#PointNetwork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.pointnet.pointnetwork.</code><code class="sig-name descname">PointNetwork</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">properties</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointnetwork.html#PointNetwork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.simulator_network.SimNetwork" title="bmtk.simulator.core.simulator_network.SimNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.simulator_network.SimNetwork</span></code></a></p>
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.pointnetwork.PointNetwork.add_spike_trains">
-<code class="descname">add_spike_trains</code><span class="sig-paren">(</span><em>spike_trains</em>, <em>node_set</em>, <em>sg_params={'precise_times': True}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointnetwork.html#PointNetwork.add_spike_trains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.add_spike_trains" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_spike_trains</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">spike_trains</span></em>, <em class="sig-param"><span class="n">node_set</span></em>, <em class="sig-param"><span class="n">sg_params</span><span class="o">=</span><span class="default_value">{'precise_times': True}</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointnetwork.html#PointNetwork.add_spike_trains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.add_spike_trains" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.pointnetwork.PointNetwork.add_weight_function">
-<code class="descname">add_weight_function</code><span class="sig-paren">(</span><em>fnc</em>, <em>name=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointnetwork.html#PointNetwork.add_weight_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.add_weight_function" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_weight_function</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fnc</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointnetwork.html#PointNetwork.add_weight_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.add_weight_function" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.pointnetwork.PointNetwork.build_nodes">
-<code class="descname">build_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointnetwork.html#PointNetwork.build_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.build_nodes" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">build_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointnetwork.html#PointNetwork.build_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.build_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.pointnetwork.PointNetwork.build_recurrent_edges">
-<code class="descname">build_recurrent_edges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointnetwork.html#PointNetwork.build_recurrent_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.build_recurrent_edges" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">build_recurrent_edges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointnetwork.html#PointNetwork.build_recurrent_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.build_recurrent_edges" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.pointnetwork.PointNetwork.find_edges">
-<code class="descname">find_edges</code><span class="sig-paren">(</span><em>source_nodes=None</em>, <em>target_nodes=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointnetwork.html#PointNetwork.find_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.find_edges" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">find_edges</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source_nodes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">target_nodes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointnetwork.html#PointNetwork.find_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.find_edges" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.pointnetwork.PointNetwork.get_node_id">
-<code class="descname">get_node_id</code><span class="sig-paren">(</span><em>population</em>, <em>node_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointnetwork.html#PointNetwork.get_node_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.get_node_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_node_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">population</span></em>, <em class="sig-param"><span class="n">node_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointnetwork.html#PointNetwork.get_node_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.get_node_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.pointnetwork.PointNetwork.get_nodes_df">
-<code class="descname">get_nodes_df</code><span class="sig-paren">(</span><em>population</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointnetwork.html#PointNetwork.get_nodes_df"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.get_nodes_df" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_nodes_df</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">population</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointnetwork.html#PointNetwork.get_nodes_df"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.get_nodes_df" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.pointnetwork.PointNetwork.get_weight_function">
-<code class="descname">get_weight_function</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointnetwork.html#PointNetwork.get_weight_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.get_weight_function" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_weight_function</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointnetwork.html#PointNetwork.get_weight_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.get_weight_function" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.pointnetwork.PointNetwork.gid_map">
-<code class="descname">gid_map</code><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.gid_map" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">gid_map</code><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.gid_map" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.pointnetwork.PointNetwork.py_function_caches">
-<code class="descname">py_function_caches</code><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.py_function_caches" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">py_function_caches</code><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.py_function_caches" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.pointnetwork.PointNetwork.set_default_weight_function">
-<code class="descname">set_default_weight_function</code><span class="sig-paren">(</span><em>fnc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointnetwork.html#PointNetwork.set_default_weight_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.set_default_weight_function" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_default_weight_function</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fnc</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointnetwork.html#PointNetwork.set_default_weight_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointnetwork.PointNetwork.set_default_weight_function" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1003,68 +1000,68 @@ log(‘Created a log file’)</dd>
 </div>
 <div class="section" id="module-bmtk.simulator.pointnet.pointsimulator">
 <span id="bmtk-simulator-pointnet-pointsimulator-module"></span><h2>bmtk.simulator.pointnet.pointsimulator module<a class="headerlink" href="#module-bmtk.simulator.pointnet.pointsimulator" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="bmtk.simulator.pointnet.pointsimulator.PointSimulator">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.pointnet.pointsimulator.</code><code class="descname">PointSimulator</code><span class="sig-paren">(</span><em>graph</em>, <em>dt=0.001</em>, <em>overwrite=True</em>, <em>print_time=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointsimulator.html#PointSimulator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.pointnet.pointsimulator.</code><code class="sig-name descname">PointSimulator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span></em>, <em class="sig-param"><span class="n">dt</span><span class="o">=</span><span class="default_value">0.001</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">print_time</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointsimulator.html#PointSimulator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.html#bmtk.simulator.core.simulator.Simulator" title="bmtk.simulator.core.simulator.Simulator"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.simulator.Simulator</span></code></a></p>
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.pointsimulator.PointSimulator.add_mod">
-<code class="descname">add_mod</code><span class="sig-paren">(</span><em>mod</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointsimulator.html#PointSimulator.add_mod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.add_mod" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_mod</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mod</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointsimulator.html#PointSimulator.add_mod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.add_mod" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.pointsimulator.PointSimulator.add_step_currents">
-<code class="descname">add_step_currents</code><span class="sig-paren">(</span><em>amp_times</em>, <em>amp_values</em>, <em>node_set</em>, <em>input_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointsimulator.html#PointSimulator.add_step_currents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.add_step_currents" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_step_currents</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">amp_times</span></em>, <em class="sig-param"><span class="n">amp_values</span></em>, <em class="sig-param"><span class="n">node_set</span></em>, <em class="sig-param"><span class="n">input_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointsimulator.html#PointSimulator.add_step_currents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.add_step_currents" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.pointsimulator.PointSimulator.dt">
-<code class="descname">dt</code><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.dt" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">dt</code><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.dt" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="classmethod">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.pointsimulator.PointSimulator.from_config">
-<em class="property">classmethod </em><code class="descname">from_config</code><span class="sig-paren">(</span><em>configure</em>, <em>graph</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointsimulator.html#PointSimulator.from_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.from_config" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">from_config</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">configure</span></em>, <em class="sig-param"><span class="n">graph</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointsimulator.html#PointSimulator.from_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.from_config" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.pointsimulator.PointSimulator.get_spike_generator_params">
-<code class="descname">get_spike_generator_params</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointsimulator.html#PointSimulator.get_spike_generator_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.get_spike_generator_params" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_spike_generator_params</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointsimulator.html#PointSimulator.get_spike_generator_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.get_spike_generator_params" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.pointsimulator.PointSimulator.gid_map">
-<code class="descname">gid_map</code><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.gid_map" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">gid_map</code><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.gid_map" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.pointsimulator.PointSimulator.n_steps">
-<code class="descname">n_steps</code><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.n_steps" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">n_steps</code><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.n_steps" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.pointsimulator.PointSimulator.net">
-<code class="descname">net</code><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.net" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">net</code><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.net" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.pointsimulator.PointSimulator.run">
-<code class="descname">run</code><span class="sig-paren">(</span><em>tstop=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointsimulator.html#PointSimulator.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.run" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tstop</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointsimulator.html#PointSimulator.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.run" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.pointsimulator.PointSimulator.set_spike_generator_params">
-<code class="descname">set_spike_generator_params</code><span class="sig-paren">(</span><em>**params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointsimulator.html#PointSimulator.set_spike_generator_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.set_spike_generator_params" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_spike_generator_params</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pointsimulator.html#PointSimulator.set_spike_generator_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.set_spike_generator_params" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.pointsimulator.PointSimulator.tstart">
-<code class="descname">tstart</code><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.tstart" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">tstart</code><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.tstart" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.pointsimulator.PointSimulator.tstop">
-<code class="descname">tstop</code><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.tstop" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">tstop</code><a class="headerlink" href="#bmtk.simulator.pointnet.pointsimulator.PointSimulator.tstop" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1072,155 +1069,156 @@ log(‘Created a log file’)</dd>
 </div>
 <div class="section" id="module-bmtk.simulator.pointnet.property_map">
 <span id="bmtk-simulator-pointnet-property-map-module"></span><h2>bmtk.simulator.pointnet.property_map module<a class="headerlink" href="#module-bmtk.simulator.pointnet.property_map" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="bmtk.simulator.pointnet.property_map.EdgePropertyMap">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.pointnet.property_map.</code><code class="descname">EdgePropertyMap</code><span class="sig-paren">(</span><em>graph</em>, <em>source_population</em>, <em>target_population</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#EdgePropertyMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.EdgePropertyMap" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.pointnet.property_map.</code><code class="sig-name descname">EdgePropertyMap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span></em>, <em class="sig-param"><span class="n">source_population</span></em>, <em class="sig-param"><span class="n">target_population</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#EdgePropertyMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.EdgePropertyMap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="classmethod">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.property_map.EdgePropertyMap.build_map">
-<em class="property">classmethod </em><code class="descname">build_map</code><span class="sig-paren">(</span><em>edge_group</em>, <em>biograph</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#EdgePropertyMap.build_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.EdgePropertyMap.build_map" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">build_map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edge_group</span></em>, <em class="sig-param"><span class="n">biograph</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#EdgePropertyMap.build_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.EdgePropertyMap.build_map" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.property_map.EdgePropertyMap.synaptic_model">
-<code class="descname">synaptic_model</code><span class="sig-paren">(</span><em>edge</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#EdgePropertyMap.synaptic_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.EdgePropertyMap.synaptic_model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">synaptic_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edge</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#EdgePropertyMap.synaptic_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.EdgePropertyMap.synaptic_model" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.property_map.EdgePropertyMap.synpatic_params">
-<code class="descname">synpatic_params</code><span class="sig-paren">(</span><em>edge</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#EdgePropertyMap.synpatic_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.EdgePropertyMap.synpatic_params" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">synpatic_params</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edge</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#EdgePropertyMap.synpatic_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.EdgePropertyMap.synpatic_params" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="bmtk.simulator.pointnet.property_map.NodePropertyMap">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.pointnet.property_map.</code><code class="descname">NodePropertyMap</code><span class="sig-paren">(</span><em>graph</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#NodePropertyMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.NodePropertyMap" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.pointnet.property_map.</code><code class="sig-name descname">NodePropertyMap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graph</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#NodePropertyMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.NodePropertyMap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="classmethod">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.property_map.NodePropertyMap.build_map">
-<em class="property">classmethod </em><code class="descname">build_map</code><span class="sig-paren">(</span><em>node_group</em>, <em>graph</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#NodePropertyMap.build_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.NodePropertyMap.build_map" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">build_map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_group</span></em>, <em class="sig-param"><span class="n">graph</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#NodePropertyMap.build_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.NodePropertyMap.build_map" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.property_map.NodePropertyMap.load_cell">
-<code class="descname">load_cell</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#NodePropertyMap.load_cell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.NodePropertyMap.load_cell" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">load_cell</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#NodePropertyMap.load_cell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.NodePropertyMap.load_cell" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.property_map.gid">
-<code class="descclassname">bmtk.simulator.pointnet.property_map.</code><code class="descname">gid</code><span class="sig-paren">(</span><em>self</em>, <em>node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#gid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.gid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.property_map.</code><code class="sig-name descname">gid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#gid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.gid" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.property_map.group_dynamics_params">
-<code class="descclassname">bmtk.simulator.pointnet.property_map.</code><code class="descname">group_dynamics_params</code><span class="sig-paren">(</span><em>self</em>, <em>node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#group_dynamics_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.group_dynamics_params" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.property_map.</code><code class="sig-name descname">group_dynamics_params</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#group_dynamics_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.group_dynamics_params" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.property_map.model_params">
-<code class="descclassname">bmtk.simulator.pointnet.property_map.</code><code class="descname">model_params</code><span class="sig-paren">(</span><em>self</em>, <em>node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#model_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.model_params" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.property_map.</code><code class="sig-name descname">model_params</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#model_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.model_params" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.property_map.model_params_batched">
-<code class="descclassname">bmtk.simulator.pointnet.property_map.</code><code class="descname">model_params_batched</code><span class="sig-paren">(</span><em>self</em>, <em>node_type_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#model_params_batched"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.model_params_batched" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.property_map.</code><code class="sig-name descname">model_params_batched</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_type_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#model_params_batched"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.model_params_batched" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.property_map.model_type">
-<code class="descclassname">bmtk.simulator.pointnet.property_map.</code><code class="descname">model_type</code><span class="sig-paren">(</span><em>self</em>, <em>node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#model_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.model_type" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.property_map.</code><code class="sig-name descname">model_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#model_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.model_type" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.property_map.model_type_batched">
-<code class="descclassname">bmtk.simulator.pointnet.property_map.</code><code class="descname">model_type_batched</code><span class="sig-paren">(</span><em>self</em>, <em>node_type_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#model_type_batched"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.model_type_batched" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.property_map.</code><code class="sig-name descname">model_type_batched</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node_type_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#model_type_batched"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.model_type_batched" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.property_map.no_syns">
-<code class="descclassname">bmtk.simulator.pointnet.property_map.</code><code class="descname">no_syns</code><span class="sig-paren">(</span><em>self</em>, <em>edge</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#no_syns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.no_syns" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.property_map.</code><code class="sig-name descname">no_syns</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">edge</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#no_syns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.no_syns" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.property_map.node_id">
-<code class="descclassname">bmtk.simulator.pointnet.property_map.</code><code class="descname">node_id</code><span class="sig-paren">(</span><em>self</em>, <em>node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#node_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.node_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.property_map.</code><code class="sig-name descname">node_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#node_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.node_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.property_map.nsyns">
-<code class="descclassname">bmtk.simulator.pointnet.property_map.</code><code class="descname">nsyns</code><span class="sig-paren">(</span><em>self</em>, <em>edge</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#nsyns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.nsyns" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.property_map.</code><code class="sig-name descname">nsyns</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">edge</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#nsyns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.nsyns" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.property_map.syn_weight">
-<code class="descclassname">bmtk.simulator.pointnet.property_map.</code><code class="descname">syn_weight</code><span class="sig-paren">(</span><em>self</em>, <em>edge</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#syn_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.syn_weight" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.property_map.</code><code class="sig-name descname">syn_weight</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">edge</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#syn_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.syn_weight" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.property_map.types_dynamics_params">
-<code class="descclassname">bmtk.simulator.pointnet.property_map.</code><code class="descname">types_dynamics_params</code><span class="sig-paren">(</span><em>self</em>, <em>node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#types_dynamics_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.types_dynamics_params" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.property_map.</code><code class="sig-name descname">types_dynamics_params</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">node</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#types_dynamics_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.types_dynamics_params" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.property_map.weight_function">
-<code class="descclassname">bmtk.simulator.pointnet.property_map.</code><code class="descname">weight_function</code><span class="sig-paren">(</span><em>self</em>, <em>edge</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#weight_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.weight_function" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.property_map.</code><code class="sig-name descname">weight_function</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">edge</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/property_map.html#weight_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.property_map.weight_function" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
 <div class="section" id="module-bmtk.simulator.pointnet.pyfunction_cache">
 <span id="bmtk-simulator-pointnet-pyfunction-cache-module"></span><h2>bmtk.simulator.pointnet.pyfunction_cache module<a class="headerlink" href="#module-bmtk.simulator.pointnet.pyfunction_cache" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.pyfunction_cache.add_cell_model">
-<code class="descclassname">bmtk.simulator.pointnet.pyfunction_cache.</code><code class="descname">add_cell_model</code><span class="sig-paren">(</span><em>func</em>, <em>directive</em>, <em>model_type</em>, <em>overwrite=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pyfunction_cache.html#add_cell_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pyfunction_cache.add_cell_model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.pyfunction_cache.</code><code class="sig-name descname">add_cell_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">directive</span></em>, <em class="sig-param"><span class="n">model_type</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pyfunction_cache.html#add_cell_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pyfunction_cache.add_cell_model" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.pyfunction_cache.add_cell_processor">
-<code class="descclassname">bmtk.simulator.pointnet.pyfunction_cache.</code><code class="descname">add_cell_processor</code><span class="sig-paren">(</span><em>func</em>, <em>name=None</em>, <em>overwrite=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pyfunction_cache.html#add_cell_processor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pyfunction_cache.add_cell_processor" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.pyfunction_cache.</code><code class="sig-name descname">add_cell_processor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pyfunction_cache.html#add_cell_processor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pyfunction_cache.add_cell_processor" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.pyfunction_cache.add_synapse_model">
-<code class="descclassname">bmtk.simulator.pointnet.pyfunction_cache.</code><code class="descname">add_synapse_model</code><span class="sig-paren">(</span><em>func</em>, <em>name=None</em>, <em>overwrite=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pyfunction_cache.html#add_synapse_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pyfunction_cache.add_synapse_model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.pyfunction_cache.</code><code class="sig-name descname">add_synapse_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pyfunction_cache.html#add_synapse_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pyfunction_cache.add_synapse_model" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.pyfunction_cache.add_weight_function">
-<code class="descclassname">bmtk.simulator.pointnet.pyfunction_cache.</code><code class="descname">add_weight_function</code><span class="sig-paren">(</span><em>func</em>, <em>name=None</em>, <em>overwrite=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pyfunction_cache.html#add_weight_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pyfunction_cache.add_weight_function" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.pyfunction_cache.</code><code class="sig-name descname">add_weight_function</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pyfunction_cache.html#add_weight_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pyfunction_cache.add_weight_function" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.pyfunction_cache.cell_model">
-<code class="descclassname">bmtk.simulator.pointnet.pyfunction_cache.</code><code class="descname">cell_model</code><span class="sig-paren">(</span><em>*wargs</em>, <em>**wkwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pyfunction_cache.html#cell_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pyfunction_cache.cell_model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.pyfunction_cache.</code><code class="sig-name descname">cell_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">wargs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">wkwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pyfunction_cache.html#cell_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pyfunction_cache.cell_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>A decorator for registering NEURON cell loader functions.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.pyfunction_cache.load_py_modules">
-<code class="descclassname">bmtk.simulator.pointnet.pyfunction_cache.</code><code class="descname">load_py_modules</code><span class="sig-paren">(</span><em>cell_models=None</em>, <em>syn_models=None</em>, <em>syn_weights=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pyfunction_cache.html#load_py_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pyfunction_cache.load_py_modules" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.pyfunction_cache.</code><code class="sig-name descname">load_py_modules</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cell_models</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">syn_models</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">syn_weights</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pyfunction_cache.html#load_py_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pyfunction_cache.load_py_modules" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.pyfunction_cache.synapse_model">
-<code class="descclassname">bmtk.simulator.pointnet.pyfunction_cache.</code><code class="descname">synapse_model</code><span class="sig-paren">(</span><em>*wargs</em>, <em>**wkwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pyfunction_cache.html#synapse_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pyfunction_cache.synapse_model" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.pyfunction_cache.</code><code class="sig-name descname">synapse_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">wargs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">wkwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pyfunction_cache.html#synapse_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pyfunction_cache.synapse_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>A decorator for registering NEURON synapse loader functions.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.pyfunction_cache.synaptic_weight">
-<code class="descclassname">bmtk.simulator.pointnet.pyfunction_cache.</code><code class="descname">synaptic_weight</code><span class="sig-paren">(</span><em>*wargs</em>, <em>**wkwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pyfunction_cache.html#synaptic_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pyfunction_cache.synaptic_weight" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.pyfunction_cache.</code><code class="sig-name descname">synaptic_weight</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">wargs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">wkwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pyfunction_cache.html#synaptic_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pyfunction_cache.synaptic_weight" title="Permalink to this definition">¶</a></dt>
 <dd><p>A decorator for registering a function as a synaptic weight function.
 To use either</p>
 <blockquote>
-<div>&#64;synaptic_weight
-def weight_function(): …</div></blockquote>
-<dl class="docutils">
-<dt>or</dt>
-<dd>&#64;synaptic_weight(name=’name_in_edge_types’)
-def weight_function(): …</dd>
+<div><p>&#64;synaptic_weight
+def weight_function(): …</p>
+</div></blockquote>
+<dl class="simple">
+<dt>or</dt><dd><p>&#64;synaptic_weight(name=’name_in_edge_types’)
+def weight_function(): …</p>
+</dd>
 </dl>
 <p>Once the decorator has been attached and imported the functions will automatically be added to py_modules.</p>
 </dd></dl>
@@ -1228,288 +1226,273 @@ def weight_function(): …</dd>
 </div>
 <div class="section" id="module-bmtk.simulator.pointnet.sonata_adaptors">
 <span id="bmtk-simulator-pointnet-sonata-adaptors-module"></span><h2>bmtk.simulator.pointnet.sonata_adaptors module<a class="headerlink" href="#module-bmtk.simulator.pointnet.sonata_adaptors" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<dl class="py class">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointEdge">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.pointnet.sonata_adaptors.</code><code class="descname">PointEdge</code><span class="sig-paren">(</span><em>sonata_edge</em>, <em>edge_adaptor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointEdge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdge" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.pointnet.sonata_adaptors.</code><code class="sig-name descname">PointEdge</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sonata_edge</span></em>, <em class="sig-param"><span class="n">edge_adaptor</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointEdge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge" title="bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.SonataBaseEdge</span></code></a></p>
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointEdge.nest_params">
-<code class="descname">nest_params</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdge.nest_params" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">nest_params</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdge.nest_params" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointEdge.source_node_ids">
-<code class="descname">source_node_ids</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdge.source_node_ids" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">source_node_ids</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdge.source_node_ids" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointEdge.target_node_ids">
-<code class="descname">target_node_ids</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdge.target_node_ids" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">target_node_ids</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdge.target_node_ids" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.pointnet.sonata_adaptors.</code><code class="descname">PointEdgeAdaptor</code><span class="sig-paren">(</span><em>network</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointEdgeAdaptor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.pointnet.sonata_adaptors.</code><code class="sig-name descname">PointEdgeAdaptor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointEdgeAdaptor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor" title="bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.sonata_reader.edge_adaptor.EdgeAdaptor</span></code></a></p>
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.batch_process">
-<code class="descname">batch_process</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.batch_process" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">batch_process</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.batch_process" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.get_batches">
-<code class="descname">get_batches</code><span class="sig-paren">(</span><em>edge_group</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointEdgeAdaptor.get_batches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.get_batches" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_batches</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edge_group</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointEdgeAdaptor.get_batches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.get_batches" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.get_edge">
-<code class="descname">get_edge</code><span class="sig-paren">(</span><em>sonata_node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointEdgeAdaptor.get_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.get_edge" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_edge</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sonata_node</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointEdgeAdaptor.get_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.get_edge" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="staticmethod">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.patch_adaptor">
-<em class="property">static </em><code class="descname">patch_adaptor</code><span class="sig-paren">(</span><em>adaptor</em>, <em>edge_group</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointEdgeAdaptor.patch_adaptor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.patch_adaptor" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">patch_adaptor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">adaptor</span></em>, <em class="sig-param"><span class="n">edge_group</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointEdgeAdaptor.patch_adaptor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.patch_adaptor" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="staticmethod">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.preprocess_edge_types">
-<em class="property">static </em><code class="descname">preprocess_edge_types</code><span class="sig-paren">(</span><em>network</em>, <em>edge_population</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointEdgeAdaptor.preprocess_edge_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.preprocess_edge_types" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">preprocess_edge_types</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em>, <em class="sig-param"><span class="n">edge_population</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointEdgeAdaptor.preprocess_edge_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.preprocess_edge_types" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.synaptic_params">
-<code class="descname">synaptic_params</code><span class="sig-paren">(</span><em>edge</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointEdgeAdaptor.synaptic_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.synaptic_params" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">synaptic_params</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edge</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointEdgeAdaptor.synaptic_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.synaptic_params" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointEdgeBatched">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.pointnet.sonata_adaptors.</code><code class="descname">PointEdgeBatched</code><span class="sig-paren">(</span><em>source_nids</em>, <em>target_nids</em>, <em>nest_params</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointEdgeBatched"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeBatched" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.pointnet.sonata_adaptors.</code><code class="sig-name descname">PointEdgeBatched</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source_nids</span></em>, <em class="sig-param"><span class="n">target_nids</span></em>, <em class="sig-param"><span class="n">nest_params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointEdgeBatched"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeBatched" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointEdgeBatched.nest_params">
-<code class="descname">nest_params</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeBatched.nest_params" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">nest_params</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeBatched.nest_params" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointEdgeBatched.source_node_ids">
-<code class="descname">source_node_ids</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeBatched.source_node_ids" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">source_node_ids</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeBatched.source_node_ids" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointEdgeBatched.target_node_ids">
-<code class="descname">target_node_ids</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeBatched.target_node_ids" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">target_node_ids</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeBatched.target_node_ids" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointNode">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.pointnet.sonata_adaptors.</code><code class="descname">PointNode</code><span class="sig-paren">(</span><em>node</em>, <em>prop_adaptor</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNode" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.pointnet.sonata_adaptors.</code><code class="sig-name descname">PointNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node</span></em>, <em class="sig-param"><span class="n">prop_adaptor</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode" title="bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.sonata_reader.node_adaptor.SonataBaseNode</span></code></a></p>
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointNode.build">
-<code class="descname">build</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointNode.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNode.build" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">build</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointNode.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNode.build" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointNode.gids">
-<code class="descname">gids</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNode.gids" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">gids</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNode.gids" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointNode.n_nodes">
-<code class="descname">n_nodes</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNode.n_nodes" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">n_nodes</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNode.n_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointNode.nest_ids">
-<code class="descname">nest_ids</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNode.nest_ids" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">nest_ids</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNode.nest_ids" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointNode.nest_model">
-<code class="descname">nest_model</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNode.nest_model" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">nest_model</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNode.nest_model" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointNode.nest_params">
-<code class="descname">nest_params</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNode.nest_params" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">nest_params</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNode.nest_params" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointNode.node_ids">
-<code class="descname">node_ids</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNode.node_ids" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">node_ids</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNode.node_ids" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.pointnet.sonata_adaptors.</code><code class="descname">PointNodeAdaptor</code><span class="sig-paren">(</span><em>network</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointNodeAdaptor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.pointnet.sonata_adaptors.</code><code class="sig-name descname">PointNodeAdaptor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointNodeAdaptor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="bmtk.simulator.core.sonata_reader.html#bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor" title="bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.core.sonata_reader.node_adaptor.NodeAdaptor</span></code></a></p>
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor.batch_process">
-<code class="descname">batch_process</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor.batch_process" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">batch_process</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor.batch_process" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor.get_batches">
-<code class="descname">get_batches</code><span class="sig-paren">(</span><em>node_group</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointNodeAdaptor.get_batches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor.get_batches" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_batches</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_group</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointNodeAdaptor.get_batches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor.get_batches" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor.get_node">
-<code class="descname">get_node</code><span class="sig-paren">(</span><em>sonata_node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointNodeAdaptor.get_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor.get_node" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_node</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sonata_node</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointNodeAdaptor.get_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor.get_node" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="staticmethod">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor.patch_adaptor">
-<em class="property">static </em><code class="descname">patch_adaptor</code><span class="sig-paren">(</span><em>adaptor</em>, <em>node_group</em>, <em>network</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointNodeAdaptor.patch_adaptor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor.patch_adaptor" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">patch_adaptor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">adaptor</span></em>, <em class="sig-param"><span class="n">node_group</span></em>, <em class="sig-param"><span class="n">network</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointNodeAdaptor.patch_adaptor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor.patch_adaptor" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="staticmethod">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor.preprocess_node_types">
-<em class="property">static </em><code class="descname">preprocess_node_types</code><span class="sig-paren">(</span><em>network</em>, <em>node_population</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointNodeAdaptor.preprocess_node_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor.preprocess_node_types" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">preprocess_node_types</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">network</span></em>, <em class="sig-param"><span class="n">node_population</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointNodeAdaptor.preprocess_node_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor.preprocess_node_types" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched">
-<em class="property">class </em><code class="descclassname">bmtk.simulator.pointnet.sonata_adaptors.</code><code class="descname">PointNodeBatched</code><span class="sig-paren">(</span><em>node_ids</em>, <em>gids</em>, <em>node_types_table</em>, <em>node_type_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointNodeBatched"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.pointnet.sonata_adaptors.</code><code class="sig-name descname">PointNodeBatched</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span></em>, <em class="sig-param"><span class="n">gids</span></em>, <em class="sig-param"><span class="n">node_types_table</span></em>, <em class="sig-param"><span class="n">node_type_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointNodeBatched"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="method">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.build">
-<code class="descname">build</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointNodeBatched.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.build" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">build</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#PointNodeBatched.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.build" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.gids">
-<code class="descname">gids</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.gids" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">gids</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.gids" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.model_type">
-<code class="descname">model_type</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.model_type" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">model_type</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.model_type" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.n_nodes">
-<code class="descname">n_nodes</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.n_nodes" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">n_nodes</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.n_nodes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.nest_ids">
-<code class="descname">nest_ids</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.nest_ids" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">nest_ids</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.nest_ids" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.nest_model">
-<code class="descname">nest_model</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.nest_model" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">nest_model</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.nest_model" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.nest_params">
-<code class="descname">nest_params</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.nest_params" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">nest_params</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.nest_params" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py method">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.node_ids">
-<code class="descname">node_ids</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.node_ids" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">node_ids</code><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.node_ids" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.all_null">
-<code class="descclassname">bmtk.simulator.pointnet.sonata_adaptors.</code><code class="descname">all_null</code><span class="sig-paren">(</span><em>node_group</em>, <em>column_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#all_null"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.all_null" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.sonata_adaptors.</code><code class="sig-name descname">all_null</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_group</span></em>, <em class="sig-param"><span class="n">column_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#all_null"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.all_null" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper function to determine if a column has any non-NULL values</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.sonata_adaptors.point_syn_weight">
-<code class="descclassname">bmtk.simulator.pointnet.sonata_adaptors.</code><code class="descname">point_syn_weight</code><span class="sig-paren">(</span><em>self</em>, <em>edge</em>, <em>src_node</em>, <em>trg_node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#point_syn_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.point_syn_weight" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.sonata_adaptors.</code><code class="sig-name descname">point_syn_weight</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">edge</span></em>, <em class="sig-param"><span class="n">src_node</span></em>, <em class="sig-param"><span class="n">trg_node</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/sonata_adaptors.html#point_syn_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.sonata_adaptors.point_syn_weight" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
 <div class="section" id="module-bmtk.simulator.pointnet.utils">
 <span id="bmtk-simulator-pointnet-utils-module"></span><h2>bmtk.simulator.pointnet.utils module<a class="headerlink" href="#module-bmtk.simulator.pointnet.utils" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.utils.gen_recurrent_csv">
-<code class="descclassname">bmtk.simulator.pointnet.utils.</code><code class="descname">gen_recurrent_csv</code><span class="sig-paren">(</span><em>num</em>, <em>offset</em>, <em>csv_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/utils.html#gen_recurrent_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.utils.gen_recurrent_csv" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.utils.</code><code class="sig-name descname">gen_recurrent_csv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num</span></em>, <em class="sig-param"><span class="n">offset</span></em>, <em class="sig-param"><span class="n">csv_file</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/utils.html#gen_recurrent_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.utils.gen_recurrent_csv" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.utils.gen_recurrent_h5">
-<code class="descclassname">bmtk.simulator.pointnet.utils.</code><code class="descname">gen_recurrent_h5</code><span class="sig-paren">(</span><em>num</em>, <em>offset</em>, <em>h5_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/utils.html#gen_recurrent_h5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.utils.gen_recurrent_h5" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.utils.</code><code class="sig-name descname">gen_recurrent_h5</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num</span></em>, <em class="sig-param"><span class="n">offset</span></em>, <em class="sig-param"><span class="n">h5_file</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/utils.html#gen_recurrent_h5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.utils.gen_recurrent_h5" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.utils.load_conns">
-<code class="descclassname">bmtk.simulator.pointnet.utils.</code><code class="descname">load_conns</code><span class="sig-paren">(</span><em>cnn_fn</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/utils.html#load_conns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.utils.load_conns" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.utils.</code><code class="sig-name descname">load_conns</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cnn_fn</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/utils.html#load_conns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.utils.load_conns" title="Permalink to this definition">¶</a></dt>
 <dd><p>load information regarding connectivity from csv files</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>cnn_fn: json file name for connection information</strong></dt>
-<dd></dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>cnn_fn: json file name for connection information</strong></dt><dd></dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>connection dictionary</strong></dt>
-<dd></dd>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>connection dictionary</dt><dd></dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.utils.load_params">
-<code class="descclassname">bmtk.simulator.pointnet.utils.</code><code class="descname">load_params</code><span class="sig-paren">(</span><em>node_name</em>, <em>model_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/utils.html#load_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.utils.load_params" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.utils.</code><code class="sig-name descname">load_params</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_name</span></em>, <em class="sig-param"><span class="n">model_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/utils.html#load_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.utils.load_params" title="Permalink to this definition">¶</a></dt>
 <dd><p>load information regarding nodes and cell_models from csv files</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>node_name: json file name for node information</strong></dt>
-<dd></dd>
-<dt><strong>model_name: json file name for neuron model information</strong></dt>
-<dd></dd>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>node_name: json file name for node information</strong></dt><dd></dd>
+<dt><strong>model_name: json file name for neuron model information</strong></dt><dd></dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>node_info: 2d array of node info read out from the json file</strong></dt>
-<dd></dd>
-<dt><strong>mode_info: 2d array of model info read out from the json file</strong></dt>
-<dd></dd>
-<dt><strong>dict_coordinates: dictionary of coordinates. keyword is the node_id and entries are the x,y and z coordinates.</strong></dt>
-<dd></dd>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>node_info: 2d array of node info read out from the json file</dt><dd></dd>
+<dt>mode_info: 2d array of model info read out from the json file</dt><dd></dd>
+<dt>dict_coordinates: dictionary of coordinates. keyword is the node_id and entries are the x,y and z coordinates.</dt><dd></dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.utils.read_LGN_activity">
-<code class="descclassname">bmtk.simulator.pointnet.utils.</code><code class="descname">read_LGN_activity</code><span class="sig-paren">(</span><em>trial_num</em>, <em>file_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/utils.html#read_LGN_activity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.utils.read_LGN_activity" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.utils.</code><code class="sig-name descname">read_LGN_activity</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trial_num</span></em>, <em class="sig-param"><span class="n">file_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/utils.html#read_LGN_activity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.utils.read_LGN_activity" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="bmtk.simulator.pointnet.utils.read_conns">
-<code class="descclassname">bmtk.simulator.pointnet.utils.</code><code class="descname">read_conns</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/utils.html#read_conns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.utils.read_conns" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.simulator.pointnet.utils.</code><code class="sig-name descname">read_conns</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/utils.html#read_conns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.utils.read_conns" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -1519,6 +1502,7 @@ def weight_function(): …</dd>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -1535,13 +1519,23 @@ def weight_function(): …</dd>
 <li class="toctree-l2"><a class="reference internal" href="../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
@@ -1550,17 +1544,15 @@ def weight_function(): …</dd>
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

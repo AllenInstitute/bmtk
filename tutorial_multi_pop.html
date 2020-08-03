@@ -1,0 +1,1506 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 4: Muti-population recurrent network (with BioNet) &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Chapter 5: Point-Neuron Network Models (with PointNet)" href="tutorial_pointnet_modeling.html" />
+    <link rel="prev" title="Chapter 3: Multi-cell, single population network (with BioNet)" href="tutorial_single_pop.html" /> 
+  </head><body>
+<script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
+<style>
+
+	/* the icon font-family definition and helper classes */
+	@font-face {
+	  font-family: 'portal_icon_font';
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
+	  font-weight: normal;
+	  font-style: normal;
+	}
+	 
+	 [class^="icon-"]:before, [class*=" icon-"]:before {
+	  font-family: "portal_icon_font";
+	  font-style: normal;
+	  font-weight: normal;
+	  speak: none;
+	 
+	  display: inline-block;
+	  text-decoration: inherit;
+	  width: 1em;
+	  margin-right: .2em;
+	  text-align: center;
+	  /* opacity: .8; */
+	 
+	  /* For safety - reset parent styles, that can break glyph codes*/
+	  font-variant: normal;
+	  text-transform: none;
+	     
+	  /* fix buttons height, for twitter bootstrap */
+	  line-height: 1em;
+	 
+	  /* Animation center compensation - margins should be symmetric */
+	  /* remove if not needed */
+	  margin-left: .2em;
+	
+	}
+	 
+	.icon-spin5:before { content: '\e806'; } /* '' */
+	.icon-left-open-1:before { content: '\e81e'; } /* '' */
+	.icon-plus-1:before { content: '\e801'; } /* '' */
+	.icon-facebook:before { content: '\e816'; } /* '' */
+	.icon-gplus:before { content: '\e818'; } /* '' */
+	.icon-linkedin-3:before { content: '\e815'; } /* '' */
+	.icon-twitter:before { content: '\e817'; } /* '' */
+	.icon-youtube-play:before { content: '\e805'; } /* '' */
+	.icon-plus-2:before { content: '\e809'; } /* '' */
+	.icon-record-1:before { content: '\e81c'; } /* '' */
+	.icon-cancel:before { content: '\e80b'; } /* '' */
+	.icon-search:before { content: '\e804'; } /* '' */
+	.icon-cancel-2:before { content: '\e80c'; } /* '' */
+	.icon-plus-4:before { content: '\e80d'; } /* '' */
+	.icon-cancel-3:before { content: '\e80e'; } /* '' */
+	.icon-plus:before { content: '\e808'; } /* '' */
+	.icon-down-open:before { content: '\e800'; } /* '' */
+	.icon-right-open:before { content: '\e802'; } /* '' */
+	.icon-up-open:before { content: '\e803'; } /* '' */
+	.icon-stop:before { content: '\e813'; } /* '' */
+	.icon-cancel-1:before { content: '\e820'; } /* '' */
+	.icon-plus-3:before { content: '\e80a'; } /* '' */
+	/* end icon font helpers */
+
+	/* icon font spin animation */
+	.animate-spin {
+	  -moz-animation: spin 2s infinite linear;
+	  -o-animation: spin 2s infinite linear;
+	  -webkit-animation: spin 2s infinite linear;
+	  animation: spin 2s infinite linear;
+	  display: inline-block;
+	}
+	@-moz-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-webkit-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-o-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-ms-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	/*  end spin animation */	
+
+	@font-face {
+	    font-family: 'bebas_neueregular';
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
+	    font-weight: normal;
+	    font-style: normal;
+	}
+
+	/* top chrome styles */
+	#top_chrome {
+
+		width:100%;
+		height:28px;
+		background-color:#163E65;
+	}
+
+	.chrome_link_block {
+
+		color:#fff !important;	
+		display:inline-block;
+		height:100%;
+		max-height:28px;
+	}
+
+	.chrome_link_block:hover {
+
+		background-color:#eee;
+		color:#0779BE !important;	
+		cursor:pointer;
+	}
+
+	#top_chrome a {
+
+		color:inherit !important;	
+		text-decoration:none;
+	}
+
+	#top_chrome a:hover {
+
+		color:inherit !important;	
+	}
+
+	#top_chrome_buttons {
+
+		float:right;
+		margin-right:50px;
+	}
+
+	.chrome_button {
+
+		font-family:arial,sans-serif;
+		font-weight:bold;
+		display:inline-block;
+		font-size:9px;
+		text-align:left;
+		text-decoration:none;
+		margin:9px 20px 10px 20px;
+	}
+
+	.chrome_active {
+
+		background-color:#1b7abd;
+		color:#fff;
+	}
+
+
+	/* header element styles*/
+	#header_content {
+
+		font-family: bebas_neueregular, arial, sans-serif;
+		font-size:22px;
+		color:#0779be;		
+		letter-spacing:0.03em;
+
+		position:relative;
+		width:calc(100% - 112px);
+		min-width:800px;
+		height:76px;
+		border-bottom:2px solid #A5A8AB;
+		margin-left:50px;
+		margin-right:50px;
+        z-index:9999; /* IT-9508 */
+	}
+
+	#portal_logo {
+
+		position:absolute;
+		top:20px;
+		left:0px;
+		width:236px;
+	}
+
+	#portal_tabs {
+
+		position: absolute;
+		bottom: 12px;
+		left: 0px;
+		margin-bottom: -12px;
+		display: block;
+	}
+
+	.horizontal_list
+	{
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		display: inline; 		
+	}
+
+	.horizontal_list li { 
+
+		display: inline; 	
+	}	
+
+	#portal_tab_menu_container {
+
+		display:none;
+	}
+
+	#portal_search_input_group {
+
+		position:absolute;
+		margin: 0;
+		padding: 0;
+		bottom:12px;
+		right:0px;
+		border:1px solid #DAD9D3;
+		color:#DAD9D3;
+	}
+
+	#portal_search_input_group input {
+
+		margin: 0;
+		padding: 0;
+		border:none;
+		width:110px;
+		color:#DAD9D3;
+		font-family:Helvetica,sans-serif;
+		font-size:12px;
+		height:28px;
+		margin-left:10px;
+
+		outline:none;
+	}
+
+	input::-ms-clear {
+		display: none;
+	}
+
+	#portal_search_input_group i {
+
+		font-size:0.8em;
+		cursor:pointer;
+	}
+
+	#pSiteSearchTextInput:focus {
+
+		color:#000;
+	}
+
+	.icon_menu_down {
+
+		font-size: 12px;
+		margin-left: 4px;
+		vertical-align: text-top;
+		padding-top: 4px;
+		display: inline-block;
+	}
+
+	.portal_tab_item {
+
+		background-color: #fff;
+		padding: 12px;
+		padding-left:20px;
+		padding-right:20px;
+		display: inline-block !important;		
+	}
+
+	.portal_tab_item a:hover {
+
+		color:#fbe300;	
+	}
+
+	.portal_tab_item:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}	
+
+
+	.portal_menu_active {
+
+		background-color: #EEEEEE;
+	}	
+
+	.portal_menu_item_active {
+
+		color:#fbe300 !important;	
+	}
+
+	.portal_tab_active {
+
+		color:#a5a8ab !important;
+	}
+
+	#header_content a {		
+
+		color:inherit !important;
+	}
+
+	#header_content a:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}
+
+	#header_content ul {
+
+		list-style: none;
+		position: relative;
+		top: 58px;
+		display: inline-table;
+	}
+
+	#header_content ul ul {
+		
+		display:none;
+		opacity:0;
+	}
+
+	/* the fly out menus */
+	#header_content ul li:hover > ul,
+	#header_content ul li.hover > ul {
+
+		position: absolute;
+		top: 48px;
+		z-index:999;
+
+		display: block;
+		width: 152px;
+		padding:0px;
+		padding-top:20px;
+		padding-bottom:10px;
+		font-size: 12px;
+		font-family: Arial,Sans-Serif;
+		font-weight: bold;
+		text-transform: uppercase;
+
+		background-color: rgba(8,122,191,0.98);
+		color: #fff !important;
+		opacity: 1;
+
+		-webkit-animation: fade 0.25s;
+		animation: fade 0.25s;
+	}
+
+	@-webkit-keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}
+	@keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}	
+
+	#header_content ul li:hover > ul li {
+
+		padding: 10px;
+		padding-top: 0px;
+		padding-left: 20px;
+		display: block;
+		opacity:1;
+	}
+
+	#header_content ul li:hover > ul a {
+
+		display: block;
+		opacity:1;
+		white-space:nowrap;
+	}
+
+	#portal_menu_start_list {
+
+		left: 81px;
+
+		/* IE sauce */
+		left:85px\9;
+
+		/* Safari sauce */
+		(;left:79px;);
+	}
+
+	#portal_menu_atlases_list {
+
+		left: 290px;
+		width: 210px !important;
+        height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 303px\9;
+        height: 225px\9;
+
+		/* Safari sauce */
+		(;left:279px;);
+	}
+
+	#portal_menu_tools_list {
+
+		left: 500px;
+		width: 172px !important;
+		height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 513px\9;
+		height:225px\9;
+
+		/* Safari sauce */
+		(;left:489px;);
+		(;height:227px;);
+	}
+
+	/* mozilla sauce */
+	@-moz-document url-prefix() {
+
+		#header_content {
+
+			height:107px;
+		}
+
+		#portal_menu_start_list {
+
+			left:85px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 302px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 512px;
+			height:236px;
+		}
+	}
+
+
+	/* make it look OK on iPad also */
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:portrait) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}  
+	}
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:landscape) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}	  
+	}
+
+	.portal_menu_list_heading {
+
+		color:#9ccae5;
+		border-bottom:1px solid #9ccae5;
+		padding-bottom:5px !important;
+	}
+
+	.portal_menu_list_heading + li {
+
+		padding-top:10px !important;
+	}
+
+	.portal_menu_list_heading li {
+
+		padding-bottom:0px;
+	}	
+
+	#portal_menu_atlases_list li:last-of-type {
+
+		padding-bottom:15px !important;
+	}
+
+	.icon-spin5 {
+
+		color:#000;
+	}
+</style>
+<div id="pHeader">
+<div id="top_chrome">
+	<div id="top_chrome_buttons">
+		<div class="chrome_link_block"><a href="http://www.alleninstitute.org" target="_blank" class="chrome_button">ALLEN INSTITUTE</a></div>
+	</div>
+</div>
+
+<div id="header_content">
+
+	<a href="http://AllenInstitute.github.io">
+		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/AIBS_Logo.png"/>
+	</a>
+</div>
+</div>
+
+<script>
+
+jQuery('#portal_tab_menu').bind('touchstart', function() {
+
+	if(window.console)
+		console.log("touchstart");
+});
+</script>
+<link rel="stylesheet" type="text/css" href="_static/external_assets/stylesheets/common_layout.css" />
+
+
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container,
+div.nbinput.container div.prompt,
+div.nbinput.container div.input_area,
+div.nbinput.container div[class*=highlight],
+div.nbinput.container div[class*=highlight] pre,
+div.nboutput.container,
+div.nboutput.container div.prompt,
+div.nboutput.container div.output_area,
+div.nboutput.container div[class*=highlight],
+div.nboutput.container div[class*=highlight] pre {
+    background: none;
+    border: none;
+    padding: 0 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    background: #f5f5f5;
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+</style>
+<div class="section" id="Chapter-4:-Muti-population-recurrent-network-(with-BioNet)">
+<h1>Chapter 4: Muti-population recurrent network (with BioNet)<a class="headerlink" href="#Chapter-4:-Muti-population-recurrent-network-(with-BioNet)" title="Permalink to this headline">¶</a></h1>
+<p>Here we will create a heterogenous yet relatively small network consisting of hundreds of cells recurrently connected. All cells will belong to one of four “cell-types”. Two of these cell types will be biophysically detailed cells, i.e. containing a full morphology and somatic and dendritic channels and receptors. The other two will be point-neuron models, which lack a full morphology or channels but still act to provide inhibitory and excitory dynamics.</p>
+<p>As input to drive the simulation, we will also create an external network of “virtual cells” that synapse directly onto our internal cells and provide spike trains stimulus</p>
+<p><strong>Note</strong> - scripts and files for running this tutorial can be found in the directory <a class="reference external" href="sources/chapter04">sources/chapter04/</a></p>
+<p>requirements: * bmtk * NEURON 7.4+</p>
+<div class="section" id="1.-Building-the-network">
+<h2>1. Building the network<a class="headerlink" href="#1.-Building-the-network" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="cells">
+<h3>cells<a class="headerlink" href="#cells" title="Permalink to this headline">¶</a></h3>
+<p>This network will loosely resemble the mouse V1 cortical column. Along the center of the column will be a population of 50 biophysically detailed neurons: 40 excitatory Scnn1a cells and 10 inhibitory PV cells.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">bmtk.builder.networks</span> <span class="kn">import</span> <span class="n">NetworkBuilder</span>
+<span class="kn">from</span> <span class="nn">bmtk.builder.auxi.node_params</span> <span class="kn">import</span> <span class="n">positions_columinar</span><span class="p">,</span> <span class="n">xiter_random</span>
+
+<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s2">&quot;V1&quot;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;Scnn1a&#39;</span><span class="p">,</span>
+              <span class="n">positions</span><span class="o">=</span><span class="n">positions_columinar</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">max_radius</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">100.0</span><span class="p">),</span>
+              <span class="n">rotation_angle_yaxis</span><span class="o">=</span><span class="n">xiter_random</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">min_x</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_x</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span>
+              <span class="n">rotation_angle_zaxis</span><span class="o">=</span><span class="n">xiter_random</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">min_x</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_x</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span>
+              <span class="n">tuning_angle</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="mf">360.0</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+              <span class="n">location</span><span class="o">=</span><span class="s1">&#39;VisL4&#39;</span><span class="p">,</span>
+              <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span>
+              <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;ctdb:Biophys1.hoc&#39;</span><span class="p">,</span>
+              <span class="n">model_processing</span><span class="o">=</span><span class="s1">&#39;aibs_perisomatic&#39;</span><span class="p">,</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;472363762_fit.json&#39;</span><span class="p">,</span>
+              <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;Scnn1a_473845048_m.swc&#39;</span><span class="p">)</span>
+
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;PV&#39;</span><span class="p">,</span>
+              <span class="n">positions</span><span class="o">=</span><span class="n">positions_columinar</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">max_radius</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">100.0</span><span class="p">),</span>
+              <span class="n">rotation_angle_yaxis</span><span class="o">=</span><span class="n">xiter_random</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">min_x</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_x</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span>
+              <span class="n">rotation_angle_zaxis</span><span class="o">=</span><span class="n">xiter_random</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">min_x</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_x</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span>
+              <span class="n">location</span><span class="o">=</span><span class="s1">&#39;VisL4&#39;</span><span class="p">,</span>
+              <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">,</span>
+              <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;ctdb:Biophys1.hoc&#39;</span><span class="p">,</span>
+              <span class="n">model_processing</span><span class="o">=</span><span class="s1">&#39;aibs_perisomatic&#39;</span><span class="p">,</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;472912177_fit.json&#39;</span><span class="p">,</span>
+              <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;Pvalb_470522102_m.swc&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>To set the position and rotation of each cell, we use the built in function positions_columinar and xiter_random, which returns a list of values given the parameters. A user could set the values themselves using a list (or function that returns a list) of size N. The parameters like location, ei (potential), params_file, etc. are cell-type parameters, and will be used for all N cells of that type.</p>
+<p>The excitory cells are also given a tuning_angle parameter. An instrinsic “tuning angle” is a property found in some cells in the visual cortex. In this model, we will use this property to determine number of strenght of connections between subsets of cells by using custom functions. But in general most models will not have or use a tuning angle, but they may require some other parameter. In general, users can assign whatever custom parameters they want to cells and cell-types and use them as
+properties for creating connections and running simulations.</p>
+<p>Next we continue to create our point (integrate-and-fire) neurons. Notice they don’t have properities like y/z rotation or morphology, as they wouldn’t apply to point neurons.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;LIF_exc&#39;</span><span class="p">,</span>
+              <span class="n">positions</span><span class="o">=</span><span class="n">positions_columinar</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">min_radius</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">max_radius</span><span class="o">=</span><span class="mf">60.0</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">100.0</span><span class="p">),</span>
+              <span class="n">tuning_angle</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="mf">360.0</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+              <span class="n">location</span><span class="o">=</span><span class="s1">&#39;VisL4&#39;</span><span class="p">,</span>
+              <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span>
+              <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point_process&#39;</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;nrn:IntFire1&#39;</span><span class="p">,</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;IntFire1_exc_1.json&#39;</span><span class="p">)</span>
+
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;LIF_inh&#39;</span><span class="p">,</span>
+              <span class="n">positions</span><span class="o">=</span><span class="n">positions_columinar</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">min_radius</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">max_radius</span><span class="o">=</span><span class="mf">60.0</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">100.0</span><span class="p">),</span>
+              <span class="n">location</span><span class="o">=</span><span class="s1">&#39;VisL4&#39;</span><span class="p">,</span>
+              <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">,</span>
+              <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point_process&#39;</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;nrn:IntFire1&#39;</span><span class="p">,</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;IntFire1_inh_1.json&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="connections">
+<h3>connections<a class="headerlink" href="#connections" title="Permalink to this headline">¶</a></h3>
+<p>Now we want to create connections between the cells. Depending on the model type, and whether or not the presynpatic “source” cell is excitory or inhibitory, we will have different synpatic model and parameters. Using the source and target filter parameters, we can create different connection types.</p>
+<p>To determine excitory-to-excitory connection matrix we want to use distance and tuning_angle property. To do this we create a customized function “dist_tuning_connector”</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="k">def</span> <span class="nf">dist_tuning_connector</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">d_weight_min</span><span class="p">,</span> <span class="n">d_weight_max</span><span class="p">,</span> <span class="n">d_max</span><span class="p">,</span> <span class="n">t_weight_min</span><span class="p">,</span> <span class="n">t_weight_max</span><span class="p">,</span> <span class="n">nsyn_min</span><span class="p">,</span>
+                          <span class="n">nsyn_max</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]:</span>
+        <span class="c1"># Avoid self-connections.n_nodes</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s1">&#39;positions&#39;</span><span class="p">])</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">target</span><span class="p">[</span><span class="s1">&#39;positions&#39;</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="n">r</span> <span class="o">&gt;</span> <span class="n">d_max</span><span class="p">:</span>
+        <span class="n">dw</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">r</span> <span class="o">/</span> <span class="n">d_max</span>
+        <span class="n">dw</span> <span class="o">=</span> <span class="n">d_weight_max</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">d_weight_min</span> <span class="o">*</span> <span class="n">t</span>
+
+    <span class="k">if</span> <span class="n">dw</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># drop the connection if the weight is too low</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># next create weights by orientation tuning [ aligned, misaligned ] --&gt; [ 1, 0 ], Check that the orientation</span>
+    <span class="c1"># tuning property exists for both cells; otherwise, ignore the orientation tuning.</span>
+    <span class="k">if</span> <span class="s1">&#39;tuning_angel&#39;</span> <span class="ow">in</span> <span class="n">source</span> <span class="ow">and</span> <span class="s1">&#39;tuning_angle&#39;</span> <span class="ow">in</span> <span class="n">target</span><span class="p">:</span>
+
+        <span class="c1"># 0-180 is the same as 180-360, so just modulo by 180</span>
+        <span class="n">delta_tuning</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">fmod</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s1">&#39;tuning_angle&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;tuning_angle&#39;</span><span class="p">]),</span> <span class="mf">180.0</span><span class="p">)</span>
+
+        <span class="c1"># 90-180 needs to be flipped, then normalize to 0-1</span>
+        <span class="n">delta_tuning</span> <span class="o">=</span> <span class="n">delta_tuning</span> <span class="k">if</span> <span class="n">delta_tuning</span> <span class="o">&lt;</span> <span class="mf">90.0</span> <span class="k">else</span> <span class="mf">180.0</span> <span class="o">-</span> <span class="n">delta_tuning</span>
+
+        <span class="n">t</span> <span class="o">=</span> <span class="n">delta_tuning</span> <span class="o">/</span> <span class="mf">90.0</span>
+        <span class="n">tw</span> <span class="o">=</span> <span class="n">t_weight_max</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="n">t_weight_min</span> <span class="o">*</span> <span class="n">t</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tw</span> <span class="o">=</span> <span class="n">dw</span>
+
+    <span class="c1"># drop the connection if the weight is too low</span>
+    <span class="k">if</span> <span class="n">tw</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># filter out nodes by treating the weight as a probability of connection</span>
+    <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">tw</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Add the number of synapses for every connection.</span>
+    <span class="c1"># It is probably very useful to take this out into a separate function.</span>
+    <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">nsyn_min</span><span class="p">,</span> <span class="n">nsyn_max</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>This first two parameters of this function is “source” and “target” and are required for all custom connector functions. These are node objects which gives a representation of a single source and target cell, with properties that can be accessed like a python dictionary. When The Network Builder is creating the connection matrix, it will call this function for all possible source-target pairs. The user doesn’t call this function directly.</p>
+<p>The remaining parameters are optional. Using these parameters, plus the distance and angles between source and target cells, this function determines the number of connections between each given source and target cell. If there are none you can return either None or 0.</p>
+<p>To create these connections we call add_edges method of the builder. We use the source and target parameter to filter out only excitory-to-excitory connections. We must also take into consideration the model type (biophysical or integrate-and-fire) of the target when setting parameters. We pass in the function throught the connection_rule parameter, and the function parameters (except source and target) through connection_params. (If our dist_tuning_connector function didn’t have any parameters
+other than source and target, we could just not set connection_params).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Scnn1a&#39;</span><span class="p">},</span>
+              <span class="n">connection_rule</span><span class="o">=</span><span class="n">dist_tuning_connector</span><span class="p">,</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;d_weight_min&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;d_weight_max&#39;</span><span class="p">:</span> <span class="mf">0.34</span><span class="p">,</span> <span class="s1">&#39;d_max&#39;</span><span class="p">:</span> <span class="mf">300.0</span><span class="p">,</span> <span class="s1">&#39;t_weight_min&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+                                 <span class="s1">&#39;t_weight_max&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;nsyn_min&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;nsyn_max&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
+              <span class="n">syn_weight</span><span class="o">=</span><span class="mf">6.4e-05</span><span class="p">,</span>
+              <span class="n">weight_function</span><span class="o">=</span><span class="s1">&#39;gaussianLL&#39;</span><span class="p">,</span>
+              <span class="n">weight_sigma</span><span class="o">=</span><span class="mf">50.0</span><span class="p">,</span>
+              <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">30.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">],</span>
+              <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;basal&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">],</span>
+              <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;AMPA_ExcToExc.json&#39;</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">)</span>
+
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;LIF_exc&#39;</span><span class="p">},</span>
+              <span class="n">connection_rule</span><span class="o">=</span><span class="n">dist_tuning_connector</span><span class="p">,</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;d_weight_min&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;d_weight_max&#39;</span><span class="p">:</span> <span class="mf">0.34</span><span class="p">,</span> <span class="s1">&#39;d_max&#39;</span><span class="p">:</span> <span class="mf">300.0</span><span class="p">,</span> <span class="s1">&#39;t_weight_min&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+                                 <span class="s1">&#39;t_weight_max&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;nsyn_min&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;nsyn_max&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
+              <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.0019</span><span class="p">,</span>
+              <span class="n">weight_function</span><span class="o">=</span><span class="s1">&#39;gaussianLL&#39;</span><span class="p">,</span>
+              <span class="n">weight_sigma</span><span class="o">=</span><span class="mf">50.0</span><span class="p">,</span>
+              <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;instanteneousExc.json&#39;</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;bmtk.builder.connection_map.ConnectionMap at 0x7f4a8c95da10&gt;
+</pre></div></div>
+</div>
+<p>Similarly we create the other types of connections. But since either the source, target, or both cells will not have the tuning_angle parameter, we don’t want to use dist_tuning_connector. Instead we can use the built-in distance_connector function which just creates connections determined by distance.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.edge_connectors</span> <span class="kn">import</span> <span class="n">distance_connector</span>
+
+<span class="c1">### Generating I-to-I connections</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="s1">&#39;model_type&#39;</span><span class="p">:</span> <span class="s1">&#39;biophysical&#39;</span><span class="p">},</span>
+              <span class="n">connection_rule</span><span class="o">=</span><span class="n">distance_connector</span><span class="p">,</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;d_weight_min&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;d_weight_max&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;d_max&#39;</span><span class="p">:</span> <span class="mf">160.0</span><span class="p">,</span> <span class="s1">&#39;nsyn_min&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;nsyn_max&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
+              <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.0002</span><span class="p">,</span>
+              <span class="n">weight_function</span><span class="o">=</span><span class="s1">&#39;wmax&#39;</span><span class="p">,</span>
+              <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1e+20</span><span class="p">],</span>
+              <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;somatic&#39;</span><span class="p">,</span> <span class="s1">&#39;basal&#39;</span><span class="p">],</span>
+              <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;GABA_InhToInh.json&#39;</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">)</span>
+
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="s1">&#39;model_type&#39;</span><span class="p">:</span> <span class="s1">&#39;point_process&#39;</span><span class="p">},</span>
+              <span class="n">connection_rule</span><span class="o">=</span><span class="n">distance_connector</span><span class="p">,</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;d_weight_min&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;d_weight_max&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;d_max&#39;</span><span class="p">:</span> <span class="mf">160.0</span><span class="p">,</span> <span class="s1">&#39;nsyn_min&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;nsyn_max&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
+              <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.00225</span><span class="p">,</span>
+              <span class="n">weight_function</span><span class="o">=</span><span class="s1">&#39;wmax&#39;</span><span class="p">,</span>
+              <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;instanteneousInh.json&#39;</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">)</span>
+
+<span class="c1">### Generating I-to-E connections</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;model_type&#39;</span><span class="p">:</span> <span class="s1">&#39;biophysical&#39;</span><span class="p">},</span>
+              <span class="n">connection_rule</span><span class="o">=</span><span class="n">distance_connector</span><span class="p">,</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;d_weight_min&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;d_weight_max&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;d_max&#39;</span><span class="p">:</span> <span class="mf">160.0</span><span class="p">,</span> <span class="s1">&#39;nsyn_min&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;nsyn_max&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
+              <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.00018</span><span class="p">,</span>
+              <span class="n">weight_function</span><span class="o">=</span><span class="s1">&#39;wmax&#39;</span><span class="p">,</span>
+              <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">],</span>
+              <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;somatic&#39;</span><span class="p">,</span> <span class="s1">&#39;basal&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">],</span>
+              <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;GABA_InhToExc.json&#39;</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">)</span>
+
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;model_type&#39;</span><span class="p">:</span> <span class="s1">&#39;point_process&#39;</span><span class="p">},</span>
+              <span class="n">connection_rule</span><span class="o">=</span><span class="n">distance_connector</span><span class="p">,</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;d_weight_min&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;d_weight_max&#39;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s1">&#39;d_max&#39;</span><span class="p">:</span> <span class="mf">160.0</span><span class="p">,</span> <span class="s1">&#39;nsyn_min&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;nsyn_max&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
+              <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.009</span><span class="p">,</span>
+              <span class="n">weight_function</span><span class="o">=</span><span class="s1">&#39;wmax&#39;</span><span class="p">,</span>
+              <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;instanteneousInh.json&#39;</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">)</span>
+
+<span class="c1">### Generating E-to-I connections</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;PV&#39;</span><span class="p">},</span>
+              <span class="n">connection_rule</span><span class="o">=</span><span class="n">distance_connector</span><span class="p">,</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;d_weight_min&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;d_weight_max&#39;</span><span class="p">:</span> <span class="mf">0.26</span><span class="p">,</span> <span class="s1">&#39;d_max&#39;</span><span class="p">:</span> <span class="mf">300.0</span><span class="p">,</span> <span class="s1">&#39;nsyn_min&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;nsyn_max&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
+              <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.00035</span><span class="p">,</span>
+              <span class="n">weight_function</span><span class="o">=</span><span class="s1">&#39;wmax&#39;</span><span class="p">,</span>
+              <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1e+20</span><span class="p">],</span>
+              <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;somatic&#39;</span><span class="p">,</span> <span class="s1">&#39;basal&#39;</span><span class="p">],</span>
+              <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;AMPA_ExcToInh.json&#39;</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">)</span>
+
+
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;LIF_inh&#39;</span><span class="p">},</span>
+              <span class="n">connection_rule</span><span class="o">=</span><span class="n">distance_connector</span><span class="p">,</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;d_weight_min&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;d_weight_max&#39;</span><span class="p">:</span> <span class="mf">0.26</span><span class="p">,</span> <span class="s1">&#39;d_max&#39;</span><span class="p">:</span> <span class="mf">300.0</span><span class="p">,</span> <span class="s1">&#39;nsyn_min&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;nsyn_max&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">},</span>
+              <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.0043</span><span class="p">,</span>
+              <span class="n">weight_function</span><span class="o">=</span><span class="s1">&#39;wmax&#39;</span><span class="p">,</span>
+              <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;instanteneousExc.json&#39;</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;bmtk.builder.connection_map.ConnectionMap at 0x7f4a8b3a3750&gt;
+</pre></div></div>
+</div>
+<p>Finally we build the network (this may take a bit of time since it’s essentially iterating over all 400x400 possible connection combinations), and save the nodes and edges.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="n">net</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch04/network&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">save_edges</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch04/network&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="Building-external-network">
+<h4>Building external network<a class="headerlink" href="#Building-external-network" title="Permalink to this headline">¶</a></h4>
+<p>Next we want to create an external network consisting of virtual cells that form a feedforward network onto our V1, which will provide input during the simulation. We will call this LGN, since the LGN is the primary input the layer 4 cells of the V1 (if we wanted to we could also create multiple external networks and run simulations on any number of them).</p>
+<p>First we build our LGN nodes. Then we must import the V1 network nodes, and create connections between LGN –&gt; V1.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.builder.networks</span> <span class="kn">import</span> <span class="n">NetworkBuilder</span>
+
+<span class="n">lgn</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;LGN&#39;</span><span class="p">)</span>
+<span class="n">lgn</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+              <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;tON&#39;</span><span class="p">,</span>
+              <span class="n">potential</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span>
+              <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;virtual&#39;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+</div>
+<p>As before, we will use a customized function to determine the number of connections between each source and target pair, however this time our connection_rule is a bit different</p>
+<p>In the previous example, our connection_rule function’s first two arguments were the presynaptic and postsynaptic cells, which allowed us to choose how many synaptic connections between the pairs existed based on individual properties:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">connection_fnc</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span>
+    <span class="n">source</span><span class="p">[</span><span class="s1">&#39;param&#39;</span><span class="p">]</span> <span class="c1"># presynaptic cell params</span>
+    <span class="n">target</span><span class="p">[</span><span class="s1">&#39;param&#39;</span><span class="p">]</span> <span class="c1"># postsynaptic cell params</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">nsyns</span> <span class="c1"># number of connections between pair</span>
+</pre></div>
+</div>
+<p>But for our LGN –&gt; V1 connection, we do things a bit differently. We want to make sure that for every source cell, there are a limited number of presynaptic targets. This is a not really possible with a function that iterates on a one-to-one basis. So instead we have a connector function who’s first parameter is a list of all N source cell, and the second parameter is a single target cell. We return an array of integers, size N; which each index representing the number of synaptics between
+sources and the target.</p>
+<p>To tell the builder to use this schema, we must set iterator=‘all_to_one’ in the add_edges method. (By default this is set to ‘one_to_one’. You can also use ‘one_to_all’ iterator which will pass in a single source and all possible targets).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="k">def</span> <span class="nf">select_source_cells</span><span class="p">(</span><span class="n">sources</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">nsources_min</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">nsources_max</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">nsyns_min</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">nsyns_max</span><span class="o">=</span><span class="mi">12</span><span class="p">):</span>
+    <span class="n">total_sources</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sources</span><span class="p">)</span>
+    <span class="n">nsources</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">nsources_min</span><span class="p">,</span> <span class="n">nsources_max</span><span class="p">)</span>
+    <span class="n">selected_sources</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">total_sources</span><span class="p">,</span> <span class="n">nsources</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">syns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">total_sources</span><span class="p">)</span>
+    <span class="n">syns</span><span class="p">[</span><span class="n">selected_sources</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">nsyns_min</span><span class="p">,</span> <span class="n">nsyns_max</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">nsources</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">syns</span>
+
+<span class="n">lgn</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">lgn</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span> <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;Scnn1a&#39;</span><span class="p">),</span>
+              <span class="n">iterator</span><span class="o">=</span><span class="s1">&#39;all_to_one&#39;</span><span class="p">,</span>
+              <span class="n">connection_rule</span><span class="o">=</span><span class="n">select_source_cells</span><span class="p">,</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;nsources_min&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;nsources_max&#39;</span><span class="p">:</span> <span class="mi">25</span><span class="p">},</span>
+              <span class="n">syn_weight</span><span class="o">=</span><span class="mf">4e-03</span><span class="p">,</span>
+              <span class="n">weight_function</span><span class="o">=</span><span class="s1">&#39;wmax&#39;</span><span class="p">,</span>
+              <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">],</span>
+              <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;basal&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">],</span>
+              <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;AMPA_ExcToExc.json&#39;</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">)</span>
+
+<span class="n">lgn</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">lgn</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span> <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;PV1&#39;</span><span class="p">),</span>
+              <span class="n">connection_rule</span><span class="o">=</span><span class="n">select_source_cells</span><span class="p">,</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;nsources_min&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s1">&#39;nsources_max&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">},</span>
+              <span class="n">iterator</span><span class="o">=</span><span class="s1">&#39;all_to_one&#39;</span><span class="p">,</span>
+              <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
+              <span class="n">weight_function</span><span class="o">=</span><span class="s1">&#39;wmax&#39;</span><span class="p">,</span>
+              <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0e+20</span><span class="p">],</span>
+              <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;somatic&#39;</span><span class="p">,</span> <span class="s1">&#39;basal&#39;</span><span class="p">],</span>
+              <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;AMPA_ExcToInh.json&#39;</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">)</span>
+
+<span class="n">lgn</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">lgn</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span>  <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;LIF_exc&#39;</span><span class="p">),</span>
+              <span class="n">connection_rule</span><span class="o">=</span><span class="n">select_source_cells</span><span class="p">,</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;nsources_min&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="s1">&#39;nsources_max&#39;</span><span class="p">:</span> <span class="mi">25</span><span class="p">},</span>
+              <span class="n">iterator</span><span class="o">=</span><span class="s1">&#39;all_to_one&#39;</span><span class="p">,</span>
+              <span class="n">syn_weight</span><span class="o">=</span> <span class="mf">0.045</span><span class="p">,</span>
+              <span class="n">weight_function</span><span class="o">=</span><span class="s1">&#39;wmax&#39;</span><span class="p">,</span>
+              <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;instanteneousExc.json&#39;</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">)</span>
+
+<span class="n">lgn</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">lgn</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span>  <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;LIF_inh&#39;</span><span class="p">),</span>
+              <span class="n">connection_rule</span><span class="o">=</span><span class="n">select_source_cells</span><span class="p">,</span>
+              <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;nsources_min&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s1">&#39;nsources_max&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">},</span>
+              <span class="n">iterator</span><span class="o">=</span><span class="s1">&#39;all_to_one&#39;</span><span class="p">,</span>
+              <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>
+              <span class="n">weight_function</span><span class="o">=</span><span class="s1">&#39;wmax&#39;</span><span class="p">,</span>
+              <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;instanteneousExc.json&#39;</span><span class="p">,</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">)</span>
+
+
+<span class="n">lgn</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="n">lgn</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch04/network&#39;</span><span class="p">)</span>
+<span class="n">lgn</span><span class="o">.</span><span class="n">save_edges</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch04/network&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="2.-Setting-up-BioNet">
+<h2>2. Setting up BioNet<a class="headerlink" href="#2.-Setting-up-BioNet" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="file-structure.">
+<h3>file structure.<a class="headerlink" href="#file-structure." title="Permalink to this headline">¶</a></h3>
+<p>Before running a simulation, we will need to create the runtime environment, including parameter files, run-script and configuration files. You can copy the files from an existing simuatlion, execute the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m bmtk.utils.sim_setup  <span class="se">\</span>
+   --report-vars v                <span class="se">\</span>
+   --report-nodes <span class="m">10</span>,80           <span class="se">\</span>
+   --network sim_ch04/network     <span class="se">\</span>
+   --dt <span class="m">0</span>.1                       <span class="se">\</span>
+   --tstop <span class="m">3000</span>.0                 <span class="se">\</span>
+   --include-examples             <span class="se">\</span>
+   --compile-mechanisms           <span class="se">\</span>
+   bionet sim_ch04
+</pre></div>
+</div>
+<p>$ python -m bmtk.utils.sim_setup –report-vars v –report-nodes 0,80,100,300 –network sim_ch04/network –dt 0.1 –tstop 3000.0 –include-examples –compile-mechanisms bionet sim_ch04</p>
+<p>or run it directly in python</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.utils.sim_setup</span> <span class="kn">import</span> <span class="n">build_env_bionet</span>
+
+<span class="n">build_env_bionet</span><span class="p">(</span><span class="n">base_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch04&#39;</span><span class="p">,</span>
+                 <span class="n">network_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch04/network&#39;</span><span class="p">,</span>
+                 <span class="n">tstop</span><span class="o">=</span><span class="mf">3000.0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+                 <span class="n">report_vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;v&#39;</span><span class="p">],</span>     <span class="c1"># Record membrane potential (default soma)</span>
+                 <span class="n">include_examples</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>    <span class="c1"># Copies components files</span>
+                 <span class="n">compile_mechanisms</span><span class="o">=</span><span class="kc">True</span>   <span class="c1"># Will try to compile NEURON mechanisms</span>
+                <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>This will fill out the <strong>sim_ch04</strong> with all the files we need to get started to run the simulation. Of interest includes</p>
+<ul class="simple">
+<li><p><strong>circuit_config.json</strong> - A configuration file that contains the location of the network files we created above. Plus location of neuron and synpatic models, templates, morphologies and mechanisms required to build our instantiate individual cell models.</p></li>
+<li><p><strong>simulation_config.json</strong> - contains information about the simulation. Including initial conditions and run-time configuration (<em>run</em> and <em>conditions</em>). In the <em>inputs</em> section we define what external sources we will use to drive the network (in this case a current clamp). And in the <em>reports</em> section we define the variables (soma membrane potential and calcium) that will be recorded during the simulation</p></li>
+<li><p><strong>run_bionent.py</strong> - A script for running our simulation. Usually this file doesn’t need to be modified.</p></li>
+<li><p><strong>components/biophysical_neuron_models/</strong> - The parameter file for the cells we’re modeling. Originally <a class="reference external" href="http://celltypes.brain-map.org/neuronal_model/download/482934212">downloaded from the Allen Cell Types Database</a>. These files were automatically copies over when we used the <em>include-examples</em> directive. If using a differrent or extended set of cell models place them here</p></li>
+<li><p><strong>components/biophysical_neuron_models/</strong> - The morphology file for our cells. Originally <a class="reference external" href="http://celltypes.brain-map.org/neuronal_model/download/482934212">downloaded from the Allen Cell Types Database</a> and copied over using the <em>include_examples</em>.</p></li>
+<li><p><strong>components/point_neuron_models/</strong> - The parameter file for our LIF_exc and LIF_inh cells.</p></li>
+<li><p><strong>components/synaptic_models/</strong> - Parameter files used to create different types of synapses.</p></li>
+</ul>
+</div>
+<div class="section" id="lgn-input">
+<h3>lgn input<a class="headerlink" href="#lgn-input" title="Permalink to this headline">¶</a></h3>
+<p>We need to provide our LGN external network cells with spike-trains so they can activate our recurrent network. Previously we showed how to do this by generating csv files. We can also use NWB files, which are a common format for saving electrophysiological data in neuroscience.</p>
+<p>We can use any NWB file generated experimentally or computationally, but for this example we will use a preexsting one. First download the file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ wget https://github.com/AllenInstitute/bmtk/raw/develop/docs/examples/NWB_files/lgn_spikes.nwb
+</pre></div>
+</div>
+<p>or copy from <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/spikes_inputs/lgn_spikes.nwb">here</a>.</p>
+<p>Then we must edit the <strong>simulation_config.json</strong> file to tell the simulator to find the nwb file and which network to associate it with.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;inputs&quot;: {
+    &quot;LGN_spikes&quot;: {
+        &quot;input_type&quot;: &quot;spikes&quot;,
+        &quot;module&quot;: &quot;nwb&quot;,
+        &quot;input_file&quot;: &quot;$BASE_DIR/lgn_spikes.nwb&quot;,
+        &quot;node_set&quot;: &quot;LGN&quot;,
+        &quot;trial&quot;: &quot;trial_0&quot;
+    }
+},
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="3.-Running-the-simulation">
+<h2>3. Running the simulation<a class="headerlink" href="#3.-Running-the-simulation" title="Permalink to this headline">¶</a></h2>
+<p>We are close to running our simulation, however unlike in previous chapters we need a little more programming before we can begin.</p>
+<p>For most of the connections we added the parameter weight_function=‘wmax’. This is a built-in function that tells the simulator when creating a connection between two cells, just use the ‘weight_max’ value assigned to that given edge-type.</p>
+<p>However, when creating excitatory-to-excitatory connections we used weight_function=‘gaussianLL’. This is because we want to use the tuning_angle parameter, when avaiable, to determine the synaptic strength between two connections. First we create the function which takes in target, source and connection properties (which are just the edge-type and properties set in the add_edges method). Then we must register the function with the BioNet simulator:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.pyfunction_cache</span> <span class="kn">import</span> <span class="n">add_weight_function</span>
+
+<span class="k">def</span> <span class="nf">gaussianLL</span><span class="p">(</span><span class="n">edge_props</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+    <span class="n">src_tuning</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;tuning_angle&#39;</span><span class="p">]</span>
+    <span class="n">tar_tuning</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;tuning_angle&#39;</span><span class="p">]</span>
+    <span class="n">w0</span> <span class="o">=</span> <span class="n">edge_props</span><span class="p">[</span><span class="s2">&quot;syn_weight&quot;</span><span class="p">]</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="n">edge_props</span><span class="p">[</span><span class="s2">&quot;weight_sigma&quot;</span><span class="p">]</span>
+
+    <span class="n">delta_tuning</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="mf">180.0</span> <span class="o">-</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">tar_tuning</span><span class="p">)</span> <span class="o">-</span> <span class="nb">float</span><span class="p">(</span><span class="n">src_tuning</span><span class="p">))</span> <span class="o">%</span> <span class="mf">360.0</span><span class="p">)</span> <span class="o">-</span> <span class="mf">90.0</span><span class="p">)</span> <span class="o">-</span> <span class="mf">90.0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">w0</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">delta_tuning</span> <span class="o">/</span> <span class="n">sigma</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="n">add_weight_function</span><span class="p">(</span><span class="n">gaussianLL</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The weights will be adjusted before each simulation, and the function can be changed between different runs.. Simply opening the edge_types.csv file with a text editor and altering the weight_function column allows users to take an existing network and readjust weights on-the-fly.</p>
+<p>Finally we are ready to run the simulation. Note that because this is a 400 cell simulation, this may be computationally intensive for some older computers and may take anywhere between a few minutes to half-an-hour to complete.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.simulator</span> <span class="kn">import</span> <span class="n">bionet</span>
+
+
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;sim_ch04/simulation_config.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2019-07-22 11:16:00,779 [INFO] Created log file
+2019-07-22 11:16:00,903 [INFO] Building cells.
+2019-07-22 11:16:08,357 [INFO] Building recurrent connections
+2019-07-22 11:16:42,482 [INFO] Building virtual cell stimulations for LGN_spikes
+2019-07-22 11:16:47,653 [INFO] Running simulation for 3000.000 ms with the time step 0.100 ms
+2019-07-22 11:16:47,654 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
+2019-07-22 11:16:47,655 [INFO] Block save every 5000 steps
+2019-07-22 11:17:22,433 [INFO]     step:5000 t_sim:500.00 ms
+2019-07-22 11:17:57,501 [INFO]     step:10000 t_sim:1000.00 ms
+2019-07-22 11:18:34,555 [INFO]     step:15000 t_sim:1500.00 ms
+2019-07-22 11:19:13,002 [INFO]     step:20000 t_sim:2000.00 ms
+2019-07-22 11:19:51,995 [INFO]     step:25000 t_sim:2500.00 ms
+2019-07-22 11:20:34,736 [INFO]     step:30000 t_sim:3000.00 ms
+2019-07-22 11:20:38,667 [INFO] Simulation completed in 3.0 minutes, 51.01 seconds
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="4.-Analyzing-results">
+<h2>4. Analyzing results<a class="headerlink" href="#4.-Analyzing-results" title="Permalink to this headline">¶</a></h2>
+<p>Results of the simulation, as specified in the config, are saved into the output directory. Using the analyzer functions, we can do things like plot the raster plot</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.spike_trains</span> <span class="kn">import</span> <span class="n">plot_raster</span><span class="p">,</span> <span class="n">plot_rates</span>
+
+<span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch04/simulation_config.json&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/tutorial_multi_pop_26_0.png" src="_images/tutorial_multi_pop_26_0.png" />
+</div>
+</div>
+<p>and the rates of each node</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">plot_rates</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch04/simulation_config.json&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/tutorial_multi_pop_28_0.png" src="_images/tutorial_multi_pop_28_0.png" />
+</div>
+</div>
+<p>In our config file we used the cell_vars and node_id_selections parameters to save the calcium influx and membrane potential of selected cells. We can also use the analyzer to display these traces:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.cell_vars</span> <span class="kn">import</span> <span class="n">plot_report</span>
+
+<span class="n">plot_report</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch03/simulation_config.json&#39;</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">80</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/tutorial_multi_pop_30_0.png" src="_images/tutorial_multi_pop_30_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/tutorial_multi_pop_30_1.png" src="_images/tutorial_multi_pop_30_1.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="index.html">Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="builder.html">Building Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html">Simulation Engines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filternet.html">FilterNet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.tests.html">bmtk.tests package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+    </div>
+<script type="text/javascript" src="_static/external_assets/javascript/portalFooter.js"></script>
+
+  </body>
+</html>

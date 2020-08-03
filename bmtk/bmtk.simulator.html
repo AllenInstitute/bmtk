@@ -1,22 +1,25 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.simulator package &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="bmtk.simulator.bionet package" href="bmtk.simulator.bionet.html" />
-    <link rel="prev" title="bmtk.scripts package" href="bmtk.scripts.html" /> 
+    <link rel="prev" title="bmtk.builder.networks package" href="bmtk.builder.networks.html" /> 
   </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
 <style>
@@ -640,6 +643,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.bionet.modules.html#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.bionet.modules.html#module-bmtk.simulator.bionet.modules.ecp">bmtk.simulator.bionet.modules.ecp module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.bionet.modules.html#module-bmtk.simulator.bionet.modules.record_cellvars">bmtk.simulator.bionet.modules.record_cellvars module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.bionet.modules.html#module-bmtk.simulator.bionet.modules.record_clamp">bmtk.simulator.bionet.modules.record_clamp module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.bionet.modules.html#module-bmtk.simulator.bionet.modules.record_netcons">bmtk.simulator.bionet.modules.record_netcons module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.bionet.modules.html#module-bmtk.simulator.bionet.modules.record_spikes">bmtk.simulator.bionet.modules.record_spikes module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.bionet.modules.html#module-bmtk.simulator.bionet.modules.save_synapses">bmtk.simulator.bionet.modules.save_synapses module</a></li>
@@ -666,6 +670,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.html#module-bmtk.simulator.bionet.pointprocesscell">bmtk.simulator.bionet.pointprocesscell module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.html#module-bmtk.simulator.bionet.pointsomacell">bmtk.simulator.bionet.pointsomacell module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.html#module-bmtk.simulator.bionet.pyfunction_cache">bmtk.simulator.bionet.pyfunction_cache module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.html#module-bmtk.simulator.bionet.seclamp">bmtk.simulator.bionet.seclamp module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.html#module-bmtk.simulator.bionet.sonata_adaptors">bmtk.simulator.bionet.sonata_adaptors module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.html#module-bmtk.simulator.bionet.utils">bmtk.simulator.bionet.utils module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.bionet.html#module-bmtk.simulator.bionet.virtualcell">bmtk.simulator.bionet.virtualcell module</a></li>
@@ -685,13 +690,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.core.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.core.html#module-bmtk.simulator.core.config">bmtk.simulator.core.config module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.core.html#module-bmtk.simulator.core.edge_population">bmtk.simulator.core.edge_population module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.core.html#module-bmtk.simulator.core.graph">bmtk.simulator.core.graph module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.core.html#bmtk-simulator-core-graph-module">bmtk.simulator.core.graph module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.core.html#module-bmtk.simulator.core.io_tools">bmtk.simulator.core.io_tools module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.core.html#module-bmtk.simulator.core.network_reader">bmtk.simulator.core.network_reader module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.core.html#module-bmtk.simulator.core.node_population">bmtk.simulator.core.node_population module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.core.html#module-bmtk.simulator.core.node_sets">bmtk.simulator.core.node_sets module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.core.html#module-bmtk.simulator.core.simulation_config">bmtk.simulator.core.simulation_config module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.core.html#module-bmtk.simulator.core.simulation_config_validator">bmtk.simulator.core.simulation_config_validator module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.core.html#module-bmtk.simulator.core.simulator">bmtk.simulator.core.simulator module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.core.html#module-bmtk.simulator.core.simulator_network">bmtk.simulator.core.simulator_network module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.core.html#module-bmtk.simulator.core">Module contents</a></li>
@@ -701,84 +707,56 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.html#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.default_setters.html">bmtk.simulator.filternet.default_setters package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.default_setters.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.default_setters.html#bmtk-simulator-filternet-default-setters-cell-loaders-module">bmtk.simulator.filternet.default_setters.cell_loaders module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.default_setters.html#module-contents">Module contents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.default_setters.html#module-bmtk.simulator.filternet.default_setters.cell_loaders">bmtk.simulator.filternet.default_setters.cell_loaders module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.default_setters.html#module-bmtk.simulator.filternet.default_setters">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html">bmtk.simulator.filternet.lgnmodel package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk-simulator-filternet-lgnmodel-cellmodel-module">bmtk.simulator.filternet.lgnmodel.cellmodel module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk-simulator-filternet-lgnmodel-cursor-module">bmtk.simulator.filternet.lgnmodel.cursor module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.cellmetrics">bmtk.simulator.filternet.lgnmodel.cellmetrics module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.cellmodel">bmtk.simulator.filternet.lgnmodel.cellmodel module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.cursor">bmtk.simulator.filternet.lgnmodel.cursor module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.fitfuns">bmtk.simulator.filternet.lgnmodel.fitfuns module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.kernel">bmtk.simulator.filternet.lgnmodel.kernel module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk-simulator-filternet-lgnmodel-lattice-unit-constructor-module">bmtk.simulator.filternet.lgnmodel.lattice_unit_constructor module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.lattice_unit_constructor">bmtk.simulator.filternet.lgnmodel.lattice_unit_constructor module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.lgnmodel1">bmtk.simulator.filternet.lgnmodel.lgnmodel1 module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.linearfilter">bmtk.simulator.filternet.lgnmodel.linearfilter module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk-simulator-filternet-lgnmodel-lnunit-module">bmtk.simulator.filternet.lgnmodel.lnunit module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk-simulator-filternet-lgnmodel-make-cell-list-module">bmtk.simulator.filternet.lgnmodel.make_cell_list module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk-simulator-filternet-lgnmodel-movie-module">bmtk.simulator.filternet.lgnmodel.movie module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.lnunit">bmtk.simulator.filternet.lgnmodel.lnunit module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.make_cell_list">bmtk.simulator.filternet.lgnmodel.make_cell_list module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.movie">bmtk.simulator.filternet.lgnmodel.movie module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.poissongeneration">bmtk.simulator.filternet.lgnmodel.poissongeneration module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk-simulator-filternet-lgnmodel-singleunitcell-module">bmtk.simulator.filternet.lgnmodel.singleunitcell module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk-simulator-filternet-lgnmodel-spatialfilter-module">bmtk.simulator.filternet.lgnmodel.spatialfilter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.singleunitcell">bmtk.simulator.filternet.lgnmodel.singleunitcell module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.spatialfilter">bmtk.simulator.filternet.lgnmodel.spatialfilter module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.temporalfilter">bmtk.simulator.filternet.lgnmodel.temporalfilter module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.transferfunction">bmtk.simulator.filternet.lgnmodel.transferfunction module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk-simulator-filternet-lgnmodel-util-fns-module">bmtk.simulator.filternet.lgnmodel.util_fns module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#bmtk-simulator-filternet-lgnmodel-utilities-module">bmtk.simulator.filternet.lgnmodel.utilities module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.util_fns">bmtk.simulator.filternet.lgnmodel.util_fns module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel.utilities">bmtk.simulator.filternet.lgnmodel.utilities module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.lgnmodel.html#module-bmtk.simulator.filternet.lgnmodel">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.filternet.modules.html">bmtk.simulator.filternet.modules package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#bmtk-simulator-filternet-modules-base-module">bmtk.simulator.filternet.modules.base module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#bmtk-simulator-filternet-modules-create-spikes-module">bmtk.simulator.filternet.modules.create_spikes module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#bmtk-simulator-filternet-modules-record-rates-module">bmtk.simulator.filternet.modules.record_rates module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#module-contents">Module contents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#module-bmtk.simulator.filternet.modules.base">bmtk.simulator.filternet.modules.base module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#module-bmtk.simulator.filternet.modules.create_spikes">bmtk.simulator.filternet.modules.create_spikes module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#module-bmtk.simulator.filternet.modules.record_rates">bmtk.simulator.filternet.modules.record_rates module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.filternet.modules.html#module-bmtk.simulator.filternet.modules">Module contents</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.html#bmtk-simulator-filternet-cell-module">bmtk.simulator.filternet.cell module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.html#bmtk-simulator-filternet-cell-models-module">bmtk.simulator.filternet.cell_models module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.html#module-bmtk.simulator.filternet.cell">bmtk.simulator.filternet.cell module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.html#module-bmtk.simulator.filternet.cell_models">bmtk.simulator.filternet.cell_models module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.html#module-bmtk.simulator.filternet.config">bmtk.simulator.filternet.config module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.html#module-bmtk.simulator.filternet.filternetwork">bmtk.simulator.filternet.filternetwork module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.html#bmtk-simulator-filternet-filters-module">bmtk.simulator.filternet.filters module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.html#bmtk-simulator-filternet-filtersimulator-module">bmtk.simulator.filternet.filtersimulator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.html#bmtk-simulator-filternet-io-tools-module">bmtk.simulator.filternet.io_tools module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.html#module-bmtk.simulator.filternet.filters">bmtk.simulator.filternet.filters module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.html#module-bmtk.simulator.filternet.filtersimulator">bmtk.simulator.filternet.filtersimulator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.html#module-bmtk.simulator.filternet.io_tools">bmtk.simulator.filternet.io_tools module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.html#module-bmtk.simulator.filternet.pyfunction_cache">bmtk.simulator.filternet.pyfunction_cache module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.html#module-bmtk.simulator.filternet.sonata_adaptors">bmtk.simulator.filternet.sonata_adaptors module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.html#bmtk-simulator-filternet-transfer-functions-module">bmtk.simulator.filternet.transfer_functions module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.html#bmtk-simulator-filternet-utils-module">bmtk.simulator.filternet.utils module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.html#module-contents">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="bmtk.simulator.mintnet.html">bmtk.simulator.mintnet package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.mintnet.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.mintnet.analysis.html">bmtk.simulator.mintnet.analysis package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.mintnet.analysis.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.mintnet.analysis.html#module-bmtk.simulator.mintnet.analysis.LocallySparseNoise">bmtk.simulator.mintnet.analysis.LocallySparseNoise module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.mintnet.analysis.html#module-bmtk.simulator.mintnet.analysis.StaticGratings">bmtk.simulator.mintnet.analysis.StaticGratings module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.mintnet.analysis.html#module-bmtk.simulator.mintnet.analysis">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.mintnet.hmax.html">bmtk.simulator.mintnet.hmax package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.mintnet.hmax.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.mintnet.hmax.html#bmtk-simulator-mintnet-hmax-c-layer-module">bmtk.simulator.mintnet.hmax.C_Layer module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.mintnet.hmax.html#bmtk-simulator-mintnet-hmax-readout-layer-module">bmtk.simulator.mintnet.hmax.Readout_Layer module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.mintnet.hmax.html#bmtk-simulator-mintnet-hmax-s1-layer-module">bmtk.simulator.mintnet.hmax.S1_Layer module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.mintnet.hmax.html#bmtk-simulator-mintnet-hmax-s-layer-module">bmtk.simulator.mintnet.hmax.S_Layer module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.mintnet.hmax.html#bmtk-simulator-mintnet-hmax-sb-layer-module">bmtk.simulator.mintnet.hmax.Sb_Layer module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.mintnet.hmax.html#bmtk-simulator-mintnet-hmax-viewtunedlayer-module">bmtk.simulator.mintnet.hmax.ViewTunedLayer module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.mintnet.hmax.html#bmtk-simulator-mintnet-hmax-hmax-module">bmtk.simulator.mintnet.hmax.hmax module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.mintnet.hmax.html#module-contents">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.mintnet.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.mintnet.html#module-bmtk.simulator.mintnet.Image_Library">bmtk.simulator.mintnet.Image_Library module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.mintnet.html#module-bmtk.simulator.mintnet.Image_Library_Supervised">bmtk.simulator.mintnet.Image_Library_Supervised module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.mintnet.html#module-bmtk.simulator.mintnet">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.html#module-bmtk.simulator.filternet.transfer_functions">bmtk.simulator.filternet.transfer_functions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.html#module-bmtk.simulator.filternet.utils">bmtk.simulator.filternet.utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.filternet.html#module-bmtk.simulator.filternet">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.simulator.pointnet.html">bmtk.simulator.pointnet package</a><ul>
@@ -817,10 +795,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.popnet.html#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.popnet.property_schemas.html">bmtk.simulator.popnet.property_schemas package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.property_schemas.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.property_schemas.html#bmtk-simulator-popnet-property-schemas-base-schema-module">bmtk.simulator.popnet.property_schemas.base_schema module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.property_schemas.html#bmtk-simulator-popnet-property-schemas-property-schema-ver0-module">bmtk.simulator.popnet.property_schemas.property_schema_ver0 module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.property_schemas.html#bmtk-simulator-popnet-property-schemas-property-schema-ver1-module">bmtk.simulator.popnet.property_schemas.property_schema_ver1 module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.property_schemas.html#module-contents">Module contents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.property_schemas.html#module-bmtk.simulator.popnet.property_schemas.base_schema">bmtk.simulator.popnet.property_schemas.base_schema module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.property_schemas.html#module-bmtk.simulator.popnet.property_schemas.property_schema_ver0">bmtk.simulator.popnet.property_schemas.property_schema_ver0 module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.property_schemas.html#module-bmtk.simulator.popnet.property_schemas.property_schema_ver1">bmtk.simulator.popnet.property_schemas.property_schema_ver1 module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.popnet.property_schemas.html#module-bmtk.simulator.popnet.property_schemas">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -839,14 +817,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.simulator.utils.html">bmtk.simulator.utils package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html">bmtk.simulator.utils.stimulus package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#bmtk-simulator-utils-stimulus-locallysparsenoise-module">bmtk.simulator.utils.stimulus.LocallySparseNoise module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#module-bmtk.simulator.utils.stimulus.NaturalScenes">bmtk.simulator.utils.stimulus.NaturalScenes module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#module-bmtk.simulator.utils.stimulus.StaticGratings">bmtk.simulator.utils.stimulus.StaticGratings module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.utils.stimulus.html#module-bmtk.simulator.utils.stimulus">Module contents</a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="bmtk.simulator.utils.tools.html">bmtk.simulator.utils.tools package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.utils.tools.html#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.simulator.utils.tools.html#module-bmtk.simulator.utils.tools.process_spikes">bmtk.simulator.utils.tools.process_spikes module</a></li>
@@ -859,11 +829,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.html#module-bmtk.simulator.utils.config">bmtk.simulator.utils.config module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.html#bmtk-simulator-utils-graph-module">bmtk.simulator.utils.graph module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.html#module-bmtk.simulator.utils.io">bmtk.simulator.utils.io module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.html#module-bmtk.simulator.utils.load_spikes">bmtk.simulator.utils.load_spikes module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.html#module-bmtk.simulator.utils.nwb">bmtk.simulator.utils.nwb module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.html#module-bmtk.simulator.utils.property_maps">bmtk.simulator.utils.property_maps module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.html#module-bmtk.simulator.utils.sim_validator">bmtk.simulator.utils.sim_validator module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.html#module-bmtk.simulator.utils.simulation_inputs">bmtk.simulator.utils.simulation_inputs module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.html#module-bmtk.simulator.utils.simulation_reports">bmtk.simulator.utils.simulation_reports module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.utils.html#module-bmtk.simulator.utils">Module contents</a></li>
@@ -878,6 +844,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -894,13 +861,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
@@ -909,17 +886,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

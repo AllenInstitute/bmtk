@@ -1,19 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.simulator.filternet.filtersimulator &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
@@ -623,17 +625,17 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span></span><span class="kn">import</span> <span class="nn">csv</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">bmtk.simulator.core.simulator</span> <span class="k">import</span> <span class="n">Simulator</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.core.simulator</span> <span class="kn">import</span> <span class="n">Simulator</span>
 <span class="kn">import</span> <span class="nn">bmtk.simulator.utils.simulation_inputs</span> <span class="k">as</span> <span class="nn">inputs</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.filternet.config</span> <span class="k">import</span> <span class="n">Config</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.filternet.lgnmodel.movie</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.filternet</span> <span class="k">import</span> <span class="n">modules</span> <span class="k">as</span> <span class="n">mods</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.filternet.io_tools</span> <span class="k">import</span> <span class="n">io</span>
-<span class="kn">from</span> <span class="nn">six</span> <span class="k">import</span> <span class="n">string_types</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.filternet.config</span> <span class="kn">import</span> <span class="n">Config</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.filternet.lgnmodel.movie</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.filternet</span> <span class="kn">import</span> <span class="n">modules</span> <span class="k">as</span> <span class="n">mods</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.filternet.io_tools</span> <span class="kn">import</span> <span class="n">io</span>
+<span class="kn">from</span> <span class="nn">six</span> <span class="kn">import</span> <span class="n">string_types</span>
 
 
 <div class="viewcode-block" id="FilterSimulator"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.filternet.html#bmtk.simulator.filternet.filtersimulator.FilterSimulator">[docs]</a><span class="k">class</span> <span class="nc">FilterSimulator</span><span class="p">(</span><span class="n">Simulator</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">tstop</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">tstop</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">FilterSimulator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_network</span> <span class="o">=</span> <span class="n">network</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> <span class="o">=</span> <span class="n">dt</span>
@@ -664,7 +666,18 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
         <span class="k">elif</span> <span class="n">movie_type</span> <span class="o">==</span> <span class="s1">&#39;full_field_flash&#39;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+            <span class="n">init_params</span> <span class="o">=</span> <span class="n">FilterSimulator</span><span class="o">.</span><span class="n">find_params</span><span class="p">([</span><span class="s1">&#39;row_size&#39;</span><span class="p">,</span> <span class="s1">&#39;col_size&#39;</span><span class="p">,</span> <span class="s1">&#39;t_on&#39;</span><span class="p">,</span> <span class="s1">&#39;t_off&#39;</span><span class="p">,</span> <span class="s1">&#39;max_intensity&#39;</span><span class="p">,</span>
+                                                       <span class="s1">&#39;frame_rate&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+            <span class="n">init_params</span><span class="p">[</span><span class="s1">&#39;row_range&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">init_params</span><span class="p">[</span><span class="s1">&#39;row_size&#39;</span><span class="p">])</span>
+            <span class="k">del</span> <span class="n">init_params</span><span class="p">[</span><span class="s1">&#39;row_size&#39;</span><span class="p">]</span>
+            <span class="n">init_params</span><span class="p">[</span><span class="s1">&#39;col_range&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">init_params</span><span class="p">[</span><span class="s1">&#39;col_size&#39;</span><span class="p">])</span>
+            <span class="k">del</span> <span class="n">init_params</span><span class="p">[</span><span class="s1">&#39;col_size&#39;</span><span class="p">]</span>
+            <span class="n">init_params</span><span class="p">[</span><span class="s1">&#39;t_on&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_params</span><span class="p">[</span><span class="s1">&#39;t_on&#39;</span><span class="p">]</span><span class="o">/</span><span class="mf">1000.0</span>
+            <span class="n">init_params</span><span class="p">[</span><span class="s1">&#39;t_off&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_params</span><span class="p">[</span><span class="s1">&#39;t_off&#39;</span><span class="p">]</span><span class="o">/</span><span class="mf">1000.0</span>
+
+            <span class="n">ffm</span> <span class="o">=</span> <span class="n">FullFieldFlashMovie</span><span class="p">(</span><span class="o">**</span><span class="n">init_params</span><span class="p">)</span>
+            <span class="n">mv</span> <span class="o">=</span> <span class="n">ffm</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">t_max</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tstop</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_movies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mv</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">movie_type</span> <span class="o">==</span> <span class="s1">&#39;graiting&#39;</span><span class="p">:</span>
             <span class="n">init_params</span> <span class="o">=</span> <span class="n">FilterSimulator</span><span class="o">.</span><span class="n">find_params</span><span class="p">([</span><span class="s1">&#39;row_size&#39;</span><span class="p">,</span> <span class="s1">&#39;col_size&#39;</span><span class="p">,</span> <span class="s1">&#39;frame_rate&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
@@ -673,6 +686,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">gm</span> <span class="o">=</span> <span class="n">GratingMovie</span><span class="p">(</span><span class="o">**</span><span class="n">init_params</span><span class="p">)</span>
             <span class="n">graiting_movie</span> <span class="o">=</span> <span class="n">gm</span><span class="o">.</span><span class="n">create_movie</span><span class="p">(</span><span class="n">t_min</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">t_max</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tstop</span><span class="p">,</span> <span class="o">**</span><span class="n">create_params</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_movies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">graiting_movie</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">movie_type</span> <span class="o">==</span> <span class="s1">&#39;looming&#39;</span><span class="p">:</span>
+            <span class="n">init_params</span> <span class="o">=</span> <span class="n">FilterSimulator</span><span class="o">.</span><span class="n">find_params</span><span class="p">([</span><span class="s1">&#39;row_size&#39;</span><span class="p">,</span> <span class="s1">&#39;col_size&#39;</span><span class="p">,</span> <span class="s1">&#39;frame_rate&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+            <span class="n">movie_params</span> <span class="o">=</span> <span class="n">FilterSimulator</span><span class="o">.</span><span class="n">find_params</span><span class="p">([</span><span class="s1">&#39;t_looming&#39;</span><span class="p">,</span> <span class="s1">&#39;gray_sceen_dur&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+            <span class="n">lm</span> <span class="o">=</span> <span class="n">LoomingMovie</span><span class="p">(</span><span class="o">**</span><span class="n">init_params</span><span class="p">)</span>
+            <span class="n">looming_movie</span> <span class="o">=</span> <span class="n">lm</span><span class="o">.</span><span class="n">create_movie</span><span class="p">(</span><span class="o">**</span><span class="n">movie_params</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_movies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">looming_movie</span><span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Unknown movie type </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">movie_type</span><span class="p">))</span>
@@ -692,7 +712,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="n">ts</span><span class="p">,</span> <span class="n">f_rates</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">lgn_cell_obj</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
 
                 <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_mods</span><span class="p">:</span>
-                    <span class="n">mod</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="o">.</span><span class="n">gid</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">f_rates</span><span class="p">)</span>
+                    <span class="n">mod</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">,</span> <span class="n">ts</span><span class="p">,</span> <span class="n">f_rates</span><span class="p">)</span>
 
         <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Done.&#39;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_mods</span><span class="p">:</span>
@@ -775,6 +795,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="n">sim</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -791,31 +812,40 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

@@ -1,0 +1,1709 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 3: Multi-cell, single population network (with BioNet) &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Chapter 4: Muti-population recurrent network (with BioNet)" href="tutorial_multi_pop.html" />
+    <link rel="prev" title="Chapter 2: Single cell simulation with external feedfoward input (with BioNet)" href="tutorial_single_cell_syn.html" /> 
+  </head><body>
+<script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
+<style>
+
+	/* the icon font-family definition and helper classes */
+	@font-face {
+	  font-family: 'portal_icon_font';
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
+	  font-weight: normal;
+	  font-style: normal;
+	}
+	 
+	 [class^="icon-"]:before, [class*=" icon-"]:before {
+	  font-family: "portal_icon_font";
+	  font-style: normal;
+	  font-weight: normal;
+	  speak: none;
+	 
+	  display: inline-block;
+	  text-decoration: inherit;
+	  width: 1em;
+	  margin-right: .2em;
+	  text-align: center;
+	  /* opacity: .8; */
+	 
+	  /* For safety - reset parent styles, that can break glyph codes*/
+	  font-variant: normal;
+	  text-transform: none;
+	     
+	  /* fix buttons height, for twitter bootstrap */
+	  line-height: 1em;
+	 
+	  /* Animation center compensation - margins should be symmetric */
+	  /* remove if not needed */
+	  margin-left: .2em;
+	
+	}
+	 
+	.icon-spin5:before { content: '\e806'; } /* '' */
+	.icon-left-open-1:before { content: '\e81e'; } /* '' */
+	.icon-plus-1:before { content: '\e801'; } /* '' */
+	.icon-facebook:before { content: '\e816'; } /* '' */
+	.icon-gplus:before { content: '\e818'; } /* '' */
+	.icon-linkedin-3:before { content: '\e815'; } /* '' */
+	.icon-twitter:before { content: '\e817'; } /* '' */
+	.icon-youtube-play:before { content: '\e805'; } /* '' */
+	.icon-plus-2:before { content: '\e809'; } /* '' */
+	.icon-record-1:before { content: '\e81c'; } /* '' */
+	.icon-cancel:before { content: '\e80b'; } /* '' */
+	.icon-search:before { content: '\e804'; } /* '' */
+	.icon-cancel-2:before { content: '\e80c'; } /* '' */
+	.icon-plus-4:before { content: '\e80d'; } /* '' */
+	.icon-cancel-3:before { content: '\e80e'; } /* '' */
+	.icon-plus:before { content: '\e808'; } /* '' */
+	.icon-down-open:before { content: '\e800'; } /* '' */
+	.icon-right-open:before { content: '\e802'; } /* '' */
+	.icon-up-open:before { content: '\e803'; } /* '' */
+	.icon-stop:before { content: '\e813'; } /* '' */
+	.icon-cancel-1:before { content: '\e820'; } /* '' */
+	.icon-plus-3:before { content: '\e80a'; } /* '' */
+	/* end icon font helpers */
+
+	/* icon font spin animation */
+	.animate-spin {
+	  -moz-animation: spin 2s infinite linear;
+	  -o-animation: spin 2s infinite linear;
+	  -webkit-animation: spin 2s infinite linear;
+	  animation: spin 2s infinite linear;
+	  display: inline-block;
+	}
+	@-moz-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-webkit-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-o-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-ms-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	/*  end spin animation */	
+
+	@font-face {
+	    font-family: 'bebas_neueregular';
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
+	    font-weight: normal;
+	    font-style: normal;
+	}
+
+	/* top chrome styles */
+	#top_chrome {
+
+		width:100%;
+		height:28px;
+		background-color:#163E65;
+	}
+
+	.chrome_link_block {
+
+		color:#fff !important;	
+		display:inline-block;
+		height:100%;
+		max-height:28px;
+	}
+
+	.chrome_link_block:hover {
+
+		background-color:#eee;
+		color:#0779BE !important;	
+		cursor:pointer;
+	}
+
+	#top_chrome a {
+
+		color:inherit !important;	
+		text-decoration:none;
+	}
+
+	#top_chrome a:hover {
+
+		color:inherit !important;	
+	}
+
+	#top_chrome_buttons {
+
+		float:right;
+		margin-right:50px;
+	}
+
+	.chrome_button {
+
+		font-family:arial,sans-serif;
+		font-weight:bold;
+		display:inline-block;
+		font-size:9px;
+		text-align:left;
+		text-decoration:none;
+		margin:9px 20px 10px 20px;
+	}
+
+	.chrome_active {
+
+		background-color:#1b7abd;
+		color:#fff;
+	}
+
+
+	/* header element styles*/
+	#header_content {
+
+		font-family: bebas_neueregular, arial, sans-serif;
+		font-size:22px;
+		color:#0779be;		
+		letter-spacing:0.03em;
+
+		position:relative;
+		width:calc(100% - 112px);
+		min-width:800px;
+		height:76px;
+		border-bottom:2px solid #A5A8AB;
+		margin-left:50px;
+		margin-right:50px;
+        z-index:9999; /* IT-9508 */
+	}
+
+	#portal_logo {
+
+		position:absolute;
+		top:20px;
+		left:0px;
+		width:236px;
+	}
+
+	#portal_tabs {
+
+		position: absolute;
+		bottom: 12px;
+		left: 0px;
+		margin-bottom: -12px;
+		display: block;
+	}
+
+	.horizontal_list
+	{
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		display: inline; 		
+	}
+
+	.horizontal_list li { 
+
+		display: inline; 	
+	}	
+
+	#portal_tab_menu_container {
+
+		display:none;
+	}
+
+	#portal_search_input_group {
+
+		position:absolute;
+		margin: 0;
+		padding: 0;
+		bottom:12px;
+		right:0px;
+		border:1px solid #DAD9D3;
+		color:#DAD9D3;
+	}
+
+	#portal_search_input_group input {
+
+		margin: 0;
+		padding: 0;
+		border:none;
+		width:110px;
+		color:#DAD9D3;
+		font-family:Helvetica,sans-serif;
+		font-size:12px;
+		height:28px;
+		margin-left:10px;
+
+		outline:none;
+	}
+
+	input::-ms-clear {
+		display: none;
+	}
+
+	#portal_search_input_group i {
+
+		font-size:0.8em;
+		cursor:pointer;
+	}
+
+	#pSiteSearchTextInput:focus {
+
+		color:#000;
+	}
+
+	.icon_menu_down {
+
+		font-size: 12px;
+		margin-left: 4px;
+		vertical-align: text-top;
+		padding-top: 4px;
+		display: inline-block;
+	}
+
+	.portal_tab_item {
+
+		background-color: #fff;
+		padding: 12px;
+		padding-left:20px;
+		padding-right:20px;
+		display: inline-block !important;		
+	}
+
+	.portal_tab_item a:hover {
+
+		color:#fbe300;	
+	}
+
+	.portal_tab_item:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}	
+
+
+	.portal_menu_active {
+
+		background-color: #EEEEEE;
+	}	
+
+	.portal_menu_item_active {
+
+		color:#fbe300 !important;	
+	}
+
+	.portal_tab_active {
+
+		color:#a5a8ab !important;
+	}
+
+	#header_content a {		
+
+		color:inherit !important;
+	}
+
+	#header_content a:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}
+
+	#header_content ul {
+
+		list-style: none;
+		position: relative;
+		top: 58px;
+		display: inline-table;
+	}
+
+	#header_content ul ul {
+		
+		display:none;
+		opacity:0;
+	}
+
+	/* the fly out menus */
+	#header_content ul li:hover > ul,
+	#header_content ul li.hover > ul {
+
+		position: absolute;
+		top: 48px;
+		z-index:999;
+
+		display: block;
+		width: 152px;
+		padding:0px;
+		padding-top:20px;
+		padding-bottom:10px;
+		font-size: 12px;
+		font-family: Arial,Sans-Serif;
+		font-weight: bold;
+		text-transform: uppercase;
+
+		background-color: rgba(8,122,191,0.98);
+		color: #fff !important;
+		opacity: 1;
+
+		-webkit-animation: fade 0.25s;
+		animation: fade 0.25s;
+	}
+
+	@-webkit-keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}
+	@keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}	
+
+	#header_content ul li:hover > ul li {
+
+		padding: 10px;
+		padding-top: 0px;
+		padding-left: 20px;
+		display: block;
+		opacity:1;
+	}
+
+	#header_content ul li:hover > ul a {
+
+		display: block;
+		opacity:1;
+		white-space:nowrap;
+	}
+
+	#portal_menu_start_list {
+
+		left: 81px;
+
+		/* IE sauce */
+		left:85px\9;
+
+		/* Safari sauce */
+		(;left:79px;);
+	}
+
+	#portal_menu_atlases_list {
+
+		left: 290px;
+		width: 210px !important;
+        height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 303px\9;
+        height: 225px\9;
+
+		/* Safari sauce */
+		(;left:279px;);
+	}
+
+	#portal_menu_tools_list {
+
+		left: 500px;
+		width: 172px !important;
+		height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 513px\9;
+		height:225px\9;
+
+		/* Safari sauce */
+		(;left:489px;);
+		(;height:227px;);
+	}
+
+	/* mozilla sauce */
+	@-moz-document url-prefix() {
+
+		#header_content {
+
+			height:107px;
+		}
+
+		#portal_menu_start_list {
+
+			left:85px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 302px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 512px;
+			height:236px;
+		}
+	}
+
+
+	/* make it look OK on iPad also */
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:portrait) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}  
+	}
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:landscape) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}	  
+	}
+
+	.portal_menu_list_heading {
+
+		color:#9ccae5;
+		border-bottom:1px solid #9ccae5;
+		padding-bottom:5px !important;
+	}
+
+	.portal_menu_list_heading + li {
+
+		padding-top:10px !important;
+	}
+
+	.portal_menu_list_heading li {
+
+		padding-bottom:0px;
+	}	
+
+	#portal_menu_atlases_list li:last-of-type {
+
+		padding-bottom:15px !important;
+	}
+
+	.icon-spin5 {
+
+		color:#000;
+	}
+</style>
+<div id="pHeader">
+<div id="top_chrome">
+	<div id="top_chrome_buttons">
+		<div class="chrome_link_block"><a href="http://www.alleninstitute.org" target="_blank" class="chrome_button">ALLEN INSTITUTE</a></div>
+	</div>
+</div>
+
+<div id="header_content">
+
+	<a href="http://AllenInstitute.github.io">
+		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/AIBS_Logo.png"/>
+	</a>
+</div>
+</div>
+
+<script>
+
+jQuery('#portal_tab_menu').bind('touchstart', function() {
+
+	if(window.console)
+		console.log("touchstart");
+});
+</script>
+<link rel="stylesheet" type="text/css" href="_static/external_assets/stylesheets/common_layout.css" />
+
+
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container,
+div.nbinput.container div.prompt,
+div.nbinput.container div.input_area,
+div.nbinput.container div[class*=highlight],
+div.nbinput.container div[class*=highlight] pre,
+div.nboutput.container,
+div.nboutput.container div.prompt,
+div.nboutput.container div.output_area,
+div.nboutput.container div[class*=highlight],
+div.nboutput.container div[class*=highlight] pre {
+    background: none;
+    border: none;
+    padding: 0 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    background: #f5f5f5;
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+</style>
+<div class="section" id="Chapter-3:-Multi-cell,-single-population-network-(with-BioNet)">
+<h1>Chapter 3: Multi-cell, single population network (with BioNet)<a class="headerlink" href="#Chapter-3:-Multi-cell,-single-population-network-(with-BioNet)" title="Permalink to this headline">¶</a></h1>
+<p>In this tutorial, we will create a more complex network that contains multiple biophysical cells, but all of them having the same cell-type (we will cover hetergenous networks in the next tutorial). The network will contain recurrent connections, as well as external input that provide the next with stimululation.</p>
+<p><strong>Note</strong> - scripts and files for running this tutorial can be found in the directory <a class="reference external" href="sources/chapter03">sources/chapter03/</a></p>
+<p>requirements: * bmtk * NEURON 7.4</p>
+<div class="section" id="1.-Building-the-Network">
+<h2>1. Building the Network<a class="headerlink" href="#1.-Building-the-Network" title="Permalink to this headline">¶</a></h2>
+<p>First we will build our internal network, which consists of 100 different cells. All the cells are of the same type (we’ll show how to build a heterogeneous network in the next tutorial), however they all have a different location and y-axis rotation.</p>
+<div class="section" id="nodes">
+<h3>nodes<a class="headerlink" href="#nodes" title="Permalink to this headline">¶</a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">bmtk.builder.networks</span> <span class="kn">import</span> <span class="n">NetworkBuilder</span>
+<span class="kn">from</span> <span class="nn">bmtk.builder.auxi.node_params</span> <span class="kn">import</span> <span class="n">positions_columinar</span><span class="p">,</span> <span class="n">xiter_random</span>
+
+<span class="n">cortex</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;mcortex&#39;</span><span class="p">)</span>
+<span class="n">cortex</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                 <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;Scnn1a&#39;</span><span class="p">,</span>
+                 <span class="n">positions</span><span class="o">=</span><span class="n">positions_columinar</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">max_radius</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">100.0</span><span class="p">),</span>
+                 <span class="n">rotation_angle_yaxis</span><span class="o">=</span><span class="n">xiter_random</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">min_x</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_x</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span>
+                 <span class="n">rotation_angle_zaxis</span><span class="o">=</span><span class="mf">3.646878266</span><span class="p">,</span>
+                 <span class="n">potental</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span>
+                 <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
+                 <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;ctdb:Biophys1.hoc&#39;</span><span class="p">,</span>
+                 <span class="n">model_processing</span><span class="o">=</span><span class="s1">&#39;aibs_perisomatic&#39;</span><span class="p">,</span>
+                 <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;472363762_fit.json&#39;</span><span class="p">,</span>
+                 <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;Scnn1a_473845048_m.swc&#39;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+</div>
+<p>The parameter N is used to indicate the number of cells in our population. The positions of each cell is defined by the columinar built-in method, which will random place our cells in a column (users can define their own positions as shown here). The rotation_angel_yaxis is similarl defined by a built-in function that will randomly assign each cell a given y angle.</p>
+<p>One thing to note is that while yaxis is defined by a function which returns a lists of values, the zaxis is defined by a single value. This means that all cells will share the zaxis. we could alteratively give all cells the same y-axis rotation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rotation_angle_yaxis</span><span class="o">=</span><span class="n">rotation_value</span>
+</pre></div>
+</div>
+<p>or give all cells a unique z-rotation angle</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rotation_angle_zaxis</span><span class="o">=</span><span class="n">xiter_random</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">min_x</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_x</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and in general, it is at the discretion of the modeler to choose what parameters are unqiue to each cell, and what parameters are global to the cell-type.</p>
+</div>
+<div class="section" id="edges">
+<h3>edges<a class="headerlink" href="#edges" title="Permalink to this headline">¶</a></h3>
+<p>Next we want to add recurrent edges. To create the connections we will use the built-in distance_connector function, which will assign the number of connections between two cells randomly (between range nsyn_min and nsysn_max) but weighted by distance. The other parameters, including the synaptic model (AMPA_ExcToExc) will be shared by all connections.</p>
+<p>To use this, or even customized, connection functions, we must pass in the name of our connection function using the “connection_rule” parameter, and the function parameters through “connection_params” as a dictionary, which will looks something like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">connection_rule</span><span class="o">=&lt;</span><span class="n">name_of_function</span><span class="o">&gt;</span>
+<span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;param_arg1&#39;</span><span class="p">:</span> <span class="n">val1</span><span class="p">,</span> <span class="s1">&#39;param_arg2&#39;</span><span class="p">:</span> <span class="n">val2</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The connection_rule method isn’t explicitly called by the script. Rather when the build() method is called, the connection_rule will iterate through every source/target node pair, and use the rule and build a connection matrix.</p>
+<p>After building the connections based on our connection function, we will save the nodes and edges files into the network/ directory.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.edge_connectors</span> <span class="kn">import</span> <span class="n">distance_connector</span>
+
+<span class="n">cortex</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Scnn1a&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Scnn1a&#39;</span><span class="p">},</span>
+                 <span class="n">connection_rule</span><span class="o">=</span><span class="n">distance_connector</span><span class="p">,</span>
+                 <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;d_weight_min&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;d_weight_max&#39;</span><span class="p">:</span> <span class="mf">0.34</span><span class="p">,</span> <span class="s1">&#39;d_max&#39;</span><span class="p">:</span> <span class="mf">50.0</span><span class="p">,</span> <span class="s1">&#39;nsyn_min&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;nsyn_max&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">},</span>
+                 <span class="n">syn_weight</span><span class="o">=</span><span class="mf">2.0e-04</span><span class="p">,</span>
+                 <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">30.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">],</span>
+                 <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;basal&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">,</span> <span class="s1">&#39;soma&#39;</span><span class="p">],</span>
+                 <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+                 <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;AMPA_ExcToExc.json&#39;</span><span class="p">,</span>
+                 <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">)</span>
+
+
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;bmtk.builder.connection_map.ConnectionMap at 0x7f62f3911090&gt;
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">cortex</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="n">cortex</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch03/network&#39;</span><span class="p">)</span>
+<span class="n">cortex</span><span class="o">.</span><span class="n">save_edges</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch03/network&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="External-network">
+<h4>External network<a class="headerlink" href="#External-network" title="Permalink to this headline">¶</a></h4>
+<p>After building our internal network, we will build the external thalamic network which will provide input (see previous tutorial for more detail). Our thalamic network will consist of 100 “filter” cells, which aren’t actual cells by just place holders for spike-trains.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">thalamus</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;mthalamus&#39;</span><span class="p">)</span>
+<span class="n">thalamus</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                   <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;tON&#39;</span><span class="p">,</span>
+                   <span class="n">potential</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span>
+                   <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;virtual&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The external network doesn’t have recurrent connections. Rather all the cells are feedforward onto the internal network. To do this is in a separate script which must reload the saved mcortex cell files using the import function. Then we create an edge with the thalamus nodes as the sources and the cortext nodes as the targets. This time we use the built-in connect_random connection rule, which will randomly assign each thalamus –&gt; cortex connection between 0 and 12 synaptic connections.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.edge_connectors</span> <span class="kn">import</span> <span class="n">connect_random</span>
+
+<span class="n">thalamus</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">thalamus</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span> <span class="n">target</span><span class="o">=</span><span class="n">cortex</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span>
+                   <span class="n">connection_rule</span><span class="o">=</span><span class="n">connect_random</span><span class="p">,</span>
+                   <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;nsyn_min&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;nsyn_max&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">},</span>
+                   <span class="n">syn_weight</span><span class="o">=</span><span class="mf">1.0e-04</span><span class="p">,</span>
+                   <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">],</span>
+                   <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;basal&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">],</span>
+                   <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+                   <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;AMPA_ExcToExc.json&#39;</span><span class="p">,</span>
+                   <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">)</span>
+
+<span class="n">thalamus</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="n">thalamus</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch03/network&#39;</span><span class="p">)</span>
+<span class="n">thalamus</span><span class="o">.</span><span class="n">save_edges</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch03/network&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="Spike-Trains">
+<h3>Spike Trains<a class="headerlink" href="#Spike-Trains" title="Permalink to this headline">¶</a></h3>
+<p>We next need to create the individual spike trains for our thalamic filter cells. We will use a Poission distrubition to create a random distribution of spikes for our 300 hundred cells each firing at ~ 15 Hz over a 3 second window. Then we can save our spike trains as a <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#spike-file">SONATA file</a> under <strong>sim_ch03/inputs</strong> directory.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.utils.reports.spike_trains</span> <span class="kn">import</span> <span class="n">PoissonSpikeGenerator</span>
+
+<span class="n">psg</span> <span class="o">=</span> <span class="n">PoissonSpikeGenerator</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="s1">&#39;mthalamus&#39;</span><span class="p">)</span>
+<span class="n">psg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>  <span class="c1"># Have 10 nodes to match mthalamus</span>
+        <span class="n">firing_rate</span><span class="o">=</span><span class="mf">15.0</span><span class="p">,</span>    <span class="c1"># 15 Hz, we can also pass in a nonhomoegenous function/array</span>
+        <span class="n">times</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">))</span>    <span class="c1"># Firing starts at 0 s up to 3 s</span>
+<span class="n">psg</span><span class="o">.</span><span class="n">to_sonata</span><span class="p">(</span><span class="s1">&#39;sim_ch03/inputs/mthalamus_spikes.h5&#39;</span><span class="p">)</span>
+
+<span class="c1"># Let&#39;s do a quick check that we have reasonable results. Should see somewhere on the order of 15*3*100 = 4500</span>
+<span class="c1"># spikes</span>
+<span class="n">psg</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span>
+
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>node_id</th>
+      <th>population</th>
+      <th>timestamps</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>0.001397</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>0.099114</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>0.145707</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>0.147085</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>0.162860</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>0.208985</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>0.209418</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>0.225538</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>0.232885</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>0.320728</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>0.435443</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>0.456890</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>0.484684</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>0.523754</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>0.542172</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>0.542389</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>0.549574</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>0.686661</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>0.744817</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>0.745667</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>0.814251</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>0.891552</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>0.911168</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>0.923863</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>1.206938</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>1.234080</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>1.284708</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>1.361369</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>1.376251</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>0</td>
+      <td>mthalamus</td>
+      <td>1.441294</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>4461</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>1.637971</td>
+    </tr>
+    <tr>
+      <th>4462</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>1.686438</td>
+    </tr>
+    <tr>
+      <th>4463</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>1.834531</td>
+    </tr>
+    <tr>
+      <th>4464</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>1.892833</td>
+    </tr>
+    <tr>
+      <th>4465</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>1.896758</td>
+    </tr>
+    <tr>
+      <th>4466</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>1.929408</td>
+    </tr>
+    <tr>
+      <th>4467</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>1.954290</td>
+    </tr>
+    <tr>
+      <th>4468</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>1.977157</td>
+    </tr>
+    <tr>
+      <th>4469</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>1.978290</td>
+    </tr>
+    <tr>
+      <th>4470</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>1.984737</td>
+    </tr>
+    <tr>
+      <th>4471</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>2.104143</td>
+    </tr>
+    <tr>
+      <th>4472</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>2.111367</td>
+    </tr>
+    <tr>
+      <th>4473</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>2.112607</td>
+    </tr>
+    <tr>
+      <th>4474</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>2.192592</td>
+    </tr>
+    <tr>
+      <th>4475</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>2.276194</td>
+    </tr>
+    <tr>
+      <th>4476</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>2.284277</td>
+    </tr>
+    <tr>
+      <th>4477</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>2.306376</td>
+    </tr>
+    <tr>
+      <th>4478</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>2.306636</td>
+    </tr>
+    <tr>
+      <th>4479</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>2.307304</td>
+    </tr>
+    <tr>
+      <th>4480</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>2.334148</td>
+    </tr>
+    <tr>
+      <th>4481</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>2.370546</td>
+    </tr>
+    <tr>
+      <th>4482</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>2.648120</td>
+    </tr>
+    <tr>
+      <th>4483</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>2.661539</td>
+    </tr>
+    <tr>
+      <th>4484</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>2.748451</td>
+    </tr>
+    <tr>
+      <th>4485</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>2.803204</td>
+    </tr>
+    <tr>
+      <th>4486</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>2.845400</td>
+    </tr>
+    <tr>
+      <th>4487</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>2.874962</td>
+    </tr>
+    <tr>
+      <th>4488</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>2.923604</td>
+    </tr>
+    <tr>
+      <th>4489</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>2.943302</td>
+    </tr>
+    <tr>
+      <th>4490</th>
+      <td>99</td>
+      <td>mthalamus</td>
+      <td>2.987504</td>
+    </tr>
+  </tbody>
+</table>
+<p>4491 rows × 3 columns</p>
+</div></div>
+</div>
+</div>
+</div>
+<div class="section" id="2.-Setting-up-BioNet">
+<h2>2. Setting up BioNet<a class="headerlink" href="#2.-Setting-up-BioNet" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="file-structure.">
+<h3>file structure.<a class="headerlink" href="#file-structure." title="Permalink to this headline">¶</a></h3>
+<p>Before running a simulation, we will need to create the runtime environment, including parameter files, run-script and configuration files. You’ve already completed Chapter 02 tutorial you can just copy the files to <strong>sim_ch03</strong> (just make sure not to overwrite the <strong>network</strong> and <strong>inputs</strong> directory).</p>
+<p>Or create them from scracth by either running the command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m bmtk.utils.sim_setup  <span class="se">\</span>
+   --report-vars v,cai            <span class="se">\</span>
+   --network sim_ch03/network     <span class="se">\</span>
+   --spikes-inputs mthalamus:sim_ch03/inputs/mthalamus_spikes.h5 <span class="se">\</span>
+   --dt <span class="m">0</span>.1             <span class="se">\</span>
+   --tstop <span class="m">3000</span>.0       <span class="se">\</span>
+   --include-examples   <span class="se">\</span>
+   --compile-mechanisms <span class="se">\</span>
+   bionet sim_ch03
+</pre></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.utils.sim_setup</span> <span class="kn">import</span> <span class="n">build_env_bionet</span>
+
+<span class="n">build_env_bionet</span><span class="p">(</span><span class="n">base_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch03&#39;</span><span class="p">,</span>
+                 <span class="n">network_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch03/network&#39;</span><span class="p">,</span>
+                 <span class="n">tstop</span><span class="o">=</span><span class="mf">3000.0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+                 <span class="n">report_vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="s1">&#39;cai&#39;</span><span class="p">],</span>     <span class="c1"># Record membrane potential and calcium (default soma)</span>
+                 <span class="n">spikes_inputs</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;mthalamus&#39;</span><span class="p">,</span>   <span class="c1"># Name of population which spikes will be generated for</span>
+                                <span class="s1">&#39;sim_ch03/inputs/mthalamus_spikes.h5&#39;</span><span class="p">)],</span>
+                 <span class="n">include_examples</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>    <span class="c1"># Copies components files</span>
+                 <span class="n">compile_mechanisms</span><span class="o">=</span><span class="kc">True</span>   <span class="c1"># Will try to compile NEURON mechanisms</span>
+                <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>It’s a good idea to check the configuration files <strong>sim_ch03/circuit_config.json</strong> and <strong>sim_ch03/simulation_config.json</strong>, especially to make sure that bmtk will know to use our generated spikes file (if you don’t see the below section in the simulation_config.json file go ahead and add it).</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;inputs&quot;: {
+    &quot;tc_spikes&quot;: {
+      &quot;input_type&quot;: &quot;spikes&quot;,
+      &quot;module&quot;: &quot;csv&quot;,
+      &quot;input_file&quot;: &quot;${BASE_DIR}/mthalamus_spikes.csv&quot;,
+      &quot;node_set&quot;: &quot;mthalamus&quot;
+    }
+}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="3.-Running-the-simulation">
+<h2>3. Running the simulation<a class="headerlink" href="#3.-Running-the-simulation" title="Permalink to this headline">¶</a></h2>
+<p>Once our config file is setup we can run a simulation either through the command line:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python run_bionet.py simulation_config.json
+</pre></div>
+</div>
+<p>or through the script</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.simulator</span> <span class="kn">import</span> <span class="n">bionet</span>
+
+
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;sim_ch03/simulation_config.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2019-07-22 09:45:15,914 [INFO] Created log file
+2019-07-22 09:45:16,009 [INFO] Building cells.
+2019-07-22 09:45:23,968 [INFO] Building recurrent connections
+2019-07-22 09:45:24,609 [INFO] Building virtual cell stimulations for mthalamus_spikes
+2019-07-22 09:45:33,506 [INFO] Running simulation for 3000.000 ms with the time step 0.100 ms
+2019-07-22 09:45:33,507 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
+2019-07-22 09:45:33,508 [INFO] Block save every 5000 steps
+2019-07-22 09:46:03,198 [INFO]     step:5000 t_sim:500.00 ms
+2019-07-22 09:46:33,324 [INFO]     step:10000 t_sim:1000.00 ms
+2019-07-22 09:47:03,400 [INFO]     step:15000 t_sim:1500.00 ms
+2019-07-22 09:47:33,230 [INFO]     step:20000 t_sim:2000.00 ms
+2019-07-22 09:48:03,147 [INFO]     step:25000 t_sim:2500.00 ms
+2019-07-22 09:48:33,519 [INFO]     step:30000 t_sim:3000.00 ms
+2019-07-22 09:48:36,802 [INFO] Simulation completed in 3.0 minutes, 3.297 seconds
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="4.-Analyzing-the-run.">
+<h2>4. Analyzing the run.<a class="headerlink" href="#4.-Analyzing-the-run." title="Permalink to this headline">¶</a></h2>
+<p>If successful, we should have our results in the <strong>output</strong> directory. We can use the analyzer to plot a raster of the spikes over time:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.spike_trains</span> <span class="kn">import</span> <span class="n">plot_raster</span>
+
+<span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch03/simulation_config.json&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/tutorial_single_pop_19_0.png" src="_images/tutorial_single_pop_19_0.png" />
+</div>
+</div>
+<p>In our config file we used the cell_vars and node_id_selections parameters to save the calcium influx and membrane potential of selected cells. We can also use the analyzer to display these traces:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.cell_vars</span> <span class="kn">import</span> <span class="n">plot_report</span>
+
+<span class="n">plot_report</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch03/simulation_config.json&#39;</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">49</span><span class="p">,</span> <span class="mi">99</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/tutorial_single_pop_21_0.png" src="_images/tutorial_single_pop_21_0.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/tutorial_single_pop_21_1.png" src="_images/tutorial_single_pop_21_1.png" />
+</div>
+</div>
+</div>
+<div class="section" id="5.-Modifying-the-network">
+<h2>5. Modifying the network<a class="headerlink" href="#5.-Modifying-the-network" title="Permalink to this headline">¶</a></h2>
+<p>When building our cortex nodes, we used some built-in functions to set certain parameters like positions and y-axis rotations:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cortex</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                 <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;Scnn1a&#39;</span><span class="p">,</span>
+                 <span class="n">positions</span><span class="o">=</span><span class="n">positions_columinar</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">max_radius</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mf">100.0</span><span class="p">),</span>
+                 <span class="n">rotation_angle_yaxis</span><span class="o">=</span><span class="n">xiter_random</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">min_x</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">max_x</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span>
+                 <span class="o">...</span>
+</pre></div>
+</div>
+<p>These functions will assign every cell a unique value in the positions and rotation_angle_yaxis parameters, unlike the pop_name parameter which will be the same for all 100 cells. We can verify by the following code:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">cortex_nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cortex</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
+<span class="n">n0</span> <span class="o">=</span> <span class="n">cortex_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">n1</span> <span class="o">=</span> <span class="n">cortex_nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;cell 0: pop_name: </span><span class="si">{}</span><span class="s1">, positions: </span><span class="si">{}</span><span class="s1">, angle_yaxis: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n0</span><span class="p">[</span><span class="s1">&#39;pop_name&#39;</span><span class="p">],</span> <span class="n">n0</span><span class="p">[</span><span class="s1">&#39;positions&#39;</span><span class="p">],</span> <span class="n">n0</span><span class="p">[</span><span class="s1">&#39;rotation_angle_yaxis&#39;</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;cell 1: pop_name: </span><span class="si">{}</span><span class="s1">, positions: </span><span class="si">{}</span><span class="s1">, angle_yaxis: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n1</span><span class="p">[</span><span class="s1">&#39;pop_name&#39;</span><span class="p">],</span> <span class="n">n1</span><span class="p">[</span><span class="s1">&#39;positions&#39;</span><span class="p">],</span> <span class="n">n1</span><span class="p">[</span><span class="s1">&#39;rotation_angle_yaxis&#39;</span><span class="p">]))</span>
+
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+cell 0: pop_name: Scnn1a, positions: [ -1.99484437  41.49527042  22.33923077], angle_yaxis: 5.29759513272
+cell 1: pop_name: Scnn1a, positions: [-25.72073426  36.01835631   2.43526216], angle_yaxis: 2.94311607964
+</pre></div></div>
+</div>
+<p>The Network Builder contains a growing number of built-in functions. However for advanced networks a modeler will probably want to assign parameters using their own functions. To do so, a modeler only needs to passes in, or alternatively create a function that returns, a list of size N. When saving the network, each individual position will be saved in the nodes.h5 file assigned to each cell by gid.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">cortex_positions</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+    <span class="c1"># codex to create a list/numpy array of N (x, y, z) positions.</span>
+    <span class="k">return</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+
+<span class="n">cortex</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                 <span class="n">positions</span><span class="o">=</span><span class="n">cortex_positions</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
+                 <span class="o">...</span>
+</pre></div>
+</div>
+<p>or if we wanted we could give all cells the same position (The builder has no restrictions on this, however this may cause issues if you’re trying to create connections based on distance). When saving the network, the same position is assigned as a global cell-type property, and thus saved in the node_types.csv file.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cortex</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                 <span class="n">positions</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">([</span><span class="mf">100.23</span><span class="p">,</span> <span class="o">-</span><span class="mf">50.67</span><span class="p">,</span> <span class="mf">89.01</span><span class="p">]),</span>
+                 <span class="o">...</span>
+</pre></div>
+</div>
+<p>We can use the same logic not just for positions and rotation_angle, but for any parameter we choose.</p>
+<p>When creating edges, we used the built-in distance_connector function to help create the connection matrix. There are a number of built-in connection functions, but we also allow modelers to create their own. To do so, the modeler must create a function that takes in a source, target, and a variable number of parameters, and pass back a natural number representing the number of connections.</p>
+<p>The Builder will iterate over that function passing in every source/target node pair (filtered by the source and target parameters in add_edges()). The source and target parameters are essentially dictionaries that can be used to fetch properties of the nodes. A typical example would look like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">customized_connector</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">param1</span><span class="p">,</span> <span class="n">param2</span><span class="p">,</span> <span class="n">param3</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">source</span><span class="o">.</span><span class="n">node_id</span> <span class="o">==</span> <span class="n">target</span><span class="o">.</span><span class="n">node_id</span><span class="p">:</span>
+        <span class="c1"># necessary if we don&#39;t want autapses</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="n">source_pot</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;potential&#39;</span><span class="p">]</span>
+    <span class="n">target_pot</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;potential&#39;</span><span class="p">]</span>
+    <span class="c1"># some code to determine number of connections</span>
+    <span class="k">return</span> <span class="n">n_synapses</span>
+
+<span class="o">...</span>
+<span class="n">cortex</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=&lt;</span><span class="n">source_nodes</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">target</span><span class="o">=&lt;</span><span class="n">target_nodes</span><span class="o">&gt;</span><span class="p">,</span>
+                 <span class="n">connection_rule</span><span class="o">=</span><span class="n">customized_connector</span><span class="p">,</span>
+                 <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;param1&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">p1</span><span class="o">&gt;</span><span class="p">,</span> <span class="s1">&#39;param2&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">p2</span><span class="o">&gt;</span><span class="p">,</span> <span class="s1">&#39;param3&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">p3</span><span class="o">&gt;</span><span class="p">},</span>
+                 <span class="o">...</span>
+</pre></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="index.html">Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="builder.html">Building Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html">Simulation Engines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filternet.html">FilterNet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.tests.html">bmtk.tests package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+    </div>
+<script type="text/javascript" src="_static/external_assets/javascript/portalFooter.js"></script>
+
+  </body>
+</html>

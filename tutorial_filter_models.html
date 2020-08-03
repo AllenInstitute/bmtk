@@ -1,0 +1,1247 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 7: Modeling the visual field (with FilterNet) &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contributors" href="contributors.html" />
+    <link rel="prev" title="Chapter 6: Population Level Modeling (with PopNet)" href="tutorial_population_modeling.html" /> 
+  </head><body>
+<script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
+<style>
+
+	/* the icon font-family definition and helper classes */
+	@font-face {
+	  font-family: 'portal_icon_font';
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
+	  font-weight: normal;
+	  font-style: normal;
+	}
+	 
+	 [class^="icon-"]:before, [class*=" icon-"]:before {
+	  font-family: "portal_icon_font";
+	  font-style: normal;
+	  font-weight: normal;
+	  speak: none;
+	 
+	  display: inline-block;
+	  text-decoration: inherit;
+	  width: 1em;
+	  margin-right: .2em;
+	  text-align: center;
+	  /* opacity: .8; */
+	 
+	  /* For safety - reset parent styles, that can break glyph codes*/
+	  font-variant: normal;
+	  text-transform: none;
+	     
+	  /* fix buttons height, for twitter bootstrap */
+	  line-height: 1em;
+	 
+	  /* Animation center compensation - margins should be symmetric */
+	  /* remove if not needed */
+	  margin-left: .2em;
+	
+	}
+	 
+	.icon-spin5:before { content: '\e806'; } /* '' */
+	.icon-left-open-1:before { content: '\e81e'; } /* '' */
+	.icon-plus-1:before { content: '\e801'; } /* '' */
+	.icon-facebook:before { content: '\e816'; } /* '' */
+	.icon-gplus:before { content: '\e818'; } /* '' */
+	.icon-linkedin-3:before { content: '\e815'; } /* '' */
+	.icon-twitter:before { content: '\e817'; } /* '' */
+	.icon-youtube-play:before { content: '\e805'; } /* '' */
+	.icon-plus-2:before { content: '\e809'; } /* '' */
+	.icon-record-1:before { content: '\e81c'; } /* '' */
+	.icon-cancel:before { content: '\e80b'; } /* '' */
+	.icon-search:before { content: '\e804'; } /* '' */
+	.icon-cancel-2:before { content: '\e80c'; } /* '' */
+	.icon-plus-4:before { content: '\e80d'; } /* '' */
+	.icon-cancel-3:before { content: '\e80e'; } /* '' */
+	.icon-plus:before { content: '\e808'; } /* '' */
+	.icon-down-open:before { content: '\e800'; } /* '' */
+	.icon-right-open:before { content: '\e802'; } /* '' */
+	.icon-up-open:before { content: '\e803'; } /* '' */
+	.icon-stop:before { content: '\e813'; } /* '' */
+	.icon-cancel-1:before { content: '\e820'; } /* '' */
+	.icon-plus-3:before { content: '\e80a'; } /* '' */
+	/* end icon font helpers */
+
+	/* icon font spin animation */
+	.animate-spin {
+	  -moz-animation: spin 2s infinite linear;
+	  -o-animation: spin 2s infinite linear;
+	  -webkit-animation: spin 2s infinite linear;
+	  animation: spin 2s infinite linear;
+	  display: inline-block;
+	}
+	@-moz-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-webkit-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-o-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-ms-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	/*  end spin animation */	
+
+	@font-face {
+	    font-family: 'bebas_neueregular';
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
+	    font-weight: normal;
+	    font-style: normal;
+	}
+
+	/* top chrome styles */
+	#top_chrome {
+
+		width:100%;
+		height:28px;
+		background-color:#163E65;
+	}
+
+	.chrome_link_block {
+
+		color:#fff !important;	
+		display:inline-block;
+		height:100%;
+		max-height:28px;
+	}
+
+	.chrome_link_block:hover {
+
+		background-color:#eee;
+		color:#0779BE !important;	
+		cursor:pointer;
+	}
+
+	#top_chrome a {
+
+		color:inherit !important;	
+		text-decoration:none;
+	}
+
+	#top_chrome a:hover {
+
+		color:inherit !important;	
+	}
+
+	#top_chrome_buttons {
+
+		float:right;
+		margin-right:50px;
+	}
+
+	.chrome_button {
+
+		font-family:arial,sans-serif;
+		font-weight:bold;
+		display:inline-block;
+		font-size:9px;
+		text-align:left;
+		text-decoration:none;
+		margin:9px 20px 10px 20px;
+	}
+
+	.chrome_active {
+
+		background-color:#1b7abd;
+		color:#fff;
+	}
+
+
+	/* header element styles*/
+	#header_content {
+
+		font-family: bebas_neueregular, arial, sans-serif;
+		font-size:22px;
+		color:#0779be;		
+		letter-spacing:0.03em;
+
+		position:relative;
+		width:calc(100% - 112px);
+		min-width:800px;
+		height:76px;
+		border-bottom:2px solid #A5A8AB;
+		margin-left:50px;
+		margin-right:50px;
+        z-index:9999; /* IT-9508 */
+	}
+
+	#portal_logo {
+
+		position:absolute;
+		top:20px;
+		left:0px;
+		width:236px;
+	}
+
+	#portal_tabs {
+
+		position: absolute;
+		bottom: 12px;
+		left: 0px;
+		margin-bottom: -12px;
+		display: block;
+	}
+
+	.horizontal_list
+	{
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		display: inline; 		
+	}
+
+	.horizontal_list li { 
+
+		display: inline; 	
+	}	
+
+	#portal_tab_menu_container {
+
+		display:none;
+	}
+
+	#portal_search_input_group {
+
+		position:absolute;
+		margin: 0;
+		padding: 0;
+		bottom:12px;
+		right:0px;
+		border:1px solid #DAD9D3;
+		color:#DAD9D3;
+	}
+
+	#portal_search_input_group input {
+
+		margin: 0;
+		padding: 0;
+		border:none;
+		width:110px;
+		color:#DAD9D3;
+		font-family:Helvetica,sans-serif;
+		font-size:12px;
+		height:28px;
+		margin-left:10px;
+
+		outline:none;
+	}
+
+	input::-ms-clear {
+		display: none;
+	}
+
+	#portal_search_input_group i {
+
+		font-size:0.8em;
+		cursor:pointer;
+	}
+
+	#pSiteSearchTextInput:focus {
+
+		color:#000;
+	}
+
+	.icon_menu_down {
+
+		font-size: 12px;
+		margin-left: 4px;
+		vertical-align: text-top;
+		padding-top: 4px;
+		display: inline-block;
+	}
+
+	.portal_tab_item {
+
+		background-color: #fff;
+		padding: 12px;
+		padding-left:20px;
+		padding-right:20px;
+		display: inline-block !important;		
+	}
+
+	.portal_tab_item a:hover {
+
+		color:#fbe300;	
+	}
+
+	.portal_tab_item:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}	
+
+
+	.portal_menu_active {
+
+		background-color: #EEEEEE;
+	}	
+
+	.portal_menu_item_active {
+
+		color:#fbe300 !important;	
+	}
+
+	.portal_tab_active {
+
+		color:#a5a8ab !important;
+	}
+
+	#header_content a {		
+
+		color:inherit !important;
+	}
+
+	#header_content a:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}
+
+	#header_content ul {
+
+		list-style: none;
+		position: relative;
+		top: 58px;
+		display: inline-table;
+	}
+
+	#header_content ul ul {
+		
+		display:none;
+		opacity:0;
+	}
+
+	/* the fly out menus */
+	#header_content ul li:hover > ul,
+	#header_content ul li.hover > ul {
+
+		position: absolute;
+		top: 48px;
+		z-index:999;
+
+		display: block;
+		width: 152px;
+		padding:0px;
+		padding-top:20px;
+		padding-bottom:10px;
+		font-size: 12px;
+		font-family: Arial,Sans-Serif;
+		font-weight: bold;
+		text-transform: uppercase;
+
+		background-color: rgba(8,122,191,0.98);
+		color: #fff !important;
+		opacity: 1;
+
+		-webkit-animation: fade 0.25s;
+		animation: fade 0.25s;
+	}
+
+	@-webkit-keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}
+	@keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}	
+
+	#header_content ul li:hover > ul li {
+
+		padding: 10px;
+		padding-top: 0px;
+		padding-left: 20px;
+		display: block;
+		opacity:1;
+	}
+
+	#header_content ul li:hover > ul a {
+
+		display: block;
+		opacity:1;
+		white-space:nowrap;
+	}
+
+	#portal_menu_start_list {
+
+		left: 81px;
+
+		/* IE sauce */
+		left:85px\9;
+
+		/* Safari sauce */
+		(;left:79px;);
+	}
+
+	#portal_menu_atlases_list {
+
+		left: 290px;
+		width: 210px !important;
+        height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 303px\9;
+        height: 225px\9;
+
+		/* Safari sauce */
+		(;left:279px;);
+	}
+
+	#portal_menu_tools_list {
+
+		left: 500px;
+		width: 172px !important;
+		height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 513px\9;
+		height:225px\9;
+
+		/* Safari sauce */
+		(;left:489px;);
+		(;height:227px;);
+	}
+
+	/* mozilla sauce */
+	@-moz-document url-prefix() {
+
+		#header_content {
+
+			height:107px;
+		}
+
+		#portal_menu_start_list {
+
+			left:85px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 302px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 512px;
+			height:236px;
+		}
+	}
+
+
+	/* make it look OK on iPad also */
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:portrait) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}  
+	}
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:landscape) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}	  
+	}
+
+	.portal_menu_list_heading {
+
+		color:#9ccae5;
+		border-bottom:1px solid #9ccae5;
+		padding-bottom:5px !important;
+	}
+
+	.portal_menu_list_heading + li {
+
+		padding-top:10px !important;
+	}
+
+	.portal_menu_list_heading li {
+
+		padding-bottom:0px;
+	}	
+
+	#portal_menu_atlases_list li:last-of-type {
+
+		padding-bottom:15px !important;
+	}
+
+	.icon-spin5 {
+
+		color:#000;
+	}
+</style>
+<div id="pHeader">
+<div id="top_chrome">
+	<div id="top_chrome_buttons">
+		<div class="chrome_link_block"><a href="http://www.alleninstitute.org" target="_blank" class="chrome_button">ALLEN INSTITUTE</a></div>
+	</div>
+</div>
+
+<div id="header_content">
+
+	<a href="http://AllenInstitute.github.io">
+		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/AIBS_Logo.png"/>
+	</a>
+</div>
+</div>
+
+<script>
+
+jQuery('#portal_tab_menu').bind('touchstart', function() {
+
+	if(window.console)
+		console.log("touchstart");
+});
+</script>
+<link rel="stylesheet" type="text/css" href="_static/external_assets/stylesheets/common_layout.css" />
+
+
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container,
+div.nbinput.container div.prompt,
+div.nbinput.container div.input_area,
+div.nbinput.container div[class*=highlight],
+div.nbinput.container div[class*=highlight] pre,
+div.nboutput.container,
+div.nboutput.container div.prompt,
+div.nboutput.container div.output_area,
+div.nboutput.container div[class*=highlight],
+div.nboutput.container div[class*=highlight] pre {
+    background: none;
+    border: none;
+    padding: 0 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    background: #f5f5f5;
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+</style>
+<div class="section" id="Chapter-7:-Modeling-the-visual-field-(with-FilterNet)">
+<h1>Chapter 7: Modeling the visual field (with FilterNet)<a class="headerlink" href="#Chapter-7:-Modeling-the-visual-field-(with-FilterNet)" title="Permalink to this headline">¶</a></h1>
+<p>FilterNet is a part of the BMTK that simulates the effects of visual input onto cells in the LGN. It uses LGNModel as a backend, which uses neural-filters to simulate firing rates and spike-trains one may expect given a stimulus on (especially mouse) visual field. FilterNet supports a number of visual stimuli including static-graitings, moving-graiting, full-field flashes, static images and even movies.</p>
+<p>Filternet uses a <a class="reference external" href="https://en.wikipedia.org/wiki/Linear-nonlinear-Poisson_cascade_model">linear-nonlinear-Poisson (lnp) model</a>, using a spatial-temporal linear filter to convert a movie into a series of spike trains.</p>
+<p><img alt="image0" src="./images/filternet_sfilt_params.png" /></p>
+<div class="section" id="A-simple-example">
+<h2>A simple example<a class="headerlink" href="#A-simple-example" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="1.-Building-the-network">
+<h3>1. Building the network<a class="headerlink" href="#1.-Building-the-network" title="Permalink to this headline">¶</a></h3>
+<p>FilterNet is modeled on the mammalian LGN and expects a two-dimensional network of cells that can be mapped onto the receptive field. The default parameters of the filters are based on experimental recordings from the mouse LGN [Durant et. al, 2016, Billeh et. al, 2019] As our starting case we will have a simple network of 20 ON cells and 20 OFF cells with coordinates that correspond to the 240x120 movie we will be playing against it.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">bmtk.builder</span> <span class="kn">import</span> <span class="n">NetworkBuilder</span>
+
+
+<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;lgn&#39;</span><span class="p">)</span>  <span class="c1"># Initialize network called &#39;lgn&#39;</span>
+
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>  <span class="c1"># add 10 simple OFF cells</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;virtual&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;lgnmodel:tOFF_TF15&#39;</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">240.0</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">120.0</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
+    <span class="n">spatial_size</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;tOFF_TF15.json&#39;</span>
+<span class="p">)</span>
+
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>  <span class="c1"># add 10 simple ON cells</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;virtual&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;lgnmodel:tON&#39;</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">240.0</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">120.0</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
+    <span class="n">spatial_size</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;tON_TF8.json&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># Create and save the network</span>
+<span class="n">net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="n">net</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch07/network&#39;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="2.-Setting-up-the-simulation-enviornment">
+<h3>2. Setting up the simulation enviornment<a class="headerlink" href="#2.-Setting-up-the-simulation-enviornment" title="Permalink to this headline">¶</a></h3>
+<p>The following will create the necessarcy python and configuration files to run a simulation, all placed in the <strong>sim_ch07</strong> directory.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.utils.sim_setup</span> <span class="kn">import</span> <span class="n">build_env_filternet</span>
+
+<span class="n">build_env_filternet</span><span class="p">(</span>
+    <span class="n">base_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch07&#39;</span><span class="p">,</span>
+    <span class="n">network_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch07/network&#39;</span><span class="p">,</span>
+    <span class="n">tstop</span><span class="o">=</span><span class="mf">3000.0</span><span class="p">,</span>                   <span class="c1"># run the simulation for 3 seconds</span>
+    <span class="n">include_examples</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>          <span class="c1"># includes example model files which we&#39;ll use in this tutorial</span>
+</pre></div>
+</div>
+</div>
+<p>The most important file that we will want to change is the <strong>simulation_config.json</strong> which contains information about the simulation.</p>
+<p>By default the config file does not contain any stimulus so the firing rate will simply be at the baseline firing rate. To change this and play a certain type of movie/stimulus, which here we’ll use a movie with a bright flash full-screen for an extend period of time. To do so open up simulation_config.json and add the following inputs section:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;inputs&quot;: {
+    &quot;full_field_flash&quot;: {
+        &quot;input_type&quot;: &quot;movie&quot;,
+        &quot;module&quot;: &quot;full_field_flash&quot;,
+        &quot;row_size&quot;: 120,
+        &quot;col_size&quot;: 240,
+        &quot;t_on&quot;: 1000.0,
+        &quot;t_off&quot;: 2000.0,
+        &quot;max_intensity&quot;: 20.0
+    }
+},
+</pre></div>
+</div>
+<p>This will create a flash on the screen from 1 to 2 seconds.</p>
+</div>
+<div class="section" id="3-Running-the-simulation">
+<h3>3 Running the simulation<a class="headerlink" href="#3-Running-the-simulation" title="Permalink to this headline">¶</a></h3>
+<p>You can run the simulation from the command line by going to the <strong>sim_ch07</strong> directory and running:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python run_filternet.py simulation_config.json
+</pre></div>
+</div>
+<p>And if you have MPI installed with access to a cluster you can parallize much of the process</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ mpirun -np <span class="nv">$NCORES</span> python run_filternet.py simulation_config.json
+</pre></div>
+</div>
+<p>or we can run it directly</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.simulator</span> <span class="kn">import</span> <span class="n">filternet</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;sim_ch07/simulation_config.json&#39;</span><span class="p">)</span>
+<span class="n">config</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">FilterNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">FilterSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">net</span><span class="p">)</span>
+<span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2020-04-19 13:06:34,784 [INFO] Created log file
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:FilterNetIOUtils:Created log file
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2020-04-19 13:06:34,817 [INFO] Building cells.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:FilterNetIOUtils:Building cells.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2020-04-19 13:06:36,197 [INFO] Evaluating rates.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:FilterNetIOUtils:Evaluating rates.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2020-04-19 13:06:37,089 [INFO] Done.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:FilterNetIOUtils:Done.
+</pre></div></div>
+</div>
+<p>This will generate a number of files in the <strong>output</strong> directory, including <strong>rates.csv</strong> that contains the firing rate of each cell over the duration of the simulation, and <strong>spikes.h5</strong> in which the rates have been converted to spike times using a nonhomogeneous Poisson process.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.visualization.spikes</span> <span class="kn">import</span> <span class="n">plot_raster</span>
+
+<span class="n">plot_raster</span><span class="p">(</span><span class="s1">&#39;sim_ch07/output/spikes.h5&#39;</span><span class="p">,</span> <span class="n">nodes_file</span><span class="o">=</span><span class="s1">&#39;sim_ch07/network/lgn_nodes.h5&#39;</span><span class="p">,</span>
+            <span class="n">node_types_file</span><span class="o">=</span><span class="s1">&#39;sim_ch07/network/lgn_node_types.csv&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;model_template&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/kael/Workspace/bmtk/bmtk/simulator/utils/config.py:4: UserWarning: Please use bmtk.simulator.core.simulation_config instead.
+  warnings.warn(&#39;Please use bmtk.simulator.core.simulation_config instead.&#39;)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/tutorial_filter_models_9_1.png" src="_images/tutorial_filter_models_9_1.png" />
+</div>
+</div>
+<p>As expected, the flash from 1 to 2 seconds caused the ON cells to temporary increase firing while also supressing the OFF cells.</p>
+</div>
+</div>
+<div class="section" id="Running-different-types-of-Stimuli">
+<h2>Running different types of Stimuli<a class="headerlink" href="#Running-different-types-of-Stimuli" title="Permalink to this headline">¶</a></h2>
+<p>Currently FilterNet allows for a number of different types of custom and pre-alligned type of stimuli. To change the type of stimuli requires updating the <em>inputs</em> section in the <strong>simulation_config.json</strong> file like above.</p>
+<p>Allows playing a custom movie file in the form of a three-dimension matrix saved in a <a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.save.html">npy file</a>.</p>
+<p><em>example</em></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;inputs&quot;: {
+    &quot;movie_input&quot;: {
+        &quot;input_type&quot;: &quot;movie&quot;,
+        &quot;module&quot;: &quot;movie&quot;,
+        &quot;data_file&quot;: &quot;/path/to/my/movie.npy&quot;,
+        &quot;frame_rate&quot;: 30.0
+        }
+    }
+},
+</pre></div>
+</div>
+<p><em>parameters</em> * <strong>movie</strong> - Link to a 3-dimensional (x, y, time) matrix representing a movie * <strong>frame_rate</strong> - frames per second</p>
+<p>Plays a drifting grating across the screen</p>
+<p><em>example</em></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;inputs&quot;: {
+  &quot;LGN_spikes&quot;: {
+    &quot;input_type&quot;: &quot;movie&quot;,
+    &quot;module&quot;: &quot;graiting&quot;,
+    &quot;row_size&quot;: 120,
+    &quot;col_size&quot;: 240,
+    &quot;gray_screen_dur&quot;: 0.5,
+    &quot;cpd&quot;: 0.04,
+    &quot;temporal_f&quot;: 4.0,
+    &quot;contrast&quot;: 0.8,
+    &quot;theta&quot;: 45.0,
+    &quot;phase&quot;: 0.0
+  }
+},
+</pre></div>
+</div>
+<p><em>parameters</em> * <strong>row_size</strong>, <strong>col_size</strong> - width and heigth dimensions of screen in pixels. * <strong>grapy_screen_dur</strong> - displays an optional gray screen for a number of seconds before the grating starts. (default: 0) * <strong>cpd</strong> - spatial frequncy represented as cycles per degree. (default: 0.05) * <strong>temporal_f</strong> - temporal frequency in Hz. (default: 4.0) * <strong>theta</strong>: orientation angle, in degrees (default: 45.0) * <strong>phase</strong>: temporal phase, in degrees (default: 0.0) * <strong>contrast</strong>: the
+maximum constrast, must be between 0 and 1.0 (default: 1.0)</p>
+<p>Creates a bright (or dark) flash on a gray screen for a limited number of seconds</p>
+<p><em>example</em></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;inputs&quot;: {
+    &quot;full_field_flash&quot;: {
+        &quot;input_type&quot;: &quot;movie&quot;,
+        &quot;module&quot;: &quot;full_field_flash&quot;,
+        &quot;row_size&quot;: 120,
+        &quot;col_size&quot;: 240,
+        &quot;t_on&quot;: 1000.0,
+        &quot;t_off&quot;: 2000.0,
+        &quot;max_intensity&quot;: 20.0
+    }
+},
+</pre></div>
+</div>
+<p><em>parameters</em> * <strong>row_size</strong>, <strong>col_size</strong> - width and heigth dimensions of screen in pixels. * <strong>t_on</strong> - time (ms) from the beginning on when to start the flash * <strong>t_off</strong> - length (ms) of flash * <strong>max_intensity</strong> - intensity of screen during flash (&gt;0.0 is brighter, &lt;0.0 is darker) compared to gray screen.</p>
+<p>Creates a spreading black field originating from the center.</p>
+<p><em>example</em></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;inputs&quot;: {
+  &quot;LGN_spikes&quot;: {
+    &quot;input_type&quot;: &quot;movie&quot;,
+    &quot;module&quot;: &quot;looming&quot;,
+    &quot;row_size&quot;: 120,
+    &quot;col_size&quot;: 240,
+    &quot;frame_rate&quot;: 1000.0,
+    &quot;gray_screen_dur&quot;: 0.5,
+    &quot;t_looming&quot;: 1.0
+  }
+},
+</pre></div>
+</div>
+<p><em>parameters</em> * <strong>row_size</strong>, <strong>col_size</strong> - width and heigth dimensions of screen in pixels. * <strong>frame_rate</strong> - frames per second * <strong>gray_screen_dur</strong> - durating of initial grey screen (seconds) * <strong>t_looming</strong> - time of looming movie (seconds).</p>
+</div>
+<div class="section" id="Units">
+<h2>Units<a class="headerlink" href="#Units" title="Permalink to this headline">¶</a></h2>
+<p>These are cells that respond by either increasing or decreasing firing rates to brightness changes in their receptive fields. They are also the basis for more advanced cell types. When building a network you can set a cell or set of cells with <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:tON'</span></code> or <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:tOFF'</span></code> during the call to <code class="docutils literal notranslate"><span class="pre">add_nodes(...)</span></code>. There are also a number of special types
+(<code class="docutils literal notranslate"><span class="pre">tON_TF8,</span> <span class="pre">sON_TF1,</span> <span class="pre">sON_TF2,</span> <span class="pre">sON_TF4,</span> <span class="pre">sON_TF8,</span> <span class="pre">sON_TF15,</span> <span class="pre">tOFF_TF1,</span> <span class="pre">tOFF_TF2,</span> <span class="pre">tOFF_TF4,</span> <span class="pre">tOFF_TF8,</span> <span class="pre">tOFF_TF15,</span> <span class="pre">sOFF_TF1,</span> <span class="pre">sOFF_TF2,</span> <span class="pre">sOFF_TF4,</span> <span class="pre">sOFF_TF8,</span> <span class="pre">sOFF_TF15</span></code>) which have properties that have been pre-calculated using electrophysiological recordings from the mouse LGN (Durant et. al 2016, Billeh et. al 2019).</p>
+<p>A combination of a Gaussian spatial filter and double cosine temporal filter are used to filter the receptive field.</p>
+<div class="row"><div class="col-md-4"><p><img alt="54fc04f142e24f8aae56b0649ab75e30" class="no-scaled-link" src="./images/filternet_spat_filter.png" style="width: 1000px; height: 1000px;" /></p>
+</div><div class="col-md-4"><p><img alt="c3e22de92b304e708412cb9265ce1861" class="no-scaled-link" src="./images/filternet_temp_filter.png" style="width: 300px; height: 300px;" /></p>
+</div></div><div class="section" id="parameters">
+<h3>parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h3>
+<p>The parameters for the cell are by default set in the .json file pointed to by the <code class="docutils literal notranslate"><span class="pre">dynamic_params</span></code> parameter are calculated from extracellular recordings from the mouse LGN (Durand et. al 2016, Billeh et. al, 2019). These parameters may be over ridden to be unique to each cell by passing in a list of values in the call to <code class="docutils literal notranslate"><span class="pre">add_nodes</span></code>. For example to given every cell a randomized spontaneous firing rate using the spont_fr variable (see below) you would just add the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>  <span class="c1"># add 10 simple ON cells</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;lgnmodel:tON&#39;</span><span class="p">,</span>
+    <span class="n">spont_fr</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span> <span class="c1"># create a rand list of 20 firing rates between 1 to 2 Hz</span>
+    <span class="o">....</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>spatial filter parameters</strong> * <em>spatial_size</em>: (float, float) - the row and column spread of the gaussian filter, default: (1.0, 1.0) * <em>spatial_rotation</em>: float - the gaussian rotation in degrees, default: 0.0</p>
+<p><img alt="image0" src="./images/filternet_sfilt_params.png" /></p>
+<p><strong>temporal filter parameters</strong> * <em>weights</em>: (float, float) - used to control amplitude of the the two bumps in cosine filter. The first value is used to set the major bump and must have weights[0] &gt; weights[1] * <em>kpeaks</em>: (float, float) - used to control the spread of the two bumps, the first value for the initial larger peak and the second for the smaller peak. The second peak must have a greater spread than the first. * <em>delays</em>: (float, float) - controls the delays of the first and second
+bumps</p>
+<p><img alt="image1" src="./images/filternet_tfilt_params.png" /></p>
+<p><strong>non-linear filter parameters</strong> * <em>spont_fr</em>: float - The spontaneous/resting firing rate of the cell. ON/OFF cells use the function <span class="math notranslate nohighlight">\(Heaviside(s+spont\_fr)*(s+spont\_fr)\)</span> to filter the firing rate following the spatialtemporal filter.</p>
+<div class="section" id="Spatial-Mixture-cells">
+<h4>Spatial Mixture cells<a class="headerlink" href="#Spatial-Mixture-cells" title="Permalink to this headline">¶</a></h4>
+<p>These types of units combine two spatial filters to create a <a class="reference external" href="https://en.wikipedia.org/w/index.php?title=Mexican_Hat_Function">Mexican hat</a> filter so the spatial filter responds to a bright area surrounded by darkness (or vice-versa). To use set <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:LGNOnOFFCell'</span></code></p>
+<p><strong>parameters</strong> * <em>sigma_on</em>: (float, float) - spread of the ON region of the spatial filter. * <em>sigma_off</em>: (float, float) - spread of the OFF region of the spatial filter.</p>
+<p>The temporal filter is set using the same parameters as a simple cell.</p>
+</div>
+<div class="section" id="Dual-filter-cells-(sONtOFF,-sONsOFF)">
+<h4>Dual filter cells (sONtOFF, sONsOFF)<a class="headerlink" href="#Dual-filter-cells-(sONtOFF,-sONsOFF)" title="Permalink to this headline">¶</a></h4>
+<p>These units combine two simple linear filters into one, and can be set using either <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:sONsOFF'</span></code> or <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:sONtOFF'</span></code>, both with a non-dominate spatial-off filter.</p>
+<p><strong>parameters</strong></p>
+<p>The parameters for the first filter (tOFF or sOFF subunit) is set using the same parameters as a simple cell. You can set non-dominate secondary subunit parameters in two ways: 1. Adding parameter <em>non_dom_params</em> that points to a second dynamics_params .json file. (eg. <code class="docutils literal notranslate"><span class="pre">non_dom_params='sON_TF8.json'</span></code>) 2. add the postfix *_non_dom* to the specified params (eg. weights_non_dom, kpeaks_non_dom, delays_non_dom)</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="index.html">Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="builder.html">Building Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simulators.html">Simulation Engines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filternet.html">FilterNet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.tests.html">bmtk.tests package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+    </div>
+<script type="text/javascript" src="_static/external_assets/javascript/portalFooter.js"></script>
+
+  </body>
+</html>

@@ -1,19 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bmtk.simulator.filternet.lgnmodel.spatialfilter &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
   </head><body>
@@ -620,223 +622,119 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <h1>Source code for bmtk.simulator.filternet.lgnmodel.spatialfilter</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">ndimage</span>
+<span></span><span class="kn">import</span> <span class="nn">ast</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
-<span class="kn">import</span> <span class="nn">importlib</span>
-<span class="kn">import</span> <span class="nn">scipy.interpolate</span> <span class="k">as</span> <span class="nn">spinterp</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">utilities</span> <span class="k">as</span> <span class="n">util</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">scipy.misc</span> <span class="k">as</span> <span class="nn">spmisc</span>
-<span class="kn">import</span> <span class="nn">scipy.ndimage</span> <span class="k">as</span> <span class="nn">spndimage</span>
-<span class="kn">from</span> <span class="nn">.kernel</span> <span class="k">import</span> <span class="n">Kernel2D</span><span class="p">,</span> <span class="n">Kernel3D</span>
+<span class="kn">from</span> <span class="nn">six</span> <span class="kn">import</span> <span class="n">string_types</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">ndimage</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utilities</span> <span class="k">as</span> <span class="n">util</span>
+<span class="kn">from</span> <span class="nn">.kernel</span> <span class="kn">import</span> <span class="n">Kernel2D</span>
+
 
 <div class="viewcode-block" id="ArrayFilter"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.spatialfilter.ArrayFilter">[docs]</a><span class="k">class</span> <span class="nc">ArrayFilter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    
-    <span class="n">default_threshold</span> <span class="o">=</span> <span class="o">.</span><span class="mi">01</span>
-    
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
-        
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span>
         
 <div class="viewcode-block" id="ArrayFilter.imshow"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.spatialfilter.ArrayFilter.imshow">[docs]</a>    <span class="k">def</span> <span class="nf">imshow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_range</span><span class="p">,</span> <span class="n">col_range</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_kernel</span><span class="p">(</span><span class="n">row_range</span><span class="p">,</span> <span class="n">col_range</span><span class="p">,</span><span class="n">threshold</span><span class="p">)</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_kernel</span><span class="p">(</span><span class="n">row_range</span><span class="p">,</span> <span class="n">col_range</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
         
 <div class="viewcode-block" id="ArrayFilter.get_kernel"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.spatialfilter.ArrayFilter.get_kernel">[docs]</a>    <span class="k">def</span> <span class="nf">get_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_range</span><span class="p">,</span> <span class="n">col_range</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mf">1.</span><span class="p">):</span>
-        
-<span class="c1">#         print np.where(self.mask&gt;threshold)</span>
-        <span class="n">row_vals</span><span class="p">,</span> <span class="n">col_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="o">&gt;</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="n">row_vals</span><span class="p">,</span> <span class="n">col_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">)</span>
 
         <span class="n">kernel_vals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">[</span><span class="n">row_vals</span><span class="p">,</span> <span class="n">col_vals</span><span class="p">]</span>
         <span class="n">kernel_vals</span> <span class="o">=</span> <span class="n">amplitude</span><span class="o">*</span><span class="n">kernel_vals</span><span class="o">/</span><span class="n">kernel_vals</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
         
-        <span class="k">return</span> <span class="n">Kernel2D</span><span class="p">(</span><span class="n">row_range</span><span class="p">,</span> <span class="n">col_range</span><span class="p">,</span> <span class="n">row_vals</span><span class="p">,</span> <span class="n">col_vals</span><span class="p">,</span> <span class="n">kernel_vals</span><span class="p">)</span>    <span class="c1"># row_range, col_range, row_inds, col_inds, kernel):</span></div></div>
+        <span class="k">return</span> <span class="n">Kernel2D</span><span class="p">(</span><span class="n">row_range</span><span class="p">,</span> <span class="n">col_range</span><span class="p">,</span> <span class="n">row_vals</span><span class="p">,</span> <span class="n">col_vals</span><span class="p">,</span> <span class="n">kernel_vals</span><span class="p">)</span></div></div>
     
 
 <div class="viewcode-block" id="GaussianSpatialFilter"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.spatialfilter.GaussianSpatialFilter">[docs]</a><span class="k">class</span> <span class="nc">GaussianSpatialFilter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    
-    <span class="n">default_threshold</span> <span class="o">=</span> <span class="o">.</span><span class="mi">01</span>
-     
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">translate</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">sigma</span><span class="o">=</span><span class="p">(</span><span class="mf">1.</span><span class="p">,</span><span class="mf">1.</span><span class="p">),</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;When w=1 and rotation=0, half-height will be at y=1&#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">translate</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="n">sigma</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A 2D gaussian used for filtering a part of the receptive field.</span>
 
+<span class="sd">        :param translate: (float, float), the location of the gaussian on the screen relative to the origin in pixels.</span>
+<span class="sd">        :param sigma: (float, float), the x and y gaussian std</span>
+<span class="sd">        :param rotation: rotation of the gaussian in degrees</span>
+<span class="sd">        :param origin: origin of the receptive field (defaults center of image)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># When w=1 and rotation=0, half-height will be at y=1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">translate</span> <span class="o">=</span> <span class="n">translate</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rotation</span> <span class="o">=</span> <span class="n">rotation</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma</span> 
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sigma</span><span class="p">,</span> <span class="n">string_types</span><span class="p">):</span>
+            <span class="c1"># TODO: Move this to calling method</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">sigma</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span> <span class="o">=</span> <span class="n">sigma</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">origin</span> <span class="o">=</span> <span class="n">origin</span>
         
 <div class="viewcode-block" id="GaussianSpatialFilter.imshow"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.spatialfilter.GaussianSpatialFilter.imshow">[docs]</a>    <span class="k">def</span> <span class="nf">imshow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_range</span><span class="p">,</span> <span class="n">col_range</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_kernel</span><span class="p">(</span><span class="n">row_range</span><span class="p">,</span> <span class="n">col_range</span><span class="p">,</span><span class="n">threshold</span><span class="p">)</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_kernel</span><span class="p">(</span><span class="n">row_range</span><span class="p">,</span> <span class="n">col_range</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
         
 <div class="viewcode-block" id="GaussianSpatialFilter.to_dict"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.spatialfilter.GaussianSpatialFilter.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
-        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:(</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span>
-                <span class="s1">&#39;translate&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">,</span>
-                <span class="s1">&#39;rotation&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">rotation</span><span class="p">,</span>
-                <span class="s1">&#39;sigma&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">}</span></div>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span>
+            <span class="s1">&#39;translate&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">,</span>
+            <span class="s1">&#39;rotation&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotation</span><span class="p">,</span>
+            <span class="s1">&#39;sigma&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span>
+        <span class="p">}</span></div>
         
-<div class="viewcode-block" id="GaussianSpatialFilter.get_kernel"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.spatialfilter.GaussianSpatialFilter.get_kernel">[docs]</a>    <span class="k">def</span> <span class="nf">get_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_range</span><span class="p">,</span> <span class="n">col_range</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mf">1.</span><span class="p">):</span>
+<div class="viewcode-block" id="GaussianSpatialFilter.get_kernel"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.spatialfilter.GaussianSpatialFilter.get_kernel">[docs]</a>    <span class="k">def</span> <span class="nf">get_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_range</span><span class="p">,</span> <span class="n">col_range</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates a 2D gaussian filter (kernel) for the given dimensions which can be used</span>
+
+<span class="sd">        :param row_range: field height in pixels</span>
+<span class="sd">        :param col_range: field width in pixels</span>
+<span class="sd">        :param threshold:</span>
+<span class="sd">        :param amplitude:</span>
+<span class="sd">        :return: A Kernel2D object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># Create symmetric initial point at center:</span>
         <span class="n">image_shape</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">col_range</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">row_range</span><span class="p">)</span>
         <span class="n">h</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">image_shape</span>
         <span class="n">on_filter_spatial</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">image_shape</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">h</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">w</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">h</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">w</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">ii</span><span class="p">,</span> <span class="n">jj</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)):</span>
-                <span class="n">on_filter_spatial</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">ii</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">int</span><span class="p">(</span><span class="n">w</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">jj</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">.</span><span class="mi">25</span>
-        <span class="k">elif</span> <span class="n">h</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">w</span><span class="o">%</span><span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">on_filter_spatial</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">ii</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">w</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">jj</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">.</span><span class="mi">25</span>
+        <span class="k">elif</span> <span class="n">h</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">w</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
-                <span class="n">on_filter_spatial</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">ii</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nb">int</span><span class="p">(</span><span class="n">w</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span> <span class="o">=</span> <span class="o">.</span><span class="mi">25</span>
-        <span class="k">elif</span> <span class="n">h</span><span class="o">%</span><span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">w</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">on_filter_spatial</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">ii</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">w</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span> <span class="o">=</span> <span class="o">.</span><span class="mi">25</span>
+        <span class="k">elif</span> <span class="n">h</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">w</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
-                <span class="n">on_filter_spatial</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="n">w</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">jj</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">.</span><span class="mi">25</span>
+                <span class="n">on_filter_spatial</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">w</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">jj</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">.</span><span class="mi">25</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">on_filter_spatial</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="n">w</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span> <span class="o">=</span> <span class="o">.</span><span class="mi">25</span>
+            <span class="n">on_filter_spatial</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">w</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span> <span class="o">=</span> <span class="o">.</span><span class="mi">25</span>
         
         <span class="c1"># Apply gaussian filter to create correct sigma:</span>
-        <span class="n">scaled_sigma_x</span> <span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">col_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">col_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="n">scaled_sigma_y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">row_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">row_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> 
-        <span class="n">on_filter_spatial</span> <span class="o">=</span> <span class="n">ndimage</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">(</span><span class="n">on_filter_spatial</span><span class="p">,</span> <span class="p">(</span><span class="n">scaled_sigma_x</span><span class="p">,</span> <span class="n">scaled_sigma_y</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span> <span class="n">cval</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="c1">#         on_filter_spatial = skf.gaussian_filter(on_filter_spatial, sigma=(scaled_sigma_x, scaled_sigma_y))</span>
-        
-        <span class="c1"># Rotate and translate at center:</span>
+        <span class="n">scaled_sigma_x</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">col_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">col_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">scaled_sigma_y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">row_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">row_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">on_filter_spatial</span> <span class="o">=</span> <span class="n">ndimage</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">(</span><span class="n">on_filter_spatial</span><span class="p">,</span> <span class="p">(</span><span class="n">scaled_sigma_x</span><span class="p">,</span> <span class="n">scaled_sigma_y</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span>
+                                                    <span class="n">cval</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Rotate and translate gaussian at center:</span>
         <span class="n">rotation_matrix</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">get_rotation_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rotation</span><span class="p">,</span> <span class="n">on_filter_spatial</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-        <span class="n">translation_x</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">row_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">row_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="n">translation_y</span> <span class="o">=</span> <span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">col_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">col_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">translation_x</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">row_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">row_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">translation_y</span> <span class="o">=</span> <span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">col_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">col_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">translation_matrix</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">get_translation_matrix</span><span class="p">((</span><span class="n">translation_x</span><span class="p">,</span> <span class="n">translation_y</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span> <span class="o">!=</span> <span class="s1">&#39;center&#39;</span><span class="p">:</span>
-            <span class="n">center_y</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="p">(</span><span class="n">col_range</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">col_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">col_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">col_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-            <span class="n">center_x</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="p">(</span><span class="n">row_range</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">row_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">row_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">row_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">center_y</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">col_range</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">col_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">col_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">col_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">center_x</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">origin</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">row_range</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">row_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">row_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">row_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
             <span class="n">translation_matrix</span> <span class="o">+=</span> <span class="n">util</span><span class="o">.</span><span class="n">get_translation_matrix</span><span class="p">((</span><span class="n">center_x</span><span class="p">,</span> <span class="n">center_y</span><span class="p">))</span>
-        <span class="n">kernel_data</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">apply_transformation_matrix</span><span class="p">(</span><span class="n">on_filter_spatial</span><span class="p">,</span> <span class="n">translation_matrix</span><span class="o">+</span><span class="n">rotation_matrix</span><span class="p">)</span>
+        <span class="n">kernel_data</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">apply_transformation_matrix</span><span class="p">(</span><span class="n">on_filter_spatial</span><span class="p">,</span> <span class="n">translation_matrix</span> <span class="o">+</span> <span class="n">rotation_matrix</span><span class="p">)</span>
         
         <span class="n">kernel</span> <span class="o">=</span> <span class="n">Kernel2D</span><span class="o">.</span><span class="n">from_dense</span><span class="p">(</span><span class="n">row_range</span><span class="p">,</span> <span class="n">col_range</span><span class="p">,</span> <span class="n">kernel_data</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">kernel</span><span class="o">.</span><span class="n">apply_threshold</span><span class="p">(</span><span class="n">threshold</span><span class="p">)</span>
         <span class="n">kernel</span><span class="o">.</span><span class="n">normalize</span><span class="p">()</span>
-       
         <span class="n">kernel</span><span class="o">.</span><span class="n">kernel</span> <span class="o">*=</span> <span class="n">amplitude</span>
-        
-        
+
         <span class="k">return</span> <span class="n">kernel</span></div></div>
-        
-
-
-<span class="c1"># spatial_model = GaussianSpatialFilterModel(height=21, aspect_ratio=1., rotation=0)</span>
-<span class="c1"># spatial_filter = spatial_model(center=(30,40))</span>
-<span class="c1"># k = spatial_filter.get_spatial_kernel(range(60), range(80))</span>
-<span class="c1"># k.imshow(frame_size=(60,80))</span>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<span class="c1">#     def evaluate_movie(self, movie, t, show=False):</span>
-<span class="c1">#         </span>
-<span class="c1">#         y = []</span>
-<span class="c1">#         for ti in t:</span>
-<span class="c1">#             kernel_result = movie.evaluate_Kernel3D(ti, self)</span>
-<span class="c1">#             y.append(self.transfer_function(kernel_result))</span>
-<span class="c1">#             </span>
-<span class="c1">#         if show == True:</span>
-<span class="c1">#             plt.plot(t, y)</span>
-<span class="c1">#             plt.show()</span>
-<span class="c1">#         </span>
-<span class="c1">#         return t, y</span>
-        
-<span class="c1">#         print mesh_range[0]</span>
-<span class="c1">#         </span>
-<span class="c1">#         ii = mesh_range[0][inds]</span>
-<span class="c1">#         jj = mesh_range[1][inds]</span>
-<span class="c1">#         print ii, jj</span>
-<span class="c1">#         print tmp[jj,ii]</span>
-
-<span class="c1">#         plt.figure()</span>
-<span class="c1">#         plt.pcolor(mesh_range[0], mesh_range[1], tmp)</span>
-<span class="c1">#         plt.colorbar()</span>
-<span class="c1">#         plt.axis(&#39;equal&#39;)</span>
-<span class="c1">#         plt.show()</span>
-
-<span class="c1">#         print self.xydata[0].shape</span>
-<span class="c1"># </span>
-<span class="c1">#         t0 = spndimage.rotate(self.xydata[0],30,reshape=False, mode=mode)</span>
-<span class="c1">#         t1 = spndimage.rotate(self.xydata[1],30, reshape=False, mode=mode)</span>
-        
-<span class="c1">#         print t0.shape</span>
-<span class="c1">#         print t1.shape</span>
-<span class="c1">#         print on_filter_spatial.shape</span>
-        
-<span class="c1">#         plt.pcolor(t0,t1, on_filter_spatial)</span>
-        
-        
-<span class="c1">#         self.interpolation_function = spinterp.interp2d(self.w_values, self.h_values, on_filter_spatial, fill_value=0, bounds_error=False)</span>
-<span class="c1"># </span>
-<span class="c1">#         print self.interpolation_function((t0,t1))</span>
-
-<span class="c1">#         translation_matrix = util.get_translation_matrix(self.translation)</span>
-<span class="c1">#         tmp = util.apply_transformation_matrix(on_filter_spatial, translation_matrix)</span>
-<span class="c1">#         </span>
-<span class="c1">#         plt.pcolor(self.xydata[0], self.xydata[1], tmp)</span>
-<span class="c1">#         plt.show()</span>
-        
-<span class="c1"># #         print self.xydata_trans[0][0], self.xydata_trans[0],[-1]</span>
-<span class="c1"># #         print self.xydata_trans[1][0], self.xydata_trans[1],[-1]</span>
-<span class="c1">#         print self.xydata_trans</span>
-<span class="c1">#         rotation_matrix = util.get_rotation_matrix(self.rotation, on_filter_spatial.shape)</span>
-<span class="c1">#         translation_matrix = util.get_translation_matrix(self.translation)</span>
-<span class="c1">#         on_filter_spatial = util.apply_transformation_matrix(on_filter_spatial, translation_matrix+rotation_matrix)</span>
-
-<span class="c1">#         plt.imshow(on_filter_spatial, extent=(self.w_values[0], self.w_values[-1], self.h_values[0], self.h_values[-1]), aspect=1.)</span>
-<span class="c1">#         plt.show()</span>
-        
-<span class="c1">#     def to_dict(self):</span>
-<span class="c1">#         </span>
-<span class="c1">#         return {&#39;scale&#39;:self.scale,</span>
-<span class="c1">#                 &#39;translation&#39;:self.translation,</span>
-<span class="c1">#                 &#39;rotation&#39;:self.rotation,</span>
-<span class="c1">#                 &#39;weight&#39;:self.weight,</span>
-<span class="c1">#                 &#39;temporal_filter&#39;:self.temporal_filter.to_dict(),</span>
-<span class="c1">#                 &#39;class&#39;:(__name__, self.__class__.__name__)}</span>
-
-<span class="c1">#     def get_kernel(self, xdata, ydata, threshold=default_threshold):</span>
-<span class="c1"># </span>
-<span class="c1"># </span>
-<span class="c1">#         # Rotate and translate at center:</span>
-<span class="c1">#         rotation_matrix = util.get_rotation_matrix(self.rotation, on_filter_spatial.shape)</span>
-<span class="c1">#         translation_matrix = util.get_translation_matrix(self.translation)</span>
-<span class="c1">#         on_filter_spatial = util.apply_transformation_matrix(on_filter_spatial, translation_matrix+rotation_matrix)</span>
-<span class="c1">#         </span>
-<span class="c1">#         # Now translate center of field in image:</span>
-<span class="c1"># #         translation_matrix = util.get_translation_matrix(relative_spatial_location)</span>
-<span class="c1"># #         on_filter_spatial = util.apply_transformation_matrix(on_filter_spatial, translation_matrix)</span>
-<span class="c1"># </span>
-<span class="c1">#         # Create and return thresholded 2D mask:</span>
-<span class="c1">#         row_ind_list, col_ind_list = np.where(on_filter_spatial != 0)</span>
-<span class="c1">#         kernel = on_filter_spatial[row_ind_list, col_ind_list]</span>
-<span class="c1">#         </span>
-<span class="c1">#         </span>
-<span class="c1">#         </span>
-<span class="c1">#         </span>
-<span class="c1"># #         filter_mask = Kernel2D(row_ind_list, col_ind_list, kernel, threshold=threshold)        </span>
-<span class="c1"># </span>
-<span class="c1">#         return filter_mask</span>
-
-<span class="c1">#         translation_matrix = util.get_translation_matrix((1.*translation[0]/fudge_factor,-1.*translation[1]/fudge_factor))</span>
-
-<span class="c1">#         plt.figure()</span>
-<span class="c1">#         plt.pcolor(self.mesh_support[0], self.mesh_support[1], self.kernel_data)</span>
-<span class="c1">#         plt.axis(&#39;equal&#39;)</span>
-<span class="c1">#         plt.show()</span>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -853,31 +751,40 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

@@ -1,18 +1,21 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to the Brain Modeling Toolkit &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Installing the BMTK" href="installation.html" /> 
@@ -623,72 +626,65 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <h1>Welcome to the Brain Modeling Toolkit<a class="headerlink" href="#welcome-to-the-brain-modeling-toolkit" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<p>The Brain Modeling Toolkit (BMTK) is a  python-based software package for creating and simulating large-scale neural network
-models. It supports building, simulation and analysis of models of different levels of resolution including:</p>
-<ul class="simple">
-<li>Biophysically detailed networks.</li>
-<li>Point neuron networks.</li>
-<li>Filter models.</li>
-<li>Population-level networks.</li>
-</ul>
-<div class="figure">
+<p>The Brain Modeling Toolkit (BMTK) is a python-based software package for building, simulating and analyzing large-scale
+neural network models. It supports the building and simulation of models of varying levels-of-resolution; from
+multi-compartment biophysically detailed networks, to point-neuron models, to filter-based models, and even
+population-level firing rate models.</p>
+<div class="figure align-default">
 <a class="reference internal image-reference" href="_images/levels_of_resolution_noml.png"><img alt="_images/levels_of_resolution_noml.png" src="_images/levels_of_resolution_noml.png" style="width: 876.4px; height: 287.7px;" /></a>
 </div>
+<p>The BMTK is not itself a simulator and will utilize existing simulators, like NEURON and NEST, to run different types of
+models. What BMTK does provide:</p>
+<ul class="simple">
+<li><p>A unified inteferce across different simulators, so that modelers can work with and study their own network models
+across different simulators without having to learn how to use each tool.</p></li>
+<li><p>An easy way to setup and initialize network simulations with little-to-no programming necessacary</p></li>
+<li><p>Automatic integration of parallelization when running on HPC.</p></li>
+<li><p>Extra built-in features which the native simulators may not support out-of-the-box.</p></li>
+</ul>
 <p>The BMTK was developed and is supported at the <a class="reference external" href="https://alleninstitute.org/">Allen Institute for Brain Science</a> and
 released under a BSD 3-clause license. We encourage others to use the BMTK for their own research, and suggestions and
 contributions to the BMTK are welcome.</p>
-<p>The latest release, previous releases, and current development can be found at:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">AllenInstitute</span><span class="o">/</span><span class="n">bmtk</span>
-</pre></div>
+<p>The latest release, previous releases, and current development can be found at <a class="reference external" href="https://github.com/AllenInstitute/bmtk">https://github.com/AllenInstitute/bmtk</a></p>
+<div class="section" id="the-bmtk-workflow-and-architecture">
+<h2>The BMTK Workflow and architecture<a class="headerlink" href="#the-bmtk-workflow-and-architecture" title="Permalink to this headline">¶</a></h2>
+<p>BMTK can readily scale to run models of single neurons, and even single compartments, and for all different types of
+neuronal networks. However BMTK was designed for very-large, highly optimized mammalian cortical network models.
+Generating the connectivity matrix could take hours or even days to complete. Plus once we had the base-line model we
+wanted to run against a large variety of conditions and stimuli, so that we could directly compare with existing in-vivo
+recordings (see Allen Brain Observatory).</p>
+<div class="figure align-default">
+<a class="reference internal image-reference" href="_images/bmtk_workflow.jpg"><img alt="_images/bmtk_workflow.jpg" src="_images/bmtk_workflow.jpg" style="width: 883.0px; height: 286.0px;" /></a>
 </div>
-<div class="section" id="requirements">
-<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
-<p>The BMTK runs on Python 2.7 and 3.6+. To use the base features, including building and analyzing networks, the
-following numpy packages are required. When installing using anaconda, pypi or distutils these dependencies will be installed if
-not already:</p>
+<p>Unlike other simulators, BMTK separates the process of building, simulating, and analyzing the results. First a fully
+instantiated base-line version of the model is built and saved to a file so each time a simulation is ran it takes only
+a small fraction of the time to instantiate the simulation. Results are also automatically saved to a disk. BMTK and
+the format it uses (SONATA, see below) makes it easy to dynamically adjust cell and synaptic parameters so that multiple
+iterations of a simulation be done as fast as possible</p>
+<p>As such BMTK can be broken into three major components:</p>
 <ul class="simple">
-<li><a class="reference external" href="http://www.numpy.org/">numpy</a></li>
-<li><a class="reference external" href="http://www.h5py.org/">h5py</a></li>
-<li><a class="reference external" href="http://pandas.pydata.org/">pandas</a></li>
-<li><a class="reference external" href="https://matplotlib.org/">matplotlib</a></li>
-<li><a class="reference external" href="https://pypi.python.org/pypi/jsonschema">jsonschema</a></li>
+<li><p>The Network Builder [<a class="reference internal" href="bmtk/bmtk.builder.html#module-bmtk.builder" title="bmtk.builder"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bmtk.builder</span></code></a>] - Used to build network models</p></li>
+<li><p>The Simulation Engines [<a class="reference internal" href="bmtk/bmtk.simulator.html#module-bmtk.simulator" title="bmtk.simulator"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bmtk.simulator</span></code></a>] - Interfaces for simulating the network</p></li>
+<li><dl class="simple">
+<dt>Analysis and Visualization Tools [<a class="reference internal" href="bmtk/bmtk.analyzer.html#module-bmtk.analyzer" title="bmtk.analyzer"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bmtk.analyzer</span></code></a>] - Python functions for analyzing and visualizing the</dt><dd><p>network and simulation results</p>
+</dd>
+</dl>
+</li>
 </ul>
-<p>Optional dependencies:</p>
-<ul class="simple">
-<li><a class="reference external" href="https://mpi4py.readthedocs.io/en/stable/">mpi4py</a></li>
-<li><a class="reference external" href="https://docs.pytest.org/en/latest/">pytest</a></li>
-<li><a class="reference external" href="https://lxml.de/">lxml</a></li>
-</ul>
-<p>For running network simulations BMTK uses existing software, which will differ depending on the type of simulation. As such
-there may be additional requirements.</p>
-<blockquote>
-<div><p><a class="reference internal" href="_images/neuron_icon.png"><img alt="neuron_icon" src="_images/neuron_icon.png" style="width: 65.32000000000001px; height: 30.59px;" /></a> Biophysically detailed simulation with BioNet uses the <a class="reference external" href="https://www.neuron.yale.edu/neuron/">NEURON simulator (7.4+)</a></p>
-<p><a class="reference internal" href="_images/nest_icon.png"><img alt="nest_icon" src="_images/nest_icon.png" style="width: 47.6px; height: 20.0px;" /></a> Point simulations with PointNet uses the <a class="reference external" href="http://www.nest-simulator.org/">NEST simulator (2.11+)</a></p>
-<p><a class="reference internal" href="_images/dipde_icon.png"><img alt="dipde_icon" src="_images/dipde_icon.png" style="width: 38.4px; height: 33.449999999999996px;" /></a> Population level firing rates simulation with PopNet uses <a class="reference external" href="http://alleninstitute.github.io/dipde/">DiPDE</a></p>
-<p><strong>FilterNet</strong> Filter models with LGNModel using built-in Python functions.</p>
-</div></blockquote>
-<p>See Installation page and individual simulator pages for further instructions.</p>
+<div class="figure align-default">
+<a class="reference internal image-reference" href="_images/bmtk_architecture.jpg"><img alt="_images/bmtk_architecture.jpg" src="_images/bmtk_architecture.jpg" style="width: 896.85px; height: 412.2px;" /></a>
 </div>
-<div class="section" id="additional-resources">
-<h2>Additional Resources<a class="headerlink" href="#additional-resources" title="Permalink to this headline">¶</a></h2>
-<p><strong>Tutorials</strong> - Jupyter-notebook tutorials for using the BMTK can be found at <a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb</a>.</p>
-<p><strong>Examples</strong> - A collection of examples for building and running simulations across different levels of resolution can be found at <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples">https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples</a>.</p>
-<p><strong>Questions</strong> - Any bugs, questions, or feature requests can be done from our github issue page at <a class="reference external" href="https://github.com/AllenInstitute/bmtk/issues">https://github.com/AllenInstitute/bmtk/issues</a>.
-Or please feel free to contact Anton Arkhipov (antona at alleninstitute dot org) and Kael Dai (kaeld at alleninstitute dot org) regarding any questions</p>
+<p>The components can be as one workflow or separately by themselves. BMTK utilizes the SONATA Data format (see next section)
+to allow sharing of large-scale network data. As such, it is possible to use the Network Builder to build the model but
+another tool to run the model. Or if another model has been built by someone else and saved in SONATA format BMTK will
+be able to simulate it.</p>
 </div>
-<div class="section" id="papers-and-posters">
-<h2>Papers and Posters<a class="headerlink" href="#papers-and-posters" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li>Paper about BMTK’s BioNet simulator can be found on <a class="reference external" href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0201630">PLOS ONE</a></li>
-</ul>
-</div>
-<div class="section" id="sonata-data-format">
-<h2>SONATA Data Format<a class="headerlink" href="#sonata-data-format" title="Permalink to this headline">¶</a></h2>
-<p>The SONATA data format was developed jointly by the Allen Institute and the Blue Brain Project as a standarized,
-cross-platform format for storing large scale networks and simulation results. The BMTK utilizes SONATA when building and
-simulating networks. Not only does this improve performance and file size, but it lets the BMTK interact with the growing
-list of software that supports the SONATA format.</p>
-<p>More information about the SONATA (and hence BMTK) data format can be found at the <a class="reference external" href="https://github.com/AllenInstitute/sonata">SONATA github page</a></p>
+<div class="section" id="sonata">
+<h2>SONATA<a class="headerlink" href="#sonata" title="Permalink to this headline">¶</a></h2>
+<p>SONATA is a multi-institutional developed standardized, cross-platform data format for storing large scale networks and
+simulation results. The BMTK utilizes SONATA when building and simulating networks, so much of what is being described
+in the documentation and tutorials will be based on SONATA. For more information see the
+<a class="reference external" href="https://github.com/AllenInstitute/sonata">SONATA github page</a>.</p>
 </div>
 <div class="section" id="acknowledgements">
 <h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permalink to this headline">¶</a></h2>
@@ -697,6 +693,7 @@ list of software that supports the SONATA format.</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -713,13 +710,23 @@ list of software that supports the SONATA format.</p>
 <li class="toctree-l2"><a class="reference internal" href="filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk/blob/develop/docs/tutorial/00_introduction.ipynb">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.scripts.html">bmtk.scripts package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.utils.html">bmtk.utils package</a></li>
@@ -728,17 +735,15 @@ list of software that supports the SONATA format.</p>
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
