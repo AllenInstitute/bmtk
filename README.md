@@ -18,6 +18,14 @@ base requirements from a command-line:
 
 There are examples of building models and running simulations located in docs/examples/. Some of the simulation engines may require additonal requirements to run.
 
+##### Tests
+
+There are a collection of unit-tests in ```bmtk.tests``` which can be run using pytest
+
+```bash
+  $ cd bmtk
+  $ py.test
+```
 
 ## Documentation
 

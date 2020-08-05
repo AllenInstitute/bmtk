@@ -17,6 +17,7 @@ Welcome to the Brain Modeling Toolkit
    simulators
    analyzer
    tutorials
+   Example Networks <examples>
    Github Profile <https://github.com/AllenInstitute/bmtk.git>
    contributors
    Source Documentation <bmtk/bmtk>
