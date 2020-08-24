@@ -72,7 +72,7 @@ class STMemoryBuffer(SpikeTrainsAPI):
     to work with parallel simulations.
     """
     def __init__(self, default_population=None, store_type='array', **kwargs):
-        self._default_population = default_population or pop_na
+        self._default_population = default_population or kwargs.get('population', None) or pop_na
         self._store_type = store_type
         # self._pop_counts = {self._default_population: 0}  # A count of spikes per population
         self._units = kwargs.get('units', 'ms')  # for backwards compatability default to milliseconds
@@ -136,12 +136,10 @@ class STMemoryBuffer(SpikeTrainsAPI):
             return []
         return np.unique(self._pops[population][col_node_ids]).astype(np.uint)
 
-    @property
     def units(self, population=None):
         return self._units
 
-    @units.setter
-    def units(self, v, population=None):
+    def set_units(self, v, population=None):
         self._units = v
 
     def n_spikes(self, population=None):
@@ -497,12 +495,10 @@ class STCSVBuffer(SpikeTrainsAPI):
     def populations(self):
         return list(self._pop_metadata.keys())
 
-    @property
     def units(self, population=None):
         return self._units
 
-    @units.setter
-    def units(self, u, population=None):
+    def set_units(self, u, population=None):
         self._units = u
 
     def node_ids(self, population=None):

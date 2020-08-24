@@ -81,6 +81,7 @@ class MembraneReport(SimulatorMod):
 
         self._tmp_dir = tmp_dir
 
+        # TODO: Full path should be determined by config/simulation_reports module
         self._file_name = file_name if os.path.isabs(file_name) else os.path.join(tmp_dir, file_name)
         self._all_gids = cells
         self._local_gids = []
