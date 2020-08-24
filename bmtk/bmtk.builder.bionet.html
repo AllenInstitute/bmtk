@@ -628,100 +628,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-bmtk.builder.bionet.swc_reader">
-<span id="bmtk-builder-bionet-swc-reader-module"></span><h2>bmtk.builder.bionet.swc_reader module<a class="headerlink" href="#module-bmtk.builder.bionet.swc_reader" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt id="bmtk.builder.bionet.swc_reader.SWCReader">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.builder.bionet.swc_reader.</code><code class="sig-name descname">SWCReader</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">swc_file</span></em>, <em class="sig-param"><span class="n">random_seed</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">fix_axon</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/bionet/swc_reader.html#SWCReader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.bionet.swc_reader.SWCReader" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A class for pulling out section id, section locations, coordinates from a SWC file. Useful when building a
-network that requires exact locations of pre- or post-synaptic locations. Requires NEURON.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>swc_file - path to a SWC morphology file</strong></dt><dd></dd>
-<dt><strong>fix_axon - If set to true, the axon will be removed and replaced with a 30 um stub, as defined for all Allen</strong></dt><dd><p>Cell-Type models (default: True).</p>
-</dd>
-<dt><strong>random_seed - integer value to seed the random genator, used by choose_sections method.</strong></dt><dd></dd>
-</dl>
-</dd>
-</dl>
-<dl class="py method">
-<dt id="bmtk.builder.bionet.swc_reader.SWCReader.choose_sections">
-<code class="sig-name descname">choose_sections</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">section_names</span></em>, <em class="sig-param"><span class="n">distance_range</span></em>, <em class="sig-param"><span class="n">n_sections</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/bionet/swc_reader.html#SWCReader.choose_sections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.bionet.swc_reader.SWCReader.choose_sections" title="Permalink to this definition">¶</a></dt>
-<dd><p>Similar to find_sections, but will only N=n_section number of sections_ids/x values randomly selected (may
-return less if there aren’t as many sections</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>section_names</strong> – ‘soma’, ‘dend’, ‘apic’, ‘axon’</p></li>
-<li><p><strong>distance_range</strong> – [float, float]: distance range of sections from the soma, in um.</p></li>
-<li><p><strong>n_sections</strong> – int: maximum number of sections to select</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>[float], [float]: A list of all section_ids and a list of all segment_x values (as defined by NEURON)
-that meet the given critera.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.builder.bionet.swc_reader.SWCReader.find_sections">
-<code class="sig-name descname">find_sections</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">section_names</span></em>, <em class="sig-param"><span class="n">distance_range</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/bionet/swc_reader.html#SWCReader.find_sections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.bionet.swc_reader.SWCReader.find_sections" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieves a list of sections ids and section x’s given a section name/type (eg axon, soma, apic, dend) and
-the distance from the soma.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>section_names</strong> – ‘soma’, ‘dend’, ‘apic’, ‘axon’</p></li>
-<li><p><strong>distance_range</strong> – [float, float]: distance range of sections from the soma, in um.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>[float], [float]: A list of all section_ids and a list of all segment_x values (as defined by NEURON)
-that meet the given critera.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.builder.bionet.swc_reader.SWCReader.get_coord">
-<code class="sig-name descname">get_coord</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sec_ids</span></em>, <em class="sig-param"><span class="n">sec_xs</span></em>, <em class="sig-param"><span class="n">soma_center</span><span class="o">=</span><span class="default_value">0.0, 0.0, 0.0</span></em>, <em class="sig-param"><span class="n">rotations</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/bionet/swc_reader.html#SWCReader.get_coord"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.bionet.swc_reader.SWCReader.get_coord" title="Permalink to this definition">¶</a></dt>
-<dd><p>Takes in a list of section_ids and section_x values and returns a list of coordinates, assuming the soma
-is at the center of the system.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>sec_ids</strong> – [float]: list of N section_ids</p></li>
-<li><p><strong>sec_xs</strong> – [float]: list of N cooresponding section_x’s</p></li>
-<li><p><strong>soma_center</strong> – location of soma in respect to the coordinate system. (default (0, 0, 0)).</p></li>
-<li><p><strong>rotations</strong> – List of rotations (not yet implemented)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>[(float, float, float)]: for seach sec_ids/sec_xs returna the x,y,z coordinates as a tuple</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.builder.bionet.swc_reader.SWCReader.get_dist">
-<code class="sig-name descname">get_dist</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sec_ids</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/bionet/swc_reader.html#SWCReader.get_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.bionet.swc_reader.SWCReader.get_dist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns arc-length distance from soma for a list of section_ids</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.builder.bionet.swc_reader.SWCReader.get_type">
-<code class="sig-name descname">get_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sec_ids</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/bionet/swc_reader.html#SWCReader.get_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.bionet.swc_reader.SWCReader.get_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>For each section_id returns the type (1: soma, 2: axon, 3: dend, 4: apic</p>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="bmtk-builder-bionet-swc-reader-module">
+<h2>bmtk.builder.bionet.swc_reader module<a class="headerlink" href="#bmtk-builder-bionet-swc-reader-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-bmtk.builder.bionet">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.builder.bionet" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 

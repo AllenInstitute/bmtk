@@ -622,42 +622,179 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <h1>Source code for bmtk.analyzer.spike_trains</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">six</span> <span class="kn">import</span> <span class="n">string_types</span>
 
-
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-
-
-<span class="kn">from</span> <span class="nn">bmtk.utils.sonata.config</span> <span class="kn">import</span> <span class="n">SonataConfig</span> <span class="k">as</span> <span class="n">ConfigDict</span>
+<span class="kn">from</span> <span class="nn">bmtk.utils</span> <span class="kn">import</span> <span class="n">sonata</span>
+<span class="kn">from</span> <span class="nn">bmtk.utils.sonata.config</span> <span class="kn">import</span> <span class="n">SonataConfig</span>
 <span class="kn">from</span> <span class="nn">bmtk.utils.reports</span> <span class="kn">import</span> <span class="n">SpikeTrains</span>
 <span class="kn">from</span> <span class="nn">bmtk.utils.reports.spike_trains</span> <span class="kn">import</span> <span class="n">plotting</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.utils</span> <span class="kn">import</span> <span class="n">simulation_reports</span>
 
 
-<div class="viewcode-block" id="load_spikes_file"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.spike_trains.load_spikes_file">[docs]</a><span class="k">def</span> <span class="nf">load_spikes_file</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">spikes_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">SpikeTrains</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">spikes_file</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_find_spikes</span><span class="p">(</span><span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">candidate_spikes</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Get spikes file(s)</span>
+    <span class="k">if</span> <span class="n">spikes_file</span><span class="p">:</span>
+        <span class="c1"># User has explicity set the location of the spike files</span>
+        <span class="n">candidate_spikes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spikes_file</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">config_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">SpikeTrains</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;spikes_file&#39;</span><span class="p">])</span></div>
+        <span class="c1"># Otherwise search the config.json for all possible output spikes_files. We can use the simulation_reports</span>
+        <span class="c1"># module to find any spikes output file specified in config&#39;s &quot;output&quot; or &quot;reports&quot; section.</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">SonataConfig</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
+        <span class="n">sim_reports</span> <span class="o">=</span> <span class="n">simulation_reports</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">report</span> <span class="ow">in</span> <span class="n">sim_reports</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">report</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="s1">&#39;spikes_report&#39;</span><span class="p">:</span>
+                <span class="c1"># BMTK can end up output the same spikes file in SONATA, CSV, and NWB format. Try fetching the SONATA</span>
+                <span class="c1"># version first, then CSV, and finally NWB if it exists.</span>
+                <span class="n">spikes_sonata</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_file&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">spikes_csv</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_file_csv&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">spikes_nwb</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_file_nwb&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">spikes_sonata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">candidate_spikes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spikes_sonata</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">spikes_csv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">candidate_spikes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spikes_csv</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">spikes_csv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">candidate_spikes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spikes_nwb</span><span class="p">)</span>
+
+        <span class="c1"># TODO: Should we also look in the &quot;inputs&quot; for displaying input spike statistics?</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">candidate_spikes</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not find an output spikes-file. Use &quot;spikes_file&quot; parameter option.&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Find file that contains spikes for the specified &quot;population&quot; of nodes. If &quot;population&quot; parameter is not</span>
+    <span class="c1"># specified try to guess that spikes that the user wants to visualize.</span>
+    <span class="k">if</span> <span class="n">population</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">spikes_obj</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">spikes_f</span> <span class="ow">in</span> <span class="n">candidate_spikes</span><span class="p">:</span>
+            <span class="n">st</span> <span class="o">=</span> <span class="n">SpikeTrains</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">spikes_f</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">population</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">populations</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">spikes_obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">spikes_obj</span> <span class="o">=</span> <span class="n">st</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">spikes_obj</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">st</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">spikes_obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not fine spikes file with node population &quot;</span><span class="si">{}</span><span class="s1">&quot;.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">population</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">population</span><span class="p">,</span> <span class="n">spikes_obj</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidate_spikes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Found more than one spike-trains file&#39;</span><span class="p">)</span>
+
+        <span class="n">spikes_f</span> <span class="o">=</span> <span class="n">candidate_spikes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">spikes_f</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Did not find spike-trains file </span><span class="si">{}</span><span class="s1">. Make sure the simulation has completed.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">spikes_f</span><span class="p">))</span>
+
+        <span class="n">spikes_obj</span> <span class="o">=</span> <span class="n">SpikeTrains</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">spikes_f</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spikes_obj</span><span class="o">.</span><span class="n">populations</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Spikes file </span><span class="si">{}</span><span class="s1"> contains more than one node population.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spikes_f</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">spikes_obj</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spikes_obj</span>
 
 
-<div class="viewcode-block" id="to_dataframe"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.spike_trains.to_dataframe">[docs]</a><span class="k">def</span> <span class="nf">to_dataframe</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="n">spike_trains</span> <span class="o">=</span> <span class="n">load_spikes_file</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="n">config_file</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="n">spikes_file</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">spike_trains</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span></div>
+<span class="k">def</span> <span class="nf">_find_nodes</span><span class="p">(</span><span class="n">population</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nodes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_types_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">nodes_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">network</span> <span class="o">=</span> <span class="n">sonata</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">data_files</span><span class="o">=</span><span class="n">nodes_file</span><span class="p">,</span> <span class="n">data_type_files</span><span class="o">=</span><span class="n">node_types_file</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">population</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">population_names</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;node population &quot;</span><span class="si">{}</span><span class="s1">&quot; not found in </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">population</span><span class="p">,</span> <span class="n">nodes_file</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">network</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">population</span><span class="p">]</span>
+
+    <span class="k">elif</span> <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">nodes_grp</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="n">network</span> <span class="o">=</span> <span class="n">sonata</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">data_files</span><span class="o">=</span><span class="n">nodes_grp</span><span class="p">[</span><span class="s1">&#39;nodes_file&#39;</span><span class="p">],</span> <span class="n">data_type_files</span><span class="o">=</span><span class="n">nodes_grp</span><span class="p">[</span><span class="s1">&#39;node_types_file&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">population</span> <span class="ow">in</span> <span class="n">network</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">population_names</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">network</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">population</span><span class="p">]</span>
+
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not find nodes file with node population &quot;</span><span class="si">{}</span><span class="s1">&quot;.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">population</span><span class="p">))</span>
 
 
-<div class="viewcode-block" id="plot_raster"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.spike_trains.plot_raster">[docs]</a><span class="k">def</span> <span class="nf">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="n">spike_trains</span> <span class="o">=</span> <span class="n">load_spikes_file</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="n">config_file</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="n">spikes_file</span><span class="p">)</span>
-    <span class="n">plotting</span><span class="o">.</span><span class="n">plot_raster</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+<span class="k">def</span> <span class="nf">_plot_helper</span><span class="p">(</span><span class="n">plot_fnc</span><span class="p">,</span> <span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">group_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nodes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_types_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">sonata_config</span> <span class="o">=</span> <span class="n">SonataConfig</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span> <span class="k">if</span> <span class="n">config_file</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">pop</span><span class="p">,</span> <span class="n">spike_trains</span> <span class="o">=</span> <span class="n">_find_spikes</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="n">config_file</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="n">spikes_file</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">)</span>
+
+    <span class="c1"># Create the title</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">title</span> <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> Nodes&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+
+    <span class="c1"># Get start and stop times from config if needed</span>
+    <span class="k">if</span> <span class="n">sonata_config</span> <span class="ow">and</span> <span class="n">times</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="p">(</span><span class="n">sonata_config</span><span class="o">.</span><span class="n">tstart</span><span class="p">,</span> <span class="n">sonata_config</span><span class="o">.</span><span class="n">tstop</span><span class="p">)</span>
+
+    <span class="c1"># Create node-groups</span>
+    <span class="k">if</span> <span class="n">group_by</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">node_groups</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="n">_find_nodes</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="n">pop</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">sonata_config</span><span class="p">,</span> <span class="n">nodes_file</span><span class="o">=</span><span class="n">nodes_file</span><span class="p">,</span>
+                            <span class="n">node_types_file</span><span class="o">=</span><span class="n">node_types_file</span><span class="p">)</span>
+        <span class="n">grouped_df</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">grp</span> <span class="ow">in</span> <span class="n">nodes</span><span class="o">.</span><span class="n">groups</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">group_by</span> <span class="ow">in</span> <span class="n">grp</span><span class="o">.</span><span class="n">all_columns</span><span class="p">:</span>
+                <span class="n">grp_df</span> <span class="o">=</span> <span class="n">grp</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span>
+                <span class="n">grp_df</span> <span class="o">=</span> <span class="n">grp_df</span><span class="p">[[</span><span class="s1">&#39;node_id&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="p">]]</span>
+                <span class="n">grouped_df</span> <span class="o">=</span> <span class="n">grp_df</span> <span class="k">if</span> <span class="n">grouped_df</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">grouped_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">grp_df</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">grouped_df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not find any nodes with group_by attribute &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">group_by</span><span class="p">))</span>
+
+        <span class="c1"># Convert from string to list so we can always use the isin() method for filtering</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">group_excludes</span><span class="p">,</span> <span class="n">string_types</span><span class="p">):</span>
+            <span class="n">group_excludes</span> <span class="o">=</span> <span class="p">[</span><span class="n">group_excludes</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">group_excludes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">group_excludes</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">grp_key</span><span class="p">,</span> <span class="n">grp</span> <span class="ow">in</span> <span class="n">grouped_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">group_by</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">grp_key</span> <span class="ow">in</span> <span class="n">group_excludes</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">node_groups</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">grp</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]),</span> <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="n">grp_key</span><span class="p">})</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">node_groups</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">plot_fnc</span><span class="p">(</span><span class="n">spike_trains</span><span class="o">=</span><span class="n">spike_trains</span><span class="p">,</span> <span class="n">node_groups</span><span class="o">=</span><span class="n">node_groups</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">pop</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="plot_rates"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.spike_trains.plot_rates">[docs]</a><span class="k">def</span> <span class="nf">plot_rates</span><span class="p">(</span><span class="n">config_file</span><span class="p">):</span>
-    <span class="n">spike_trains</span> <span class="o">=</span> <span class="n">load_spikes_file</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
-    <span class="n">plotting</span><span class="o">.</span><span class="n">plot_rates</span><span class="p">(</span><span class="n">spike_trains</span><span class="p">)</span></div>
+<div class="viewcode-block" id="plot_raster"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.spike_trains.plot_raster">[docs]</a><span class="k">def</span> <span class="nf">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">with_histogram</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">group_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nodes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_types_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="n">plot_fnc</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">plotting</span><span class="o">.</span><span class="n">plot_raster</span><span class="p">,</span> <span class="n">with_histogram</span><span class="o">=</span><span class="n">with_histogram</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_plot_helper</span><span class="p">(</span><span class="n">plot_fnc</span><span class="p">,</span>
+                        <span class="n">config_file</span><span class="o">=</span><span class="n">config_file</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span>
+                        <span class="n">group_by</span><span class="o">=</span><span class="n">group_by</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="n">group_excludes</span><span class="p">,</span>
+                        <span class="n">spikes_file</span><span class="o">=</span><span class="n">spikes_file</span><span class="p">,</span> <span class="n">nodes_file</span><span class="o">=</span><span class="n">nodes_file</span><span class="p">,</span> <span class="n">node_types_file</span><span class="o">=</span><span class="n">node_types_file</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plot_rates"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.spike_trains.plot_rates">[docs]</a><span class="k">def</span> <span class="nf">plot_rates</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">smoothing_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nodes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_types_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="n">plot_fnc</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">plotting</span><span class="o">.</span><span class="n">plot_rates</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="n">smoothing</span><span class="p">,</span> <span class="n">smoothing_params</span><span class="o">=</span><span class="n">smoothing_params</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_plot_helper</span><span class="p">(</span><span class="n">plot_fnc</span><span class="p">,</span>
+                        <span class="n">config_file</span><span class="o">=</span><span class="n">config_file</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span>
+                        <span class="n">group_by</span><span class="o">=</span><span class="n">group_by</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="n">group_excludes</span><span class="p">,</span>
+                        <span class="n">spikes_file</span><span class="o">=</span><span class="n">spikes_file</span><span class="p">,</span> <span class="n">nodes_file</span><span class="o">=</span><span class="n">nodes_file</span><span class="p">,</span> <span class="n">node_types_file</span><span class="o">=</span><span class="n">node_types_file</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plot_rates_boxplot"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.spike_trains.plot_rates_boxplot">[docs]</a><span class="k">def</span> <span class="nf">plot_rates_boxplot</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                       <span class="n">group_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nodes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_types_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="n">plot_fnc</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">plotting</span><span class="o">.</span><span class="n">plot_rates_boxplot</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_plot_helper</span><span class="p">(</span><span class="n">plot_fnc</span><span class="p">,</span>
+        <span class="n">config_file</span><span class="o">=</span><span class="n">config_file</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span>
+        <span class="n">group_by</span><span class="o">=</span><span class="n">group_by</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="n">group_excludes</span><span class="p">,</span>
+        <span class="n">spikes_file</span><span class="o">=</span><span class="n">spikes_file</span><span class="p">,</span> <span class="n">nodes_file</span><span class="o">=</span><span class="n">nodes_file</span><span class="p">,</span> <span class="n">node_types_file</span><span class="o">=</span><span class="n">node_types_file</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="spike_statistics"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.spike_trains.spike_statistics">[docs]</a><span class="k">def</span> <span class="nf">spike_statistics</span><span class="p">(</span><span class="n">spikes_file</span><span class="p">,</span> <span class="n">simulation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">simulation_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">groupby</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">filterparams</span><span class="p">):</span>
@@ -692,6 +829,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="n">vals_df</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">spike_counts_df</span></div>
+
+
+<div class="viewcode-block" id="to_dataframe"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.spike_trains.to_dataframe">[docs]</a><span class="k">def</span> <span class="nf">to_dataframe</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">spike_trains</span> <span class="o">=</span> <span class="n">_find_spikes</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="n">config_file</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="n">spikes_file</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">spike_trains</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span></div>
 </pre></div>
 
             <div class="clearer"></div>

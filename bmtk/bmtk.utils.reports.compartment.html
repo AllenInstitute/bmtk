@@ -733,6 +733,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dt id="bmtk.utils.reports.compartment.compartment_report.CompartmentReport">
 <em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.reports.compartment.compartment_report.</code><code class="sig-name descname">CompartmentReport</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'r'</span></em>, <em class="sig-param"><span class="n">adaptor</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/compartment/compartment_report.html#CompartmentReport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.compartment.compartment_report.CompartmentReport" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="bmtk.utils.reports.compartment.compartment_report.CompartmentReport.load">
+<em class="property">static </em><code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">report</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/compartment/compartment_report.html#CompartmentReport.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.compartment.compartment_report.CompartmentReport.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </div>
@@ -1179,6 +1184,139 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 <code class="sig-name descname">set_variable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">val</span></em>, <em class="sig-param"><span class="n">population</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/compartment/core.html#CompartmentWriterABC.set_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.compartment.core.CompartmentWriterABC.set_variable" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.utils.reports.compartment.plotting">
+<span id="bmtk-utils-reports-compartment-plotting-module"></span><h2>bmtk.utils.reports.compartment.plotting module<a class="headerlink" href="#module-bmtk.utils.reports.compartment.plotting" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="bmtk.utils.reports.compartment.plotting.plot_traces">
+<code class="sig-prename descclassname">bmtk.utils.reports.compartment.plotting.</code><code class="sig-name descname">plot_traces</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">report</span></em>, <em class="sig-param"><span class="n">population</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sections</span><span class="o">=</span><span class="default_value">'origin'</span></em>, <em class="sig-param"><span class="n">average</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">node_groups</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">times</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show_legend</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/compartment/plotting.html#plot_traces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.compartment.plotting.plot_traces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displays the time trace of one or more nodes from a SONATA CompartmentReport file.</p>
+<p>To plot a group of individual variable traces (based on their soma)
+<a href="#id7"><span class="problematic" id="id8">``</span></a><a href="#id9"><span class="problematic" id="id10">`</span></a>python</p>
+<blockquote>
+<div><p>plot_traces(‘/path/to/report.h5’, node_ids=[0, 10, 20, …])</p>
+</div></blockquote>
+<p><a href="#id11"><span class="problematic" id="id12">``</span></a><a href="#id13"><span class="problematic" id="id14">`</span></a></p>
+<p>If node_ids=None (default) then all nodes in the report will be displayed. For large networks then can become
+difficult to visualize so it’s recommended you use average=True:
+<a href="#id15"><span class="problematic" id="id16">``</span></a><a href="#id17"><span class="problematic" id="id18">`</span></a>python</p>
+<blockquote>
+<div><p>plot_traces(‘/path/to/report.h5’, average=True)</p>
+</div></blockquote>
+<p><a href="#id19"><span class="problematic" id="id20">``</span></a><a href="#id21"><span class="problematic" id="id22">`</span></a></p>
+<p>Users also have the option of taking the averages of multiple subsets of nodes using the “node_groups” options.
+“node_groups” should be a list of dictionary, each dict with a ‘node_ids’: [list of ids], and optionally
+a ‘label’ and ‘c’ (color). For example support nodes [0, 70) are excitatory cells, nodes [70, 100) are inhibitory,
+and we want display excitatory and inhibitory averages and blue and red, respectivly:
+<a href="#id23"><span class="problematic" id="id24">``</span></a><a href="#id25"><span class="problematic" id="id26">`</span></a>python</p>
+<blockquote>
+<div><dl class="simple">
+<dt>plot_traces(‘/path/to/report.h5’,</dt><dd><dl class="simple">
+<dt>node_groups=[{‘node_ids’: range(0, 70), ‘label’: ‘exc’, ‘c’: ‘b’},</dt><dd><p>{‘node_ids’: range(70, 100), ‘label’: ‘inh’, ‘c’: ‘r’}])</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<p><a href="#id27"><span class="problematic" id="id28">``</span></a><a href="#id29"><span class="problematic" id="id30">`</span></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>report</strong> – Path to SONATA report file or CompartmentReport object</p></li>
+<li><p><strong>population</strong> – string. If the report more than one population of nodes, use this to determine which nodes to
+plot. If only one population exists and population=None then the function will find it by default.</p></li>
+<li><p><strong>node_ids</strong> – int or list of ints. Individual node to display the variable</p></li>
+<li><p><strong>sections</strong> – ‘origin’, ‘all’, or list of ids, Compartments/elements to display, By default will only show values
+at the soma.</p></li>
+<li><p><strong>average</strong> – If True will take the averages of all/selected nodes. Default False</p></li>
+<li><p><strong>node_groups</strong> – None or list of dicts. Used to group sets of nodes by labels and color. Each grouping should
+be a dictionary with a ‘node_ids’ key with a list of the ids. You can also add ‘label’ and ‘c’ keys for
+label and color. If None all nodes will be labeled and colored the same.</p></li>
+<li><p><strong>times</strong> – (float, float), start and stop times of simulation</p></li>
+<li><p><strong>title</strong> – str, adds a title to the plot</p></li>
+<li><p><strong>show_legend</strong> – Set True or False to determine if legend should be displayed on the plot. The default (None)
+function itself will guess if legend should be shown.</p></li>
+<li><p><strong>show</strong> – bool to display or not display plot. default True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>matplotlib figure.Figure object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="bmtk.utils.reports.compartment.plotting.plot_traces_averaged">
+<code class="sig-prename descclassname">bmtk.utils.reports.compartment.plotting.</code><code class="sig-name descname">plot_traces_averaged</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">report</span></em>, <em class="sig-param"><span class="n">population</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sections</span><span class="o">=</span><span class="default_value">'origin'</span></em>, <em class="sig-param"><span class="n">node_groups</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">times</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show_background</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">show_legend</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/compartment/plotting.html#plot_traces_averaged"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.compartment.plotting.plot_traces_averaged" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to plot averages across multiple nodes in a SONATA Compartment Report file.</p>
+<p>Recommended that you use “plot_traces” function.</p>
+<p>To plot multiple averages use the “node_groups” options. “node_groups” should be a list of dictionary, each dict
+with a ‘node_ids’: [list of ids], and optionally a ‘label’ and ‘c’ (color). For example support nodes [0, 70) are
+excitatory cells, nodes [70, 100) are inhibitory, and we want display excitatory and inhibitory averages and blue
+and red, respectivly:
+<a href="#id31"><span class="problematic" id="id32">``</span></a><a href="#id33"><span class="problematic" id="id34">`</span></a>python</p>
+<blockquote>
+<div><dl class="simple">
+<dt>plot_traces(‘/path/to/report.h5’,</dt><dd><dl class="simple">
+<dt>node_groups=[{‘node_ids’: range(0, 70), ‘label’: ‘exc’, ‘c’: ‘b’},</dt><dd><p>{‘node_ids’: range(70, 100), ‘label’: ‘inh’, ‘c’: ‘r’}])</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<p><a href="#id35"><span class="problematic" id="id36">``</span></a><a href="#id37"><span class="problematic" id="id38">`</span></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>report</strong> – Path to SONATA report file or CompartmentReport object.</p></li>
+<li><p><strong>population</strong> – string. If the report more than one population of nodes, use this to determine which nodes to
+plot. If only one population exists and population=None then the function will find it by default.</p></li>
+<li><p><strong>sections</strong> – ‘origin’, ‘all’, or list of ids, Compartments/elements to display, By default will only show values
+at the soma.</p></li>
+<li><p><strong>node_groups</strong> – None or list of dicts. Used to group sets of nodes by labels and color. Each grouping should
+be a dictionary with a ‘node_ids’ key with a list of the ids. You can also add ‘label’ and ‘c’ keys for
+label and color. If None all nodes will be labeled and colored the same.</p></li>
+<li><p><strong>times</strong> – (float, float), start and stop times of simulation.</p></li>
+<li><p><strong>title</strong> – str, adds a title to the plot.</p></li>
+<li><p><strong>show_background</strong> – shows all the individual traces greyed in the background.</p></li>
+<li><p><strong>show_legend</strong> – Set True or False to determine if legend should be displayed on the plot. The default (None)
+function itself will guess if legend should be shown.</p></li>
+<li><p><strong>show</strong> – bool to display or not display plot. default True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>matplotlib figure.Figure object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="bmtk.utils.reports.compartment.plotting.plot_traces_individual">
+<code class="sig-prename descclassname">bmtk.utils.reports.compartment.plotting.</code><code class="sig-name descname">plot_traces_individual</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">report</span></em>, <em class="sig-param"><span class="n">population</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sections</span><span class="o">=</span><span class="default_value">'origin'</span></em>, <em class="sig-param"><span class="n">times</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show_legend</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/compartment/plotting.html#plot_traces_individual"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.compartment.plotting.plot_traces_individual" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used the plot time traces of individual nodes from a SONATA compartment report file.</p>
+<p>Recommended use plot_traces instead, which will call this function if necessarcy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>report</strong> – Path to SONATA report file or CompartmentReport object.</p></li>
+<li><p><strong>population</strong> – string. If the report more than one population of nodes, use this to determine which nodes to
+plot. If only one population exists and population=None then the function will find it by default.</p></li>
+<li><p><strong>node_ids</strong> – int or list of ints. Individual node to display the variable.</p></li>
+<li><p><strong>sections</strong> – ‘origin’, ‘all’, or list of ids, Compartments/elements to display, By default will only show values
+at the soma.</p></li>
+<li><p><strong>times</strong> – (float, float), start and stop times of simulation.</p></li>
+<li><p><strong>title</strong> – str, adds a title to the plot.</p></li>
+<li><p><strong>show_legend</strong> – Set True or False to determine if legend should be displayed on the plot. The default (None)
+function itself will guess if legend should be shown.</p></li>
+<li><p><strong>show</strong> – bool to display or not display plot. default True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>matplotlib figure.Figure object</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

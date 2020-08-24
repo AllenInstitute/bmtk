@@ -754,7 +754,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">filtered_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_grp</span><span class="p">[</span><span class="n">time_slice</span><span class="p">,</span> <span class="n">gid_slice</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">filtered_data</span> <span class="k">if</span> <span class="n">multi_compartments</span> <span class="k">else</span> <span class="n">filtered_data</span><span class="p">[:]</span>
 
-
     <span class="k">def</span> <span class="nf">custom_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="p">[()]</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_custom_cols</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
 
