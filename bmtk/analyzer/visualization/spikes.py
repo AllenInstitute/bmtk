@@ -26,13 +26,14 @@ import h5py
 from six import string_types
 import pandas as pd
 import numpy as np
+import warnings
 import matplotlib.pyplot as plt
 import matplotlib.cm as cmx
 import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
 
 import bmtk.simulator.utils.config as config
-from bmtk.utils.reports.spike_trains.plotting import plot_raster, plot_rates, plot_raster_cmp
+from bmtk.utils.reports.spike_trains.plotting import plot_raster, plot_rates # , plot_raster_cmp
 
 
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -119,6 +120,7 @@ def _count_spikes(spikes_file, max_gid, interval=None):
 
 
 def plot_spikes_config(configure, group_key=None, exclude=[], save_as=None, show_plot=True):
+    warnings.warn('Deprecated: Please use bmtk.analyzer.spike_trains.plot_raster instead.', DeprecationWarning)
     if isinstance(configure, string_types):
         conf = config.from_json(configure)
     elif isinstance(configure, dict):
@@ -135,6 +137,7 @@ def plot_spikes_config(configure, group_key=None, exclude=[], save_as=None, show
 
 def plot_spikes(cells_file, cell_models_file, spikes_file, population=None, group_key=None, exclude=[], save_as=None,
                 show=True, title=None, legend=True, font_size=None):
+    warnings.warn('Deprecated: Please use bmtk.analyzer.spike_trains.plot_raster instead.', DeprecationWarning)
     # check if can be shown and/or saved
     #if save_as is not None:
     #    if os.path.exists(save_as):

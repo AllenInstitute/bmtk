@@ -1,0 +1,35 @@
+Example Networks and Simulations
+================================
+
+
+Mouse V1 Layer 4 Model
+-----------------------
+
+A ~45,000 cell model of the primary input layer (L4) of the mouse primary visual cortex. Built using BMTK and simulated
+using BioNet:
+
+https://portal.brain-map.org/explore/models/l4-mv1
+
+
+Mouse V1 Full Column Models
+---------------------------
+
+Biologically realistic models of the mouse primary visual cortex (V1) with ~230,000 simulated neurons. Contains two
+different types of models: A multi-compartmental model using BioNet and a GLIF-based point-neuron model using
+PointNet.
+
+
+https://portal.brain-map.org/explore/models/mv1-all-layers
+
+
+Brunel Models
+-------------
+
+12,500 neuron models based on the network described in "Dynamics of Sparsely Connected Networks of Excitatory and
+Inhibitory Spiking Neurons", Nicolas Brunel, 2000. The models are built using BioNet, PointNet, and PopNet and
+is a good metric of how to compare simulations ran across different levels of resultion:
+
+
+https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/ei_network
+
+

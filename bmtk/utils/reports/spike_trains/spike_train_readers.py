@@ -191,12 +191,10 @@ class SonataSTReader(SpikeTrainsReadOnlyAPI):
     def populations(self):
         return list(self._population_map.keys())
 
-    @property
     def units(self, population=None):
         return self._units
 
-    @units.setter
-    def units(self, u, population=None):
+    def set_units(self, u, population=None):
         self._units = u
 
     def sort_order(self, population=None):

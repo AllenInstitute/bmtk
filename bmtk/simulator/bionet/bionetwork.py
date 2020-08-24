@@ -48,7 +48,6 @@ class BioNetwork(SimNetwork):
     model_type_col = 'model_type'
 
     def __init__(self):
-        # property_schema = property_schema if property_schema is not None else DefaultPropertySchema
         super(BioNetwork, self).__init__()
         self._io = io
 

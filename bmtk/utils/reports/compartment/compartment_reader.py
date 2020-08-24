@@ -130,7 +130,6 @@ class _CompartmentPopulationReaderVer01(CompartmentReaderABC):
         filtered_data = np.array(self._data_grp[time_slice, gid_slice])
         return filtered_data if multi_compartments else filtered_data[:]
 
-
     def custom_columns(self, population=None):
         return {k: v[()] for k,v in self._custom_cols.items()}
 

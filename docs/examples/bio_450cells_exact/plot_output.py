@@ -1,16 +1,15 @@
-from bmtk.analyzer.visualization.spikes import plot_raster, plot_rates
 import matplotlib.pyplot as plt
 
-plt.figure('Raster')
-plot_raster('output/spikes.h5', with_histogram=True, with_labels=['v1'],
-            nodes_file='network/internal_nodes.h5',
-            node_types_file='network/internal_node_types.csv',
-            group_by='model_name',
-            show_plot=False)
-plt.figure('Rates')
-plot_rates('output/spikes.h5',
-           nodes_file='network/internal_nodes.h5',
-           node_types_file='network/internal_node_types.csv',
-           group_by='model_name',
-           show_plot=False)
+from bmtk.analyzer.compartment import plot_traces
+from bmtk.analyzer.spike_trains import plot_raster, plot_rates_boxplot
+
+
+# Setting show to False so we can display all the plots at the same time
+plot_raster(config_file='config.json', group_by='model_name', show=False)
+plot_rates_boxplot(config_file='config.json', group_by='model_name', show=False)
+
+
+plot_traces(config_file='config.json', report_name='membrane_potential', group_by='model_name',
+            times=(0.0, 200.0), show=False)
+
 plt.show()

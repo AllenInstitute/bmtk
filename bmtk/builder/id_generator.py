@@ -68,4 +68,3 @@ class IDGenerator(object):
 
         assert(isinstance(N, six.integer_types))
         return [self.next() for _ in six.moves.range(N)]
-

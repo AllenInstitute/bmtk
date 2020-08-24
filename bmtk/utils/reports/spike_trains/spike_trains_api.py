@@ -69,7 +69,6 @@ class SpikeTrainsAPI(object):
         """
         raise NotImplementedError()
 
-    @property
     def units(self, population=None):
         """Returns the units used in the timestamps.
 
@@ -80,8 +79,7 @@ class SpikeTrainsAPI(object):
         # TODO: Use an enum/struct to pre-define the avilable units.
         return 'ms'
 
-    @units.setter
-    def units(self, u, population=None):
+    def set_units(self, u, population=None):
         """Set the units associated with a population timestamps (ms, seconds)"""
         raise NotImplementedError()
 
@@ -169,6 +167,13 @@ class SpikeTrainsAPI(object):
 
     def to_nwb(self, path, mode='w', **kwargs):
         raise NotImplemented()
+
+    def merge(self, other):
+        """Import Another SpikesTrain object into current file, always in-place.
+
+        :param other: Another SpikeTrainsAPI object
+        """
+        raise NotImplementedError()
 
     def is_equal(self, other, populations=None, err=0.00001, time_window=None):
         """Compares two SpikeTrains instances to see if they have the same spikes (exlcuding order or their method of

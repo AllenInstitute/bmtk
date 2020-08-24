@@ -7,7 +7,7 @@ We are releasing this code to the public as a tool we expect others to use. Ques
 
 
 ## Quickstart
-bmtk requires Python 2.7 plus [additional python dependicies](https://alleninstitute.github.io/bmtk/index.html#base-installation). To install with
+bmtk requires Python 2.7 or 3.5+, plus [additional python dependicies](https://alleninstitute.github.io/bmtk/index.html#base-installation). To install with
 base requirements from a command-line:
 
 ```bash
@@ -18,6 +18,14 @@ base requirements from a command-line:
 
 There are examples of building models and running simulations located in docs/examples/. Some of the simulation engines may require additonal requirements to run.
 
+##### Tests
+
+There are a collection of unit-tests in ```bmtk.tests``` which can be run using pytest
+
+```bash
+  $ cd bmtk
+  $ py.test
+```
 
 ## Documentation
 

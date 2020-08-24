@@ -1,5 +1,6 @@
 from .compartment_reader import CompartmentReaderVer01 as SonataReaderDefault
 from .compartment_writer import CompartmentWriterv01 as SonataWriterDefault
+from .core import CompartmentReaderABC, CompartmentWriterABC
 from bmtk.utils.io import bmtk_world_comm
 
 try:
@@ -20,3 +21,12 @@ class CompartmentReport(object):
                 return SonataReaderDefault(path, mode, **kwargs)
             else:
                 return SonataWriterDefault(path, mode, **kwargs)
+
+    @staticmethod
+    def load(report):
+        if isinstance(report, CompartmentReaderABC):
+            return report
+        elif isinstance(report, CompartmentWriterABC):
+            raise AttributeError('Unable to load a CompartmentWriter object.')
+        else:
+            return CompartmentReport(report, mode='r')
