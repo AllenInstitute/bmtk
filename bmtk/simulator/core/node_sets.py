@@ -39,7 +39,7 @@ class NodeSet(object):
         else:
             for pop in self._populations:
                 for node in pop.filter(self._filter):
-                    yield node.node_id
+                    yield self._network.gid_pool.get_gid(name=pop.name, node_id=node.node_id)
 
     def nodes(self):
         return None

@@ -69,8 +69,8 @@ class BioCell(Cell):
     """Implemntation of a morphologically and biophysically detailed type cell.
 
     """
-    def __init__(self, node, bionetwork):
-        super(BioCell, self).__init__(node)
+    def __init__(self, node, population_name, bionetwork):
+        super(BioCell, self).__init__(node=node, population_name=population_name, network=bionetwork)
 
         # Set up netcon object that can be used to detect and communicate cell spikes.
         self.set_spike_detector(bionetwork.spike_threshold)

@@ -65,6 +65,10 @@ class PointNetwork(SimNetwork):
     def gid_map(self):
         return self._gid_map
 
+    @property
+    def gid_pool(self):
+        return self._gid_map
+
     def get_nodes_df(self, population):
         nodes_adaptor = self.get_node_population(population)
         return nodes_adaptor.nodes_df()

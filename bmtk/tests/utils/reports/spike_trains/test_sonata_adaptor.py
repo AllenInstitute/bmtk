@@ -3,12 +3,12 @@ import numpy as np
 import tempfile
 import h5py
 from six import string_types
+import warnings
 
 from bmtk.utils.reports.spike_trains.spike_train_buffer import STMemoryBuffer, STCSVBuffer
 from bmtk.utils.reports.spike_trains import sort_order, pop_na
 from bmtk.utils.reports.spike_trains.spike_train_readers import load_sonata_file, SonataSTReader, SonataOldReader, EmptySonataReader
 from bmtk.utils.reports.spike_trains.spikes_file_writers import write_sonata, write_sonata_itr
-# from bmtk.utils.reports.spike_trains.adaptors.sonata_adaptors import SonataSTReader, SonataOldReader, EmptySonataReader
 from bmtk.utils.sonata.utils import check_magic, get_version, add_hdf5_magic, add_hdf5_version
 
 
@@ -38,7 +38,7 @@ def test_write_sonata(st_cls, write_fnc):
     tmpfile = tempfile.NamedTemporaryFile(suffix='.h5')
     write_fnc(tmpfile.name, st)
 
-    with h5py.File(tmpfile.name) as h5:
+    with h5py.File(tmpfile.name, 'r') as h5:
         assert(check_magic(h5))
         assert(get_version(h5) is not None)
         assert('/spikes/V1' in h5)
@@ -68,7 +68,7 @@ def test_write_sonata_empty(st_cls, write_fnc):
     tmpfile = tempfile.NamedTemporaryFile(suffix='.h5')
     write_fnc(tmpfile.name, st)
 
-    with h5py.File(tmpfile.name) as h5:
+    with h5py.File(tmpfile.name, 'r') as h5:
         assert(check_magic(h5))
         assert(get_version(h5) is not None)
         assert('/spikes' in h5)
@@ -94,7 +94,7 @@ def test_write_sonata_append(st_cls, write_fnc):
     st.add_spikes(population='V2', node_ids=0, timestamps=np.linspace(0, 1.0, 100))
 
     write_fnc(tmpfile.name, st, mode='a', sort_order=sort_order.by_id)
-    with h5py.File(tmpfile.name) as h5:
+    with h5py.File(tmpfile.name, 'r') as h5:
         assert(check_magic(h5))
         assert(get_version(h5) is not None)
         assert('/spikes/V1' in h5)
@@ -126,7 +126,7 @@ def test_write_sonata_bytime(st_cls, write_fnc):
 
     tmpfile = tempfile.NamedTemporaryFile(suffix='.h5')
     write_fnc(tmpfile.name, st, sort_order=sort_order.by_time)
-    with h5py.File(tmpfile.name) as h5:
+    with h5py.File(tmpfile.name, 'r') as h5:
         assert(check_magic(h5))
         assert(get_version(h5) is not None)
         assert(h5['/spikes/V1'].attrs['sorting'] == 'by_time')
@@ -149,7 +149,7 @@ def test_write_sonata_byid(st_cls, write_fnc):
 
     tmpfile = tempfile.NamedTemporaryFile(suffix='.h5')
     write_fnc(tmpfile.name, st, sort_order=sort_order.by_id)
-    with h5py.File(tmpfile.name) as h5:
+    with h5py.File(tmpfile.name, 'r') as h5:
         assert(check_magic(h5))
         assert(get_version(h5) is not None)
         assert(h5['/spikes/V1'].attrs['sorting'] == 'by_id')
@@ -227,6 +227,8 @@ def test_oldsonata_reader():
 
 
 def test_load_sonata():
+    warnings.simplefilter("ignore", UserWarning)
+
     # Sonata adaptor's factory method
     tmp_sonata = tempfile.NamedTemporaryFile(suffix='.h5')
     with h5py.File(tmp_sonata.name, 'w') as h5:

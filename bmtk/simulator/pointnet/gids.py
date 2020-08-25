@@ -24,8 +24,7 @@ class GidPool(object):
         raise NotImplementedError()
 
     def get_gid(self, name, node_id):
-        # return self._popid2gid[name][node_id]
-        raise NotImplementedError()
+        return self.get_nestids(name=name, node_ids=[node_id])[0]
 
     def get_pool_id(self, gid):
         return self._gid2pop_id[gid]

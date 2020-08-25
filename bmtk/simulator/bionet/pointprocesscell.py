@@ -54,8 +54,8 @@ class ConnectionStruct(object):
 
 class PointProcessCell(Cell):
     """Implimentation of a Leaky Integrate-and-file neuron type cell."""
-    def __init__(self, node, bionetwork):
-        super(PointProcessCell, self).__init__(node)
+    def __init__(self, node, population_name, bionetwork):
+        super(PointProcessCell, self).__init__(node, population_name=population_name, network=bionetwork)
         self.set_spike_detector()
         self._src_gids = []
         self._src_nets = []
