@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chapter 1: Single cell simulation with current injection (with BioNet) &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <title>Tutorial 1: Single cell simulation with current injection (with BioNet) &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -18,7 +18,7 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Chapter 2: Single cell simulation with external feedfoward input (with BioNet)" href="tutorial_single_cell_syn.html" />
+    <link rel="next" title="Tutorial 2: Single cell simulation with external feedfoward input (with BioNet)" href="tutorial_single_cell_syn.html" />
     <link rel="prev" title="BMTK Builder (A Quick Introduction)" href="tutorial_NetworkBuilder_Intro.html" /> 
   </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
@@ -856,10 +856,10 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<div class="section" id="Chapter-1:-Single-cell-simulation-with-current-injection-(with-BioNet)">
-<h1>Chapter 1: Single cell simulation with current injection (with BioNet)<a class="headerlink" href="#Chapter-1:-Single-cell-simulation-with-current-injection-(with-BioNet)" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="Tutorial-1:-Single-cell-simulation-with-current-injection-(with-BioNet)">
+<h1>Tutorial 1: Single cell simulation with current injection (with BioNet)<a class="headerlink" href="#Tutorial-1:-Single-cell-simulation-with-current-injection-(with-BioNet)" title="Permalink to this headline">¶</a></h1>
 <p>In this example we will build a network consisting of a single biophysically detailed cell. Then we will run a short simulation with a current injection at the soma of the cell, then look at the output of spikes, membrane potential and calcium flux.</p>
-<p><strong>Note</strong> - scripts and files for running this tutorial can be found in the directory <a class="reference external" href="sources/chapter01">sources/chapter01/</a></p>
+<p><strong>Note</strong> - scripts and files for running this tutorial can be found in the directory <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/sources/chapter01">sources/chapter01/</a></p>
 <p><strong>requirements:</strong> * Python 2.7, 3.6+ * bmtk * NEURON 7.4+</p>
 <div class="section" id="1.-Building-the-network">
 <h2>1. Building the network<a class="headerlink" href="#1.-Building-the-network" title="Permalink to this headline">¶</a></h2>
@@ -869,7 +869,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.builder.networks</span> <span class="kn">import</span> <span class="n">NetworkBuilder</span>
 
 <span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;mcortex&#39;</span><span class="p">)</span>
@@ -889,24 +889,17 @@ div.rendered_html tbody tr:hover {
 <h3>Building and saving<a class="headerlink" href="#Building-and-saving" title="Permalink to this headline">¶</a></h3>
 <p>The final thing to do is to build and save the network. If successful, we should see a combination of hdf5 and csv files in the ‘./network’ directory, these files are used describe the network, and can be saved, stored and run at a later date.</p>
 <p>First, it’s a good idea to remove any old files in the “network” folder so they don’t interfere with the current simulation.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ rm network/*
 </pre></div>
-</div>
-<div class="input_area highlight-bash notranslate"><div class="highlight"><pre>
-<span></span>%%bash
-rm network/*
-</pre></div>
-</div>
 </div>
 <p>If you get the output:</p>
 <p>rm: cannot remove ’network/<a href="#id1"><span class="problematic" id="id2">*</span></a>’: No such file or directory</p>
 <p>It’s OK. Keep going.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
 <span class="n">net</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;network&#39;</span><span class="p">)</span>
 </pre></div>
@@ -914,10 +907,10 @@ rm network/*
 </div>
 <p>Use the NetworkBuilder nodes() method to show that a node of our parameters was created</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 </pre></div>
@@ -947,10 +940,10 @@ rm network/*
 </div>
 <p>Or call the function directly in python</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.utils.sim_setup</span> <span class="kn">import</span> <span class="n">build_env_bionet</span>
 
 <span class="n">build_env_bionet</span><span class="p">(</span><span class="n">base_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch01&#39;</span><span class="p">,</span>      <span class="c1"># Where to save the scripts and config files</span>
@@ -991,10 +984,10 @@ rm network/*
 </div>
 <p>or through the script</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.simulator</span> <span class="kn">import</span> <span class="n">bionet</span>
 
 
@@ -1011,7 +1004,7 @@ rm network/*
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2019-09-04 13:48:44,204 [INFO] Created log file
+2020-08-25 10:49:42,153 [INFO] Created log file
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1027,7 +1020,7 @@ INFO:NEURONIOUtils:Created log file
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2019-09-04 13:48:44,676 [INFO] Building cells.
+2020-08-25 10:49:42,242 [INFO] Building cells.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1043,7 +1036,7 @@ INFO:NEURONIOUtils:Building cells.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2019-09-04 13:48:45,421 [INFO] Building recurrent connections
+2020-08-25 10:49:42,441 [INFO] Building recurrent connections
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1059,7 +1052,7 @@ INFO:NEURONIOUtils:Building recurrent connections
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2019-09-04 13:48:45,454 [INFO] Running simulation for 2000.000 ms with the time step 0.100 ms
+2020-08-25 10:49:42,464 [INFO] Running simulation for 2000.000 ms with the time step 0.100 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1075,7 +1068,7 @@ INFO:NEURONIOUtils:Running simulation for 2000.000 ms with the time step 0.100 m
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2019-09-04 13:48:45,463 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
+2020-08-25 10:49:42,467 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1091,7 +1084,7 @@ INFO:NEURONIOUtils:Starting timestep: 0 at t_sim: 0.000 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2019-09-04 13:48:45,483 [INFO] Block save every 5000 steps
+2020-08-25 10:49:42,469 [INFO] Block save every 5000 steps
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1107,7 +1100,7 @@ INFO:NEURONIOUtils:Block save every 5000 steps
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2019-09-04 13:48:46,071 [INFO]     step:5000 t_sim:500.00 ms
+2020-08-25 10:49:42,766 [INFO]     step:5000 t_sim:500.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1123,7 +1116,7 @@ INFO:NEURONIOUtils:    step:5000 t_sim:500.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2019-09-04 13:48:46,620 [INFO]     step:10000 t_sim:1000.00 ms
+2020-08-25 10:49:43,132 [INFO]     step:10000 t_sim:1000.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1139,7 +1132,7 @@ INFO:NEURONIOUtils:    step:10000 t_sim:1000.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2019-09-04 13:48:47,187 [INFO]     step:15000 t_sim:1500.00 ms
+2020-08-25 10:49:43,576 [INFO]     step:15000 t_sim:1500.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1155,7 +1148,7 @@ INFO:NEURONIOUtils:    step:15000 t_sim:1500.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2019-09-04 13:48:47,815 [INFO]     step:20000 t_sim:2000.00 ms
+2020-08-25 10:49:43,904 [INFO]     step:20000 t_sim:2000.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1171,7 +1164,7 @@ INFO:NEURONIOUtils:    step:20000 t_sim:2000.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2019-09-04 13:48:47,869 [INFO] Simulation completed in 2.415 seconds
+2020-08-25 10:49:43,918 [INFO] Simulation completed in 1.454 seconds
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1179,7 +1172,7 @@ INFO:NEURONIOUtils:    step:20000 t_sim:2000.00 ms
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-INFO:NEURONIOUtils:Simulation completed in 2.415 seconds
+INFO:NEURONIOUtils:Simulation completed in 1.454 seconds
 </pre></div></div>
 </div>
 <div class="admonition warning">
@@ -1211,17 +1204,18 @@ INFO:NEURONIOUtils:Simulation completed in 2.415 seconds
 <p>The results of the simulation are placed into various files as specified in the “output” section of the config file. We can change this before run-time if required.</p>
 <p>All simulations will save the spike times of the network cells. These are saved in csv format (output/spikes.txt) or hdf5 format(output/spikes.h5). To get the table of spike times for our single-cell network we can run the following method from the analyzer (gid 0 corresponds to our single cell).</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.spike_trains</span> <span class="kn">import</span> <span class="n">to_dataframe</span>
+
 <span class="n">to_dataframe</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch01/simulation_config.json&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -1244,118 +1238,118 @@ INFO:NEURONIOUtils:Simulation completed in 2.415 seconds
     <tr style="text-align: right;">
       <th></th>
       <th>timestamps</th>
-      <th>population</th>
       <th>node_ids</th>
+      <th>population</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
       <td>554.8</td>
-      <td>mcortex</td>
       <td>0</td>
+      <td>mcortex</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>594.4</td>
-      <td>mcortex</td>
+      <td>1379.5</td>
       <td>0</td>
+      <td>mcortex</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>637.1</td>
-      <td>mcortex</td>
+      <td>1319.5</td>
       <td>0</td>
+      <td>mcortex</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>683.9</td>
-      <td>mcortex</td>
+      <td>1259.5</td>
       <td>0</td>
+      <td>mcortex</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>734.7</td>
-      <td>mcortex</td>
+      <td>1199.5</td>
       <td>0</td>
+      <td>mcortex</td>
     </tr>
     <tr>
       <th>5</th>
-      <td>788.7</td>
-      <td>mcortex</td>
+      <td>1139.7</td>
       <td>0</td>
+      <td>mcortex</td>
     </tr>
     <tr>
       <th>6</th>
-      <td>844.9</td>
-      <td>mcortex</td>
+      <td>1079.9</td>
       <td>0</td>
+      <td>mcortex</td>
     </tr>
     <tr>
       <th>7</th>
-      <td>902.6</td>
-      <td>mcortex</td>
+      <td>1020.4</td>
       <td>0</td>
+      <td>mcortex</td>
     </tr>
     <tr>
       <th>8</th>
       <td>961.2</td>
-      <td>mcortex</td>
       <td>0</td>
+      <td>mcortex</td>
     </tr>
     <tr>
       <th>9</th>
-      <td>1020.4</td>
-      <td>mcortex</td>
+      <td>902.6</td>
       <td>0</td>
+      <td>mcortex</td>
     </tr>
     <tr>
       <th>10</th>
-      <td>1079.9</td>
-      <td>mcortex</td>
+      <td>844.9</td>
       <td>0</td>
+      <td>mcortex</td>
     </tr>
     <tr>
       <th>11</th>
-      <td>1139.7</td>
-      <td>mcortex</td>
+      <td>788.7</td>
       <td>0</td>
+      <td>mcortex</td>
     </tr>
     <tr>
       <th>12</th>
-      <td>1199.5</td>
-      <td>mcortex</td>
+      <td>734.7</td>
       <td>0</td>
+      <td>mcortex</td>
     </tr>
     <tr>
       <th>13</th>
-      <td>1259.5</td>
-      <td>mcortex</td>
+      <td>683.9</td>
       <td>0</td>
+      <td>mcortex</td>
     </tr>
     <tr>
       <th>14</th>
-      <td>1319.5</td>
-      <td>mcortex</td>
+      <td>637.1</td>
       <td>0</td>
+      <td>mcortex</td>
     </tr>
     <tr>
       <th>15</th>
-      <td>1379.5</td>
-      <td>mcortex</td>
+      <td>594.4</td>
       <td>0</td>
+      <td>mcortex</td>
     </tr>
     <tr>
       <th>16</th>
       <td>1439.6</td>
-      <td>mcortex</td>
       <td>0</td>
+      <td>mcortex</td>
     </tr>
     <tr>
       <th>17</th>
       <td>1499.7</td>
-      <td>mcortex</td>
       <td>0</td>
+      <td>mcortex</td>
     </tr>
   </tbody>
 </table>
@@ -1363,13 +1357,14 @@ INFO:NEURONIOUtils:Simulation completed in 2.415 seconds
 </div>
 <p>When setting up the enviornment and config file we specified cell_vars=[‘v’, ‘cai’]. This indicates to the simulator to also record membrane potential and calcium diffusion (and we can also specify other variables as long as they are supported in NEURON).</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.cell_vars</span> <span class="kn">import</span> <span class="n">plot_report</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.compartment</span> <span class="kn">import</span> <span class="n">plot_traces</span>
 
-<span class="n">plot_report</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch01/simulation_config.json&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch01/simulation_config.json&#39;</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;v_report&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch01/simulation_config.json&#39;</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;cai_report&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1377,14 +1372,14 @@ INFO:NEURONIOUtils:Simulation completed in 2.415 seconds
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/tutorial_single_cell_clamped_18_0.png" src="_images/tutorial_single_cell_clamped_18_0.png" />
+<img alt="_images/tutorial_single_cell_clamped_16_0.png" src="_images/tutorial_single_cell_clamped_16_0.png" />
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/tutorial_single_cell_clamped_18_1.png" src="_images/tutorial_single_cell_clamped_18_1.png" />
+<img alt="_images/tutorial_single_cell_clamped_16_1.png" src="_images/tutorial_single_cell_clamped_16_1.png" />
 </div>
 </div>
 </div>
@@ -1460,17 +1455,17 @@ INFO:NEURONIOUtils:Simulation completed in 2.415 seconds
 </div>
 <p>When building the network we defined the cell model and morphology through the ‘dynamics_params’ and ‘morphology_file’ options. After building and saving the network, these values were saved in the node-types csv file.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;network/mcortex_node_types.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -1493,12 +1488,12 @@ INFO:NEURONIOUtils:Simulation completed in 2.415 seconds
     <tr style="text-align: right;">
       <th></th>
       <th>node_type_id</th>
-      <th>dynamics_params</th>
-      <th>model_processing</th>
-      <th>model_type</th>
-      <th>model_template</th>
-      <th>morphology</th>
       <th>potental</th>
+      <th>model_template</th>
+      <th>model_type</th>
+      <th>dynamics_params</th>
+      <th>morphology</th>
+      <th>model_processing</th>
       <th>cell_name</th>
     </tr>
   </thead>
@@ -1506,12 +1501,12 @@ INFO:NEURONIOUtils:Simulation completed in 2.415 seconds
     <tr>
       <th>0</th>
       <td>100</td>
-      <td>472363762_fit.json</td>
-      <td>aibs_perisomatic</td>
-      <td>biophysical</td>
-      <td>ctdb:Biophys1.hoc</td>
-      <td>Scnn1a_473845048_m.swc</td>
       <td>exc</td>
+      <td>ctdb:Biophys1.hoc</td>
+      <td>biophysical</td>
+      <td>472363762_fit.json</td>
+      <td>Scnn1a_473845048_m.swc</td>
+      <td>aibs_perisomatic</td>
       <td>Scnn1a_473845048</td>
     </tr>
   </tbody>
@@ -1520,6 +1515,15 @@ INFO:NEURONIOUtils:Simulation completed in 2.415 seconds
 </div>
 <p>If we want to run the simulation on a different cell model, all we have to do is 1. Download new parameters.json and morphology.swc into components/biophysical 2. Open mcortex_node_types.csv in a text editor and update ‘morphology_file’ and ‘params_file’ accordingly.</p>
 <p>In our simple one-cell example, it is likely faster to just rebuild the network. However the advantage of the use of the node types becomes clear once we start dealing with a larger network. For example we may have a network of hundreds of thousands of individual cells with tens of thousands of Scnn1a type cells. The process of adjusting/changing the Scnn1a parameter in the csv then starting another simulation only takes seconds, whereas rebuilding the entire network may take hours.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>
+</pre></div>
+</div>
+</div>
 </div>
 </div>
 

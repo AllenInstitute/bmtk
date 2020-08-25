@@ -648,8 +648,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GidPool.get_gid"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.gids.GidPool.get_gid">[docs]</a>    <span class="k">def</span> <span class="nf">get_gid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">node_id</span><span class="p">):</span>
-        <span class="c1"># return self._popid2gid[name][node_id]</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nestids</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="n">node_id</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="GidPool.get_pool_id"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.gids.GidPool.get_pool_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_pool_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gid</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid2pop_id</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span></div>

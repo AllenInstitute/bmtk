@@ -18,8 +18,8 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Chapter 4: Muti-population recurrent network (with BioNet)" href="tutorial_multi_pop.html" />
-    <link rel="prev" title="Chapter 2: Single cell simulation with external feedfoward input (with BioNet)" href="tutorial_single_cell_syn.html" /> 
+    <link rel="next" title="Tutorial 4: Muti-population recurrent network (with BioNet)" href="tutorial_multi_pop.html" />
+    <link rel="prev" title="Tutorial 2: Single cell simulation with external feedfoward input (with BioNet)" href="tutorial_single_cell_syn.html" /> 
   </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
 <style>
@@ -859,8 +859,8 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="Chapter-3:-Multi-cell,-single-population-network-(with-BioNet)">
 <h1>Chapter 3: Multi-cell, single population network (with BioNet)<a class="headerlink" href="#Chapter-3:-Multi-cell,-single-population-network-(with-BioNet)" title="Permalink to this headline">¶</a></h1>
 <p>In this tutorial, we will create a more complex network that contains multiple biophysical cells, but all of them having the same cell-type (we will cover hetergenous networks in the next tutorial). The network will contain recurrent connections, as well as external input that provide the next with stimululation.</p>
-<p><strong>Note</strong> - scripts and files for running this tutorial can be found in the directory <a class="reference external" href="sources/chapter03">sources/chapter03/</a></p>
-<p>requirements: * bmtk * NEURON 7.4</p>
+<p><strong>Note</strong> - scripts and files for running this tutorial can be found in the directory <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/sources/chapter03">sources/chapter03/</a></p>
+<p>requirements: * bmtk * NEURON 7.4+</p>
 <div class="section" id="1.-Building-the-Network">
 <h2>1. Building the Network<a class="headerlink" href="#1.-Building-the-Network" title="Permalink to this headline">¶</a></h2>
 <p>First we will build our internal network, which consists of 100 different cells. All the cells are of the same type (we’ll show how to build a heterogeneous network in the next tutorial), however they all have a different location and y-axis rotation.</p>
@@ -870,7 +870,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">bmtk.builder.networks</span> <span class="kn">import</span> <span class="n">NetworkBuilder</span>
 <span class="kn">from</span> <span class="nn">bmtk.builder.auxi.node_params</span> <span class="kn">import</span> <span class="n">positions_columinar</span><span class="p">,</span> <span class="n">xiter_random</span>
@@ -916,7 +916,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.edge_connectors</span> <span class="kn">import</span> <span class="n">distance_connector</span>
 
 <span class="n">cortex</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Scnn1a&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Scnn1a&#39;</span><span class="p">},</span>
@@ -939,14 +939,14 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;bmtk.builder.connection_map.ConnectionMap at 0x7f62f3911090&gt;
+&lt;bmtk.builder.connection_map.ConnectionMap at 0x7fb9ab955860&gt;
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">cortex</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
 <span class="n">cortex</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch03/network&#39;</span><span class="p">)</span>
 <span class="n">cortex</span><span class="o">.</span><span class="n">save_edges</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch03/network&#39;</span><span class="p">)</span>
@@ -960,7 +960,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">thalamus</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;mthalamus&#39;</span><span class="p">)</span>
 <span class="n">thalamus</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
                    <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;tON&#39;</span><span class="p">,</span>
@@ -974,7 +974,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.edge_connectors</span> <span class="kn">import</span> <span class="n">connect_random</span>
 
 <span class="n">thalamus</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">thalamus</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span> <span class="n">target</span><span class="o">=</span><span class="n">cortex</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span>
@@ -1002,7 +1002,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.utils.reports.spike_trains</span> <span class="kn">import</span> <span class="n">PoissonSpikeGenerator</span>
 
 <span class="n">psg</span> <span class="o">=</span> <span class="n">PoissonSpikeGenerator</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="s1">&#39;mthalamus&#39;</span><span class="p">)</span>
@@ -1013,7 +1013,7 @@ div.rendered_html tbody tr:hover {
 
 <span class="c1"># Let&#39;s do a quick check that we have reasonable results. Should see somewhere on the order of 15*3*100 = 4500</span>
 <span class="c1"># spikes</span>
-<span class="n">psg</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span>
+<span class="n">psg</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 
 </pre></div>
 </div>
@@ -1041,381 +1041,44 @@ div.rendered_html tbody tr:hover {
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>node_id</th>
-      <th>population</th>
+      <th>node_ids</th>
       <th>timestamps</th>
+      <th>population</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
       <td>0</td>
+      <td>41.735876</td>
       <td>mthalamus</td>
-      <td>0.001397</td>
     </tr>
     <tr>
       <th>1</th>
       <td>0</td>
+      <td>71.347642</td>
       <td>mthalamus</td>
-      <td>0.099114</td>
     </tr>
     <tr>
       <th>2</th>
       <td>0</td>
+      <td>206.996984</td>
       <td>mthalamus</td>
-      <td>0.145707</td>
     </tr>
     <tr>
       <th>3</th>
       <td>0</td>
+      <td>316.232099</td>
       <td>mthalamus</td>
-      <td>0.147085</td>
     </tr>
     <tr>
       <th>4</th>
       <td>0</td>
+      <td>479.833100</td>
       <td>mthalamus</td>
-      <td>0.162860</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>0.208985</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>0.209418</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>0.225538</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>0.232885</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>0.320728</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>0.435443</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>0.456890</td>
-    </tr>
-    <tr>
-      <th>12</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>0.484684</td>
-    </tr>
-    <tr>
-      <th>13</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>0.523754</td>
-    </tr>
-    <tr>
-      <th>14</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>0.542172</td>
-    </tr>
-    <tr>
-      <th>15</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>0.542389</td>
-    </tr>
-    <tr>
-      <th>16</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>0.549574</td>
-    </tr>
-    <tr>
-      <th>17</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>0.686661</td>
-    </tr>
-    <tr>
-      <th>18</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>0.744817</td>
-    </tr>
-    <tr>
-      <th>19</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>0.745667</td>
-    </tr>
-    <tr>
-      <th>20</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>0.814251</td>
-    </tr>
-    <tr>
-      <th>21</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>0.891552</td>
-    </tr>
-    <tr>
-      <th>22</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>0.911168</td>
-    </tr>
-    <tr>
-      <th>23</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>0.923863</td>
-    </tr>
-    <tr>
-      <th>24</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>1.206938</td>
-    </tr>
-    <tr>
-      <th>25</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>1.234080</td>
-    </tr>
-    <tr>
-      <th>26</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>1.284708</td>
-    </tr>
-    <tr>
-      <th>27</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>1.361369</td>
-    </tr>
-    <tr>
-      <th>28</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>1.376251</td>
-    </tr>
-    <tr>
-      <th>29</th>
-      <td>0</td>
-      <td>mthalamus</td>
-      <td>1.441294</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-      <td>...</td>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>4461</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>1.637971</td>
-    </tr>
-    <tr>
-      <th>4462</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>1.686438</td>
-    </tr>
-    <tr>
-      <th>4463</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>1.834531</td>
-    </tr>
-    <tr>
-      <th>4464</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>1.892833</td>
-    </tr>
-    <tr>
-      <th>4465</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>1.896758</td>
-    </tr>
-    <tr>
-      <th>4466</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>1.929408</td>
-    </tr>
-    <tr>
-      <th>4467</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>1.954290</td>
-    </tr>
-    <tr>
-      <th>4468</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>1.977157</td>
-    </tr>
-    <tr>
-      <th>4469</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>1.978290</td>
-    </tr>
-    <tr>
-      <th>4470</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>1.984737</td>
-    </tr>
-    <tr>
-      <th>4471</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>2.104143</td>
-    </tr>
-    <tr>
-      <th>4472</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>2.111367</td>
-    </tr>
-    <tr>
-      <th>4473</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>2.112607</td>
-    </tr>
-    <tr>
-      <th>4474</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>2.192592</td>
-    </tr>
-    <tr>
-      <th>4475</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>2.276194</td>
-    </tr>
-    <tr>
-      <th>4476</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>2.284277</td>
-    </tr>
-    <tr>
-      <th>4477</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>2.306376</td>
-    </tr>
-    <tr>
-      <th>4478</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>2.306636</td>
-    </tr>
-    <tr>
-      <th>4479</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>2.307304</td>
-    </tr>
-    <tr>
-      <th>4480</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>2.334148</td>
-    </tr>
-    <tr>
-      <th>4481</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>2.370546</td>
-    </tr>
-    <tr>
-      <th>4482</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>2.648120</td>
-    </tr>
-    <tr>
-      <th>4483</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>2.661539</td>
-    </tr>
-    <tr>
-      <th>4484</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>2.748451</td>
-    </tr>
-    <tr>
-      <th>4485</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>2.803204</td>
-    </tr>
-    <tr>
-      <th>4486</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>2.845400</td>
-    </tr>
-    <tr>
-      <th>4487</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>2.874962</td>
-    </tr>
-    <tr>
-      <th>4488</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>2.923604</td>
-    </tr>
-    <tr>
-      <th>4489</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>2.943302</td>
-    </tr>
-    <tr>
-      <th>4490</th>
-      <td>99</td>
-      <td>mthalamus</td>
-      <td>2.987504</td>
     </tr>
   </tbody>
 </table>
-<p>4491 rows × 3 columns</p>
 </div></div>
 </div>
 </div>
@@ -1438,10 +1101,10 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.utils.sim_setup</span> <span class="kn">import</span> <span class="n">build_env_bionet</span>
 
 <span class="n">build_env_bionet</span><span class="p">(</span><span class="n">base_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch03&#39;</span><span class="p">,</span>
@@ -1477,10 +1140,10 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>or through the script</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.simulator</span> <span class="kn">import</span> <span class="n">bionet</span>
 
 
@@ -1492,25 +1155,228 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2019-07-22 09:45:15,914 [INFO] Created log file
-2019-07-22 09:45:16,009 [INFO] Building cells.
-2019-07-22 09:45:23,968 [INFO] Building recurrent connections
-2019-07-22 09:45:24,609 [INFO] Building virtual cell stimulations for mthalamus_spikes
-2019-07-22 09:45:33,506 [INFO] Running simulation for 3000.000 ms with the time step 0.100 ms
-2019-07-22 09:45:33,507 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
-2019-07-22 09:45:33,508 [INFO] Block save every 5000 steps
-2019-07-22 09:46:03,198 [INFO]     step:5000 t_sim:500.00 ms
-2019-07-22 09:46:33,324 [INFO]     step:10000 t_sim:1000.00 ms
-2019-07-22 09:47:03,400 [INFO]     step:15000 t_sim:1500.00 ms
-2019-07-22 09:47:33,230 [INFO]     step:20000 t_sim:2000.00 ms
-2019-07-22 09:48:03,147 [INFO]     step:25000 t_sim:2500.00 ms
-2019-07-22 09:48:33,519 [INFO]     step:30000 t_sim:3000.00 ms
-2019-07-22 09:48:36,802 [INFO] Simulation completed in 3.0 minutes, 3.297 seconds
+2020-08-25 13:50:49,354 [INFO] Created log file
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Created log file
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2020-08-25 13:50:49,485 [INFO] Building cells.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Building cells.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2020-08-25 13:51:01,008 [INFO] Building recurrent connections
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Building recurrent connections
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2020-08-25 13:51:02,693 [INFO] Building virtual cell stimulations for mthalamus_spikes
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Building virtual cell stimulations for mthalamus_spikes
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2020-08-25 13:51:18,534 [INFO] Running simulation for 3000.000 ms with the time step 0.100 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Running simulation for 3000.000 ms with the time step 0.100 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2020-08-25 13:51:18,535 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Starting timestep: 0 at t_sim: 0.000 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2020-08-25 13:51:18,537 [INFO] Block save every 5000 steps
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Block save every 5000 steps
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2020-08-25 13:52:17,714 [INFO]     step:5000 t_sim:500.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:    step:5000 t_sim:500.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2020-08-25 13:53:12,883 [INFO]     step:10000 t_sim:1000.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:    step:10000 t_sim:1000.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2020-08-25 13:54:07,377 [INFO]     step:15000 t_sim:1500.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:    step:15000 t_sim:1500.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2020-08-25 13:55:01,072 [INFO]     step:20000 t_sim:2000.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:    step:20000 t_sim:2000.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2020-08-25 13:55:54,108 [INFO]     step:25000 t_sim:2500.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:    step:25000 t_sim:2500.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2020-08-25 13:56:47,955 [INFO]     step:30000 t_sim:3000.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:    step:30000 t_sim:3000.00 ms
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2020-08-25 13:56:48,032 [INFO] Simulation completed in 5.0 minutes, 29.5 seconds
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+INFO:NEURONIOUtils:Simulation completed in 5.0 minutes, 29.5 seconds
 </pre></div></div>
 </div>
 </div>
@@ -1518,13 +1384,14 @@ div.rendered_html tbody tr:hover {
 <h2>4. Analyzing the run.<a class="headerlink" href="#4.-Analyzing-the-run." title="Permalink to this headline">¶</a></h2>
 <p>If successful, we should have our results in the <strong>output</strong> directory. We can use the analyzer to plot a raster of the spikes over time:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.spike_trains</span> <span class="kn">import</span> <span class="n">plot_raster</span>
 
-<span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch03/simulation_config.json&#39;</span><span class="p">)</span>
+
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch03/simulation_config.json&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1537,13 +1404,14 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>In our config file we used the cell_vars and node_id_selections parameters to save the calcium influx and membrane potential of selected cells. We can also use the analyzer to display these traces:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.cell_vars</span> <span class="kn">import</span> <span class="n">plot_report</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.compartment</span> <span class="kn">import</span> <span class="n">plot_traces</span>
 
-<span class="n">plot_report</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch03/simulation_config.json&#39;</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">49</span><span class="p">,</span> <span class="mi">99</span><span class="p">])</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch01/simulation_config.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;v_report&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch01/simulation_config.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;cai_report&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1574,10 +1442,10 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>These functions will assign every cell a unique value in the positions and rotation_angle_yaxis parameters, unlike the pop_name parameter which will be the same for all 100 cells. We can verify by the following code:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">cortex_nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cortex</span><span class="o">.</span><span class="n">nodes</span><span class="p">())</span>
 <span class="n">n0</span> <span class="o">=</span> <span class="n">cortex_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">n1</span> <span class="o">=</span> <span class="n">cortex_nodes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
@@ -1592,8 +1460,8 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-cell 0: pop_name: Scnn1a, positions: [ -1.99484437  41.49527042  22.33923077], angle_yaxis: 5.29759513272
-cell 1: pop_name: Scnn1a, positions: [-25.72073426  36.01835631   2.43526216], angle_yaxis: 2.94311607964
+cell 0: pop_name: Scnn1a, positions: [ -8.09139216  60.66966008 -18.96498613], angle_yaxis: 3.0000200067928224
+cell 1: pop_name: Scnn1a, positions: [ 4.49907709 78.44333228  2.94240925], angle_yaxis: 5.93260443315686
 </pre></div></div>
 </div>
 <p>The Network Builder contains a growing number of built-in functions. However for advanced networks a modeler will probably want to assign parameters using their own functions. To do so, a modeler only needs to passes in, or alternatively create a function that returns, a list of size N. When saving the network, each individual position will be saved in the nodes.h5 file assigned to each cell by gid.</p>
@@ -1635,7 +1503,7 @@ cell 1: pop_name: Scnn1a, positions: [-25.72073426  36.01835631   2.43526216], a
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>
 </pre></div>
 </div>

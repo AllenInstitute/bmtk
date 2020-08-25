@@ -695,6 +695,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="n">spikes_f</span><span class="p">))</span>
 
         <span class="n">spikes_obj</span> <span class="o">=</span> <span class="n">SpikeTrains</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">spikes_f</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spikes_obj</span><span class="o">.</span><span class="n">populations</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Spikes file </span><span class="si">{}</span><span class="s1"> contains more than one node population.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spikes_f</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
@@ -832,7 +833,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="to_dataframe"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.spike_trains.to_dataframe">[docs]</a><span class="k">def</span> <span class="nf">to_dataframe</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="n">_</span><span class="p">,</span> <span class="n">spike_trains</span> <span class="o">=</span> <span class="n">_find_spikes</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="n">config_file</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="n">spikes_file</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">)</span>
+    <span class="c1"># _, spike_trains = _find_spikes(config_file=config_file, spikes_file=spikes_file, population=population)</span>
+    <span class="n">pop</span><span class="p">,</span> <span class="n">spike_trains</span> <span class="o">=</span> <span class="n">_find_spikes</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="n">config_file</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="n">spikes_file</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">spike_trains</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span></div>
 </pre></div>
 
