@@ -23,7 +23,7 @@ class GidPool(object):
         self._accumulated_offset += n_nodes
 
     def get_gid(self, name, node_id):
-        return self._pool_offsets[name] + node_id
+        return int(self._pool_offsets[name] + node_id)
 
     def get_pool_id(self, gid):
         offset_indx = np.searchsorted(self._offsets, gid, 'right')

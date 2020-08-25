@@ -123,9 +123,9 @@ class BioNetwork(SimNetwork):
             self._virtual_nodes[population][node_id] = virt_cell
             return virt_cell
 
-    def _build_cell(self, bionode):
+    def _build_cell(self, bionode, population_name):
         if bionode.model_type in self._model_type_map:
-            cell = self._model_type_map[bionode.model_type](bionode, self)
+            cell = self._model_type_map[bionode.model_type](bionode, population_name=population_name, bionetwork=self)
             self._rank_nodes_by_model[bionode.model_type][cell.gid] = cell
             return cell
         else:
@@ -142,7 +142,7 @@ class BioNetwork(SimNetwork):
             node_ids_map = {}
             if node_pop.internal_nodes_only:
                 for node in node_pop[MPI_rank::MPI_size]:
-                    cell = self._build_cell(node)
+                    cell = self._build_cell(bionode=node, population_name=node_pop.name)
                     node_ids_map[node.node_id] = cell
                     self._rank_node_gids[cell.gid] = cell
 
@@ -154,8 +154,10 @@ class BioNetwork(SimNetwork):
                     if node.model_type == 'virtual':
                         continue
                     else:
-                        cell = self._build_cell(node)
+                        cell = self._build_cell(bionode=node, population_name=node_pop.name)
                         node_ids_map[node.node_id] = cell
+
+
                         self._rank_node_gids[cell.gid] = cell
 
             elif node_pop.virtual_nodes_only:

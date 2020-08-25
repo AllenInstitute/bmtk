@@ -35,9 +35,10 @@ class Cell(object):
     a Cell object directly. Cell classes act as wrapper around HOC cell object with extra functionality for setting
     positions, synapses, and other parameters depending on the desired cell class.
     """
-    def __init__(self, node):
+    def __init__(self, node, population_name, network=None):
         self._node = node
-        self._gid = node.gid
+
+        self._gid = network.gid_pool.get_gid(name=population_name, node_id=node.node_id)
         self._node_id = node.node_id
         self._props = node
         self._netcons = []  # list of NEURON network connection object attached to this cell

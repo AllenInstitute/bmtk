@@ -71,6 +71,7 @@ def _find_spikes(spikes_file=None, config_file=None, population=None):
                 spikes_f))
 
         spikes_obj = SpikeTrains.load(spikes_f)
+
         if len(spikes_obj.populations) > 1:
             raise ValueError('Spikes file {} contains more than one node population.'.format(spikes_f))
         else:
@@ -208,5 +209,7 @@ def spike_statistics(spikes_file, simulation=None, simulation_time=None, groupby
 
 
 def to_dataframe(config_file, spikes_file=None, population=None):
-    _, spike_trains = _find_spikes(config_file=config_file, spikes_file=spikes_file, population=population)
+    # _, spike_trains = _find_spikes(config_file=config_file, spikes_file=spikes_file, population=population)
+    pop, spike_trains = _find_spikes(config_file=config_file, spikes_file=spikes_file, population=population)
+
     return spike_trains.to_dataframe()

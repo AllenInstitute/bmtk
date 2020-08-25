@@ -12,16 +12,18 @@ def test_psg_fixed():
     assert(np.all(psg.node_ids() == list(range(10))))
     assert(psg.n_spikes() == 143)
     assert(psg.n_spikes(population='test') == 143)
-    assert(np.allclose(psg.time_range(), (0.005380662350673328, 2.9865205688893295)))
+    assert (np.allclose(psg.time_range(), (5.380662350673328, 2986.5205688893295)))
 
     df = psg.to_dataframe()
     assert(df.shape == (143, 3))
 
-    assert(np.allclose(psg.get_times(node_id=0), [0.156, 0.222, 0.332, 0.705, 0.706, 0.731, 0.954, 1.303, 1.333, 1.504,
-                                                  1.948, 1.995, 2.036, 2.059, 2.108, 2.877], atol=1.0e-3))
+    assert(np.allclose(psg.get_times(node_id=0), [156.7916, 222.0400, 332.5493, 705.1267, 706.0727, 731.9963, 954.1834,
+                                                  1303.7542, 1333.1543, 1504.3314, 1948.2045, 1995.1471, 2036.1411,
+                                                  2059.0835, 2108.6982, 2877.7935], atol=1.0e-3))
+
     assert(np.allclose(psg.get_times(node_id=9, population='test'),
-                       [0.0233, 0.241, 0.390, 0.428, 1.001, 1.056, 2.424, 2.599, 2.640, 2.737, 2.780, 2.885],
-                       atol=1.0e-3))
+                       [23.3176, 241.7332, 390.1951, 428.2215, 1001.0229, 1056.4003, 2424.8442, 2599.6312, 2640.1228,
+                        2737.9504, 2780.0140, 2885.8020], atol=1.0e-3))
 
 
 def test_psg_variable():
@@ -34,10 +36,12 @@ def test_psg_variable():
     assert(psg.populations == ['test'])
     assert(np.all(psg.node_ids() == list(range(10))))
     assert(psg.n_spikes() == 59)
-    assert(np.allclose(psg.time_range(), (0.13932107933711294, 2.9013003727909172)))
+    assert(np.allclose(psg.time_range(), (139.32107933711294, 2901.3003727909172)))
     assert(psg.to_dataframe().shape == (59, 3))
-    assert(np.allclose(psg.get_times(node_id=0), [0.442, 0.520, 0.640, 1.099, 1.393, 1.725], atol=1.0e-3))
-    assert(np.allclose(psg.get_times(node_id=9), [0.729, 0.885, 1.047, 1.276, 1.543, 1.669, 1.881], atol=1.0e-3))
+    assert(np.allclose(psg.get_times(node_id=0), [442.8378, 520.3624, 640.3880, 1099.0661, 1393.0794, 1725.6109],
+                       atol=1.0e-3))
+    assert(np.allclose(psg.get_times(node_id=9), [729.6267, 885.2469, 1047.7728, 1276.3554, 1543.6557, 1669.9070,
+                                                  1881.3605], atol=1.0e-3))
 
 
 def test_equals():
@@ -74,7 +78,7 @@ def test_subset():
 
 
 if __name__ == '__main__':
-    # test_psg_fixed()
+    test_psg_fixed()
     # test_psg_variable()
-    test_equals()
-    test_subset()
+    # test_equals()
+    # test_subset()
