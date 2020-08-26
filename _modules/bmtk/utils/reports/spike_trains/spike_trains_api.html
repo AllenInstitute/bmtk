@@ -657,8 +657,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <span class="sd">        :param node_id: integer, id of node/cell that spike belongs too.</span>
 <span class="sd">        :param timestamp: double, time that spike occurred.</span>
-<span class="sd">        :param population: string, name of population belong to spike. If none will try to use the default population</span>
-<span class="sd">        :param kwargs:</span>
+<span class="sd">        :param population: string, name of population belong to spike. If none will try to use the default population.</span>
+<span class="sd">        :param kwargs: optional arguments.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
@@ -669,7 +669,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">            timestamps. If a singluar integer value is used then assumes all timestamps corresponds with said node_id.</span>
 <span class="sd">        :param timestamps: A list of doubles</span>
 <span class="sd">        :param population: The population to which the node(s) belong too</span>
-<span class="sd">        :param kwargs:</span>
+<span class="sd">        :param kwargs: optional arguments.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
@@ -714,7 +714,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="sd">&quot;&quot;&quot; Returns a list of (node-ids, population_name).</span>
 
 <span class="sd">        :param population: Name of population, if not set uses the default_population</span>
-<span class="sd">        :return:</span>
+<span class="sd">        :return: A list of node-ids (integers).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
@@ -731,9 +731,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <span class="sd">        :param node_id: The id of the node</span>
 <span class="sd">        :param population: Name of the node-population which the node belongs to. By default will try to use the</span>
-<span class="sd">        default population (if possible).</span>
+<span class="sd">            default population (if possible).</span>
 <span class="sd">        :param time_window: A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.</span>
-<span class="sd">        :param kwargs:</span>
+<span class="sd">        :param kwargs: optional arguments.</span>
 <span class="sd">        :return: list of spike times [float]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
@@ -754,7 +754,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="SpikeTrainsAPI.spikes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.spikes">[docs]</a>    <span class="k">def</span> <span class="nf">spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">none</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Iterate over all the saved spikes, returning a single spike at a time. Will typically be slower than calling</span>
-<span class="sd">        to_dataframe(), but not require as much memory. To use the generator:</span>
+<span class="sd">        to_dataframe(), but not require as much memory. To use the generator::</span>
+
 <span class="sd">            for node_id, population, timestamp in spike_trains.spikes():</span>
 <span class="sd">                ...</span>
 

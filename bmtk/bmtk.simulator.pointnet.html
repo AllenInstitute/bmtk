@@ -865,74 +865,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 </dd></dl>
 
-<dl class="py function">
-<dt id="bmtk.simulator.pointnet.io_tools.barrier">
-<code class="sig-prename descclassname">bmtk.simulator.pointnet.io_tools.</code><code class="sig-name descname">barrier</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.simulator.pointnet.io_tools.barrier" title="Permalink to this definition">¶</a></dt>
-<dd><p>Barrier synchronization</p>
-</dd></dl>
-
-<dl class="py data">
-<dt id="bmtk.simulator.pointnet.io_tools.io">
-<code class="sig-prename descclassname">bmtk.simulator.pointnet.io_tools.</code><code class="sig-name descname">io</code><em class="property"> = &lt;bmtk.simulator.pointnet.io_tools.NestIOUtils object&gt;</em><a class="headerlink" href="#bmtk.simulator.pointnet.io_tools.io" title="Permalink to this definition">¶</a></dt>
-<dd><p>def collect_gdf_files(gdf_dir, output_file, nest_id_map, overwrite=False):</p>
-<blockquote>
-<div><dl class="simple">
-<dt>if n_nodes &gt; 0:</dt><dd><p># Wait until all nodes are finished
-barrier()</p>
-</dd>
-<dt>if rank != 0:</dt><dd><p>return</p>
-</dd>
-</dl>
-<p>log(“Saving spikes to file…”)
-spikes_out = output_file
-if os.path.exists(spikes_out) and not overwrite:</p>
-<blockquote>
-<div><p>return</p>
-</div></blockquote>
-<p>gdf_files_globs = ‘{}/<a href="#id1"><span class="problematic" id="id2">*</span></a>.gdf’.format(gdf_dir)
-gdf_files = glob.glob(gdf_files_globs)
-with open(spikes_out, ‘w’) as spikes_file:</p>
-<blockquote>
-<div><p>csv_writer = csv.writer(spikes_file, delimiter=’ ‘)
-for gdffile in gdf_files:</p>
-<blockquote>
-<div><p>spikes_df = pd.read_csv(gdffile, names=[‘gid’, ‘time’, ‘nan’], sep=’        ‘)
-for _, row in spikes_df.iterrows():</p>
-<blockquote>
-<div><p>csv_writer.writerow([row[‘time’], nest_id_map[int(row[‘gid’])]])</p>
-</div></blockquote>
-<p>os.remove(gdffile)</p>
-</div></blockquote>
-</div></blockquote>
-<p>log(“done.”)</p>
-</div></blockquote>
-<dl>
-<dt>def setup_output_dir(config):</dt><dd><dl>
-<dt>if rank == 0:</dt><dd><dl>
-<dt>try:</dt><dd><p>output_dir = config[‘output’][‘output_dir’]
-if os.path.exists(output_dir):</p>
-<blockquote>
-<div><p>shutil.rmtree(output_dir)</p>
-</div></blockquote>
-<p>os.makedirs(output_dir)</p>
-<dl class="simple">
-<dt>if ‘log_file’ in config[‘output’]:</dt><dd><p>file_logger = logging.FileHandler(config[‘output’][‘log_file’])
-file_logger.setFormatter(log_format)
-pointnet_logger.addHandler(file_logger)
-log(‘Created a log file’)</p>
-</dd>
-</dl>
-</dd>
-<dt>except Exception as exc:</dt><dd><p>print(exc)</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p>barrier()</p>
-</dd>
-</dl>
-</dd></dl>
-
 </div>
 <div class="section" id="module-bmtk.simulator.pointnet.pointnetwork">
 <span id="bmtk-simulator-pointnet-pointnetwork-module"></span><h2>bmtk.simulator.pointnet.pointnetwork module<a class="headerlink" href="#module-bmtk.simulator.pointnet.pointnetwork" title="Permalink to this headline">¶</a></h2>
@@ -1215,16 +1147,18 @@ log(‘Created a log file’)</p>
 <dt id="bmtk.simulator.pointnet.pyfunction_cache.synaptic_weight">
 <code class="sig-prename descclassname">bmtk.simulator.pointnet.pyfunction_cache.</code><code class="sig-name descname">synaptic_weight</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">wargs</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">wkwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/pointnet/pyfunction_cache.html#synaptic_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.pointnet.pyfunction_cache.synaptic_weight" title="Permalink to this definition">¶</a></dt>
 <dd><p>A decorator for registering a function as a synaptic weight function.
-To use either</p>
-<blockquote>
-<div><p>&#64;synaptic_weight
-def weight_function(): …</p>
-</div></blockquote>
-<dl class="simple">
-<dt>or</dt><dd><p>&#64;synaptic_weight(name=’name_in_edge_types’)
-def weight_function(): …</p>
-</dd>
-</dl>
+To use either:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@synaptic_weight</span>
+<span class="k">def</span> <span class="nf">weight_function</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>or:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@synaptic_weight</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;name_in_edge_types&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">weight_function</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
 <p>Once the decorator has been attached and imported the functions will automatically be added to py_modules.</p>
 </dd></dl>
 

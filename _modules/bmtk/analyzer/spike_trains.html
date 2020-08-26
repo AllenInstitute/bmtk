@@ -766,7 +766,44 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="viewcode-block" id="plot_raster"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.spike_trains.plot_raster">[docs]</a><span class="k">def</span> <span class="nf">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">with_histogram</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">group_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nodes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_types_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a raster plot (plus optional histogram) from the results of the simulation.</span>
 
+<span class="sd">    Will using the SONATA simulation configs &quot;output&quot; section to locate where the spike-trains file was created and</span>
+<span class="sd">    display them::</span>
+
+<span class="sd">        plot_raster(config_file=&#39;config.json&#39;)</span>
+
+<span class="sd">    If the path the the report is different (or missing) than what&#39;s in the SONATA config then use the &quot;spikes_file&quot;</span>
+<span class="sd">    option instead::</span>
+
+<span class="sd">        plot_raster(spikes_file=&#39;/my/path/to/membrane_potential.h5&#39;)</span>
+
+<span class="sd">    You may also group together different subsets of nodes using specific attributes of the network using the &quot;group_by&quot;</span>
+<span class="sd">    option, and the &quot;group_excludes&quot; option to exclude specific subsets. For example to color and label different</span>
+<span class="sd">    subsets of nodes based on their cortical &quot;layer&quot;, but exlcude plotting the L1 nodes::</span>
+
+<span class="sd">        plot_raster(config_file=&#39;config.json&#39;, groupy_by=&#39;layer&#39;, group_excludes=&#39;L1&#39;)</span>
+
+<span class="sd">    :param config_file: path to SONATA simulation configuration.</span>
+<span class="sd">    :param population: name of the membrane_report &quot;report&quot; which will be plotted. If only one compartment report</span>
+<span class="sd">        in the simulation config then function will find it automatically.</span>
+<span class="sd">    :param with_histogram: If True the a histogram will be shown as a small subplot below the scatter plot. Default</span>
+<span class="sd">        True.</span>
+<span class="sd">    :param times: (float, float), start and stop times of simulation. By default will get values from simulation</span>
+<span class="sd">        configs &quot;run&quot; section.</span>
+<span class="sd">    :param title: str, adds a title to the plot. If None (default) then name will be automatically generated using the</span>
+<span class="sd">        report_name.</span>
+<span class="sd">    :param show: bool to display or not display plot. default True.</span>
+<span class="sd">    :param group_by: Attribute of the &quot;nodes&quot; file used to group and average subsets of nodes.</span>
+<span class="sd">    :param group_excludes: list of strings or None. When using the &quot;group_by&quot;, allows users to exclude certain groupings</span>
+<span class="sd">        based on the attribute value.</span>
+<span class="sd">    :param spikes_file: Path to SONATA spikes file. Do not use with &quot;config_file&quot; options.</span>
+<span class="sd">    :param nodes_file: path to nodes hdf5 file containing &quot;population&quot;. By default this will be resolved using the</span>
+<span class="sd">        config.</span>
+<span class="sd">    :param node_types_file: path to node-types csv file containing &quot;population&quot;. By default this will be resolved using</span>
+<span class="sd">        the config.</span>
+<span class="sd">    :return: matplotlib figure.Figure object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">plot_fnc</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">plotting</span><span class="o">.</span><span class="n">plot_raster</span><span class="p">,</span> <span class="n">with_histogram</span><span class="o">=</span><span class="n">with_histogram</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">_plot_helper</span><span class="p">(</span><span class="n">plot_fnc</span><span class="p">,</span>
                         <span class="n">config_file</span><span class="o">=</span><span class="n">config_file</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span>
@@ -777,7 +814,47 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="plot_rates"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.spike_trains.plot_rates">[docs]</a><span class="k">def</span> <span class="nf">plot_rates</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">smoothing_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nodes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_types_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate and plot the rates of each node recorded during the simulation - averaged across the entirety of the</span>
+<span class="sd">    simulation.</span>
 
+<span class="sd">    Will using the SONATA simulation configs &quot;output&quot; section to locate where the spike-trains file was created and</span>
+<span class="sd">    display them::</span>
+
+<span class="sd">        plot_rates(config_file=&#39;config.json&#39;)</span>
+
+<span class="sd">    If the path the the report is different (or missing) than what&#39;s in the SONATA config then use the &quot;spikes_file&quot;</span>
+<span class="sd">    option instead::</span>
+
+<span class="sd">        plot_rates(spikes_file=&#39;/my/path/to/membrane_potential.h5&#39;)</span>
+
+<span class="sd">    You may also group together different subsets of nodes using specific attributes of the network using the &quot;group_by&quot;</span>
+<span class="sd">    option, and the &quot;group_excludes&quot; option to exclude specific subsets. For example to color and label different</span>
+<span class="sd">    subsets of nodes based on their cortical &quot;layer&quot;, but exlcude plotting the L1 nodes::</span>
+
+<span class="sd">        plot_rates(config_file=&#39;config.json&#39;, groupy_by=&#39;layer&#39;, group_excludes=&#39;L1&#39;)</span>
+
+
+<span class="sd">    :param config_file: path to SONATA simulation configuration.</span>
+<span class="sd">    :param population: name of the membrane_report &quot;report&quot; which will be plotted. If only one compartment report</span>
+<span class="sd">        in the simulation config then function will find it automatically.</span>
+<span class="sd">    :param smoothing: Bool or function. Used to smooth the data. By default (False) no smoothing will be done. If True</span>
+<span class="sd">        will using a moving average smoothing function. Or use a function pointer.</span>
+<span class="sd">    :param smoothing_params: dict, parameters when using a function pointer smoothing value.</span>
+<span class="sd">    :param times: (float, float), start and stop times of simulation. By default will get values from simulation</span>
+<span class="sd">        configs &quot;run&quot; section.</span>
+<span class="sd">    :param title: str, adds a title to the plot. If None (default) then name will be automatically generated using the</span>
+<span class="sd">        report_name.</span>
+<span class="sd">    :param show: bool to display or not display plot. default True.</span>
+<span class="sd">    :param group_by: Attribute of the &quot;nodes&quot; file used to group and average subsets of nodes.</span>
+<span class="sd">    :param group_excludes: list of strings or None. When using the &quot;group_by&quot;, allows users to exclude certain groupings</span>
+<span class="sd">        based on the attribute value.</span>
+<span class="sd">    :param spikes_file: Path to SONATA spikes file. Do not use with &quot;config_file&quot; options.</span>
+<span class="sd">    :param nodes_file: Path to nodes hdf5 file containing &quot;population&quot;. By default this will be resolved using the</span>
+<span class="sd">        config.</span>
+<span class="sd">    :param node_types_file: Path to node-types csv file containing &quot;population&quot;. By default this will be resolved using</span>
+<span class="sd">        the config.</span>
+<span class="sd">    :return: matplotlib figure.Figure object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">plot_fnc</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">plotting</span><span class="o">.</span><span class="n">plot_rates</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="n">smoothing</span><span class="p">,</span> <span class="n">smoothing_params</span><span class="o">=</span><span class="n">smoothing_params</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">_plot_helper</span><span class="p">(</span><span class="n">plot_fnc</span><span class="p">,</span>
                         <span class="n">config_file</span><span class="o">=</span><span class="n">config_file</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span>
@@ -789,7 +866,42 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="viewcode-block" id="plot_rates_boxplot"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.spike_trains.plot_rates_boxplot">[docs]</a><span class="k">def</span> <span class="nf">plot_rates_boxplot</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                        <span class="n">group_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                        <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nodes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_types_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates a box plot of the firing rates taken from nodes recorded during the simulation.</span>
 
+<span class="sd">    Will using the SONATA simulation configs &quot;output&quot; section to locate where the spike-trains file was created and</span>
+<span class="sd">    display them::</span>
+
+<span class="sd">        plot_rates_boxplot(config_file=&#39;config.json&#39;)</span>
+
+<span class="sd">    If the path the the report is different (or missing) than what&#39;s in the SONATA config then use the &quot;spikes_file&quot;</span>
+<span class="sd">    option instead::</span>
+
+<span class="sd">        plot_rates_boxplot(spikes_file=&#39;/my/path/to/membrane_potential.h5&#39;)</span>
+
+<span class="sd">    You may also group together different subsets of nodes using specific attributes of the network using the &quot;group_by&quot;</span>
+<span class="sd">    option, and the &quot;group_excludes&quot; option to exclude specific subsets. For example to color and label different</span>
+<span class="sd">    subsets of nodes based on their cortical &quot;layer&quot;, but exlcude plotting the L1 nodes::</span>
+
+<span class="sd">        plot_rates_boxplot(config_file=&#39;config.json&#39;, groupy_by=&#39;layer&#39;, group_excludes=&#39;L1&#39;)</span>
+
+<span class="sd">    :param config_file: path to SONATA simulation configuration.</span>
+<span class="sd">    :param population: name of the membrane_report &quot;report&quot; which will be plotted. If only one compartment report</span>
+<span class="sd">        in the simulation config then function will find it automatically.</span>
+<span class="sd">    :param times: (float, float), start and stop times of simulation. By default will get values from simulation</span>
+<span class="sd">        configs &quot;run&quot; section.</span>
+<span class="sd">    :param title: str, adds a title to the plot. If None (default) then name will be automatically generated using the</span>
+<span class="sd">        report_name.</span>
+<span class="sd">    :param show: bool to display or not display plot. default True.</span>
+<span class="sd">    :param group_by: Attribute of the &quot;nodes&quot; file used to group and average subsets of nodes.</span>
+<span class="sd">    :param group_excludes: list of strings or None. When using the &quot;group_by&quot;, allows users to exclude certain groupings</span>
+<span class="sd">        based on the attribute value.</span>
+<span class="sd">    :param spikes_file: Path to SONATA spikes file. Do not use with &quot;config_file&quot; options.</span>
+<span class="sd">    :param nodes_file: Path to nodes hdf5 file containing &quot;population&quot;. By default this will be resolved using the</span>
+<span class="sd">        config.</span>
+<span class="sd">    :param node_types_file: Path to node-types csv file containing &quot;population&quot;. By default this will be resolved using</span>
+<span class="sd">        the config.</span>
+<span class="sd">    :return: matplotlib figure.Figure object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">plot_fnc</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">plotting</span><span class="o">.</span><span class="n">plot_rates_boxplot</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">_plot_helper</span><span class="p">(</span><span class="n">plot_fnc</span><span class="p">,</span>
         <span class="n">config_file</span><span class="o">=</span><span class="n">config_file</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span>
@@ -798,8 +910,24 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="spike_statistics"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.spike_trains.spike_statistics">[docs]</a><span class="k">def</span> <span class="nf">spike_statistics</span><span class="p">(</span><span class="n">spikes_file</span><span class="p">,</span> <span class="n">simulation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">simulation_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">groupby</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">filterparams</span><span class="p">):</span>
-    <span class="n">spike_trains</span> <span class="o">=</span> <span class="n">SpikeTrains</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">spikes_file</span><span class="p">)</span>
+<div class="viewcode-block" id="spike_statistics"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.spike_trains.spike_statistics">[docs]</a><span class="k">def</span> <span class="nf">spike_statistics</span><span class="p">(</span><span class="n">spikes_file</span><span class="p">,</span> <span class="n">simulation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">simulation_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">filterparams</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get spike statistics (firing_rate, counts, inter-spike interval) of the nodes.</span>
+
+<span class="sd">    :param spikes_file: Path to SONATA spikes file. Do not use with &quot;config_file&quot; options.</span>
+<span class="sd">    :param simulation:</span>
+<span class="sd">    :param population:</span>
+<span class="sd">    :param simulation_time:</span>
+<span class="sd">    :param groupby:</span>
+<span class="sd">    :param network:</span>
+<span class="sd">    :param config_file:</span>
+<span class="sd">    :param filterparams:</span>
+<span class="sd">    :return: pandas dataframe</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># TODO: Should be implemented in bmtk.utils.spike_trains.stats.py</span>
+    <span class="n">pop</span><span class="p">,</span> <span class="n">spike_trains</span> <span class="o">=</span> <span class="n">_find_spikes</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="n">config_file</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="n">spikes_file</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">)</span>
+    <span class="c1"># spike_trains = SpikeTrains.load(spikes_file)</span>
 
     <span class="k">def</span> <span class="nf">calc_stats</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
         <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
@@ -826,13 +954,22 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">vals_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">nodes_df</span><span class="p">,</span> <span class="n">spike_counts_df</span><span class="p">,</span> <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
         <span class="n">vals_df</span> <span class="o">=</span> <span class="n">vals_df</span><span class="o">.</span><span class="n">fillna</span><span class="p">({</span><span class="s1">&#39;count&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;firing_rate&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;isi&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">})</span>
 
-        <span class="n">vals_df</span> <span class="o">=</span> <span class="n">vals_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">groupby</span><span class="p">)[[</span><span class="s1">&#39;firing_rate&#39;</span><span class="p">,</span> <span class="s1">&#39;count&#39;</span><span class="p">,</span> <span class="s1">&#39;isi&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">agg</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">])</span>
+        <span class="n">vals_df</span> <span class="o">=</span> <span class="n">vals_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">group_by</span><span class="p">)[[</span><span class="s1">&#39;firing_rate&#39;</span><span class="p">,</span> <span class="s1">&#39;count&#39;</span><span class="p">,</span> <span class="s1">&#39;isi&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">agg</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">vals_df</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">spike_counts_df</span></div>
 
 
 <div class="viewcode-block" id="to_dataframe"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.spike_trains.to_dataframe">[docs]</a><span class="k">def</span> <span class="nf">to_dataframe</span><span class="p">(</span><span class="n">config_file</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    :param config_file:</span>
+<span class="sd">    :param spikes_file:</span>
+<span class="sd">    :param population:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
     <span class="c1"># _, spike_trains = _find_spikes(config_file=config_file, spikes_file=spikes_file, population=population)</span>
     <span class="n">pop</span><span class="p">,</span> <span class="n">spike_trains</span> <span class="o">=</span> <span class="n">_find_spikes</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="n">config_file</span><span class="p">,</span> <span class="n">spikes_file</span><span class="o">=</span><span class="n">spikes_file</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">)</span>
 

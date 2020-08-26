@@ -889,11 +889,11 @@ div.rendered_html tbody tr:hover {
 <h3>Building and saving<a class="headerlink" href="#Building-and-saving" title="Permalink to this headline">¶</a></h3>
 <p>The final thing to do is to build and save the network. If successful, we should see a combination of hdf5 and csv files in the ‘./network’ directory, these files are used describe the network, and can be saved, stored and run at a later date.</p>
 <p>First, it’s a good idea to remove any old files in the “network” folder so they don’t interfere with the current simulation.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ rm network/*
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ rm network
 </pre></div>
 </div>
 <p>If you get the output:</p>
-<p>rm: cannot remove ’network/<a href="#id1"><span class="problematic" id="id2">*</span></a>’: No such file or directory</p>
+<p><code class="docutils literal notranslate"><span class="pre">rm:</span> <span class="pre">cannot</span> <span class="pre">remove</span> <span class="pre">network/*:</span> <span class="pre">No</span> <span class="pre">such</span> <span class="pre">file</span> <span class="pre">or</span> <span class="pre">directory</span></code></p>
 <p>It’s OK. Keep going.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
@@ -1385,15 +1385,19 @@ INFO:NEURONIOUtils:Simulation completed in 1.454 seconds
 </div>
 <div class="section" id="5.-Additional-Information">
 <h2>5. Additional Information<a class="headerlink" href="#5.-Additional-Information" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Changing-run-time-parameters.">
+<h3>Changing run-time parameters.<a class="headerlink" href="#Changing-run-time-parameters." title="Permalink to this headline">¶</a></h3>
 <p>By making changes to the config file, we can change the conditions and simulation parameters without having to rebuild the network, modify parameter files, or change our run_bionet script. In fact we can iteratively run multiple simulations without any extra coding, only a text editor to change the json file.</p>
 <p>The run section of the config.json contains most of the parameters unique to the simulation:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;run&quot;: {
-    &quot;dL&quot;: 20,
-    &quot;nsteps_block&quot;: 5000,
-    &quot;spike_threshold&quot;: -15,
-    &quot;tstop&quot;: 2000.0,
-    &quot;dt&quot;: 0.1
-}
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;run&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;dL&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="nt">&quot;nsteps_block&quot;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span>
+    <span class="nt">&quot;spike_threshold&quot;</span><span class="p">:</span> <span class="mi">-15</span><span class="p">,</span>
+    <span class="nt">&quot;tstop&quot;</span><span class="p">:</span> <span class="mf">2000.0</span><span class="p">,</span>
+    <span class="nt">&quot;dt&quot;</span><span class="p">:</span> <span class="mf">0.1</span>
+  <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -1403,56 +1407,65 @@ INFO:NEURONIOUtils:Simulation completed in 1.454 seconds
 <li><p>dL - length of segments in a section. the number of segments will be forced to an odd number so the actual length may vary.</p></li>
 </ul>
 <p>Through the conditions section we can adjust simulation temperature (C) and the initial membrane potential of the cells:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;conditions&quot;: {
-    &quot;celsius&quot;: 34.0,
-    &quot;v_init&quot;: -80
-}
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;conditions&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;celsius&quot;</span><span class="p">:</span> <span class="mf">34.0</span><span class="p">,</span>
+    <span class="nt">&quot;v_init&quot;</span><span class="p">:</span> <span class="mi">-80</span>
+  <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>And lastly, the input section lets us control stimulus onto the network. There are a number of different options which will be explained in the following tutorials. But even with a simple current injection we can adjust amplitude, delay and stimulation duration and measure the effect on the cell.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;inputs&quot;: {
-    &quot;current_clamp&quot;: {
-      &quot;input_type&quot;: &quot;current_clamp&quot;,
-      &quot;module&quot;: &quot;IClamp&quot;,
-      &quot;node_set&quot;: &quot;all&quot;,
-      &quot;amp&quot;: 0.120,
-      &quot;delay&quot;: 500.0,
-      &quot;duration&quot;: 1000.0
-    }
-}
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;current_clamp&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;amp&quot;</span><span class="p">:</span> <span class="mf">0.120</span><span class="p">,</span>
+      <span class="nt">&quot;delay&quot;</span><span class="p">:</span> <span class="mf">500.0</span><span class="p">,</span>
+      <span class="nt">&quot;duration&quot;</span><span class="p">:</span> <span class="mf">1000.0</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>We can even add multiple injections</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;inputs&quot;: {
-    &quot;cclamp1&quot;: {
-      &quot;input_type&quot;: &quot;current_clamp&quot;,
-      &quot;module&quot;: &quot;IClamp&quot;,
-      &quot;node_set&quot;: &quot;all&quot;,
-      &quot;amp&quot;: 0.150,
-      &quot;delay&quot;: 0.0,
-      &quot;duration&quot;: 400.0
-    }
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;cclamp1&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;amp&quot;</span><span class="p">:</span> <span class="mf">0.150</span><span class="p">,</span>
+      <span class="nt">&quot;delay&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+      <span class="nt">&quot;duration&quot;</span><span class="p">:</span> <span class="mf">400.0</span>
+    <span class="p">},</span>
 
-    &quot;cclamp2&quot;: {
-      &quot;input_type&quot;: &quot;current_clamp&quot;,
-      &quot;module&quot;: &quot;IClamp&quot;,
-      &quot;node_set&quot;: &quot;all&quot;,
-      &quot;amp&quot;: 0.300,
-      &quot;delay&quot;: 500.0,
-      &quot;duration&quot;: 400.0
-    }
+    <span class="nt">&quot;cclamp2&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;amp&quot;</span><span class="p">:</span> <span class="mf">0.300</span><span class="p">,</span>
+      <span class="nt">&quot;delay&quot;</span><span class="p">:</span> <span class="mf">500.0</span><span class="p">,</span>
+      <span class="nt">&quot;duration&quot;</span><span class="p">:</span> <span class="mf">400.0</span>
+    <span class="p">},</span>
 
-    &quot;cclamp3&quot;: {
-      &quot;input_type&quot;: &quot;current_clamp&quot;,
-      &quot;module&quot;: &quot;IClamp&quot;,
-      &quot;node_set&quot;: &quot;all&quot;,
-      &quot;amp&quot;: 0.450,
-      &quot;delay&quot;: 1000.0,
-      &quot;duration&quot;: 400.0
-    }
-}
+    <span class="nt">&quot;cclamp3&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;amp&quot;</span><span class="p">:</span> <span class="mf">0.450</span><span class="p">,</span>
+      <span class="nt">&quot;delay&quot;</span><span class="p">:</span> <span class="mf">1000.0</span><span class="p">,</span>
+      <span class="nt">&quot;duration&quot;</span><span class="p">:</span> <span class="mf">400.0</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="Changing-cell-models">
+<h3>Changing cell models<a class="headerlink" href="#Changing-cell-models" title="Permalink to this headline">¶</a></h3>
 <p>When building the network we defined the cell model and morphology through the ‘dynamics_params’ and ‘morphology_file’ options. After building and saving the network, these values were saved in the node-types csv file.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
@@ -1522,6 +1535,7 @@ INFO:NEURONIOUtils:Simulation completed in 1.454 seconds
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>
 </pre></div>
+</div>
 </div>
 </div>
 </div>

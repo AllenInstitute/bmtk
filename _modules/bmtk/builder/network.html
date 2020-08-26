@@ -662,65 +662,62 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">    be generalized to build any time of network for any time of simulation.</span>
 
 <span class="sd">    Building the network:</span>
-<span class="sd">    For the general use-case building a network consists of 4 steps, each with a corresponding method:</span>
-<span class="sd">    1. Initialize the network</span>
-<span class="sd">    ```python</span>
-<span class="sd">        net = Network(&quot;network_name&quot;)</span>
-<span class="sd">    ```</span>
+<span class="sd">        For the general use-case building a network consists of 4 steps, each with a corresponding method.</span>
 
-<span class="sd">    2. Create nodes (ie cells) using the **add_nodes()** method</span>
-<span class="sd">    ```python</span>
-<span class="sd">        net.add_nodes(N=80, model_type=&#39;Biophysical&#39;, ei=&#39;exc&#39;)</span>
-<span class="sd">        net.add_nodes(N=20, model_type=&#39;IntFire&#39;, ei=&#39;inh&#39;)</span>
-<span class="sd">        ...</span>
-<span class="sd">    ```</span>
+<span class="sd">        1. Initialize the network::</span>
 
-<span class="sd">    3. Create Connection rules between different subsets of nodes using **add_edges()** method</span>
-<span class="sd">    ```python</span>
-<span class="sd">        net.add_edges(source={&#39;ei&#39;: &#39;exc&#39;}, target={&#39;ei&#39;: &#39;inh&#39;}, connection_rule=my_conn_func, synaptic_model=&#39;e2i&#39;)</span>
-<span class="sd">        ...</span>
-<span class="sd">    ```</span>
+<span class="sd">            net = Network(&quot;network_name&quot;)</span>
 
-<span class="sd">    4. Finally **build** the network and **save** the files</span>
-<span class="sd">    ```python</span>
-<span class="sd">        net.build()</span>
-<span class="sd">        net.save(output_dir=&#39;network_path&#39;)</span>
-<span class="sd">    ```</span>
+<span class="sd">        2. Create nodes (ie cells) using the **add_nodes()** method::</span>
 
-<span class="sd">    See the bmtk documentation, or the method doc-strings for more advanced functionality</span>
-
-
-<span class="sd">    Network Accessor methods</span>
-<span class="sd">    ========================</span>
-<span class="sd">    **nodes()**</span>
-<span class="sd">    Will return a iterable of Node objects for each node created. The Node objects can be used like dictionaries to</span>
-<span class="sd">    fetch their properties. By default returns all nodes in the network, but you can filter out a given subset by</span>
-<span class="sd">    passing in property/values pairs.</span>
-<span class="sd">    ```python</span>
-<span class="sd">        for node in net.nodes(model_type=&#39;Biophysical&#39;, ei=&#39;exc&#39;):</span>
-<span class="sd">            assert(node[&#39;ei&#39;] == &#39;exc&#39;)</span>
-<span class="sd">            ...</span>
-<span class="sd">    ```</span>
-
-<span class="sd">    **edges()**</span>
-<span class="sd">    Like the nodes() methods, but insteads returns a list of Edge type objects. It too can be filtered by an edge</span>
-<span class="sd">    property:</span>
-<span class="sd">    ```python</span>
-<span class="sd">        for edge in net.edges(synaptic_model=&#39;exp2&#39;):</span>
-<span class="sd">            ...</span>
-<span class="sd">    ```</span>
-
-<span class="sd">    One can also pass in a list of source (or target) to filter out only those edges which belong to a specific subet</span>
-<span class="sd">    of cells</span>
-<span class="sd">    ```python</span>
-<span class="sd">        for edge in net.edges(target_nodes=net.nodes(ei=&#39;exc&#39;)):</span>
+<span class="sd">            net.add_nodes(N=80, model_type=&#39;Biophysical&#39;, ei=&#39;exc&#39;)</span>
+<span class="sd">            net.add_nodes(N=20, model_type=&#39;IntFire&#39;, ei=&#39;inh&#39;)</span>
 <span class="sd">            ...</span>
 
-<span class="sd">    Network Properties</span>
-<span class="sd">    ==================</span>
-<span class="sd">    **name** - name of the network</span>
-<span class="sd">    **nnodes** - number of nodes (cells) in the network.</span>
-<span class="sd">    **nedges** - number of edges. Will be zero if build() method hasn&#39;t been called</span>
+<span class="sd">        3. Create Connection rules between different subsets of nodes using **add_edges()** method::</span>
+
+<span class="sd">            net.add_edges(source={&#39;ei&#39;: &#39;exc&#39;}, target={&#39;ei&#39;: &#39;inh&#39;},</span>
+<span class="sd">                          connection_rule=my_conn_func, synaptic_model=&#39;e2i&#39;)</span>
+<span class="sd">            ...</span>
+
+<span class="sd">        4. Finally **build** the network and **save** the files::</span>
+
+<span class="sd">            net.build()</span>
+<span class="sd">            net.save(output_dir=&#39;network_path&#39;)</span>
+
+<span class="sd">        See the bmtk documentation, or the method doc-strings for more advanced functionality</span>
+
+
+<span class="sd">    Network Accessor methods:</span>
+<span class="sd">        **nodes()**</span>
+
+<span class="sd">        Will return a iterable of Node objects for each node created. The Node objects can be used like dictionaries to</span>
+<span class="sd">        fetch their properties. By default returns all nodes in the network, but you can filter out a given subset by</span>
+<span class="sd">        passing in property/values pairs::</span>
+
+<span class="sd">            for node in net.nodes(model_type=&#39;Biophysical&#39;, ei=&#39;exc&#39;):</span>
+<span class="sd">                assert(node[&#39;ei&#39;] == &#39;exc&#39;)</span>
+<span class="sd">                ...</span>
+
+<span class="sd">        **edges()**</span>
+
+<span class="sd">        Like the nodes() methods, but insteads returns a list of Edge type objects. It too can be filtered by an edge</span>
+<span class="sd">        property::</span>
+
+<span class="sd">            for edge in net.edges(synaptic_model=&#39;exp2&#39;):</span>
+<span class="sd">                ...</span>
+
+<span class="sd">        One can also pass in a list of source (or target) to filter out only those edges which belong to a specific</span>
+<span class="sd">        subset of cells::</span>
+
+<span class="sd">            for edge in net.edges(target_nodes=net.nodes(ei=&#39;exc&#39;)):</span>
+<span class="sd">            ...</span>
+
+
+<span class="sd">    Network Properties:</span>
+<span class="sd">        * **name** - name of the network</span>
+<span class="sd">        * **nnodes** - number of nodes (cells) in the network.</span>
+<span class="sd">        * **nedges** - number of edges. Will be zero if build() method hasn&#39;t been called</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">network_props</span><span class="p">):</span>
@@ -752,25 +749,32 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the name (string) of this network.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network_name</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nodes_built</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns True if nodes has been instantiated for this network.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes_built</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">edges_built</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns True if the connectivity matrix has been instantiated for this network.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edges_built</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nnodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the number of nodes for this network.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nedges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the total number of edges for this network.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 <div class="viewcode-block" id="Network.get_connections"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.network.Network.get_connections">[docs]</a>    <span class="k">def</span> <span class="nf">get_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a list of all bmtk.builder.connection_map.ConnectionMap objects representing all edge-types for this</span>
+<span class="sd">         network.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection_maps</span></div>
 
     <span class="k">def</span> <span class="nf">_add_node_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">props</span><span class="p">):</span>
@@ -793,21 +797,18 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">        If a property is a singluar value then said property will be shared by all the nodes in the group. If a value</span>
 <span class="sd">        is a list of length N then each property will be uniquly assigned the each node. In the below example a group</span>
 <span class="sd">        of 100 nodes is created, all share the same &#39;model_type&#39; parameter but the pos_x values will be different for</span>
-<span class="sd">        each node:</span>
-<span class="sd">        ```python</span>
+<span class="sd">        each node::</span>
+
 <span class="sd">            net.add_nodes(N=100, pos_x=np.random.rand(100), model_type=&#39;intfire1&#39;, ...)</span>
-<span class="sd">        ```</span>
 
 <span class="sd">        You can use a tuple to store property values (in which the SONATA hdf5 will save it as a dataset with multiple</span>
-<span class="sd">        columns). For example to have one property &#39;positions&#39; which keeps track of the x/y/z coordinates of each cell:</span>
-<span class="sd">        ```python</span>
+<span class="sd">        columns). For example to have one property &#39;positions&#39; which keeps track of the x/y/z coordinates of each cell::</span>
+
 <span class="sd">            net.add_nodes(N=100, positions=[(rand(), rand(), rand()) for _ in range(100)], ...)</span>
-<span class="sd">        ```</span>
 
 <span class="sd">        :param N: number of nodes in this group</span>
 <span class="sd">        :param properties: Individual and group properties of given nodes</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_clear</span><span class="p">()</span>
 
         <span class="c1"># categorize properties as either a node-params (for nodes file) or node-type-property (for node_types files)</span>
@@ -841,82 +842,75 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="sd">&quot;&quot;&quot;Used to create the connectivity matrix between subsets of nodes. The actually connections will not be</span>
 <span class="sd">        created until the build() method is called, using the &#39;connection_rule.</span>
 
-<span class="sd">        Node Selection</span>
-<span class="sd">        --------------</span>
-<span class="sd">        To specify what subset of nodes will be used for the pre- and post-synaptic one can use a dictionary to filter</span>
-<span class="sd">        the nodes. In the following all inh nodes will be used for the pre-synaptic neurons, but only exc</span>
-<span class="sd">        fast-spiking neurons will be used in the post-synaptic neurons (If target or source is not specified all neurons</span>
-<span class="sd">        will be used).</span>
-<span class="sd">        ```python</span>
-<span class="sd">            net.add_edges(source={&#39;ei&#39;: &#39;inh&#39;}, target={&#39;ei&#39;: &#39;exc&#39;, &#39;etype&#39;: &#39;fast-spiking&#39;},</span>
-<span class="sd">                          dynamic_params=&#39;i2e.json&#39;, synaptic_model=&#39;alpha&#39;, ...)</span>
-<span class="sd">        ```</span>
+<span class="sd">        Node Selection:</span>
+<span class="sd">            To specify what subset of nodes will be used for the pre- and post-synaptic one can use a dictionary to filter</span>
+<span class="sd">            the nodes. In the following all inh nodes will be used for the pre-synaptic neurons, but only exc</span>
+<span class="sd">            fast-spiking neurons will be used in the post-synaptic neurons (If target or source is not specified all neurons</span>
+<span class="sd">            will be used)::</span>
 
-<span class="sd">        In the above code there is one connection between each source/target pair of nodes, but to create a multi-graph</span>
-<span class="sd">        with N connections between each pair use &#39;connection_rule&#39; parameter with an integer value</span>
-<span class="sd">        ```python</span>
-<span class="sd">            net.add_edges(source={&#39;ei&#39;: &#39;inh&#39;}, target={&#39;ei&#39;: &#39;exc&#39;, &#39;etype&#39;: &#39;fast-spiking&#39;}, connection_rule=M, ...)</span>
-<span class="sd">        ```</span>
+<span class="sd">                net.add_edges(source={&#39;ei&#39;: &#39;inh&#39;}, target={&#39;ei&#39;: &#39;exc&#39;, &#39;etype&#39;: &#39;fast-spiking&#39;},</span>
+<span class="sd">                              dynamic_params=&#39;i2e.json&#39;, synaptic_model=&#39;alpha&#39;, ...)</span>
 
-<span class="sd">        Connection rules</span>
-<span class="sd">        ----------------</span>
-<span class="sd">        Usually the &#39;connection_rule&#39; parameter will be the name of a function that takes in source-node and</span>
-<span class="sd">        target-node object (which can be treated like dictionaries, and returns the number of connections (ie</span>
-<span class="sd">        synapses, 0 or None if no synapses should exists) between the source and target cell:</span>
-<span class="sd">        ```python</span>
-<span class="sd">            def my_conn_fnc(source_node, target_node):</span>
-<span class="sd">                src_pos = source_node[&#39;position&#39;]</span>
-<span class="sd">                trg_pos = target_node[&#39;position&#39;]</span>
-<span class="sd">                ...</span>
-<span class="sd">                return N_syns</span>
+<span class="sd">            In the above code there is one connection between each source/target pair of nodes, but to create a multi-graph</span>
+<span class="sd">            with N connections between each pair use &#39;connection_rule&#39; parameter with an integer value::</span>
 
-<span class="sd">            net.add_edges(source={&#39;ei&#39;: &#39;exc&#39;}, target={&#39;ei&#39;: &#39;inh&#39;}, connection_rule=my_conn_fnc, **opt_edge_attrs)</span>
-<span class="sd">        ```</span>
+<span class="sd">                net.add_edges(source={&#39;ei&#39;: &#39;inh&#39;}, target={&#39;ei&#39;: &#39;exc&#39;, &#39;etype&#39;: &#39;fast-spiking&#39;}, connection_rule=M, ...)</span>
 
-<span class="sd">        If the connection_rule function requires addition arguments use the &#39;connection_params&#39; option:</span>
-<span class="sd">        ```python</span>
-<span class="sd">            def my_conn_fnc(source_node, target_node, min_edges, max_edges)</span>
-<span class="sd">                ...</span>
+<span class="sd">        Connection rules:</span>
+<span class="sd">            Usually the &#39;connection_rule&#39; parameter will be the name of a function that takes in source-node and</span>
+<span class="sd">            target-node object (which can be treated like dictionaries, and returns the number of connections (ie</span>
+<span class="sd">            synapses, 0 or None if no synapses should exists) between the source and target cell::</span>
 
-<span class="sd">            net.add_edges(connection_rule=my_conn_fnc, connection_params={&#39;min_edges&#39;: 0, &#39;max_edges&#39;: 20}, ...)</span>
-<span class="sd">        ```</span>
+<span class="sd">                def my_conn_fnc(source_node, target_node):</span>
+<span class="sd">                    src_pos = source_node[&#39;position&#39;]</span>
+<span class="sd">                    trg_pos = target_node[&#39;position&#39;]</span>
+<span class="sd">                    ...</span>
+<span class="sd">                    return N_syns</span>
 
-<span class="sd">        Sometimes it may be more efficient or even a requirement that multiple connections are created at the same</span>
-<span class="sd">        time. For example a post-synaptic neuron may only be targeted by a limited number of sources which couldn&#39;t</span>
-<span class="sd">        be done by the previous connection_rule function. But by setting property &#39;iterator&#39; to value &#39;all_to_one&#39;</span>
-<span class="sd">        the connection_rule function now takes in as a value a list of N source neurons, a single target, and should</span>
-<span class="sd">        return a list of size N:</span>
-<span class="sd">        ```python</span>
-<span class="sd">            def bulk_conn_fnc(sources, target):</span>
-<span class="sd">                syn_list = np.zeros(len(sources))</span>
-<span class="sd">                for source in sources:</span>
+<span class="sd">                net.add_edges(source={&#39;ei&#39;: &#39;exc&#39;}, target={&#39;ei&#39;: &#39;inh&#39;}, connection_rule=my_conn_fnc, **opt_edge_attrs)</span>
+
+<span class="sd">            If the connection_rule function requires addition arguments use the &#39;connection_params&#39; option::</span>
+
+<span class="sd">                def my_conn_fnc(source_node, target_node, min_edges, max_edges)</span>
+<span class="sd">                    ...</span>
+
+<span class="sd">                net.add_edges(connection_rule=my_conn_fnc, connection_params={&#39;min_edges&#39;: 0, &#39;max_edges&#39;: 20}, ...)</span>
+
+<span class="sd">            Sometimes it may be more efficient or even a requirement that multiple connections are created at the same</span>
+<span class="sd">            time. For example a post-synaptic neuron may only be targeted by a limited number of sources which couldn&#39;t</span>
+<span class="sd">            be done by the previous connection_rule function. But by setting property &#39;iterator&#39; to value &#39;all_to_one&#39;</span>
+<span class="sd">            the connection_rule function now takes in as a value a list of N source neurons, a single target, and should</span>
+<span class="sd">            return a list of size N::</span>
+
+<span class="sd">                def bulk_conn_fnc(sources, target):</span>
+<span class="sd">                    syn_list = np.zeros(len(sources))</span>
+<span class="sd">                    for source in sources:</span>
+<span class="sd">                        ....</span>
+<span class="sd">                    return syn_list</span>
+
+<span class="sd">                net.add_edges(connection_rule=bulk_conn_fnc, iterator=&#39;all_to_one&#39;, ...)</span>
+
+<span class="sd">            There is also a &#39;all_to_one&#39; iterator option that will pair each source node with a list of all available</span>
+<span class="sd">            target nodes.</span>
+
+<span class="sd">        Edge Properties:</span>
+<span class="sd">            Normally the properties used when creating a given type of edge will be shared by all the indvidual</span>
+<span class="sd">            connections. To create unique values for each edge, the add_edges() method returns a ConnectionMap object::</span>
+
+<span class="sd">                def set_syn_weight_by_dist(source, target):</span>
+<span class="sd">                    src_pos, trg_pos = source[&#39;position&#39;], target[&#39;position&#39;]</span>
 <span class="sd">                    ....</span>
-<span class="sd">                return syn_list</span>
-
-<span class="sd">            net.add_edges(connection_rule=bulk_conn_fnc, iterator=&#39;all_to_one&#39;, ...)</span>
-<span class="sd">        ```</span>
-<span class="sd">        There is also a &#39;all_to_one&#39; iterator option that will pair each source node with a list of all available</span>
-<span class="sd">        target nodes.</span>
-
-<span class="sd">        Edge Properties</span>
-<span class="sd">        ---------------</span>
-<span class="sd">        Normally the properties used when creating a given type of edge will be shared by all the indvidual</span>
-<span class="sd">        connections. To create unique values for each edge, the add_edges() method returns a ConnectionMap object:</span>
-<span class="sd">        ```python</span>
-<span class="sd">            def set_syn_weight_by_dist(source, target):</span>
-<span class="sd">                src_pos, trg_pos = source[&#39;position&#39;], target[&#39;position&#39;]</span>
-<span class="sd">                ....</span>
-<span class="sd">                return syn_weight</span>
+<span class="sd">                    return syn_weight</span>
 
 
-<span class="sd">            cm = net.add_edges(connection_rule=my_conn_fnc, model_template=&#39;Exp2Syn&#39;, ...)</span>
-<span class="sd">                            delay=2.0)</span>
-<span class="sd">            cm.add_properties(&#39;syn_weight&#39;, rule=set_syn_weight_by_dist)</span>
-<span class="sd">            cm.add_properties(&#39;delay&#39;, rule=lambda *_: np.random.rand(0.01, 0.50))</span>
-<span class="sd">        ```</span>
-<span class="sd">        In this case the &#39;model_template&#39; property has a value for all connections of this given type of edge. The</span>
-<span class="sd">        &#39;syn_weight&#39; and &#39;delay&#39; properties will (most likely) be unique values. See ConnectionMap documentation for</span>
-<span class="sd">        more info.</span>
+<span class="sd">                cm = net.add_edges(connection_rule=my_conn_fnc, model_template=&#39;Exp2Syn&#39;, ...)</span>
+<span class="sd">                                delay=2.0)</span>
+<span class="sd">                cm.add_properties(&#39;syn_weight&#39;, rule=set_syn_weight_by_dist)</span>
+<span class="sd">                cm.add_properties(&#39;delay&#39;, rule=lambda *_: np.random.rand(0.01, 0.50))</span>
+
+<span class="sd">            In this case the &#39;model_template&#39; property has a value for all connections of this given type of edge. The</span>
+<span class="sd">            &#39;syn_weight&#39; and &#39;delay&#39; properties will (most likely) be unique values. See ConnectionMap documentation for</span>
+<span class="sd">            more info.</span>
 
 <span class="sd">        :param source: A dictionary or list of Node objects (see nodes() method). Used to filter out pre-synaptic</span>
 <span class="sd">            subset of nodes.</span>
@@ -984,19 +978,17 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="viewcode-block" id="Network.nodes"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.network.Network.nodes">[docs]</a>    <span class="k">def</span> <span class="nf">nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">properties</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns an iterator of Node (glorified dictionary) objects, filtered by parameters.</span>
 
-<span class="sd">        To get all nodes on a network:</span>
-<span class="sd">        ```python</span>
+<span class="sd">        To get all nodes on a network::</span>
+
 <span class="sd">            for node in net.nodes():</span>
 <span class="sd">                ...</span>
-<span class="sd">        ```</span>
 
-<span class="sd">        To only get those nodes with properties that match a given list of parameter values</span>
-<span class="sd">        ```python</span>
+<span class="sd">        To only get those nodes with properties that match a given list of parameter values::</span>
+
 <span class="sd">            for nod in net.nodes(param1=value1, param2=value2, ...):</span>
 <span class="sd">                ...</span>
-<span class="sd">        ```</span>
 
-<span class="sd">        :param properties:</span>
+<span class="sd">        :param properties: key-value pair of node attributes to filter returned nodes</span>
 <span class="sd">        :return: An iterator of Node objects</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes_built</span><span class="p">:</span>
@@ -1010,17 +1002,16 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="viewcode-block" id="Network.edges"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.network.Network.edges">[docs]</a>    <span class="k">def</span> <span class="nf">edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target_network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">source_network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">properties</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns a list of dictionary-like Edge objects, given filter parameters.</span>
 
-<span class="sd">        To get all edges from a network</span>
-<span class="sd">        ```python</span>
-<span class="sd">           edges = net.edges()</span>
-<span class="sd">        ```</span>
+<span class="sd">        To get all edges from a network::</span>
 
-<span class="sd">        To specify the target and/or source node-set</span>
-<span class="sd">        ```python</span>
-<span class="sd">          edges = net.edges(target_nodes=net.nodes(type=&#39;biophysical&#39;), source_nodes=net.nodes(ei=&#39;i&#39;))</span>
-<span class="sd">        ```</span>
+<span class="sd">            edges = net.edges()</span>
 
-<span class="sd">        To only get edges with a given edge_property</span>
+<span class="sd">        To specify the target and/or source node-set::</span>
+
+<span class="sd">            edges = net.edges(target_nodes=net.nodes(type=&#39;biophysical&#39;), source_nodes=net.nodes(ei=&#39;i&#39;))</span>
+
+<span class="sd">        To only get edges with a given edge_property::</span>
+
 <span class="sd">          edges = net.edges(weight=100, syn_type=&#39;AMPA_Exc2Exc&#39;)</span>
 
 <span class="sd">        :param target_nodes: gid, list of gid, dict or node-pool. Set of target nodes for a given edge.</span>
@@ -1085,7 +1076,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="viewcode-block" id="Network.edges_iter"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.network.Network.edges_iter">[docs]</a>    <span class="k">def</span> <span class="nf">edges_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trg_gids</span><span class="p">,</span> <span class="n">src_network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trg_network</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Given a list of target gids, returns a generator for iteratoring over all possible edges.</span>
 
-<span class="sd">        It is preferable to use edges() method instead, it allows more flexibibility in the input and can better</span>
+<span class="sd">        It is preferable to use edges() method instead, it allows more flexibility in the input and can better</span>
 <span class="sd">        indicate if their is a problem.</span>
 
 <span class="sd">        The order of the edges returned will be in the same order as the trg_gids list, but does not guarentee any</span>
@@ -1100,6 +1091,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="Network.clear"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.network.Network.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Resets the network removing the nodes and edges created.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nodes_built</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_edges_built</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_clear</span><span class="p">()</span></div>
@@ -1133,13 +1125,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_edges_built</span> <span class="o">=</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="Network.build"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.network.Network.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Builds nodes and edges.</span>
+        <span class="sd">&quot;&quot;&quot;Builds nodes and edges.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            force (bool): set true to force complete rebuilding of nodes and edges, if nodes() or save_nodes() has been</span>
-<span class="sd">                called before then forcing a rebuild may change gids of each node.</span>
+<span class="sd">        :param force: set true to force complete rebuilding of nodes and edges, if nodes() or save_nodes() has been</span>
+<span class="sd">            called before then forcing a rebuild may change gids of each node.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="c1"># if nodes() or save_nodes() is called by user prior to calling build() - make sure the nodes</span>
         <span class="c1"># are completely rebuilt (unless a node set has been added).</span>
         <span class="k">if</span> <span class="n">force</span><span class="p">:</span>
@@ -1159,11 +1149,27 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Network.save"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.network.Network.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">save_edges</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">)</span></div>
+<div class="viewcode-block" id="Network.save"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.network.Network.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">force_overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Used to save the network files in the appropriate (eg SONATA) format into the output_dir directory. The file</span>
+<span class="sd">        names will be automatically generated based on the network names.</span>
+
+<span class="sd">        To have more control over the output and file names use the **save_nodes()** and **save_edges()** methods.</span>
+
+<span class="sd">        :param output_dir: string, directory where network files will be generated. Default, current working directory.</span>
+<span class="sd">        :param force_overwrite: Overwrites existing network files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">force_overwrite</span><span class="o">=</span><span class="n">force_overwrite</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_edges</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">force_overwrite</span><span class="o">=</span><span class="n">force_overwrite</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Network.save_nodes"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.network.Network.save_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">save_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes_file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_types_file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">force_overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Save the instantiated nodes in SONATA format files.</span>
+
+<span class="sd">        :param nodes_file_name: file-name of hdf5 nodes file. By default will use &lt;network.name&gt;_nodes.h5.</span>
+<span class="sd">        :param node_types_file_name: file-name of the csv node-types file. By default will use</span>
+<span class="sd">            &lt;network.name&gt;_node_types.csv</span>
+<span class="sd">        :param output_dir: Directory where network files will be generated. Default, current working directory.</span>
+<span class="sd">        :param force_overwrite: Overwrites existing network files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">nodes_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_path</span><span class="p">(</span><span class="n">nodes_file_name</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;nodes.h5&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">force_overwrite</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">nodes_file</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;File </span><span class="si">{}</span><span class="s1"> exists. Please use different name or use force_overwrite&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nodes_file</span><span class="p">))</span>
@@ -1197,6 +1203,18 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="Network.save_edges"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.network.Network.save_edges">[docs]</a>    <span class="k">def</span> <span class="nf">save_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edges_file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_types_file_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">src_network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">trg_network</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force_build</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">force_overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Save the instantiated edges in SONATA format files.</span>
+
+<span class="sd">        :param edges_file_name: file-name of hdf5 edges file. By default will use &lt;src_network&gt;_&lt;trg_network&gt;_edges.h5.</span>
+<span class="sd">        :param edge_types_file_name: file-name of csv edge-types file. By default will use</span>
+<span class="sd">            &lt;src_network&gt;_&lt;trg_network&gt;_edges.h5.</span>
+<span class="sd">        :param output_dir: Directory where network files will be generated. Default, current working directory.</span>
+<span class="sd">        :param src_network: Name of the source-node populations.</span>
+<span class="sd">        :param trg_network: Name of the target-node populations.</span>
+<span class="sd">        :param name: Name of file.</span>
+<span class="sd">        :param force_build: Force to (re)build the connection matrix if it hasn&#39;t already been built.</span>
+<span class="sd">        :param force_overwrite: Overwrites existing network files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Make sure edges exists and are built</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_connection_maps</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning: no edges have been made for this network, skipping saving.&quot;</span><span class="p">)</span>

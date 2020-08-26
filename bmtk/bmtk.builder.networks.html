@@ -680,7 +680,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dt id="bmtk.builder.networks.dm_network.DenseNetwork.edges_iter">
 <code class="sig-name descname">edges_iter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trg_gids</span></em>, <em class="sig-param"><span class="n">src_network</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">trg_network</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/networks/dm_network.html#DenseNetwork.edges_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.dm_network.DenseNetwork.edges_iter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a list of target gids, returns a generator for iteratoring over all possible edges.</p>
-<p>It is preferable to use edges() method instead, it allows more flexibibility in the input and can better
+<p>It is preferable to use edges() method instead, it allows more flexibility in the input and can better
 indicate if their is a problem.</p>
 <p>The order of the edges returned will be in the same order as the trg_gids list, but does not guarentee any
 secondary ordering by source-nodes and/or edge-type. If their isn’t a edge with a matching target-id then
@@ -712,12 +712,14 @@ it will skip that gid in the list, the size of the generator can 0 to arbitrarly
 <dl class="py method">
 <dt id="bmtk.builder.networks.dm_network.DenseNetwork.nedges">
 <em class="property">property </em><code class="sig-name descname">nedges</code><a class="headerlink" href="#bmtk.builder.networks.dm_network.DenseNetwork.nedges" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns the total number of edges for this network.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="bmtk.builder.networks.dm_network.DenseNetwork.nnodes">
 <em class="property">property </em><code class="sig-name descname">nnodes</code><a class="headerlink" href="#bmtk.builder.networks.dm_network.DenseNetwork.nnodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns the number of nodes for this network.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="bmtk.builder.networks.dm_network.DenseNetwork.nodes_iter">
@@ -745,7 +747,7 @@ it will skip that gid in the list, the size of the generator can 0 to arbitrarly
 <dt id="bmtk.builder.networks.mpi_network.MPINetwork.edges_iter">
 <code class="sig-name descname">edges_iter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trg_gids</span></em>, <em class="sig-param"><span class="n">src_network</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">trg_network</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/networks/mpi_network.html#MPINetwork.edges_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.mpi_network.MPINetwork.edges_iter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a list of target gids, returns a generator for iteratoring over all possible edges.</p>
-<p>It is preferable to use edges() method instead, it allows more flexibibility in the input and can better
+<p>It is preferable to use edges() method instead, it allows more flexibility in the input and can better
 indicate if their is a problem.</p>
 <p>The order of the edges returned will be in the same order as the trg_gids list, but does not guarentee any
 secondary ordering by source-nodes and/or edge-type. If their isn’t a edge with a matching target-id then
@@ -767,7 +769,19 @@ it will skip that gid in the list, the size of the generator can 0 to arbitrarly
 <dl class="py method">
 <dt id="bmtk.builder.networks.mpi_network.MPINetwork.save_nodes">
 <code class="sig-name descname">save_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes_file_name</span></em>, <em class="sig-param"><span class="n">node_types_file_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/networks/mpi_network.html#MPINetwork.save_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.mpi_network.MPINetwork.save_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Save the instantiated nodes in SONATA format files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nodes_file_name</strong> – file-name of hdf5 nodes file. By default will use &lt;network.name&gt;_nodes.h5.</p></li>
+<li><p><strong>node_types_file_name</strong> – file-name of the csv node-types file. By default will use
+&lt;network.name&gt;_node_types.csv</p></li>
+<li><p><strong>output_dir</strong> – Directory where network files will be generated. Default, current working directory.</p></li>
+<li><p><strong>force_overwrite</strong> – Overwrites existing network files.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -781,12 +795,14 @@ it will skip that gid in the list, the size of the generator can 0 to arbitrarly
 <dl class="py method">
 <dt id="bmtk.builder.networks.nxnetwork.NxNetwork.nedges">
 <em class="property">property </em><code class="sig-name descname">nedges</code><a class="headerlink" href="#bmtk.builder.networks.nxnetwork.NxNetwork.nedges" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns the total number of edges for this network.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="bmtk.builder.networks.nxnetwork.NxNetwork.nnodes">
 <em class="property">property </em><code class="sig-name descname">nnodes</code><a class="headerlink" href="#bmtk.builder.networks.nxnetwork.NxNetwork.nnodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns the number of nodes for this network.</p>
+</dd></dl>
 
 </dd></dl>
 

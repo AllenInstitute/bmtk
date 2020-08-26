@@ -683,21 +683,18 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 return the figure</p>
 <p>By default will display all nodes, if you want to only display a subset of nodes and/or group together different
 nodes (by node_id) by dot colors and labels then you can use the node_groups, which should be a list of dicts:</p>
-<dl>
-<dt><a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>python</dt><dd><p>plot_raster(‘/path/to/my/spike.h5’,
-node_groups=[{‘node_ids’: range(0, 70), ‘c’: ‘b’, ‘label’: ‘pyr’},      # first 70 nodes are blue pyr cells</p>
-<blockquote>
-<div><p>{‘node_ids’: range(70, 100), ‘c’: ‘r’, ‘label’: ‘inh’}])   # last 30 nodes are red inh cells</p>
-</div></blockquote>
-</dd>
-</dl>
-<p><a href="#id5"><span class="problematic" id="id6">``</span></a><a href="#id7"><span class="problematic" id="id8">`</span></a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_raster</span><span class="p">(</span><span class="s1">&#39;/path/to/my/spike.h5&#39;</span><span class="p">,</span>
+<span class="n">node_groups</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">70</span><span class="p">),</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;pyr&#39;</span><span class="p">},</span>      <span class="c1"># first 70 nodes are blue pyr cells</span>
+             <span class="p">{</span><span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">70</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;inh&#39;</span><span class="p">}])</span>   <span class="c1"># last 30 nodes are red inh cells</span>
+</pre></div>
+</div>
 <p>The histogram will not be grouped.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>spike_trains</strong> – SpikeTrains object or path to a (SONATA) spikes file.</p></li>
-<li><p><strong>with_histogram</strong> – If True the a histogram will be shown as a small subplot below the scatter plot. Default True.</p></li>
+<li><p><strong>with_histogram</strong> – If True the a histogram will be shown as a small subplot below the scatter plot. Default
+True.</p></li>
 <li><p><strong>population</strong> – string. If a spikes-file contains more than one population of nodes, use this to determine which
 nodes to actually plot. If only one population exists and population=None then the function will find it by
 default.</p></li>
@@ -723,17 +720,11 @@ data.</p></li>
 times are not specified from the “times” parameter, will try to parse values from the timestamps data.</p>
 <p>If you want to only display a subset of nodes and/or group together different nodes (by node_id) by dot colors and
 labels then you can use the node_groups, which should be a list of dicts:</p>
-<dl class="simple">
-<dt><a href="#id9"><span class="problematic" id="id10">``</span></a><a href="#id11"><span class="problematic" id="id12">`</span></a>python</dt><dd><dl class="simple">
-<dt>plot_rates(‘/path/to/my/spike.h5’,</dt><dd><dl class="simple">
-<dt>node_groups=[{‘node_ids’: range(0, 70), ‘c’: ‘b’, ‘label’: ‘pyr’},</dt><dd><p>{‘node_ids’: range(70, 100), ‘c’: ‘r’, ‘label’: ‘inh’}])</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd>
-</dl>
-<p><a href="#id13"><span class="problematic" id="id14">``</span></a><a href="#id15"><span class="problematic" id="id16">`</span></a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_rates</span><span class="p">(</span><span class="s1">&#39;/path/to/my/spike.h5&#39;</span><span class="p">,</span>
+            <span class="n">node_groups</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">70</span><span class="p">),</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;pyr&#39;</span><span class="p">},</span>
+                         <span class="p">{</span><span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">70</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;inh&#39;</span><span class="p">}])</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -765,20 +756,14 @@ will using a moving average smoothing function. Or use a function pointer.</p></
 <dd><p>Creates a box plot of the firing rates taken from a SpikeTrains object or SONATA Spike-Trains file. If start
 and stop times are not specified from the “times” parameter, will try to parse values from the timestamps data.</p>
 <p>By default will plot all nodes together. To only display a subset of the nodes and/or create groups of nodes use
-the node_groups options:
-<a href="#id17"><span class="problematic" id="id18">``</span></a><a href="#id19"><span class="problematic" id="id20">`</span></a>python</p>
-<blockquote>
-<div><dl>
-<dt>plot_rates_boxplot(</dt><dd><p>‘/path/to/my/spike.h5’,
-node_groups=[{‘node_ids’: range(0, 70), ‘label’: ‘pyr’},</p>
-<blockquote>
-<div><p>{‘node_ids’: range(70, 100), ‘label’: ‘inh’}]</p>
-</div></blockquote>
-</dd>
-</dl>
-<p>)</p>
-</div></blockquote>
-<p><a href="#id21"><span class="problematic" id="id22">``</span></a><a href="#id23"><span class="problematic" id="id24">`</span></a></p>
+the node_groups options:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_rates_boxplot</span><span class="p">(</span>
+    <span class="s1">&#39;/path/to/my/spike.h5&#39;</span><span class="p">,</span>
+    <span class="n">node_groups</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">70</span><span class="p">),</span> <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;pyr&#39;</span><span class="p">},</span>
+                 <span class="p">{</span><span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">70</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;inh&#39;</span><span class="p">}]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -821,8 +806,8 @@ will always have an upper bound on the maximum memory used.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – integer, id of node/cell that spike belongs too.</p></li>
 <li><p><strong>timestamp</strong> – double, time that spike occurred.</p></li>
-<li><p><strong>population</strong> – string, name of population belong to spike. If none will try to use the default population</p></li>
-<li><p><strong>kwargs</strong> – </p></li>
+<li><p><strong>population</strong> – string, name of population belong to spike. If none will try to use the default population.</p></li>
+<li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
 </dl>
@@ -839,7 +824,7 @@ will always have an upper bound on the maximum memory used.</p>
 timestamps. If a singluar integer value is used then assumes all timestamps corresponds with said node_id.</p></li>
 <li><p><strong>timestamps</strong> – A list of doubles</p></li>
 <li><p><strong>population</strong> – The population to which the node(s) belong too</p></li>
-<li><p><strong>kwargs</strong> – </p></li>
+<li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
 </dl>
@@ -864,14 +849,16 @@ timestamps. If a singluar integer value is used then assumes all timestamps corr
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – The id of the node</p></li>
-<li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the</p></li>
+<li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the
+default population (if possible).</p></li>
+<li><p><strong>time_window</strong> – A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.</p></li>
+<li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of spike times [float]</p>
+</dd>
 </dl>
-<p>default population (if possible).
-:param time_window: A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.
-:param kwargs:
-:return: list of spike times [float]</p>
 </dd></dl>
 
 <dl class="py method">
@@ -897,7 +884,7 @@ timestamps. If a singluar integer value is used then assumes all timestamps corr
 <dd class="field-odd"><p><strong>population</strong> – Name of population, if not set uses the default_population</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
+<dd class="field-even"><p>A list of node-ids (integers).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -924,12 +911,10 @@ timestamps. If a singluar integer value is used then assumes all timestamps corr
 <code class="sig-name descname">spikes</code><span class="sig-paren">(</span><em class="sig-param">populations=None</em>, <em class="sig-param">time_window=None</em>, <em class="sig-param">sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STCSVBuffer.spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterate over all the saved spikes, returning a single spike at a time. Will typically be slower than calling
 to_dataframe(), but not require as much memory. To use the generator:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>for node_id, population, timestamp in spike_trains.spikes():</dt><dd><p>…</p>
-</dd>
-</dl>
-</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">timestamp</span> <span class="ow">in</span> <span class="n">spike_trains</span><span class="o">.</span><span class="n">spikes</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1003,14 +988,16 @@ dataframs with only one population). True by default</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – The id of the node</p></li>
-<li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the</p></li>
+<li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the
+default population (if possible).</p></li>
+<li><p><strong>time_window</strong> – A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.</p></li>
+<li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of spike times [float]</p>
+</dd>
 </dl>
-<p>default population (if possible).
-:param time_window: A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.
-:param kwargs:
-:return: list of spike times [float]</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1036,7 +1023,7 @@ dataframs with only one population). True by default</p></li>
 <dd class="field-odd"><p><strong>population</strong> – Name of population, if not set uses the default_population</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
+<dd class="field-even"><p>A list of node-ids (integers).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1057,12 +1044,10 @@ dataframs with only one population). True by default</p></li>
 <code class="sig-name descname">spikes</code><span class="sig-paren">(</span><em class="sig-param">populations=None</em>, <em class="sig-param">time_window=None</em>, <em class="sig-param">sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em class="sig-param">on_rank='all'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STCSVMPIBuffer.spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVMPIBuffer.spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterate over all the saved spikes, returning a single spike at a time. Will typically be slower than calling
 to_dataframe(), but not require as much memory. To use the generator:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>for node_id, population, timestamp in spike_trains.spikes():</dt><dd><p>…</p>
-</dd>
-</dl>
-</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">timestamp</span> <span class="ow">in</span> <span class="n">spike_trains</span><span class="o">.</span><span class="n">spikes</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1126,14 +1111,16 @@ dataframs with only one population). True by default</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – The id of the node</p></li>
-<li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the</p></li>
+<li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the
+default population (if possible).</p></li>
+<li><p><strong>time_window</strong> – A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.</p></li>
+<li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of spike times [float]</p>
+</dd>
 </dl>
-<p>default population (if possible).
-:param time_window: A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.
-:param kwargs:
-:return: list of spike times [float]</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1159,7 +1146,7 @@ dataframs with only one population). True by default</p></li>
 <dd class="field-odd"><p><strong>population</strong> – Name of population, if not set uses the default_population</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
+<dd class="field-even"><p>A list of node-ids (integers).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1180,12 +1167,10 @@ dataframs with only one population). True by default</p></li>
 <code class="sig-name descname">spikes</code><span class="sig-paren">(</span><em class="sig-param">populations=None</em>, <em class="sig-param">time_window=None</em>, <em class="sig-param">sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em class="sig-param">on_rank='all'</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STMPIBuffer.spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMPIBuffer.spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterate over all the saved spikes, returning a single spike at a time. Will typically be slower than calling
 to_dataframe(), but not require as much memory. To use the generator:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>for node_id, population, timestamp in spike_trains.spikes():</dt><dd><p>…</p>
-</dd>
-</dl>
-</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">timestamp</span> <span class="ow">in</span> <span class="n">spike_trains</span><span class="o">.</span><span class="n">spikes</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1244,8 +1229,8 @@ to work with parallel simulations.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – integer, id of node/cell that spike belongs too.</p></li>
 <li><p><strong>timestamp</strong> – double, time that spike occurred.</p></li>
-<li><p><strong>population</strong> – string, name of population belong to spike. If none will try to use the default population</p></li>
-<li><p><strong>kwargs</strong> – </p></li>
+<li><p><strong>population</strong> – string, name of population belong to spike. If none will try to use the default population.</p></li>
+<li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1262,7 +1247,7 @@ to work with parallel simulations.</p>
 timestamps. If a singluar integer value is used then assumes all timestamps corresponds with said node_id.</p></li>
 <li><p><strong>timestamps</strong> – A list of doubles</p></li>
 <li><p><strong>population</strong> – The population to which the node(s) belong too</p></li>
-<li><p><strong>kwargs</strong> – </p></li>
+<li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1287,14 +1272,16 @@ timestamps. If a singluar integer value is used then assumes all timestamps corr
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – The id of the node</p></li>
-<li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the</p></li>
+<li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the
+default population (if possible).</p></li>
+<li><p><strong>time_window</strong> – A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.</p></li>
+<li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of spike times [float]</p>
+</dd>
 </dl>
-<p>default population (if possible).
-:param time_window: A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.
-:param kwargs:
-:return: list of spike times [float]</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1326,7 +1313,7 @@ timestamps. If a singluar integer value is used then assumes all timestamps corr
 <dd class="field-odd"><p><strong>population</strong> – Name of population, if not set uses the default_population</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
+<dd class="field-even"><p>A list of node-ids (integers).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1353,12 +1340,10 @@ timestamps. If a singluar integer value is used then assumes all timestamps corr
 <code class="sig-name descname">spikes</code><span class="sig-paren">(</span><em class="sig-param">populations=None</em>, <em class="sig-param">time_window=None</em>, <em class="sig-param">sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_buffer.html#STMemoryBuffer.spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_buffer.STMemoryBuffer.spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterate over all the saved spikes, returning a single spike at a time. Will typically be slower than calling
 to_dataframe(), but not require as much memory. To use the generator:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>for node_id, population, timestamp in spike_trains.spikes():</dt><dd><p>…</p>
-</dd>
-</dl>
-</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">timestamp</span> <span class="ow">in</span> <span class="n">spike_trains</span><span class="o">.</span><span class="n">spikes</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1425,14 +1410,16 @@ dataframs with only one population). True by default</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – The id of the node</p></li>
-<li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the</p></li>
+<li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the
+default population (if possible).</p></li>
+<li><p><strong>time_window</strong> – A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.</p></li>
+<li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of spike times [float]</p>
+</dd>
 </dl>
-<p>default population (if possible).
-:param time_window: A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.
-:param kwargs:
-:return: list of spike times [float]</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1458,7 +1445,7 @@ dataframs with only one population). True by default</p></li>
 <dd class="field-odd"><p><strong>population</strong> – Name of population, if not set uses the default_population</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
+<dd class="field-even"><p>A list of node-ids (integers).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1479,12 +1466,10 @@ dataframs with only one population). True by default</p></li>
 <code class="sig-name descname">spikes</code><span class="sig-paren">(</span><em class="sig-param">node_ids=None</em>, <em class="sig-param">populations=None</em>, <em class="sig-param">time_window=None</em>, <em class="sig-param">sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#CSVSTReader.spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.CSVSTReader.spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterate over all the saved spikes, returning a single spike at a time. Will typically be slower than calling
 to_dataframe(), but not require as much memory. To use the generator:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>for node_id, population, timestamp in spike_trains.spikes():</dt><dd><p>…</p>
-</dd>
-</dl>
-</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">timestamp</span> <span class="ow">in</span> <span class="n">spike_trains</span><span class="o">.</span><span class="n">spikes</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1539,14 +1524,16 @@ dataframs with only one population). True by default</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – The id of the node</p></li>
-<li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the</p></li>
+<li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the
+default population (if possible).</p></li>
+<li><p><strong>time_window</strong> – A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.</p></li>
+<li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of spike times [float]</p>
+</dd>
 </dl>
-<p>default population (if possible).
-:param time_window: A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.
-:param kwargs:
-:return: list of spike times [float]</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1572,7 +1559,7 @@ dataframs with only one population). True by default</p></li>
 <dd class="field-odd"><p><strong>population</strong> – Name of population, if not set uses the default_population</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
+<dd class="field-even"><p>A list of node-ids (integers).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1593,12 +1580,10 @@ dataframs with only one population). True by default</p></li>
 <code class="sig-name descname">spikes</code><span class="sig-paren">(</span><em class="sig-param">node_ids=None</em>, <em class="sig-param">populations=None</em>, <em class="sig-param">time_window=None</em>, <em class="sig-param">sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#EmptySonataReader.spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.EmptySonataReader.spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterate over all the saved spikes, returning a single spike at a time. Will typically be slower than calling
 to_dataframe(), but not require as much memory. To use the generator:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>for node_id, population, timestamp in spike_trains.spikes():</dt><dd><p>…</p>
-</dd>
-</dl>
-</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">timestamp</span> <span class="ow">in</span> <span class="n">spike_trains</span><span class="o">.</span><span class="n">spikes</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1656,14 +1641,16 @@ dataframs with only one population). True by default</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – The id of the node</p></li>
-<li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the</p></li>
+<li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the
+default population (if possible).</p></li>
+<li><p><strong>time_window</strong> – A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.</p></li>
+<li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of spike times [float]</p>
+</dd>
 </dl>
-<p>default population (if possible).
-:param time_window: A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.
-:param kwargs:
-:return: list of spike times [float]</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1689,7 +1676,7 @@ dataframs with only one population). True by default</p></li>
 <dd class="field-odd"><p><strong>population</strong> – Name of population, if not set uses the default_population</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
+<dd class="field-even"><p>A list of node-ids (integers).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1710,12 +1697,10 @@ dataframs with only one population). True by default</p></li>
 <code class="sig-name descname">spikes</code><span class="sig-paren">(</span><em class="sig-param">node_ids=None</em>, <em class="sig-param">populations=None</em>, <em class="sig-param">time_window=None</em>, <em class="sig-param">sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#NWBSTReader.spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.NWBSTReader.spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterate over all the saved spikes, returning a single spike at a time. Will typically be slower than calling
 to_dataframe(), but not require as much memory. To use the generator:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>for node_id, population, timestamp in spike_trains.spikes():</dt><dd><p>…</p>
-</dd>
-</dl>
-</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">timestamp</span> <span class="ow">in</span> <span class="n">spike_trains</span><span class="o">.</span><span class="n">spikes</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1769,14 +1754,16 @@ dataframs with only one population). True by default</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – The id of the node</p></li>
-<li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the</p></li>
+<li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the
+default population (if possible).</p></li>
+<li><p><strong>time_window</strong> – A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.</p></li>
+<li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of spike times [float]</p>
+</dd>
 </dl>
-<p>default population (if possible).
-:param time_window: A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.
-:param kwargs:
-:return: list of spike times [float]</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1802,7 +1789,7 @@ dataframs with only one population). True by default</p></li>
 <dd class="field-odd"><p><strong>population</strong> – Name of population, if not set uses the default_population</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
+<dd class="field-even"><p>A list of node-ids (integers).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1812,12 +1799,10 @@ dataframs with only one population). True by default</p></li>
 <code class="sig-name descname">spikes</code><span class="sig-paren">(</span><em class="sig-param">node_ids=None</em>, <em class="sig-param">populations=None</em>, <em class="sig-param">time_window=None</em>, <em class="sig-param">sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#SonataOldReader.spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.SonataOldReader.spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterate over all the saved spikes, returning a single spike at a time. Will typically be slower than calling
 to_dataframe(), but not require as much memory. To use the generator:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>for node_id, population, timestamp in spike_trains.spikes():</dt><dd><p>…</p>
-</dd>
-</dl>
-</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">timestamp</span> <span class="ow">in</span> <span class="n">spike_trains</span><span class="o">.</span><span class="n">spikes</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1875,14 +1860,16 @@ dataframs with only one population). True by default</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – The id of the node</p></li>
-<li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the</p></li>
+<li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the
+default population (if possible).</p></li>
+<li><p><strong>time_window</strong> – A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.</p></li>
+<li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of spike times [float]</p>
+</dd>
 </dl>
-<p>default population (if possible).
-:param time_window: A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.
-:param kwargs:
-:return: list of spike times [float]</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1908,7 +1895,7 @@ dataframs with only one population). True by default</p></li>
 <dd class="field-odd"><p><strong>population</strong> – Name of population, if not set uses the default_population</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
+<dd class="field-even"><p>A list of node-ids (integers).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1940,12 +1927,10 @@ dataframs with only one population). True by default</p></li>
 <code class="sig-name descname">spikes</code><span class="sig-paren">(</span><em class="sig-param">node_ids=None</em>, <em class="sig-param">populations=None</em>, <em class="sig-param">time_window=None</em>, <em class="sig-param">sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_train_readers.html#SonataSTReader.spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_train_readers.SonataSTReader.spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterate over all the saved spikes, returning a single spike at a time. Will typically be slower than calling
 to_dataframe(), but not require as much memory. To use the generator:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>for node_id, population, timestamp in spike_trains.spikes():</dt><dd><p>…</p>
-</dd>
-</dl>
-</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">timestamp</span> <span class="ow">in</span> <span class="n">spike_trains</span><span class="o">.</span><span class="n">spikes</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -2094,8 +2079,8 @@ dataframs with only one population). True by default</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – integer, id of node/cell that spike belongs too.</p></li>
 <li><p><strong>timestamp</strong> – double, time that spike occurred.</p></li>
-<li><p><strong>population</strong> – string, name of population belong to spike. If none will try to use the default population</p></li>
-<li><p><strong>kwargs</strong> – </p></li>
+<li><p><strong>population</strong> – string, name of population belong to spike. If none will try to use the default population.</p></li>
+<li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
 </dl>
@@ -2112,7 +2097,7 @@ dataframs with only one population). True by default</p></li>
 timestamps. If a singluar integer value is used then assumes all timestamps corresponds with said node_id.</p></li>
 <li><p><strong>timestamps</strong> – A list of doubles</p></li>
 <li><p><strong>population</strong> – The population to which the node(s) belong too</p></li>
-<li><p><strong>kwargs</strong> – </p></li>
+<li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
 </dl>
@@ -2137,14 +2122,16 @@ timestamps. If a singluar integer value is used then assumes all timestamps corr
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – The id of the node</p></li>
-<li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the</p></li>
+<li><p><strong>population</strong> – Name of the node-population which the node belongs to. By default will try to use the
+default population (if possible).</p></li>
+<li><p><strong>time_window</strong> – A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.</p></li>
+<li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of spike times [float]</p>
+</dd>
 </dl>
-<p>default population (if possible).
-:param time_window: A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.
-:param kwargs:
-:return: list of spike times [float]</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2232,7 +2219,7 @@ two spikes at 100.00 ms as well.
 <dd class="field-odd"><p><strong>population</strong> – Name of population, if not set uses the default_population</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
+<dd class="field-even"><p>A list of node-ids (integers).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2264,12 +2251,10 @@ two spikes at 100.00 ms as well.
 <code class="sig-name descname">spikes</code><span class="sig-paren">(</span><em class="sig-param">populations=None</em>, <em class="sig-param">time_window=None</em>, <em class="sig-param">sort_order=&lt;SortOrder.none: 'none'&gt;</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/spike_trains/spike_trains_api.html#SpikeTrainsAPI.spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI.spikes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterate over all the saved spikes, returning a single spike at a time. Will typically be slower than calling
 to_dataframe(), but not require as much memory. To use the generator:</p>
-<blockquote>
-<div><dl class="simple">
-<dt>for node_id, population, timestamp in spike_trains.spikes():</dt><dd><p>…</p>
-</dd>
-</dl>
-</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">timestamp</span> <span class="ow">in</span> <span class="n">spike_trains</span><span class="o">.</span><span class="n">spikes</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -2377,8 +2362,8 @@ dataframs with only one population). True by default</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>node_id</strong> – integer, id of node/cell that spike belongs too.</p></li>
 <li><p><strong>timestamp</strong> – double, time that spike occurred.</p></li>
-<li><p><strong>population</strong> – string, name of population belong to spike. If none will try to use the default population</p></li>
-<li><p><strong>kwargs</strong> – </p></li>
+<li><p><strong>population</strong> – string, name of population belong to spike. If none will try to use the default population.</p></li>
+<li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
 </dl>
@@ -2395,7 +2380,7 @@ dataframs with only one population). True by default</p></li>
 timestamps. If a singluar integer value is used then assumes all timestamps corresponds with said node_id.</p></li>
 <li><p><strong>timestamps</strong> – A list of doubles</p></li>
 <li><p><strong>population</strong> – The population to which the node(s) belong too</p></li>
-<li><p><strong>kwargs</strong> – </p></li>
+<li><p><strong>kwargs</strong> – optional arguments.</p></li>
 </ul>
 </dd>
 </dl>

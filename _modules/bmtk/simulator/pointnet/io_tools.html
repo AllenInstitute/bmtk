@@ -686,64 +686,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <span class="n">io</span> <span class="o">=</span> <span class="n">NestIOUtils</span><span class="p">()</span>
-
-
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">log_format = logging.Formatter(&#39;%(asctime)s [%(levelname)s] %(message)s&#39;)</span>
-<span class="sd">pointnet_logger = logging.getLogger()</span>
-<span class="sd">pointnet_logger.setLevel(logging.DEBUG)</span>
-
-<span class="sd">console_handler = logging.StreamHandler(sys.stdout)</span>
-<span class="sd">console_handler.setFormatter(log_format)</span>
-<span class="sd">pointnet_logger.addHandler(console_handler)</span>
-
-
-<span class="sd">def collect_gdf_files(gdf_dir, output_file, nest_id_map, overwrite=False):</span>
-
-<span class="sd">    if n_nodes &gt; 0:</span>
-<span class="sd">        # Wait until all nodes are finished</span>
-<span class="sd">        barrier()</span>
-
-<span class="sd">    if rank != 0:</span>
-<span class="sd">        return</span>
-
-<span class="sd">    log(&quot;Saving spikes to file...&quot;)</span>
-<span class="sd">    spikes_out = output_file</span>
-<span class="sd">    if os.path.exists(spikes_out) and not overwrite:</span>
-<span class="sd">        return</span>
-
-<span class="sd">    gdf_files_globs = &#39;{}/*.gdf&#39;.format(gdf_dir)</span>
-<span class="sd">    gdf_files = glob.glob(gdf_files_globs)</span>
-<span class="sd">    with open(spikes_out, &#39;w&#39;) as spikes_file:</span>
-<span class="sd">        csv_writer = csv.writer(spikes_file, delimiter=&#39; &#39;)</span>
-<span class="sd">        for gdffile in gdf_files:</span>
-<span class="sd">            spikes_df = pd.read_csv(gdffile, names=[&#39;gid&#39;, &#39;time&#39;, &#39;nan&#39;], sep=&#39;\t&#39;)</span>
-<span class="sd">            for _, row in spikes_df.iterrows():</span>
-<span class="sd">                csv_writer.writerow([row[&#39;time&#39;], nest_id_map[int(row[&#39;gid&#39;])]])</span>
-<span class="sd">            os.remove(gdffile)</span>
-<span class="sd">    log(&quot;done.&quot;)</span>
-
-
-<span class="sd">def setup_output_dir(config):</span>
-<span class="sd">    if rank == 0:</span>
-<span class="sd">        try:</span>
-<span class="sd">            output_dir = config[&#39;output&#39;][&#39;output_dir&#39;]</span>
-<span class="sd">            if os.path.exists(output_dir):</span>
-<span class="sd">                shutil.rmtree(output_dir)</span>
-<span class="sd">            os.makedirs(output_dir)</span>
-
-<span class="sd">            if &#39;log_file&#39; in config[&#39;output&#39;]:</span>
-<span class="sd">                file_logger = logging.FileHandler(config[&#39;output&#39;][&#39;log_file&#39;])</span>
-<span class="sd">                file_logger.setFormatter(log_format)</span>
-<span class="sd">                pointnet_logger.addHandler(file_logger)</span>
-<span class="sd">                log(&#39;Created a log file&#39;)</span>
-
-<span class="sd">        except Exception as exc:</span>
-<span class="sd">            print(exc)</span>
-
-<span class="sd">    barrier()</span>
-<span class="sd">&#39;&#39;&#39;</span>
-
 </pre></div>
 
             <div class="clearer"></div>

@@ -1126,14 +1126,16 @@ Units: ms
 </div>
 </div>
 <p>The last thing that we need to do is to update the configuration file to read “thalamus_spikes.csv”. To do so we open simulation_config.json in a text editor and add the following to the <strong>input</strong> section.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;inputs&quot;: {
-    &quot;mthalamus_spikes&quot;: {
-      &quot;input_type&quot;: &quot;spikes&quot;,
-      &quot;module&quot;: &quot;sonata&quot;,
-      &quot;input_file&quot;: &quot;${BASE_DIR}/input/mthalamus_spikes.csv&quot;,
-      &quot;node_set&quot;: &quot;mthalamus&quot;
-    }
-}
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;mthalamus_spikes&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;sonata&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;input_file&quot;</span><span class="p">:</span> <span class="s2">&quot;${BASE_DIR}/input/mthalamus_spikes.csv&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="s2">&quot;mthalamus&quot;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -1510,6 +1512,8 @@ Number of Spikes: 49
 </div>
 <div class="section" id="5.-Additional-things-to-do:">
 <h2>5. Additional things to do:<a class="headerlink" href="#5.-Additional-things-to-do:" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Changing-edge-properties">
+<h3>Changing edge properties<a class="headerlink" href="#Changing-edge-properties" title="Permalink to this headline">¶</a></h3>
 <p>When using the Network Builder add_edges method, we gave all the edges the same parameter values (delay, weight, target_section, etc.). All connection created by this method call constitute an single edge-type that share the same parameters, and are specified in the mthalamic_edge_type.csv file</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
@@ -1576,6 +1580,7 @@ Number of Spikes: 49
 </div>
 <p>(if in the build script we called add_edges multiple times, we’d have multiple edge-types).</p>
 <p>Using a simple text-editor we can modify this file directly, change parameters before a simulation run without having to rebuild the entire network (although for a network this small it may not be beneficial).</p>
+</div>
 <div class="section" id="weight_function">
 <h3>weight_function<a class="headerlink" href="#weight_function" title="Permalink to this headline">¶</a></h3>
 <p>By default BioNet uses the value in syn_weight to set a synaptic weight, which is a constant stored in the network files. Often we will want to adjust the synaptic weight between simulations, but don’t want to have to regenerate the network. BioNet allows us to specify custom synaptic weight functions that will calculate synaptic weight before each simulation.</p>
@@ -1639,15 +1644,17 @@ Number of Spikes: 49
 <div class="section" id="Using-NWB-for-spike-trains">
 <h4>Using NWB for spike trains<a class="headerlink" href="#Using-NWB-for-spike-trains" title="Permalink to this headline">¶</a></h4>
 <p>Instead of using csv files to set the spike trains of our external network, we can also use nwb files. The typical setup would look like the following in the config file:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;inputs&quot;: {
-    &quot;LGN_spikes&quot;: {
-      &quot;input_type&quot;: &quot;spikes&quot;,
-      &quot;module&quot;: &quot;nwb&quot;,
-      &quot;input_file&quot;: &quot;$INPUT_DIR/lgn_spikes.nwb&quot;,
-      &quot;node_set&quot;: &quot;lgn&quot;,
-      &quot;trial&quot;: &quot;trial_0&quot;
-    },
-}
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;nwb&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;input_file&quot;</span><span class="p">:</span> <span class="s2">&quot;$INPUT_DIR/lgn_spikes.nwb&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="s2">&quot;lgn&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;trial&quot;</span><span class="p">:</span> <span class="s2">&quot;trial_0&quot;</span>
+    <span class="p">},</span>
+  <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <div class="nbinput nblast docutils container">

@@ -638,8 +638,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.builder.bionet.html">bmtk.builder.bionet package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.bionet.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.bionet.html#bmtk-builder-bionet-swc-reader-module">bmtk.builder.bionet.swc_reader module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.bionet.html#module-contents">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.bionet.html#module-bmtk.builder.bionet.swc_reader">bmtk.builder.bionet.swc_reader module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.bionet.html#module-bmtk.builder.bionet">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.builder.networks.html">bmtk.builder.networks package</a><ul>
@@ -674,6 +674,43 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </dl>
 <p>The number of synapses rule (1) is stored as a connector. Individual synaptic parameters, if they exists, are stored
 as ParamsRules.</p>
+<dl>
+<dt>Usage:</dt><dd><p>Do not create a ConnectionMap object directly. Rather one is created and return every time NetworkBuilder’s
+add_edges() method is called.</p>
+<p>For example, The following will create a set of edges where there is between 1 to 16 synapatic connections
+between each source and target node. Properties ‘dynamics_params’ and ‘model_template’ will be global
+properties:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cm</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;exc&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;inh&#39;</span><span class="p">},</span>
+                   <span class="n">connection_rule</span><span class="o">=</span><span class="k">lambda</span> <span class="o">*</span><span class="n">_</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+                   <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;ExcToInh.json&#39;</span><span class="p">,</span>
+                   <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;Exp2Syn&#39;</span><span class="p">,</span>
+                   <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If we want all edges to have a unique ‘syn_weight’ value calculated from source/target locations, we create a
+function that takes in source and target (Node object) and returns the syn weight. This function will be called
+for every individual connection:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">syn_weight_by_loc</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+    <span class="n">src_loc</span><span class="p">,</span> <span class="n">trg_loc</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">],</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">]</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">syn_weight</span>
+
+<span class="n">cm</span><span class="o">.</span><span class="n">add_properties</span><span class="p">(</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">,</span> <span class="n">rule</span><span class="o">=</span><span class="n">syn_weight_by_loc</span><span class="p">,</span> <span class="n">dtypes</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can also add multiple properties at the same time:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_target_loc_and_dist</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">trg_loc</span><span class="p">,</span> <span class="n">trg_dist</span>
+
+<span class="n">cm</span><span class="o">.</span><span class="n">add_properties</span><span class="p">([</span><span class="s1">&#39;syn_location&#39;</span><span class="p">,</span> <span class="s1">&#39;syn_distance&#39;</span><span class="p">],</span>
+              <span class="n">rule</span><span class="o">=</span><span class="n">get_target_loc_and_dist</span><span class="p">,</span>
+              <span class="n">dtypes</span><span class="o">=</span><span class="p">[</span><span class="n">string</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Once NetworkBuilder.build() is called the ‘connection_rule’ will be called.</p>
+</dd>
+</dl>
 <dl class="py class">
 <dt id="bmtk.builder.connection_map.ConnectionMap.ParamsRules">
 <em class="property">class </em><code class="sig-name descname">ParamsRules</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">names</span></em>, <em class="sig-param"><span class="n">rule</span></em>, <em class="sig-param"><span class="n">rule_params</span></em>, <em class="sig-param"><span class="n">dtypes</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/connection_map.html#ConnectionMap.ParamsRules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.ParamsRules" title="Permalink to this definition">¶</a></dt>
@@ -705,46 +742,37 @@ as ParamsRules.</p>
 <dt id="bmtk.builder.connection_map.ConnectionMap.add_properties">
 <code class="sig-name descname">add_properties</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">names</span></em>, <em class="sig-param"><span class="n">rule</span></em>, <em class="sig-param"><span class="n">rule_params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dtypes</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/connection_map.html#ConnectionMap.add_properties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.connection_map.ConnectionMap.add_properties" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a synaptic property for an individual edge.</p>
-<p>Typicall this requires a custom rule that will be used for every source/target pair of nodes and returns
-a value for the property. Such rule is a user defined function, and will be called by NetworkBuilder.build().</p>
-<dl>
-<dt><a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>python</dt><dd><dl class="simple">
-<dt>def syn_weight_by_loc(source, target):</dt><dd><p>…
-return syn_weight</p>
-</dd>
-</dl>
-<p>cm.add_properties(‘syn_weight’, rule=syn_weight_by_loc, dtypes=np.float)</p>
-</dd>
-</dl>
-<p><a href="#id5"><span class="problematic" id="id6">``</span></a><a href="#id7"><span class="problematic" id="id8">`</span></a></p>
-<p>If the connection_rule function requires additional parameters use the rule_params option:
-<a href="#id9"><span class="problematic" id="id10">``</span></a><a href="#id11"><span class="problematic" id="id12">`</span></a>python</p>
-<blockquote>
-<div><dl class="simple">
-<dt>def syn_weight_by_loc(source, target, min_weight, max_weight):</dt><dd><p>…
-return syn_weight</p>
-</dd>
-<dt>cm.add_properties(‘syn_weight’,</dt><dd><p>rule=syn_weight_by_loc,
-rule_params={‘min_weigth’:1.0e-7, ‘max_weight’: 5.0e-6},
-dtypes=np.float)</p>
-</dd>
-</dl>
-</div></blockquote>
-<p><a href="#id13"><span class="problematic" id="id14">``</span></a><a href="#id15"><span class="problematic" id="id16">`</span></a></p>
-<p>You may also have the rule define multiple connection parameters at one time
-<a href="#id17"><span class="problematic" id="id18">``</span></a><a href="#id19"><span class="problematic" id="id20">`</span></a>python</p>
-<blockquote>
-<div><dl class="simple">
-<dt>def conn_rule(source, target, min_weight, max_weight):</dt><dd><p>…
-return syn_weight, syn_location, delay</p>
-</dd>
-<dt>cm.add_properties([‘syn_weight’, ‘syn_loc’, ‘delay’],</dt><dd><p>rule=syn_weight_by_loc,
-rule_params={‘min_weigth’:1.0e-7, ‘max_weight’: 5.0e-6},
-dtypes=[np.float, str, np.float])</p>
-</dd>
-</dl>
-</div></blockquote>
-<p><a href="#id21"><span class="problematic" id="id22">``</span></a><a href="#id23"><span class="problematic" id="id24">`</span></a></p>
+<p>Typically this requires a custom rule that will be used for every source/target pair of nodes and returns
+a value for the property. Such rule is a user defined function, and will be called by NetworkBuilder.build():</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">syn_weight_by_loc</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">syn_weight</span>
+
+<span class="n">cm</span><span class="o">.</span><span class="n">add_properties</span><span class="p">(</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">,</span> <span class="n">rule</span><span class="o">=</span><span class="n">syn_weight_by_loc</span><span class="p">,</span> <span class="n">dtypes</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If the connection_rule function requires additional parameters use the rule_params option:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">syn_weight_by_loc</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">min_weight</span><span class="p">,</span> <span class="n">max_weight</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">syn_weight</span>
+
+<span class="n">cm</span><span class="o">.</span><span class="n">add_properties</span><span class="p">(</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">,</span>
+                  <span class="n">rule</span><span class="o">=</span><span class="n">syn_weight_by_loc</span><span class="p">,</span>
+                  <span class="n">rule_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;min_weigth&#39;</span><span class="p">:</span><span class="mf">1.0e-7</span><span class="p">,</span> <span class="s1">&#39;max_weight&#39;</span><span class="p">:</span> <span class="mf">5.0e-6</span><span class="p">},</span>
+                  <span class="n">dtypes</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You may also have the rule define multiple connection parameters at one time:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">conn_rule</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">min_weight</span><span class="p">,</span> <span class="n">max_weight</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">syn_weight</span><span class="p">,</span> <span class="n">syn_location</span><span class="p">,</span> <span class="n">delay</span>
+
+<span class="n">cm</span><span class="o">.</span><span class="n">add_properties</span><span class="p">([</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">,</span> <span class="s1">&#39;syn_loc&#39;</span><span class="p">,</span> <span class="s1">&#39;delay&#39;</span><span class="p">],</span>
+                  <span class="n">rule</span><span class="o">=</span><span class="n">syn_weight_by_loc</span><span class="p">,</span>
+                  <span class="n">rule_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;min_weigth&#39;</span><span class="p">:</span><span class="mf">1.0e-7</span><span class="p">,</span> <span class="s1">&#39;max_weight&#39;</span><span class="p">:</span> <span class="mf">5.0e-6</span><span class="p">},</span>
+                  <span class="n">dtypes</span><span class="o">=</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">])</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1012,42 +1040,162 @@ when using imported networks and we want to elimnate previously created id.</p>
 <p>The Network class is used for building and saving a brain network/circuit. By default it will save to SONATA
 format for running network simulations using BioNet, PointNet, PopNet or FilterNet bmtk modules, however it can
 be generalized to build any time of network for any time of simulation.</p>
-<p>Building the network:
-For the general use-case building a network consists of 4 steps, each with a corresponding method:
-1. Initialize the network
-<a href="#id25"><span class="problematic" id="id26">``</span></a><a href="#id27"><span class="problematic" id="id28">`</span></a>python</p>
-<blockquote>
-<div><p>net = Network(“network_name”)</p>
-</div></blockquote>
-<p><a href="#id29"><span class="problematic" id="id30">``</span></a><a href="#id31"><span class="problematic" id="id32">`</span></a></p>
-<p>2. Create nodes (ie cells) using the <strong>add_nodes()</strong> method
-<a href="#id33"><span class="problematic" id="id34">``</span></a><a href="#id35"><span class="problematic" id="id36">`</span></a>python</p>
-<blockquote>
-<div><p>net.add_nodes(N=80, model_type=’Biophysical’, ei=’exc’)
-net.add_nodes(N=20, model_type=’IntFire’, ei=’inh’)
-…</p>
-</div></blockquote>
-<p><a href="#id37"><span class="problematic" id="id38">``</span></a><a href="#id39"><span class="problematic" id="id40">`</span></a></p>
-<p>3. Create Connection rules between different subsets of nodes using <strong>add_edges()</strong> method
-<a href="#id41"><span class="problematic" id="id42">``</span></a><a href="#id43"><span class="problematic" id="id44">`</span></a>python</p>
-<blockquote>
-<div><p>net.add_edges(source={‘ei’: ‘exc’}, target={‘ei’: ‘inh’}, connection_rule=my_conn_func, synaptic_model=’e2i’)
-…</p>
-</div></blockquote>
-<p><a href="#id45"><span class="problematic" id="id46">``</span></a><a href="#id47"><span class="problematic" id="id48">`</span></a></p>
-<p>4. Finally <strong>build</strong> the network and <strong>save</strong> the files
-<a href="#id49"><span class="problematic" id="id50">``</span></a><a href="#id51"><span class="problematic" id="id52">`</span></a>python</p>
-<blockquote>
-<div><p>net.build()
-net.save(output_dir=’network_path’)</p>
-</div></blockquote>
-<p><a href="#id53"><span class="problematic" id="id54">``</span></a><a href="#id55"><span class="problematic" id="id56">`</span></a></p>
+<dl>
+<dt>Building the network:</dt><dd><p>For the general use-case building a network consists of 4 steps, each with a corresponding method.</p>
+<ol class="arabic">
+<li><p>Initialize the network:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">Network</span><span class="p">(</span><span class="s2">&quot;network_name&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>Create nodes (ie cells) using the <strong>add_nodes()</strong> method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;Biophysical&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;IntFire&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;inh&#39;</span><span class="p">)</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+</li>
+<li><p>Create Connection rules between different subsets of nodes using <strong>add_edges()</strong> method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;exc&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;inh&#39;</span><span class="p">},</span>
+              <span class="n">connection_rule</span><span class="o">=</span><span class="n">my_conn_func</span><span class="p">,</span> <span class="n">synaptic_model</span><span class="o">=</span><span class="s1">&#39;e2i&#39;</span><span class="p">)</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+</li>
+<li><p>Finally <strong>build</strong> the network and <strong>save</strong> the files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;network_path&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ol>
 <p>See the bmtk documentation, or the method doc-strings for more advanced functionality</p>
+</dd>
+<dt>Network Accessor methods:</dt><dd><p><strong>nodes()</strong></p>
+<p>Will return a iterable of Node objects for each node created. The Node objects can be used like dictionaries to
+fetch their properties. By default returns all nodes in the network, but you can filter out a given subset by
+passing in property/values pairs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;Biophysical&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">):</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;ei&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;exc&#39;</span><span class="p">)</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p><strong>edges()</strong></p>
+<p>Like the nodes() methods, but insteads returns a list of Edge type objects. It too can be filtered by an edge
+property:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">synaptic_model</span><span class="o">=</span><span class="s1">&#39;exp2&#39;</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>One can also pass in a list of source (or target) to filter out only those edges which belong to a specific
+subset of cells:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">target_nodes</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">)):</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+</dd>
+<dt>Network Properties:</dt><dd><ul class="simple">
+<li><p><strong>name</strong> - name of the network</p></li>
+<li><p><strong>nnodes</strong> - number of nodes (cells) in the network.</p></li>
+<li><p><strong>nedges</strong> - number of edges. Will be zero if build() method hasn’t been called</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="bmtk.builder.network.Network.add_edges">
 <code class="sig-name descname">add_edges</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">connection_rule</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">connection_params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">iterator</span><span class="o">=</span><span class="default_value">'one_to_one'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">edge_type_properties</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.add_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.add_edges" title="Permalink to this definition">¶</a></dt>
 <dd><p>Used to create the connectivity matrix between subsets of nodes. The actually connections will not be
 created until the build() method is called, using the ‘connection_rule.</p>
+<dl>
+<dt>Node Selection:</dt><dd><p>To specify what subset of nodes will be used for the pre- and post-synaptic one can use a dictionary to filter
+the nodes. In the following all inh nodes will be used for the pre-synaptic neurons, but only exc
+fast-spiking neurons will be used in the post-synaptic neurons (If target or source is not specified all neurons
+will be used):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;inh&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="s1">&#39;etype&#39;</span><span class="p">:</span> <span class="s1">&#39;fast-spiking&#39;</span><span class="p">},</span>
+              <span class="n">dynamic_params</span><span class="o">=</span><span class="s1">&#39;i2e.json&#39;</span><span class="p">,</span> <span class="n">synaptic_model</span><span class="o">=</span><span class="s1">&#39;alpha&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the above code there is one connection between each source/target pair of nodes, but to create a multi-graph
+with N connections between each pair use ‘connection_rule’ parameter with an integer value:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;inh&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="s1">&#39;etype&#39;</span><span class="p">:</span> <span class="s1">&#39;fast-spiking&#39;</span><span class="p">},</span> <span class="n">connection_rule</span><span class="o">=</span><span class="n">M</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>Connection rules:</dt><dd><p>Usually the ‘connection_rule’ parameter will be the name of a function that takes in source-node and
+target-node object (which can be treated like dictionaries, and returns the number of connections (ie
+synapses, 0 or None if no synapses should exists) between the source and target cell:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">my_conn_fnc</span><span class="p">(</span><span class="n">source_node</span><span class="p">,</span> <span class="n">target_node</span><span class="p">):</span>
+    <span class="n">src_pos</span> <span class="o">=</span> <span class="n">source_node</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span>
+    <span class="n">trg_pos</span> <span class="o">=</span> <span class="n">target_node</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">N_syns</span>
+
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;exc&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;inh&#39;</span><span class="p">},</span> <span class="n">connection_rule</span><span class="o">=</span><span class="n">my_conn_fnc</span><span class="p">,</span> <span class="o">**</span><span class="n">opt_edge_attrs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If the connection_rule function requires addition arguments use the ‘connection_params’ option:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">my_conn_fnc</span><span class="p">(</span><span class="n">source_node</span><span class="p">,</span> <span class="n">target_node</span><span class="p">,</span> <span class="n">min_edges</span><span class="p">,</span> <span class="n">max_edges</span><span class="p">)</span>
+    <span class="o">...</span>
+
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">connection_rule</span><span class="o">=</span><span class="n">my_conn_fnc</span><span class="p">,</span> <span class="n">connection_params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;min_edges&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;max_edges&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">},</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Sometimes it may be more efficient or even a requirement that multiple connections are created at the same
+time. For example a post-synaptic neuron may only be targeted by a limited number of sources which couldn’t
+be done by the previous connection_rule function. But by setting property ‘iterator’ to value ‘all_to_one’
+the connection_rule function now takes in as a value a list of N source neurons, a single target, and should
+return a list of size N:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">bulk_conn_fnc</span><span class="p">(</span><span class="n">sources</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+    <span class="n">syn_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sources</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">:</span>
+        <span class="o">....</span>
+    <span class="k">return</span> <span class="n">syn_list</span>
+
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">connection_rule</span><span class="o">=</span><span class="n">bulk_conn_fnc</span><span class="p">,</span> <span class="n">iterator</span><span class="o">=</span><span class="s1">&#39;all_to_one&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>There is also a ‘all_to_one’ iterator option that will pair each source node with a list of all available
+target nodes.</p>
+</dd>
+<dt>Edge Properties:</dt><dd><p>Normally the properties used when creating a given type of edge will be shared by all the indvidual
+connections. To create unique values for each edge, the add_edges() method returns a ConnectionMap object:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_syn_weight_by_dist</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+    <span class="n">src_pos</span><span class="p">,</span> <span class="n">trg_pos</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">],</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span>
+    <span class="o">....</span>
+    <span class="k">return</span> <span class="n">syn_weight</span>
+
+<span class="n">cm</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">connection_rule</span><span class="o">=</span><span class="n">my_conn_fnc</span><span class="p">,</span> <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;Exp2Syn&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+                <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+<span class="n">cm</span><span class="o">.</span><span class="n">add_properties</span><span class="p">(</span><span class="s1">&#39;syn_weight&#39;</span><span class="p">,</span> <span class="n">rule</span><span class="o">=</span><span class="n">set_syn_weight_by_dist</span><span class="p">)</span>
+<span class="n">cm</span><span class="o">.</span><span class="n">add_properties</span><span class="p">(</span><span class="s1">&#39;delay&#39;</span><span class="p">,</span> <span class="n">rule</span><span class="o">=</span><span class="k">lambda</span> <span class="o">*</span><span class="n">_</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>In this case the ‘model_template’ property has a value for all connections of this given type of edge. The
+‘syn_weight’ and ‘delay’ properties will (most likely) be unique values. See ConnectionMap documentation for
+more info.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> – A dictionary or list of Node objects (see nodes() method). Used to filter out pre-synaptic
+subset of nodes.</p></li>
+<li><p><strong>target</strong> – A dictionary or list of Node objects). Used to filter out post-synaptic subset of nodes</p></li>
+<li><p><strong>connection_rule</strong> – Integer or a function that returns integer(s). Rule to determine number of connections
+between each source and target node</p></li>
+<li><p><strong>connection_params</strong> – A dictionary, used when the ‘connection_rule’ is a function that requires additional
+argments</p></li>
+<li><p><strong>iterator</strong> – ‘one_to_one’, ‘all_to_one’, ‘one_to_all’. When ‘connection_rule’ is a function this sets
+how the subsets of source/target nodes are passed in. By default (one-to-one) the connection_rule is
+called for every source/target pair. ‘all-to-one’ will pass in a list of all possible source nodes for
+each target, and ‘all-to-one’ will pass in a list of all possible targets for each source.</p></li>
+<li><p><strong>edge_type_properties</strong> – properties/attributes of the given edge type</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A ConnectionMap object</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1065,19 +1213,15 @@ unique ‘node_id’ to identify each node in the network and a ‘node_type_id�
 <p>If a property is a singluar value then said property will be shared by all the nodes in the group. If a value
 is a list of length N then each property will be uniquly assigned the each node. In the below example a group
 of 100 nodes is created, all share the same ‘model_type’ parameter but the pos_x values will be different for
-each node:
-<a href="#id57"><span class="problematic" id="id58">``</span></a><a href="#id59"><span class="problematic" id="id60">`</span></a>python</p>
-<blockquote>
-<div><p>net.add_nodes(N=100, pos_x=np.random.rand(100), model_type=’intfire1’, …)</p>
-</div></blockquote>
-<p><a href="#id61"><span class="problematic" id="id62">``</span></a><a href="#id63"><span class="problematic" id="id64">`</span></a></p>
+each node:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">pos_x</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;intfire1&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>You can use a tuple to store property values (in which the SONATA hdf5 will save it as a dataset with multiple
-columns). For example to have one property ‘positions’ which keeps track of the x/y/z coordinates of each cell:
-<a href="#id65"><span class="problematic" id="id66">``</span></a><a href="#id67"><span class="problematic" id="id68">`</span></a>python</p>
-<blockquote>
-<div><p>net.add_nodes(N=100, positions=[(rand(), rand(), rand()) for _ in range(100)], …)</p>
-</div></blockquote>
-<p><a href="#id69"><span class="problematic" id="id70">``</span></a><a href="#id71"><span class="problematic" id="id72">`</span></a></p>
+columns). For example to have one property ‘positions’ which keeps track of the x/y/z coordinates of each cell:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">positions</span><span class="o">=</span><span class="p">[(</span><span class="n">rand</span><span class="p">(),</span> <span class="n">rand</span><span class="p">(),</span> <span class="n">rand</span><span class="p">())</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)],</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1092,11 +1236,10 @@ columns). For example to have one property ‘positions’ which keeps track of 
 <dt id="bmtk.builder.network.Network.build">
 <code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">force</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.build" title="Permalink to this definition">¶</a></dt>
 <dd><p>Builds nodes and edges.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><dl class="simple">
-<dt>force (bool): set true to force complete rebuilding of nodes and edges, if nodes() or save_nodes() has been</dt><dd><p>called before then forcing a rebuild may change gids of each node.</p>
-</dd>
-</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>force</strong> – set true to force complete rebuilding of nodes and edges, if nodes() or save_nodes() has been
+called before then forcing a rebuild may change gids of each node.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1104,28 +1247,25 @@ columns). For example to have one property ‘positions’ which keeps track of 
 <dl class="py method">
 <dt id="bmtk.builder.network.Network.clear">
 <code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.clear" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Resets the network removing the nodes and edges created.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="bmtk.builder.network.Network.edges">
 <code class="sig-name descname">edges</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target_nodes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">source_nodes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">target_network</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">source_network</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">properties</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.edges" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of dictionary-like Edge objects, given filter parameters.</p>
-<p>To get all edges from a network
-<a href="#id73"><span class="problematic" id="id74">``</span></a><a href="#id75"><span class="problematic" id="id76">`</span></a>python</p>
-<blockquote>
-<div><p>edges = net.edges()</p>
-</div></blockquote>
-<p><a href="#id77"><span class="problematic" id="id78">``</span></a><a href="#id79"><span class="problematic" id="id80">`</span></a></p>
-<p>To specify the target and/or source node-set
-<a href="#id81"><span class="problematic" id="id82">``</span></a><a href="#id83"><span class="problematic" id="id84">`</span></a>python</p>
-<blockquote>
-<div><p>edges = net.edges(target_nodes=net.nodes(type=’biophysical’), source_nodes=net.nodes(ei=’i’))</p>
-</div></blockquote>
-<p><a href="#id85"><span class="problematic" id="id86">``</span></a><a href="#id87"><span class="problematic" id="id88">`</span></a></p>
-<dl class="simple">
-<dt>To only get edges with a given edge_property</dt><dd><p>edges = net.edges(weight=100, syn_type=’AMPA_Exc2Exc’)</p>
-</dd>
-</dl>
+<p>To get all edges from a network:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">edges</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>To specify the target and/or source node-set:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">edges</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">target_nodes</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">),</span> <span class="n">source_nodes</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>To only get edges with a given edge_property:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">edges</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">weight</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">syn_type</span><span class="o">=</span><span class="s1">&#39;AMPA_Exc2Exc&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1145,13 +1285,14 @@ columns). For example to have one property ‘positions’ which keeps track of 
 <dl class="py method">
 <dt id="bmtk.builder.network.Network.edges_built">
 <em class="property">property </em><code class="sig-name descname">edges_built</code><a class="headerlink" href="#bmtk.builder.network.Network.edges_built" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if the connectivity matrix has been instantiated for this network.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="bmtk.builder.network.Network.edges_iter">
 <code class="sig-name descname">edges_iter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trg_gids</span></em>, <em class="sig-param"><span class="n">src_network</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">trg_network</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.edges_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.edges_iter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a list of target gids, returns a generator for iteratoring over all possible edges.</p>
-<p>It is preferable to use edges() method instead, it allows more flexibibility in the input and can better
+<p>It is preferable to use edges() method instead, it allows more flexibility in the input and can better
 indicate if their is a problem.</p>
 <p>The order of the edges returned will be in the same order as the trg_gids list, but does not guarentee any
 secondary ordering by source-nodes and/or edge-type. If their isn’t a edge with a matching target-id then
@@ -1173,7 +1314,9 @@ it will skip that gid in the list, the size of the generator can 0 to arbitrarly
 <dl class="py method">
 <dt id="bmtk.builder.network.Network.get_connections">
 <code class="sig-name descname">get_connections</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.get_connections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.get_connections" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns a list of all bmtk.builder.connection_map.ConnectionMap objects representing all edge-types for this
+network.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="bmtk.builder.network.Network.import_nodes">
@@ -1183,43 +1326,38 @@ it will skip that gid in the list, the size of the generator can 0 to arbitrarly
 <dl class="py method">
 <dt id="bmtk.builder.network.Network.name">
 <em class="property">property </em><code class="sig-name descname">name</code><a class="headerlink" href="#bmtk.builder.network.Network.name" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the name (string) of this network.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="bmtk.builder.network.Network.nedges">
 <em class="property">property </em><code class="sig-name descname">nedges</code><a class="headerlink" href="#bmtk.builder.network.Network.nedges" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns the total number of edges for this network.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="bmtk.builder.network.Network.nnodes">
 <em class="property">property </em><code class="sig-name descname">nnodes</code><a class="headerlink" href="#bmtk.builder.network.Network.nnodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns the number of nodes for this network.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="bmtk.builder.network.Network.nodes">
 <code class="sig-name descname">nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">properties</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns an iterator of Node (glorified dictionary) objects, filtered by parameters.</p>
-<p>To get all nodes on a network:
-<a href="#id89"><span class="problematic" id="id90">``</span></a><a href="#id91"><span class="problematic" id="id92">`</span></a>python</p>
-<blockquote>
-<div><dl class="simple">
-<dt>for node in net.nodes():</dt><dd><p>…</p>
-</dd>
-</dl>
-</div></blockquote>
-<p><a href="#id93"><span class="problematic" id="id94">``</span></a><a href="#id95"><span class="problematic" id="id96">`</span></a></p>
-<p>To only get those nodes with properties that match a given list of parameter values
-<a href="#id97"><span class="problematic" id="id98">``</span></a><a href="#id99"><span class="problematic" id="id100">`</span></a>python</p>
-<blockquote>
-<div><dl class="simple">
-<dt>for nod in net.nodes(param1=value1, param2=value2, …):</dt><dd><p>…</p>
-</dd>
-</dl>
-</div></blockquote>
-<p><a href="#id101"><span class="problematic" id="id102">``</span></a><a href="#id103"><span class="problematic" id="id104">`</span></a></p>
+<p>To get all nodes on a network:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">():</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>To only get those nodes with properties that match a given list of parameter values:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">nod</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">param1</span><span class="o">=</span><span class="n">value1</span><span class="p">,</span> <span class="n">param2</span><span class="o">=</span><span class="n">value2</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>properties</strong> – </p>
+<dd class="field-odd"><p><strong>properties</strong> – key-value pair of node attributes to filter returned nodes</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>An iterator of Node objects</p>
@@ -1230,7 +1368,8 @@ it will skip that gid in the list, the size of the generator can 0 to arbitrarly
 <dl class="py method">
 <dt id="bmtk.builder.network.Network.nodes_built">
 <em class="property">property </em><code class="sig-name descname">nodes_built</code><a class="headerlink" href="#bmtk.builder.network.Network.nodes_built" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Returns True if nodes has been instantiated for this network.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="bmtk.builder.network.Network.nodes_iter">
@@ -1239,18 +1378,57 @@ it will skip that gid in the list, the size of the generator can 0 to arbitrarly
 
 <dl class="py method">
 <dt id="bmtk.builder.network.Network.save">
-<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">'.'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.save" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">'.'</span></em>, <em class="sig-param"><span class="n">force_overwrite</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to save the network files in the appropriate (eg SONATA) format into the output_dir directory. The file
+names will be automatically generated based on the network names.</p>
+<p>To have more control over the output and file names use the <strong>save_nodes()</strong> and <strong>save_edges()</strong> methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output_dir</strong> – string, directory where network files will be generated. Default, current working directory.</p></li>
+<li><p><strong>force_overwrite</strong> – Overwrites existing network files.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="bmtk.builder.network.Network.save_edges">
 <code class="sig-name descname">save_edges</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edges_file_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">edge_types_file_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">'.'</span></em>, <em class="sig-param"><span class="n">src_network</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">trg_network</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">force_build</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">force_overwrite</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.save_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.save_edges" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Save the instantiated edges in SONATA format files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>edges_file_name</strong> – file-name of hdf5 edges file. By default will use &lt;src_network&gt;_&lt;trg_network&gt;_edges.h5.</p></li>
+<li><p><strong>edge_types_file_name</strong> – file-name of csv edge-types file. By default will use
+&lt;src_network&gt;_&lt;trg_network&gt;_edges.h5.</p></li>
+<li><p><strong>output_dir</strong> – Directory where network files will be generated. Default, current working directory.</p></li>
+<li><p><strong>src_network</strong> – Name of the source-node populations.</p></li>
+<li><p><strong>trg_network</strong> – Name of the target-node populations.</p></li>
+<li><p><strong>name</strong> – Name of file.</p></li>
+<li><p><strong>force_build</strong> – Force to (re)build the connection matrix if it hasn’t already been built.</p></li>
+<li><p><strong>force_overwrite</strong> – Overwrites existing network files.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="bmtk.builder.network.Network.save_nodes">
 <code class="sig-name descname">save_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes_file_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_types_file_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">'.'</span></em>, <em class="sig-param"><span class="n">force_overwrite</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/network.html#Network.save_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.network.Network.save_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Save the instantiated nodes in SONATA format files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nodes_file_name</strong> – file-name of hdf5 nodes file. By default will use &lt;network.name&gt;_nodes.h5.</p></li>
+<li><p><strong>node_types_file_name</strong> – file-name of the csv node-types file. By default will use
+&lt;network.name&gt;_node_types.csv</p></li>
+<li><p><strong>output_dir</strong> – Directory where network files will be generated. Default, current working directory.</p></li>
+<li><p><strong>force_overwrite</strong> – Overwrites existing network files.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -1304,12 +1482,13 @@ it will skip that gid in the list, the size of the generator can 0 to arbitrarly
 <p>Returns the results of a query of nodes from a network using the nodes() method. Nodes are still generated and
 saved by the network, this just stores the query information and provides iterator methods for accessing different
 nodes.</p>
-<p>TODO:
-* Implement a collection-set algebra including | and not operators. ie.</p>
-<blockquote>
-<div><p>nodes = net.nodes(type=1) | net.nodes(type=2)</p>
-</div></blockquote>
-<ul class="simple">
+<dl class="simple">
+<dt>TODO:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>Implement a collection-set algebra including | and not operators. ie.</dt><dd><p>nodes = net.nodes(type=1) | net.nodes(type=2)</p>
+</dd>
+</dl>
+</li>
 <li><dl class="simple">
 <dt>Implement operators on properties</dt><dd><p>nodes = net.nodes(val) &gt; 100
 nodes = 100 in net.nodes(val)</p>
@@ -1317,6 +1496,8 @@ nodes = 100 in net.nodes(val)</p>
 </dl>
 </li>
 </ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="bmtk.builder.node_pool.NodePool.filter_str">
 <em class="property">property </em><code class="sig-name descname">filter_str</code><a class="headerlink" href="#bmtk.builder.node_pool.NodePool.filter_str" title="Permalink to this definition">¶</a></dt>

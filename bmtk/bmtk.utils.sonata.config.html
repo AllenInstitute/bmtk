@@ -18,7 +18,7 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="bmtk.utils.sonata.builder package" href="bmtk.utils.sonata.builder.html" /> 
+    <link rel="prev" title="bmtk.utils.sonata package" href="bmtk.utils.sonata.html" /> 
   </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
 <style>
@@ -667,90 +667,87 @@ as well as some (non-SONATA) special features. This class should be able to:
 * resovlve manifest variables
 * Allow for custom and pre-defined variables for use in config
 * Make sure resolves the output_dir location</p>
-<dl>
-<dt>General Usage:</dt><dd><p>You can read in a root sonata config json file (or just the circuit or simulation files individual) by passing
+<p>General Usage:</p>
+<blockquote>
+<div><p>You can read in a root sonata config json file (or just the circuit or simulation files individual) by passing
 the file path or a file-pointer, which will return a dictionary like object you can use to build and run your
-simulation</p>
-<blockquote>
-<div><p>sim_params = SonataConfig.from_json(‘/path/to/sonata_config.json’)
-… = sim_params[‘run’][‘tstop’]</p>
+simulation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sim_params</span> <span class="o">=</span> <span class="n">SonataConfig</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;/path/to/sonata_config.json&#39;</span><span class="p">)</span>
+<span class="o">...</span> <span class="o">=</span> <span class="n">sim_params</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">][</span><span class="s1">&#39;tstop&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>You can also pass in a dictionary and use the from_dict() factory method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sim_params</span> <span class="o">=</span> <span class="n">SonataConfig</span><span class="o">.</span><span class="n">from_dict</span><span class="p">({</span><span class="o">...</span><span class="p">})</span>
+</pre></div>
+</div>
 </div></blockquote>
-<dl class="simple">
-<dt>You can also pass in a dictionary and use the from_dict() factory method:</dt><dd><p>sim_params = SonataConfig.from_dict({…})</p>
-</dd>
-</dl>
-</dd>
-<dt>JSON Variables:</dt><dd><p>You can add variables to your SONATA config file which can make reusing json files easiers. The standard way
+<p>JSON Variables:</p>
+<blockquote>
+<div><p>You can add variables to your SONATA config file which can make reusing json files easiers. The standard way
 of doing this by using the ‘manifest’ section to set the variable name and value to be used in other parts of
-the json. If the json file looks like</p>
-<blockquote>
-<div><dl>
-<dt>{</dt><dd><p>‘manifest’: {‘$CIRCUIT_HOME’: ‘/home/john/cortex_simulation/network’}
-‘network’: {</p>
-<blockquote>
-<div><p>‘nodes’: ‘${CIRCUIT_HOME}/nodes.h5,
-‘node_types’: ‘${$CIRCUIT_HOME}/nodes_types.csv’</p>
+the json. If the json file looks like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;manifest&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;$CIRCUIT_HOME&#39;</span><span class="p">:</span> <span class="s1">&#39;/home/john/cortex_simulation/network&#39;</span><span class="p">},</span>
+    <span class="s1">&#39;network&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;nodes&#39;</span><span class="p">:</span> <span class="s1">&#39;$</span><span class="si">{CIRCUIT_HOME}</span><span class="s1">/nodes.h5,</span>
+        <span class="s1">&#39;node_types&#39;</span><span class="p">:</span> <span class="s1">&#39;${$CIRCUIT_HOME}/nodes_types.csv&#39;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>SonataConfig will resolve the $CIRCUIT_HOME variable when accessed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sim_params</span><span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">][</span><span class="s1">&#39;nodes&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;/home/john/cortex_simulation/network/nodes.h5&#39;</span>
+<span class="n">sim_params</span><span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">][</span><span class="s1">&#39;node_types&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;/home/john/cortex_simulation/network/nodes_types.h5&#39;</span>
+</pre></div>
+</div>
 </div></blockquote>
-<p>}</p>
-</dd>
-</dl>
-<p>}</p>
+<p>Users and Predefined variables:</p>
+<blockquote>
+<div><p>You can also create your own predefined variables:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">circuit_config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;run&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="s2">&quot;$</span><span class="si">{time_step}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;overwrite_output_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;$</span><span class="si">{overwrite}</span><span class="s2">&quot;</span>
+    <span class="p">}</span>
+    <span class="s1">&#39;target_simulator&#39;</span><span class="p">:</span> <span class="s2">&quot;$</span><span class="si">{simulator}</span><span class="s2">&quot;</span>
+<span class="p">}</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">SonataConfig</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">circuit_config</span><span class="p">,</span> <span class="n">time_step</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">simlator</span><span class="o">=</span><span class="s1">&#39;CoreNeuron&#39;</span><span class="p">)</span>
+<span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">][</span><span class="s1">&#39;dt&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.001</span>
+<span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">][</span><span class="s1">&#39;overwrite_output_dir&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span>
+<span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;target_simulator&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;CoreNeuron&#39;</span>
+</pre></div>
+</div>
+<p>There are also a number of built in variables which you can add to your json</p>
+<ul class="simple">
+<li><p>${configdir} - location of the current json file</p></li>
+<li><p>${workingdir} - directory where the code/simulator is being ran</p></li>
+<li><p>${datetime} - date-time string in Y-M-d_H-M-S format</p></li>
+</ul>
 </div></blockquote>
-<dl class="simple">
-<dt>SonataConfig will resolve the $CIRCUIT_HOME variable when accessed</dt><dd><p>sim_params[‘network’][‘nodes’] == ‘/home/john/cortex_simulation/network/nodes.h5’
-sim_params[‘network’][‘node_types’] == ‘/home/john/cortex_simulation/network/nodes_types.h5’</p>
-</dd>
-</dl>
-</dd>
-<dt>Users and Predefined variables:</dt><dd><dl>
-<dt>You can also create your own predefined variables:</dt><dd><dl>
-<dt>circuit_config = {</dt><dd><dl class="simple">
-<dt>‘run’: {</dt><dd><p>“dt”: “${time_step}”,
-“overwrite_output_dir”: “${overwrite}”</p>
-</dd>
-</dl>
-<p>}
-‘target_simulator’: “${simulator}”</p>
-</dd>
-</dl>
-<p>}
-cfg = SonataConfig.from_dict(circuit_config, time_step=0.001, overwrite=True, simlator=’CoreNeuron’)
-cfg[‘run’][‘dt’] == 0.001
-cfg[‘run’][‘overwrite_output_dir’] == True
-cfg[‘target_simulator’] == ‘CoreNeuron’</p>
-</dd>
-</dl>
-<p>There are also a number of built in variables which you can add to your json
-* ${configdir} - location of the current json file
-* ${workingdir} - directory where the code/simulator is being ran
-* ${datetime} - date-time string in Y-M-d_H-M-S format</p>
-</dd>
-<dt>Validating the json file:</dt><dd><p>You can check if the schema is valid, making suring certain section variables that are required actually exists
+<p>Validating the json file:</p>
+<blockquote>
+<div><p>You can check if the schema is valid, making suring certain section variables that are required actually exists
 in the config and is of the right type:</p>
-<blockquote>
-<div><p>cfg = SonataConfig.from_json(‘config.json’)
-try:</p>
-<blockquote>
-<div><p>is_valid = cfg.valid()</p>
-</div></blockquote>
-<dl class="simple">
-<dt>catch Exception e:</dt><dd><p>is_valid = False</p>
-</dd>
-</dl>
-</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">SonataConfig</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.json&#39;</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">is_valid</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">valid</span><span class="p">()</span>
+<span class="n">catch</span> <span class="ne">Exception</span> <span class="n">e</span><span class="p">:</span>
+    <span class="n">is_valid</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
 <p>If a section (eg. ‘run’, ‘components’, ‘output’, etc) is missing then it will be skipped, meaning if valid()
 returns true it may still be missing parts of the config to run a complete simulation.</p>
 <p>You can also add your own schema validator, just as long as it’s a class instance that has a validate(cfg)
 method. The easiest way to do this is by using jsonschema:</p>
-<blockquote>
-<div><p>from jsonschema import Draft4Validator
-validator = Drafter4Validator(‘/path/to/schema.json’)</p>
-<p>cfg = Sonata.from_json(‘config.json’)
-cfg.validator = validator
-cfg.validate()</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jsonschema</span> <span class="kn">import</span> <span class="n">Draft4Validator</span>
+<span class="n">validator</span> <span class="o">=</span> <span class="n">Drafter4Validator</span><span class="p">(</span><span class="s1">&#39;/path/to/schema.json&#39;</span><span class="p">)</span>
+
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">Sonata</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;config.json&#39;</span><span class="p">)</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">validator</span> <span class="o">=</span> <span class="n">validator</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+</pre></div>
+</div>
 </div></blockquote>
-</dd>
-</dl>
 <dl class="py method">
 <dt id="bmtk.utils.sonata.config.sonata_config.SonataConfig.from_dict">
 <em class="property">classmethod </em><code class="sig-name descname">from_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_dict</span></em>, <em class="sig-param"><span class="n">validator</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">opts</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/sonata/config/sonata_config.html#SonataConfig.from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.sonata.config.sonata_config.SonataConfig.from_dict" title="Permalink to this definition">¶</a></dt>

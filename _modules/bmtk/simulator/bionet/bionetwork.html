@@ -747,9 +747,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="bp">self</span><span class="o">.</span><span class="n">_virtual_nodes</span><span class="p">[</span><span class="n">population</span><span class="p">][</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">virt_cell</span>
             <span class="k">return</span> <span class="n">virt_cell</span></div>
 
-    <span class="k">def</span> <span class="nf">_build_cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bionode</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_build_cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bionode</span><span class="p">,</span> <span class="n">population_name</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">bionode</span><span class="o">.</span><span class="n">model_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_type_map</span><span class="p">:</span>
-            <span class="n">cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_type_map</span><span class="p">[</span><span class="n">bionode</span><span class="o">.</span><span class="n">model_type</span><span class="p">](</span><span class="n">bionode</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="n">cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_type_map</span><span class="p">[</span><span class="n">bionode</span><span class="o">.</span><span class="n">model_type</span><span class="p">](</span><span class="n">bionode</span><span class="p">,</span> <span class="n">population_name</span><span class="o">=</span><span class="n">population_name</span><span class="p">,</span> <span class="n">bionetwork</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_rank_nodes_by_model</span><span class="p">[</span><span class="n">bionode</span><span class="o">.</span><span class="n">model_type</span><span class="p">][</span><span class="n">cell</span><span class="o">.</span><span class="n">gid</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span>
             <span class="k">return</span> <span class="n">cell</span>
         <span class="k">else</span><span class="p">:</span>
@@ -766,7 +766,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">node_ids_map</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="k">if</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">internal_nodes_only</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">node_pop</span><span class="p">[</span><span class="n">MPI_rank</span><span class="p">::</span><span class="n">MPI_size</span><span class="p">]:</span>
-                    <span class="n">cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_cell</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                    <span class="n">cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_cell</span><span class="p">(</span><span class="n">bionode</span><span class="o">=</span><span class="n">node</span><span class="p">,</span> <span class="n">population_name</span><span class="o">=</span><span class="n">node_pop</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
                     <span class="n">node_ids_map</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_rank_node_gids</span><span class="p">[</span><span class="n">cell</span><span class="o">.</span><span class="n">gid</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span>
 
@@ -778,8 +778,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                     <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;virtual&#39;</span><span class="p">:</span>
                         <span class="k">continue</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_cell</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                        <span class="n">cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_cell</span><span class="p">(</span><span class="n">bionode</span><span class="o">=</span><span class="n">node</span><span class="p">,</span> <span class="n">population_name</span><span class="o">=</span><span class="n">node_pop</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
                         <span class="n">node_ids_map</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span>
+
+
                         <span class="bp">self</span><span class="o">.</span><span class="n">_rank_node_gids</span><span class="p">[</span><span class="n">cell</span><span class="o">.</span><span class="n">gid</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span>
 
             <span class="k">elif</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">virtual_nodes_only</span><span class="p">:</span>

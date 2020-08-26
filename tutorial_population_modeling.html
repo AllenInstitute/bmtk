@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chapter 6: Population Level Modeling (with PopNet) &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <title>Tutorial 6: Population Level Modeling (with PopNet) &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -19,7 +19,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Chapter 7: Modeling the visual field (with FilterNet)" href="tutorial_filter_models.html" />
-    <link rel="prev" title="Chapter 5: Point-Neuron Network Models (with PointNet)" href="tutorial_pointnet_modeling.html" /> 
+    <link rel="prev" title="Tutorial 5: Point-Neuron Network Models (with PointNet)" href="tutorial_pointnet_modeling.html" /> 
   </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
 <style>
@@ -856,8 +856,8 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<div class="section" id="Chapter-6:-Population-Level-Modeling-(with-PopNet)">
-<h1>Chapter 6: Population Level Modeling (with PopNet)<a class="headerlink" href="#Chapter-6:-Population-Level-Modeling-(with-PopNet)" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="Tutorial-6:-Population-Level-Modeling-(with-PopNet)">
+<h1>Tutorial 6: Population Level Modeling (with PopNet)<a class="headerlink" href="#Tutorial-6:-Population-Level-Modeling-(with-PopNet)" title="Permalink to this headline">¶</a></h1>
 <p>In this tutorial we will focus on modeling of populations and population firing rates. This is done with the PopNet simulator application of bmtk which uses <a class="reference external" href="https://github.com/AllenInstitute/dipde">DiPDE</a> engine as a backend. We will first build our networks using the bmtk NetworkBuilder and save them into the SONATA data format. Then we will show how to simulate the firing rates over a given time-source.</p>
 <p>Requirements: * BMTK * DiPDE</p>
 <div class="section" id="1.-Building-the-network">
@@ -865,12 +865,15 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="Converting-existing-networks">
 <h3>Converting existing networks<a class="headerlink" href="#Converting-existing-networks" title="Permalink to this headline">¶</a></h3>
 <p>Like BioNet for biophysically detailed modeling, and PointNet with point-based networks, PopNet stores networks in the SONATA data format. PopNet supports simulating networks of individual cells at the population level. First thing you have to do is modify the node-types and edge-types of an existing network to use Population level models (rather than models of individual cells.</p>
+<div class="admonition warning">
+<p><strong>WARNING</strong> - Converting a network of individual nodes into population of nodes is good for a quick and naive simulation, but for faster and more reliable results it’s best to build a network from scratch (next section).</p>
+</div>
 <p>Here is the node-types csv file of a network set to work with BioNet</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;sources/chapter06/converted_network/V1_node_types_bionet.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
@@ -969,7 +972,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;sources/chapter06/converted_network/V1_node_types_popnet.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1075,7 +1078,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.builder</span> <span class="kn">import</span> <span class="n">NetworkBuilder</span>
 
 
@@ -1101,7 +1104,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">},</span>
               <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span>
               <span class="n">nsyns</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
@@ -1130,7 +1133,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
 <span class="n">net</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;network&#39;</span><span class="p">)</span>
 <span class="n">net</span><span class="o">.</span><span class="n">save_edges</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;network&#39;</span><span class="p">)</span>
@@ -1145,7 +1148,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">input_net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;LGN&#39;</span><span class="p">)</span>
 <span class="n">input_net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;tON&#39;</span><span class="p">,</span>
                     <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span>
@@ -1180,14 +1183,16 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <p>Then we must open the simulation_config.json file with a text editor and add the lgn_rates.csv file as a part of our inputs:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;inputs&quot;: {
-  &quot;LGN_pop_rates&quot;: {
-    &quot;input_type&quot;: &quot;csv&quot;,
-    &quot;module&quot;: &quot;pop_rates&quot;,
-    &quot;rates&quot;: &quot;${BASE_DIR}/lgn_rates.csv&quot;,
-    &quot;node_set&quot;: &quot;LGN&quot;
-  }
-}
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;LGN_pop_rates&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;csv&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;pop_rates&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;rates&quot;</span><span class="p">:</span> <span class="s2">&quot;${BASE_DIR}/lgn_rates.csv&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="s2">&quot;LGN&quot;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -1203,7 +1208,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.simulator</span> <span class="kn">import</span> <span class="n">popnet</span>
 
 <span class="n">configure</span> <span class="o">=</span> <span class="n">popnet</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;simulation_config.json&#39;</span><span class="p">)</span>
@@ -1236,7 +1241,7 @@ done simulation.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.visualization.spikes</span> <span class="kn">import</span> <span class="n">plot_rates_popnet</span>
 
 <span class="n">plot_rates_popnet</span><span class="p">(</span><span class="s1">&#39;network/V1_node_types.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;output/firing_rates.csv&#39;</span><span class="p">,</span> <span class="n">model_keys</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">)</span>
@@ -1254,7 +1259,7 @@ done simulation.
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>
 </pre></div>
 </div>

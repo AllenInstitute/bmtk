@@ -670,26 +670,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show_legend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Displays the time trace of one or more nodes from a SONATA CompartmentReport file.</span>
 
-<span class="sd">    To plot a group of individual variable traces (based on their soma)</span>
-<span class="sd">    ```python</span>
+<span class="sd">    To plot a group of individual variable traces (based on their soma)::</span>
+
 <span class="sd">       plot_traces(&#39;/path/to/report.h5&#39;, node_ids=[0, 10, 20, ...])</span>
-<span class="sd">    ```</span>
 
 <span class="sd">    If node_ids=None (default) then all nodes in the report will be displayed. For large networks then can become</span>
-<span class="sd">    difficult to visualize so it&#39;s recommended you use average=True:</span>
-<span class="sd">    ```python</span>
+<span class="sd">    difficult to visualize so it&#39;s recommended you use average=True::</span>
+
 <span class="sd">        plot_traces(&#39;/path/to/report.h5&#39;, average=True)</span>
-<span class="sd">    ```</span>
 
 <span class="sd">    Users also have the option of taking the averages of multiple subsets of nodes using the &quot;node_groups&quot; options.</span>
 <span class="sd">    &quot;node_groups&quot; should be a list of dictionary, each dict with a &#39;node_ids&#39;: [list of ids], and optionally</span>
 <span class="sd">    a &#39;label&#39; and &#39;c&#39; (color). For example support nodes [0, 70) are excitatory cells, nodes [70, 100) are inhibitory,</span>
-<span class="sd">    and we want display excitatory and inhibitory averages and blue and red, respectivly:</span>
-<span class="sd">    ```python</span>
+<span class="sd">    and we want display excitatory and inhibitory averages and blue and red, respectivly::</span>
+
 <span class="sd">        plot_traces(&#39;/path/to/report.h5&#39;,</span>
 <span class="sd">                    node_groups=[{&#39;node_ids&#39;: range(0, 70), &#39;label&#39;: &#39;exc&#39;, &#39;c&#39;: &#39;b&#39;},</span>
 <span class="sd">                                 {&#39;node_ids&#39;: range(70, 100), &#39;label&#39;: &#39;inh&#39;, &#39;c&#39;: &#39;r&#39;}])</span>
-<span class="sd">    ```</span>
 
 <span class="sd">    :param report: Path to SONATA report file or CompartmentReport object</span>
 <span class="sd">    :param population: string. If the report more than one population of nodes, use this to determine which nodes to</span>
@@ -799,12 +796,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">    To plot multiple averages use the &quot;node_groups&quot; options. &quot;node_groups&quot; should be a list of dictionary, each dict</span>
 <span class="sd">    with a &#39;node_ids&#39;: [list of ids], and optionally a &#39;label&#39; and &#39;c&#39; (color). For example support nodes [0, 70) are</span>
 <span class="sd">    excitatory cells, nodes [70, 100) are inhibitory, and we want display excitatory and inhibitory averages and blue</span>
-<span class="sd">    and red, respectivly:</span>
-<span class="sd">    ```python</span>
+<span class="sd">    and red, respectively::</span>
+
 <span class="sd">        plot_traces(&#39;/path/to/report.h5&#39;,</span>
 <span class="sd">                    node_groups=[{&#39;node_ids&#39;: range(0, 70), &#39;label&#39;: &#39;exc&#39;, &#39;c&#39;: &#39;b&#39;},</span>
 <span class="sd">                                 {&#39;node_ids&#39;: range(70, 100), &#39;label&#39;: &#39;inh&#39;, &#39;c&#39;: &#39;r&#39;}])</span>
-<span class="sd">    ```</span>
 
 <span class="sd">    :param report: Path to SONATA report file or CompartmentReport object.</span>
 <span class="sd">    :param population: string. If the report more than one population of nodes, use this to determine which nodes to</span>

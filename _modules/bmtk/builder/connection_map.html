@@ -658,44 +658,42 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">    The number of synapses rule (1) is stored as a connector. Individual synaptic parameters, if they exists, are stored</span>
 <span class="sd">    as ParamsRules.</span>
 
-<span class="sd">    Usage</span>
-<span class="sd">    =====</span>
-<span class="sd">    Do not create a ConnectionMap object directly. Rather one is created and return every time NetworkBuilder&#39;s</span>
-<span class="sd">    add_edges() method is called.</span>
+<span class="sd">    Usage:</span>
+<span class="sd">        Do not create a ConnectionMap object directly. Rather one is created and return every time NetworkBuilder&#39;s</span>
+<span class="sd">        add_edges() method is called.</span>
 
-<span class="sd">    For example, The following will create a set of edges where there is between 1 to 16 synapatic connections between</span>
-<span class="sd">    each source and target node. Properties &#39;dynamics_params&#39; and &#39;model_template&#39; will be global properties:</span>
-<span class="sd">    ```python</span>
-<span class="sd">        cm = net.add_edges(source={&#39;ei&#39;: &#39;exc&#39;}, target={&#39;ei&#39;: &#39;inh&#39;},</span>
-<span class="sd">                           connection_rule=lambda *_: np.random.randn(1, 16),</span>
-<span class="sd">                           dynamics_params=&#39;ExcToInh.json&#39;,</span>
-<span class="sd">                           model_template=&#39;Exp2Syn&#39;,</span>
-<span class="sd">                           ...)</span>
-<span class="sd">    ```</span>
-<span class="sd">    If we want all edges to have a unique &#39;syn_weight&#39; value calculated from source/target locations, we create a</span>
-<span class="sd">    function that takes in source and target (Node object) and returns the syn weight. This function will be called</span>
-<span class="sd">    for every individual connection.</span>
-<span class="sd">    ```python</span>
-<span class="sd">        def syn_weight_by_loc(source, target):</span>
-<span class="sd">            src_loc, trg_loc = source[&#39;loc&#39;], target[&#39;loc&#39;]</span>
-<span class="sd">            ...</span>
-<span class="sd">            return syn_weight</span>
+<span class="sd">        For example, The following will create a set of edges where there is between 1 to 16 synapatic connections</span>
+<span class="sd">        between each source and target node. Properties &#39;dynamics_params&#39; and &#39;model_template&#39; will be global</span>
+<span class="sd">        properties::</span>
 
+<span class="sd">            cm = net.add_edges(source={&#39;ei&#39;: &#39;exc&#39;}, target={&#39;ei&#39;: &#39;inh&#39;},</span>
+<span class="sd">                               connection_rule=lambda *_: np.random.randn(1, 16),</span>
+<span class="sd">                               dynamics_params=&#39;ExcToInh.json&#39;,</span>
+<span class="sd">                               model_template=&#39;Exp2Syn&#39;,</span>
+<span class="sd">                               ...)</span>
 
-<span class="sd">        cm.add_properties(&#39;syn_weight&#39;, rule=syn_weight_by_loc, dtypes=np.float)</span>
-<span class="sd">    ```</span>
+<span class="sd">        If we want all edges to have a unique &#39;syn_weight&#39; value calculated from source/target locations, we create a</span>
+<span class="sd">        function that takes in source and target (Node object) and returns the syn weight. This function will be called</span>
+<span class="sd">        for every individual connection::</span>
 
-<span class="sd">    We can also add multiple properties at the same time</span>
-<span class="sd">    ```python</span>
-<span class="sd">        def get_target_loc_and_dist(source, target):</span>
-<span class="sd">            ...</span>
-<span class="sd">            return trg_loc, trg_dist</span>
+<span class="sd">            def syn_weight_by_loc(source, target):</span>
+<span class="sd">                src_loc, trg_loc = source[&#39;loc&#39;], target[&#39;loc&#39;]</span>
+<span class="sd">                ...</span>
+<span class="sd">                return syn_weight</span>
 
-<span class="sd">        cm.add_properties([&#39;syn_location&#39;, &#39;syn_distance&#39;],</span>
-<span class="sd">                      rule=get_target_loc_and_dist,</span>
-<span class="sd">                      dtypes=[string, np.float])</span>
-<span class="sd">    ```</span>
-<span class="sd">    Once NetworkBuilder.build() is called the &#39;connection_rule&#39; will be called.</span>
+<span class="sd">            cm.add_properties(&#39;syn_weight&#39;, rule=syn_weight_by_loc, dtypes=np.float)</span>
+
+<span class="sd">        We can also add multiple properties at the same time::</span>
+
+<span class="sd">            def get_target_loc_and_dist(source, target):</span>
+<span class="sd">                ...</span>
+<span class="sd">                return trg_loc, trg_dist</span>
+
+<span class="sd">            cm.add_properties([&#39;syn_location&#39;, &#39;syn_distance&#39;],</span>
+<span class="sd">                          rule=get_target_loc_and_dist,</span>
+<span class="sd">                          dtypes=[string, np.float])</span>
+
+<span class="sd">        Once NetworkBuilder.build() is called the &#39;connection_rule&#39; will be called.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ConnectionMap.ParamsRules"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.connection_map.ConnectionMap.ParamsRules">[docs]</a>    <span class="k">class</span> <span class="nc">ParamsRules</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -798,19 +796,17 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="viewcode-block" id="ConnectionMap.add_properties"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.connection_map.ConnectionMap.add_properties">[docs]</a>    <span class="k">def</span> <span class="nf">add_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">rule</span><span class="p">,</span> <span class="n">rule_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtypes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Add a synaptic property for an individual edge.</span>
 
-<span class="sd">        Typicall this requires a custom rule that will be used for every source/target pair of nodes and returns</span>
-<span class="sd">        a value for the property. Such rule is a user defined function, and will be called by NetworkBuilder.build().</span>
+<span class="sd">        Typically this requires a custom rule that will be used for every source/target pair of nodes and returns</span>
+<span class="sd">        a value for the property. Such rule is a user defined function, and will be called by NetworkBuilder.build()::</span>
 
-<span class="sd">        ```python</span>
 <span class="sd">            def syn_weight_by_loc(source, target):</span>
 <span class="sd">                ...</span>
 <span class="sd">                return syn_weight</span>
 
 <span class="sd">            cm.add_properties(&#39;syn_weight&#39;, rule=syn_weight_by_loc, dtypes=np.float)</span>
-<span class="sd">        ```</span>
 
-<span class="sd">        If the connection_rule function requires additional parameters use the rule_params option:</span>
-<span class="sd">        ```python</span>
+<span class="sd">        If the connection_rule function requires additional parameters use the rule_params option::</span>
+
 <span class="sd">            def syn_weight_by_loc(source, target, min_weight, max_weight):</span>
 <span class="sd">                ...</span>
 <span class="sd">                return syn_weight</span>
@@ -819,10 +815,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">                              rule=syn_weight_by_loc,</span>
 <span class="sd">                              rule_params={&#39;min_weigth&#39;:1.0e-7, &#39;max_weight&#39;: 5.0e-6},</span>
 <span class="sd">                              dtypes=np.float)</span>
-<span class="sd">        ```</span>
 
-<span class="sd">        You may also have the rule define multiple connection parameters at one time</span>
-<span class="sd">        ```python</span>
+<span class="sd">        You may also have the rule define multiple connection parameters at one time::</span>
+
 <span class="sd">            def conn_rule(source, target, min_weight, max_weight):</span>
 <span class="sd">                ...</span>
 <span class="sd">                return syn_weight, syn_location, delay</span>
@@ -831,7 +826,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">                              rule=syn_weight_by_loc,</span>
 <span class="sd">                              rule_params={&#39;min_weigth&#39;:1.0e-7, &#39;max_weight&#39;: 5.0e-6},</span>
 <span class="sd">                              dtypes=[np.float, str, np.float])</span>
-<span class="sd">        ```</span>
 
 <span class="sd">        :param names: list, or single string, of the property</span>
 <span class="sd">        :param rule: function, list or value of property</span>

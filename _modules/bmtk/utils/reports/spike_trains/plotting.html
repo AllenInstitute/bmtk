@@ -710,18 +710,17 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">    return the figure</span>
 
 <span class="sd">    By default will display all nodes, if you want to only display a subset of nodes and/or group together different</span>
-<span class="sd">    nodes (by node_id) by dot colors and labels then you can use the node_groups, which should be a list of dicts:</span>
+<span class="sd">    nodes (by node_id) by dot colors and labels then you can use the node_groups, which should be a list of dicts::</span>
 
-<span class="sd">    ```python</span>
 <span class="sd">        plot_raster(&#39;/path/to/my/spike.h5&#39;,</span>
 <span class="sd">        node_groups=[{&#39;node_ids&#39;: range(0, 70), &#39;c&#39;: &#39;b&#39;, &#39;label&#39;: &#39;pyr&#39;},      # first 70 nodes are blue pyr cells</span>
 <span class="sd">                     {&#39;node_ids&#39;: range(70, 100), &#39;c&#39;: &#39;r&#39;, &#39;label&#39;: &#39;inh&#39;}])   # last 30 nodes are red inh cells</span>
-<span class="sd">    ```</span>
 
 <span class="sd">    The histogram will not be grouped.</span>
 
 <span class="sd">    :param spike_trains: SpikeTrains object or path to a (SONATA) spikes file.</span>
-<span class="sd">    :param with_histogram: If True the a histogram will be shown as a small subplot below the scatter plot. Default True.</span>
+<span class="sd">    :param with_histogram: If True the a histogram will be shown as a small subplot below the scatter plot. Default</span>
+<span class="sd">        True.</span>
 <span class="sd">    :param population: string. If a spikes-file contains more than one population of nodes, use this to determine which</span>
 <span class="sd">        nodes to actually plot. If only one population exists and population=None then the function will find it by</span>
 <span class="sd">        default.</span>
@@ -815,13 +814,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">    times are not specified from the &quot;times&quot; parameter, will try to parse values from the timestamps data.</span>
 
 <span class="sd">    If you want to only display a subset of nodes and/or group together different nodes (by node_id) by dot colors and</span>
-<span class="sd">    labels then you can use the node_groups, which should be a list of dicts:</span>
+<span class="sd">    labels then you can use the node_groups, which should be a list of dicts::</span>
 
-<span class="sd">    ```python</span>
 <span class="sd">        plot_rates(&#39;/path/to/my/spike.h5&#39;,</span>
 <span class="sd">                    node_groups=[{&#39;node_ids&#39;: range(0, 70), &#39;c&#39;: &#39;b&#39;, &#39;label&#39;: &#39;pyr&#39;},</span>
 <span class="sd">                                 {&#39;node_ids&#39;: range(70, 100), &#39;c&#39;: &#39;r&#39;, &#39;label&#39;: &#39;inh&#39;}])</span>
-<span class="sd">    ```</span>
 
 <span class="sd">    :param spike_trains: SpikeTrains object or path to a (SONATA) spikes file.</span>
 <span class="sd">    :param population: string. If a spikes-file contains more than one population of nodes, use this to determine which</span>
@@ -892,14 +889,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">    and stop times are not specified from the &quot;times&quot; parameter, will try to parse values from the timestamps data.</span>
 
 <span class="sd">    By default will plot all nodes together. To only display a subset of the nodes and/or create groups of nodes use</span>
-<span class="sd">    the node_groups options:</span>
-<span class="sd">    ```python</span>
+<span class="sd">    the node_groups options::</span>
+
 <span class="sd">        plot_rates_boxplot(</span>
 <span class="sd">            &#39;/path/to/my/spike.h5&#39;,</span>
 <span class="sd">            node_groups=[{&#39;node_ids&#39;: range(0, 70), &#39;label&#39;: &#39;pyr&#39;},</span>
 <span class="sd">                         {&#39;node_ids&#39;: range(70, 100), &#39;label&#39;: &#39;inh&#39;}]</span>
 <span class="sd">        )</span>
-<span class="sd">    ```</span>
 
 <span class="sd">    :param spike_trains: SpikeTrains object or path to a (SONATA) spikes file.</span>
 <span class="sd">    :param population: string. If a spikes-file contains more than one population of nodes, use this to determine which</span>

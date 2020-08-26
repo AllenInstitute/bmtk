@@ -841,7 +841,7 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 <dt id="bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.DataTable">
 <em class="property">class </em><code class="sig-name descname">DataTable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">var_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/compartment/compartment_writer.html#PopulationWriterv01.DataTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.DataTable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A small struct to keep track of different <a href="#id1"><span class="problematic" id="id2">*</span></a>/data (and buffer) tables</p>
+<p>A small struct to keep track of different data (and buffer) tables</p>
 </dd></dl>
 
 <dl class="py method">
@@ -982,33 +982,6 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 </div>
 <div class="section" id="module-bmtk.utils.reports.compartment.core">
 <span id="bmtk-utils-reports-compartment-core-module"></span><h2>bmtk.utils.reports.compartment.core module<a class="headerlink" href="#module-bmtk.utils.reports.compartment.core" title="Permalink to this headline">¶</a></h2>
-<dl class="simple">
-<dt>class CompartmentReport(object):</dt><dd><dl class="simple">
-<dt>def __init__(self, path, mode=’r’, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs):</dt><dd><p>pass</p>
-</dd>
-<dt>def initialize(self):</dt><dd><p>pass</p>
-</dd>
-<dt>def add_cell(self, node_id, sections, segments, population=None, <a href="#id5"><span class="problematic" id="id6">**</span></a>attrs):</dt><dd><p>pass</p>
-</dd>
-<dt>def record_cell(self, node_id, segment_vals, tstep, population=None):</dt><dd><p>pass</p>
-</dd>
-<dt>def record_cell_block(self, node_ids, segment_vals, tbegin, tend, population=None):</dt><dd><p>pass</p>
-</dd>
-<dt>def close(self):</dt><dd><p>pass</p>
-</dd>
-<dt>def flush(self):</dt><dd><p>pass</p>
-</dd>
-<dt>def from_sonata(self, path):</dt><dd><p>pass</p>
-</dd>
-<dt>def from_nwb(self, path):</dt><dd><p>pass</p>
-</dd>
-<dt>def from_path(self, path):</dt><dd><p>pass</p>
-</dd>
-<dt>def __getitem__(self, item):</dt><dd><p>pass</p>
-</dd>
-</dl>
-</dd>
-</dl>
 <dl class="py class">
 <dt id="bmtk.utils.reports.compartment.core.CompartmentReaderABC">
 <em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.reports.compartment.core.</code><code class="sig-name descname">CompartmentReaderABC</code><a class="reference internal" href="../_modules/bmtk/utils/reports/compartment/core.html#CompartmentReaderABC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.compartment.core.CompartmentReaderABC" title="Permalink to this definition">¶</a></dt>
@@ -1193,34 +1166,24 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 <dt id="bmtk.utils.reports.compartment.plotting.plot_traces">
 <code class="sig-prename descclassname">bmtk.utils.reports.compartment.plotting.</code><code class="sig-name descname">plot_traces</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">report</span></em>, <em class="sig-param"><span class="n">population</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sections</span><span class="o">=</span><span class="default_value">'origin'</span></em>, <em class="sig-param"><span class="n">average</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">node_groups</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">times</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show_legend</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/reports/compartment/plotting.html#plot_traces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.reports.compartment.plotting.plot_traces" title="Permalink to this definition">¶</a></dt>
 <dd><p>Displays the time trace of one or more nodes from a SONATA CompartmentReport file.</p>
-<p>To plot a group of individual variable traces (based on their soma)
-<a href="#id7"><span class="problematic" id="id8">``</span></a><a href="#id9"><span class="problematic" id="id10">`</span></a>python</p>
-<blockquote>
-<div><p>plot_traces(‘/path/to/report.h5’, node_ids=[0, 10, 20, …])</p>
-</div></blockquote>
-<p><a href="#id11"><span class="problematic" id="id12">``</span></a><a href="#id13"><span class="problematic" id="id14">`</span></a></p>
+<p>To plot a group of individual variable traces (based on their soma):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_traces</span><span class="p">(</span><span class="s1">&#39;/path/to/report.h5&#39;</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span>
+</pre></div>
+</div>
 <p>If node_ids=None (default) then all nodes in the report will be displayed. For large networks then can become
-difficult to visualize so it’s recommended you use average=True:
-<a href="#id15"><span class="problematic" id="id16">``</span></a><a href="#id17"><span class="problematic" id="id18">`</span></a>python</p>
-<blockquote>
-<div><p>plot_traces(‘/path/to/report.h5’, average=True)</p>
-</div></blockquote>
-<p><a href="#id19"><span class="problematic" id="id20">``</span></a><a href="#id21"><span class="problematic" id="id22">`</span></a></p>
+difficult to visualize so it’s recommended you use average=True:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_traces</span><span class="p">(</span><span class="s1">&#39;/path/to/report.h5&#39;</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>Users also have the option of taking the averages of multiple subsets of nodes using the “node_groups” options.
 “node_groups” should be a list of dictionary, each dict with a ‘node_ids’: [list of ids], and optionally
 a ‘label’ and ‘c’ (color). For example support nodes [0, 70) are excitatory cells, nodes [70, 100) are inhibitory,
-and we want display excitatory and inhibitory averages and blue and red, respectivly:
-<a href="#id23"><span class="problematic" id="id24">``</span></a><a href="#id25"><span class="problematic" id="id26">`</span></a>python</p>
-<blockquote>
-<div><dl class="simple">
-<dt>plot_traces(‘/path/to/report.h5’,</dt><dd><dl class="simple">
-<dt>node_groups=[{‘node_ids’: range(0, 70), ‘label’: ‘exc’, ‘c’: ‘b’},</dt><dd><p>{‘node_ids’: range(70, 100), ‘label’: ‘inh’, ‘c’: ‘r’}])</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</div></blockquote>
-<p><a href="#id27"><span class="problematic" id="id28">``</span></a><a href="#id29"><span class="problematic" id="id30">`</span></a></p>
+and we want display excitatory and inhibitory averages and blue and red, respectivly:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_traces</span><span class="p">(</span><span class="s1">&#39;/path/to/report.h5&#39;</span><span class="p">,</span>
+            <span class="n">node_groups</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">70</span><span class="p">),</span> <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="s1">&#39;b&#39;</span><span class="p">},</span>
+                         <span class="p">{</span><span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">70</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;inh&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="s1">&#39;r&#39;</span><span class="p">}])</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1255,18 +1218,12 @@ function itself will guess if legend should be shown.</p></li>
 <p>To plot multiple averages use the “node_groups” options. “node_groups” should be a list of dictionary, each dict
 with a ‘node_ids’: [list of ids], and optionally a ‘label’ and ‘c’ (color). For example support nodes [0, 70) are
 excitatory cells, nodes [70, 100) are inhibitory, and we want display excitatory and inhibitory averages and blue
-and red, respectivly:
-<a href="#id31"><span class="problematic" id="id32">``</span></a><a href="#id33"><span class="problematic" id="id34">`</span></a>python</p>
-<blockquote>
-<div><dl class="simple">
-<dt>plot_traces(‘/path/to/report.h5’,</dt><dd><dl class="simple">
-<dt>node_groups=[{‘node_ids’: range(0, 70), ‘label’: ‘exc’, ‘c’: ‘b’},</dt><dd><p>{‘node_ids’: range(70, 100), ‘label’: ‘inh’, ‘c’: ‘r’}])</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</div></blockquote>
-<p><a href="#id35"><span class="problematic" id="id36">``</span></a><a href="#id37"><span class="problematic" id="id38">`</span></a></p>
+and red, respectively:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_traces</span><span class="p">(</span><span class="s1">&#39;/path/to/report.h5&#39;</span><span class="p">,</span>
+            <span class="n">node_groups</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">70</span><span class="p">),</span> <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="s1">&#39;b&#39;</span><span class="p">},</span>
+                         <span class="p">{</span><span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="mi">70</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;inh&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span> <span class="s1">&#39;r&#39;</span><span class="p">}])</span>
+</pre></div>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

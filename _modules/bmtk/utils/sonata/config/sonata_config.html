@@ -665,33 +665,41 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <span class="sd">    General Usage:</span>
+
 <span class="sd">        You can read in a root sonata config json file (or just the circuit or simulation files individual) by passing</span>
 <span class="sd">        the file path or a file-pointer, which will return a dictionary like object you can use to build and run your</span>
-<span class="sd">        simulation</span>
+<span class="sd">        simulation::</span>
+
 <span class="sd">            sim_params = SonataConfig.from_json(&#39;/path/to/sonata_config.json&#39;)</span>
 <span class="sd">            ... = sim_params[&#39;run&#39;][&#39;tstop&#39;]</span>
 
-<span class="sd">        You can also pass in a dictionary and use the from_dict() factory method:</span>
+<span class="sd">        You can also pass in a dictionary and use the from_dict() factory method::</span>
+
 <span class="sd">            sim_params = SonataConfig.from_dict({...})</span>
 
 <span class="sd">    JSON Variables:</span>
+
 <span class="sd">        You can add variables to your SONATA config file which can make reusing json files easiers. The standard way</span>
 <span class="sd">        of doing this by using the &#39;manifest&#39; section to set the variable name and value to be used in other parts of</span>
-<span class="sd">        the json. If the json file looks like</span>
+<span class="sd">        the json. If the json file looks like::</span>
+
 <span class="sd">            {</span>
-<span class="sd">                &#39;manifest&#39;: {&#39;$CIRCUIT_HOME&#39;: &#39;/home/john/cortex_simulation/network&#39;}</span>
+<span class="sd">                &#39;manifest&#39;: {&#39;$CIRCUIT_HOME&#39;: &#39;/home/john/cortex_simulation/network&#39;},</span>
 <span class="sd">                &#39;network&#39;: {</span>
 <span class="sd">                    &#39;nodes&#39;: &#39;${CIRCUIT_HOME}/nodes.h5,</span>
 <span class="sd">                    &#39;node_types&#39;: &#39;${$CIRCUIT_HOME}/nodes_types.csv&#39;</span>
 <span class="sd">                }</span>
 <span class="sd">            }</span>
-<span class="sd">        SonataConfig will resolve the $CIRCUIT_HOME variable when accessed</span>
+
+<span class="sd">        SonataConfig will resolve the $CIRCUIT_HOME variable when accessed::</span>
+
 <span class="sd">            sim_params[&#39;network&#39;][&#39;nodes&#39;] == &#39;/home/john/cortex_simulation/network/nodes.h5&#39;</span>
 <span class="sd">            sim_params[&#39;network&#39;][&#39;node_types&#39;] == &#39;/home/john/cortex_simulation/network/nodes_types.h5&#39;</span>
 
-
 <span class="sd">    Users and Predefined variables:</span>
-<span class="sd">        You can also create your own predefined variables:</span>
+
+<span class="sd">        You can also create your own predefined variables::</span>
+
 <span class="sd">            circuit_config = {</span>
 <span class="sd">                &#39;run&#39;: {</span>
 <span class="sd">                    &quot;dt&quot;: &quot;${time_step}&quot;,</span>
@@ -705,13 +713,16 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">            cfg[&#39;target_simulator&#39;] == &#39;CoreNeuron&#39;</span>
 
 <span class="sd">        There are also a number of built in variables which you can add to your json</span>
+
 <span class="sd">        * ${configdir} - location of the current json file</span>
 <span class="sd">        * ${workingdir} - directory where the code/simulator is being ran</span>
 <span class="sd">        * ${datetime} - date-time string in Y-M-d_H-M-S format</span>
 
 <span class="sd">    Validating the json file:</span>
+
 <span class="sd">        You can check if the schema is valid, making suring certain section variables that are required actually exists</span>
-<span class="sd">        in the config and is of the right type:</span>
+<span class="sd">        in the config and is of the right type::</span>
+
 <span class="sd">            cfg = SonataConfig.from_json(&#39;config.json&#39;)</span>
 <span class="sd">            try:</span>
 <span class="sd">                is_valid = cfg.valid()</span>
@@ -722,7 +733,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">        returns true it may still be missing parts of the config to run a complete simulation.</span>
 
 <span class="sd">        You can also add your own schema validator, just as long as it&#39;s a class instance that has a validate(cfg)</span>
-<span class="sd">        method. The easiest way to do this is by using jsonschema:</span>
+<span class="sd">        method. The easiest way to do this is by using jsonschema::</span>
+
 <span class="sd">            from jsonschema import Draft4Validator</span>
 <span class="sd">            validator = Drafter4Validator(&#39;/path/to/schema.json&#39;)</span>
 

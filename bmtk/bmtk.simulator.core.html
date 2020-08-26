@@ -683,8 +683,175 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </dd></dl>
 
 </div>
-<div class="section" id="bmtk-simulator-core-graph-module">
-<h2>bmtk.simulator.core.graph module<a class="headerlink" href="#bmtk-simulator-core-graph-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-bmtk.simulator.core.graph">
+<span id="bmtk-simulator-core-graph-module"></span><h2>bmtk.simulator.core.graph module<a class="headerlink" href="#module-bmtk.simulator.core.graph" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="bmtk.simulator.core.graph.SimEdge">
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.core.graph.</code><code class="sig-name descname">SimEdge</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">original_params</span></em>, <em class="sig-param"><span class="n">dynamics_params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimEdge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimEdge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="bmtk.simulator.core.graph.SimEdge.edge_type_id">
+<em class="property">property </em><code class="sig-name descname">edge_type_id</code><a class="headerlink" href="#bmtk.simulator.core.graph.SimEdge.edge_type_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="bmtk.simulator.core.graph.SimGraph">
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.core.graph.</code><code class="sig-name descname">SimGraph</code><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="bmtk.simulator.core.graph.SimGraph.add_component">
+<code class="sig-name descname">add_component</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.add_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.add_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a component key-value pair</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – name of component</p></li>
+<li><p><strong>value</strong> – value</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bmtk.simulator.core.graph.SimGraph.add_edges">
+<code class="sig-name descname">add_edges</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sonata_file</span></em>, <em class="sig-param"><span class="n">populations</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">source_pop</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">target_pop</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.add_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.add_edges" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sonata_file</strong> – </p></li>
+<li><p><strong>populations</strong> – </p></li>
+<li><p><strong>source_pop</strong> – </p></li>
+<li><p><strong>target_pop</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bmtk.simulator.core.graph.SimGraph.add_nodes">
+<code class="sig-name descname">add_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sonata_file</span></em>, <em class="sig-param"><span class="n">populations</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.add_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.add_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add nodes from a network to the graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sonata_file</strong> – A NodesFormat type object containing list of nodes.</p></li>
+<li><p><strong>populations</strong> – name/identifier of network. If none will attempt to retrieve from nodes object</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bmtk.simulator.core.graph.SimGraph.build_nodes">
+<code class="sig-name descname">build_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.build_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.build_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="bmtk.simulator.core.graph.SimGraph.build_recurrent_edges">
+<code class="sig-name descname">build_recurrent_edges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.build_recurrent_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.build_recurrent_edges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="bmtk.simulator.core.graph.SimGraph.external_edge_populations">
+<code class="sig-name descname">external_edge_populations</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src_pop</span></em>, <em class="sig-param"><span class="n">trg_pop</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.external_edge_populations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.external_edge_populations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="bmtk.simulator.core.graph.SimGraph.from_config">
+<em class="property">classmethod </em><code class="sig-name descname">from_config</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">conf</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">properties</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.from_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.from_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a graph structure from a json config file or dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>conf</strong> – name of json config file, or a dictionary with config parameters</p></li>
+<li><p><strong>properties</strong> – optional properties.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A graph object of type cls</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bmtk.simulator.core.graph.SimGraph.get_component">
+<code class="sig-name descname">get_component</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.get_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.get_component" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of item in the components dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> – name of component</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>value assigned to component</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bmtk.simulator.core.graph.SimGraph.get_node_population">
+<code class="sig-name descname">get_node_population</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">population_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.get_node_population"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.get_node_population" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="bmtk.simulator.core.graph.SimGraph.get_node_populations">
+<code class="sig-name descname">get_node_populations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.get_node_populations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.get_node_populations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="bmtk.simulator.core.graph.SimGraph.get_node_set">
+<code class="sig-name descname">get_node_set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_set</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimGraph.get_node_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.get_node_set" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="bmtk.simulator.core.graph.SimGraph.io">
+<em class="property">property </em><code class="sig-name descname">io</code><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.io" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="bmtk.simulator.core.graph.SimGraph.model_type_col">
+<code class="sig-name descname">model_type_col</code><em class="property"> = 'model_type'</em><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.model_type_col" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="bmtk.simulator.core.graph.SimGraph.node_populations">
+<em class="property">property </em><code class="sig-name descname">node_populations</code><a class="headerlink" href="#bmtk.simulator.core.graph.SimGraph.node_populations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="bmtk.simulator.core.graph.SimNode">
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.simulator.core.graph.</code><code class="sig-name descname">SimNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_id</span></em>, <em class="sig-param"><span class="n">graph</span></em>, <em class="sig-param"><span class="n">network</span></em>, <em class="sig-param"><span class="n">params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/core/graph.html#SimNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.core.graph.SimNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="bmtk.simulator.core.graph.SimNode.model_params">
+<em class="property">property </em><code class="sig-name descname">model_params</code><a class="headerlink" href="#bmtk.simulator.core.graph.SimNode.model_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parameters (json file, nml, dictionary) that describe a specific node</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bmtk.simulator.core.graph.SimNode.network">
+<em class="property">property </em><code class="sig-name descname">network</code><a class="headerlink" href="#bmtk.simulator.core.graph.SimNode.network" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of network node belongs too.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bmtk.simulator.core.graph.SimNode.node_id">
+<em class="property">property </em><code class="sig-name descname">node_id</code><a class="headerlink" href="#bmtk.simulator.core.graph.SimNode.node_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="bmtk.simulator.core.graph.SimNode.node_type_id">
+<em class="property">property </em><code class="sig-name descname">node_type_id</code><a class="headerlink" href="#bmtk.simulator.core.graph.SimNode.node_type_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-bmtk.simulator.core.io_tools">
 <span id="bmtk-simulator-core-io-tools-module"></span><h2>bmtk.simulator.core.io_tools module<a class="headerlink" href="#module-bmtk.simulator.core.io_tools" title="Permalink to this headline">¶</a></h2>

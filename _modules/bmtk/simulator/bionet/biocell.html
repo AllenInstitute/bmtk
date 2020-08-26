@@ -693,8 +693,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="sd">&quot;&quot;&quot;Implemntation of a morphologically and biophysically detailed type cell.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">bionetwork</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">BioCell</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">population_name</span><span class="p">,</span> <span class="n">bionetwork</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BioCell</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span> <span class="n">population_name</span><span class="o">=</span><span class="n">population_name</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">bionetwork</span><span class="p">)</span>
 
         <span class="c1"># Set up netcon object that can be used to detect and communicate cell spikes.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_spike_detector</span><span class="p">(</span><span class="n">bionetwork</span><span class="o">.</span><span class="n">spike_threshold</span><span class="p">)</span>
@@ -1016,7 +1016,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="c1">#    sec.insert(&#39;extracellular&#39;)</span>
 
 <div class="viewcode-block" id="BioCell.set_im_ptr"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biocell.BioCell.set_im_ptr">[docs]</a>    <span class="k">def</span> <span class="nf">set_im_ptr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Set PtrVector to point to the i_membrane_&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Set PtrVector to point to the _ref_i_membrane_ parameter&quot;&quot;&quot;</span>
         <span class="n">jseg</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>  
             <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">sec</span><span class="p">:</span>

@@ -1120,14 +1120,18 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <p>It’s a good idea to check the configuration files <strong>sim_ch03/circuit_config.json</strong> and <strong>sim_ch03/simulation_config.json</strong>, especially to make sure that bmtk will know to use our generated spikes file (if you don’t see the below section in the simulation_config.json file go ahead and add it).</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;inputs&quot;: {
-    &quot;tc_spikes&quot;: {
-      &quot;input_type&quot;: &quot;spikes&quot;,
-      &quot;module&quot;: &quot;csv&quot;,
-      &quot;input_file&quot;: &quot;${BASE_DIR}/mthalamus_spikes.csv&quot;,
-      &quot;node_set&quot;: &quot;mthalamus&quot;
-    }
-}
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+
+
+  <span class="nt">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;tc_spikes&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;csv&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;input_file&quot;</span><span class="p">:</span> <span class="s2">&quot;${BASE_DIR}/mthalamus_spikes.csv&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="s2">&quot;mthalamus&quot;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -1432,6 +1436,8 @@ INFO:NEURONIOUtils:Simulation completed in 5.0 minutes, 29.5 seconds
 </div>
 <div class="section" id="5.-Modifying-the-network">
 <h2>5. Modifying the network<a class="headerlink" href="#5.-Modifying-the-network" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Customized-node-params">
+<h3>Customized node params<a class="headerlink" href="#Customized-node-params" title="Permalink to this headline">¶</a></h3>
 <p>When building our cortex nodes, we used some built-in functions to set certain parameters like positions and y-axis rotations:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cortex</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
                  <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;Scnn1a&#39;</span><span class="p">,</span>
@@ -1481,6 +1487,9 @@ cell 1: pop_name: Scnn1a, positions: [ 4.49907709 78.44333228  2.94240925], angl
 </pre></div>
 </div>
 <p>We can use the same logic not just for positions and rotation_angle, but for any parameter we choose.</p>
+</div>
+<div class="section" id="Customized-connector-functions">
+<h3>Customized connector functions<a class="headerlink" href="#Customized-connector-functions" title="Permalink to this headline">¶</a></h3>
 <p>When creating edges, we used the built-in distance_connector function to help create the connection matrix. There are a number of built-in connection functions, but we also allow modelers to create their own. To do so, the modeler must create a function that takes in a source, target, and a variable number of parameters, and pass back a natural number representing the number of connections.</p>
 <p>The Builder will iterate over that function passing in every source/target node pair (filtered by the source and target parameters in add_edges()). The source and target parameters are essentially dictionaries that can be used to fetch properties of the nodes. A typical example would look like:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">customized_connector</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">param1</span><span class="p">,</span> <span class="n">param2</span><span class="p">,</span> <span class="n">param3</span><span class="p">):</span>
@@ -1506,6 +1515,7 @@ cell 1: pop_name: Scnn1a, positions: [ 4.49907709 78.44333228  2.94240925], angl
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>
 </pre></div>
+</div>
 </div>
 </div>
 </div>

@@ -18,7 +18,7 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Chapter 5: Point-Neuron Network Models (with PointNet)" href="tutorial_pointnet_modeling.html" />
+    <link rel="next" title="Tutorial 5: Point-Neuron Network Models (with PointNet)" href="tutorial_pointnet_modeling.html" />
     <link rel="prev" title="Chapter 3: Multi-cell, single population network (with BioNet)" href="tutorial_single_pop.html" /> 
   </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
@@ -1285,15 +1285,17 @@ sources and the target.</p>
 </div>
 <p>or copy from <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/spikes_inputs/lgn_spikes.nwb">here</a>.</p>
 <p>Then we must edit the <strong>simulation_config.json</strong> file to tell the simulator to find the nwb file and which network to associate it with.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>&quot;inputs&quot;: {
-    &quot;LGN_spikes&quot;: {
-        &quot;input_type&quot;: &quot;spikes&quot;,
-        &quot;module&quot;: &quot;nwb&quot;,
-        &quot;input_file&quot;: &quot;$BASE_DIR/lgn_spikes.nwb&quot;,
-        &quot;node_set&quot;: &quot;LGN&quot;,
-        &quot;trial&quot;: &quot;trial_0&quot;
-    }
-},
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;nwb&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;input_file&quot;</span><span class="p">:</span> <span class="s2">&quot;$BASE_DIR/lgn_spikes.nwb&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="s2">&quot;LGN&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;trial&quot;</span><span class="p">:</span> <span class="s2">&quot;trial_0&quot;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </div>
