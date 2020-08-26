@@ -4,8 +4,8 @@ class SimInput(object):
     to instantiate a module from the metadata parameters (eg, name, module, input_type)
 
     Use the build() method to parse the json/dictionary of a section of input, then **params** to get a dictionary
-    of the values used to instantiate.
-    ```python
+    of the values used to instantiate::
+
         input = SimInput.Build(
                   'spikes_inputs',
                   {'module': 'spikes', 'input_type': 'hdf5', input_file: 'my_spikes.h5', 'time_scale': 'ms'}
@@ -14,31 +14,30 @@ class SimInput(object):
         if input.module == 'spike':
             SpikesInput(**params)
             ...
-    ```
 
-    Attributes
-    ==========
-    **name** - str, name of module
-    **input_type** - str
-    **module** - str,
-    **params** - dictionary, all parameters (not including name, input_type, module)
+    Attributes:
 
-    Custom Modules
-    ==============
-    Sometimes certain input types may require extra steps in processing, like auto-conversion of filling in missing
-    parameters. In this case use the register module method:
-    ```python
-        class MyVClampInput(SimInput):
-            def avail_module():
-                return ['vclamp', 'voltage_clamp']
+        * **name** - str, name of module
+        * **input_type** - str
+        * **module** - str,
+        * **params** - dictionary, all parameters (not including name, input_type, module)
 
-            def build():
-                ....
+    Custom Modules:
 
-        SimInput.registerModule(MyVClampInput)
-    ```
-    Then when SimInput.build() is called and the 'module_name'=='vclamp' (or 'voltage_clamp') it will pass the parsing
-    to the MyVClampInput class.
+        Sometimes certain input types may require extra steps in processing, like auto-conversion of filling in missing
+        parameters. In this case use the register module method::
+
+            class MyVClampInput(SimInput):
+                def avail_module():
+                    return ['vclamp', 'voltage_clamp']
+
+                def build():
+                    ....
+
+            SimInput.registerModule(MyVClampInput)
+
+        Then when SimInput.build() is called and the 'module_name'=='vclamp' (or 'voltage_clamp') it will pass the parsing
+        to the MyVClampInput class.
     """
     registry = {}  # For factory function
 

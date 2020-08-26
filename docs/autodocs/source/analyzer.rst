@@ -152,6 +152,7 @@ pull data from a cell report.
    print(report.data(node_id=0))
 
 .. code::
+
    v
    0.0, 3.0, 0.01
    [0, 1, 2, 2, ...]

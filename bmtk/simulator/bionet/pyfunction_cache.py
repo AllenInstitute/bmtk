@@ -115,13 +115,17 @@ py_modules = _PyFunctions()
 
 def synaptic_weight(*wargs, **wkwargs):
     """A decorator for registering a function as a synaptic weight function.
-    To use either
-      @synaptic_weight
-      def weight_function(): ...
+    To use either::
 
-    or
-      @synaptic_weight(name='name_in_edge_types')
-      def weight_function(): ...
+        @synaptic_weight
+        def weight_function():
+            ...
+
+    or::
+
+        @synaptic_weight(name='name_in_edge_types')
+        def weight_function():
+        ...
 
     Once the decorator has been attached and imported the functions will automatically be added to py_modules.
     """

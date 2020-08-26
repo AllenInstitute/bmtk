@@ -86,18 +86,17 @@ def plot_raster(spike_trains, with_histogram=True, population=None, node_groups=
     return the figure
 
     By default will display all nodes, if you want to only display a subset of nodes and/or group together different
-    nodes (by node_id) by dot colors and labels then you can use the node_groups, which should be a list of dicts:
+    nodes (by node_id) by dot colors and labels then you can use the node_groups, which should be a list of dicts::
 
-    ```python
         plot_raster('/path/to/my/spike.h5',
         node_groups=[{'node_ids': range(0, 70), 'c': 'b', 'label': 'pyr'},      # first 70 nodes are blue pyr cells
                      {'node_ids': range(70, 100), 'c': 'r', 'label': 'inh'}])   # last 30 nodes are red inh cells
-    ```
 
     The histogram will not be grouped.
 
     :param spike_trains: SpikeTrains object or path to a (SONATA) spikes file.
-    :param with_histogram: If True the a histogram will be shown as a small subplot below the scatter plot. Default True.
+    :param with_histogram: If True the a histogram will be shown as a small subplot below the scatter plot. Default
+        True.
     :param population: string. If a spikes-file contains more than one population of nodes, use this to determine which
         nodes to actually plot. If only one population exists and population=None then the function will find it by
         default.
@@ -191,13 +190,11 @@ def plot_rates(spike_trains, population=None, node_groups=None, times=None, smoo
     times are not specified from the "times" parameter, will try to parse values from the timestamps data.
 
     If you want to only display a subset of nodes and/or group together different nodes (by node_id) by dot colors and
-    labels then you can use the node_groups, which should be a list of dicts:
+    labels then you can use the node_groups, which should be a list of dicts::
 
-    ```python
         plot_rates('/path/to/my/spike.h5',
                     node_groups=[{'node_ids': range(0, 70), 'c': 'b', 'label': 'pyr'},
                                  {'node_ids': range(70, 100), 'c': 'r', 'label': 'inh'}])
-    ```
 
     :param spike_trains: SpikeTrains object or path to a (SONATA) spikes file.
     :param population: string. If a spikes-file contains more than one population of nodes, use this to determine which
@@ -268,14 +265,13 @@ def plot_rates_boxplot(spike_trains, population=None, node_groups=None, times=No
     and stop times are not specified from the "times" parameter, will try to parse values from the timestamps data.
 
     By default will plot all nodes together. To only display a subset of the nodes and/or create groups of nodes use
-    the node_groups options:
-    ```python
+    the node_groups options::
+
         plot_rates_boxplot(
             '/path/to/my/spike.h5',
             node_groups=[{'node_ids': range(0, 70), 'label': 'pyr'},
                          {'node_ids': range(70, 100), 'label': 'inh'}]
         )
-    ```
 
     :param spike_trains: SpikeTrains object or path to a (SONATA) spikes file.
     :param population: string. If a spikes-file contains more than one population of nodes, use this to determine which

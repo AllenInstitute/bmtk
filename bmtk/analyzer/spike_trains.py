@@ -142,7 +142,44 @@ def _plot_helper(plot_fnc, config_file=None, population=None, times=None, title=
 def plot_raster(config_file=None, population=None, with_histogram=True, times=None, title=None, show=True,
                 group_by=None, group_excludes=None,
                 spikes_file=None, nodes_file=None, node_types_file=None):
+    """Create a raster plot (plus optional histogram) from the results of the simulation.
 
+    Will using the SONATA simulation configs "output" section to locate where the spike-trains file was created and
+    display them::
+
+        plot_raster(config_file='config.json')
+
+    If the path the the report is different (or missing) than what's in the SONATA config then use the "spikes_file"
+    option instead::
+
+        plot_raster(spikes_file='/my/path/to/membrane_potential.h5')
+
+    You may also group together different subsets of nodes using specific attributes of the network using the "group_by"
+    option, and the "group_excludes" option to exclude specific subsets. For example to color and label different
+    subsets of nodes based on their cortical "layer", but exlcude plotting the L1 nodes::
+
+        plot_raster(config_file='config.json', groupy_by='layer', group_excludes='L1')
+
+    :param config_file: path to SONATA simulation configuration.
+    :param population: name of the membrane_report "report" which will be plotted. If only one compartment report
+        in the simulation config then function will find it automatically.
+    :param with_histogram: If True the a histogram will be shown as a small subplot below the scatter plot. Default
+        True.
+    :param times: (float, float), start and stop times of simulation. By default will get values from simulation
+        configs "run" section.
+    :param title: str, adds a title to the plot. If None (default) then name will be automatically generated using the
+        report_name.
+    :param show: bool to display or not display plot. default True.
+    :param group_by: Attribute of the "nodes" file used to group and average subsets of nodes.
+    :param group_excludes: list of strings or None. When using the "group_by", allows users to exclude certain groupings
+        based on the attribute value.
+    :param spikes_file: Path to SONATA spikes file. Do not use with "config_file" options.
+    :param nodes_file: path to nodes hdf5 file containing "population". By default this will be resolved using the
+        config.
+    :param node_types_file: path to node-types csv file containing "population". By default this will be resolved using
+        the config.
+    :return: matplotlib figure.Figure object
+    """
     plot_fnc = partial(plotting.plot_raster, with_histogram=with_histogram)
     return _plot_helper(plot_fnc,
                         config_file=config_file, population=population, times=times, title=title, show=show,
@@ -153,7 +190,47 @@ def plot_raster(config_file=None, population=None, with_histogram=True, times=No
 
 def plot_rates(config_file=None, population=None, smoothing=False, smoothing_params=None, times=None, title=None,
                show=True, group_by=None, group_excludes=None, spikes_file=None, nodes_file=None, node_types_file=None):
+    """Calculate and plot the rates of each node recorded during the simulation - averaged across the entirety of the
+    simulation.
 
+    Will using the SONATA simulation configs "output" section to locate where the spike-trains file was created and
+    display them::
+
+        plot_rates(config_file='config.json')
+
+    If the path the the report is different (or missing) than what's in the SONATA config then use the "spikes_file"
+    option instead::
+
+        plot_rates(spikes_file='/my/path/to/membrane_potential.h5')
+
+    You may also group together different subsets of nodes using specific attributes of the network using the "group_by"
+    option, and the "group_excludes" option to exclude specific subsets. For example to color and label different
+    subsets of nodes based on their cortical "layer", but exlcude plotting the L1 nodes::
+
+        plot_rates(config_file='config.json', groupy_by='layer', group_excludes='L1')
+
+
+    :param config_file: path to SONATA simulation configuration.
+    :param population: name of the membrane_report "report" which will be plotted. If only one compartment report
+        in the simulation config then function will find it automatically.
+    :param smoothing: Bool or function. Used to smooth the data. By default (False) no smoothing will be done. If True
+        will using a moving average smoothing function. Or use a function pointer.
+    :param smoothing_params: dict, parameters when using a function pointer smoothing value.
+    :param times: (float, float), start and stop times of simulation. By default will get values from simulation
+        configs "run" section.
+    :param title: str, adds a title to the plot. If None (default) then name will be automatically generated using the
+        report_name.
+    :param show: bool to display or not display plot. default True.
+    :param group_by: Attribute of the "nodes" file used to group and average subsets of nodes.
+    :param group_excludes: list of strings or None. When using the "group_by", allows users to exclude certain groupings
+        based on the attribute value.
+    :param spikes_file: Path to SONATA spikes file. Do not use with "config_file" options.
+    :param nodes_file: Path to nodes hdf5 file containing "population". By default this will be resolved using the
+        config.
+    :param node_types_file: Path to node-types csv file containing "population". By default this will be resolved using
+        the config.
+    :return: matplotlib figure.Figure object
+    """
     plot_fnc = partial(plotting.plot_rates, smoothing=smoothing, smoothing_params=smoothing_params)
     return _plot_helper(plot_fnc,
                         config_file=config_file, population=population, times=times, title=title, show=show,
@@ -165,7 +242,42 @@ def plot_rates(config_file=None, population=None, smoothing=False, smoothing_par
 def plot_rates_boxplot(config_file=None, population=None, times=None, title=None, show=True,
                        group_by=None, group_excludes=None,
                        spikes_file=None, nodes_file=None, node_types_file=None):
+    """Creates a box plot of the firing rates taken from nodes recorded during the simulation.
 
+    Will using the SONATA simulation configs "output" section to locate where the spike-trains file was created and
+    display them::
+
+        plot_rates_boxplot(config_file='config.json')
+
+    If the path the the report is different (or missing) than what's in the SONATA config then use the "spikes_file"
+    option instead::
+
+        plot_rates_boxplot(spikes_file='/my/path/to/membrane_potential.h5')
+
+    You may also group together different subsets of nodes using specific attributes of the network using the "group_by"
+    option, and the "group_excludes" option to exclude specific subsets. For example to color and label different
+    subsets of nodes based on their cortical "layer", but exlcude plotting the L1 nodes::
+
+        plot_rates_boxplot(config_file='config.json', groupy_by='layer', group_excludes='L1')
+
+    :param config_file: path to SONATA simulation configuration.
+    :param population: name of the membrane_report "report" which will be plotted. If only one compartment report
+        in the simulation config then function will find it automatically.
+    :param times: (float, float), start and stop times of simulation. By default will get values from simulation
+        configs "run" section.
+    :param title: str, adds a title to the plot. If None (default) then name will be automatically generated using the
+        report_name.
+    :param show: bool to display or not display plot. default True.
+    :param group_by: Attribute of the "nodes" file used to group and average subsets of nodes.
+    :param group_excludes: list of strings or None. When using the "group_by", allows users to exclude certain groupings
+        based on the attribute value.
+    :param spikes_file: Path to SONATA spikes file. Do not use with "config_file" options.
+    :param nodes_file: Path to nodes hdf5 file containing "population". By default this will be resolved using the
+        config.
+    :param node_types_file: Path to node-types csv file containing "population". By default this will be resolved using
+        the config.
+    :return: matplotlib figure.Figure object
+    """
     plot_fnc = partial(plotting.plot_rates_boxplot)
     return _plot_helper(plot_fnc,
         config_file=config_file, population=population, times=times, title=title, show=show,
@@ -174,8 +286,24 @@ def plot_rates_boxplot(config_file=None, population=None, times=None, title=None
     )
 
 
-def spike_statistics(spikes_file, simulation=None, simulation_time=None, groupby=None, network=None, **filterparams):
-    spike_trains = SpikeTrains.load(spikes_file)
+def spike_statistics(spikes_file, simulation=None, population=None, simulation_time=None, group_by=None, network=None,
+                     config_file=None, **filterparams):
+    """Get spike statistics (firing_rate, counts, inter-spike interval) of the nodes.
+
+    :param spikes_file: Path to SONATA spikes file. Do not use with "config_file" options.
+    :param simulation:
+    :param population:
+    :param simulation_time:
+    :param groupby:
+    :param network:
+    :param config_file:
+    :param filterparams:
+    :return: pandas dataframe
+    """
+
+    # TODO: Should be implemented in bmtk.utils.spike_trains.stats.py
+    pop, spike_trains = _find_spikes(config_file=config_file, spikes_file=spikes_file, population=population)
+    # spike_trains = SpikeTrains.load(spikes_file)
 
     def calc_stats(r):
         d = {}
@@ -202,13 +330,22 @@ def spike_statistics(spikes_file, simulation=None, simulation_time=None, groupby
         vals_df = pd.merge(nodes_df, spike_counts_df, left_index=True, right_index=True, how='left')
         vals_df = vals_df.fillna({'count': 0.0, 'firing_rate': 0.0, 'isi': 0.0})
 
-        vals_df = vals_df.groupby(groupby)[['firing_rate', 'count', 'isi']].agg([np.mean, np.std])
+        vals_df = vals_df.groupby(group_by)[['firing_rate', 'count', 'isi']].agg([np.mean, np.std])
         return vals_df
     else:
         return spike_counts_df
 
 
 def to_dataframe(config_file, spikes_file=None, population=None):
+    """
+
+    :param config_file:
+    :param spikes_file:
+    :param population:
+    :return:
+    """
+
+
     # _, spike_trains = _find_spikes(config_file=config_file, spikes_file=spikes_file, population=population)
     pop, spike_trains = _find_spikes(config_file=config_file, spikes_file=spikes_file, population=population)
 

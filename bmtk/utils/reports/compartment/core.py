@@ -1,40 +1,37 @@
-'''
-class CompartmentReport(object):
-    def __init__(self, path, mode='r', **kwargs):
-        pass
-
-    def initialize(self):
-        pass
-
-    def add_cell(self, node_id, sections, segments, population=None, **attrs):
-        pass
-
-    def record_cell(self, node_id, segment_vals, tstep, population=None):
-        pass
-
-    def record_cell_block(self, node_ids, segment_vals, tbegin, tend, population=None):
-        pass
-
-    def close(self):
-        pass
-
-    def flush(self):
-        pass
-
-    def from_sonata(self, path):
-        pass
-
-    def from_nwb(self, path):
-        pass
-
-
-    def from_path(self, path):
-        pass
-
-    def __getitem__(self, item):
-        pass
-'''
-
+# class CompartmentReport(object):
+#     def __init__(self, path, mode='r', **kwargs):
+#         pass
+#
+#     def initialize(self):
+#         pass
+#
+#     def add_cell(self, node_id, sections, segments, population=None, **attrs):
+#         pass
+#
+#     def record_cell(self, node_id, segment_vals, tstep, population=None):
+#         pass
+#
+#     def record_cell_block(self, node_ids, segment_vals, tbegin, tend, population=None):
+#         pass
+#
+#     def close(self):
+#         pass
+#
+#     def flush(self):
+#         pass
+#
+#     def from_sonata(self, path):
+#         pass
+#
+#     def from_nwb(self, path):
+#         pass
+#
+#
+#     def from_path(self, path):
+#         pass
+#
+#     def __getitem__(self, item):
+#         pass
 
 
 class CompartmentReaderABC(object):
@@ -148,5 +145,3 @@ class CompartmentWriterABC(object):
 
     def __getitem__(self, item):
         raise NotImplementedError()
-
-

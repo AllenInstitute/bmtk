@@ -24,9 +24,10 @@ import os
 import json
 import ast
 import numpy as np
+from six import string_types
 
-import config as cfg
-from property_maps import NodePropertyMap, EdgePropertyMap
+# import config as cfg
+# from property_maps import NodePropertyMap, EdgePropertyMap
 from bmtk.utils import sonata
 
 
@@ -151,11 +152,11 @@ class SimGraph(object):
         """Make sure various components (i.e. paths) exists before attempting to build the graph."""
         return True
 
-    def _create_nodes_prop_map(self, grp):
-        return NodePropertyMap()
+    # def _create_nodes_prop_map(self, grp):
+    #     return NodePropertyMap()
 
-    def _create_edges_prop_map(self, grp):
-        return EdgePropertyMap()
+    # def _create_edges_prop_map(self, grp):
+    #     return EdgePropertyMap()
 
     def __avail_model_types(self, population):
         model_types = set()
@@ -363,7 +364,7 @@ class SimGraph(object):
         :return: A graph object of type cls
         """
         graph = cls(**properties)
-        if isinstance(conf, basestring):
+        if isinstance(conf, string_types):
             config = graph._from_json(conf)
         elif isinstance(conf, dict):
             config = conf

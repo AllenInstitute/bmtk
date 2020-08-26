@@ -52,6 +52,8 @@ templates_path = ['aibs_sphinx/templates']
 # source_suffix = ['.rst', '.md']
 source_suffix = ['.rst', '.ipynb']
 
+autodoc_mock_imports = ['nest', 'lxml', 'bluepyopt', 'utils']
+
 # The master toctree document.
 master_doc = 'index'
 
@@ -196,7 +198,8 @@ def copy_tutorials():
 
     for ipynb_file in glob.glob(tutorials):
         tut_fname = os.path.basename(ipynb_file)
-        if ipynb_file.startswith('00'):
+        if tut_fname.startswith('00') or tut_fname.startswith('tutorial_introduction') \
+                or tut_fname.startswith('Simulation_Intro'):
             continue
         elif tut_fname[:2].isnumeric():
             tut_fname = tut_fname[3:]
@@ -204,6 +207,31 @@ def copy_tutorials():
         tut_path = os.path.join(source_dir, 'tutorial_{}'.format(tut_fname))
         shutil.copy(ipynb_file, tut_path)
 
+    tutorial_images_dir = os.path.join(tutorials_dir, '_static/_tutorial_images')
+    source_tutorial_images_dir = os.path.join(source_dir, '_static/_tutorial_images')
+    if os.path.exists(source_tutorial_images_dir):
+        shutil.rmtree(source_tutorial_images_dir)
+
+    shutil.copytree(tutorial_images_dir, source_tutorial_images_dir)
+
+
+def autodoc_skip_member(app, what, name, obj, skip, options):
+    # exclusions = ('__weakref__',  # special-members
+    #               '__doc__', '__module__', '__dict__',  # undoc-members
+    #               )
+    # print(name, what, app)
+    # # exit()
+    # exclude = name in exclusions
+    # return skip or exclude
+    # print(obj)
+    return skip or name in ['load_reports', 'plot_report', 'bmtk.analyzer.cell_vars']
+
 
 def setup(app):
     copy_tutorials()
+    app.connect('autodoc-skip-member', autodoc_skip_member)
+
+
+# def autodoc_skip_member(app, what, name, obj, skip, options):
+#     print(app)
+#     return False

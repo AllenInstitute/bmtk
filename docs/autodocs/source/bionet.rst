@@ -23,7 +23,7 @@ Inputs can be specified in the “inputs” sections of the `simulation config <
 following the rules specified in the `SONATA Data format <https://github.com/AllenInstitute/sonata>`_.
 
 Spike-Trains
-+++++++++
+++++++++++++
 The modeler may wish to have certain cells in the circuit generate a pre-arranged series of spikes to drive the network.
 These cells must have ``model_type`` value ``virtual`` and are not actual cell objects (you can’t record from them). You
 may use either a `SONATA spike file <https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#spike-file>`_,
@@ -50,7 +50,7 @@ shows some examples of how to generate `spike-train files using bmtk <./analyzer
 
 
 Current Clamp
-+++++++++++
++++++++++++++
 May use one step current clamp on multiple nodes, or have one node receive multiple current injections. Currently ;)
 only support injections at the soma.
 
@@ -74,10 +74,10 @@ only support injections at the soma.
 * duration: duration of current injection in ms
 
 Voltage Clamp
-+++++++++++
++++++++++++++
 
 Extracellular Stimulation
-+++++++++++++++++++
++++++++++++++++++++++++++
 Allows for a set of external electrodes to provide a continuous stimulation in the neuropil. Requires a space-separated csv file with one row for each electrode:
 
 .. code::
@@ -113,11 +113,11 @@ And in the configuration file
 
 
 Spontaneous Firing
-++++++++++++++
+++++++++++++++++++
 
 
 Outputs
-----------
+-------
 Spikes
 ++++++
 By default all non-virtual cells in the circuit will have all their spikes at the soma recorded. The “spike_threadhold”
