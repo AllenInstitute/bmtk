@@ -27,10 +27,11 @@ import numpy as np
 from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
 
 class CurrentWriterv01(object):
-    """Used to save current currents to the described hdf5 format."""
+    """Used to save current currents to the described hdf5 format.
+    """
 
     class DataTable(object):
-        """A small struct to keep track of different */data (and buffer) tables"""
+        """A small struct to keep track of different data (and buffer) tables"""
         def __init__(self):
             # If buffering data, buffer_block will be an in-memory array and will write to data_block during when
             # filled. If not buffering buffer_block is an hdf5 dataset and data_block is ignored

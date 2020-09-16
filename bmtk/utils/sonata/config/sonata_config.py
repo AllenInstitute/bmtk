@@ -41,33 +41,41 @@ class SonataConfig(dict):
 
 
     General Usage:
+
         You can read in a root sonata config json file (or just the circuit or simulation files individual) by passing
         the file path or a file-pointer, which will return a dictionary like object you can use to build and run your
-        simulation
+        simulation::
+
             sim_params = SonataConfig.from_json('/path/to/sonata_config.json')
             ... = sim_params['run']['tstop']
 
-        You can also pass in a dictionary and use the from_dict() factory method:
+        You can also pass in a dictionary and use the from_dict() factory method::
+
             sim_params = SonataConfig.from_dict({...})
 
     JSON Variables:
+
         You can add variables to your SONATA config file which can make reusing json files easiers. The standard way
         of doing this by using the 'manifest' section to set the variable name and value to be used in other parts of
-        the json. If the json file looks like
+        the json. If the json file looks like::
+
             {
-                'manifest': {'$CIRCUIT_HOME': '/home/john/cortex_simulation/network'}
+                'manifest': {'$CIRCUIT_HOME': '/home/john/cortex_simulation/network'},
                 'network': {
                     'nodes': '${CIRCUIT_HOME}/nodes.h5,
                     'node_types': '${$CIRCUIT_HOME}/nodes_types.csv'
                 }
             }
-        SonataConfig will resolve the $CIRCUIT_HOME variable when accessed
+
+        SonataConfig will resolve the $CIRCUIT_HOME variable when accessed::
+
             sim_params['network']['nodes'] == '/home/john/cortex_simulation/network/nodes.h5'
             sim_params['network']['node_types'] == '/home/john/cortex_simulation/network/nodes_types.h5'
 
-
     Users and Predefined variables:
-        You can also create your own predefined variables:
+
+        You can also create your own predefined variables::
+
             circuit_config = {
                 'run': {
                     "dt": "${time_step}",
@@ -81,13 +89,16 @@ class SonataConfig(dict):
             cfg['target_simulator'] == 'CoreNeuron'
 
         There are also a number of built in variables which you can add to your json
+
         * ${configdir} - location of the current json file
         * ${workingdir} - directory where the code/simulator is being ran
         * ${datetime} - date-time string in Y-M-d_H-M-S format
 
     Validating the json file:
+
         You can check if the schema is valid, making suring certain section variables that are required actually exists
-        in the config and is of the right type:
+        in the config and is of the right type::
+
             cfg = SonataConfig.from_json('config.json')
             try:
                 is_valid = cfg.valid()
@@ -98,7 +109,8 @@ class SonataConfig(dict):
         returns true it may still be missing parts of the config to run a complete simulation.
 
         You can also add your own schema validator, just as long as it's a class instance that has a validate(cfg)
-        method. The easiest way to do this is by using jsonschema:
+        method. The easiest way to do this is by using jsonschema::
+
             from jsonschema import Draft4Validator
             validator = Drafter4Validator('/path/to/schema.json')
 

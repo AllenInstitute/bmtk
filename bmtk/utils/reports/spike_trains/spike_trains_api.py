@@ -33,8 +33,8 @@ class SpikeTrainsAPI(object):
 
         :param node_id: integer, id of node/cell that spike belongs too.
         :param timestamp: double, time that spike occurred.
-        :param population: string, name of population belong to spike. If none will try to use the default population
-        :param kwargs:
+        :param population: string, name of population belong to spike. If none will try to use the default population.
+        :param kwargs: optional arguments.
         """
         raise NotImplementedError()
 
@@ -45,7 +45,7 @@ class SpikeTrainsAPI(object):
             timestamps. If a singluar integer value is used then assumes all timestamps corresponds with said node_id.
         :param timestamps: A list of doubles
         :param population: The population to which the node(s) belong too
-        :param kwargs:
+        :param kwargs: optional arguments.
         """
         raise NotImplementedError()
 
@@ -90,7 +90,7 @@ class SpikeTrainsAPI(object):
         """ Returns a list of (node-ids, population_name).
 
         :param population: Name of population, if not set uses the default_population
-        :return:
+        :return: A list of node-ids (integers).
         """
         raise NotImplementedError()
 
@@ -107,9 +107,9 @@ class SpikeTrainsAPI(object):
 
         :param node_id: The id of the node
         :param population: Name of the node-population which the node belongs to. By default will try to use the
-        default population (if possible).
+            default population (if possible).
         :param time_window: A tuple (min-time, max-time) to limit the returned spikes. By default returns all spikes.
-        :param kwargs:
+        :param kwargs: optional arguments.
         :return: list of spike times [float]
         """
         raise NotImplementedError()
@@ -130,7 +130,8 @@ class SpikeTrainsAPI(object):
 
     def spikes(self, populations=None, time_window=None, sort_order=SortOrder.none, **kwargs):
         """Iterate over all the saved spikes, returning a single spike at a time. Will typically be slower than calling
-        to_dataframe(), but not require as much memory. To use the generator:
+        to_dataframe(), but not require as much memory. To use the generator::
+
             for node_id, population, timestamp in spike_trains.spikes():
                 ...
 

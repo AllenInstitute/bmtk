@@ -392,7 +392,7 @@ class BioCell(Cell):
             #    sec.insert('extracellular')
 
     def set_im_ptr(self):
-        """Set PtrVector to point to the i_membrane_"""
+        """Set PtrVector to point to the _ref_i_membrane_ parameter"""
         jseg = 0
         for sec in self.hobj.all:  
             for seg in sec:

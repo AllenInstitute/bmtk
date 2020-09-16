@@ -23,7 +23,7 @@ https://portal.brain-map.org/explore/models/mv1-all-layers
 
 
 Exc-Inh Network Model
-----------------
+---------------------
 
 12,500 randomly connected excitatory and inhibitory neurons. The models are built using BioNet, PointNet, and PopNet,
 providing a good example of how to compare simulations ran across different levels of resolution:

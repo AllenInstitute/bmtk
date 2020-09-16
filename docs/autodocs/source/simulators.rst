@@ -172,7 +172,7 @@ of SONATA)
 components
 ++++++++++
 links to external directories and files required to fully instantiate all the models and parameters of the network,
-see `SONATA documentation <https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#tying-it-all-together---the-networkcircuit-config-file>`_
+see `SONATA circuit config documentation <https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#tying-it-all-together---the-networkcircuit-config-file>`_
 for a full description
 
 .. code:: json

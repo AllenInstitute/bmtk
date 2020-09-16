@@ -136,6 +136,7 @@ list see `SONATA <https://github.com/AllenInstitute/sonata/blob/master/docs/SONA
 
 Building Edges
 --------------
+
 To define different types of edges between two subsets of nodes you should use the
 :py:meth:`NetworkBuilder.add_edges() <bmtk.builder.network.Network.add_edges>` method. Then once
 :py:meth:`NetworkBuilder.build() <bmtk.builder.network.Network.build>` method is called the the actual connections will

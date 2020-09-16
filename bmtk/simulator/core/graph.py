@@ -25,7 +25,8 @@ import json
 import ast
 import numpy as np
 
-from bmtk.simulator.core.config import ConfigDict
+# from bmtk.simulator.core.config import ConfigDict
+from bmtk.simulator.core.simulation_config import SimulationConfig as ConfigDict
 from bmtk.simulator.utils.property_maps import NodePropertyMap, EdgePropertyMap
 from bmtk.utils import sonata
 from bmtk.simulator.core.io_tools import io

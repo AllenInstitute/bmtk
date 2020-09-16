@@ -6,15 +6,13 @@ class SimReport(object):
     values.
 
     Use the build() method to convert a "reports" section dictionary to a SimReport object. The SimReport object has
-    properties that can be used to instantiate a simualtion report, particular properties **module** and **params**
+    properties that can be used to instantiate a simualtion report, particular properties **module** and **params**::
 
-    ```python
         report = SimReport.build(
             report_name='my_report',
             params = {'module': 'my_mod', ...})
         ...
         MyReport(**report.params)
-    ```
     """
 
     default_dir = '.'

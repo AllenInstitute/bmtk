@@ -46,26 +46,23 @@ def plot_traces(report, population=None, node_ids=None, sections='origin', avera
                 title=None, show_legend=None, show=True):
     """Displays the time trace of one or more nodes from a SONATA CompartmentReport file.
 
-    To plot a group of individual variable traces (based on their soma)
-    ```python
+    To plot a group of individual variable traces (based on their soma)::
+
        plot_traces('/path/to/report.h5', node_ids=[0, 10, 20, ...])
-    ```
 
     If node_ids=None (default) then all nodes in the report will be displayed. For large networks then can become
-    difficult to visualize so it's recommended you use average=True:
-    ```python
+    difficult to visualize so it's recommended you use average=True::
+
         plot_traces('/path/to/report.h5', average=True)
-    ```
 
     Users also have the option of taking the averages of multiple subsets of nodes using the "node_groups" options.
     "node_groups" should be a list of dictionary, each dict with a 'node_ids': [list of ids], and optionally
     a 'label' and 'c' (color). For example support nodes [0, 70) are excitatory cells, nodes [70, 100) are inhibitory,
-    and we want display excitatory and inhibitory averages and blue and red, respectivly:
-    ```python
+    and we want display excitatory and inhibitory averages and blue and red, respectivly::
+
         plot_traces('/path/to/report.h5',
                     node_groups=[{'node_ids': range(0, 70), 'label': 'exc', 'c': 'b'},
                                  {'node_ids': range(70, 100), 'label': 'inh', 'c': 'r'}])
-    ```
 
     :param report: Path to SONATA report file or CompartmentReport object
     :param population: string. If the report more than one population of nodes, use this to determine which nodes to
@@ -175,12 +172,11 @@ def plot_traces_averaged(report, population=None, sections='origin', node_groups
     To plot multiple averages use the "node_groups" options. "node_groups" should be a list of dictionary, each dict
     with a 'node_ids': [list of ids], and optionally a 'label' and 'c' (color). For example support nodes [0, 70) are
     excitatory cells, nodes [70, 100) are inhibitory, and we want display excitatory and inhibitory averages and blue
-    and red, respectivly:
-    ```python
+    and red, respectively::
+
         plot_traces('/path/to/report.h5',
                     node_groups=[{'node_ids': range(0, 70), 'label': 'exc', 'c': 'b'},
                                  {'node_ids': range(70, 100), 'label': 'inh', 'c': 'r'}])
-    ```
 
     :param report: Path to SONATA report file or CompartmentReport object.
     :param population: string. If the report more than one population of nodes, use this to determine which nodes to

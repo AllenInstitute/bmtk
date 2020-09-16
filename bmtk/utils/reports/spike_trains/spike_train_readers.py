@@ -366,7 +366,6 @@ class SonataSTReader(SpikeTrainsReadOnlyAPI):
 
 class SonataOldReader(SonataSTReader):
     """Older version of SONATA
-
     """
 
     def node_ids(self, population=None):

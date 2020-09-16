@@ -62,10 +62,62 @@ def _find_nodes(population, config=None, nodes_file=None, node_types_file=None):
     raise ValueError('Could not find nodes file with node population "{}".'.format(population))
 
 
-def plot_traces(report_path=None, config_file=None, report_name=None, population=None, group_by=None,
+def plot_traces(config_file=None, report_name=None, population=None, report_path=None, group_by=None,
                 group_excludes=None, nodes_file=None, node_types_file=None,
                 node_ids=None, sections='origin', average=False, times=None, title=None,
                 show_legend=None, show=True):
+    """Plot compartment variables (eg Membrane Voltage, Calcium conc.) traces from the output of simulation. Will
+    attempt to look in the SONATA simulation configuration json "reports" sections for any matching "membrane_report"
+    outputs with a matching report_name::
+
+        plot_traces(config_file='config.json', report_name='membrane_potential')
+
+    If the path the the report is different (or missing) than what's in the SONATA config then use the "report_path"
+    option instead::
+
+        plot_traces(report_path='/my/path/to/membrane_potential.h5')
+
+    To display the traces of only a select number of nodes you can filter using the node_ids options::
+
+        plot_traces(config_file='config.json', node_ids=[10, 20, 30, 40, 50])
+
+    The average option will find the mean value of all the traces to display::
+
+        plot_traces(config_file='config.json', node_ids=range(50, 100), average=True)
+
+    You may also group together different subsets of nodes and display multiple averages based on certain attributes
+    of the network, which can be done using the group_by key. The group_exlcudes option will exclude certain groups.
+    For example if you want to plot the averaged membrane potential across each cortical "layer", exclude L1::
+
+        plot_traces(config_file='config.json', report='membrane_potential', group_by='layer', group_excludes='L1')
+
+    :param config_file: path to SONATA simulation configuration.
+    :param report_name: name of the membrane_report "report" which will be plotted. If only one compartment report
+        in the simulation config then function will find it automatically.
+    :param population: string. If the report more than one population of nodes, use this to determine which nodes to
+           plot. If only one population exists and population=None then the function will find it by default.
+    :param report_path: Path to SONATA compartment report file. Do not use with "config_file" and "report_name" options.
+    :param group_by: Attribute of the "nodes" file used to group and average subsets of nodes.
+    :param group_excludes: list of strings or None. When using the "group_by", allows users to exclude certain groupings
+        based on the attribute value.
+    :param nodes_file: path to nodes hdf5 file containing "population". By default this will be resolved using the
+        config.
+    :param node_types_file: path to node-types csv file containing "population". By default this will be resolved using
+        the config.
+    :param node_ids: int or list of integers. Individual node to display the variable.
+    :param sections: 'origin', 'all', or list of ids, Compartments/elements to display, By default will only show values
+           at the soma.
+    :param average: If true will display average of "node_ids". Default: False
+    :param times: (float, float), start and stop times of simulation. By default will get values from simulation
+        configs "run" section.
+    :param title: str, adds a title to the plot. If None (default) then name will be automatically generated using the
+        report_name.
+    :param show_legend: Set True or False to determine if legend should be displayed on the plot. The default (None)
+           function itself will guess if legend should be shown.
+    :param show: bool to display or not display plot. default True.
+    :return: matplotlib figure.Figure object
+    """
+
     sonata_config = SonataConfig.from_json(config_file) if config_file else None
     report_name, cr = _get_report(report_path=report_path, config=sonata_config, report_name=report_name)
 
