@@ -290,6 +290,15 @@ class NetconReport(MembraneReport):
     def avail_modules():
         return ['netcon_report']
 
+@SimReport.register_module
+class RecordMechanisms(SimReport):
+    @staticmethod
+    def avail_modules():
+        return ['record_mechanisms']
+
+    def _get_defaults(self):
+        return [('output_dir', self.default_dir)]
+
 
 def from_config(cfg):
     SimReport.default_dir = cfg.output_dir

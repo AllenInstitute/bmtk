@@ -521,7 +521,8 @@ class BioSimulator(Simulator):
             elif report.module == 'save_synapses':
                 mod = mods.SaveSynapses(**report.params)
 
-
+            elif report.module == 'record_mechanisms':
+                mod = mods.RecordMechanisms(**report.params)
 
             else:
                 # TODO: Allow users to register customized modules using pymodules
