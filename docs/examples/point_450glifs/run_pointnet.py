@@ -4,7 +4,10 @@ from bmtk.analyzer.visualization.spikes import plot_spikes
 
 import nest
 
-nest.Install('glifmodule')
+try:
+    nest.Install('glifmodule')
+except Exception as e:
+    pass
 
 def main(config_file):
     configure = pointnet.Config.from_json(config_file)

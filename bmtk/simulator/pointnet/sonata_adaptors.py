@@ -153,8 +153,9 @@ class PointNodeAdaptor(NodeAdaptor):
                 mtemplate = node_type_attrs['model_template']
                 dyn_params = node_type_attrs['dynamics_params']
                 if mtemplate.startswith('nest:glif') and dyn_params.get('type', None) == 'GLIF':
-                    node_type_attrs['dynamics_params'] = convert_aibs2nest(mtemplate, dyn_params)
-
+                    model_template, dynamics_params = convert_aibs2nest(mtemplate, dyn_params)
+                    node_type_attrs['model_template'] = model_template
+                    node_type_attrs['dynamics_params'] = dynamics_params
 
     @staticmethod
     def patch_adaptor(adaptor, node_group, network):
@@ -254,8 +255,6 @@ class PointEdgeAdaptor(EdgeAdaptor):
                 model_template = edge_type['model_template']
                 if model_template.startswith('nest'):
                     edge_type['model_template'] = model_template[5:]
-                    # print edge_type['model_template']
-
 
     def get_batches(self, edge_group):
         src_ids = {}
@@ -337,22 +336,6 @@ class PointEdgeAdaptor(EdgeAdaptor):
 
             yield PointEdgeBatched(source_nids=grp_vals['src_nids'].values, target_nids=grp_vals['trg_nids'].values,
                                    nest_params=type_params[edge_id])
-
-            #print(type_params[edge_id])
-            #print(src_ids[edge_id])
-            #print(grp_vals['src_nids'].values)
-            #print(trg_ids[edge_id])
-            #print(grp_vals['trg_nids'].values)
-            #exit()
-
-
-        '''
-        batched_edges = []
-        for et_id in et_id_counter.keys():
-            batched_edges.append(PointEdgeBatched(src_ids[et_id], trg_ids[et_id], type_params[et_id]))
-
-        return batched_edges
-        '''
 
     @staticmethod
     def patch_adaptor(adaptor, edge_group):
