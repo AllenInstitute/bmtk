@@ -13,35 +13,35 @@ glif_models = [
         ### 'model_template': 'nest:iaf_psc_alpha',
         'model_template': 'nest:glif_lif_asc_psc',
         ### 'dynamics_params': '472363762_point.json'
-        'dynamics_params': '476056333_glif_lif_asc_psc.json'
+        'dynamics_params': '476056333_glif_lif_asc_config.json'
     },
     {
         'model_name': 'Rorb', 'ei': 'e',
         ###  'model_template': 'nest:iaf_psc_alpha',
         'model_template': 'nest:glif_lif_asc_psc',
         ### 'dynamics_params': '473863510_point.json'
-        'dynamics_params': '480124551_glif_lif_asc_psc.json'
+        'dynamics_params': '480124551_glif_lif_asc_config.json'
     },
     {
         'model_name': 'Nr5a1', 'ei': 'e',
         ### 'model_template': 'nest:iaf_psc_alpha',
         'model_template': 'nest:glif_lif_asc_psc',
         ###'dynamics_params': '473863035_point.json'
-        'dynamics_params': '318808427_glif_lif_asc_psc.json'
+        'dynamics_params': '318808427_glif_lif_asc_config.json'
     },
     {
         'model_name': 'PV1', 'ei': 'i',
         ### 'model_template': 'nest:iaf_psc_alpha',
         'model_template': 'nest:glif_lif_asc_psc',
         ### 'dynamics_params': '472912177_point.json'
-        'dynamics_params': '478958894_glif_lif_asc_psc.json'
+        'dynamics_params': '478958894_glif_lif_asc_config.json'
     },
     {
         'model_name': 'PV2', 'ei': 'i',
         ### 'model_template': 'nest:iaf_psc_alpha',
         'model_template': 'nest:glif_lif_asc_psc',
         ### 'dynamics_params': '473862421_point.json'
-        'dynamics_params': '487667205_glif_lif_asc_psc.json'
+        'dynamics_params': '487667205_glif_lif_asc_config.json'
     }
 ]
 
