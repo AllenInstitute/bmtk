@@ -204,4 +204,4 @@ class PoissonSpikeGenerator(SpikeTrains):
 
 def _interpolate_fr(t, t0, t1, fr0, fr1):
     # Used to interpolate the firing rate at time t from a discrete list of firing rates
-    return fr0 + (fr1 - fr0)*(t - t0)/t1
+    return fr0 + (fr1 - fr0)*(t - t0)/(t1 - t0)

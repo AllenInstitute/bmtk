@@ -136,7 +136,7 @@ def _plot_helper(plot_fnc, config_file=None, population=None, times=None, title=
     else:
         node_groups = None
 
-    plot_fnc(spike_trains=spike_trains, node_groups=node_groups, population=pop, times=times, title=title, show=show)
+    return plot_fnc(spike_trains=spike_trains, node_groups=node_groups, population=pop, times=times, title=title, show=show)
 
 
 def plot_raster(config_file=None, population=None, with_histogram=True, times=None, title=None, show=True,
