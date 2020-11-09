@@ -147,7 +147,8 @@ class Morphology(object):
                 seg_x.append(seg.x)
                 seg_length.append(sec.L/sec.nseg)
                 seg_type.append(sec_type_swc)           # record section type in a list
-                seg_dist.append(h.distance(seg.x))  # distance to the center of the segment
+                # seg_dist.append(h.distance(seg.x))  # distance to the center of the segment
+                seg_dist.append(h.distance(seg))
 
         self.seg_prop = {}
         self.seg_prop['type'] = np.array(seg_type)
