@@ -2,6 +2,12 @@
 
 A software development package for building, simulating and analyzing large-scale networks of different levels of resolution.
 
+See the paper about BMTK: [link](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008386).
+
+Please cite BMTK as follows:
+
+Dai et al. Brain Modeling ToolKit: An open source software suite for multiscale modeling of brain circuits. PLoS Comput Biol 16(11): e1008386. https://doi.org/10.1371/journal.pcbi.1008386
+
 ## Level of Support
 We are releasing this code to the public as a tool we expect others to use. Questions concerning bugs and related issues are welcomed. We expect to address them promptly, pull requests will vetted by our staff before inclusion.
 
