@@ -89,6 +89,16 @@ in the documentation and tutorials will be based on SONATA. For more information
 `SONATA github page <https://github.com/AllenInstitute/sonata>`_.
 
 
+References
+----------
+See the paper about BMTK: `link <https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008386>`_.
+
+Please cite BMTK as follows:
+
+Dai et al. Brain Modeling ToolKit: An open source software suite for multiscale modeling of brain circuits. PLoS Comput Biol 16(11): e1008386. https://doi.org/10.1371/journal.pcbi.1008386
+
+
+
 Acknowledgements
 ----------------
 We wish to thank the Allen Institute for Brain Science founder, Paul G. Allen, for their vision, encouragement, and support.

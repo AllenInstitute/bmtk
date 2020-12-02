@@ -777,8 +777,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="n">mtemplate</span> <span class="o">=</span> <span class="n">node_type_attrs</span><span class="p">[</span><span class="s1">&#39;model_template&#39;</span><span class="p">]</span>
                 <span class="n">dyn_params</span> <span class="o">=</span> <span class="n">node_type_attrs</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">mtemplate</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;nest:glif&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dyn_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;GLIF&#39;</span><span class="p">:</span>
-                    <span class="n">node_type_attrs</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">convert_aibs2nest</span><span class="p">(</span><span class="n">mtemplate</span><span class="p">,</span> <span class="n">dyn_params</span><span class="p">)</span></div>
-
+                    <span class="n">model_template</span><span class="p">,</span> <span class="n">dynamics_params</span> <span class="o">=</span> <span class="n">convert_aibs2nest</span><span class="p">(</span><span class="n">mtemplate</span><span class="p">,</span> <span class="n">dyn_params</span><span class="p">)</span>
+                    <span class="n">node_type_attrs</span><span class="p">[</span><span class="s1">&#39;model_template&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model_template</span>
+                    <span class="n">node_type_attrs</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dynamics_params</span></div>
 
 <div class="viewcode-block" id="PointNodeAdaptor.patch_adaptor"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor.patch_adaptor">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">patch_adaptor</span><span class="p">(</span><span class="n">adaptor</span><span class="p">,</span> <span class="n">node_group</span><span class="p">,</span> <span class="n">network</span><span class="p">):</span>
@@ -878,8 +879,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="n">model_template</span> <span class="o">=</span> <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;model_template&#39;</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">model_template</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;nest&#39;</span><span class="p">):</span>
                     <span class="n">edge_type</span><span class="p">[</span><span class="s1">&#39;model_template&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">model_template</span><span class="p">[</span><span class="mi">5</span><span class="p">:]</span></div>
-                    <span class="c1"># print edge_type[&#39;model_template&#39;]</span>
-
 
 <div class="viewcode-block" id="PointEdgeAdaptor.get_batches"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.get_batches">[docs]</a>    <span class="k">def</span> <span class="nf">get_batches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_group</span><span class="p">):</span>
         <span class="n">src_ids</span> <span class="o">=</span> <span class="p">{}</span>
@@ -960,23 +959,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nsyns</span> <span class="o">*</span> <span class="n">syn_weight</span>
 
             <span class="k">yield</span> <span class="n">PointEdgeBatched</span><span class="p">(</span><span class="n">source_nids</span><span class="o">=</span><span class="n">grp_vals</span><span class="p">[</span><span class="s1">&#39;src_nids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">target_nids</span><span class="o">=</span><span class="n">grp_vals</span><span class="p">[</span><span class="s1">&#39;trg_nids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
-                                   <span class="n">nest_params</span><span class="o">=</span><span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">])</span>
-
-            <span class="c1">#print(type_params[edge_id])</span>
-            <span class="c1">#print(src_ids[edge_id])</span>
-            <span class="c1">#print(grp_vals[&#39;src_nids&#39;].values)</span>
-            <span class="c1">#print(trg_ids[edge_id])</span>
-            <span class="c1">#print(grp_vals[&#39;trg_nids&#39;].values)</span>
-            <span class="c1">#exit()</span>
-
-
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        batched_edges = []</span>
-<span class="sd">        for et_id in et_id_counter.keys():</span>
-<span class="sd">            batched_edges.append(PointEdgeBatched(src_ids[et_id], trg_ids[et_id], type_params[et_id]))</span>
-
-<span class="sd">        return batched_edges</span>
-<span class="sd">        &#39;&#39;&#39;</span></div>
+                                   <span class="n">nest_params</span><span class="o">=</span><span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="PointEdgeAdaptor.patch_adaptor"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.sonata_adaptors.PointEdgeAdaptor.patch_adaptor">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">patch_adaptor</span><span class="p">(</span><span class="n">adaptor</span><span class="p">,</span> <span class="n">edge_group</span><span class="p">):</span>
