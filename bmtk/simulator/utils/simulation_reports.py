@@ -176,6 +176,7 @@ class SpikesReport(SimReport):
             'tmp_dir': output_dict.get('output_dir', cls.default_dir),
             'cache_to_disk': output_dict.get('cache_to_disk', True)
         }
+
         if not (params['spikes_file'] or params['spikes_file_csv'] or params['spikes_file_nwb']):
             # User hasn't specified any spikes file
             params['enabled'] = False
@@ -299,6 +300,7 @@ def from_config(cfg):
     has_spikes_report = False
     for report_name, report_params in cfg.reports.items():
         # Get the Report class from the module_name parameter
+
         if not report_params.get('enabled', True):
             # not a part of the standard but will help skip modules
             continue
