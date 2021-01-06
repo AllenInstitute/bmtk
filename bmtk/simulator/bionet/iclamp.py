@@ -47,7 +47,7 @@ class FileIClamp(object):
     def attach_current(self, cell):
         self._stim = h.IClamp(cell.hobj.soma[0](0.5))
 
-        #Listed as necessary values in the docs to use play() with an IClamp.
+        # Listed as necessary values in the docs to use play() with an IClamp.
         self._stim.delay = 0
         self._stim.dur = 1e9
 

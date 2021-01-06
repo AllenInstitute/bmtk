@@ -195,7 +195,6 @@ class BioSimulator(Simulator):
             self._spikes[gid] = tvec
 
     def attach_current_clamp(self, amplitude, delay, duration, gids=None):
-
         # TODO: Create appropiate module
         if gids is None or gids=='all':
             gids = self.biophysical_gids
@@ -207,13 +206,17 @@ class BioSimulator(Simulator):
         elif isinstance(gids, NodeSet):
             gids = gids.gids()
 
-
         gids = list(set(self.local_gids) & set(gids))
+        n_gids = len(gids)
         
-        if len(gids)!=len(amplitude):
-            amplitude = amplitude * len(gids)
+        if len(gids) != len(amplitude):
+            amplitude = amplitude * n_gids  # len(gids)
 
-        for idx,gid in enumerate(gids):
+        if len(gids) != len(delay):
+            delay = delay * n_gids
+            duration = duration * n_gids
+
+        for idx, gid in enumerate(gids):
             cell = self.net.get_cell_gid(gid)
             Ic = IClamp(amplitude[idx], delay[idx], duration[idx])
             
@@ -383,8 +386,8 @@ class BioSimulator(Simulator):
     def from_config(cls, config, network, set_recordings=True):
         # TODO: convert from json to sonata config if necessary
 
-        #The network must be built before initializing the simulator because
-        #gap junctions must be set up before the simulation is initialized.
+        # The network must be built before initializing the simulator because
+        # gap junctions must be set up before the simulation is initialized.
         network.io.log_info('Building cells.')
         network.build_nodes()
 
@@ -520,8 +523,6 @@ class BioSimulator(Simulator):
 
             elif report.module == 'save_synapses':
                 mod = mods.SaveSynapses(**report.params)
-
-
 
             else:
                 # TODO: Allow users to register customized modules using pymodules
