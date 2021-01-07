@@ -113,38 +113,23 @@ class PointNetwork(SimNetwork):
         for node_pop in self.node_populations:
             pop_name = node_pop.name
             gid_map = self.gid_map
+            # print(gid_map._gid2pop_id)
+            # exit()
 
             gid_map.create_pool(pop_name)
-            # nid2nest_map = {}
-            # nest2nid_map = {}
             if node_pop.internal_nodes_only:
                 for node in node_pop.get_nodes():
                     node.build()
+                    # print(node.node_ids)
+                    # print(node.nest_ids)
+                    # exit()
                     gid_map.add_nestids(name=pop_name, node_ids=node.node_ids, nest_ids=node.nest_ids)
-                    '''
-                    for nid, gid, nest_id in zip(node.node_ids, node.gids, node.nest_ids):
-                        # gid_map.add(name=pop_name, node_id=nid, gid=nest_id)
-
-                        self._nestid2gid[nest_id] = gid
-                        self._gid2nestid[gid] = nest_id
-                        nid2nest_map[nid] = nest_id
-                        nest2nid_map[nest_id] = nid
-                    '''
 
             elif node_pop.mixed_nodes:
                 for node in node_pop.get_nodes():
                     if node.model_type != 'virtual':
                         node.build()
                         gid_map.add_nestids(name=pop_name, node_ids=node.node_ids, nest_ids=node.nest_ids)
-                        '''
-                        for nid, gid, nest_id in zip(node.node_ids, node.gids, node.nest_ids):
-                            gid_map.add(name=pop_name, node_id=nid, gid=nest_id)
-                            nid2nest_map[nid] = nest_id
-                            nest2nid_map[nest_id] = nid
-                        '''
-
-            #self._nest_id_map[node_pop.name] = nid2nest_map
-            #self._nestid2nodeid_map[node_pop.name] = nest2nid_map
 
     def build_recurrent_edges(self):
         recurrent_edge_pops = [ep for ep in self._edge_populations if not ep.virtual_connections]

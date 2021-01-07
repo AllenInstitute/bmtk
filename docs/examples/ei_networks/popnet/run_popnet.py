@@ -4,7 +4,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from bmtk.simulator import popnet
-from bmtk.analyzer.visualization.spikes import plot_rates_popnet
 
 
 fig_size = (5.0, 5.7)

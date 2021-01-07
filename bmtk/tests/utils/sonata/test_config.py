@@ -56,13 +56,14 @@ def test_json():
     assert(config_dict['cdir'] == os.path.dirname(config_file.name))
     assert(config_dict['cfname'] == config_file.name)
 
-    config_dict = from_json(config_file.name)
-    assert(isinstance(config_dict, SonataConfig))
-    assert(isinstance(config_dict, dict))
-    assert(config_dict['myvar'] == 'mytest/myvar')
-    assert(config_dict['cwd'] == os.getcwd())
-    assert(config_dict['cdir'] == os.path.dirname(config_file.name))
-    assert(config_dict['cfname'] == config_file.name)
+    with pytest.warns(DeprecationWarning):
+        config_dict = from_json(config_file.name)
+        assert(isinstance(config_dict, SonataConfig))
+        assert(isinstance(config_dict, dict))
+        assert(config_dict['myvar'] == 'mytest/myvar')
+        assert(config_dict['cwd'] == os.getcwd())
+        assert(config_dict['cdir'] == os.path.dirname(config_file.name))
+        assert(config_dict['cfname'] == config_file.name)
 
 
 def test_json_split():
@@ -145,10 +146,11 @@ def test_dict():
     assert(isinstance(config_dict, dict))
     assert(config_dict['myvar'] == 'mytest/myvar')
 
-    config_dict = from_dict(sonata_dict)
-    assert(isinstance(config_dict, SonataConfig))
-    assert(isinstance(config_dict, dict))
-    assert(config_dict['myvar'] == 'mytest/myvar')
+    with pytest.warns(DeprecationWarning):
+        config_dict = from_dict(sonata_dict)
+        assert(isinstance(config_dict, SonataConfig))
+        assert(isinstance(config_dict, dict))
+        assert(config_dict['myvar'] == 'mytest/myvar')
 
 
 def test_build_manifest1():

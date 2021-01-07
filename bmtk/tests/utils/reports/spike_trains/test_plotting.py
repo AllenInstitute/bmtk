@@ -8,6 +8,9 @@ from bmtk.utils.reports.spike_trains import plotting
 matplotlib = pytest.importorskip('matplotlib')
 
 
+matplotlib.rcParams.update({'figure.max_open_warning': 0})  # stop pytest memory warning
+
+
 @pytest.fixture
 def spike_trains():
     st = SpikeTrains(default_population='V1')

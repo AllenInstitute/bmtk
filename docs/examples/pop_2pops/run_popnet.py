@@ -3,7 +3,8 @@ import os
 
 from bmtk.simulator import popnet
 
-from bmtk.analyzer.visualization.spikes import plot_rates_popnet
+from bmtk.analyzer.firing_rates import plot_rates_popnet
+
 
 def main(config_file):
     configure = popnet.config.from_json(config_file)
