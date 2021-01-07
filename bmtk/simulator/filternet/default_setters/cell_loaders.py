@@ -174,14 +174,13 @@ def default_cell_loader(node, template_name, dynamics_params):
 
         # Get filters
         transfer_function = ScalarTransferFunction('Heaviside(s+{})*(s+{})'.format(spont_fr, spont_fr))
-
         temporal_filter = TemporalFilterCosineBump(t_weights, t_kpeaks, t_delays)
 
-        if cell_type.find('OFF') >= 0:
+        if cell_type.find('ON') >= 0:
             amplitude = 1.0
             linear_filter = SpatioTemporalFilter(spatial_filter, temporal_filter, amplitude=amplitude)
             cell = OnUnit(linear_filter, transfer_function)
-        elif cell_type.find('ON') >= 0:
+        elif cell_type.find('OFF') >= 0:
             amplitude = -1.0
             linear_filter = SpatioTemporalFilter(spatial_filter, temporal_filter, amplitude=amplitude)
             cell = OffUnit(linear_filter, transfer_function)

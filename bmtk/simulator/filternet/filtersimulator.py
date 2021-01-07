@@ -16,10 +16,15 @@ class FilterSimulator(Simulator):
         self._network = network
         self._dt = dt
         self._tstop = tstop/1000.0
+        self._io = network.io
 
         self.rates_csv = None
         self._movies = []
         self._eval_options = []
+
+    @property
+    def io(self):
+        return self._io
 
     def add_movie(self, movie_type, params):
         # TODO: Move this into its own factory
@@ -33,6 +38,15 @@ class FilterSimulator(Simulator):
                     m_data = params['data']
                 else:
                     raise Exception('Could not find movie "data_file" in config to use as input.')
+
+                contrast_min, contrast_max = m_data.min(), m_data.max()
+                normalize_data = params.get('normalize', False)
+                if contrast_min < -1.0 or contrast_max > 1.0:
+                    if normalize_data:
+                        self.io.log_info('Normalizing movie data to (-1.0, 1.0).')
+                        m_data = m_data*2.0/(contrast_max - contrast_min) - 1.0
+                    else:
+                        self.io.log_info('Movie data range is not normalized to (-1.0, 1.0).')
 
                 init_params = FilterSimulator.find_params(['row_range', 'col_range', 'labels', 'units', 'frame_rate',
                                                            't_range'], **params)
@@ -59,6 +73,8 @@ class FilterSimulator(Simulator):
             init_params = FilterSimulator.find_params(['row_size', 'col_size', 'frame_rate'], **params)
             create_params = FilterSimulator.find_params(['gray_screen_dur', 'cpd', 'temporal_f', 'theta', 'contrast'],
                                                         **params)
+
+            create_params['gray_screen_dur'] /= 1000.0
             gm = GratingMovie(**init_params)
             graiting_movie = gm.create_movie(t_min=0.0, t_max=self._tstop, **create_params)
             self._movies.append(graiting_movie)
@@ -140,32 +156,4 @@ class FilterSimulator(Simulator):
         if spikes_csv or spikes_h5 or spikes_nwb:
             sim.add_mod(mods.SpikesGenerator(spikes_csv, spikes_h5, spikes_nwb, config.output_dir))
 
-        # Parse the "reports" section of the config and load an associated output module for each report
-        """
-        sim_reports = reports.from_config(config)
-        for report in sim_reports:
-            if isinstance(report, reports.SpikesReport):
-                mod = mods.SpikesMod(**report.params)
-
-            elif isinstance(report, reports.MembraneReport):
-                if report.params['sections'] == 'soma':
-                    mod = mods.SomaReport(**report.params)
-
-                else:
-                    #print report.params
-                    mod = mods.MembraneReport(**report.params)
-
-            elif isinstance(report, reports.ECPReport):
-                mod = mods.EcpMod(**report.params)
-                # Set up the ability for ecp on all relevant cells
-                # TODO: According to spec we need to allow a different subset other than only biophysical cells
-                for gid, cell in network.cell_type_maps('biophysical').items():
-                    cell.setup_ecp()
-            else:
-                # TODO: Allow users to register customized modules using pymodules
-                io.log_warning('Unrecognized module {}, skipping.'.format(report.module))
-                continue
-
-            sim.add_mod(mod)
-        """
         return sim
