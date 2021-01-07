@@ -46,27 +46,10 @@ class PopSimulator(Simulator):
         self._rates_file = None  # name of file where the output is saved
 
         self.__population_list = []  # list of all populations, internal and external
-        #self.__population_table = {graph: {} for graph in self._graph.networks}  # population lookup by [network][id]
         self.__connection_list = []  # list of all connections
         self._dipde_network = None  # reference to dipde.Network object
 
-        # diction of rates for every external network/pop_id. Prepopulate dictionary with populations whose rates
-        # have already been manually set, otherwise they should use one of the add_rates_* function.
-        #self._rates = {network: {pop.pop_id: pop.firing_rate for pop in self._graph.get_populations(network)
-        #                         if not pop.is_internal and pop.is_firing_rate_set}
-        #               for network in self._graph.networks}
-
-        """
-        for network in self._graph.networks:
-            for pop in self._graph.get_populations(network):
-
-                if pop.is_internal:
-                    dipde_pop = self.__create_internal_pop(pop)
-
-                else:
-                    if pop.is_firing_rate_set:
-                        rates = pop.firing_rate
-        """
+        self.io = self._graph.io
 
     @property
     def tstop(self):
@@ -122,7 +105,7 @@ class PopSimulator(Simulator):
             if pop.is_internal:
                 continue
             elif not force and pop.pop_id in existing_rates:
-                print('Firing rate for {}/{} has already been set, skipping.'.format(network, pop.pop_id))
+                self.io.log_info('Firing rate for {}/{} has already been set, skipping.'.format(network, pop.pop_id))
             else:
                 selected_pops.append(pop)
 
@@ -222,29 +205,19 @@ class PopSimulator(Simulator):
     def run(self, tstop=None):
         # TODO: Check if cells/connections need to be rebuilt.
 
-        # Create the networ
+        # Create the network
         dipde_pops = [p.dipde_obj for p in self._graph.populations]
         dipde_conns = [c.dipde_obj for c in self._graph.connections]
-        #print dipde_pops
-        #print dipde_conns
-        #exit()
-
         self._dipde_network = dipde.Network(population_list=dipde_pops, connection_list=dipde_conns)
-
-        #self._dipde_network = dipde.Network(population_list=self._graph.populations,
-        #                                    connection_list=self._graph.connections)
 
         if tstop is None:
             tstop = self.tstop
 
-        #print tstop, self.dt
-        #print self._graph.populations
-        #exit()
-        print("running simulation...")
+        self.io.log_info("Running simulation.")
         self._dipde_network.run(t0=0.0, tf=tstop, dt=self.dt)
         # TODO: make record_rates optional?
         self.__record_rates()
-        print("done simulation.")
+        self.io.log_info("Finished simulation.")
 
     def __create_internal_pop(self, params):
         # TODO: use getter methods directly in case arguments are not stored in dynamics params
@@ -265,82 +238,6 @@ class PopSimulator(Simulator):
                 if pop.record:
                     for time, rate in zip(pop.dipde_obj.t_record, pop.dipde_obj.firing_rate_record):
                         f.write('{} {} {}\n'.format(pop.pop_id, time, rate))
-
-    '''
-    @classmethod
-    def from_config(cls, configure, graph):
-        # load the json file or object
-        if isinstance(configure, basestring):
-            config = cfg.from_json(configure, validate=True)
-        elif isinstance(configure, dict):
-            config = configure
-        else:
-            raise Exception('Could not convert {} (type "{}") to json.'.format(configure, type(configure)))
-        network = cls(graph)
-
-        if 'run' not in config:
-            raise Exception('Json file is missing "run" entry. Unable to build Bionetwork.')
-        run_dict = config['run']
-
-        # Create the output file
-        if 'output' in config:
-            out_dict = config['output']
-
-            rates_file = out_dict.get('rates_file', None)
-            if rates_file is not None:
-                # create directory if required
-                network.rates_file = rates_file
-                parent_dir = os.path.dirname(rates_file)
-                if not os.path.exists(parent_dir):
-                    os.makedirs(parent_dir)
-
-            if 'log_file' in out_dict:
-                log_file = out_dict['log_file']
-                network.set_logging(log_file)
-
-        # get network parameters
-        if 'duration' in run_dict:
-            network.duration = run_dict['duration']
-
-        if 'dt' in run_dict:
-            network.dt = run_dict['dt']
-
-        # TODO: need to get firing rates before building populations
-        if 'input' in config:
-            for netinput in config['input']:
-                if netinput['type'] == 'external_spikes' and netinput['format'] == 'nwb' and netinput['active']:
-                    # Load external network spike trains from an NWB file.
-                    print('Setting firing rates for {} from {}.'.format(netinput['source_nodes'], netinput['file']))
-                    network.add_rates_nwb(netinput['source_nodes'], netinput['file'], netinput['trial'])
-
-                if netinput['type'] == 'pop_rate':
-                    print('Setting {}/{} to fire at {} Hz.'.format(netinput['source_nodes'], netinput['pop_id'], netinput['rate']))
-                    network.add_rate_hz(netinput['source_nodes'], netinput['pop_id'], netinput['rate'])
-
-                # TODO: take input as function with Population argument
-
-        # Build populations
-        print('Building Populations')
-        network.build_populations()
-
-        # Build recurrent connections
-        if run_dict['connect_internal']:
-            print('Building recurrention connections')
-            network.set_recurrent_connections()
-
-        # Build external connections. Set connection to default True and turn off only if explicitly stated.
-        # NOTE: It might be better to set to default off?!?! Need to dicuss what would be more intuitive for the users.
-        # TODO: ignore case of network name
-        external_network_settings = {name: True for name in graph.external_networks()}
-        if 'connect_external' in run_dict:
-            external_network_settings.update(run_dict['connect_external'])
-        for netname, connect in external_network_settings.items():
-            if connect:
-                print('Setting external connections for {}'.format(netname))
-                network.set_external_connections(netname)
-
-        return network
-    '''
 
     @classmethod
     def from_config(cls, configure, graph):
@@ -411,42 +308,6 @@ class PopSimulator(Simulator):
             if 'log_file' in out_dict:
                 log_file = out_dict['log_file']
                 network.set_logging(log_file)
-
-
-        # exit()
-
-
-        # build the cells
-        #io.log('Building cells')
-        #network.build_cells()
-
-        # Build internal connections
-        #if run_dict['connect_internal']:
-        #    io.log('Creating recurrent connections')
-        #    network.set_recurrent_connections()
-
-        # Build external connections. Set connection to default True and turn off only if explicitly stated.
-        # NOTE: It might be better to set to default off?!?! Need to dicuss what would be more intuitive for the users.
-        # TODO: ignore case of network name
-
-        '''
-        external_network_settings = {name: True for name in graph.external_networks()}
-        if 'connect_external' in run_dict:
-            external_network_settings.update(run_dict['connect_external'])
-        for netname, connect in external_network_settings.items():
-            if connect:
-                io.log('Setting external connections for {}'.format(netname))
-                network.set_external_connections(netname)
-
-        # Build inputs
-        if 'input' in config:
-            for netinput in config['input']:
-                if netinput['type'] == 'external_spikes' and netinput['format'] == 'nwb' and netinput['active']:
-                    network.add_spikes_nwb(netinput['source_nodes'], netinput['file'], netinput['trial'])
-
-            io.log_info('Adding stimulations')
-            network.make_stims()
-        '''
 
         graph.io.log_info('Network created.')
         return network

@@ -33,7 +33,6 @@ class MultimeterMod(object):
         :param delete_dat: True to delete the .dat files created by NEST (default True)
         :param opt_params:
         """
-
         self._output_dir = tmp_dir
         self._file_name = file_name if os.path.isabs(file_name) else os.path.join(self._output_dir, file_name)
         self._variable_name = variable_name
@@ -44,8 +43,7 @@ class MultimeterMod(object):
         self._to_h5 = to_h5
         self._delete_dat = delete_dat
 
-        self._gids = None
-        self._nest_ids = None
+        self._gids = None  # global ids will be the NEST ids assigned to each cell
         self._multimeter = None
         self._population = None
 
@@ -59,18 +57,18 @@ class MultimeterMod(object):
 
         self._gids =  list(set(node_set.gids()))
         self._population = node_set.population_names()[0]
-        self._nest_ids = list(sim.net.gid_map.get_gids(name=self._population, node_ids=self._gids))
         self._tstart = self._tstart or sim.tstart
         self._tstop = self._tstop or sim.tstop
         self._interval = self._interval or sim.dt
-        self._multimeter = nest.Create('multimeter',
-                                       params={'interval': self._interval, 'start': self._tstart, 'stop': self._tstop,
-                                               'to_file': True, 'to_memory': False,
-                                               'withtime': True,
-                                               'record_from': self._variable_name,
-                                               'label': self.__output_label})
+        self._multimeter = nest.Create(
+            'multimeter',
+            params={'interval': self._interval, 'start': self._tstart, 'stop': self._tstop, 'to_file': True,
+                    'to_memory': False, 'withtime': True, 'record_from': self._variable_name,
+                    'label': self.__output_label
+                    }
+        )
 
-        nest.Connect(self._multimeter, self._nest_ids)
+        nest.Connect(self._multimeter, self._gids)
 
     def finalize(self, sim):
         io.barrier()  # Makes sure all nodes finish, but not sure if actually required by nest
@@ -93,14 +91,14 @@ class MultimeterMod(object):
                                                            mpi_size=1)
                     if self._to_h5 and MPI_RANK == 0:
                         for gid in self._gids:
-                            self._var_recorder.add_cell(gid, element_ids=[0], element_pos=[0.0],
-                                                        population=self._population)
+                            pop_id = gid_map.get_pool_id(gid)
+                            self._var_recorder.add_cell(pop_id.node_id, element_ids=[0], element_pos=[0.0],
+                                                        population=pop_id.population)
 
                     self._var_recorder.initialize()
 
                 return self._var_recorder
 
-            # gid_map = sim.net._nestid2gid
             gid_map = sim.net.gid_map
             for nest_file in glob.glob('{}*'.format(self.__output_label)):
                 report_df = pd.read_csv(nest_file, index_col=False, names=['nest_id', 'time']+self._variable_name,

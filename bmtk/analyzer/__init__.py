@@ -27,7 +27,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-import bmtk.simulator.utils.config as cfg
+from bmtk.utils.sonata.config import SonataConfig as cfg
 
 
 def _get_config(config):

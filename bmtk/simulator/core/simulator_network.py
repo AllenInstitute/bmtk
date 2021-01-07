@@ -139,8 +139,6 @@ class SimNetwork(object):
             if 'population' not in node_pop_df:
                 node_pop_df['population'] = node_pop.name
 
-            #node_pop_df = node_pop_df.set_index([node_pop_df.index.astype(dtype=np.uint64)])
-
             if all_nodes_df is None:
                 all_nodes_df = node_pop_df
             else:
