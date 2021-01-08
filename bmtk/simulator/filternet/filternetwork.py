@@ -5,6 +5,7 @@ from bmtk.simulator.filternet.sonata_adaptors import FilterNodeAdaptor
 from bmtk.utils.io.ioutils import bmtk_world_comm
 from bmtk.simulator.filternet.io_tools import io
 
+
 class FilterNetwork(SimNetwork):
     def __init__(self):
         super(FilterNetwork, self).__init__()
