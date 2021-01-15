@@ -14,7 +14,13 @@ class SpikesGenerator(SimModule):
             if file_name is None or os.path.isabs(file_name):
                 return file_name
 
-            return os.path.join(tmp_dir, file_name)
+            else:
+                rel_tmp = os.path.realpath(tmp_dir)
+                rel_fname = os.path.realpath(file_name)
+                if not rel_fname.startswith(rel_tmp):
+                    return os.path.join(tmp_dir, file_name)
+                else:
+                    return file_name
 
         self._csv_fname = _get_file_path(spikes_file_csv)
         self._save_csv = spikes_file_csv is not None

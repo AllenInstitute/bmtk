@@ -150,9 +150,9 @@ class FilterSimulator(Simulator):
         if rates_csv or rates_h5:
             sim.add_mod(mods.RecordRates(rates_csv, rates_h5, config.output_dir))
 
-        spikes_csv = config.output.get('spikes_csv', None)
-        spikes_h5 = config.output.get('spikes_h5', None)
-        spikes_nwb = config.output.get('spikes_nwb', None)
+        spikes_csv = config.output.get('spikes_csv', None) or config.output.get('spikes_file_csv', None)
+        spikes_h5 = config.output.get('spikes_h5', None) or config.output.get('spikes_file', None)
+        spikes_nwb = config.output.get('spikes_nwb', None) or config.output.get('spikes_file_nwb', None)
         if spikes_csv or spikes_h5 or spikes_nwb:
             sim.add_mod(mods.SpikesGenerator(spikes_csv, spikes_h5, spikes_nwb, config.output_dir))
 

@@ -77,9 +77,11 @@ class IOUtils(object):
             if os.path.exists(output_dir):
                 if overwrite:
                     shutil.rmtree(output_dir)
+                    os.makedirs(output_dir)
                 else:
-                    self.log_exception('Directory already exists (remove or set to overwrite).')
-            os.makedirs(output_dir)
+                    self.log_warning('Directory {} already exists.'.format(output_dir))
+            else:
+                os.makedirs(output_dir)
         self.barrier()  # other ranks wait for output directory to be created.
 
         # Create logger handle for writing to log.txt file
