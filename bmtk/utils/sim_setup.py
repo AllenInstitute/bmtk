@@ -663,7 +663,8 @@ def build_env_pointnet(base_dir='.', network_dir=None, components_dir=None, node
                        v_init=-80.0, celsius=34.0,
                        report_vars=[], report_nodes=None, current_clamp=None,
                        spikes_inputs=None,
-                       use_relative_paths=True):
+                       use_relative_paths=True,
+                       config_file=None):
     env_builder = PointNetEnvBuilder(base_dir=base_dir, network_dir=network_dir, components_dir=components_dir,
                                      node_sets_file=node_sets_file)
 
@@ -675,13 +676,13 @@ def build_env_pointnet(base_dir='.', network_dir=None, components_dir=None, node
 
 
 def build_env_filternet(base_dir='.', network_dir=None, components_dir=None,
-                        node_sets_file=None, include_examples=False, tstart=0.0, tstop=1000.0):
+                        node_sets_file=None, include_examples=False, tstart=0.0, tstop=1000.0, config_file=None):
     env_builder = FilterNetEnvBuilder(base_dir=base_dir, network_dir=network_dir, components_dir=components_dir,
                                      node_sets_file=node_sets_file)
 
     env_builder.build(include_examples=include_examples,
                       base_dir=base_dir, network_dir=network_dir, components_dir=components_dir, tstart=tstart,
-                      tstop=tstop)
+                      tstop=tstop, config_file=config_file)
 
 
 
@@ -810,5 +811,9 @@ if __name__ == '__main__':
 
     elif target_sim == 'popnet':
         build_env_popnet(base_dir=base_dir, network_dir=options.network_dir, tstop=options.tstop,
-                           dt=options.dt, reports=reports)
+                           dt=options.dt, config_file=options.config_file)
 
+    elif target_sim == 'filternet':
+        build_env_filternet(base_dir=base_dir, network_dir=options.network_dir, tstop=options.tstop,
+                            include_examples=options.include_examples,
+                            config_file=options.config_file)

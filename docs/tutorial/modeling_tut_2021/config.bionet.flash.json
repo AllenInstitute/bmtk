@@ -1,7 +1,7 @@
 {
   "manifest": {
     "$BASE_DIR": ".",
-    "$OUTPUT_DIR": "$BASE_DIR/output",
+    "$OUTPUT_DIR": "$BASE_DIR/output_flash",
     "$NETWORK_DIR": "$BASE_DIR/network",
     "$COMPONENTS_DIR": "$BASE_DIR/components"
   },
@@ -58,8 +58,8 @@
   "inputs": {
     "LGN_spikes": {
       "input_type": "spikes",
-      "module": "h5",
-      "input_file": "./inputs/lgn_spikes.poisson.h5",
+      "module": "csv",
+      "input_file": "./inputs/spikes.flash.csv",
       "node_set": "LGN"
     }
   },
@@ -72,14 +72,5 @@
   },
 
   "reports": {
-    "membrane_potential": {
-      "module": "membrane_report",
-      "variable_name": "v",
-      "cells": {
-          "population": "V1",
-          "pop_name": "Scnn1a"
-      },
-      "sections": "soma"
-    }
   }
 }

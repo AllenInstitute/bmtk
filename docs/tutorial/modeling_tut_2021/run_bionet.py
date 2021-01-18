@@ -1,6 +1,5 @@
 import os, sys
 from bmtk.simulator import bionet
-from bmtk.analyzer.spike_trains import plot_raster
 
 
 def run(config_file):
@@ -10,12 +9,6 @@ def run(config_file):
     graph = bionet.BioNetwork.from_config(conf)
     sim = bionet.BioSimulator.from_config(conf, network=graph)
     sim.run()
-
-
-
-    # Plot the spike trains raster
-    plot_raster(config_file='config.bionet.json', group_by='pop_name')
-    # bionet.nrn.quit_execution()
 
 
 if __name__ == '__main__':
