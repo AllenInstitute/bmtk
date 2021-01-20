@@ -8,16 +8,6 @@
 
   "target_simulator": "NEURON",
 
-  "components": {
-    "templates_dir": "$COMPONENTS_DIR/templates",
-    "biophysical_neuron_models_dir": "$COMPONENTS_DIR/biophysical_neuron_models",
-    "mechanisms_dir": "$COMPONENTS_DIR/mechanisms",
-    "synaptic_models_dir": "$COMPONENTS_DIR/synaptic_models",
-    "morphologies_dir": "$COMPONENTS_DIR/morphologies",
-    "point_neuron_models_dir": "$COMPONENTS_DIR/point_neuron_models",
-    "filter_models_dir": "$COMPONENTS_DIR/filter_models"
-  },
-
   "networks": {
     "nodes": [
       {
@@ -41,6 +31,16 @@
     ]
   },
 
+  "components": {
+    "templates_dir": "$COMPONENTS_DIR/templates",
+    "biophysical_neuron_models_dir": "$COMPONENTS_DIR/biophysical_neuron_models",
+    "mechanisms_dir": "$COMPONENTS_DIR/mechanisms",
+    "synaptic_models_dir": "$COMPONENTS_DIR/synaptic_models",
+    "morphologies_dir": "$COMPONENTS_DIR/morphologies",
+    "point_neuron_models_dir": "$COMPONENTS_DIR/point_neuron_models",
+    "filter_models_dir": "$COMPONENTS_DIR/filter_models"
+  },
+
   "run": {
     "tstart": 0.0,
     "tstop": 2000.0,
@@ -55,18 +55,9 @@
     "v_init": -80.0
   },
 
-  "inputs": {
-    "LGN_spikes": {
-      "input_type": "spikes",
-      "module": "h5",
-      "input_file": "./inputs/lgn_spikes.poisson.h5",
-      "node_set": "LGN"
-    }
-  },
-
   "output": {
     "log_file": "log.txt",
-    "output_dir": "$OUTPUT_DIR",
+    "output_dir": "./output",
     "spikes_file": "spikes.h5",
     "spikes_file_csv": "spikes.csv"
   },
@@ -80,6 +71,15 @@
           "pop_name": "Scnn1a"
       },
       "sections": "soma"
+    }
+  },
+
+  "inputs": {
+    "LGN_spikes": {
+      "input_type": "spikes",
+      "module": "h5",
+      "input_file": "./inputs/lgn_spikes.poisson.h5",
+      "node_set": "LGN"
     }
   }
 }

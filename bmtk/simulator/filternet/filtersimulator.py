@@ -64,6 +64,7 @@ class FilterSimulator(Simulator):
             del init_params['col_size']
             init_params['t_on'] = init_params['t_on']/1000.0
             init_params['t_off'] = init_params['t_off']/1000.0
+            init_params['t_off'] = init_params.get('max_intensity', 1)*-1.0
 
             ffm = FullFieldFlashMovie(**init_params)
             mv = ffm.full(t_max=self._tstop)
