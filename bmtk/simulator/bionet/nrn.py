@@ -83,3 +83,8 @@ def load_templates(template_dir):
         h.load_file(str(hoc_template))
 
     os.chdir(cwd)
+
+
+def reset():
+    pc.gid_clear()
+    pc.barrier()

@@ -23,7 +23,7 @@ def _get_report(report_path=None, config=None, report_name=None):
                 # TODO: Full path should be determined by config/simulation_reports module
                 rpath = rfile if os.path.isabs(rfile) else os.path.join(report.params['tmp_dir'], rfile)
                 if report_name is not None and report_name == rname:
-                        selected_reports.append((rname, CompartmentReport.load(rpath)))
+                    selected_reports.append((rname, CompartmentReport.load(rpath)))
                 elif report_name is None:
                     selected_reports.append((rname, CompartmentReport.load(rpath)))
 

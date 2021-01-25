@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-
-"""Simulates an example network of 14 cell receiving two kinds of exernal input as defined in configuration file"""
-
 import os, sys
 from bmtk.simulator import bionet
 

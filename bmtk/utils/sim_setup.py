@@ -496,8 +496,19 @@ class EnvBuilder(object):
 
     def build(self, include_examples=False, use_relative_paths=True, report_vars=[],
               report_nodes=None, clamp_reports=[], current_clamp=None, file_current_clamp=None,
-               se_voltage_clamp=None,
-              spikes_inputs=None, **run_args):
+              se_voltage_clamp=None,
+              spikes_inputs=None, config_file='config.json', **run_args):
+
+        config_path = config_file if os.path.isabs(config_file) else os.path.join(self._base_dir, config_file)
+        if os.path.exists(config_path):
+            logger.info('Configuration file {} already exists, skipping.'.format(config_path))
+        else:
+            base_config = {
+                'network': os.path.join(self._base_dir, 'circuit_config.json'),
+                'simulation': os.path.join(self._base_dir, 'simulation_config.json')
+            }
+            self._save_config(base_config, config_path)
+
         self._parse_network_dir(self.network_dir)
         self._create_components_dir(self.components_dir, with_examples=include_examples)
         if use_relative_paths:
@@ -509,7 +520,7 @@ class EnvBuilder(object):
         self._add_clamp_reports(clamp_reports)
         self._add_output_section()
         self._simulation_config['target_simulator'] = self.target_simulator
-        self._simulation_config['network'] = os.path.join(self.base_dir, 'circuit_config.json')
+        # self._simulation_config['network'] = os.path.join(self.base_dir, 'circuit_config.json')
         self._add_run_params(**run_args)
 
         if current_clamp is not None:
@@ -527,7 +538,7 @@ class EnvBuilder(object):
             try:
                 se_voltage_clamp['gids']
             except:
-                se_voltage_clamp['gids']='all'
+                se_voltage_clamp['gids'] = 'all'
 
             self._add_se_voltage_clamp(se_voltage_clamp)
 
@@ -538,7 +549,6 @@ class EnvBuilder(object):
         self._save_config(self._simulation_config, 'simulation_config.json')
 
         self._copy_run_script()
-
 
 
 class BioNetEnvBuilder(EnvBuilder):
@@ -617,9 +627,9 @@ class FilterNetEnvBuilder(EnvBuilder):
 
     def _add_output_section(self):
         super(FilterNetEnvBuilder, self)._add_output_section()
-        self._simulation_config['output']['rates_csv'] = 'rates.csv'
-        self._simulation_config['output']['spikes_csv'] = 'spikes.csv'
-        self._simulation_config['output']['spikes_h5'] = 'spikes.h5'
+        self._simulation_config['output']['rates_file_csv'] = 'rates.csv'
+        self._simulation_config['output']['spikes_file_csv'] = 'spikes.csv'
+        self._simulation_config['output']['spikes_file_h5'] = 'spikes.h5'
 
 
 def build_env_bionet(base_dir='.', network_dir=None, components_dir=None, node_sets_file=None, include_examples=False,
@@ -632,7 +642,8 @@ def build_env_bionet(base_dir='.', network_dir=None, components_dir=None, node_s
                      se_voltage_clamp=None,
                      spikes_inputs=None,
                      compile_mechanisms=False,
-                     use_relative_paths=True):
+                     use_relative_paths=True,
+                     config_file=None):
     env_builder = BioNetEnvBuilder(base_dir=base_dir, network_dir=network_dir, components_dir=components_dir,
                                    node_sets_file=node_sets_file)
 
@@ -641,7 +652,7 @@ def build_env_bionet(base_dir='.', network_dir=None, components_dir=None, node_s
                        current_clamp=current_clamp,
                       file_current_clamp=file_current_clamp, se_voltage_clamp=se_voltage_clamp, spikes_inputs=spikes_inputs,
                       tstart=tstart, tstop=tstop, dt=dt, dL=dL, spikes_threshold=spikes_threshold,
-                      nsteps_block=nsteps_block, v_init=v_init, celsius=celsius)
+                      nsteps_block=nsteps_block, v_init=v_init, celsius=celsius, config_file=config_file)
 
     if compile_mechanisms:
         env_builder.compile_mechanisms()
@@ -652,7 +663,8 @@ def build_env_pointnet(base_dir='.', network_dir=None, components_dir=None, node
                        v_init=-80.0, celsius=34.0,
                        report_vars=[], report_nodes=None, current_clamp=None,
                        spikes_inputs=None,
-                       use_relative_paths=True):
+                       use_relative_paths=True,
+                       config_file=None):
     env_builder = PointNetEnvBuilder(base_dir=base_dir, network_dir=network_dir, components_dir=components_dir,
                                      node_sets_file=node_sets_file)
 
@@ -664,13 +676,13 @@ def build_env_pointnet(base_dir='.', network_dir=None, components_dir=None, node
 
 
 def build_env_filternet(base_dir='.', network_dir=None, components_dir=None,
-                        node_sets_file=None, include_examples=False, tstart=0.0, tstop=1000.0):
+                        node_sets_file=None, include_examples=False, tstart=0.0, tstop=1000.0, config_file=None):
     env_builder = FilterNetEnvBuilder(base_dir=base_dir, network_dir=network_dir, components_dir=components_dir,
                                      node_sets_file=node_sets_file)
 
     env_builder.build(include_examples=include_examples,
                       base_dir=base_dir, network_dir=network_dir, components_dir=components_dir, tstart=tstart,
-                      tstop=tstop)
+                      tstop=tstop, config_file=config_file)
 
 
 
@@ -744,7 +756,8 @@ if __name__ == '__main__':
                       help='Copies component files used by examples and tutorials.')
     parser.add_option('--compile-mechanisms', dest='compile_mechanisms', action='store_true', default=False,
                       help='Will try to compile the NEURON mechanisms (BioNet only).')
-
+    parser.add_option('--config', dest='config_file', type='string', default=None,
+                      help='Name of conguration json file.')
 
     options, args = parser.parse_args()
 
@@ -756,7 +769,7 @@ if __name__ == '__main__':
         parser.error('Unrecognized arguments {}'.format(args[2:]))
     else:
         target_sim = args[0].lower()
-        if target_sim not in ['bionet', 'popnet', 'pointnet', 'mintnet']:
+        if target_sim not in ['bionet', 'popnet', 'pointnet', 'filternet']:
             parser.error('Must specify one target simulator. options: "bionet", pointnet", "popnet", "filternet"')
         base_dir = args[1]
 
@@ -786,7 +799,9 @@ if __name__ == '__main__':
                          dt=options.dt, report_vars=options.mem_rep_vars, report_nodes=options.mem_rep_cells,
                          current_clamp=iclamp_args, include_examples=options.include_examples,
                          spikes_inputs=spikes_inputs,
-                         compile_mechanisms=options.compile_mechanisms)
+                         compile_mechanisms=options.compile_mechanisms,
+                         config_file=options.config_file
+                         )
 
     if target_sim == 'pointnet':
         build_env_pointnet(base_dir=base_dir, network_dir=options.network_dir, tstop=options.tstop,
@@ -796,5 +811,9 @@ if __name__ == '__main__':
 
     elif target_sim == 'popnet':
         build_env_popnet(base_dir=base_dir, network_dir=options.network_dir, tstop=options.tstop,
-                           dt=options.dt, reports=reports)
+                           dt=options.dt, config_file=options.config_file)
 
+    elif target_sim == 'filternet':
+        build_env_filternet(base_dir=base_dir, network_dir=options.network_dir, tstop=options.tstop,
+                            include_examples=options.include_examples,
+                            config_file=options.config_file)

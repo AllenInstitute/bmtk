@@ -13,6 +13,9 @@ ENV WORK_DIR=${HOME_DIR}/workspace
 ENV PYTHON_VER=3.8
 ENV PYTHON_ENV=python${PYTHON_VER}
 
+ENV GIT_REPO=https://github.com/AllenInstitute/bmtk.git
+ENV GIT_BRANCH=develop
+
 RUN mkdir -p ${BUILD_DIR}
 RUN mkdir -p ${HOME_DIR}
 RUN mkdir -p ${WORK_DIR}
@@ -77,26 +80,33 @@ RUN cd ${BUILD_DIR}; \
 
 
 ### Install the bmtk
-RUN cd ${BUILD_DIR}; \
-    git clone https://github.com/AllenInstitute/bmtk.git; \
-    cd bmtk; \
-    python setup.py install
+RUN cd ${BUILD_DIR} \
+#    && git clone --branch feature/modeling_tutorial https://github.com/kaeldai/bmtk.git \
+    && git clone --branch ${GIT_BRANCH} ${GIT_REPO} \
+    && cd bmtk \
+    && python setup.py install
 
 # Setup the examples and tutorials
 RUN cd ${BUILD_DIR}/bmtk/docs; \
     cp -R examples ${HOME_DIR}; \
     cp -R tutorial ${HOME_DIR}
 
-# Setup components directories for tutorials, including compiling neuron modfiles
+### Setup components directories for tutorials, including compiling neuron modfiles
 RUN cd ${HOME_DIR}/tutorial; \
     cp -R ../examples/*_components .; \
     cd biophys_components/mechanisms; \
     nrnivmodl modfiles/
 
-# Pre-compile mechanisms for BioNet examples
+### Pre-compile mechanisms for BioNet examples
 RUN cd ${HOME_DIR}/examples/biophys_components/mechanisms; \
     nrnivmodl modfiles/
 
+### Pre-compile mechanisms for BioNet examples
+# COPY ../docs/tutorial/modeling_tut_2021 ${HOME_DIR}/modeling_tut_2021
+
+# RUN cd ${HOME_DIR}/tutorial/modeling_tut_2021
+RUN cd ${HOME_DIR}/tutorial/modeling_tut_2021/components/mechanisms \
+    && nrnivmodl modfiles/
 
 # Create an entry point for running the image
 COPY entry_script.sh ${BUILD_DIR}
