@@ -71,9 +71,10 @@ def test_overwrite():
     assert(os.path.exists(os.path.join(output_dir, 'simulation.log')))
     assert(os.path.exists(os.path.join(output_dir, 'sonata_config.json')))
 
-    with pytest.raises(Exception):
-        cfg = SimulationConfig.from_dict(sim_config)
-        cfg.build_env()
+    ## Changed behavior so that even if overwrite_output_dir is false and dir exists, it will still run
+    # with pytest.raises(Exception):
+    #     cfg = SimulationConfig.from_dict(sim_config)
+    #     cfg.build_env()
 
     sim_config['output']['overwrite_output_dir'] = True
     cfg = SimulationConfig.from_dict(sim_config)
