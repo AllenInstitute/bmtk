@@ -44,7 +44,17 @@ class SpikesMod(object):
             # Unless file-name is an absolute path then it should be placed in the $OUTPUT_DIR
             if file_name is None:
                 return None
-            return file_name if os.path.isabs(file_name) else os.path.join(tmp_dir, file_name)
+
+            if os.path.isabs(file_name):
+                return file_name
+            else:
+                abs_tmp = os.path.abspath(tmp_dir)
+                abs_fname = os.path.abspath(file_name)
+                if not abs_fname.startswith(abs_tmp):
+                    return os.path.join(tmp_dir, file_name)
+                else:
+                    return file_name
+            # return file_name if os.path.isabs(file_name) else os.path.join(tmp_dir, file_name)
 
         self._csv_fname = _get_path(spikes_file_csv)
         self._h5_fname = _get_path(spikes_file)
