@@ -15,5 +15,8 @@ class FilterNetIOUtils(IOUtils):
 
         self.logger.info(message)
 
+    def barrier(self):
+        bmtk_world_comm.barrier()
+
 
 io = FilterNetIOUtils()

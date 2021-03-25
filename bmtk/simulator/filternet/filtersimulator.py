@@ -26,6 +26,10 @@ class FilterSimulator(Simulator):
     def io(self):
         return self._io
 
+    @property
+    def dt(self):
+        return self._dt
+
     def add_movie(self, movie_type, params):
         # TODO: Move this into its own factory
         movie_type = movie_type.lower() if isinstance(movie_type, string_types) else 'movie'
@@ -111,6 +115,9 @@ class FilterSimulator(Simulator):
         for mod in self._sim_mods:
             mod.finalize(self)
 
+    def local_cells(self):
+        return self._network.cells()
+
     @staticmethod
     def find_params(param_names, **kwargs):
         ret_dict = {}
@@ -136,15 +143,15 @@ class FilterSimulator(Simulator):
         if config.jitter is not None:
             network.jitter = config.jitter
 
-        network.io.log_info('Building cells.')
-        network.build_nodes()
-
-        # TODO: Need to create a gid selector
         for sim_input in inputs.from_config(config):
             if sim_input.input_type == 'movie':
                 sim.add_movie(sim_input.module, sim_input.params)
             else:
                 raise Exception('Unable to load input type {}'.format(sim_input.input_type))
+
+        network.io.log_info('Building cells.')
+        network.build_nodes()
+
 
         rates_csv = config.output.get('rates_csv', None)
         rates_h5 = config.output.get('rates_h5', None)
