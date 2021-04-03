@@ -23,6 +23,9 @@ class IOUtils(object):
         self._log_to_console = True
         self._logger = None
 
+        # Used by log_warning to keep track of previous shown messages
+        self._warn_messages = set()
+
     @property
     def log_to_console(self):
         return self._log_to_console
@@ -97,9 +100,17 @@ class IOUtils(object):
 
         self.logger.info(message)
 
-    def log_warning(self, message, all_ranks=False):
+    def log_warning(self, message, all_ranks=False, display_once=False):
         if all_ranks is False and self.mpi_rank != 0:
             return
+
+        # Prevent the spaming of the same warning message multiple times, keep track of previous messages and if
+        # display_once is true don't log.
+        # TODO: Won't work across multiple ranks in MPI, is it possible?
+        msg_hash = hash(message)
+        if display_once and msg_hash in self._warn_messages:
+            return
+        self._warn_messages.add(msg_hash)
 
         self.logger.warning(message)
 

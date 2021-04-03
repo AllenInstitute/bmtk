@@ -23,6 +23,7 @@
 import numpy as np
 from bmtk.simulator.bionet import utils, nrn
 from bmtk.simulator.bionet.cell import Cell
+from bmtk.simulator.bionet.io_tools import io
 import six
 
 from neuron import h
@@ -313,7 +314,11 @@ class BioCell(Cell):
         src_gid = src_node.node_id
         nsyns = edge_prop.nsyns
 
-        # choose nsyn elements from seg_ix with probability proportional to segment area
+        if len(tar_seg_ix) == 0:
+            msg = 'Could not find target synaptic location for edge-type {}, Please check target_section and/or distance_range properties'.format(edge_prop.edge_type_id)
+            io.log_warning(msg, all_ranks=True, display_once=True)
+            return 0
+
         segs_ix = self.prng.choice(tar_seg_ix, nsyns, p=tar_seg_prob)
         secs = self._secs[segs_ix]  # sections where synapases connect
         xs = self._morph.seg_prop['x'][segs_ix]  # distance along the section where synapse connects, i.e., seg_x
