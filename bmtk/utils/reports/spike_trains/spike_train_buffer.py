@@ -24,6 +24,7 @@ import os
 import numpy as np
 import pandas as pd
 import csv
+import time
 from array import array
 
 from .core import SortOrder, pop_na, comm, MPI_size, MPI_rank, comm_barrier
@@ -463,6 +464,7 @@ class STCSVBuffer(SpikeTrainsAPI):
         self._buffer_handle = open(self._buffer_filename, 'w')
         self._units = kwargs.get('units', 'ms')
         self._pop_metadata = {}
+        self._spike_counts = 0  # all spikes added on rank, for each individual pop spike count stored in _pop_metadata
 
     def _cache_fname(self, cache_dir):
         # TODO: Potential problem if multiple SpikeTrains are opened at the same time, add salt to prevent collisions
@@ -482,6 +484,7 @@ class STCSVBuffer(SpikeTrainsAPI):
             self._pop_metadata[population] = {'node_ids': set(), 'n_spikes': 0}
         self._pop_metadata[population]['node_ids'].add(node_id)
         self._pop_metadata[population]['n_spikes'] += 1
+        self._spike_counts += 1
 
     def add_spikes(self, node_ids, timestamps, population=None, **kwargs):
         if np.isscalar(node_ids):
@@ -550,6 +553,19 @@ class STCSVBuffer(SpikeTrainsAPI):
 
     def flush(self):
         self._buffer_handle.flush()
+
+        # Found an issue with even after flushing the csv there can be a lag before data is actually cached to the disk.
+        # this can have problems with other processes on a different rank tries open the file that hasn't been
+        # completely saved. This hack should hopefully ensure that each rank has fully cached their spikes to disk.
+        for i in range(10):
+            with open(self._buffer_filename) as fh:
+                fcount = len(fh.readlines())
+                if fcount == self._spike_counts:
+                    break
+                time.sleep(0.5)
+        else:
+            print('Warning: spike counts on rank {} cache does not match total added.'.format(MPI_rank))
+
 
     def close(self):
         self._buffer_handle.close()
@@ -847,4 +863,5 @@ class STCSVMPIBufferV2(STCSVMPIBuffer):
             elif sort_order == SortOrder.by_id:
                 ret_df = ret_df.sort_values(col_node_ids)
 
+        comm_barrier()
         return ret_df
