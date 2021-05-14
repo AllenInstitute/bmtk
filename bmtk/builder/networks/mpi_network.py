@@ -39,10 +39,10 @@ class MPINetwork(DenseNetwork):
         if self._assign_to_rank(i):
             super(MPINetwork, self)._add_edges(connection_map, i)
 
-    def save_nodes(self, nodes_file_name, node_types_file_name):
-        if rank == 0:
-            super(MPINetwork, self).save_nodes(nodes_file_name, node_types_file_name)
-        comm.Barrier()
+    # def save_nodes(self, nodes_file_name, node_types_file_name):
+    #     if rank == 0:
+    #         super(MPINetwork, self).save_nodes(nodes_file_name, node_types_file_name)
+    #     comm.Barrier()
 
     """
     def save_edges(self, edges_file_name=None, edge_types_file_name=None, output_dir='.', src_network=None,

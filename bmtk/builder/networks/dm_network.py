@@ -31,6 +31,18 @@ from bmtk.builder.node import Node
 from bmtk.builder.edge import Edge
 from bmtk.utils import sonata
 
+try:
+    from mpi4py import MPI
+    comm = MPI.COMM_WORLD
+    mpi_rank = comm.Get_rank()
+    mpi_size = comm.Get_size()
+    barrier = comm.barrier
+
+except ImportError:
+    mpi_rank = 0
+    mpi_size = 1
+    barrier = lambda: None
+
 
 class DenseNetwork(Network):
     def __init__(self, name, **network_props):
@@ -105,26 +117,28 @@ class DenseNetwork(Network):
                 prop_ds.append(node.params[key])
 
         # TODO: open in append mode
-        with h5py.File(nodes_file_name, 'w') as hf:
-            # Add magic and version attribute
-            add_hdf5_attrs(hf)
+        if mpi_rank == 0:
+            with h5py.File(nodes_file_name, 'w') as hf:
+                # Add magic and version attribute
+                add_hdf5_attrs(hf)
 
-            pop_grp = hf.create_group('/nodes/{}'.format(self.name))
-            pop_grp.create_dataset('node_id', data=node_gid_table, dtype='uint64')
-            pop_grp.create_dataset('node_type_id', data=node_type_id_table, dtype='uint64')
-            pop_grp.create_dataset('node_group_id', data=node_group_table, dtype='uint32')
-            pop_grp.create_dataset('node_group_index', data=node_group_index_tables, dtype='uint64')
+                pop_grp = hf.create_group('/nodes/{}'.format(self.name))
+                pop_grp.create_dataset('node_id', data=node_gid_table, dtype='uint64')
+                pop_grp.create_dataset('node_type_id', data=node_type_id_table, dtype='uint64')
+                pop_grp.create_dataset('node_group_id', data=node_group_table, dtype='uint32')
+                pop_grp.create_dataset('node_group_index', data=node_group_index_tables, dtype='uint64')
 
-            for grp_id, props in group_props.items():
-                model_grp = pop_grp.create_group('{}'.format(grp_id))
+                for grp_id, props in group_props.items():
+                    model_grp = pop_grp.create_group('{}'.format(grp_id))
 
-                for key, dataset in props.items():
-                    # ds_path = 'nodes/{}/{}'.format(grp_id, key)
-                    try:
-                        model_grp.create_dataset(key, data=dataset)
-                    except TypeError:
-                        str_list = [str(d) for d in dataset]
-                        hf.create_dataset(key, data=str_list)
+                    for key, dataset in props.items():
+                        # ds_path = 'nodes/{}/{}'.format(grp_id, key)
+                        try:
+                            model_grp.create_dataset(key, data=dataset)
+                        except TypeError:
+                            str_list = [str(d) for d in dataset]
+                            hf.create_dataset(key, data=str_list)
+        barrier()
 
     def nodes_iter(self, node_ids=None):
         if node_ids is not None:
@@ -264,6 +278,8 @@ class DenseNetwork(Network):
         matching_edge_tables = [et for et in self.__edges_tables
                                 if et['source_network'] == src_network and et['target_network'] == trg_network]
 
+        # print(matching_edge_tables)
+
         for ets in matching_edge_tables:
             params_hash = str(ets['params'].keys())
             group_id = groups_lookup.get(params_hash, None)
@@ -280,6 +296,9 @@ class DenseNetwork(Network):
 
             total_syns += int(ets['nsyns'])
 
+        # print('total_syns:', total_syns)
+        # exit()
+
         group_index_itrs = [0 for _ in range(grp_id_itr)]
         trg_gids = np.zeros(total_syns)  # set dtype to uint64
         src_gids = np.zeros(total_syns)
@@ -292,6 +311,9 @@ class DenseNetwork(Network):
         #index_ptrs = np.zeros(len(self._nodes)+1)  # TODO: issue when target nodes come from another network
         index_ptr_itr = 0
 
+        # print(self._target_networks[trg_network].nodes())
+        # exit()
+
         gid_indx = 0
         for trg_node in self._target_networks[trg_network].nodes():
             index_ptrs[index_ptr_itr] = gid_indx
@@ -302,6 +324,9 @@ class DenseNetwork(Network):
                 group_table = groups[edge_group_id]
 
                 syn_table = ets['syn_table']
+                # print(syn_table)
+                # print(syn_table._nsyn_table)
+                # exit()
                 if syn_table.has_target(trg_node.node_id):
                     if ets['params']:
                         for src_id, nsyns in syn_table.trg_itr(trg_node.node_id):
@@ -327,6 +352,10 @@ class DenseNetwork(Network):
                             group_table['nsyns'] = []
                         group_dtypes[edge_group_id]['nsyns'] = 'uint16'
                         for src_id, nsyns in syn_table.trg_itr(trg_node.node_id):
+                            # print('>', trg_node.node_id, src_id, nsyns)
+                            # print(syn_table._nsyn_table)
+                            # syn_table.flatten()
+
                             trg_gids[gid_indx] = trg_node.node_id
                             src_gids[gid_indx] = src_id
                             edge_type_ids[gid_indx] = ets['edge_type_id']
@@ -492,6 +521,16 @@ class DenseNetwork(Network):
                 nsyns = self._nsyn_table[src_j, trg_i]
                 if nsyns:
                     yield src_id, nsyns
+
+        def flatten(self):
+            print('flatten()')
+            print(self._nsyn_table)
+            print(self.__idx2src)
+            print(self.__idx2trg)
+            print(self._nsyn_table.ravel(), self._nsyn_table.ravel().shape)
+            print(np.array(np.meshgrid(self.__idx2src, self.__idx2trg)).T.reshape(-1, 2))
+            print(np.argwhere(self._nsyn_table > 0))
+            exit()
 
     class PropertyTable(object):
         # TODO: add support for strings
