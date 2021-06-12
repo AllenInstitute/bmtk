@@ -495,7 +495,6 @@ class Network(object):
             self._build_nodes()
 
         for i, conn_map in enumerate(self._connection_maps):
-            # print conn_map
             self._add_edges(conn_map, i)
 
         self._edges_built = True
