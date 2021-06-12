@@ -25,11 +25,16 @@ import numpy as np
 import types
 import csv
 import six
+import logging
 
 from .node_pool import NodePool
 from .connection_map import ConnectionMap
 from .node_set import NodeSet
 from .id_generator import IDGenerator
+from .builder_utils import mpi_rank, mpi_size, barrier
+
+
+logger = logging.getLogger(__name__)
 
 
 class Network(object):
@@ -342,8 +347,9 @@ class Network(object):
                           target_sections=['somatic'], connection_rule=1, connection_params=None):
         """A special function for marking a edge group as gap junctions. Just a wrapper for add_edges"""
         if target_sections is not None:
-            print("Warning: For gap junctions, the target sections variable is used for both the source and target"
-                  " sections.")
+            logger.warning(
+                'For gap junctions, the target sections variable is used for both the source and target sections.'
+            )
 
         return self.add_edges(
             source=source, target=target, iterator=iterator, distance_range=[0.0, 300.0], syn_weight=resistance,
@@ -408,7 +414,7 @@ class Network(object):
                 nodes = self._connected_networks[network].nodes(**nodes)
             if isinstance(nodes, NodePool):
                 if network is not None and nodes.network_name != network:
-                    print('Warning. nodes and network don not match')
+                    logger.warning('Nodes and network do not match')
                 return [n.node_id for n in nodes], nodes.network_name
             else:
                 raise Exception('Couldnt convert nodes')
@@ -479,14 +485,18 @@ class Network(object):
 
     def _build_nodes(self):
         """Builds or rebuilds all the nodes, clear out both node and edge sets."""
-        # print 'build_nodes'
+        logger.debug('Building nodes for population {}.'.format(self.name))
         self._clear()
         self._initialize()
 
+        n_node_types = 0
         for ns in self._node_sets:
             nodes = ns.build(nid_generator=self._node_id)
             self._add_nodes(nodes)
+            n_node_types += 1
+
         self._nodes_built = True
+        logger.debug('Nodes {} built with {} nodes, {} node-types'.format(self.name, self.nnodes, n_node_types))
 
     def __build_edges(self):
         """Builds network edges"""
@@ -494,6 +504,7 @@ class Network(object):
             # only rebuild nodes if necessary.
             self._build_nodes()
 
+        logger.debug('Building edges.')
         for i, conn_map in enumerate(self._connection_maps):
             self._add_edges(conn_map, i)
 
@@ -566,12 +577,16 @@ class Network(object):
         raise NotImplementedError
 
     def _save_node_types(self, node_types_file_name):
-        node_types_cols = ['node_type_id'] + [col for col in self._node_types_columns if col != 'node_type_id']
-        with open(node_types_file_name, 'w') as csvfile:
-            csvw = csv.writer(csvfile, delimiter=' ')
-            csvw.writerow(node_types_cols)
-            for node_type in self._node_types_properties.values():
-                csvw.writerow([node_type.get(cname, 'NULL') for cname in node_types_cols])
+        if mpi_rank == 0:
+            logger.debug('Saving {} node-types to {}.'.format(self.name, node_types_file_name))
+
+            node_types_cols = ['node_type_id'] + [col for col in self._node_types_columns if col != 'node_type_id']
+            with open(node_types_file_name, 'w') as csvfile:
+                csvw = csv.writer(csvfile, delimiter=' ')
+                csvw.writerow(node_types_cols)
+                for node_type in self._node_types_properties.values():
+                    csvw.writerow([node_type.get(cname, 'NULL') for cname in node_types_cols])
+        barrier()
 
     def import_nodes(self, nodes_file_name, node_types_file_name):
         raise NotImplementedError
@@ -592,15 +607,14 @@ class Network(object):
         """
         # Make sure edges exists and are built
         if len(self._connection_maps) == 0:
-            print("Warning: no edges have been made for this network, skipping saving.")
+            logging.warning('No edges have been made for this network, skipping saving.')
             return
 
         if self._edges_built is False:
             if force_build:
-                print("Message: building edges")
                 self.__build_edges()
             else:
-                print("Warning: Edges are not built. Either call build() or use force_build parameter. Skip saving.")
+                logger.warning("Edges are not built. Either call build() or use force_build parameter. Skip saving.")
                 return
 
         network_params = [(s, t, s+'_'+t+'_edges.h5', s+'_'+t+'_edge_types.csv') for s, t in list(self._network_conns)]
@@ -611,7 +625,7 @@ class Network(object):
             network_params = [p for p in network_params if p[1] == trg_network]
 
         if len(network_params) == 0:
-            print("Warning: couldn't find connections. Skip saving.")
+            logger.warning("Warning: couldn't find connections. Skip saving.")
             return
 
         if (edges_file_name or edge_types_file_name) is not None:
@@ -648,7 +662,7 @@ class Network(object):
                 csvw.writerow([edge_type.get(cname, 'NULL') if edge_type.get(cname, 'NULL') is not None else 'NULL'
                                for cname in cols])
 
-    def _save_edges(self, edges_file_name, src_network, trg_network, **opts):
+    def _save_edges(self, edges_file_name, src_network, trg_network, pop_name=None, **opts):
         raise NotImplementedError
 
     def _save_gap_junctions(self, gj_file_name):

@@ -5,6 +5,8 @@ import h5py
 import logging
 
 
+logger = logging.getLogger(__name__)
+
 # MAX_EDGE_READS = 500000000
 MAX_EDGE_READS = 200000000
 
@@ -37,16 +39,13 @@ def create_index_in_memory(edges_file, edges_population, index_type, force_rebui
     # print(edges_file)
     with h5py.File(edges_file, mode='r+') as edges_h5:
         edges_pop_grp = edges_h5[edges_population]
-        print(index_grp_name)
-
-        # return
 
         if index_grp_name in edges_pop_grp:
             # Remove existing index if it exists
             if not force_rebuild:
-                print('Edges index "{}" already exists, skipping.'.format(index_grp_name))
+                logger.debug('create_index_in_memory> Edges index "{}" already exists, skipping.'.format(index_grp_name))
             else:
-                print('Removing existing index "{}".'.format(index_grp_name))
+                logger.debug('create_index_in_memory> Removing existing index "{}".'.format(index_grp_name))
                 del edges_pop_grp[index_grp_name]
 
         index_grp = edges_pop_grp.create_group(index_grp_name)
@@ -56,7 +55,7 @@ def create_index_in_memory(edges_file, edges_population, index_type, force_rebui
         # group together and save ids so contigous duplicates are represented using ranges, creating a range -> edge
         # index table.
         #  eg. [10 10 10 10 10 32 32 32 10 10 ...] ==> ... 10: [(0, 5), (8, 10)], 32: [(5, 8)], ...
-        print('Creating range_to_edge_id table')
+        logger.debug('create_index_in_memory> Creating range_to_edge_id table')
         ids_diffs = np.diff(ids_array)
         ids_diffs_idx = ids_diffs.nonzero()[0]
 
@@ -76,7 +75,7 @@ def create_index_in_memory(edges_file, edges_population, index_type, force_rebui
         # create a map to the range_to_edge_id dataset from id --> blocks ranges. The id value is implicitly equal to
         # the index
         # TODO: See if del r2e_table_df will significantly improve memory footprint?
-        print('Creating node_id_to_range table')
+        logger.debug('create_index_in_memory> Creating node_id_to_range table')
         ordered_ids = np.array(r2e_table_df['lu_ids'])
         ordered_ids_diffs = np.diff(ordered_ids).nonzero()[0]
         ordered_ids_beg = np.concatenate(([0], ordered_ids_diffs+1))

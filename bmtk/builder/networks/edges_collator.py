@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 
 
 class EdgesCollator(object):
-    def __init__(self, edge_types_tables, sort_by=None):
+    def __init__(self, edge_types_tables):
         self._edge_types_tables = edge_types_tables
 
         self._model_groups_md = {}
@@ -23,7 +23,7 @@ class EdgesCollator(object):
         self.edge_group_index = None
         self._prop_data = {}
 
-    def merge_edges(self):
+    def process(self):
         self.source_ids = np.zeros(self.n_total_edges, dtype=np.uint)
         self.target_ids = np.zeros(self.n_total_edges, dtype=np.uint)
         self.edge_type_ids = np.zeros(self.n_total_edges, dtype=np.uint32)
@@ -54,7 +54,7 @@ class EdgesCollator(object):
                 pdata[group_idx_beg:group_idx_end] = et.get_property_value(pname)
 
             idx_beg = idx_end
-            group_idx[et.edge_group_id] += group_idx_end
+            group_idx[et.edge_group_id] = group_idx_end
 
             et.free_data()
 
@@ -144,7 +144,7 @@ class EdgesCollator(object):
             return
 
         # check if dataset is already sorted
-        if np.all(np.diff(sort_ds) >= 0):
+        if np.all(np.diff(sort_ds) <= 0):
             return
 
         # Find order of arguments of sorted arrays, and sort main columns

@@ -24,7 +24,7 @@ import os
 import numpy as np
 import h5py
 import six
-import csv
+import logging
 
 from ..network import Network
 from bmtk.builder.node import Node
@@ -33,20 +33,10 @@ from bmtk.utils import sonata
 from .edges_collator import EdgesCollator
 from .edge_props_table import EdgeTypesTable
 from ..index_builders import create_index_in_memory, create_index_on_disk
+from ..builder_utils import mpi_rank, mpi_size, barrier
 
 
-try:
-    from mpi4py import MPI
-
-    comm = MPI.COMM_WORLD
-    mpi_rank = comm.Get_rank()
-    mpi_size = comm.Get_size()
-    barrier = comm.barrier
-
-except ImportError:
-    mpi_rank = 0
-    mpi_size = 1
-    barrier = lambda: None
+logger = logging.getLogger(__name__)
 
 
 '''
@@ -231,7 +221,6 @@ class DenseNetwork(Network):
             self._build_nodes()
 
         # save the node_types file
-        # TODO: how do we add attributes to the h5
         group_indx = 0
         groups_lookup = {}
         group_indicies = {}
@@ -262,8 +251,9 @@ class DenseNetwork(Network):
             for key, prop_ds in group_dict.items():
                 prop_ds.append(node.params[key])
 
-        # TODO: open in append mode
         if mpi_rank == 0:
+            hdf5_nodes_path = '/nodes/{}'.format(self.name)
+
             with h5py.File(nodes_file_name, 'w') as hf:
                 # Add magic and version attribute
                 add_hdf5_attrs(hf)
@@ -327,7 +317,8 @@ class DenseNetwork(Network):
         :param connection_map:
         :param i:
         """
-        print('adding edges')
+        edge_type_id = connection_map.edge_type_properties['edge_type_id']
+        logger.debug('Generating edges data for edge_types_id {}.'.format(edge_type_id))
         edges_table = EdgeTypesTable(connection_map)
         connections = connection_map.connection_itr()
 
@@ -344,7 +335,6 @@ class DenseNetwork(Network):
         # get prop value and add it to the edge-types table. Need to fetch and store SxTxN value (where N is the avg
         # num of nsyns between each source/target pair) and it is necessary that the nsyns table be finished.
         for param in connection_map.params:
-            print('  ', param.names)
             rule = param.rule
             rets_multiple_vals = isinstance(param.names, (list, tuple, np.ndarray))
 
@@ -370,6 +360,9 @@ class DenseNetwork(Network):
                     for pname, pval in zip(pnames, pvals):
                         edges_table.set_property_value(prop_name=pname, edge_index=edge_index, prop_value=pval)
 
+        logger.debug('Edge-types {} data built with {} connection ({} synapses)'.format(
+            edge_type_id, edges_table.n_syns, edges_table.n_edges)
+        )
         self.__edges_tables.append(edges_table)
 
     '''
@@ -493,17 +486,17 @@ class DenseNetwork(Network):
                 f.create_dataset('src_gap_ids', data=np.array(src_gap_ids))
                 f.create_dataset('trg_gap_ids', data=np.array(trg_gap_ids))
 
-    def _save_edges(self, edges_file_name, src_network, trg_network, name=None, sort_by='target_node_id',
+    def _save_edges(self, edges_file_name, src_network, trg_network, pop_name=None, sort_by='target_node_id',
                     index_by=['target_node_id', 'source_node_id']):
-        print('saving edges')
+        logger.debug('Saving {} --> {} edges to {}.'.format(src_network, trg_network, edges_file_name))
 
         filtered_edge_types = [
             et for et in self.__edges_tables
             if et.source_network == src_network and et.target_network == trg_network
         ]
 
-        merged_edges = EdgesCollator(filtered_edge_types, sort_by=sort_by)
-        merged_edges.merge_edges()
+        merged_edges = EdgesCollator(filtered_edge_types)
+        merged_edges.process()
         n_total_conns = merged_edges.n_total_edges
 
         # Try to sort in memory, if we can't (eg too big or using MPI) will have to save file and sort later.
@@ -514,8 +507,8 @@ class DenseNetwork(Network):
             else:
                 merged_edges.sort(sort_by=sort_by)
 
-        print('writing to disk')
-        pop_name = '{}_to_{}'.format(src_network, trg_network) if name is None else name
+        logger.debug('Saving edges to disk')
+        pop_name = '{}_to_{}'.format(src_network, trg_network) if pop_name is None else pop_name
         with h5py.File(edges_file_name, 'w') as hf:
             # Initialize the hdf5 groups and datasets
             add_hdf5_attrs(hf)
@@ -555,7 +548,7 @@ class DenseNetwork(Network):
         if index_by:
             index_by = index_by if isinstance(index_by, (list, tuple)) else [index_by]
             for index_type in index_by:
-                print('creating index {}'.format(index_type))
+                logger.debug('Creating index {}'.format(index_type))
                 create_index_in_memory(
                     edges_file=edges_file_name,
                     edges_population='/edges/{}'.format(pop_name),
