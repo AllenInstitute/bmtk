@@ -24,6 +24,8 @@ class EdgesCollator(object):
         self._prop_data = {}
 
     def process(self):
+        logger.debug('Processing and collating {:,} edges.'.format(self.n_total_edges))
+
         self.source_ids = np.zeros(self.n_total_edges, dtype=np.uint)
         self.target_ids = np.zeros(self.n_total_edges, dtype=np.uint)
         self.edge_type_ids = np.zeros(self.n_total_edges, dtype=np.uint32)

@@ -363,6 +363,8 @@ class DenseNetwork(Network):
         logger.debug('Edge-types {} data built with {} connection ({} synapses)'.format(
             edge_type_id, edges_table.n_syns, edges_table.n_edges)
         )
+
+        edges_table.save()
         self.__edges_tables.append(edges_table)
 
     '''
@@ -498,6 +500,10 @@ class DenseNetwork(Network):
         merged_edges = EdgesCollator(filtered_edge_types)
         merged_edges.process()
         n_total_conns = merged_edges.n_total_edges
+
+        if n_total_conns == 0:
+            logger.warning('Was not able to generate any edges using the "connection_rule". Not saving.')
+            return
 
         # Try to sort in memory, if we can't (eg too big or using MPI) will have to save file and sort later.
         # sort_on_disk = False

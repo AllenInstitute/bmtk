@@ -1,4 +1,5 @@
 import numpy as np
+from ..builder_utils import mpi_rank, mpi_size
 
 
 class EdgeTypesTable(object):
@@ -117,10 +118,9 @@ class EdgeTypesTable(object):
         else:
             return self._prop_vals[prop_name]
 
+    def save(self):
+        pass
+
     def free_data(self):
         del self.nsyn_table
         del self._prop_vals
-
-
-class EdgeTypesTableMPI(EdgeTypesTable):
-    pass

@@ -52,6 +52,10 @@ def create_index_in_memory(edges_file, edges_population, index_type, force_rebui
         ids_array = np.array(edges_pop_grp[col_to_index])  # ids to be indexed
         total_edges = len(edges_pop_grp[col_to_index])
 
+        if total_edges == 0:
+            logger.warning('edges file {} does not contain any edges.'.format(edges_file))
+            return
+
         # group together and save ids so contigous duplicates are represented using ranges, creating a range -> edge
         # index table.
         #  eg. [10 10 10 10 10 32 32 32 10 10 ...] ==> ... 10: [(0, 5), (8, 10)], 32: [(5, 8)], ...
