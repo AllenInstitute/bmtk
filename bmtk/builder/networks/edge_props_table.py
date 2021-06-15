@@ -1,5 +1,9 @@
+import os
 import numpy as np
-from ..builder_utils import mpi_rank, mpi_size
+import h5py
+import hashlib
+
+from ..builder_utils import mpi_rank, mpi_size, barrier
 
 
 class EdgeTypesTable(object):
@@ -71,9 +75,16 @@ class EdgeTypesTable(object):
 
     @property
     def hash_key(self):
+        """Creates a hash key for edge-types based on their (hdf5) properties, for grouping together properties of
+        different edge-types. If two edge-types have the same (hdf5) properties they should have the same hash value.
+        """
         prop_keys = ['{}({})'.format(p['name'], p['dtype']) for p in self.get_property_metatadata()]
         prop_keys.sort()
-        return hash(':'.join(prop_keys))
+
+        # WARNING: python's hash() function is randomized which is a problem when using MPI to process different edge
+        # types across different ranks.
+        prop_keys = ':'.join(prop_keys).encode('utf-8')
+        return hashlib.md5(prop_keys).hexdigest()[:9]
 
     def get_property_metatadata(self):
         if not self._prop_vals:
@@ -124,3 +135,74 @@ class EdgeTypesTable(object):
     def free_data(self):
         del self.nsyn_table
         del self._prop_vals
+
+try:
+    if mpi_rank == 0 and mpi_size > 1:
+        for r in range(mpi_size):
+            tmp_path = '.edge_types_table.{}.h5'.format(r)
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+except Exception:
+    pass
+
+barrier()
+
+
+
+class EdgeTypesTableMPI(EdgeTypesTable):
+    # _tmp_table_handle = None  # Singleton file object so hdf5 temp file is created only once
+    _tmp_table_valid = False
+
+    def __init__(self, connection_map):
+        super(EdgeTypesTableMPI, self).__init__(connection_map)
+
+        # self._tmp_edges_table_path = '.edge_types_table.{}.h5'.format(mpi_rank)
+
+    @property
+    def tmp_table_name(self):
+        return '.edge_types_table.{}.h5'.format(mpi_rank)
+
+    def _open_tmp_table(self):
+        if EdgeTypesTableMPI._tmp_table_handle is None:
+            EdgeTypesTableMPI._tmp_table_handle = h5py.File(self.tmp_table_name, 'w')
+
+        return EdgeTypesTableMPI._tmp_table_handle
+
+    def _init_tmp_table(self):
+        # There may/will be multiple EdgeTypeTables objects, but only one .edge_type_table*.h5 file per rank, but don't
+        # overwrite the file everytime save() is called. Use a singleton to ensure hdf5 tmp file is created only once.
+        if not EdgeTypesTableMPI._tmp_table_valid:
+            with h5py.File(self.tmp_table_name, 'w') as h5:
+                h5.create_group('unprocessed')
+                EdgeTypesTableMPI._tmp_table_valid = True
+
+
+    # @property
+    # def edge_tables_rank(self):
+    #     return self._tmp_edges_table_path
+
+    def save(self):
+        """Saves edges data to hdf5 on the disk so that other ranks can read it (without MPISend)."""
+        # mode = 'r+' if os.path.exists(self._tmp_edges_table_path) else 'w'
+        # with h5py.File(self._tmp_edges_table_path, mode) as h5:
+        # h5 = self._open_tmp_table()
+
+        self._init_tmp_table()
+        with h5py.File(self.tmp_table_name, 'r+') as h5:
+            # Create a new group
+            edge_type_id_str = str(self.edge_type_id)
+            if edge_type_id_str in h5:
+                del h5[edge_type_id_str]
+
+            edge_type_grp = h5.create_group('/unprocessed/{}'.format(edge_type_id_str))
+            src_trg_ids = super().prop_node_ids
+            edge_type_grp.create_dataset('source_node_id', data=src_trg_ids[:, 0])
+            edge_type_grp.create_dataset('target_node_id', data=src_trg_ids[:, 1])
+
+            for prop_mdata in super().get_property_metatadata():
+                pname = prop_mdata['name']
+                ptype = prop_mdata['dtype']
+                pvals = super().get_property_value(pname)
+                edge_type_grp.create_dataset(pname, data=pvals, dtype=ptype)
+                edge_type_grp.attrs['size'] = len(pvals)
+                edge_type_grp.attrs['hash_key'] = self.hash_key

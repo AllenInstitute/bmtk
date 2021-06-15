@@ -505,9 +505,11 @@ class Network(object):
             self._build_nodes()
 
         logger.debug('Building edges.')
-        for i, conn_map in enumerate(self._connection_maps):
+        # for i, conn_map in enumerate(self._connection_maps):
+        for i, conn_map in enumerate(self._connection_maps[mpi_rank::mpi_size]):
             self._add_edges(conn_map, i)
 
+        # exit()
         self._edges_built = True
 
     def build(self, force=False):

@@ -30,10 +30,16 @@ from ..network import Network
 from bmtk.builder.node import Node
 from bmtk.builder.edge import Edge
 from bmtk.utils import sonata
-from .edges_collator import EdgesCollator
-from .edge_props_table import EdgeTypesTable
+
+# from .edges_collator import EdgesCollator
+from .edges_collator import EdgesCollatorMPI as EdgesCollator
+
+# from .edge_props_table import EdgeTypesTable
+from .edge_props_table import EdgeTypesTableMPI as EdgeTypesTable
+
 from ..index_builders import create_index_in_memory, create_index_on_disk
 from ..builder_utils import mpi_rank, mpi_size, barrier
+from ..edges_sorter import resort_edges
 
 
 logger = logging.getLogger(__name__)
@@ -500,67 +506,91 @@ class DenseNetwork(Network):
         merged_edges = EdgesCollator(filtered_edge_types)
         merged_edges.process()
         n_total_conns = merged_edges.n_total_edges
+        barrier()
 
         if n_total_conns == 0:
             logger.warning('Was not able to generate any edges using the "connection_rule". Not saving.')
             return
 
-        # Try to sort in memory, if we can't (eg too big or using MPI) will have to save file and sort later.
-        # sort_on_disk = False
+        # Try to sort before writing file, If edges are split across ranks/files for MPI/size issues then we need to
+        # write to disk first then sort the hdf5 file
+        sort_on_disk = False
+        edges_file_name_final = None
         if sort_by:
-            if mpi_size > 1:
-                sort_on_disk = True
-            else:
+            if merged_edges.can_sort:
                 merged_edges.sort(sort_by=sort_by)
+            else:
+                sort_on_disk = True
+                edges_file_name_final = edges_file_name
+
+                edges_file_basename = os.path.basename(edges_file_name)
+                edges_file_dirname = os.path.dirname(edges_file_name)
+                edges_file_name = os.path.join(edges_file_dirname, '.unsorted.{}'.format(edges_file_basename))
+                logger.debug('Unable to sort edges in memory, will temporarly save to {}'.format(edges_file_name) +
+                             ' before sorting hdf5 file.')
+        barrier()
 
         logger.debug('Saving edges to disk')
-        pop_name = '{}_to_{}'.format(src_network, trg_network) if pop_name is None else pop_name
-        with h5py.File(edges_file_name, 'w') as hf:
-            # Initialize the hdf5 groups and datasets
-            add_hdf5_attrs(hf)
-            pop_grp = hf.create_group('/edges/{}'.format(pop_name))
+        if mpi_rank == 0:
+            pop_name = '{}_to_{}'.format(src_network, trg_network) if pop_name is None else pop_name
+            with h5py.File(edges_file_name, 'w') as hf:
+                # Initialize the hdf5 groups and datasets
+                add_hdf5_attrs(hf)
+                pop_grp = hf.create_group('/edges/{}'.format(pop_name))
 
-            pop_grp.create_dataset('source_node_id', (n_total_conns,), dtype='uint64')
-            pop_grp['source_node_id'].attrs['node_population'] = src_network
-            pop_grp.create_dataset('target_node_id', (n_total_conns,), dtype='uint64')
-            pop_grp['target_node_id'].attrs['node_population'] = trg_network
-            pop_grp.create_dataset('edge_group_id', (n_total_conns,), dtype='uint16')
-            pop_grp.create_dataset('edge_group_index', (n_total_conns,), dtype='uint32')
-            pop_grp.create_dataset('edge_type_id', (n_total_conns,), dtype='uint32')
+                pop_grp.create_dataset('source_node_id', (n_total_conns,), dtype='uint64')
+                pop_grp['source_node_id'].attrs['node_population'] = src_network
+                pop_grp.create_dataset('target_node_id', (n_total_conns,), dtype='uint64')
+                pop_grp['target_node_id'].attrs['node_population'] = trg_network
+                pop_grp.create_dataset('edge_group_id', (n_total_conns,), dtype='uint16')
+                pop_grp.create_dataset('edge_group_index', (n_total_conns,), dtype='uint32')
+                pop_grp.create_dataset('edge_type_id', (n_total_conns,), dtype='uint32')
 
-            for group_id in merged_edges.group_ids:
-                # different model-groups will have different datasets/properties depending on what edge information
-                # is being saved for each edges
-                model_grp = pop_grp.create_group(str(group_id))
-                for prop_mdata in merged_edges.get_group_metadata(group_id):
-                    model_grp.create_dataset(prop_mdata['name'], prop_mdata['dim'], dtype=prop_mdata['type'])
+                for group_id in merged_edges.group_ids:
+                    # different model-groups will have different datasets/properties depending on what edge information
+                    # is being saved for each edges
+                    model_grp = pop_grp.create_group(str(group_id))
+                    for prop_mdata in merged_edges.get_group_metadata(group_id):
+                        model_grp.create_dataset(prop_mdata['name'], shape=prop_mdata['dim'], dtype=prop_mdata['type'])
 
-            # Uses the collated edges (eg combined edges across all edge-types) to actually write the data to hdf5,
-            # potentially in multiple chunks. For small networks doing it this way isn't very effiecent, however this
-            # has the benefits:
-            #  * For very large networks it won't always be possible to store all the data in memory.
-            #  * When using MPI/multi-node the chunks can represent data from different ranks.
-            for chunk_id, idx_beg, idx_end in merged_edges.itr_chunks():
-                pop_grp['source_node_id'][idx_beg:idx_end] = merged_edges.get_source_node_ids(chunk_id)
-                pop_grp['target_node_id'][idx_beg:idx_end] = merged_edges.get_target_node_ids(chunk_id)
-                pop_grp['edge_type_id'][idx_beg:idx_end] = merged_edges.get_edge_type_ids(chunk_id)
-                pop_grp['edge_group_id'][idx_beg:idx_end] = merged_edges.get_edge_group_ids(chunk_id)
-                pop_grp['edge_group_index'][idx_beg:idx_end] = merged_edges.get_edge_group_indices(chunk_id)
+                # Uses the collated edges (eg combined edges across all edge-types) to actually write the data to hdf5,
+                # potentially in multiple chunks. For small networks doing it this way isn't very effiecent, however
+                # this has the benefits:
+                #  * For very large networks it won't always be possible to store all the data in memory.
+                #  * When using MPI/multi-node the chunks can represent data from different ranks.
+                for chunk_id, idx_beg, idx_end in merged_edges.itr_chunks():
+                    pop_grp['source_node_id'][idx_beg:idx_end] = merged_edges.get_source_node_ids(chunk_id)
+                    pop_grp['target_node_id'][idx_beg:idx_end] = merged_edges.get_target_node_ids(chunk_id)
+                    pop_grp['edge_type_id'][idx_beg:idx_end] = merged_edges.get_edge_type_ids(chunk_id)
+                    pop_grp['edge_group_id'][idx_beg:idx_end] = merged_edges.get_edge_group_ids(chunk_id)
+                    pop_grp['edge_group_index'][idx_beg:idx_end] = merged_edges.get_edge_group_indices(chunk_id)
 
-                for group_id, group_name, grp_idx_beg, grp_idx_end in merged_edges.get_group_data(chunk_id):
-                    prop_array = merged_edges.get_group_property(group_name, group_id, chunk_id)
-                    pop_grp[str(group_id)][group_name][grp_idx_beg:grp_idx_end] = prop_array
+                    for group_id, prop_name, grp_idx_beg, grp_idx_end in merged_edges.get_group_data(chunk_id):
+                        prop_array = merged_edges.get_group_property(prop_name, group_id, chunk_id)
+                        pop_grp[str(group_id)][prop_name][grp_idx_beg:grp_idx_end] = prop_array
 
-        if index_by:
-            index_by = index_by if isinstance(index_by, (list, tuple)) else [index_by]
-            for index_type in index_by:
-                logger.debug('Creating index {}'.format(index_type))
-                create_index_in_memory(
-                    edges_file=edges_file_name,
-                    edges_population='/edges/{}'.format(pop_name),
-                    index_type=index_type
-                )
+                if sort_on_disk:
+                    logger.debug('Sorting {} by {} to {}'.format(edges_file_name, sort_by, edges_file_name_final))
+                    resort_edges(
+                        input_edges_path=edges_file_name,
+                        output_edges_path=edges_file_name_final,
+                        edges_population='/edges/{}'.format(pop_name),
+                        sort_by=sort_by
+                    )
 
+
+
+                if index_by:
+                    index_by = index_by if isinstance(index_by, (list, tuple)) else [index_by]
+                    for index_type in index_by:
+                        logger.debug('Creating index {}'.format(index_type))
+                        create_index_in_memory(
+                            edges_file=edges_file_name,
+                            edges_population='/edges/{}'.format(pop_name),
+                            index_type=index_type
+                        )
+
+        barrier()
 
     """
     def _save_edges_old(self, edges_file_name, src_network, trg_network, name=None):
@@ -741,7 +771,7 @@ class DenseNetwork(Network):
             # self._create_index(pop_grp['target_node_id'], pop_grp, index_type='target')
             # self._create_index(pop_grp['source_node_id'], pop_grp, index_type='source')
         """
-
+    """
     def _create_index(self, node_ids_ds, output_grp, index_type='target'):
         if index_type == 'target':
             edge_nodes = np.array(node_ids_ds, dtype=np.int64)
@@ -779,6 +809,7 @@ class DenseNetwork(Network):
 
         output_grp.create_dataset('range_to_edge_id', data=range_to_edge_id, dtype='uint64')
         output_grp.create_dataset('node_id_to_range', data=node_id_to_range, dtype='uint64')
+    """
 
     def _clear(self):
         self._nedges = 0
