@@ -23,7 +23,6 @@
 import os
 import numpy as np
 import h5py
-import six
 import logging
 
 from ..network import Network
@@ -31,170 +30,14 @@ from bmtk.builder.node import Node
 from bmtk.builder.edge import Edge
 from bmtk.utils import sonata
 
-# from .edges_collator import EdgesCollator
-from .edges_collator import EdgesCollatorMPI as EdgesCollator
-
-# from .edge_props_table import EdgeTypesTable
-from .edge_props_table import EdgeTypesTableMPI as EdgeTypesTable
-
+from .edges_collator import EdgesCollator
+from .edge_props_table import EdgeTypesTable
 from ..index_builders import create_index_in_memory, create_index_on_disk
 from ..builder_utils import mpi_rank, mpi_size, barrier
 from ..edges_sorter import resort_edges
 
 
 logger = logging.getLogger(__name__)
-
-
-'''
-class EdgeTable(object):
-    def __init__(self, connection_map):
-        # TODO: save column and row lengths
-        # Create maps between source_node gids and their row in the matrix.
-        self.__idx2src = [n.node_id for n in connection_map.source_nodes]
-        self.__src2idx = {node_id: i for i, node_id in enumerate(self.__idx2src)}
-
-        # Create maps betwee target_node gids and their column in the matrix
-        self.__idx2trg = [n.node_id for n in connection_map.target_nodes]
-        self.__trg2idx = {node_id: i for i, node_id in enumerate(self.__idx2trg)}
-
-        self._nsyn_table = np.zeros((len(self.__idx2src), len(self.__idx2trg)), dtype=np.uint8)
-
-    def __getitem__(self, item):
-        # TODO: make sure matrix is column oriented, or swithc trg and srcs.
-        indexed_pair = (self.__src2idx[item[0]], self.__trg2idx[item[1]])
-        return self._nsyn_table[indexed_pair]
-
-    def __setitem__(self, key, value):
-        assert (len(key) == 2)
-        indexed_pair = (self.__src2idx[key[0]], self.__trg2idx[key[1]])
-        self._nsyn_table[indexed_pair] = value
-
-    def has_target(self, node_id):
-        return node_id in self.__trg2idx
-
-    @property
-    def n_connections(self):
-        return int(np.count_nonzero(self._nsyn_table))
-
-    @property
-    def nsyn_table(self):
-        return self._nsyn_table
-
-    @property
-    def target_ids(self):
-        return self.__idx2trg
-
-    @property
-    def source_ids(self):
-        return self.__idx2src
-
-    def trg_itr(self, trg_id):
-        trg_i = self.__trg2idx[trg_id]
-        for src_j, src_id in enumerate(self.__idx2src):
-            nsyns = self._nsyn_table[src_j, trg_i]
-            if nsyns:
-                yield src_id, nsyns
-
-    def get_table(self):
-        nsyns_table_flat = self._nsyn_table.ravel()
-        node_ids_flat = np.array(np.meshgrid(self.__idx2src, self.__idx2trg)).T.reshape(-1, 2)
-
-        nonzero_indxs = np.argwhere(nsyns_table_flat > 0).flatten()
-        valid_src_ids = node_ids_flat[nonzero_indxs, 0]
-        valid_trg_ids = node_ids_flat[nonzero_indxs, 1]
-        valid_nsyns = nsyns_table_flat[nonzero_indxs]
-        return valid_src_ids, valid_trg_ids, valid_nsyns
-'''
-
-'''
-class PropertyTable(object):
-    # TODO: add support for strings
-    def __init__(self, nvalues):
-        self._prop_array = np.zeros(nvalues)
-        self._index = np.zeros((nvalues, 2), dtype=np.uint32)
-        self._itr_index = 0
-        self._nvalues = nvalues
-
-    @property
-    def n_connections(self):
-        return self._nvalues
-
-    def itr_vals(self, src_id, trg_id):
-        indicies = np.where((self._index[:, 0] == src_id) & (self._index[:, 1] == trg_id))
-        for val in self._prop_array[indicies]:
-            yield val
-
-    def __setitem__(self, key, value):
-        self._index[self._itr_index, 0] = key[0]  # src_node_id
-        self._index[self._itr_index, 1] = key[1]  # trg_node_id
-        self._prop_array[self._itr_index] = value
-        self._itr_index += 1
-
-    def __getitem__(self, item):
-        indicies = np.where((self._index[:, 0] == item[0]) & (self._index[:, 1] == item[1]))
-        return self._prop_array[indicies]
-'''
-
-"""
-class NsynsTable(object):
-    def __init__(self, connection_map):
-        # TODO: save column and row lengths
-        # Create maps between source_node_ids and their row in the matrix.
-        self.__idx2src = [n.node_id for n in connection_map.source_nodes]
-        self.__src2idx = {node_id: i for i, node_id in enumerate(self.__idx2src)}
-
-        # Create maps between target_node_ids and their column in the matrix
-        self.__idx2trg = [n.node_id for n in connection_map.target_nodes]
-        self.__trg2idx = {node_id: i for i, node_id in enumerate(self.__idx2trg)}
-
-        self._nsyn_table = np.zeros((len(self.__idx2src), len(self.__idx2trg)), dtype=np.uint8)
-
-    @property
-    def n_connections(self):
-        return np.count_nonzero(self._nsyn_table)
-
-    def __getitem__(self, item):
-        # TODO: make sure matrix is column oriented, or swithc trg and srcs.
-        indexed_pair = (self.__src2idx[item[0]], self.__trg2idx[item[1]])
-        return self._nsyn_table[indexed_pair]
-
-    def __setitem__(self, key, value):
-        assert (len(key) == 2)
-        indexed_pair = (self.__src2idx[key[0]], self.__trg2idx[key[1]])
-        self._nsyn_table[indexed_pair] = value
-
-    def has_target(self, node_id):
-        return node_id in self.__trg2idx
-
-    # @property
-    # def nsyn_table(self):
-    #     return self._nsyn_table
-
-    @property
-    def target_ids(self):
-        return self.__idx2trg
-
-    @property
-    def source_ids(self):
-        return self.__idx2src
-
-    def trg_itr(self, trg_id):
-        trg_i = self.__trg2idx[trg_id]
-        for src_j, src_id in enumerate(self.__idx2src):
-            nsyns = self._nsyn_table[src_j, trg_i]
-            if nsyns:
-                yield src_id, nsyns
-
-    def flatten(self):
-        nsyns_table_flat = self._nsyn_table.ravel()
-        node_ids_flat = np.array(np.meshgrid(self.__idx2src, self.__idx2trg)).T.reshape(-1, 2)
-
-        nonzero_indxs = np.argwhere(nsyns_table_flat > 0).flatten()
-        valid_src_ids = node_ids_flat[nonzero_indxs, 0]
-        valid_trg_ids = node_ids_flat[nonzero_indxs, 1]
-        valid_nsyns = nsyns_table_flat[nonzero_indxs]
-        return valid_src_ids, valid_trg_ids, valid_nsyns
-"""
 
 
 class DenseNetwork(Network):
@@ -373,90 +216,6 @@ class DenseNetwork(Network):
         edges_table.save()
         self.__edges_tables.append(edges_table)
 
-    '''
-    def _add_edges_orig(self, connection_map, i):
-        syn_table = EdgeTypesTable(connection_map)
-        connections = connection_map.connection_itr()
-        for con in connections:
-            # print(con)
-            if con[2] is not None:
-                syn_table[con[0], con[1]] = con[2]
-
-        target_net = connection_map.target_nodes
-        self._target_networks[target_net.network_name] = target_net.network
-
-        nsyns = np.sum(syn_table.nsyn_table)
-        self._nedges += int(nsyns)
-        edge_table = {
-            # 'syn_table': syn_table,
-            'nsyns': nsyns,
-            'edge_types': connection_map.edge_type_properties,
-            'edge_type_id': connection_map.edge_type_properties['edge_type_id'],
-            'source_network': connection_map.source_nodes.network_name,
-            'target_network': connection_map.target_nodes.network_name,
-            'props': {'nsyns': syn_table},
-            'props_type': {'nsyns': 'uint8'},
-            # 'source_query': connection_map.source_nodes.filter_str,
-            # 'target_query': connection_map.target_nodes.filter_str
-        }
-
-
-
-        for param in connection_map.params:
-            print(connection_map)
-            print(connection_map.source_nodes)
-            print(connection_map.target_nodes)
-            print(connection_map.params)
-            print(connection_map.params[0].names)
-
-            exit()
-
-            rule = param.rule
-            param_names = param.names
-            edge_table['props_type'].update(param.dtypes)
-            if isinstance(param_names, list) or isinstance(param_names, tuple):
-                tmp_tables = [PropertyTable(nsyns) for _ in range(len(param_names))]
-                for source in connection_map.source_nodes:
-                    src_node_id = source.node_id
-                    for target in connection_map.target_nodes:
-                        trg_node_id = target.node_id  # TODO: pull this out and put in it's own list
-                        for _ in range(syn_table[src_node_id, trg_node_id]):
-                            pvals = rule(source, target)
-                            for i in range(len(param_names)):
-                                tmp_tables[i][src_node_id, trg_node_id] = pvals[i]
-
-                for i, name in enumerate(param_names):
-                    # TODO: I think a copy constructor might get called, move this out.
-                    edge_table['props'][name] = tmp_tables[i]
-
-            else:
-                pt = PropertyTable(np.sum(nsyns))
-                # print(pt)
-                # exit()
-                for source in connection_map.source_nodes:
-                    src_node_id = source.node_id
-                    for target in connection_map.target_nodes:
-                        trg_node_id = target.node_id  # TODO: pull this out and put in it's own list
-                        for _ in range(syn_table[src_node_id, trg_node_id]):
-                            # print(source, target)
-                            pt[src_node_id, trg_node_id] = rule(source, target)
-                edge_table['props'][param_names] = pt
-
-        # remove the nsyns table if there are other connection_map properties in the edge-type
-        if len(edge_table['props'].keys()) > 1 and 'nsyns' in edge_table['props']:
-            del edge_table['props']['nsyns']
-            del edge_table['props_type']['nsyns']
-        # exit()
-
-        # print(edge_table['props'].values())
-        edge_table['nconn'] = int(list(edge_table['props'].values())[0].n_connections)
-        self.__edges_tables.append(edge_table)
-
-
-
-        # exit()
-    '''
-
     def _get_edge_group_id(self, params_hash):
         return int(params_hash)
 
@@ -495,7 +254,7 @@ class DenseNetwork(Network):
                 f.create_dataset('trg_gap_ids', data=np.array(trg_gap_ids))
 
     def _save_edges(self, edges_file_name, src_network, trg_network, pop_name=None, sort_by='target_node_id',
-                    index_by=['target_node_id', 'source_node_id']):
+                    index_by=('target_node_id', 'source_node_id')):
         logger.debug('Saving {} --> {} edges to {}.'.format(src_network, trg_network, edges_file_name))
 
         filtered_edge_types = [
@@ -515,7 +274,7 @@ class DenseNetwork(Network):
         # Try to sort before writing file, If edges are split across ranks/files for MPI/size issues then we need to
         # write to disk first then sort the hdf5 file
         sort_on_disk = False
-        edges_file_name_final = None
+        edges_file_name_final = edges_file_name
         if sort_by:
             if merged_edges.can_sort:
                 merged_edges.sort(sort_by=sort_by)
@@ -530,8 +289,8 @@ class DenseNetwork(Network):
                              ' before sorting hdf5 file.')
         barrier()
 
-        logger.debug('Saving edges to disk')
         if mpi_rank == 0:
+            logger.debug('Saving {} edges to disk'.format(n_total_conns))
             pop_name = '{}_to_{}'.format(src_network, trg_network) if pop_name is None else pop_name
             with h5py.File(edges_file_name, 'w') as hf:
                 # Initialize the hdf5 groups and datasets
@@ -577,239 +336,23 @@ class DenseNetwork(Network):
                         edges_population='/edges/{}'.format(pop_name),
                         sort_by=sort_by
                     )
-
-
+                    try:
+                        logger.debug('Deleting intermediate edges file {}.'.format(edges_file_name))
+                        os.remove(edges_file_name)
+                    except OSError as e:
+                        logger.warning('Unable to remove intermediate edges file {}.'.format(edges_file_name))
 
                 if index_by:
                     index_by = index_by if isinstance(index_by, (list, tuple)) else [index_by]
                     for index_type in index_by:
                         logger.debug('Creating index {}'.format(index_type))
                         create_index_in_memory(
-                            edges_file=edges_file_name,
+                            edges_file=edges_file_name_final,
                             edges_population='/edges/{}'.format(pop_name),
                             index_type=index_type
                         )
 
         barrier()
-
-    """
-    def _save_edges_old(self, edges_file_name, src_network, trg_network, name=None):
-        groups = {}
-        group_dtypes = {}  # TODO: this should be stored in PropertyTable
-        grp_id_itr = 0
-        groups_lookup = {}
-        total_syns = 0
-
-        matching_edge_tables = [et for et in self.__edges_tables
-                                if et['source_network'] == src_network and et['target_network'] == trg_network]
-
-        # print(matching_edge_tables)
-        # print('HERE')
-
-        for ets in matching_edge_tables:
-            params_hash = str(ets['params'].keys())
-            group_id = groups_lookup.get(params_hash, None)
-            if group_id is None:
-                group_id = grp_id_itr
-                groups_lookup[params_hash] = group_id
-                grp_id_itr += 1
-
-            ets['group_id'] = group_id
-            groups[group_id] = {}
-            group_dtypes[group_id] = ets['params_dtypes']
-            for param_name in ets['params'].keys():
-                groups[group_id][param_name] = []
-
-            total_syns += int(ets['nsyns'])
-
-        # print('total_syns:', total_syns)
-        # exit()
-
-        group_index_itrs = [0 for _ in range(grp_id_itr)]
-        trg_gids = np.zeros(total_syns)  # set dtype to uint64
-        src_gids = np.zeros(total_syns)
-        edge_groups = np.zeros(total_syns)  # dtype uint16 or uint8
-        edge_group_index = np.zeros(total_syns)  # uint32
-        edge_type_ids = np.zeros(total_syns)  # uint32
-
-
-        # print(total_syns)
-        # exit()
-
-        # TODO: Another potential issue if node-ids don't start with 0
-        index_ptrs = np.zeros(len(self._target_networks[trg_network].nodes()) + 1)
-        # index_ptrs = np.zeros(len(self._nodes)+1)  # TODO: issue when target nodes come from another network
-        # index_ptr_itr = 0
-
-        # for ets in matching_edge_tables:
-        #     print(ets)
-        #     print('--')
-        # exit()
-
-        # for edges_table in matching_edge_tables:
-        #     print(edges_table)
-        # exit()
-
-        idx_beg = 0
-        for edges_table in matching_edge_tables:
-            syn_table = edges_table['syn_table']
-            src_ids, trg_ids, nsyns = syn_table.flatten()
-
-            idx_end = idx_beg + len(nsyns)
-
-            src_gids[idx_beg:idx_end] = src_ids
-            trg_gids[idx_beg:idx_end] = trg_ids
-            edge_type_ids[idx_beg:idx_end] = edges_table['edge_type_id']
-
-            edge_group_id = ets['group_id']
-
-
-            group_table = groups[edge_group_id]
-            if 'nsyns' not in group_table:
-                group_table['nsyns'] = []
-            group_dtypes[edge_group_id]['nsyns'] = 'uint16'
-
-            group_table['nsyns'].extend(nsyns.tolist())
-
-
-
-            # edge_groups[gid_indx] = edge_group_id
-            # edge_group_index[gid_indx] = group_index_itrs[edge_group_id]
-            # group_dtypes
-            # group_index_itrs[edge_group_id] += 1
-            # gid_indx += 1
-
-            # exit()
-
-        '''
-        gid_indx = 0
-        for trg_node in self._target_networks[trg_network].nodes():
-            # index_ptrs[index_ptr_itr] = gid_indx
-            # index_ptr_itr += 1
-
-            for ets in matching_edge_tables:
-                edge_group_id = ets['group_id']
-                group_table = groups[edge_group_id]
-
-                syn_table = ets['syn_table']
-                if syn_table.has_target(trg_node.node_id):
-
-                    if ets['params']:
-                        for src_id, nsyns in syn_table.trg_itr(trg_node.node_id):
-                            # Add on to the edges index
-                            indx_end = gid_indx + nsyns
-                            while gid_indx < indx_end:
-                                trg_gids[gid_indx] = trg_node.node_id
-                                src_gids[gid_indx] = src_id
-                                edge_type_ids[gid_indx] = ets['edge_type_id']
-                                edge_groups[gid_indx] = edge_group_id
-                                edge_group_index[gid_indx] = group_index_itrs[edge_group_id]
-                                group_index_itrs[edge_group_id] += 1
-                                gid_indx += 1
-
-                            for param_name, param_table in ets['params'].items():
-                                param_vals = group_table[param_name]
-                                for val in param_table.itr_vals(src_id, trg_node.node_id):
-                                    param_vals.append(val)
-
-                    else:
-                        # If no properties just print nsyns table.
-                        if 'nsyns' not in group_table:
-                            group_table['nsyns'] = []
-                        group_dtypes[edge_group_id]['nsyns'] = 'uint16'
-                        for src_id, nsyns in syn_table.trg_itr(trg_node.node_id):
-                            print('>', trg_node.node_id, src_id, nsyns)
-                            # print(syn_table._nsyn_table)
-                            syn_table.flatten()
-
-                            trg_gids[gid_indx] = trg_node.node_id
-                            src_gids[gid_indx] = src_id
-                            edge_type_ids[gid_indx] = ets['edge_type_id']
-                            edge_groups[gid_indx] = edge_group_id
-                            edge_group_index[gid_indx] = group_index_itrs[edge_group_id]
-                            # group_dtypes
-                            group_index_itrs[edge_group_id] += 1
-                            gid_indx += 1
-
-                            group_table['nsyns'].append(nsyns)
-        '''
-
-        trg_gids = trg_gids[:idx_end]
-        src_gids = src_gids[:idx_end]
-        edge_groups = edge_groups[:idx_end]
-        edge_group_index = edge_group_index[:idx_end]
-        edge_type_ids = edge_type_ids[:idx_end]
-
-
-        pop_name = '{}_to_{}'.format(src_network, trg_network) if name is None else name
-
-        # index_ptrs[index_ptr_itr] = gid_indx
-        with h5py.File(edges_file_name, 'w') as hf:
-            add_hdf5_attrs(hf)
-            pop_grp = hf.create_group('/edges/{}'.format(pop_name))
-            pop_grp.create_dataset('target_node_id', data=trg_gids, dtype='uint64')
-            pop_grp['target_node_id'].attrs['node_population'] = trg_network
-            pop_grp.create_dataset('source_node_id', data=src_gids, dtype='uint64')
-            pop_grp['source_node_id'].attrs['node_population'] = src_network
-
-            pop_grp.create_dataset('edge_group_id', data=edge_groups, dtype='uint16')
-            pop_grp.create_dataset('edge_group_index', data=edge_group_index, dtype='uint32')
-            pop_grp.create_dataset('edge_type_id', data=edge_type_ids, dtype='uint32')
-            # pop_grp.create_dataset('edges/index_pointer', data=index_ptrs, dtype='uint32')
-
-            for group_id, params_dict in groups.items():
-                model_grp = pop_grp.create_group(str(group_id))
-                for params_key, params_vals in params_dict.items():
-                    # group_path = 'edges/{}/{}'.format(group_id, params_key)
-                    dtype = group_dtypes[group_id][params_key]
-                    if dtype is not None:
-                        # print(params_vals)
-                        model_grp.create_dataset(params_key, data=list(params_vals), dtype=dtype)
-                    else:
-                        model_grp.create_dataset(params_key, data=list(params_vals))
-
-            # self._create_index(pop_grp['target_node_id'], pop_grp, index_type='target')
-            # self._create_index(pop_grp['source_node_id'], pop_grp, index_type='source')
-        """
-    """
-    def _create_index(self, node_ids_ds, output_grp, index_type='target'):
-        if index_type == 'target':
-            edge_nodes = np.array(node_ids_ds, dtype=np.int64)
-            output_grp = output_grp.create_group('indicies/target_to_source')
-        elif index_type == 'source':
-            edge_nodes = np.array(node_ids_ds, dtype=np.int64)
-            output_grp = output_grp.create_group('indicies/source_to_target')
-        else:
-            raise Exception('Unknown index type {}'.format(index_type))
-
-        edge_nodes = np.append(edge_nodes, [-1])
-        n_targets = np.max(edge_nodes)
-        ranges_list = [[] for _ in six.moves.range(n_targets + 1)]
-
-        n_ranges = 0
-        begin_index = 0
-        cur_trg = edge_nodes[begin_index]
-        for end_index, trg_gid in enumerate(edge_nodes):
-            if cur_trg != trg_gid:
-                ranges_list[cur_trg].append((begin_index, end_index))
-                cur_trg = int(trg_gid)
-                begin_index = end_index
-                n_ranges += 1
-
-        node_id_to_range = np.zeros((n_targets + 1, 2))
-        range_to_edge_id = np.zeros((n_ranges, 2))
-        range_index = 0
-        for node_index, trg_ranges in enumerate(ranges_list):
-            if len(trg_ranges) > 0:
-                node_id_to_range[node_index, 0] = range_index
-                for r in trg_ranges:
-                    range_to_edge_id[range_index, :] = r
-                    range_index += 1
-                node_id_to_range[node_index, 1] = range_index
-
-        output_grp.create_dataset('range_to_edge_id', data=range_to_edge_id, dtype='uint64')
-        output_grp.create_dataset('node_id_to_range', data=node_id_to_range, dtype='uint64')
-    """
 
     def _clear(self):
         self._nedges = 0

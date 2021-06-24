@@ -6,11 +6,27 @@ import hashlib
 from ..builder_utils import mpi_rank, mpi_size, barrier
 
 
-class EdgeTypesTable(object):
+class EdgeTypesTableIFace(object):
+    @property
+    def n_syns(self):
+        raise NotImplementedError()
+
+    @property
+    def n_edges(self):
+        raise NotImplementedError()
+
+
+class EdgeTypesTableMemory(object):
     """A class for creating and storing the actual connectivity matrix plus all the possible (hdf5 bound) properties
     of an edge - unlike the ConnectionMap class which only stores the unevaluated rules each edge-types. There should
     be one EdgeTypesTable for each call to Network.add_edges(...)
+
+    By default edges in the SONATA edges.h5 table are stored in a (sparse) SxT table, S/T the num of source/target
+    cells. If individual edge properties (syn_weight, syn_location, etc) and added then it must be stored in a SxTxN
+    table, N the avg. number of synapses between each source/target pair. The actually number of edges (ie rows)
+    saved in the SONATA file will vary.
     """
+
     def __init__(self, connection_map):
         self._connection_map = connection_map
 
@@ -26,7 +42,7 @@ class EdgeTypesTable(object):
         self._nsyns_trg2idx = {node_id: i for i, node_id in enumerate(self._nsyns_idx2trg)}
         self._nsyns_updated = False
         self._n_syns = 0
-        self.nsyn_table = np.zeros((len(self._nsyns_idx2src), len(self._nsyns_idx2trg)), dtype=np.uint8)
+        self.nsyn_table = np.zeros((len(self._nsyns_idx2src), len(self._nsyns_idx2trg)), dtype=np.uint16)
 
         self._prop_vals = {}  # used to store the arrays for each property
         self._prop_node_ids = None  # used to save the source_node_id and target_node_id for each edge
@@ -35,6 +51,7 @@ class EdgeTypesTable(object):
 
     @property
     def n_syns(self):
+        """Number of synapses."""
         if self._nsyns_updated:
             self._nsyns_updated = False
             self._n_syns = int(np.sum(self.nsyn_table))
@@ -42,22 +59,37 @@ class EdgeTypesTable(object):
 
     @property
     def n_edges(self):
+        """Number of unque edges/connections (eg rows in SONATA edges file). When multiple synapse can be safely
+        represented with just one edge it will have n_edges < n_syns.
+        """
         if self._prop_vals:
             return self.n_syns
         else:
             return np.count_nonzero(self.nsyn_table)
 
     @property
-    def prop_node_ids(self):
+    def edge_type_node_ids(self):
+        """Returns a table n_edges x 2, first column containing source_node_ids and second target_node_ids."""
         if self._prop_node_ids is None or self._nsyns_updated:
-            self._prop_node_ids = np.zeros((self.n_edges, 2), dtype=np.uint32)
-            idx = 0
-            for r, src_id in enumerate(self._nsyns_idx2src):
-                for c, trg_id in enumerate(self._nsyns_idx2trg):
-                    nsyns = self.nsyn_table[r, c]
-                    self._prop_node_ids[idx:(idx + nsyns), 0] = src_id
-                    self._prop_node_ids[idx:(idx + nsyns), 1] = trg_id
-                    idx += nsyns
+            if len(self._prop_vals) == 0:
+                # Get the source and target node ids from the rows/columns of nsyns table cells that are greater than 0
+                nsyn_table_flat = self.nsyn_table.ravel()
+                src_trg_prods = np.array(np.meshgrid(self._nsyns_idx2src, self._nsyns_idx2trg)).T.reshape(-1, 2)
+                nonzero_idxs = np.argwhere(nsyn_table_flat > 0).flatten()
+                self._prop_node_ids = src_trg_prods[nonzero_idxs, :].astype(np.uint64)
+
+            else:
+                # If there are synaptic properties go through each source/target pair and add their node-ids N times,
+                # where N is the number of synapses between the two nodes
+                self._prop_node_ids = np.zeros((self.n_edges, 2), dtype=np.int64)
+                idx = 0
+                for r, src_id in enumerate(self._nsyns_idx2src):
+                    for c, trg_id in enumerate(self._nsyns_idx2trg):
+                        nsyns = self.nsyn_table[r, c]
+
+                        self._prop_node_ids[idx:(idx + nsyns), 0] = src_id
+                        self._prop_node_ids[idx:(idx + nsyns), 1] = trg_id
+                        idx += nsyns
 
         return self._prop_node_ids
 
@@ -105,7 +137,7 @@ class EdgeTypesTable(object):
         self._prop_vals[prop_name] = np.zeros(prop_size, dtype=prop_type)
 
     def iter_edges(self):
-        prop_node_ids = self.prop_node_ids
+        prop_node_ids = self.edge_type_node_ids
         src_nodes_lu = self.source_nodes_map
         trg_nodes_lu = self.target_nodes_map
         for edge_index in range(self.n_edges):
@@ -121,10 +153,9 @@ class EdgeTypesTable(object):
 
     def get_property_value(self, prop_name):
         if prop_name == 'nsyns':
-            # nonzero_idxs = np.argwhere(nsyn_table_flat > 0).flatten()
             nsyns_table_flat = self.nsyn_table.ravel()
-            # node_ids_flat = np.array(np.meshgrid(self._nsyns_idx2src, self._nsyns_idx2trg)).T.reshape(-1, 2)
             nonzero_indxs = np.argwhere(nsyns_table_flat > 0).flatten()
+
             return nsyns_table_flat[nonzero_indxs]
         else:
             return self._prop_vals[prop_name]
@@ -136,27 +167,20 @@ class EdgeTypesTable(object):
         del self.nsyn_table
         del self._prop_vals
 
-try:
-    if mpi_rank == 0 and mpi_size > 1:
-        for r in range(mpi_size):
-            tmp_path = '.edge_types_table.{}.h5'.format(r)
-            if os.path.exists(tmp_path):
-                os.remove(tmp_path)
-except Exception:
-    pass
 
-barrier()
+class EdgeTypesTableMPI(EdgeTypesTableMemory):
+    """Like parent used for storing actualized edges data, but designed for when using MPI and the edges-tables rules
+    are split across different ranks/processors.
 
+    The data tables are saved in temporary files on the disk, so that the rank which is responsible for writing to the
+    final hdf5 file. This could also be useful for very large networks built on one core.
 
-
-class EdgeTypesTableMPI(EdgeTypesTable):
-    # _tmp_table_handle = None  # Singleton file object so hdf5 temp file is created only once
-    _tmp_table_valid = False
+    TODO: Look into saving in memory, use MPI Gather/Send.
+    """
+    _tmp_table_valid = False  # Singleton flag to ensure hdf5 temp file is created only once
 
     def __init__(self, connection_map):
         super(EdgeTypesTableMPI, self).__init__(connection_map)
-
-        # self._tmp_edges_table_path = '.edge_types_table.{}.h5'.format(mpi_rank)
 
     @property
     def tmp_table_name(self):
@@ -176,17 +200,8 @@ class EdgeTypesTableMPI(EdgeTypesTable):
                 h5.create_group('unprocessed')
                 EdgeTypesTableMPI._tmp_table_valid = True
 
-
-    # @property
-    # def edge_tables_rank(self):
-    #     return self._tmp_edges_table_path
-
     def save(self):
         """Saves edges data to hdf5 on the disk so that other ranks can read it (without MPISend)."""
-        # mode = 'r+' if os.path.exists(self._tmp_edges_table_path) else 'w'
-        # with h5py.File(self._tmp_edges_table_path, mode) as h5:
-        # h5 = self._open_tmp_table()
-
         self._init_tmp_table()
         with h5py.File(self.tmp_table_name, 'r+') as h5:
             # Create a new group
@@ -195,7 +210,7 @@ class EdgeTypesTableMPI(EdgeTypesTable):
                 del h5[edge_type_id_str]
 
             edge_type_grp = h5.create_group('/unprocessed/{}'.format(edge_type_id_str))
-            src_trg_ids = super().prop_node_ids
+            src_trg_ids = super().edge_type_node_ids
             edge_type_grp.create_dataset('source_node_id', data=src_trg_ids[:, 0])
             edge_type_grp.create_dataset('target_node_id', data=src_trg_ids[:, 1])
 
@@ -206,3 +221,22 @@ class EdgeTypesTableMPI(EdgeTypesTable):
                 edge_type_grp.create_dataset(pname, data=pvals, dtype=ptype)
                 edge_type_grp.attrs['size'] = len(pvals)
                 edge_type_grp.attrs['hash_key'] = self.hash_key
+
+
+try:
+    if mpi_rank == 0 and mpi_size > 1:
+        for r in range(mpi_size):
+            tmp_path = '.edge_types_table.{}.h5'.format(r)
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+    barrier()
+except Exception:
+    pass
+
+
+class EdgeTypesTable(object):
+    def __new__(cls, *args, **kwargs):
+        if mpi_size > 1:
+            return EdgeTypesTableMPI(*args, **kwargs)
+        else:
+            return EdgeTypesTableMemory(*args, **kwargs)

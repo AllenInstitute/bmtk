@@ -8,7 +8,11 @@ from ..builder_utils import mpi_rank, mpi_size, barrier
 logger = logging.getLogger(__name__)
 
 
-class EdgesCollator(object):
+class EdgesCollatorSingular(object):
+    """Used to collect all the edges data-tables created and stored in the EdgeTypesTable to simplify the process
+    of saving into a SONATA edges file.
+    """
+
     def __init__(self, edge_types_tables):
         self._edge_types_tables = edge_types_tables
         self._model_groups_md = {}
@@ -47,7 +51,7 @@ class EdgesCollator(object):
         for et in self._edge_types_tables:
             idx_end = idx_beg + et.n_edges
 
-            src_trg_ids = et.prop_node_ids
+            src_trg_ids = et.edge_type_node_ids
             self.source_ids[idx_beg:idx_end] = src_trg_ids[:, 0]
             self.target_ids[idx_beg:idx_end] = src_trg_ids[:, 1]
             self.edge_type_ids[idx_beg:idx_end] = et.edge_type_id
@@ -178,7 +182,12 @@ class EdgesCollator(object):
 
 
 class EdgesCollatorMPI(object):
-    # TODO: Try removing the MPI code and make this an on-disk class, the MPI issues can be handled by the network class
+    """For collecting all the different edge-types tables to make writing edges and iterating over the entire network
+    easier. Similar to above but for when edge-rules data are split across multiple MPI ranks/processors. Can also
+    be utlized for single core building when the network is too big to store in memory at once.
+
+    TODO: Consider saving tables to memory on each rank, and using MPI Gather/Send.
+    """
     def __init__(self, edge_types_tables):
         self._edge_types_tables = edge_types_tables
 
@@ -320,7 +329,8 @@ class EdgesCollatorMPI(object):
                 proc_grp['edge_group_id'][idx_beg:idx_end] = group_id
 
                 group_index_offset = group_rank_offsets[group_id][mpi_rank]
-                proc_grp['edge_group_index'][idx_beg:idx_end] = np.arange(grp_idx_beg, grp_idx_end, dtype=np.uint) + group_index_offset
+                proc_grp['edge_group_index'][idx_beg:idx_end] = \
+                    np.arange(grp_idx_beg, grp_idx_end, dtype=np.uint) + group_index_offset
 
                 idx_beg = idx_end
                 grp_indices[group_id] = grp_idx_end
@@ -328,6 +338,9 @@ class EdgesCollatorMPI(object):
     @property
     def group_ids(self):
         return list(self._group_ids)
+
+    def sort(self, sort_by, sort_group_properties=True):
+        logger.warning('Unable to sort edges.')
 
     def get_group_metadata(self, group_id):
         """for a given group_id return all the property dataset metadata; {name, type, size}, across all ranks."""
@@ -350,20 +363,13 @@ class EdgesCollatorMPI(object):
             return ret_props
 
     def itr_chunks(self):
-        # rank_id = 0
         idx_beg = 0
         self._group_offsets = {grp_id: 0 for grp_id in self.group_ids}
-        # idx_end = self.n_total_edges
 
         for rank_id in range(mpi_size):
             idx_end = idx_beg + self._edges_by_rank[rank_id]
-            # print(idx_beg, idx_end)
             yield rank_id, idx_beg, idx_end
             idx_beg = idx_end
-
-
-
-        # yield chunk_id, idx_beg, idx_end
 
     def _get_processed_h5(self, rank):
         h5_path = '.edge_types_table.processed.{}.h5'.format(rank)
@@ -413,3 +419,11 @@ class EdgesCollatorMPI(object):
     def get_group_property(self, prop_name, group_id, chunk_id):
         rank_h5 = self._get_processed_h5(rank=chunk_id)
         return rank_h5['processed'][str(group_id)][prop_name][()]
+
+
+class EdgesCollator(object):
+    def __new__(cls, *args, **kwargs):
+        if mpi_size > 1:
+            return EdgesCollatorMPI(*args, **kwargs)
+        else:
+            return EdgesCollatorSingular(*args, **kwargs)
