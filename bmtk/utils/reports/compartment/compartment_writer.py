@@ -376,7 +376,10 @@ class CompartmentWriterv01(CompartmentWriterABC):
     def close(self):
         for pop_grp in self._pop_tables.values():
             pop_grp.close()
-        self._h5_handle.close()
+
+        if self._h5_handle is not None:
+            self._h5_handle.close()
+
         if self._mpi_size > 1:
             self.merge()
 
@@ -384,7 +387,8 @@ class CompartmentWriterv01(CompartmentWriterABC):
         barrier()
         if self._mpi_size > 1 and self._mpi_rank == 0:
             h5final = h5py.File(self._final_fpath, 'w')
-            tmp_reports = [CompartmentReader(name) for name in self.temp_files]
+
+            tmp_reports = [CompartmentReader(name) for name in self.temp_files if os.path.exists(name)]
             populations = set()
             for r in tmp_reports:
                 populations.update(r.populations)
@@ -488,7 +492,8 @@ class CompartmentWriterv01(CompartmentWriterABC):
                     var_data.attrs['units'] = units
 
             for tmp_file in self.temp_files:
-                os.remove(tmp_file)
+                if os.path.exists(tmp_file):
+                    os.remove(tmp_file)
         barrier()
 
     def _build_or_fetch_pop(self, population):
