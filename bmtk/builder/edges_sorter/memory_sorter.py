@@ -37,6 +37,27 @@ def _create_output_h5(input_file, output_file, edges_root, n_edges):
     return root_grp
 
 
+def copy_attributes(in_grp, out_grp):
+    """Recursively copy hdf5 Group/Dataset attributes from in_grp to out_grp
+
+    :param in_grp: hdf5 Group object whose attributes will be copied from.
+    :param out_grp: hdf5 Group object that will have it's attributes updated/copied to.
+    """
+    if in_grp.attrs:
+        out_grp.attrs.update(in_grp.attrs)
+
+    for in_name, in_h5_obj in in_grp.items():
+        if in_name not in out_grp:
+            # make sure matching subgroup/dataset exists in the output group
+            continue
+
+        elif isinstance(in_h5_obj, h5py.Dataset):
+            out_grp[in_name].attrs.update(in_h5_obj.attrs)
+
+        elif isinstance(in_h5_obj, h5py.Group):
+            copy_attributes(in_h5_obj, out_grp[in_name])
+
+
 # def _get_sort(index_type):
 #     if index_type.lower() in ['target', 'target_id', 'target_node_id', 'target_node_ids']:
 #         col_to_index = 'target_node_id'
@@ -67,7 +88,7 @@ def resort_edges(input_edges_path, output_edges_path, edges_population, sort_by,
         sort_order = np.argsort(sort_vals)
         # TODO: Check if already sorted
 
-        for col_name in ['source_node_id', 'target_node_id', 'edge_type_id', 'edge_group_id']:  # , 'edge_group_index']:
+        for col_name in ['source_node_id', 'target_node_id', 'edge_type_id', 'edge_group_id']:
             col_type = in_pop_grp[col_name].dtype
             col_vals = in_pop_grp[col_name][()]
             sorted_col_vals = col_vals[sort_order]
@@ -91,3 +112,5 @@ def resort_edges(input_edges_path, output_edges_path, edges_population, sort_by,
             sorted_group_indx[group_id_mask] = np.arange(0, len(group_id_mask), dtype=group_index_dtype)
 
         out_pop_grp.create_dataset('edge_group_index', data=sorted_group_indx)
+        copy_attributes(input_h5['/'], output_h5['/'])
+

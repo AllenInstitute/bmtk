@@ -2,9 +2,12 @@ import os
 import numpy as np
 import h5py
 import hashlib
+import logging
 
 from ..builder_utils import mpi_rank, mpi_size, barrier
 
+
+logger = logging.getLogger(__name__)
 
 class EdgeTypesTableIFace(object):
     @property
@@ -27,8 +30,9 @@ class EdgeTypesTableMemory(object):
     saved in the SONATA file will vary.
     """
 
-    def __init__(self, connection_map):
+    def __init__(self, connection_map, network_name):
         self._connection_map = connection_map
+        self._network_name = network_name
 
         self.source_network = connection_map.source_nodes.network_name
         self.target_network = connection_map.target_nodes.network_name
@@ -179,12 +183,17 @@ class EdgeTypesTableMPI(EdgeTypesTableMemory):
     """
     _tmp_table_valid = False  # Singleton flag to ensure hdf5 temp file is created only once
 
-    def __init__(self, connection_map):
-        super(EdgeTypesTableMPI, self).__init__(connection_map)
+    def __init__(self, connection_map, network_name):
+        super(EdgeTypesTableMPI, self).__init__(connection_map, network_name)
+        self.tmp_table_name = EdgeTypesTableMPI.get_tmp_table_path(mpi_rank)
 
-    @property
-    def tmp_table_name(self):
-        return '.edge_types_table.{}.h5'.format(mpi_rank)
+    # @property
+    # def tmp_table_name(self):
+    #     return '.edge_types_table.{}.h5'.format(mpi_rank)
+
+    @staticmethod
+    def get_tmp_table_path(rank=0, name=None):
+        return '.edge_types_table.{}.h5'.format(rank)
 
     def _open_tmp_table(self):
         if EdgeTypesTableMPI._tmp_table_handle is None:
@@ -203,14 +212,20 @@ class EdgeTypesTableMPI(EdgeTypesTableMemory):
     def save(self):
         """Saves edges data to hdf5 on the disk so that other ranks can read it (without MPISend)."""
         self._init_tmp_table()
+
+        src_trg_ids = super().edge_type_node_ids
+        if src_trg_ids.shape[0] == 0:
+            # ignore if no actual edges
+            return
+
         with h5py.File(self.tmp_table_name, 'r+') as h5:
             # Create a new group
             edge_type_id_str = str(self.edge_type_id)
             if edge_type_id_str in h5:
                 del h5[edge_type_id_str]
 
-            edge_type_grp = h5.create_group('/unprocessed/{}'.format(edge_type_id_str))
-            src_trg_ids = super().edge_type_node_ids
+            edge_type_grp = h5.create_group('/unprocessed/{}/{}'.format(self._network_name, edge_type_id_str))
+
             edge_type_grp.create_dataset('source_node_id', data=src_trg_ids[:, 0])
             edge_type_grp.create_dataset('target_node_id', data=src_trg_ids[:, 1])
 
@@ -222,16 +237,24 @@ class EdgeTypesTableMPI(EdgeTypesTableMemory):
                 edge_type_grp.attrs['size'] = len(pvals)
                 edge_type_grp.attrs['hash_key'] = self.hash_key
 
+    def __del__(self):
+        tmp_h5_path = EdgeTypesTableMPI.get_tmp_table_path(rank=mpi_rank)
+        try:
+            if os.path.exists(tmp_h5_path):
+                os.remove(tmp_h5_path)
+        except (FileNotFoundError, IOError, Exception) as e:
+            logger.warning('Unable to delete temp edges file {}.'.format(tmp_h5_path))
 
-try:
-    if mpi_rank == 0 and mpi_size > 1:
-        for r in range(mpi_size):
-            tmp_path = '.edge_types_table.{}.h5'.format(r)
-            if os.path.exists(tmp_path):
-                os.remove(tmp_path)
-    barrier()
-except Exception:
-    pass
+
+# try:
+#     if mpi_rank == 0 and mpi_size > 1:
+#         for r in range(mpi_size):
+#             tmp_path = '.edge_types_table.{}.h5'.format(r)
+#             if os.path.exists(tmp_path):
+#                 os.remove(tmp_path)
+#     barrier()
+# except Exception:
+#     pass
 
 
 class EdgeTypesTable(object):

@@ -24,6 +24,7 @@ import os
 import numpy as np
 import h5py
 import logging
+import csv
 
 from ..network import Network
 from bmtk.builder.node import Node
@@ -168,7 +169,7 @@ class DenseNetwork(Network):
         """
         edge_type_id = connection_map.edge_type_properties['edge_type_id']
         logger.debug('Generating edges data for edge_types_id {}.'.format(edge_type_id))
-        edges_table = EdgeTypesTable(connection_map)
+        edges_table = EdgeTypesTable(connection_map, network_name=self.name)
         connections = connection_map.connection_itr()
 
         # iterate through all possible SxT source/target pairs and use the user-defined function/list/value to update
@@ -210,7 +211,7 @@ class DenseNetwork(Network):
                         edges_table.set_property_value(prop_name=pname, edge_index=edge_index, prop_value=pval)
 
         logger.debug('Edge-types {} data built with {} connection ({} synapses)'.format(
-            edge_type_id, edges_table.n_syns, edges_table.n_edges)
+            edge_type_id, edges_table.n_edges, edges_table.n_syns)
         )
 
         edges_table.save()
@@ -255,20 +256,22 @@ class DenseNetwork(Network):
 
     def _save_edges(self, edges_file_name, src_network, trg_network, pop_name=None, sort_by='target_node_id',
                     index_by=('target_node_id', 'source_node_id')):
-        logger.debug('Saving {} --> {} edges to {}.'.format(src_network, trg_network, edges_file_name))
+        if mpi_rank == 0:
+            logger.debug('Saving {} --> {} edges to {}.'.format(src_network, trg_network, edges_file_name))
 
         filtered_edge_types = [
             et for et in self.__edges_tables
             if et.source_network == src_network and et.target_network == trg_network
         ]
 
-        merged_edges = EdgesCollator(filtered_edge_types)
+        merged_edges = EdgesCollator(filtered_edge_types, network_name=self.name)
         merged_edges.process()
         n_total_conns = merged_edges.n_total_edges
         barrier()
 
         if n_total_conns == 0:
-            logger.warning('Was not able to generate any edges using the "connection_rule". Not saving.')
+            if mpi_rank == 0:
+                logger.warning('Was not able to generate any edges using the "connection_rule". Not saving.')
             return
 
         # Try to sort before writing file, If edges are split across ranks/files for MPI/size issues then we need to
@@ -285,8 +288,9 @@ class DenseNetwork(Network):
                 edges_file_basename = os.path.basename(edges_file_name)
                 edges_file_dirname = os.path.dirname(edges_file_name)
                 edges_file_name = os.path.join(edges_file_dirname, '.unsorted.{}'.format(edges_file_basename))
-                logger.debug('Unable to sort edges in memory, will temporarly save to {}'.format(edges_file_name) +
-                             ' before sorting hdf5 file.')
+                if mpi_rank == 0:
+                    logger.debug('Unable to sort edges in memory, will temporarly save to {}'.format(edges_file_name) +
+                                 ' before sorting hdf5 file.')
         barrier()
 
         if mpi_rank == 0:
@@ -353,6 +357,10 @@ class DenseNetwork(Network):
                         )
 
         barrier()
+        del merged_edges
+
+        if mpi_rank == 0:
+            logger.debug('Saving completed.')
 
     def _clear(self):
         self._nedges = 0

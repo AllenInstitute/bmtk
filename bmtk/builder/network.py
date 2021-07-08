@@ -646,23 +646,25 @@ class Network(object):
                 self._save_edges(os.path.join(output_dir, p[2]), p[0], p[1], name)
 
     def _save_edge_types(self, edge_types_file_name, src_network, trg_network):
+        if mpi_rank == 0:
+            # Get edge-type properties for connections with matching source/target networks
+            matching_et = [c.edge_type_properties for c in self._connection_maps
+                           if c.source_network_name == src_network and c.target_network_name == trg_network]
 
-        # Get edge-type properties for connections with matching source/target networks
-        matching_et = [c.edge_type_properties for c in self._connection_maps
-                       if c.source_network_name == src_network and c.target_network_name == trg_network]
+            # Get edge-type properties that are only relevant for this source-target network pair
+            cols = ['edge_type_id', 'target_query', 'source_query']  # manditory and should come first
+            merged_keys = [k for et in matching_et for k in et.keys() if k not in cols]
+            cols += list(set(merged_keys))
 
-        # Get edge-type properties that are only relevant for this source-target network pair
-        cols = ['edge_type_id', 'target_query', 'source_query']  # manditory and should come first
-        merged_keys = [k for et in matching_et for k in et.keys() if k not in cols]
-        cols += list(set(merged_keys))
+            # Write to csv
+            with open(edge_types_file_name, 'w') as csvfile:
+                csvw = csv.writer(csvfile, delimiter=' ')
+                csvw.writerow(cols)
+                for edge_type in matching_et:
+                    csvw.writerow([edge_type.get(cname, 'NULL') if edge_type.get(cname, 'NULL') is not None else 'NULL'
+                                   for cname in cols])
 
-        # Write to csv
-        with open(edge_types_file_name, 'w') as csvfile:
-            csvw = csv.writer(csvfile, delimiter=' ')
-            csvw.writerow(cols)
-            for edge_type in matching_et:
-                csvw.writerow([edge_type.get(cname, 'NULL') if edge_type.get(cname, 'NULL') is not None else 'NULL'
-                               for cname in cols])
+        barrier()
 
     def _save_edges(self, edges_file_name, src_network, trg_network, pop_name=None, **opts):
         raise NotImplementedError
