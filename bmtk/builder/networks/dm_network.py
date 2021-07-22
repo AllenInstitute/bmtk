@@ -168,7 +168,6 @@ class DenseNetwork(Network):
             else:
                 raise Exception('Nodes file {} does not contain population {}.'.format(nodes_file_name, population))
 
-        # print node_pop.node_types_table
         for node_type_props in node_pop.node_types_table:
             self._add_node_type(node_type_props)
 
@@ -177,7 +176,6 @@ class DenseNetwork(Network):
             self._nodes.append(Node(node.node_id, node.group_props, node.node_type_properties))
 
     def _add_edges(self, connection_map, i):
-        print('adding edges')
         syn_table = self.EdgeTable(connection_map)
         connections = connection_map.connection_itr()
         for con in connections:
@@ -202,12 +200,12 @@ class DenseNetwork(Network):
 
 
         for param in connection_map.params:
-            print('  ', param.names)
             rule = param.rule
             param_names = param.names
             edge_table['params_dtypes'].update(param.dtypes)
             if isinstance(param_names, list) or isinstance(param_names, tuple):
-                tmp_tables = [self.PropertyTable(nsyns) for _ in range(len(param_names))]
+                tmp_tables = [self.PropertyTable(nsyns, param.dtypes[n]) for n in param_names]
+                # tmp_tables = [self.PropertyTable(nsyns) for _ in range(len(param_names))]
                 for source in connection_map.source_nodes:
                     src_node_id = source.node_id
                     for target in connection_map.target_nodes:
@@ -222,7 +220,7 @@ class DenseNetwork(Network):
                     edge_table['params'][name] = tmp_tables[i]
 
             else:
-                pt = self.PropertyTable(np.sum(nsyns))
+                pt = self.PropertyTable(np.sum(nsyns), dtype=param.dtypes[param_names])
                 for source in connection_map.source_nodes:
                     src_node_id = source.node_id
                     for target in connection_map.target_nodes:
@@ -271,7 +269,6 @@ class DenseNetwork(Network):
 
 
     def _save_edges(self, edges_file_name, src_network, trg_network, name=None):
-        print('saving edges')
         groups = {}
         group_dtypes = {}  # TODO: this should be stored in PropertyTable
         grp_id_itr = 0
@@ -280,8 +277,6 @@ class DenseNetwork(Network):
 
         matching_edge_tables = [et for et in self.__edges_tables
                                 if et['source_network'] == src_network and et['target_network'] == trg_network]
-
-        # print(matching_edge_tables)
 
         for ets in matching_edge_tables:
             params_hash = str(ets['params'].keys())
@@ -311,7 +306,6 @@ class DenseNetwork(Network):
         #index_ptrs = np.zeros(len(self._nodes)+1)  # TODO: issue when target nodes come from another network
         index_ptr_itr = 0
 
-        print('building table')
         gid_indx = 0
         for trg_node in self._target_networks[trg_network].nodes():
             index_ptrs[index_ptr_itr] = gid_indx
@@ -347,16 +341,11 @@ class DenseNetwork(Network):
                             group_table['nsyns'] = []
                         group_dtypes[edge_group_id]['nsyns'] = 'uint16'
                         for src_id, nsyns in syn_table.trg_itr(trg_node.node_id):
-                            # print('>', trg_node.node_id, src_id, nsyns)
-                            # print(syn_table._nsyn_table)
-                            # syn_table.flatten()
-
                             trg_gids[gid_indx] = trg_node.node_id
                             src_gids[gid_indx] = src_id
                             edge_type_ids[gid_indx] = ets['edge_type_id']
                             edge_groups[gid_indx] = edge_group_id
                             edge_group_index[gid_indx] = group_index_itrs[edge_group_id]
-                            # group_dtypes
                             group_index_itrs[edge_group_id] += 1
                             gid_indx += 1
 
@@ -370,7 +359,6 @@ class DenseNetwork(Network):
 
         pop_name = '{}_to_{}'.format(src_network, trg_network) if name is None else name
 
-        print('saving to disk')
         index_ptrs[index_ptr_itr] = gid_indx
         with h5py.File(edges_file_name, 'w') as hf:
             add_hdf5_attrs(hf)
@@ -395,7 +383,6 @@ class DenseNetwork(Network):
                     else:
                         model_grp.create_dataset(params_key, data=list(params_vals))
 
-            print('creating indexes')
             self._create_index(pop_grp['target_node_id'], pop_grp, index_type='target')
             self._create_index(pop_grp['source_node_id'], pop_grp, index_type='source')
 
@@ -519,20 +506,10 @@ class DenseNetwork(Network):
                 if nsyns:
                     yield src_id, nsyns
 
-        def flatten(self):
-            print('flatten()')
-            print(self._nsyn_table)
-            print(self.__idx2src)
-            print(self.__idx2trg)
-            print(self._nsyn_table.ravel(), self._nsyn_table.ravel().shape)
-            print(np.array(np.meshgrid(self.__idx2src, self.__idx2trg)).T.reshape(-1, 2))
-            print(np.argwhere(self._nsyn_table > 0))
-            exit()
-
     class PropertyTable(object):
         # TODO: add support for strings
-        def __init__(self, nvalues):
-            self._prop_array = np.zeros(nvalues)
+        def __init__(self, nvalues, dtype):
+            self._prop_array = np.zeros(nvalues, dtype=dtype)
             # self._prop_table = np.zeros((nvalues, 1))  # TODO: set dtype
             self._index = np.zeros((nvalues, 2), dtype=np.uint32)
             self._itr_index = 0

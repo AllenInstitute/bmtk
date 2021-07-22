@@ -76,19 +76,37 @@ def test_add_nodes_tuples():
         assert(node['arg_const'][0] == 'a' and node['arg_const'][1] == 'b')
 
 
-def test_add_nodes_ids():
+def test_add_node_ids():
     # Special case if parameters node_id and node_type_id are explicitly defined by the user
     net = NetworkBuilder('V1')
     net.add_nodes(N=3, node_id=[100, 200, 300], node_type_id=101, name=['one', 'two', 'three'])
+    net.build()
     node_one = list(net.nodes(name='one'))[0]
     assert(node_one['name'] == 'one')
     assert(node_one['node_id'] == 100)
+    assert(node_one.node_id == 100)
     assert(node_one['node_type_id'] == 101)
 
     node_three = list(net.nodes(name='three'))[0]
     assert(node_three['name'] == 'three')
     assert(node_three['node_id'] == 300)
+    assert (node_one.node_id == 100)
     assert(node_three['node_type_id'] == 101)
+
+
+def test_add_node_ids_mixed():
+    net = NetworkBuilder('V1')
+    net.add_nodes(N=3, node_id=[0, 2, 4], vals=[0, 2, 4])
+    net.add_nodes(N=3, vals=[1, 1, 1])
+    net.add_nodes(nodes_ids=[6], vals=[6])
+    unique_ids = set()
+    for n in net.nodes():
+        unique_ids.add(n.node_id)
+        if n.node_id % 2 == 0:
+            assert(n['vals'] == n.node_id)
+        else:
+            assert(n['vals'] == 1)
+    assert(len(unique_ids) == 7)
 
 
 def test_add_nodes_mismatch_params():
@@ -98,11 +116,20 @@ def test_add_nodes_mismatch_params():
         net.add_nodes(N=100, list1=[100]*99)
 
 
-def test_build_nodes_id_clash():
+def test_duplicate_node_ids():
+    # Check if the same node_id is being used twice
+    net = NetworkBuilder('V1')
+    net.add_nodes(N=1, node_id=[100])
+
+    with pytest.raises(ValueError):
+        net.add_nodes(N=1, node_id=[100])
+
+
+def test_duplicate_node_type_ids():
     # Should fail if their is a node_type_id clash between two groups
     net = NetworkBuilder('V1')
+    net.add_nodes(N=2, node_type_id=0)
     with pytest.raises(Exception):
-        net.add_nodes(N=2, node_type_id=0)
         net.add_nodes(N=2, node_type_id=0)
 
 
@@ -111,12 +138,18 @@ def test_add_edges():
     net.add_nodes(N=10, cell_type='Scnna1', ei='e')
     net.add_nodes(N=10, cell_type='PV1', ei='i')
     net.add_nodes(N=10, cell_type='PV2', ei='i')
-    net.add_edges(source={'ei': 'i'}, target={'ei': 'e'},
-                  connection_rule=lambda s, t: 1,
-                  edge_arg='i2e')
-    net.add_edges(source=net.nodes(cell_type='Scnna1'), target=net.nodes(cell_type='PV1'),
-                  connection_rule=2,
-                  edge_arg='e2i')
+    net.add_edges(
+        source={'ei': 'i'},
+        target={'ei': 'e'},
+        connection_rule=lambda s, t: 1,
+        edge_arg='i2e'
+    )
+    net.add_edges(
+        source=net.nodes(cell_type='Scnna1'),
+        target=net.nodes(cell_type='PV1'),
+        connection_rule=2,
+        edge_arg='e2i'
+    )
     net.build()
     assert(net.nedges == 200 + 200)
     assert(net.edges_built is True)
@@ -136,14 +169,20 @@ def test_add_edges_custom_params():
     net.add_nodes(N=10, arg_list=range(10), arg_ctype='e')
     net.add_nodes(N=5, arg_list=range(10, 15), arg_ctype='i')
 
-    cm = net.add_edges(source={'arg_ctype': 'e'}, target={'arg_ctype': 'i'}, connection_rule=1)
+    cm = net.add_edges(
+        source={'arg_ctype': 'e'},
+        target={'arg_ctype': 'i'},
+        connection_rule=2
+    )
     cm.add_properties('syn_weight', rule=0.5, dtypes=np.float)
-    cm.add_properties(['src_num', 'trg_num'],
-                      rule=lambda s, t: [s['node_id'], t['node_id']],
-                      dtypes=[np.int, np.int])
+    cm.add_properties(
+        ['src_num', 'trg_num'],
+        rule=lambda s, t: [s['node_id'], t['node_id']],
+        dtypes=[np.int, np.int]
+    )
     net.build()
 
-    assert(net.nedges == 50)
+    assert(net.nedges == 2*50)
     assert(net.edges_built is True)
 
     for e in net.edges():
@@ -161,9 +200,12 @@ def test_cross_pop_edges():
     net2 = NetworkBuilder('V2')
     net2.add_nodes(N=5, arg_list=range(10, 15), arg_ctype='i')
 
-    net2.add_edges(source={'arg_ctype': 'i'}, target=net1.nodes(arg_ctype='e'),
-                  connection_rule=lambda s, t: 1,
-                  edge_arg='i2e')
+    net2.add_edges(
+        source={'arg_ctype': 'i'},
+        target=net1.nodes(arg_ctype='e'),
+        connection_rule=lambda s, t: 1,
+        edge_arg='i2e'
+    )
     net2.build()
     assert(net2.nedges == 50)
 
@@ -172,11 +214,13 @@ if __name__ == '__main__':
     # test_basic()
     # test_no_name()
     # test_add_nodes()
+    # test_add_node_ids_mixed()
     # test_add_nodes_tuples()
     # test_add_nodes_ids()
-    # test_add_nodes_mismatch_params()
+    # test_duplicate_node_ids()
     # test_build_nodes_id_clash()
     # test_add_edges()
-    # test_add_edges_custom_params()
-    test_cross_pop_edges()
+    test_add_edges_custom_params()
+    # test_cross_pop_edges()
+
 

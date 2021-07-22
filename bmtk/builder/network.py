@@ -113,7 +113,7 @@ class Network(object):
         
         self._node_sets = []
         self.__external_node_sets = []
-        self.__node_id_counter = 0
+        # self.__node_id_counter = 0
 
         self._node_types_properties = {}
         self._node_types_columns = {'node_type_id'}
@@ -196,7 +196,7 @@ class Network(object):
         node_params = {}
         node_properties = {}
         for prop_name, prop_value in properties.items():
-            if isinstance(prop_value, (list, np.ndarray)):  # TODO: what about pandas series
+            if isinstance(prop_value, (list, np.ndarray)):
                 n_props = len(prop_value)
                 if n_props != N:
                     raise Exception('Trying to pass in array of length {} into N={} nodes'.format(n_props, N))
@@ -215,6 +215,14 @@ class Network(object):
         if 'node_type_id' in node_params:
             raise Exception('There can be only one "node_type_id" per set of nodes.')
 
+        if 'node_id' in node_params:
+            node_id_list = node_params['node_id']
+            node_id_list = node_id_list if isinstance(node_id_list, (list, np.ndarray)) else [node_id_list]
+            for nid in node_id_list:
+                if nid in self._node_id_gen:
+                    raise ValueError('Duplicate add node_id value {}.'.format(nid))
+                self._node_id_gen.remove_id(nid)
+
         self._add_node_type(node_properties)
         self._node_sets.append(NodeSet(N, node_params, node_properties))
 
@@ -224,18 +232,23 @@ class Network(object):
         created until the build() method is called, using the 'connection_rule.
 
         Node Selection:
-            To specify what subset of nodes will be used for the pre- and post-synaptic one can use a dictionary to filter
-            the nodes. In the following all inh nodes will be used for the pre-synaptic neurons, but only exc
-            fast-spiking neurons will be used in the post-synaptic neurons (If target or source is not specified all neurons
-            will be used)::
+            To specify what subset of nodes will be used for the pre- and post-synaptic one can use a dictionary to
+            filter the nodes. In the following all inh nodes will be used for the pre-synaptic neurons, but only exc
+            fast-spiking neurons will be used in the post-synaptic neurons (If target or source is not specified all
+            neurons will be used)::
 
                 net.add_edges(source={'ei': 'inh'}, target={'ei': 'exc', 'etype': 'fast-spiking'},
                               dynamic_params='i2e.json', synaptic_model='alpha', ...)
 
-            In the above code there is one connection between each source/target pair of nodes, but to create a multi-graph
-            with N connections between each pair use 'connection_rule' parameter with an integer value::
+            In the above code there is one connection between each source/target pair of nodes, but to create a
+            multi-graph with N connections between each pair use 'connection_rule' parameter with an integer value::
 
-                net.add_edges(source={'ei': 'inh'}, target={'ei': 'exc', 'etype': 'fast-spiking'}, connection_rule=M, ...)
+                net.add_edges(
+                    source={'ei': 'inh'},
+                    target={'ei': 'exc', 'etype': 'fast-spiking'},
+                    connection_rule=M,
+                    ...
+                )
 
         Connection rules:
             Usually the 'connection_rule' parameter will be the name of a function that takes in source-node and
@@ -307,8 +320,6 @@ class Network(object):
         :param edge_type_properties: properties/attributes of the given edge type
         :return: A ConnectionMap object
         """
-        # TODO: check edge_type_properties for 'edge_type_id' and make sure there isn't a collision. Otherwise create
-        #       a new id.
         if not isinstance(source, NodePool):
             source = NodePool(self, **source or {})
 
@@ -322,7 +333,7 @@ class Network(object):
         self._connected_networks[source.network_name] = source.network
         self._connected_networks[target.network_name] = target.network
 
-        # TODO: make sure that they don't add a dictionary or some other wried property type.
+        # TODO: make sure that they don't add a dictionary or some other weird property type.
         edge_type_id = edge_type_properties.get('edge_type_id', None)
         if edge_type_id is None:
             edge_type_id = self._edge_type_id_gen.next()
@@ -478,11 +489,6 @@ class Network(object):
         self._edges_built = False
         self._clear()
 
-    def _node_id(self, N):
-        for i in six.moves.range(N):
-            yield self.__node_id_counter
-            self.__node_id_counter += 1
-
     def _build_nodes(self):
         """Builds or rebuilds all the nodes, clear out both node and edge sets."""
         logger.debug('Building nodes for population {}.'.format(self.name))
@@ -491,7 +497,7 @@ class Network(object):
 
         n_node_types = 0
         for ns in self._node_sets:
-            nodes = ns.build(nid_generator=self._node_id)
+            nodes = ns.build(nid_generator=self._node_id_gen)
             self._add_nodes(nodes)
             n_node_types += 1
 

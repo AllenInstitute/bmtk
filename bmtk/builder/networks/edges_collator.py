@@ -208,36 +208,41 @@ class EdgesCollatorMPI(object):
         self.can_sort = False
 
     def process(self):
+        barrier()
+
         # Iterate through all the temp hdf5 edge-type files on the disk and gather information about all the
         # different edge-types and their properties.
         # NOTE: Assumes that each .edge_type_table*h5 file contains unique edge_type_ids
         for rank in range(mpi_size):
-            rank_edge_table_path = EdgeTypesTableMPI.get_tmp_table_path(rank=rank, name=self._network_name)  # '.edge_types_table.{}.h5'.format(rank)
+            rank_edge_table_path = EdgeTypesTableMPI.get_tmp_table_path(rank=rank, name=self._network_name)
+            if os.path.exists(rank_edge_table_path):  # possible .tmp file doesn't exist
+                with h5py.File(rank_edge_table_path, 'r') as edge_table_h5:
+                    for et_id, et_grp in edge_table_h5['unprocessed'][self._network_name].items():
+                        et_size = et_grp.attrs['size']
+                        self.n_total_edges += et_size   # et_grp.attrs['size']
+                        self.n_local_edges += et_size if rank == mpi_rank else 0
+                        edge_type_id = int(et_id)
 
-            with h5py.File(rank_edge_table_path, 'r') as edge_table_h5:
-                for et_id, et_grp in edge_table_h5['unprocessed'][self._network_name].items():
-                    et_size = et_grp.attrs['size']
-                    self.n_total_edges += et_size   # et_grp.attrs['size']
-                    self.n_local_edges += et_size if rank == mpi_rank else 0
-                    edge_type_id = int(et_id)
+                        self._edges_by_rank[rank] += et_size
+                        self._rank_offsets.append(self._rank_offsets[-1] + et_size)
 
-                    self._edges_by_rank[rank] += et_size
-                    self._rank_offsets.append(self._rank_offsets[-1] + et_size)
+                        # Save metadata about the edge-type-id
+                        group_hash_key = et_grp.attrs['hash_key']
+                        self._model_groups_md[edge_type_id] = {
+                            'hash_key': group_hash_key,
+                            'size': et_size,
+                            'rank': rank,
+                            'properties': []
+                        }
+                        et_props = [(n, d) for n, d in et_grp.items() if n not in ['source_node_id', 'target_node_id']]
+                        for pname, pdata in et_props:
+                            self._model_groups_md[edge_type_id]['properties'].append({
+                                'name': pname,
+                                'type': pdata.dtype
+                            })
 
-                    # Save metadata about the edge-type-id
-                    group_hash_key = et_grp.attrs['hash_key']
-                    self._model_groups_md[edge_type_id] = {
-                        'hash_key': group_hash_key,
-                        'size': et_size,
-                        'rank': rank,
-                        'properties': []
-                    }
-                    et_props = [(n, d) for n, d in et_grp.items() if n not in ['source_node_id', 'target_node_id']]
-                    for pname, pdata in et_props:
-                        self._model_groups_md[edge_type_id]['properties'].append({'name': pname, 'type': pdata.dtype})
-
-        # Assign the group_ids for each edge-type. If two edge-types contain the same property types they should be
-        # assigned to the same group_id. Must also take care to unify group_id's across multiple
+        # Assign the group_ids for each edge-type. If two or more edge-types contain the same property name+types they
+        # should be assigned to the same group_id. Must also take care to unify group_id's across multiple
         # .edge_type_table*h5 files
         group_hashes = set([mg['hash_key'] for mg in self._model_groups_md.values()])
         ordred_group_hashes = list(group_hashes)
@@ -267,6 +272,7 @@ class EdgesCollatorMPI(object):
 
         # collect info on local edge-group-properties to simplify things when building /processed data on rank
         local_group_props = {}
+        et_count = 0
         for edge_type_id, mg_grp in self._model_groups_md.items():
             if mg_grp['rank'] != mpi_rank:
                 continue
@@ -280,14 +286,23 @@ class EdgesCollatorMPI(object):
                     'ptypes': [p['type'] for p in mg_grp['properties']]
                 }
             local_group_props[group_id]['size'] += mg_grp['size']
+            et_count += 1
 
         # Try to take all the edge-types-tables on the current rank and combine them into one "processed" table (and
         # multiple model groups). There will be a penalty for doing more disk writing, and doing this part is not
         # strictly necessary. But for very large and complicated network it will make the process more parallizable
         # (since the writing is only done on one rank).
         unprocessed_h5_path = EdgeTypesTableMPI.get_tmp_table_path(rank=mpi_rank, name=self._network_name)
-        unprocessed_h5 = h5py.File(unprocessed_h5_path.format(mpi_rank), 'r')
-        # unprocessed_h5 = h5py.File('.edge_types_table.{}.h5'.format(mpi_rank), 'r')
+
+        if os.path.exists(unprocessed_h5_path):
+            unprocessed_h5 = h5py.File(unprocessed_h5_path.format(mpi_rank), 'r')
+        else:
+            # It is possible a .edge_types_table.<rank>.h5 file doesn't exist because there are no edges on that rank.
+            # As such hack together a fake hdf5 format with /unprocessed/network_name/ path but no data.
+            unprocessed_h5 = {
+                'unprocessed': {self._network_name: {}}
+            }
+
         with h5py.File('.edge_types_table.processed.{}.h5'.format(mpi_rank), 'w') as local_h5:
             # WARNING: Trying to process the data back into the .edge_types_table*h5 being read from will randomly cause
             #          resource unavailble errors.
@@ -328,6 +343,7 @@ class EdgesCollatorMPI(object):
                 group_id = group_props['edge_group_id']
                 grp_idx_beg = grp_indices[group_id]
                 grp_idx_end = grp_idx_beg + edge_type_grp.attrs['size']
+
                 for pname in local_group_props[group_id]['pnames']:
                     proc_grp[str(group_id)][pname][grp_idx_beg:grp_idx_end] = edge_type_grp[pname]
 
@@ -339,6 +355,8 @@ class EdgesCollatorMPI(object):
 
                 idx_beg = idx_end
                 grp_indices[group_id] = grp_idx_end
+
+        barrier()
 
     @property
     def group_ids(self):

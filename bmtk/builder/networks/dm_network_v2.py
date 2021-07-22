@@ -44,14 +44,11 @@ logger = logging.getLogger(__name__)
 class DenseNetwork(Network):
     def __init__(self, name, **network_props):
         super(DenseNetwork, self).__init__(name, **network_props or {})
-
-        self.__edges_types = {}
-        self.__src_mapping = {}
-
-        self.__networks = {}
-        self.__node_count = 0
+        # self.__edges_types = {}
+        # self.__src_mapping = {}
+        # self.__networks = {}
+        # self.__node_count = 0
         self._nodes = []
-
         self.__edges_tables = []
         self._target_networks = {}
 
@@ -102,8 +99,6 @@ class DenseNetwork(Network):
                 prop_ds.append(node.params[key])
 
         if mpi_rank == 0:
-            hdf5_nodes_path = '/nodes/{}'.format(self.name)
-
             with h5py.File(nodes_file_name, 'w') as hf:
                 # Add magic and version attribute
                 add_hdf5_attrs(hf)
@@ -118,7 +113,6 @@ class DenseNetwork(Network):
                     model_grp = pop_grp.create_group('{}'.format(grp_id))
 
                     for key, dataset in props.items():
-                        # ds_path = 'nodes/{}/{}'.format(grp_id, key)
                         try:
                             model_grp.create_dataset(key, data=dataset)
                         except TypeError:
@@ -162,7 +156,7 @@ class DenseNetwork(Network):
             self._nodes.append(Node(node.node_id, node.group_props, node.node_type_properties))
 
     def _add_edges(self, connection_map, i):
-        """Should
+        """
 
         :param connection_map:
         :param i:
@@ -215,6 +209,10 @@ class DenseNetwork(Network):
         )
 
         edges_table.save()
+
+        # To EdgeTypesTable the number of synaptic/gap connections between all source/target paris, which can be more
+        # than the number of actual edges stored (for efficency), may be a better user-representation.
+        self._nedges += edges_table.n_syns  # edges_table.n_edges
         self.__edges_tables.append(edges_table)
 
     def _get_edge_group_id(self, params_hash):
@@ -256,6 +254,8 @@ class DenseNetwork(Network):
 
     def _save_edges(self, edges_file_name, src_network, trg_network, pop_name=None, sort_by='target_node_id',
                     index_by=('target_node_id', 'source_node_id')):
+        barrier()
+
         if mpi_rank == 0:
             logger.debug('Saving {} --> {} edges to {}.'.format(src_network, trg_network, edges_file_name))
 
@@ -369,27 +369,25 @@ class DenseNetwork(Network):
     def edges_iter(self, trg_gids, src_network=None, trg_network=None):
         matching_edge_tables = self.__edges_tables
         if trg_network is not None:
-            matching_edge_tables = [et for et in self.__edges_tables if et['target_network'] == trg_network]
+            matching_edge_tables = [et for et in self.__edges_tables if et.target_network == trg_network]
 
         if src_network is not None:
-            matching_edge_tables = [et for et in matching_edge_tables if et['source_network'] == src_network]
+            matching_edge_tables = [et for et in matching_edge_tables if et.source_network == src_network]
 
-        for trg_gid in trg_gids:
-            for ets in matching_edge_tables:
-                syn_table = ets['syn_table']
-                if syn_table.has_target(trg_gid):
-                    for src_id, nsyns in syn_table.trg_itr(trg_gid):
-                        if ets['params']:
-                            synapses = [{} for _ in range(nsyns)]
-                            for param_name, param_table in ets['params'].items():
-                                for i, val in enumerate(param_table[src_id, trg_gid]):
-                                    synapses[i][param_name] = val
-                            for syn_prop in synapses:
-                                yield Edge(src_gid=src_id, trg_gid=trg_gid, edge_type_props=ets['edge_types'],
-                                           syn_props=syn_prop)
-                        else:
-                            yield Edge(src_gid=src_id, trg_gid=trg_gid, edge_type_props=ets['edge_types'],
-                                       syn_props={'nsyns': nsyns})
+        for edge_type_table in matching_edge_tables:
+            et_df = edge_type_table.to_dataframe()
+            et_df = et_df[et_df['target_node_id'].isin(trg_gids)]
+            if len(et_df) == 0:
+                continue
+
+            edge_type_props = edge_type_table.edge_type_properties
+            for row in et_df.to_dict(orient='records'):
+                yield Edge(
+                    src_gid=row['source_node_id'],
+                    trg_gid=row['target_node_id'],
+                    edge_type_props=edge_type_props,
+                    syn_props=row
+                )
 
     @property
     def nnodes(self):

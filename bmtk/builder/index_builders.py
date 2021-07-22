@@ -36,16 +36,15 @@ def remove_index(edges_file, edges_population):
 def create_index_in_memory(edges_file, edges_population, index_type, force_rebuild=True):
     col_to_index, index_grp_name = _get_names(index_type)
 
-    # print(edges_file)
     with h5py.File(edges_file, mode='r+') as edges_h5:
         edges_pop_grp = edges_h5[edges_population]
 
         if index_grp_name in edges_pop_grp:
             # Remove existing index if it exists
             if not force_rebuild:
-                logger.debug('create_index_in_memory> Edges index "{}" already exists, skipping.'.format(index_grp_name))
+                logger.debug('create_index_in_memory> Edges index {} already exists, skipping.'.format(index_grp_name))
             else:
-                logger.debug('create_index_in_memory> Removing existing index "{}".'.format(index_grp_name))
+                logger.debug('create_index_in_memory> Removing existing index {}.'.format(index_grp_name))
                 del edges_pop_grp[index_grp_name]
 
         index_grp = edges_pop_grp.create_group(index_grp_name)
@@ -150,21 +149,20 @@ def create_index_on_disk(edges_file, edges_population, index_type, force_rebuild
                     '({} vs {}). Use force-rebuild'.format(cache_grp.attrs['cache_partition_size'], partition_size)
                 )
 
-        print('Number of edges, {}, exceeds maximum ({}).'.format(total_edges, MAX_EDGE_READS))
-        print('Separating into {} partitions'.format(n_partitions))
-        print(total_edges)
+        logger.debug('Number of edges, {}, exceeds maximum ({}).'.format(total_edges, MAX_EDGE_READS))
+        logger.debug('Separating into {} partitions'.format(n_partitions))
         while block_begin_idx <= total_edges:
             # cache_grp_name = index_grp_name + '/cache/edges_partition_{}'.format(partition_index)
             partition_grp_name = 'edges_partition_{}'.format(partition_index)
             if partition_grp_name in cache_grp:
-                print('Cache {}/cache/{} already exists, skipping'.format(index_grp_name, partition_grp_name))
+                logger.debug('Cache {}/cache/{} already exists, skipping'.format(index_grp_name, partition_grp_name))
                 block_begin_idx += partition_size
                 partition_index += 1
                 total_blocks += cache_grp[partition_grp_name]['partitioned_table'].shape[0]
                 continue
 
-            print('Creating cache {} of {} to {}/{}'.format(partition_index+1, n_partitions, index_grp_name,
-                                                            partition_grp_name))
+            logger.debug('Creating cache {} of {} to {}/{}'.format(partition_index+1, n_partitions, index_grp_name,
+                                                                   partition_grp_name))
 
             block_end_idx = block_begin_idx + partition_size
             edge_ids = edges_root_grp[col_to_index][block_begin_idx:block_end_idx]

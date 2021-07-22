@@ -3,11 +3,13 @@ import numpy as np
 import h5py
 import hashlib
 import logging
+import pandas as pd
 
 from ..builder_utils import mpi_rank, mpi_size, barrier
 
 
 logger = logging.getLogger(__name__)
+
 
 class EdgeTypesTableIFace(object):
     @property
@@ -122,6 +124,10 @@ class EdgeTypesTableMemory(object):
         prop_keys = ':'.join(prop_keys).encode('utf-8')
         return hashlib.md5(prop_keys).hexdigest()[:9]
 
+    @property
+    def edge_type_properties(self):
+        return self._connection_map.edge_type_properties
+
     def get_property_metatadata(self):
         if not self._prop_vals:
             return [{'name': 'nsyns', 'dtype': self.nsyn_table.dtype}]
@@ -164,6 +170,19 @@ class EdgeTypesTableMemory(object):
         else:
             return self._prop_vals[prop_name]
 
+    def to_dataframe(self, **kwargs):
+        src_trg_ids = self.edge_type_node_ids
+        ret_df = pd.DataFrame({
+            'source_node_id': src_trg_ids[:, 0],
+            'target_node_id': src_trg_ids[:, 1],
+            # 'edge_type_id': self.edge_type_id
+        })
+        for edge_prop in self.get_property_metatadata():
+            pname = edge_prop['name']
+            ret_df[pname] = self.get_property_value(prop_name=pname)
+
+        return ret_df
+
     def save(self):
         pass
 
@@ -186,10 +205,6 @@ class EdgeTypesTableMPI(EdgeTypesTableMemory):
     def __init__(self, connection_map, network_name):
         super(EdgeTypesTableMPI, self).__init__(connection_map, network_name)
         self.tmp_table_name = EdgeTypesTableMPI.get_tmp_table_path(mpi_rank)
-
-    # @property
-    # def tmp_table_name(self):
-    #     return '.edge_types_table.{}.h5'.format(mpi_rank)
 
     @staticmethod
     def get_tmp_table_path(rank=0, name=None):
@@ -237,6 +252,8 @@ class EdgeTypesTableMPI(EdgeTypesTableMemory):
                 edge_type_grp.attrs['size'] = len(pvals)
                 edge_type_grp.attrs['hash_key'] = self.hash_key
 
+            h5.flush()
+
     def __del__(self):
         tmp_h5_path = EdgeTypesTableMPI.get_tmp_table_path(rank=mpi_rank)
         try:
@@ -244,17 +261,6 @@ class EdgeTypesTableMPI(EdgeTypesTableMemory):
                 os.remove(tmp_h5_path)
         except (FileNotFoundError, IOError, Exception) as e:
             logger.warning('Unable to delete temp edges file {}.'.format(tmp_h5_path))
-
-
-# try:
-#     if mpi_rank == 0 and mpi_size > 1:
-#         for r in range(mpi_size):
-#             tmp_path = '.edge_types_table.{}.h5'.format(r)
-#             if os.path.exists(tmp_path):
-#                 os.remove(tmp_path)
-#     barrier()
-# except Exception:
-#     pass
 
 
 class EdgeTypesTable(object):
