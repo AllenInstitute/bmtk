@@ -6,8 +6,7 @@ import pandas as pd
 import h5py
 import tempfile
 
-from bmtk.builder.networks.dm_network import DenseNetwork
-
+from bmtk.builder.network_adaptors.dm_network_v2 import DenseNetwork
 
 
 def test_save_nsyn_table():
@@ -61,8 +60,8 @@ def test_save_nsyn_table():
     assert ('p2' in edge_types_df.columns)
 
     edges_h5 = h5py.File(edges_h5.name, 'r')
-    assert('source_to_target' in edges_h5['/edges/NET1_to_NET1/indicies'])
-    assert('target_to_source' in edges_h5['/edges/NET1_to_NET1/indicies'])
+    assert('source_to_target' in edges_h5['/edges/NET1_to_NET1/indices'])
+    assert('target_to_source' in edges_h5['/edges/NET1_to_NET1/indices'])
     assert(len(edges_h5['/edges/NET1_to_NET1/target_node_id']) == 300)
     assert(len(edges_h5['/edges/NET1_to_NET1/source_node_id']) == 300)
 

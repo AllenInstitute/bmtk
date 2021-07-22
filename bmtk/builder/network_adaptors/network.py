@@ -27,11 +27,11 @@ import csv
 import six
 import logging
 
-from .node_pool import NodePool
-from .connection_map import ConnectionMap
-from .node_set import NodeSet
-from .id_generator import IDGenerator
-from .builder_utils import mpi_rank, mpi_size, barrier
+from ..node_pool import NodePool
+from ..connection_map import ConnectionMap
+from ..node_set import NodeSet
+from ..id_generator import IDGenerator
+from ..builder_utils import mpi_rank, mpi_size, barrier
 
 
 logger = logging.getLogger(__name__)

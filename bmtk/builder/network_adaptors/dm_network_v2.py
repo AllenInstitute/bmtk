@@ -26,7 +26,7 @@ import h5py
 import logging
 import csv
 
-from ..network import Network
+from .network import Network
 from bmtk.builder.node import Node
 from bmtk.builder.edge import Edge
 from bmtk.utils import sonata
@@ -260,6 +260,7 @@ class DenseNetwork(Network):
             logger.debug('Saving {} --> {} edges to {}.'.format(src_network, trg_network, edges_file_name))
 
         filtered_edge_types = [
+            # Some edges may not match the source/target population
             et for et in self.__edges_tables
             if et.source_network == src_network and et.target_network == trg_network
         ]

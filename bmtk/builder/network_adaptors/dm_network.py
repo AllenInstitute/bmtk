@@ -26,7 +26,7 @@ import h5py
 import six
 import csv
 
-from ..network import Network
+from .network import Network
 from bmtk.builder.node import Node
 from bmtk.builder.edge import Edge
 from bmtk.utils import sonata

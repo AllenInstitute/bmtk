@@ -12,7 +12,8 @@ logger = logging.getLogger(__name__)
 
 class EdgesCollatorSingular(object):
     """Used to collect all the edges data-tables created and stored in the EdgeTypesTable to simplify the process
-    of saving into a SONATA edges file.
+    of saving into a SONATA edges file. All the actual edges may be stored across diffrent edge-type-tables/mpi-ranks
+    and needs to be merged together (and possibly sorted) before writing to HDF5 file.
     """
 
     def __init__(self, edge_types_tables, network_name):
