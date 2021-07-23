@@ -2,7 +2,6 @@ import os
 import h5py
 import logging
 import numpy as np
-import pandas as pd
 
 from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
 
@@ -58,23 +57,8 @@ def copy_attributes(in_grp, out_grp):
             copy_attributes(in_h5_obj, out_grp[in_name])
 
 
-# def _get_sort(index_type):
-#     if index_type.lower() in ['target', 'target_id', 'target_node_id', 'target_node_ids']:
-#         col_to_index = 'target_node_id'
-#         index_grp_name = 'indices/target_to_source'
-#     elif index_type in ['source', 'source_id', 'source_node_id', 'source_node_ids']:
-#         col_to_index = 'source_node_id'
-#         index_grp_name = 'indices/source_to_target'
-#     elif index_type == ['edge_type', 'edge_type_id', 'edge_type_ids']:
-#         col_to_index = 'edge_type_id'
-#         index_grp_name = 'indices/edge_type_to_index'
-#     else:
-#         raise ValueError('Unknown edges parameter {}'.format(index_type))
-#
-#     return col_to_index, index_grp_name
-
-
-def resort_edges(input_edges_path, output_edges_path, edges_population, sort_by, sort_model_properties=True):
+def quicksort_edges(input_edges_path, output_edges_path, edges_population, sort_by, sort_model_properties=True,
+                    **kwargs):
     assert(os.path.exists(input_edges_path))
 
     output_h5 = h5py.File(output_edges_path, 'w')
@@ -92,7 +76,6 @@ def resort_edges(input_edges_path, output_edges_path, edges_population, sort_by,
             col_type = in_pop_grp[col_name].dtype
             col_vals = in_pop_grp[col_name][()]
             sorted_col_vals = col_vals[sort_order]
-
             out_pop_grp.create_dataset(col_name, data=sorted_col_vals, dtype=col_type)
 
         sorted_group_indx = in_pop_grp['edge_group_index'][()][sort_order]
@@ -102,9 +85,7 @@ def resort_edges(input_edges_path, output_edges_path, edges_population, sort_by,
             out_model_grp = out_pop_grp.create_group(str(group_id))
             model_cols = [n for n, h5_obj in in_pop_grp[str(group_id)].items() if isinstance(h5_obj, h5py.Dataset)]
             group_id_mask = np.argwhere(out_pop_grp['edge_group_id'][()] == group_id).flatten()
-
             new_index_order = sorted_group_indx[group_id_mask]
-
             for col_name in model_cols:
                 prop_data = in_pop_grp[str(group_id)][col_name][()][new_index_order]
                 out_model_grp.create_dataset(col_name, data=prop_data)
@@ -113,4 +94,3 @@ def resort_edges(input_edges_path, output_edges_path, edges_population, sort_by,
 
         out_pop_grp.create_dataset('edge_group_index', data=sorted_group_indx)
         copy_attributes(input_h5['/'], output_h5['/'])
-

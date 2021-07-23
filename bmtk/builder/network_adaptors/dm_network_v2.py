@@ -24,7 +24,6 @@ import os
 import numpy as np
 import h5py
 import logging
-import csv
 
 from .network import Network
 from bmtk.builder.node import Node
@@ -35,7 +34,7 @@ from .edges_collator import EdgesCollator
 from .edge_props_table import EdgeTypesTable
 from ..index_builders import create_index_in_memory, create_index_on_disk
 from ..builder_utils import mpi_rank, mpi_size, barrier
-from ..edges_sorter import resort_edges
+from ..edges_sorter import sort_edges
 
 
 logger = logging.getLogger(__name__)
@@ -335,7 +334,7 @@ class DenseNetwork(Network):
 
                 if sort_on_disk:
                     logger.debug('Sorting {} by {} to {}'.format(edges_file_name, sort_by, edges_file_name_final))
-                    resort_edges(
+                    sort_edges(
                         input_edges_path=edges_file_name,
                         output_edges_path=edges_file_name_final,
                         edges_population='/edges/{}'.format(pop_name),

@@ -3,8 +3,14 @@ import h5py
 import pandas as pd
 import numpy as np
 import json
+import shutil
+import logging
+import glob
 
 from bmtk.utils.sonata.utils import add_hdf5_magic, add_hdf5_version
+
+
+logger = logging.getLogger(__name__)
 
 
 class ProgressFile(object):
@@ -16,10 +22,9 @@ class ProgressFile(object):
         self.root_name = root_name
         self.cache_dir = cache_dir
 
-        self._progress_file = os.path.join(self.cache_dir, 'progress.json')
-        if os.path.exists(self._progress_file):
-            # self._conf_parser.read(self._progress_file)
-            self._conf_parser = json.load(open(self._progress_file, 'r'))
+        self.progress_file = os.path.join(self.cache_dir, 'progress.json')
+        if os.path.exists(self.progress_file):
+            self._conf_parser = json.load(open(self.progress_file, 'r'))
             self.initialized = self._conf_parser[self.root_name]['initialized']
             self.n_edges = self._conf_parser[self.root_name]['n_edges']
             self.n_chunks = self._conf_parser[self.root_name]['n_chunks']
@@ -93,7 +98,7 @@ class ProgressFile(object):
         self._conf_parser[self.root_name]['completed'] = self.completed
 
         if self._can_serialize():
-            json.dump(self._conf_parser, open(self._progress_file, 'w'), indent=4)
+            json.dump(self._conf_parser, open(self.progress_file, 'w'), indent=4)
         else:
             raise ValueError('Unable to serialize to json')
 
@@ -102,11 +107,30 @@ def _get_chunk_fn(cache_dir, itr_num, chunk_num):
     return os.path.join(cache_dir, 'itr{}_chunk{}.h5'.format(itr_num, chunk_num))
 
 
+def _copy_attributes(in_grp, out_grp):
+    """Recursively copy hdf5 Group/Dataset attributes from in_grp to out_grp
+
+    :param in_grp: hdf5 Group object whose attributes will be copied from.
+    :param out_grp: hdf5 Group object that will have it's attributes updated/copied to.
+    """
+    if in_grp.attrs:
+        out_grp.attrs.update(in_grp.attrs)
+
+    for in_name, in_h5_obj in in_grp.items():
+        if in_name not in out_grp:
+            # make sure matching subgroup/dataset exists in the output group
+            continue
+
+        elif isinstance(in_h5_obj, h5py.Dataset):
+            out_grp[in_name].attrs.update(in_h5_obj.attrs)
+
+        elif isinstance(in_h5_obj, h5py.Group):
+            _copy_attributes(in_h5_obj, out_grp[in_name])
+
+
 def _create_output_h5(input_file, output_file, edges_root, n_edges):
     mode = 'r+' if os.path.exists(output_file) else 'w'
     out_h5 = h5py.File(output_file, mode=mode)
-    add_hdf5_version(out_h5)
-    add_hdf5_magic(out_h5)
     root_grp = out_h5.create_group(edges_root) if edges_root not in out_h5 else out_h5[edges_root]
 
     if 'source_node_id' not in root_grp:
@@ -124,15 +148,122 @@ def _create_output_h5(input_file, output_file, edges_root, n_edges):
     if 'edge_group_index' not in root_grp:
         root_grp.create_dataset('edge_group_index', (n_edges, ), dtype=np.uint32)
 
-    with h5py.File(input_file, 'r') as in_h5:
-        for h5obj in in_h5[edges_root].values():
-            if isinstance(h5obj, h5py.Group):
-                root_grp.copy(h5obj, h5obj.name)
+    # with h5py.File(input_file, 'r') as in_h5:
+    #     for h5obj in in_h5[edges_root].values():
+    #         if isinstance(h5obj, h5py.Group) and h5obj.name not in root_grp:
+    #             root_grp.copy(h5obj, h5obj.name)
+
+    _copy_attributes(h5py.File(input_file, 'r'), out_h5)
 
     return root_grp
 
 
-def initialize_chunks(edges_file_path, progress):
+def _order_model_groups(input_edges_path, output_edges_path, edges_population, chunk_size):
+    """
+
+    :param input_edges_path:
+    :param output_edges_path:
+    :param edges_population:
+    :param chunk_size:
+    :return:
+    """
+    # The output hdf5 should already have edges_group_id, edges_group_index columns which we can use to find order. This
+    # hdf5 file handle should only be for reading
+
+    # Get the model parameters from the input (original) edges file.
+    in_edges_h5 = h5py.File(input_edges_path, 'r')
+    in_edges_grp = in_edges_h5[edges_population]
+
+    with h5py.File(output_edges_path, 'r+') as out_h5:
+        out_root_grp = out_h5[edges_population]
+
+        # Get a list of all model group columns that need to be resorted, create the dataset in the output hdf5 edges
+        # file if it doesn't exist
+        model_grp_tracker = {}
+        for h5name, h5obj in in_edges_grp.items():
+            if isinstance(h5obj, h5py.Group) and h5obj.name not in ['indices', 'indicies']:
+                model_grp_tracker[h5name] = {'c_indx': 0, 'cols': []}
+                for col_name, col_ds in h5obj.items():
+                    model_grp_tracker[h5name]['cols'].append(col_name)
+                    if col_ds.name not in out_h5:
+                        out_h5.create_dataset(col_ds.name, shape=col_ds.shape, dtype=col_ds.dtype)
+
+        # use edge_group_id and edge_group_index to sort the model group columns
+        edge_group_ids_ds = out_root_grp['edge_group_id']
+        edge_group_indices_ds = out_root_grp['edge_group_index']
+        n_edges = len(edge_group_indices_ds)
+        if 'edge_group_index_sorted' not in out_root_grp:
+            # we will need to also need to keep track of the reordering and replace edge_group_index
+            out_root_grp.create_dataset(
+                'edge_group_index_sorted',
+                shape=edge_group_indices_ds.shape,
+                dtype=edge_group_indices_ds.dtype
+            )
+
+        chunk_idx_beg = 0
+        while chunk_idx_beg < n_edges:
+            # assuming we can't load and sort the entire edge_group_id/edge_group_index tables into memory, we need to
+            # reorder into handable chunks
+
+            chunk_idx_end = np.min((chunk_idx_beg + chunk_size, n_edges)).astype(np.uint)
+            if chunk_idx_beg == chunk_idx_end:
+                continue
+
+            chunk_grp_ids = edge_group_ids_ds[chunk_idx_beg:chunk_idx_end][()]
+            chunk_grp_idxs = edge_group_indices_ds[chunk_idx_beg:chunk_idx_end][()]
+            updated_order = np.zeros(int(chunk_idx_end-chunk_idx_beg), dtype=np.uint32)
+
+            # Go through all the groups and all their columns and reorder by group_id only
+            for group_id in np.unique(chunk_grp_ids):
+                # the order they appear in group_index is the order the columns will be resorted
+                group_id_mask = np.argwhere(chunk_grp_ids == group_id).flatten()
+                new_index_order = chunk_grp_idxs[group_id_mask]
+
+                # If new_index_order is not sorted h5py will complain when we try to fetch those values in the index.
+                # Use nio_incremental to fetch from the datasets and nio_argwhere to put back into the right order
+                nio_incremental = np.sort(new_index_order)
+                nio_argswhere = np.argsort(new_index_order)
+
+                # for each column take values from in_edges and write them to out_edges in the correct order
+                group_indx_beg = model_grp_tracker[str(group_id)]['c_indx']
+                group_indx_end = group_indx_beg + len(new_index_order)
+                for col in model_grp_tracker[str(group_id)]['cols']:
+                    col_vals_tmp = in_edges_grp[str(group_id)][col][nio_incremental]
+                    col_vals = col_vals_tmp[nio_argswhere]
+                    out_root_grp[str(group_id)][col][group_indx_beg:group_indx_end] = col_vals
+
+                model_grp_tracker[str(group_id)]['c_indx'] = group_indx_end
+                updated_order[group_id_mask] = np.arange(group_indx_beg, group_indx_beg + len(new_index_order))
+
+            out_root_grp['edge_group_index_sorted'][chunk_idx_beg:chunk_idx_end] = updated_order
+            chunk_idx_beg = chunk_idx_end
+
+        del out_root_grp['edge_group_index']
+        out_root_grp['edge_group_index'] = out_root_grp['edge_group_index_sorted']
+        del out_root_grp['edge_group_index_sorted']
+
+        _copy_attributes(h5py.File(input_edges_path, 'r'), out_h5)
+
+
+def _clean(progress):
+    for c_fn in glob.glob(os.path.join(progress.cache_dir, 'itr*_chunk*.h5')):
+        try:
+            os.remove(c_fn)
+        except Exception as e:
+            pass
+
+    try:
+        os.remove(progress.progress_file)
+    except Exception as e:
+        pass
+
+    try:
+        shutil.rmtree(progress.cache_dir)
+    except Exception as e:
+        pass
+
+
+def _initialize_chunks(edges_file_path, progress):
     """ Splits the original hdf5 edges file into n_chunks individual files"""
     edges_h5 = h5py.File(edges_file_path, 'r')
     edges_root_grp = edges_h5[progress.root_name]
@@ -142,8 +273,13 @@ def initialize_chunks(edges_file_path, progress):
     n_chunks = progress.n_chunks
     cache_dir = progress.cache_dir
 
-    print('Splitting {} into {} sorted chunks'.format(edges_file_path, n_chunks))
+    logger.debug('Splitting {} into {} sorted chunks'.format(edges_file_path, n_chunks))
     chunk_size = np.ceil(n_edges / n_chunks).astype(np.uint)
+
+    # Split the edges table into N chunks, each chunk will be sorted (by the specified column) and the sorted table
+    # will be saved it's own tmp hdf5 file.
+    # Note: we don't have to keep track of subgroups since the edge_group_id w/
+    # edge_group_index column will still hold the valid line references
     chunk_idx_beg = 0
     chunk_idx_end = np.min((chunk_size, n_edges)).astype(np.uint)
     iteration = 0
@@ -151,8 +287,9 @@ def initialize_chunks(edges_file_path, progress):
     chunk_files = []
     chunk_indices = []
     while chunk_idx_beg < n_edges:
-        print('  Chunk {} of {} [{:,} - {:,})'.format(chunk_num+1, n_chunks, chunk_idx_beg, chunk_idx_end))
-
+        logger.debug('  Chunk {} of {} [{:,} - {:,})'.format(chunk_num+1, n_chunks, chunk_idx_beg, chunk_idx_end))
+        # TODO: should be more efficencent if we just sort the specified column and keep track of the sort_order
+        #   index for later.
         chunk_data_df = pd.DataFrame({
             'source_node_id': edges_root_grp['source_node_id'][chunk_idx_beg:chunk_idx_end],
             'target_node_id': edges_root_grp['target_node_id'][chunk_idx_beg:chunk_idx_end],
@@ -168,19 +305,20 @@ def initialize_chunks(edges_file_path, progress):
         chunk_h5.create_dataset('edge_type_id', data=chunk_data_df['edge_type_id'])
         chunk_h5.create_dataset('edge_group_id', data=chunk_data_df['edge_group_id'])
         chunk_h5.create_dataset('edge_group_index', data=chunk_data_df['edge_group_index'])
-        # Note we don't have to keep track of subgroups since the edge_group_id + edge_group_index column will still
-        #  hold the valid line references
 
+        # store the min/max sort-column value found in current chunk
         chunk_h5.attrs['min_id'] = chunk_data_df[sort_key].min()
         max_id = chunk_data_df[sort_key].max()
         chunk_h5.attrs['max_id'] = max_id
 
+        # For each unique id that is being sorted on, keep a list of how many times the id shows up in the current
+        # tmp chunk file
         id_counts = chunk_data_df[sort_key].value_counts().sort_index()
         id_counts = id_counts.reindex(pd.RangeIndex(max_id+1), fill_value=0)
         chunk_h5.create_dataset('id_counts', data=id_counts, dtype=np.uint32)
 
         chunk_files.append(chunk_file)
-        chunk_indices.append(0)
+        chunk_indices.append(0) # chunk index is 0 b/c none of the data has been merged into the final file
 
         chunk_idx_beg = chunk_idx_end
         chunk_idx_end += np.min((chunk_size, n_edges)).astype(np.uint)
@@ -189,14 +327,17 @@ def initialize_chunks(edges_file_path, progress):
     progress.update(initialized=True, chunk_files=chunk_files, chunk_indices=chunk_indices)
 
 
-def sort_chunks(progress):
+def _sort_chunks(progress):
     """Takes the M (usually N or N-1) sorted chunk files, splits and merges them into N new chunk files"""
-    print('Resorting Chunks')
+    logger.debug('Resorting Chunks')
 
     cache_dir = progress.cache_dir
     itr_num = progress.iteration
-    n_chunks = progress.n_chunks  # len(alive_chunks)
+    n_chunks = progress.n_chunks
 
+    # during the previous merge() process some of the rows of last iteration's sorted chunk file may have been merged
+    # into the final result. Use the chunk_indices variable to keep track of what row to use for creating the next
+    # sorted chunk files.
     chunk_files = progress.chunk_files
     chunk_h5s = [h5py.File(cf, 'r') for cf in chunk_files]
     chunk_start_indices = progress.chunk_indices
@@ -209,13 +350,20 @@ def sort_chunks(progress):
 
     new_chunk_files = []
     new_chunk_indices = np.zeros(n_chunks, dtype=np.uint).tolist()
+
+    # loop through all the sorted chunk files created during the last iteration and divide them up into further chunks.
+    # Take and merge together the corresponding chunks of data into a new table, sort and save for the next round of
+    # merging,
     for chunk_num in range(n_chunks):
-        print('  Chunk {} of {}'.format(chunk_num+1, n_chunks))
+        logger.debug('  Chunk {} of {}'.format(chunk_num+1, n_chunks))
         combined_df = None
         for i, chunk_fn in enumerate(chunk_files):
             chunk_h5 = chunk_h5s[i]
             chunk_idx_beg = chunk_indices[chunk_fn][chunk_num]
             chunk_idx_end = chunk_indices[chunk_fn][chunk_num+1]
+            if chunk_idx_end == chunk_idx_beg:
+                continue
+
             data_df = pd.DataFrame({
                 'source_node_id': chunk_h5['source_node_id'][chunk_idx_beg:chunk_idx_end],
                 'target_node_id': chunk_h5['target_node_id'][chunk_idx_beg:chunk_idx_end],
@@ -225,7 +373,11 @@ def sort_chunks(progress):
             })
             combined_df = data_df if combined_df is None else pd.concat((combined_df, data_df))
 
+        if combined_df is None:
+            continue
+
         combined_df = combined_df.sort_values(progress.sort_key)
+
         new_chunk_file = os.path.join(cache_dir, 'itr{}_chunk{}.h5'.format(itr_num+1, chunk_num))
         new_chunk_h5 = h5py.File(new_chunk_file, 'w')
         new_chunk_h5.create_dataset('source_node_id', data=combined_df['source_node_id'])
@@ -234,9 +386,12 @@ def sort_chunks(progress):
         new_chunk_h5.create_dataset('edge_group_id', data=combined_df['edge_group_id'])
         new_chunk_h5.create_dataset('edge_group_index', data=combined_df['edge_group_index'])
         new_chunk_h5.attrs['min_id'] = combined_df[progress.sort_key].min()
+
         max_id = combined_df[progress.sort_key].max()
         new_chunk_h5.attrs['max_id'] = max_id
 
+        # For each unique id that is being sorted on, keep a list of how many times the id shows up in the current
+        # tmp chunk file
         id_counts = combined_df['edge_type_id'].value_counts().sort_index()
         id_counts = id_counts.reindex(pd.RangeIndex(max_id+1), fill_value=0)
         new_chunk_h5.create_dataset('id_counts', data=id_counts, dtype=np.uint32)
@@ -245,168 +400,16 @@ def sort_chunks(progress):
 
     progress.update(iteration=itr_num+1, chunk_files=new_chunk_files, chunk_indices=new_chunk_indices)
 
-    print('Deleteing old chunks')
+    logger.debug('Deleteing old chunks')
     for c_fn in chunk_files:
         try:
             os.remove(c_fn)
         except Exception as e:
-            print('Could not delete file {}'.format(c_fn))
+            logger.warning('Could not delete file {}'.format(c_fn))
             print(e)
 
 
-# def _merge_chunk_file(edges_grp, chunk_h5, progress, read_end_idx=None):
-#     merge_type = 'Completely' if read_end_idx is None else 'Partially'
-#     read_end_idx = read_end_idx if read_end_idx is not None else chunk_h5['source_node_id'].shape[0]
-#     write_beg_idx = progress.write_index
-#     write_end_idx = write_beg_idx + read_end_idx
-#
-#     id_beg, id_end = chunk_h5[progress.sort_key][0], chunk_h5[progress.sort_key][read_end_idx-1]
-#     print('{} merging file "{}" with ids ({:,} - {:,}) into master at indices [{:,} - {:,})'.format(
-#         merge_type,
-#         chunk_h5.filename,
-#         id_beg,
-#         id_end,
-#         write_beg_idx,
-#         write_end_idx
-#     ))
-#
-#     edges_grp['source_node_id'][write_beg_idx:write_end_idx] = chunk_h5['source_node_id'][:read_end_idx]
-#     edges_grp['target_node_id'][write_beg_idx:write_end_idx] = chunk_h5['target_node_id'][:read_end_idx]
-#     edges_grp['edge_type_id'][write_beg_idx:write_end_idx] = chunk_h5['edge_type_id'][:read_end_idx]
-#
-#     return write_end_idx
-
-
-# def merge(progress, edges_grp):
-#     """Will merge data from  one or more sorted chunk files into the output file"""
-#     cache_dir = progress.cache_dir
-#     itr_num = progress.iteration
-#
-#     # Create a table of min and max ids in each chunk file and sort. Using this table we can find overlaps, and when
-#     # the max/max ids of one file doesn't overlap with another then it's safe to push that table to the output h5
-#     chunk_files = progress.chunk_files.copy()
-#     chunk_indices = progress.chunk_indices.copy()
-#     chunk_nums = []
-#     chunks_h5 = []
-#     chunks_id_min = []
-#     chunks_id_max = []
-#     for chunk_num, chunk_file in enumerate(chunk_files):
-#         chunk_file = os.path.join(cache_dir, 'itr{}_chunk{}.h5'.format(itr_num, chunk_num))
-#         h5 = h5py.File(chunk_file, 'r+')
-#         chunk_nums.append(chunk_num)
-#         chunks_h5.append(h5)
-#         chunks_id_min.append(h5.attrs['min_id'])
-#         chunks_id_max.append(h5.attrs['max_id'])
-#
-#     sorted_order = np.argsort(chunks_id_min)
-#     print('Current status:')
-#     print(pd.DataFrame({
-#         'chunk file': [os.path.basename(c) for c in chunk_files],
-#         'min_id': chunks_id_min,
-#         'max_id': chunks_id_max
-#     }))
-#
-#     while True:
-#         if len(sorted_order) == 0:
-#             progress.update(completed=True)
-#             return
-#
-#         if len(sorted_order) == 1:
-#             # Case: only one sorted chunk file so push it into the output h5
-#             h5 = chunks_h5[lead_chunk]
-#             # read_end_idx = h5['source_node_id'].shape[0]
-#             write_index = _merge_chunk_file(edges_grp, h5, progress)
-#
-#             # write_beg_idx = progress.write_index
-#             # write_end_idx = write_beg_idx + read_end_idx
-#             #
-#             # print('  Merging file {} (ids {:,} - {:,}) into master and indices [{:,} - {:,}'.format(
-#             #     chunk_files[lead_chunk],
-#             #     chunks_id_min[lead_chunk],
-#             #     chunks_id_max[lead_chunk],
-#             #     write_beg_idx,
-#             #     write_end_idx
-#             # ))
-#             #
-#             # edges_grp['source_node_id'][write_beg_idx:write_end_idx] = h5['source_node_id'][:read_end_idx]
-#             # edges_grp['target_node_id'][write_beg_idx:write_end_idx] = h5['target_node_id'][:read_end_idx]
-#             # edges_grp['edge_type_id'][write_beg_idx:write_end_idx] = h5['edge_type_id'][:read_end_idx]
-#
-#             del chunk_files[lead_chunk]
-#             del chunk_indices[lead_chunk]
-#             del chunk_nums[lead_chunk]
-#             del chunks_h5[lead_chunk]
-#             del chunks_id_min[lead_chunk]
-#             del chunks_id_max[lead_chunk]
-#             progress.update(write_index=write_index, chunk_files=chunk_files, chunk_indices=chunk_indices)
-#
-#             sorted_order = np.argsort(chunks_id_min)
-#
-#         lead_chunk = sorted_order[0]
-#         second_place = sorted_order[1]
-#         if chunks_id_max[lead_chunk] <= chunks_id_min[second_place]:
-#             # Case: the first chunk has no id overlap with the next one in the table. Merge chunk into output, update
-#             # progress.chunk_files so it's ignored on next iteration, the continue with the next chunk
-#             h5 = chunks_h5[lead_chunk]
-#             # read_end_idx = h5['source_node_id'].shape[0]
-#             write_index = _merge_chunk_file(edges_grp, h5, progress)
-#             # write_beg_idx = progress.write_index
-#             # write_end_idx = write_beg_idx + read_end_idx
-#             #
-#             # print('  Merging file {} (ids {:,} - {:,}) into master and indices [{:,} - {:,}'.format(
-#             #     chunk_files[lead_chunk],
-#             #     chunks_id_min[lead_chunk],
-#             #     chunks_id_max[lead_chunk],
-#             #     write_beg_idx,
-#             #     write_end_idx
-#             # ))
-#             #
-#             # edges_grp['source_node_id'][write_beg_idx:write_end_idx] = h5['source_node_id'][:read_end_idx]
-#             # edges_grp['target_node_id'][write_beg_idx:write_end_idx] = h5['target_node_id'][:read_end_idx]
-#             # edges_grp['edge_type_id'][write_beg_idx:write_end_idx] = h5['edge_type_id'][:read_end_idx]
-#
-#             del chunk_files[lead_chunk]
-#             del chunk_indices[lead_chunk]
-#             del chunk_nums[lead_chunk]
-#             del chunks_h5[lead_chunk]
-#             del chunks_id_min[lead_chunk]
-#             del chunks_id_max[lead_chunk]
-#             progress.update(write_index=write_index, chunk_files=chunk_files, chunk_indices=chunk_indices)
-#
-#             sorted_order = np.argsort(chunks_id_min)
-#
-#         elif chunks_id_min[lead_chunk] <= chunks_id_min[second_place]:
-#             # Case: first sorted chunk file has subset of ids not in the other chunks, push this subset into the
-#             # output and update chunk_indices so on next iteration only the remaining part of the first chunk is used.
-#             h5 = chunks_h5[lead_chunk]
-#             sort_col = np.array(h5[progress.sort_key])
-#             read_end_idx = np.argwhere(sort_col <= chunks_id_min[second_place]).flatten()[-1] + 1
-#             write_index = _merge_chunk_file(edges_grp, h5, progress, read_end_idx=read_end_idx)
-#             # write_beg_idx = progress.write_index
-#             # write_end_idx = write_beg_idx + read_end_idx
-#             #
-#             # print(' Merging ids [{:,} - {:,}] from {} into master (indices [{:,} - {:,}))'.format(
-#             #     chunks_id_min[lead_chunk],
-#             #     chunks_id_min[second_place],
-#             #     chunk_files[lead_chunk],
-#             #     write_beg_idx,
-#             #     write_end_idx
-#             # ))
-#             #
-#             # edges_grp['source_node_id'][write_beg_idx:write_end_idx] = h5['source_node_id'][:read_end_idx]
-#             # edges_grp['target_node_id'][write_beg_idx:write_end_idx] = h5['target_node_id'][:read_end_idx]
-#             # edges_grp['edge_type_id'][write_beg_idx:write_end_idx] = h5['edge_type_id'][:read_end_idx]
-#             chunk_indices[lead_chunk] = int(read_end_idx)
-#             progress.update(write_index=write_index, chunk_indices=chunk_indices)
-#             break
-#
-#             # print(sort_col[end_idx-3:end_idx+4])
-#         else:
-#             print('Unable to merge data into output, continuing iterating over chunks.')
-#             break
-
-
-def merge(progress, edges_grp):
+def _merge(progress, edges_grp):
     """Will merge data from  one or more sorted chunk files into the output file"""
 
     # Create a table of min and max ids in each chunk file and sort. Using this table we can find overlaps, and when
@@ -421,7 +424,6 @@ def merge(progress, edges_grp):
     min_id = np.inf
     max_id = 0
     for chunk_num, chunk_file in enumerate(chunk_files):
-        # chunk_file = os.path.join(cache_dir, 'itr{}_chunk{}.h5'.format(itr_num, chunk_num))
         h5 = h5py.File(chunk_file, 'r+')
         chunk_nums.append(chunk_num)
         chunk_h5s.append(h5)
@@ -430,9 +432,8 @@ def merge(progress, edges_grp):
         max_id = int(np.max((max_id, h5.attrs['max_id'])))
         min_id = int(np.min((min_id, h5.attrs['min_id'])))
 
-    #  sorted_order = np.argsort(chunk_ids_max)
-    print('Current status:')
-    print(pd.DataFrame({
+    logger.debug('Current status:')
+    logger.debug(pd.DataFrame({
         'chunk file': [os.path.basename(c) for c in chunk_files],
         'min_id': chunk_ids_min,
         'max_id': chunk_ids_max,
@@ -448,7 +449,6 @@ def merge(progress, edges_grp):
 
     collected_df = None
     for chunk_num, chunk_h5 in zip(chunk_nums, chunk_h5s):
-        print(chunk_num)
         read_beg_idx = chunk_indices[chunk_num]
         sort_col = np.array(chunk_h5[progress.sort_key][read_beg_idx:])
         id_indices = np.argwhere(sort_col <= id_end).flatten()
@@ -475,7 +475,7 @@ def merge(progress, edges_grp):
             chunk_indices[chunk_num] = int(read_end_idx)
 
     if collected_df is None or len(collected_df) == 0:
-        print('No ids collected.')
+        logger.debug('No ids collected.')
         return
 
     collected_df = collected_df.sort_values(progress.sort_key)
@@ -484,7 +484,7 @@ def merge(progress, edges_grp):
     write_beg_idx = progress.write_index
     write_end_idx = write_beg_idx + n_collected
 
-    print('Writing ids [{:,} - {:,}] to output indices [{:,} - {:,})'.format(
+    logger.debug('Writing ids [{:,} - {:,}] to output indices [{:,} - {:,})'.format(
         collected_df[progress.sort_key].iloc[0],
         collected_df[progress.sort_key].iloc[-1],
         write_beg_idx,
@@ -499,60 +499,85 @@ def merge(progress, edges_grp):
 
     chunk_files = [c for c in chunk_files if c is not None]
     chunk_indices = [c for c in chunk_indices if c != -1]
+
     progress.update(chunk_files=chunk_files, chunk_indices=chunk_indices, write_index=write_end_idx,
                     completed=len(chunk_files) == 0)
 
 
-def external_merge_sort(input_file, output_file, sort_key, edges_root, n_chunks=12, max_itrs=10):
+def external_merge_sort(input_edges_path, output_edges_path, edges_population, sort_by, sort_model_properties=True,
+                        n_chunks=12, max_itrs=10, cache_dir='.sort_cache', **kwargs):
     """Does an external merge sort on an input edges hdf5 file, saves value in new file. Usefull for large network
     files where we are not able to load into memory.
 
-    Will split the original hdf5 into <n_chunks> chunks on the disk in .sort_cache/, Will sort each individual chunk
+    Will split the original hdf5 into <n_chunks> chunks on the disk in cache_dir, Will sort each individual chunk
     of data in memory, then perform a merge on all the chunks. For speed considers may try to do the chunking and
     merging in multiple iterations.
 
-    :param input_file: path to original edges file
-    :param output_file: path name of new file that will be created
-    :param sort_key: 'edge_type_id', 'source_node_id', '
-    :param edges_root: hdf5 path to edges population group (ex /edges/left_ispi)
-    :param n_chunks: Number of chunks
-    :param max_itrs: maximimum number of times will do a spliting + merging, mostly so it doesn't fall in an infite loop
-    """
-    with h5py.File(input_file, 'r') as input_h5:
-        n_edges = input_h5[edges_root]['source_node_id'].shape[0]
+    Itermediate sorting results are saved in cache_dir (eg .sort_cache) and if the sorting fails or doesn't finish in
+    max_itrs, running this function again will continue where it last left off.
 
-    cache_dir = os.path.join(os.path.dirname(output_file), '.sort_cache',
-                             os.path.splitext(os.path.basename(output_file))[0])
+    :param input_edges_path: path to original edges file
+    :param output_edges_path: path name of new file that will be created
+    :param edges_population:
+    :param sort_by: 'edge_type_id', 'source_node_id', etc.
+    :param sort_model_properties: resort the model group so edges_group_id+edge_group_index is in order
+    :param n_chunks: Number of chunks, eg the fraction of the edges.h5 file that will be loaded into memory at a given
+        time. (default: 12)
+    :param cache_dir: A temporary directory where itermeidate results will be stored. (default: './cache_dir/)
+    :param max_itrs: The maximum number of iterations to run the merge sort.
+    """
+    with h5py.File(input_edges_path, 'r') as input_h5:
+        n_edges = input_h5[edges_population]['source_node_id'].shape[0]
+
+    cache_dir = os.path.join(os.path.dirname(output_edges_path), cache_dir,
+                             os.path.splitext(os.path.basename(output_edges_path))[0])
     if not os.path.exists(cache_dir):
         os.makedirs(cache_dir)
 
-    progress = ProgressFile(cache_dir=cache_dir, n_edges=n_edges, n_chunks=n_chunks, root_name=edges_root,
-                            sort_key=sort_key)
+    n_chunks = np.min((n_chunks, n_edges))
+    progress = ProgressFile(cache_dir=cache_dir, n_edges=n_edges, n_chunks=int(n_chunks), root_name=edges_population,
+                            sort_key=sort_by)
 
-    output_root_grp = _create_output_h5(input_file=input_file, output_file=output_file, edges_root=edges_root,
-                                        n_edges=n_edges)
+    output_root_grp = _create_output_h5(input_file=input_edges_path, output_file=output_edges_path,
+                                        edges_root=edges_population, n_edges=n_edges)
 
     # Split the edges files into N chunks.
     if not progress.initialized or not os.path.exists(cache_dir):
-        initialize_chunks(edges_file_path=input_file, progress=progress)
+        _initialize_chunks(edges_file_path=input_edges_path, progress=progress)
     else:
-        print('edges files has already been initialized. Continuing from last saved point')
+        logger.debug('Edges files has already been initialized. Continuing from last saved point')
 
     # Try to merge chunk data to output, if there's still data left split and resort into another N chunks. Repeat.
-    merge(progress, edges_grp=output_root_grp)
+    _merge(progress, edges_grp=output_root_grp)
     for i in range(max_itrs):
         if progress.completed:
             break
-        sort_chunks(progress)
-        merge(progress, edges_grp=output_root_grp)
+        _sort_chunks(progress)
+        _merge(progress, edges_grp=output_root_grp)
 
-    print('Done.')
+    output_root_grp.file.flush()
+    output_root_grp.file.close()
+
+    if progress.completed and sort_model_properties:
+        logger.debug('Sorting model group columns')
+        chunk_size = np.max((np.ceil(n_edges / n_chunks), 2)).astype(np.uint)
+        _order_model_groups(
+            input_edges_path=input_edges_path,
+            output_edges_path=output_edges_path,
+            edges_population=progress.root_name,
+            chunk_size=chunk_size
+        )
+
+    logger.debug('Cleaning up cache directory')
+    _clean(progress)
+
+    logger.debug('Done sorting.')
 
 
 if __name__ == '__main__':
     external_merge_sort(
-        input_file='network/right_local_edges.h5',
-        output_file='network/right_local_edges_by_edgetype_merge_sort_v1.h5',
-        sort_key='edge_type_id',
-        edges_root='/edges/right_local'
+        input_edges_path='network/right_local_edges.h5',
+        output_edges_path='network/right_local_edges_by_edgetype_merge_sort_v1.h5',
+        sort_by='edge_type_id',
+        edges_population='/edges/right_local'
     )

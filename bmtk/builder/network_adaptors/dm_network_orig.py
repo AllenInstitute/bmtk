@@ -44,9 +44,9 @@ except ImportError:
     barrier = lambda: None
 
 
-class DenseNetwork(Network):
+class DenseNetworkOrig(Network):
     def __init__(self, name, **network_props):
-        super(DenseNetwork, self).__init__(name, **network_props or {})
+        super(DenseNetworkOrig, self).__init__(name, **network_props or {})
 
         self.__edges_types = {}
         self.__src_mapping = {}
