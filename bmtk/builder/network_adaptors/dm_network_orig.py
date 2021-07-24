@@ -26,15 +26,27 @@ import h5py
 import six
 import csv
 
-from ..network import Network
+from .network import Network
 from bmtk.builder.node import Node
 from bmtk.builder.edge import Edge
 from bmtk.utils import sonata
 
+try:
+    from mpi4py import MPI
+    comm = MPI.COMM_WORLD
+    mpi_rank = comm.Get_rank()
+    mpi_size = comm.Get_size()
+    barrier = comm.barrier
 
-class DenseNetwork(Network):
+except ImportError:
+    mpi_rank = 0
+    mpi_size = 1
+    barrier = lambda: None
+
+
+class DenseNetworkOrig(Network):
     def __init__(self, name, **network_props):
-        super(DenseNetwork, self).__init__(name, **network_props or {})
+        super(DenseNetworkOrig, self).__init__(name, **network_props or {})
 
         self.__edges_types = {}
         self.__src_mapping = {}
@@ -105,26 +117,28 @@ class DenseNetwork(Network):
                 prop_ds.append(node.params[key])
 
         # TODO: open in append mode
-        with h5py.File(nodes_file_name, 'w') as hf:
-            # Add magic and version attribute
-            add_hdf5_attrs(hf)
+        if mpi_rank == 0:
+            with h5py.File(nodes_file_name, 'w') as hf:
+                # Add magic and version attribute
+                add_hdf5_attrs(hf)
 
-            pop_grp = hf.create_group('/nodes/{}'.format(self.name))
-            pop_grp.create_dataset('node_id', data=node_gid_table, dtype='uint64')
-            pop_grp.create_dataset('node_type_id', data=node_type_id_table, dtype='uint64')
-            pop_grp.create_dataset('node_group_id', data=node_group_table, dtype='uint32')
-            pop_grp.create_dataset('node_group_index', data=node_group_index_tables, dtype='uint64')
+                pop_grp = hf.create_group('/nodes/{}'.format(self.name))
+                pop_grp.create_dataset('node_id', data=node_gid_table, dtype='uint64')
+                pop_grp.create_dataset('node_type_id', data=node_type_id_table, dtype='uint64')
+                pop_grp.create_dataset('node_group_id', data=node_group_table, dtype='uint32')
+                pop_grp.create_dataset('node_group_index', data=node_group_index_tables, dtype='uint64')
 
-            for grp_id, props in group_props.items():
-                model_grp = pop_grp.create_group('{}'.format(grp_id))
+                for grp_id, props in group_props.items():
+                    model_grp = pop_grp.create_group('{}'.format(grp_id))
 
-                for key, dataset in props.items():
-                    # ds_path = 'nodes/{}/{}'.format(grp_id, key)
-                    try:
-                        model_grp.create_dataset(key, data=dataset)
-                    except TypeError:
-                        str_list = [str(d) for d in dataset]
-                        hf.create_dataset(key, data=str_list)
+                    for key, dataset in props.items():
+                        # ds_path = 'nodes/{}/{}'.format(grp_id, key)
+                        try:
+                            model_grp.create_dataset(key, data=dataset)
+                        except TypeError:
+                            str_list = [str(d) for d in dataset]
+                            hf.create_dataset(key, data=str_list)
+        barrier()
 
     def nodes_iter(self, node_ids=None):
         if node_ids is not None:
@@ -154,7 +168,6 @@ class DenseNetwork(Network):
             else:
                 raise Exception('Nodes file {} does not contain population {}.'.format(nodes_file_name, population))
 
-        # print node_pop.node_types_table
         for node_type_props in node_pop.node_types_table:
             self._add_node_type(node_type_props)
 
@@ -191,7 +204,8 @@ class DenseNetwork(Network):
             param_names = param.names
             edge_table['params_dtypes'].update(param.dtypes)
             if isinstance(param_names, list) or isinstance(param_names, tuple):
-                tmp_tables = [self.PropertyTable(nsyns) for _ in range(len(param_names))]
+                tmp_tables = [self.PropertyTable(nsyns, param.dtypes[n]) for n in param_names]
+                # tmp_tables = [self.PropertyTable(nsyns) for _ in range(len(param_names))]
                 for source in connection_map.source_nodes:
                     src_node_id = source.node_id
                     for target in connection_map.target_nodes:
@@ -206,7 +220,7 @@ class DenseNetwork(Network):
                     edge_table['params'][name] = tmp_tables[i]
 
             else:
-                pt = self.PropertyTable(np.sum(nsyns))
+                pt = self.PropertyTable(np.sum(nsyns), dtype=param.dtypes[param_names])
                 for source in connection_map.source_nodes:
                     src_node_id = source.node_id
                     for target in connection_map.target_nodes:
@@ -332,7 +346,6 @@ class DenseNetwork(Network):
                             edge_type_ids[gid_indx] = ets['edge_type_id']
                             edge_groups[gid_indx] = edge_group_id
                             edge_group_index[gid_indx] = group_index_itrs[edge_group_id]
-                            # group_dtypes
                             group_index_itrs[edge_group_id] += 1
                             gid_indx += 1
 
@@ -376,10 +389,10 @@ class DenseNetwork(Network):
     def _create_index(self, node_ids_ds, output_grp, index_type='target'):
         if index_type == 'target':
             edge_nodes = np.array(node_ids_ds, dtype=np.int64)
-            output_grp = output_grp.create_group('indicies/target_to_source')
+            output_grp = output_grp.create_group('indices/target_to_source')
         elif index_type == 'source':
             edge_nodes = np.array(node_ids_ds, dtype=np.int64)
-            output_grp = output_grp.create_group('indicies/source_to_target')
+            output_grp = output_grp.create_group('indices/source_to_target')
 
         edge_nodes = np.append(edge_nodes, [-1])
         n_targets = np.max(edge_nodes)
@@ -495,8 +508,8 @@ class DenseNetwork(Network):
 
     class PropertyTable(object):
         # TODO: add support for strings
-        def __init__(self, nvalues):
-            self._prop_array = np.zeros(nvalues)
+        def __init__(self, nvalues, dtype):
+            self._prop_array = np.zeros(nvalues, dtype=dtype)
             # self._prop_table = np.zeros((nvalues, 1))  # TODO: set dtype
             self._index = np.zeros((nvalues, 2), dtype=np.uint32)
             self._itr_index = 0

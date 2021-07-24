@@ -6,12 +6,16 @@ import pandas as pd
 import h5py
 import tempfile
 
-from bmtk.builder.networks.dm_network import DenseNetwork
+from bmtk.builder.network_adaptors.dm_network import DenseNetwork
+from bmtk.builder.network_adaptors.dm_network_orig import DenseNetworkOrig
 
 
-
-def test_save_nsyn_table():
-    net = DenseNetwork('NET1')
+@pytest.mark.parametrize('network_cls', [
+    (DenseNetwork),
+    (DenseNetworkOrig)
+])
+def test_save_nsyn_table(network_cls):
+    net = network_cls('NET1')
     net.add_nodes(N=10, position=[(0.0, 1.0, -1.0)]*10, cell_type='Scnna1', ei='e')
     net.add_nodes(N=10, position=[(0.0, 1.0, -1.0)]*10, cell_type='PV1', ei='i')
     net.add_nodes(N=10, position=[(0.0, 1.0, -1.0)]*10, tags=np.linspace(0, 100, 10), cell_type='PV2', ei='i')
@@ -61,8 +65,8 @@ def test_save_nsyn_table():
     assert ('p2' in edge_types_df.columns)
 
     edges_h5 = h5py.File(edges_h5.name, 'r')
-    assert('source_to_target' in edges_h5['/edges/NET1_to_NET1/indicies'])
-    assert('target_to_source' in edges_h5['/edges/NET1_to_NET1/indicies'])
+    assert('source_to_target' in edges_h5['/edges/NET1_to_NET1/indices'])
+    assert('target_to_source' in edges_h5['/edges/NET1_to_NET1/indices'])
     assert(len(edges_h5['/edges/NET1_to_NET1/target_node_id']) == 300)
     assert(len(edges_h5['/edges/NET1_to_NET1/source_node_id']) == 300)
 
@@ -79,8 +83,12 @@ def test_save_nsyn_table():
     assert(edges_h5['/edges/NET1_to_NET1/0/nsyns'][299] == 2)
 
 
-def test_save_weights():
-    net = DenseNetwork('NET1')
+@pytest.mark.parametrize('network_cls', [
+    (DenseNetwork),
+    (DenseNetworkOrig)
+])
+def test_save_weights(network_cls):
+    net = network_cls('NET1')
     net.add_nodes(N=100, position=[(0.0, 1.0, -1.0)]*100, cell_type='Scnna1', ei='e')
     net.add_nodes(N=100, position=[(0.0, 1.0, -1.0)]*100, cell_type='PV1', ei='i')
     net.add_nodes(N=100, position=[(0.0, 1.0, -1.0)]*100, tags=np.linspace(0, 100, 100), cell_type='PV2', ei='i')
@@ -106,7 +114,11 @@ def test_save_weights():
     assert(edges_h5['/edges/NET1_to_NET1/1/nsyns'][0] == 2)
 
 
-def test_save_multinetwork():
+@pytest.mark.parametrize('network_cls', [
+    (DenseNetwork),
+    (DenseNetworkOrig)
+])
+def test_save_multinetwork(network_cls):
     net1 = DenseNetwork('NET1')
     net1.add_nodes(N=100, position=[(0.0, 1.0, -1.0)] * 100, cell_type='Scnna1', ei='e')
     net1.add_edges(source={'ei': 'e'}, target={'ei': 'e'}, connection_rule=5, ctype_1='n1_rec')
@@ -166,5 +178,5 @@ def test_save_multinetwork():
 
 
 if __name__ == '__main__':
-    #test_save_weights()
-    test_save_multinetwork()
+    # test_save_weights(DenseNetwork)
+    test_save_multinetwork(DenseNetwork)

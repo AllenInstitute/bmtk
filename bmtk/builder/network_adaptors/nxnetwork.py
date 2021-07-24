@@ -22,8 +22,7 @@
 #
 import networkx as nx
 
-from bmtk.builder.network import Network
-from bmtk.builder.node import Node
+from .network import Network
 
 
 class NxNetwork(Network):
@@ -32,7 +31,6 @@ class NxNetwork(Network):
 
         self.net = nx.MultiDiGraph()
         self.__nodes = []
-
 
     def _initialize(self):
         self.net.clear()
@@ -45,31 +43,29 @@ class NxNetwork(Network):
         for src, trg, nsyns in connections:
             self.net.add_edge(src, trg, nsyns=nsyns, edge_type_id=edge.edge_type_id)
 
-
     def _clear(self):
         self.net.clear()
 
     def _nodes_iter(self, nids=None):
         if nids is not None:
             return ((nid, d)
-                     for nid, d in self.__nodes
-                     if nid in nids )
+                    for nid, d in self.__nodes
+                    if nid in nids)
         else:
             return self.__nodes
-            #return self.net.nodes_iter(data=True)
 
     def _edges_iter(self, nids=None, rank=0):
-        if nids == None or len(nids) == 0:
+        if nids is None or len(nids) == 0:
             for e in self.net.edges(data=True):
                 yield (e[0], e[1], e[2]['nsyns'], e[2]['edge_type_id'])
-                #return self.net.edges(data=True)
+
         elif rank == 0:
             for e in self.net.out_edges(nids, data=True):
                 yield (e[0], e[1], e[2]['nsyns'], e[2]['edge_type_id'])
+
         else:
             for e in self.net.in_edges(nids, data=True):
                 yield (e[0], e[1], e[2]['nsyns'], e[2]['edge_type_id'])
-            #return self.net.in_edges(nids, data=True)
 
     @property
     def nnodes(self):
