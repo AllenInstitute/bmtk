@@ -559,6 +559,7 @@ def external_merge_sort(input_edges_path, output_edges_path, edges_population, s
     output_root_grp.file.close()
 
     if progress.completed and sort_model_properties:
+        # copy over model group, and reorder so edge_group_ids/edge_group_index is ordered
         logger.debug('Sorting model group columns')
         chunk_size = np.max((np.ceil(n_edges / n_chunks), 2)).astype(np.uint)
         _order_model_groups(
@@ -567,6 +568,15 @@ def external_merge_sort(input_edges_path, output_edges_path, edges_population, s
             edges_population=progress.root_name,
             chunk_size=chunk_size
         )
+    else:
+        # Copy over model group columns without sorting
+        out_h5 = h5py.File(output_edges_path, 'r+')
+        root_grp = out_h5[progress.root_name]
+
+        with h5py.File(input_edges_path, 'r') as in_h5:
+            for h5obj in in_h5[progress.root_name].values():
+                if isinstance(h5obj, h5py.Group) and h5obj.name not in root_grp and h5obj.name not in ['indices', 'indicies']:
+                    root_grp.copy(h5obj, h5obj.name)
 
     logger.debug('Cleaning up cache directory')
     _clean(progress)

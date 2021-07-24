@@ -8,7 +8,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 # MAX_EDGE_READS = 500000000
-MAX_EDGE_READS = 200000000
+# MAX_EDGE_READS = 200000000
 
 
 def _get_names(index_type):
@@ -18,7 +18,7 @@ def _get_names(index_type):
     elif index_type in ['source', 'source_id', 'source_node_id', 'source_node_ids']:
         col_to_index = 'source_node_id'
         index_grp_name = 'indices/source_to_target'
-    elif index_type == ['edge_type', 'edge_type_id', 'edge_type_ids']:
+    elif index_type in ['edge_type', 'edge_type_id', 'edge_type_ids']:
         col_to_index = 'edge_type_id'
         index_grp_name = 'indices/edge_type_to_index'
     else:
@@ -33,7 +33,7 @@ def remove_index(edges_file, edges_population):
         del edges_pop_grp['indices']
 
 
-def create_index_in_memory(edges_file, edges_population, index_type, force_rebuild=True):
+def create_index_in_memory(edges_file, edges_population, index_type, force_rebuild=True, **kwargs):
     col_to_index, index_grp_name = _get_names(index_type)
 
     with h5py.File(edges_file, mode='r+') as edges_h5:
@@ -97,13 +97,14 @@ def create_index_in_memory(edges_file, edges_population, index_type, force_rebui
                                  dtype='uint64')
 
 
-def create_index_on_disk(edges_file, edges_population, index_type, force_rebuild=False, cache_file=None):
+def create_index_on_disk(edges_file, edges_population, index_type, force_rebuild=False, cache_file=None,
+                         max_edge_reads=200000000, **kwargs):
     col_to_index, index_grp_name = _get_names(index_type)
     cache_file = cache_file if cache_file is not None else edges_file
 
     mode = 'r+' if os.path.exists(cache_file) else 'w'
     with h5py.File(cache_file, mode=mode) as cache_h5:
-        # Step 1: Separate the column being indexed into N partitons each of less than MAX_EDGE_READS length. Build the
+        # Step 1: Separate the column being indexed into N partitons each of less than max_edge_reads length. Build the
         # index for each partition and save to disk. Make sure we don't have to have the read the entire col_to_index
         # in memory at one time
 
@@ -116,8 +117,8 @@ def create_index_on_disk(edges_file, edges_population, index_type, force_rebuild
             caches_root_grp = cache_h5[edges_population]
 
         total_edges = edges_root_grp[col_to_index].shape[0]
-        partition_size = np.min((MAX_EDGE_READS, total_edges))
-        n_partitions = np.ceil(total_edges / MAX_EDGE_READS).astype(np.uint)
+        partition_size = np.min((max_edge_reads, total_edges))
+        n_partitions = np.ceil(total_edges / max_edge_reads).astype(np.uint)
         block_begin_idx = 0  # initial index of current partition being created
         partition_index = 0
         max_id = 0
@@ -130,17 +131,17 @@ def create_index_on_disk(edges_file, edges_population, index_type, force_rebuild
             index_grp = caches_root_grp.create_group(index_grp_name) \
                 if index_grp_name not in caches_root_grp else caches_root_grp[index_grp_name]
             cache_grp = index_grp.create_group('cache')
-            cache_grp.attrs['max_edge_reads'] = MAX_EDGE_READS
+            cache_grp.attrs['max_edge_reads'] = max_edge_reads
             cache_grp.attrs['cache_partition_size'] = partition_size
 
         else:
             cache_grp = caches_root_grp[index_grp_name]['cache']
             max_id = cache_grp.attrs.get('max_id', max_id)
 
-            if cache_grp.attrs['max_edge_reads'] != MAX_EDGE_READS:
+            if cache_grp.attrs['max_edge_reads'] != max_edge_reads:
                 raise Exception(
-                    'Cache already exists but has a conflicting MAX_EDGE_READS' 
-                    '({} vs {}). Use force-rebuild'.format(cache_grp.attrs['max_edge_reads'], MAX_EDGE_READS)
+                    'Cache already exists but has a conflicting max_edge_reads' 
+                    '({} vs {}). Use force-rebuild'.format(cache_grp.attrs['max_edge_reads'], max_edge_reads)
                 )
 
             if cache_grp.attrs['cache_partition_size'] != partition_size:
@@ -149,9 +150,9 @@ def create_index_on_disk(edges_file, edges_population, index_type, force_rebuild
                     '({} vs {}). Use force-rebuild'.format(cache_grp.attrs['cache_partition_size'], partition_size)
                 )
 
-        logger.debug('Number of edges, {}, exceeds maximum ({}).'.format(total_edges, MAX_EDGE_READS))
+        logger.debug('Number of edges, {}, exceeds maximum ({}).'.format(total_edges, max_edge_reads))
         logger.debug('Separating into {} partitions'.format(n_partitions))
-        while block_begin_idx <= total_edges:
+        while block_begin_idx < total_edges:
             # cache_grp_name = index_grp_name + '/cache/edges_partition_{}'.format(partition_index)
             partition_grp_name = 'edges_partition_{}'.format(partition_index)
             if partition_grp_name in cache_grp:
@@ -238,7 +239,7 @@ def create_index_on_disk(edges_file, edges_population, index_type, force_rebuild
             raise ValueError('Error, could not find hdf5 group {}/cache. Unable to proceed.'.format(index_grp_name))
         cache_grp = edges_pop_grp[index_grp_name]['cache']
 
-        print('Building edges index {}'.format(index_grp_name))
+        logger.debug('Building edges index {}'.format(index_grp_name))
 
         total_blocks = cache_grp.attrs['total_blocks']  # total number of 'partitioned_table' rows across all partitions
         max_id = cache_grp.attrs['max_id']  # maximum value in 'col_to_index' across all partions
@@ -272,7 +273,7 @@ def create_index_on_disk(edges_file, edges_population, index_type, force_rebuild
         # for ids [N_0, N_1]
         # TODO: Save index_beg, index_end, and block number as attributes in "cache"
         caches = {grp_name: grp for grp_name, grp in edges_pop_grp[index_grp_name]['cache'].items()}
-        read_block_size = MAX_EDGE_READS / (n_partitions*2+1)
+        read_block_size = max_edge_reads / (n_partitions*2+1)
 
         if cache_grp.attrs.get('building_index', False):
             print('Index has already been partially built, resumming from last point')
@@ -291,7 +292,7 @@ def create_index_on_disk(edges_file, edges_population, index_type, force_rebuild
             cache_grp.attrs['id_end'] = id_end
 
         while id_beg <= max_id:
-            print('Building "range_to_edge_id" for nodes ({}, {})'.format(id_beg, id_end))
+            logger.debug('Building "range_to_edge_id" for nodes ({}, {})'.format(id_beg, id_end))
             indx_beg = global_offsets[id_beg]
             indx_end = global_offsets[id_end+1]
             block_num += 1
@@ -322,13 +323,14 @@ def create_index_on_disk(edges_file, edges_population, index_type, force_rebuild
                 })
                 master_df = tmp_df if master_df is None else pd.concat((master_df, tmp_df))
 
-            master_df = master_df.sort_values(['id', 'range_beg'])
-            index_grp['range_to_edge_id'][indx_beg:indx_end, :] = master_df[['range_beg', 'range_end']]
+            if master_df is not None:
+                master_df = master_df.sort_values(['id', 'range_beg'])
+                index_grp['range_to_edge_id'][indx_beg:indx_end, :] = master_df[['range_beg', 'range_end']]
 
-            for name in to_remove:
-                del caches[name]
+                for name in to_remove:
+                    del caches[name]
 
-            del master_df
+                del master_df
 
             id_beg = id_end + 1
             id_end = np.searchsorted(global_offsets, read_block_size*block_num, side='right')

@@ -22,3 +22,4 @@
 #
 from .network import Network
 from .dm_network_orig import DenseNetworkOrig
+from .dm_network import DenseNetwork

@@ -49,8 +49,8 @@ class NxNetwork(Network):
     def _nodes_iter(self, nids=None):
         if nids is not None:
             return ((nid, d)
-                     for nid, d in self.__nodes
-                     if nid in nids )
+                    for nid, d in self.__nodes
+                    if nid in nids)
         else:
             return self.__nodes
 

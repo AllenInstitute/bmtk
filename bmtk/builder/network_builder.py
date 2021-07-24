@@ -1,4 +1,4 @@
-from .network_adaptors.dm_network_v2 import DenseNetwork
+from .network_adaptors.dm_network import DenseNetwork
 
 
 """

@@ -65,7 +65,8 @@ def test_sort(sort_func, sort_params):
         input_edges_path=tmp_edges_h5.name,
         output_edges_path=sorted_tmp_edges_h5.name,
         edges_population='/edges/a_to_b',
-        sort_by='source_node_id'
+        sort_by='source_node_id',
+        **sort_params
     )
     with h5py.File(sorted_tmp_edges_h5.name, 'r') as h5:
         assert(np.all(np.diff(h5['/edges/a_to_b/source_node_id'][()]) >= 0))
@@ -77,7 +78,8 @@ def test_sort(sort_func, sort_params):
         input_edges_path=tmp_edges_h5.name,
         output_edges_path=sorted_tmp_edges_h5.name,
         edges_population='/edges/a_to_b',
-        sort_by='target_node_id'
+        sort_by='target_node_id',
+        **sort_params
     )
     with h5py.File(sorted_tmp_edges_h5.name, 'r') as h5:
         assert(np.all(np.diff(h5['/edges/a_to_b/target_node_id'][()]) >= 0))
@@ -89,7 +91,8 @@ def test_sort(sort_func, sort_params):
         input_edges_path=tmp_edges_h5.name,
         output_edges_path=sorted_tmp_edges_h5.name,
         edges_population='/edges/a_to_b',
-        sort_by='edge_type_id'
+        sort_by='edge_type_id',
+        **sort_params
     )
     with h5py.File(sorted_tmp_edges_h5.name, 'r') as h5:
         assert(np.all(np.diff(h5['/edges/a_to_b/edge_type_id'][()]) >= 0))
@@ -101,7 +104,8 @@ def test_sort(sort_func, sort_params):
         input_edges_path=tmp_edges_h5.name,
         output_edges_path=sorted_tmp_edges_h5.name,
         edges_population='/edges/a_to_b',
-        sort_by='edge_group_id'
+        sort_by='edge_group_id',
+        **sort_params
     )
     with h5py.File(sorted_tmp_edges_h5.name, 'r') as h5:
         assert(np.all(np.diff(h5['/edges/a_to_b/edge_group_id'][()]) >= 0))
@@ -112,5 +116,5 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
 
     # test_sort(quicksort_edges, {})
-    # test_sort(external_merge_sort, {'sort_model_properties': False, 'n_chunks': 5})
-    test_sort(external_merge_sort, {'sort_model_properties': True, 'n_chunks': 5})
+    test_sort(external_merge_sort, {'sort_model_properties': False, 'n_chunks': 5})
+    # test_sort(external_merge_sort, {'sort_model_properties': True, 'n_chunks': 5})

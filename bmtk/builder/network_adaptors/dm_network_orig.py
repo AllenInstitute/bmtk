@@ -389,10 +389,10 @@ class DenseNetworkOrig(Network):
     def _create_index(self, node_ids_ds, output_grp, index_type='target'):
         if index_type == 'target':
             edge_nodes = np.array(node_ids_ds, dtype=np.int64)
-            output_grp = output_grp.create_group('indicies/target_to_source')
+            output_grp = output_grp.create_group('indices/target_to_source')
         elif index_type == 'source':
             edge_nodes = np.array(node_ids_ds, dtype=np.int64)
-            output_grp = output_grp.create_group('indicies/source_to_target')
+            output_grp = output_grp.create_group('indices/source_to_target')
 
         edge_nodes = np.append(edge_nodes, [-1])
         n_targets = np.max(edge_nodes)
