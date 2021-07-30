@@ -332,29 +332,30 @@ class DenseNetwork(Network):
                         prop_array = merged_edges.get_group_property(prop_name, group_id, chunk_id)
                         pop_grp[str(group_id)][prop_name][grp_idx_beg:grp_idx_end] = prop_array
 
-                if sort_on_disk:
-                    logger.debug('Sorting {} by {} to {}'.format(edges_file_name, sort_by, edges_file_name_final))
-                    sort_edges(
-                        input_edges_path=edges_file_name,
-                        output_edges_path=edges_file_name_final,
-                        edges_population='/edges/{}'.format(pop_name),
-                        sort_by=sort_by
-                    )
-                    try:
-                        logger.debug('Deleting intermediate edges file {}.'.format(edges_file_name))
-                        os.remove(edges_file_name)
-                    except OSError as e:
-                        logger.warning('Unable to remove intermediate edges file {}.'.format(edges_file_name))
+            if sort_on_disk:
+                logger.debug('Sorting {} by {} to {}'.format(edges_file_name, sort_by, edges_file_name_final))
+                sort_edges(
+                    input_edges_path=edges_file_name,
+                    output_edges_path=edges_file_name_final,
+                    edges_population='/edges/{}'.format(pop_name),
+                    sort_by=sort_by,
+                    # sort_on_disk=True,
+                )
+                try:
+                    logger.debug('Deleting intermediate edges file {}.'.format(edges_file_name))
+                    os.remove(edges_file_name)
+                except OSError as e:
+                    logger.warning('Unable to remove intermediate edges file {}.'.format(edges_file_name))
 
-                if index_by:
-                    index_by = index_by if isinstance(index_by, (list, tuple)) else [index_by]
-                    for index_type in index_by:
-                        logger.debug('Creating index {}'.format(index_type))
-                        create_index_in_memory(
-                            edges_file=edges_file_name_final,
-                            edges_population='/edges/{}'.format(pop_name),
-                            index_type=index_type
-                        )
+            if index_by:
+                index_by = index_by if isinstance(index_by, (list, tuple)) else [index_by]
+                for index_type in index_by:
+                    logger.debug('Creating index {}'.format(index_type))
+                    create_index_in_memory(
+                        edges_file=edges_file_name_final,
+                        edges_population='/edges/{}'.format(pop_name),
+                        index_type=index_type
+                    )
 
         barrier()
         del merged_edges

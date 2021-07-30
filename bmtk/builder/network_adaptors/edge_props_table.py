@@ -48,7 +48,7 @@ class EdgeTypesTableMemory(object):
         self._nsyns_trg2idx = {node_id: i for i, node_id in enumerate(self._nsyns_idx2trg)}
         self._nsyns_updated = False
         self._n_syns = 0
-        self.nsyn_table = np.zeros((len(self._nsyns_idx2src), len(self._nsyns_idx2trg)), dtype=np.uint16)
+        self.nsyn_table = np.zeros((len(self._nsyns_idx2src), len(self._nsyns_idx2trg)), dtype=np.uint32)
 
         self._prop_vals = {}  # used to store the arrays for each property
         self._prop_node_ids = None  # used to save the source_node_id and target_node_id for each edge

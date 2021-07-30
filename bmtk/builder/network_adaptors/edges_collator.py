@@ -266,7 +266,7 @@ class EdgesCollatorMPI(object):
         for edge_type_id, mg in self._model_groups_md.items():
             rank = mg['rank']
             group_id = mg['edge_group_id']
-            group_rank_sizes[group_id][rank+1] = mg['size']
+            group_rank_sizes[group_id][rank+1] += mg['size']
         group_rank_offsets = {}
         for group_id, group_sizes in group_rank_sizes.items():
             group_rank_offsets[group_id] = np.cumsum(group_sizes)
