@@ -49,7 +49,7 @@ class VirtualCell(object):
     def set_stim(self, stim_prop, spike_train):
         """Gets the spike trains for each individual cell."""
         spikes = spike_train.get_times(node_id=self.node_id)
-        assert(np.all(spikes >= 0))
+        # assert(np.all(spikes >= 0))
         spikes = np.sort(spikes)  # sort the spikes for NEURON
 
         self._train_vec = h.Vector(spikes)

@@ -194,7 +194,8 @@ class BioSimulator(Simulator):
             pc.spike_record(gid, tvec, gidvec)
             self._spikes[gid] = tvec
 
-    def attach_current_clamp(self, amplitude, delay, duration, gids=None):
+    def attach_current_clamp(self, amplitude, delay, duration, gids=None, section_name='soma', section_index=0,
+                             section_dist=0.5):
         # TODO: Create appropiate module
         if gids is None or gids=='all':
             gids = self.biophysical_gids
@@ -218,7 +219,7 @@ class BioSimulator(Simulator):
 
         for idx, gid in enumerate(gids):
             cell = self.net.get_cell_gid(gid)
-            Ic = IClamp(amplitude[idx], delay[idx], duration[idx])
+            Ic = IClamp(amplitude[idx], delay[idx], duration[idx], section_name, section_index, section_dist)
             
             Ic.attach_current(cell)
             self._iclamps.append(Ic)
@@ -443,7 +444,17 @@ class BioSimulator(Simulator):
                 amplitude = sim_input.params['amp']
                 delay = sim_input.params['delay']
                 duration = sim_input.params['duration']
-                
+
+                # specificed for location to place iclamp hobj.<section_name>[<section_index>](<section_dist>). The
+                # default is hobj.soma[0](0.5), the center of the soma
+                section_name = sim_input.params.get('section_name', 'soma')
+                section_index = sim_input.params.get('section_index', 0)
+                section_dist = sim_input.params.get('section_dist', 0.5)
+
+                # section_name = section_name if isinstance(section_name, (list, tuple)) else [section_name]
+                # section_index = section_index if isinstance(section_index, (list, tuple)) else [section_index]
+                # section_dist = section_dist if isinstance(section_dist, (list, tuple)) else [section_dist]
+
                 try:
                     sim_input.params['gids']
                 except:
@@ -453,7 +464,7 @@ class BioSimulator(Simulator):
                 else:
                     gids = list(node_set.gids())
 
-                sim.attach_current_clamp(amplitude, delay, duration, gids)
+                sim.attach_current_clamp(amplitude, delay, duration, gids, section_name, section_index, section_dist)
 
             elif sim_input.module == "SEClamp":
                 try: 
