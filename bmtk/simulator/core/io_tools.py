@@ -19,7 +19,7 @@ class IOUtils(object):
         self.mpi_size = 1
 
         self._log_format = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
-        self._log_level = logging.DEBUG
+        self._log_level = logging.INFO
         self._log_to_console = True
         self._logger = None
 
