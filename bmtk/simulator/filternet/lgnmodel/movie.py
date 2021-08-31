@@ -10,7 +10,7 @@ class Movie(object):
         self.labels = labels
         self.units = units
         assert(units[0] == 'second')
-        
+
         if t_range is None:
             self.frame_rate = float(frame_rate)
             self.t_range = np.arange(data.shape[0])*(1./self.frame_rate)
@@ -223,11 +223,11 @@ class GratingMovie(Movie):
         self.row_range = np.linspace(0, self.row_size, int(self.row_size/physical_spacing), endpoint=True)
         self.col_range = np.linspace(0, self.col_size, int(self.col_size/physical_spacing), endpoint=True)
         numberFramesNeeded = int(round(self.frame_rate * (t_max - gray_screen_dur))) + 1
-        time_range = np.linspace(gray_screen_dur, t_max - gray_screen_dur, numberFramesNeeded, endpoint=True)
+        time_range = np.linspace(0, t_max - gray_screen_dur, numberFramesNeeded, endpoint=True)
 
         # Creates a drifting grating panel
         tt, yy, xx = np.meshgrid(time_range, self.row_range, self.col_range, indexing='ij')
-        theta_rad = -np.pi*(180 - theta) / 180.
+        theta_rad = np.pi*(180 - theta) / 180.
         phase_rad = np.pi*(180 - phase) / 180.
         xy = xx * np.cos(theta_rad) + yy * np.sin(theta_rad)
         data = contrast*np.sin(2*np.pi*(cpd * xy + temporal_f *tt) + phase_rad)

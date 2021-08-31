@@ -109,12 +109,12 @@ class FilterSimulator(Simulator):
         cells_on_rank = self.local_cells()
         n_cells_on_rank = len(cells_on_rank)
         ten_percent = int(np.ceil(n_cells_on_rank*0.1))
+        rank_msg = '' if bmtk_world_comm.MPI_size < 2 else ' (on rank {})'.format(bmtk_world_comm.MPI_rank)
 
         for cell_num, cell in enumerate(cells_on_rank):
             for movie, options in zip(self._movies, self._eval_options):
                 if cell_num > 0 and cell_num % ten_percent == 0:
-                    io.log_debug(' Processing cell {} of {} (on rank {})'.format(cell_num, n_cells_on_rank,
-                                                                                  bmtk_world_comm.MPI_rank))
+                    io.log_debug(' Processing cell {} of {}{}.'.format(cell_num, n_cells_on_rank, rank_msg))
                 ts, f_rates = cell.lgn_cell_obj.evaluate(movie, **options)
 
                 for mod in self._sim_mods:

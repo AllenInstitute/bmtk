@@ -1,3 +1,5 @@
+import numpy as np
+
 from bmtk.simulator.core.simulator_network import SimNetwork
 from bmtk.simulator.filternet.cell import Cell
 from bmtk.simulator.filternet.pyfunction_cache import py_modules
@@ -38,9 +40,22 @@ class FilterNetwork(SimNetwork):
         py_modules.add_cell_processor('default', processing_fnc)
 
     def build_nodes(self):
+        rank_msg = '' if bmtk_world_comm.MPI_size < 2 else ' (on rank {})'.format(bmtk_world_comm.MPI_rank)
+
         for node_pop in self.node_populations:
-            for node in node_pop[bmtk_world_comm.MPI_rank::bmtk_world_comm.MPI_size]:
+            nodes = node_pop[bmtk_world_comm.MPI_rank::bmtk_world_comm.MPI_size]
+            n_rank_nodes = int(node_pop.n_nodes() / float(bmtk_world_comm.MPI_size))
+
+            ten_percent = int(np.ceil(n_rank_nodes*0.1))
+            io.log_debug(' Adding {} cells.'.format(node_pop.name))
+
+            for i, node in enumerate(nodes):
+                if i > 0 and i % ten_percent == 0:
+                    io.log_debug('  Adding cell {} of {}{}.'.format(i, n_rank_nodes, rank_msg))
+
                 cell = Cell(node, population=node_pop.name)
                 cell.default_jitter = self.jitter
                 cell.build()
                 self._local_cells.append(cell)
+
+        bmtk_world_comm.barrier()
