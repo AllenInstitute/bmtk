@@ -1,5 +1,6 @@
 import csv
 import numpy as np
+from six import string_types
 
 from bmtk.simulator.core.simulator import Simulator
 import bmtk.simulator.utils.simulation_inputs as inputs
@@ -7,7 +8,7 @@ from bmtk.simulator.filternet.config import Config
 from bmtk.simulator.filternet.lgnmodel.movie import *
 from bmtk.simulator.filternet import modules as mods
 from bmtk.simulator.filternet.io_tools import io
-from six import string_types
+from bmtk.utils.io.ioutils import bmtk_world_comm
 
 
 class FilterSimulator(Simulator):
@@ -104,8 +105,16 @@ class FilterSimulator(Simulator):
             mod.initialize(self)
 
         io.log_info('Evaluating rates.')
-        for cell in self._network.cells():
+
+        cells_on_rank = self.local_cells()
+        n_cells_on_rank = len(cells_on_rank)
+        ten_percent = int(np.ceil(n_cells_on_rank*0.1))
+        rank_msg = '' if bmtk_world_comm.MPI_size < 2 else ' (on rank {})'.format(bmtk_world_comm.MPI_rank)
+
+        for cell_num, cell in enumerate(cells_on_rank):
             for movie, options in zip(self._movies, self._eval_options):
+                if cell_num > 0 and cell_num % ten_percent == 0:
+                    io.log_debug(' Processing cell {} of {}{}.'.format(cell_num, n_cells_on_rank, rank_msg))
                 ts, f_rates = cell.lgn_cell_obj.evaluate(movie, **options)
 
                 for mod in self._sim_mods:
@@ -151,7 +160,6 @@ class FilterSimulator(Simulator):
 
         network.io.log_info('Building cells.')
         network.build_nodes()
-
 
         rates_csv = config.output.get('rates_csv', None)
         rates_h5 = config.output.get('rates_h5', None)

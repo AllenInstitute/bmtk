@@ -129,7 +129,7 @@ def test_sONsOFF(cell_type, expected_val):
 
 
 @pytest.mark.parametrize("cell_type,expected_val", [
-    ('sONsOFF_001', [4.0, 5.6769, 5.2724, 3.5743, 2.3019])
+    ('sONsOFF_001', [4.0, 3.5654, 2.2957, 2.7437, 4.4481])
 ])
 def test_sONtOFF(cell_type, expected_val):
     gm = movie.GratingMovie(row_size=120, col_size=240, frame_rate=24.0)
