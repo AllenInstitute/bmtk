@@ -84,7 +84,8 @@ class PointProcessCell(Cell):
             #src_gid = src_node.node_id
             nc = h.NetCon(stim.hobj, self.hobj)
         else:
-            src_gid = src_node.node_id
+            # src_gid = src_node.node_id
+            src_gid = self._network.gid_pool.get_gid(name=src_node.population_name, node_id=src_node.node_id)
             nc = pc.gid_connect(src_gid, self.hobj)
 
         weight = syn_weight
