@@ -291,10 +291,12 @@ class BioCell(Cell):
         synapse_fnc = nrn.py_modules.synapse_model(edge_prop['model_template'])
         syn = synapse_fnc(edge_prop['dynamics_params'], sec_x, section)
 
+
         if stim is not None:
             nc = h.NetCon(stim.hobj, syn)  # stim.hobj - source, syn - target
         else:
-            nc = pc.gid_connect(src_node.node_id, syn)
+            src_gid = self._network.gid_pool.get_gid(name=src_node.population_name, node_id=src_node.node_id)
+            nc = pc.gid_connect(src_gid, syn)
 
         nc.weight[0] = syn_weight
         nc.delay = delay
@@ -311,7 +313,6 @@ class BioCell(Cell):
 
     def _set_connections(self, edge_prop, src_node, syn_weight, stim=None):
         tar_seg_ix, tar_seg_prob = self._morph.get_target_segments(edge_prop)
-        src_gid = src_node.node_id
         nsyns = edge_prop.nsyns
 
         if len(tar_seg_ix) == 0:
@@ -337,6 +338,7 @@ class BioCell(Cell):
             if stim:
                 nc = h.NetCon(stim.hobj, syn)
             else:
+                src_gid = self._network.gid_pool.get_gid(name=src_node.population_name, node_id=src_node.node_id)
                 nc = pc.gid_connect(src_gid, syn)
 
             nc.weight[0] = syn_weight

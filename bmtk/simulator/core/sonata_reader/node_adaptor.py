@@ -14,6 +14,10 @@ class SonataBaseNode(object):
         return self._prop_adaptor.node_id(self._node)
 
     @property
+    def population_name(self):
+        return self._node.population_name
+
+    @property
     def gid(self):
         return self._prop_adaptor.gid(self._node)
 
