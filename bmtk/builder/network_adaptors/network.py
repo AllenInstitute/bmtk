@@ -31,7 +31,7 @@ from ..node_pool import NodePool
 from ..connection_map import ConnectionMap
 from ..node_set import NodeSet
 from ..id_generator import IDGenerator
-from ..builder_utils import mpi_rank, mpi_size, barrier
+from ..builder_utils import mpi_rank, mpi_size, barrier, check_properties_across_ranks
 
 
 logger = logging.getLogger(__name__)
@@ -191,6 +191,7 @@ class Network(object):
         :param properties: Individual and group properties of given nodes
         """
         self._clear()
+        check_properties_across_ranks(properties)
 
         # categorize properties as either a node-params (for nodes file) or node-type-property (for node_types files)
         node_params = {}
@@ -320,6 +321,8 @@ class Network(object):
         :param edge_type_properties: properties/attributes of the given edge type
         :return: A ConnectionMap object
         """
+        check_properties_across_ranks(edge_type_properties)
+
         if not isinstance(source, NodePool):
             source = NodePool(self, **source or {})
 
@@ -568,15 +571,17 @@ class Network(object):
         if not force_overwrite and os.path.exists(nodes_file):
             raise Exception('File {} exists. Please use different name or use force_overwrite'.format(nodes_file))
         nf_dir = os.path.dirname(nodes_file)
-        if not os.path.exists(nf_dir):
+        if not os.path.exists(nf_dir) and mpi_rank == 0:
             os.makedirs(nf_dir)
+        barrier()
 
         node_types_file = self.__get_path(node_types_file_name, output_dir, 'node_types.csv')
         if not force_overwrite and os.path.exists(node_types_file):
             raise Exception('File {} exists. Please use different name or use force_overwrite'.format(node_types_file))
         ntf_dir = os.path.dirname(node_types_file)
-        if not os.path.exists(ntf_dir):
+        if not os.path.exists(ntf_dir) and mpi_rank == 0:
             os.makedirs(ntf_dir)
+        barrier()
 
         self._save_nodes(nodes_file)
         self._save_node_types(node_types_file)
@@ -639,8 +644,9 @@ class Network(object):
         if (edges_file_name or edge_types_file_name) is not None:
             network_params = [(network_params[0][0], network_params[0][1], edges_file_name, edge_types_file_name)]
 
-        if not os.path.exists(output_dir):
+        if not os.path.exists(output_dir) and mpi_rank == 0:
             os.mkdir(output_dir)
+        barrier()
 
         self._save_gap_junctions(os.path.join(output_dir, self._network_name + '_gap_juncs.h5'))
 
