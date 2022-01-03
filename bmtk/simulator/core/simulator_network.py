@@ -197,7 +197,7 @@ class SimNetwork(object):
     def build_nodes(self):
         raise NotImplementedError()
 
-    def build_recurrent_edges(self):
+    def build_recurrent_edges(self, **opts):
         raise NotImplementedError()
 
     def build_virtual_connections(self):
