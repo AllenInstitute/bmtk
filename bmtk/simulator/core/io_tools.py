@@ -114,12 +114,16 @@ class IOUtils(object):
 
         self.logger.warning(message)
 
-    def log_exception(self, message):
+    def log_error(self, message):
+        self.logger.error(message)
+
+    def log_exception(self, message, raise_exception=True):
         if self.mpi_rank == 0:
             self.logger.error(message)
 
         self.barrier()
-        raise Exception(message)
+        if raise_exception:
+            raise Exception(message)
 
 
 io = IOUtils()

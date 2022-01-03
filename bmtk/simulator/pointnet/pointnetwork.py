@@ -24,6 +24,7 @@ import os
 import json
 import functools
 import nest
+
 from six import string_types
 import numpy as np
 
@@ -113,16 +114,11 @@ class PointNetwork(SimNetwork):
         for node_pop in self.node_populations:
             pop_name = node_pop.name
             gid_map = self.gid_map
-            # print(gid_map._gid2pop_id)
-            # exit()
 
             gid_map.create_pool(pop_name)
             if node_pop.internal_nodes_only:
                 for node in node_pop.get_nodes():
                     node.build()
-                    # print(node.node_ids)
-                    # print(node.nest_ids)
-                    # exit()
                     gid_map.add_nestids(name=pop_name, node_ids=node.node_ids, nest_ids=node.nest_ids)
 
             elif node_pop.mixed_nodes:
@@ -131,7 +127,7 @@ class PointNetwork(SimNetwork):
                         node.build()
                         gid_map.add_nestids(name=pop_name, node_ids=node.node_ids, nest_ids=node.nest_ids)
 
-    def build_recurrent_edges(self):
+    def build_recurrent_edges(self, force_resolution=False):
         recurrent_edge_pops = [ep for ep in self._edge_populations if not ep.virtual_connections]
         if not recurrent_edge_pops:
             return
@@ -140,7 +136,7 @@ class PointNetwork(SimNetwork):
             for edge in edge_pop.get_edges():
                 nest_srcs = self.gid_map.get_nestids(edge_pop.source_nodes, edge.source_node_ids)
                 nest_trgs = self.gid_map.get_nestids(edge_pop.target_nodes, edge.target_node_ids)
-                nest.Connect(nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=edge.nest_params)
+                self._nest_connect(nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=edge.nest_params)
 
     def find_edges(self, source_nodes=None, target_nodes=None):
         # TODO: Move to parent
@@ -194,4 +190,25 @@ class PointNetwork(SimNetwork):
                 for edge in edge_pop.get_edges():
                     nest_trgs = self.gid_map.get_nestids(edge_pop.target_nodes, edge.target_node_ids)
                     nest_srcs = virt_gid_map.get_nestids(edge_pop.source_nodes, edge.source_node_ids)
-                    nest.Connect(nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=edge.nest_params)
+                    self._nest_connect(nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=edge.nest_params)
+
+    def _nest_connect(self, nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=None):
+        """Calls nest.Connect but with some extra error logging and exception handling."""
+        try:
+            nest.Connect(nest_srcs, nest_trgs, conn_spec=conn_spec, syn_spec=syn_spec)
+
+        except nest.kernel.NESTErrors.BadDelay as bde:
+            # An occuring issue is when dt > delay, add some extra messaging in log to help users fix problem.
+            res_kernel = nest.GetKernelStatus().get('resolution', 'NaN')
+            delay_edges = syn_spec.get('delay', 'NaN')
+            msg = 'synaptic "delay" value in edges ({}) is not compatable with simulator resolution/"dt" ({})'.format(
+                delay_edges, res_kernel
+            )
+            self.io.log_error('{}{}'.format(bde.errorname, bde.errormessage))
+            self.io.log_error(msg)
+            raise
+
+        except Exception as e:
+            # Record exception to log file.
+            self.io.log_error(str(e))
+            raise

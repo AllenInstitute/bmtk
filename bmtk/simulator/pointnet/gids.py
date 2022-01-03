@@ -56,3 +56,6 @@ class GidPool(object):
 
     def get_gids(self, name, node_ids):
         return self.get_nestids(name=name, node_ids=node_ids)
+
+    def __len__(self):
+        return len(self.gids)

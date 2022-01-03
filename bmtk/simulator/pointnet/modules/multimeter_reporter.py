@@ -55,19 +55,27 @@ class MultimeterMod(object):
     def initialize(self, sim):
         node_set = sim.net.get_node_set(self._node_set)
 
-        self._gids =  list(set(node_set.gids()))
+        self._gids = list(set(node_set.gids()))
         self._population = node_set.population_names()[0]
         self._tstart = self._tstart or sim.tstart
         self._tstop = self._tstop or sim.tstop
         self._interval = self._interval or sim.dt
         self._multimeter = nest.Create(
             'multimeter',
-            params={'interval': self._interval, 'start': self._tstart, 'stop': self._tstop, 'to_file': True,
-                    'to_memory': False, 'withtime': True, 'record_from': self._variable_name,
-                    'label': self.__output_label
-                    }
+            params={
+                # 'interval': self._interval,
+                'start': self._tstart,
+                'stop': self._tstop,
+                'to_file': True,
+                'to_memory': False,
+                'withtime': True,
+                'record_from': self._variable_name,
+                'label': self.__output_label
+            }
         )
-
+        # A problem with nest when the interval value is very large (>= 10), the value cannot be initialized in the
+        # Create() method and instead must be set using SetStatus().
+        nest.SetStatus(self._multimeter, 'interval', self._interval)
         nest.Connect(self._multimeter, self._gids)
 
     def finalize(self, sim):
