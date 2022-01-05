@@ -13,12 +13,12 @@ except ImportError:
 
 
 class MockNodePop(object):
-    def __init__(self, name, nnodes=100, batched=True):
+    def __init__(self, name, nnodes=100, batched=True, virtual=False):
         self.name = name
         self.mixed_nodes = False
-        self.internal_nodes_only = True
-        self.virtual_nodes_only = False
-        self.nnodes = nnodes
+        self.internal_nodes_only = not virtual
+        self.virtual_nodes_only = virtual
+        self.n_nodes = nnodes
         self.batched = batched
 
     def initialize(self, net):
@@ -26,23 +26,23 @@ class MockNodePop(object):
 
     def get_nodes(self):
         if self.batched:
-            return [self.MockNode(nnodes=self.nnodes)]
+            return [self.MockNode(n_nodes=self.n_nodes)]
         else:
-            return [self.MockNode(nnodes=1) for _ in range(self.nnodes)]
+            return [self.MockNode(n_nodes=1) for _ in range(self.n_nodes)]
 
     def filter(self, filter):
         # return [self.MockNode(nnodes=self.nnodes) for _ in range(self.nnodes)]
-        return [self.MockNode(nnodes=1, node_id=i) for i in range(self.nnodes)]
+        return [self.MockNode(n_nodes=1, node_id=i) for i in range(self.n_nodes)]
 
     class MockNode(object):
-        def __init__(self, nnodes=1, node_id=0):
-            self.nnodes = nnodes
-            self.node_ids = list(range(nnodes))
+        def __init__(self, n_nodes=1, node_id=0):
+            self.n_nodes = n_nodes
+            self.node_ids = list(range(n_nodes))
             self.node_id = node_id
             self.nest_ids = None
 
         def build(self):
-            self.nest_ids = nest.Create('iaf_psc_delta', self.nnodes, {})
+            self.nest_ids = nest.Create('iaf_psc_delta', self.n_nodes, {})
 
 
 class MockEdges(object):
@@ -68,3 +68,19 @@ class MockEdges(object):
             self.source_node_ids = range(100)
             self.target_node_ids = range(100)
             self.nest_params = {'model': 'static_synapse', 'delay': delay,  'weight': 2.0}
+
+
+class MockNodeSet(object):
+    def __init__(self, population_names):
+        self._population_names = population_names
+
+    def population_names(self):
+        return self._population_names
+
+
+class MockSpikes(object):
+    def __init__(self, spike_times):
+        self.spikes = spike_times
+
+    def get_times(self, node_id):
+        return self.spikes
