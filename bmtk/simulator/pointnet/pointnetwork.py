@@ -166,9 +166,19 @@ class PointNetwork(SimNetwork):
                     for node_id, nest_id in zip(node.node_ids, nest_ids):
                         virt_node_map[node_id] = nest_id
 
-                        st = np.array(spike_trains.get_times(node_id=node_id))
-                        if len(st) == 0:
+                        st = spike_trains.get_times(node_id=node_id)
+
+                        if st is None or len(st) == 0:
                             continue
+                        st = np.array(st)
+
+                        if np.any(st <= 0.0):
+                            # NRN will fail if VecStim contains negative spike-time, throw an exception and log info for user
+                            io.log_exception(
+                                'spike train {} contains negative/zero time, unable to run virtual cell in NEST'.format(
+                                    st
+                                ))
+
                         st.sort()
                         nest.SetStatus([nest_id], {'spike_times': st})
 
