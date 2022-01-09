@@ -25,6 +25,7 @@ nr5a1_morphology = """##n,type,x,y,z,radius,parent
 """
 
 
+@pytest.mark.skip
 def test_swc_reader():
     tmpfile = tempfile.NamedTemporaryFile(suffix='.h5')
     with open(tmpfile.name, 'w') as f:

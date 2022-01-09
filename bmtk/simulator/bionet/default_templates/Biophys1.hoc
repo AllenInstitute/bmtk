@@ -2,18 +2,21 @@ begintemplate Biophys1
 
 public init
 public soma, dend, apic, axon
+public nl
+public i3d
 public all, somatic, basal, apical, axonal
 
 objref all, somatic, basal, apical, axonal
 objref this
+objref nl
+objref i3d
 
 create soma[1]
 create dend[1]
 create apic[1]
 create axon[1]
 
-
-proc init() {localobj nl, import
+proc init() { // localobj nl, import
 	all = new SectionList()
 	somatic = new SectionList()
 	basal = new SectionList()
@@ -24,8 +27,8 @@ proc init() {localobj nl, import
 	nl = new Import3d_SWC_read()
 	nl.quiet = 1
 	nl.input($s1)
-	import = new Import3d_GUI(nl, 0)
-	import.instantiate(this)
+	i3d = new Import3d_GUI(nl, 0)
+	i3d.instantiate(this)
 	
 }
 
