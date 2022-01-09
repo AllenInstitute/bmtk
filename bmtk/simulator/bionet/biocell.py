@@ -214,8 +214,8 @@ class BioCell(Cell):
         if edge_prop.nsyns < 1:
             return 1
 
-        sec_x = edge_prop['sec_x']
-        sec_id = edge_prop['sec_id']
+        sec_x = edge_prop.afferent_section_pos
+        sec_id = edge_prop.afferent_section_id
         section = self._secs_by_id[sec_id]
 
         #Sets up the section to be connected to the gap junction.
@@ -283,8 +283,9 @@ class BioCell(Cell):
 
     def _set_connection_preselected(self, edge_prop, src_node, syn_weight, stim=None):
         # TODO: synapses should be loaded by edge_prop.load_synapse
-        sec_x = edge_prop['sec_x']
-        sec_id = edge_prop['sec_id']
+        sec_x = edge_prop.afferent_section_pos
+        sec_id = edge_prop.afferent_section_id
+
         section = self._secs_by_id[sec_id]
         # section = self._secs[sec_id]
         delay = edge_prop['delay']
