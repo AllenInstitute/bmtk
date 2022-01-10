@@ -472,6 +472,7 @@ add_cell_model(NMLLoad, directive='nml', model_type='biophysical')
 add_cell_model(Biophys1, directive='ctdb:Biophys1', model_type='biophysical', overwrite=False)
 add_cell_model(Biophys1, directive='ctdb:Biophys1.hoc', model_type='biophysical', overwrite=False)
 add_cell_model(IntFire1, directive='nrn:IntFire1', model_type='point_process', overwrite=False)
+add_cell_model(IntFire1, directive='nrn:IntFire1', model_type='point_neuron', overwrite=False)
 
 
 add_cell_processor(aibs_perisomatic, overwrite=False)

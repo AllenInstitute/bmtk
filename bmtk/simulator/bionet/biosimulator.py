@@ -385,7 +385,16 @@ class BioSimulator(Simulator):
 
     @classmethod
     def from_config(cls, config, network, set_recordings=True):
-        # TODO: convert from json to sonata config if necessary
+        simulation_inputs = inputs.from_config(config)
+
+        # Special case for setting synapses to spontaneously (for a given set of pre-synaptic cell-types). Using this
+        # input will change the way the network builds cells/connections and thus needs to be set first.
+        for sim_input in simulation_inputs:
+            if sim_input.input_type == 'syn_activity':
+                network.set_spont_syn_activity(
+                    precell_filter=sim_input.params['precell_filter'],
+                    timestamps=sim_input.params['timestamps']
+                )
 
         # The network must be built before initializing the simulator because
         # gap junctions must be set up before the simulation is initialized.
@@ -503,6 +512,9 @@ class BioSimulator(Simulator):
 
             elif sim_input.module == 'xstim':
                 sim.add_mod(mods.XStimMod(**sim_input.params))
+
+            elif sim_input.module == 'syn_activity':
+                pass
 
             else:
                 io.log_exception('Can not parse input format {}'.format(sim_input.name))

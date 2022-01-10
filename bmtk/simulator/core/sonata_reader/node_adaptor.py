@@ -141,7 +141,7 @@ class NodeAdaptor(object):
                 model_type = node_type['model_type']
                 if model_type == 'biophysical':
                     params_dir = network.get_component('biophysical_neuron_models_dir')
-                elif model_type == 'point_process':
+                elif model_type in ['point_process', 'point_neuron']:
                     params_dir = network.get_component('point_neuron_models_dir')
                 elif model_type == 'point_soma':
                     params_dir = network.get_component('point_neuron_models_dir')
