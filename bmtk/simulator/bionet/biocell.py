@@ -431,3 +431,97 @@ class BioCell(Cell):
                                                            self.netcons[i].delay, self._syn_seg_ix[i],
                                                            self._syn_sec_x[i])
         return rstr
+
+
+class BioCellSpontSyn(BioCell):
+    """Special class that allows certain synapses to spontaneously fire (without spiking) at a specific time.
+    """
+    def __init__(self, node, population_name, bionetwork):
+        super(BioCellSpontSyn, self).__init__(node, population_name=population_name, bionetwork=bionetwork)
+
+        # Get the timestamp at which synapses
+        self._syn_timestamps = bionetwork.spont_syns_times
+        self._syn_timestamps = [self._syn_timestamps] if np.isscalar(self._syn_timestamps) else self._syn_timestamps
+        self._spike_trains = h.Vector(self._syn_timestamps)
+        self._vecstim = h.VecStim()
+        self._vecstim.play(self._spike_trains)
+
+        self._precell_filter = bionetwork.spont_syns_filter
+        assert(isinstance(self._precell_filter, dict))
+
+    def _matches_filter(self, src_node):
+        """Check to see if the presynaptic cell matches the criteria specified"""
+        for k, v in self._precell_filter.items():
+            if isinstance(v, (list, tuple)):
+                if src_node[k] not in v:
+                    return False
+            else:
+                if src_node[k] != v:
+                    return False
+        return True
+
+    def _set_connections(self, edge_prop, src_node, syn_weight, stim=None):
+        tar_seg_ix, tar_seg_prob = self._morph.get_target_segments(edge_prop)
+        src_gid = src_node.node_id
+        nsyns = edge_prop.nsyns
+
+        # choose nsyn elements from seg_ix with probability proportional to segment area
+        segs_ix = self.prng.choice(tar_seg_ix, nsyns, p=tar_seg_prob)
+        secs = self._secs[segs_ix]  # sections where synapases connect
+        xs = self._morph.seg_prop['x'][segs_ix]  # distance along the section where synapse connects, i.e., seg_x
+
+        synapses = [edge_prop.load_synapses(x, sec) for x, sec in zip(xs, secs)]
+
+        delay = edge_prop['delay']
+        self._synapses.extend(synapses)
+
+        for syn in synapses:
+            # connect synapses
+            if stim:
+                nc = h.NetCon(stim.hobj, syn)
+            elif self._matches_filter(src_node):
+                nc = h.NetCon(self._vecstim, syn)
+            else:
+                nc = pc.gid_connect(src_gid, syn)
+                syn_weight = 0.0
+
+            nc.weight[0] = syn_weight
+            nc.delay = delay
+            self.netcons.append(nc)
+
+            self._connections.append(ConnectionStruct(edge_prop, src_node, syn, nc, stim is not None))
+
+        return nsyns
+
+    def _set_connection_preselected(self, edge_prop, src_node, syn_weight, stim=None):
+        # TODO: synapses should be loaded by edge_prop.load_synapse
+        sec_x = edge_prop.afferent_section_pos
+        sec_id = edge_prop.afferent_section_id
+        section = self._secs_by_id[sec_id]
+        # section = self._secs[sec_id]
+        delay = edge_prop['delay']
+        synapse_fnc = nrn.py_modules.synapse_model(edge_prop['model_template'])
+        syn = synapse_fnc(edge_prop['dynamics_params'], sec_x, section)
+
+        if stim is not None:
+            nc = h.NetCon(stim.hobj, syn)
+
+        elif self._matches_filter(src_node):
+            nc = h.NetCon(self._vecstim, syn)
+
+        else:
+            nc = pc.gid_connect(src_node.node_id, syn)
+            syn_weight = 0.0
+
+        nc.weight[0] = syn_weight
+        nc.delay = delay
+        self._connections.append(ConnectionStruct(edge_prop, src_node, syn, nc, stim is not None))
+
+        self._netcons.append(nc)
+        self._synapses.append(syn)
+        self._edge_type_ids.append(edge_prop.edge_type_id)
+        if self._save_conn:
+            self._save_connection(src_gid=src_node.node_id, src_net=src_node.network, sec_x=sec_x, seg_ix=sec_id,
+                                  edge_type_id=edge_prop.edge_type_id)
+
+        return 1

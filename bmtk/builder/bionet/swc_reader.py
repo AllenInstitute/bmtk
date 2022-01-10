@@ -445,6 +445,9 @@ def get_swc(cell, morphology_dir=None, use_cache=False):
     if not os.path.exists(swc_path) and not swc_path.endswith('.swc'):
         swc_path += '.swc'
 
+    if not os.path.exists(swc_path):
+        raise ValueError('File {} does not exists.'.format(swc_path))
+
     swc = SWCReader(swc_path)
 
     if cell.get('model_processing', 'NULL') == 'aibs_perisomatic':
