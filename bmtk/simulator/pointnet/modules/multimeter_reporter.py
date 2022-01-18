@@ -2,8 +2,8 @@ import os
 import glob
 import pandas as pd
 from bmtk.utils.reports import CompartmentReport
-# from bmtk.utils.io.cell_vars import CellVarRecorder
 from bmtk.simulator.pointnet.io_tools import io
+from bmtk.simulator.pointnet.nest_utils import nest_version
 
 import nest
 
@@ -15,6 +15,53 @@ try:
 except Exception as e:
     MPI_RANK = 0
     N_HOSTS = 1
+
+
+def create_multimeter_nest2(tstart, tstop, variable_name, label):
+    return nest.Create(
+        'multimeter',
+        params={
+            'start': tstart,
+            'stop': tstop,
+            'to_file': True,
+            'to_memory': False,
+            'withtime': True,
+            'record_from': variable_name,
+            'label': label
+        }
+    )
+
+
+def create_multimeter_nest3(tstart, tstop, variable_name, label):
+    return nest.Create(
+        'multimeter',
+        params={
+            'start': tstart,
+            'stop': tstop,
+            'record_to': 'ascii',
+            'record_from': variable_name,
+            'label': label
+        }
+    )
+
+
+def read_dat_nest2(dat_file, variable_name):
+    return pd.read_csv(dat_file, index_col=False, names=['nest_id', 'time']+variable_name, sep='\t')
+
+
+def read_dat_nest3(dat_file, variable_name):
+    report_df = pd.read_csv(dat_file, index_col=False, sep='\t', comment='#')
+    report_df = report_df.rename(columns={'sender': 'nest_id', 'time_ms': 'time'})
+    return report_df
+
+
+
+if nest_version[0] >= 3:
+    create_multimeter = create_multimeter_nest3
+    read_dat = read_dat_nest3
+else:
+    create_multimeter = create_multimeter_nest2
+    read_dat = read_dat_nest2
 
 
 class MultimeterMod(object):
@@ -56,25 +103,13 @@ class MultimeterMod(object):
         node_set = sim.net.get_node_set(self._node_set)
 
         self._gids = list(set(node_set.gids()))
+        self._gids.sort()
         self._population = node_set.population_names()[0]
         self._tstart = self._tstart or sim.tstart
         self._tstop = self._tstop or sim.tstop
         self._interval = self._interval or sim.dt
-        self._multimeter = nest.Create(
-            'multimeter',
-            params={
-                # 'interval': self._interval,
-                'start': self._tstart,
-                'stop': self._tstop,
-                'to_file': True,
-                'to_memory': False,
-                'withtime': True,
-                'record_from': self._variable_name,
-                'label': self.__output_label
-            }
-        )
-        # A problem with nest when the interval value is very large (>= 10), the value cannot be initialized in the
-        # Create() method and instead must be set using SetStatus().
+        self._multimeter = create_multimeter(self._tstart, self._tstop, self._variable_name, self.__output_label)
+
         nest.SetStatus(self._multimeter, 'interval', self._interval)
         nest.Connect(self._multimeter, self._gids)
 
@@ -109,8 +144,12 @@ class MultimeterMod(object):
 
             gid_map = sim.net.gid_map
             for nest_file in glob.glob('{}*'.format(self.__output_label)):
-                report_df = pd.read_csv(nest_file, index_col=False, names=['nest_id', 'time']+self._variable_name,
-                                        sep='\t')
+                # report_df = pd.read_csv(nest_file, index_col=False, names=['nest_id', 'time']+self._variable_name,
+                #                         sep='\t', comment='#')
+                report_df = read_dat(nest_file, self._variable_name)
+                # print(report_df)
+                # exit()
+
                 for grp_id, grp_df in report_df.groupby(by='nest_id'):
                     pop_id = gid_map.get_pool_id(grp_id)
                     vr = get_var_recorder(grp_df)
