@@ -30,8 +30,15 @@ from bmtk.simulator.core.io_tools import IOUtils
 
 # Want users to be able to use NEST whether or not it is compiled in parallel mode or not, which means checking if
 # the method nest.SyncPRocesses (aka MPI Barrier) exists. If it doesn't try getting barrier from mpi4py
-rank = nest.Rank()
-n_nodes = nest.NumProcesses()
+try:
+    rank = nest.Rank()
+    n_nodes = nest.NumProcesses()
+
+except Exception as e:
+    rank = 0
+    n_nodes = 1
+
+
 try:
     barrier = nest.SyncProcesses
 except AttributeError as exc:

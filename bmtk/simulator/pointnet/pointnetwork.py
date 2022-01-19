@@ -32,7 +32,39 @@ from bmtk.simulator.core.simulator_network import SimNetwork
 from bmtk.simulator.pointnet.sonata_adaptors import PointNodeAdaptor, PointEdgeAdaptor
 from bmtk.simulator.pointnet import pyfunction_cache
 from bmtk.simulator.pointnet.io_tools import io
+from bmtk.simulator.pointnet.nest_utils import nest_version
 from .gids import GidPool
+
+
+def set_spikes_nest2(node_id, nest_obj, spike_trains):
+    st = spike_trains.get_times(node_id=node_id)
+    if st is None or len(st) == 0:
+        return
+
+    st = np.array(st)
+    if np.any(st <= 0.0):
+        # NRN will fail if VecStim contains negative spike-time, throw an exception and log info for user
+        io.log_exception('spike train {} contains negative/zero time, unable to run virtual cell in NEST'.format(st))
+    st.sort()
+    nest.SetStatus([nest_obj], {'spike_times': st})
+
+
+def set_spikes_nest3(node_id, nest_obj, spike_trains):
+    st = spike_trains.get_times(node_id=node_id)
+    if st is None or len(st) == 0:
+        return
+
+    st = np.array(st)
+    if np.any(st <= 0.0):
+        io.log_exception('spike train {} contains negative/zero time, unable to run virtual cell in NEST'.format(st))
+    st.sort()
+    nest.SetStatus(nest_obj, {'spike_times': st})
+
+
+if nest_version[0] >= 3:
+    set_spikes = set_spikes_nest3
+else:
+    set_spikes = set_spikes_nest2
 
 
 class PointNetwork(SimNetwork):
@@ -161,26 +193,13 @@ class PointNetwork(SimNetwork):
             virt_node_map = {}
             if node_pop.virtual_nodes_only:
                 for node in node_pop.get_nodes():
-                    nest_ids = nest.Create('spike_generator', node.n_nodes, sg_params)
+                    nest_objs = nest.Create('spike_generator', node.n_nodes, sg_params)
+                    nest_ids = nest_objs.tolist() if nest_version[0] >= 3 else nest_objs
+
                     virt_gid_map.add_nestids(name=node_pop.name, nest_ids=nest_ids, node_ids=node.node_ids)
-                    for node_id, nest_id in zip(node.node_ids, nest_ids):
+                    for node_id, nest_obj, nest_id in zip(node.node_ids, nest_objs, nest_ids):
                         virt_node_map[node_id] = nest_id
-
-                        st = spike_trains.get_times(node_id=node_id)
-
-                        if st is None or len(st) == 0:
-                            continue
-                        st = np.array(st)
-
-                        if np.any(st <= 0.0):
-                            # NRN will fail if VecStim contains negative spike-time, throw an exception and log info for user
-                            io.log_exception(
-                                'spike train {} contains negative/zero time, unable to run virtual cell in NEST'.format(
-                                    st
-                                ))
-
-                        st.sort()
-                        nest.SetStatus([nest_id], {'spike_times': st})
+                        set_spikes(node_id=node_id, nest_obj=nest_obj, spike_trains=spike_trains)
 
             elif node_pop.mixed_nodes:
                 for node in node_pop.get_nodes():
@@ -190,7 +209,7 @@ class PointNetwork(SimNetwork):
                     nest_ids = nest.Create('spike_generator', node.n_nodes, sg_params)
                     for node_id, nest_id in zip(node.node_ids, nest_ids):
                         virt_node_map[node_id] = nest_id
-                        nest.SetStatus([nest_id], {'spike_times': np.array(spike_trains.get_times(node_id=node_id))})
+                        set_spikes(node_id=node_id, nest_id=nest_id, spike_trains=spike_trains)
 
             self._virtual_ids_map[node_pop.name] = virt_node_map
 
