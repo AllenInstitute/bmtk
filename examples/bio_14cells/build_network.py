@@ -20,7 +20,7 @@ def build_v1_network():
         model_template='ctdb:Biophys1.hoc',  # Tells the simulator that when building cells models use a hoc_template specially created for parsing Allen Cell-types file models. Value would be different if we were using NeuronML or different model files
         model_processing='aibs_perisomatic',  # further instructions for how to processes a cell model. In this case aibs_perisomatic is a built-in directive to cut the axon in a specific way
         dynamics_params='472363762_fit.json',  # Name of file (downloaded from Allen Cell-Types) used to set model parameters and channels
-        morphology='Scnn1a-Tg3-Cre_Ai14_IVSCC_-177300.01.02.01_473845048_m.swc'  # Name of morphology file downloaded
+        morphology='Scnn1a_473845048_m.swc'  # Name of morphology file downloaded
     )
 
     v1.add_nodes(
@@ -35,7 +35,7 @@ def build_v1_network():
         model_template='ctdb:Biophys1.hoc',
         model_processing='aibs_perisomatic',
         dynamics_params='473863510_fit.json',
-        morphology='Rorb-IRES2-Cre-D_Ai14_IVSCC_-168053.05.01.01_325404214_m.swc'
+        morphology='Rorb_325404214_m.swc'
     )
 
     v1.add_nodes(
@@ -50,7 +50,7 @@ def build_v1_network():
         model_template='ctdb:Biophys1.hoc',
         model_processing='aibs_perisomatic',
         dynamics_params='473863035_fit.json',
-        morphology='Nr5a1-Cre_Ai14_IVSCC_-169250.03.02.01_471087815_m.swc'
+        morphology='Nr5a1_471087815_m.swc'
     )
 
     # Note that in the previous cells we set the tuning_angle, but for PV1 and PV2 such parameter is absent (as it is
@@ -66,7 +66,7 @@ def build_v1_network():
         model_template='ctdb:Biophys1.hoc',
         model_processing='aibs_perisomatic',
         dynamics_params='472912177_fit.json',
-        morphology='Pvalb-IRES-Cre_Ai14_IVSCC_-176847.04.02.01_470522102_m.swc'
+        morphology='Pvalb_470522102_m.swc'
     )
 
     v1.add_nodes(
@@ -80,7 +80,7 @@ def build_v1_network():
         model_template='ctdb:Biophys1.hoc',
         model_processing='aibs_perisomatic',
         dynamics_params='473862421_fit.json',
-        morphology='Pvalb-IRES-Cre_Ai14_IVSCC_-169125.03.01.01_469628681_m.swc'
+        morphology='Pvalb_469628681_m.swc'
     )
 
     # Along with our biophysical cells our network will also include integate-and-fire point cells

@@ -1,9 +1,9 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
 from bmtk.builder.networks import NetworkBuilder
 from bmtk.builder.bionet.swc_reader import get_swc
 from bmtk.utils.reports.spike_trains import PoissonSpikeGenerator
-
-import matplotlib.pyplot as plt
-import numpy as np
 
 
 def create_spokes_nsyns(src_neurons, trg_neuron):

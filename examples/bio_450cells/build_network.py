@@ -97,7 +97,7 @@ def connect_external(src, trgs, dist_cutoff=30.0, max_trgs=10, max_syns=12):
 
 
 def set_synapses(src, trg, section_names=('soma', 'apical', 'basal'), distance_range=(0.0, 1.0e20)):
-    trg_swc = get_swc(trg, morphology_dir='../../docs/examples/biophys_components/morphologies/', use_cache=True)
+    trg_swc = get_swc(trg, morphology_dir='../bio_components/morphologies/', use_cache=True)
 
     sec_ids, seg_xs = trg_swc.choose_sections(section_names, distance_range, n_sections=1)
     sec_id, seg_x = sec_ids[0], seg_xs[0]

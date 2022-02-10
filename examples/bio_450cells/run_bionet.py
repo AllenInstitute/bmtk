@@ -9,9 +9,9 @@ def run(config_file):
 
     net = bionet.BioNetwork.from_config(conf)
     sim = bionet.BioSimulator.from_config(conf, network=net)
-    sim.run()  # run simulation
+    sim.run()
 
-    bionet.nrn.quit_execution()  # exit
+    bionet.nrn.quit_execution()
 
 
 if __name__ == '__main__':
