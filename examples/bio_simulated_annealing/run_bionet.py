@@ -101,7 +101,7 @@ def run_iteration(config_file):
     sim.run()
 
     # Get the spike statistics of the output, using "groupby" will get averaged firing rates across each model
-    spike_stats_df = spike_statistics('output/spikes.h5', simulation=sim, groupby='pop_name', populations='v1')
+    spike_stats_df = spike_statistics('output/spikes.h5', simulation=sim, group_by='pop_name', populations='v1')
 
     # Calculate gradients
     gradients, mse = get_grads(spike_stats_df, target_frs)
@@ -126,7 +126,7 @@ def run_iteration(config_file):
         sim_step.run()
 
         # Get latest spiking statistics, calcuate gradients and update the weights
-        spike_stats_df = spike_statistics('output/spikes.h5', simulation=sim, groupby='pop_name', populations='v1')
+        spike_stats_df = spike_statistics('output/spikes.h5', simulation=sim, group_by='pop_name', populations='v1')
         gradients, mse = get_grads(spike_stats_df, target_frs)
         update_syn_weights(graph, gradients)
         rates_table = update_rates_table(rates_table, spike_stats_df, mse)
@@ -147,4 +147,4 @@ if __name__ == '__main__':
     if __file__ != sys.argv[-1]:
         run_iteration(sys.argv[-1])
     else:
-        run_iteration('config.json')
+        run_iteration('config.simulation.json')
