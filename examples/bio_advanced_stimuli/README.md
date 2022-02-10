@@ -26,7 +26,6 @@ Stimulates the network using a series of current clamps at all the biophysically
       "delay": 500.0,
       "duration": 500.0
     }
-    ...
 ```
 Times are in miliseconds and the delay is from the begining of the simulation. To run:
 
