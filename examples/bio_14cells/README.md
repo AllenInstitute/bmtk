@@ -8,7 +8,7 @@ Uses the BioNet simulator (requires NEURON)
 ## Running:
 To run a simulation, install bmtk and run the following:
 ```
-$ python run_bionet.py config.json
+$ python run_bionet.py config.simulation.json
 ```
 If successful, will create a *output* directory containing log, V1 spike trains and recorded cell variables.
 

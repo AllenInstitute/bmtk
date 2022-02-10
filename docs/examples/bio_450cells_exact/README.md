@@ -15,10 +15,19 @@ This example is different from the other bio_450cell example in that:
 
 ## Running:
 To run a simulation, install bmtk and run the following:
+```bash
+$ python run_bionet.py config.simulation.json
 ```
-$ python run_bionet.py config.json
+
+to run using multiple cores using MPI:
+```bash
+$ mpirun -np <N> nrniv -mpi -python run_bionet.py config.simulation.json
 ```
-If successful, will create a *output* directory containing log, spike trains and recorded cell variables.
+
+If successful, will create a *output* directory containing log, spike trains and recorded cell variables. By default
+only the "internal" spike times are recorded to a spikes.h5 file - as specified in the config. The config ```config.simulation_ecp.json``` 
+will also record extra-cellular potentials, and ```config.simulation_vm.json``` will record membrane potential variable
+from the soma.
 
 ## The Network:
 The network files have already been built and stored as SONATA files in the *network/* directory. The bmtk Builder
@@ -27,6 +36,11 @@ change this file and run:
 ```
 $ python build_network.py
 ```
+or
+```bash
+$ mpirun -np <N> python build_network.py
+```
+
 This will overwrite the existing files in the network directory. Note that there is some randomness in how the network
 is built, so expect (slightly) different simulation results everytime the network is rebuilt.
 
