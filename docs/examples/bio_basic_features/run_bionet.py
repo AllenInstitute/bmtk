@@ -1,15 +1,8 @@
 """Simulates an example network of 450 cell receiving two kinds of exernal input as defined in the configuration file"""
 import sys
-import matplotlib.pyplot as plt
-import h5py
-import numpy as np
 
 from bmtk.simulator import bionet
 from bmtk.analyzer.compartment import plot_traces
-
-
-def show_cell_var(conf, var_name):
-    plot_traces(config_file=conf, report_name=var_name)
 
 
 def run(config_file):
@@ -20,7 +13,7 @@ def run(config_file):
     sim = bionet.BioSimulator.from_config(conf, network=graph)
     sim.run()
 
-    show_cell_var(config_file, 'membrane_potential')
+    plot_traces(config_file=config_file, report_name='membrane_potential', population='bio')
 
 
 if __name__ == '__main__':
@@ -28,6 +21,7 @@ if __name__ == '__main__':
         run(sys.argv[-1])
     else:
         # Make sure to run only one at a time
-        run('config_iclamp.json')  # Current clamp stimulation
-        # run('config_xstim.json')  # Extracellular electrode stimulation
-        # run('config_spikes_input.json')  # Synaptic stimulation with external virtual cells
+        # run('config.simulation_iclamp.json')  # Current clamp stimulation
+        # run('config.simulation_xstim.json')  # Extracellular electrode stimulation
+        # run('config.simulation_spikes.json')  # Synaptic stimulation with external virtual cells
+        run('config.simulation_spont_activity.json')

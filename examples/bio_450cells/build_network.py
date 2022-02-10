@@ -66,7 +66,7 @@ def n_connections(src, trg, prob=0.1, min_syns=1, max_syns=5):
     return 0 if np.random.uniform() > prob else np.random.randint(min_syns, max_syns)
 
 
-def connect_external(src, trgs, dist_cutoff=25.0, max_trgs=10, max_syns=8):
+def connect_external(src, trgs, dist_cutoff=30.0, max_trgs=10, max_syns=12):
     """Connects the external cells to the internal cells. Each source cell in the external population connects to
     "max_trgs" cells in the target internal population, based on the distance between cells in the xy and xz planes.
 
@@ -91,13 +91,13 @@ def connect_external(src, trgs, dist_cutoff=25.0, max_trgs=10, max_syns=8):
     selected_trgs = np.random.choice(selected_trgs, size=np.min((max_trgs, len(selected_trgs))), replace=False)
     selected_trgs = np.sort(selected_trgs)
 
-    n_syns = np.zeros(len(trgs), dtype=np.int)  # [0 for _ in trgs]
+    n_syns = np.zeros(len(trgs), dtype=np.int)
     n_syns[selected_trgs] = np.random.randint(0, max_syns, size=len(selected_trgs))
     return n_syns
 
 
 def set_synapses(src, trg, section_names=('soma', 'apical', 'basal'), distance_range=(0.0, 1.0e20)):
-    trg_swc = get_swc(trg, morphology_dir='../biophys_components/morphologies/', use_cache=True)
+    trg_swc = get_swc(trg, morphology_dir='../../docs/examples/biophys_components/morphologies/', use_cache=True)
 
     sec_ids, seg_xs = trg_swc.choose_sections(section_names, distance_range, n_sections=1)
     sec_id, seg_x = sec_ids[0], seg_xs[0]
@@ -107,9 +107,7 @@ def set_synapses(src, trg, section_names=('soma', 'apical', 'basal'), distance_r
     return [sec_id, seg_x, swc_id, swc_dist]  # coords[0], coords[y], coords[z]
 
 
-
 def build_internal_network():
-    """Build a network of 300 biophysical cells to simulate"""
     print('Creating network internal')
     internal = NetworkBuilder('internal')
     for i, model_props in enumerate(bio_models):
@@ -260,7 +258,8 @@ def build_external_network(internal):
 
     cm = external.add_edges(
         target=internal.nodes(ei='i', model_type='biophysical'), source=external.nodes(),
-        connection_rule=lambda *_: np.random.randint(0, 5),
+        connection_rule=connect_external,
+        iterator='one_to_all',
         dynamics_params='AMPA_ExcToInh.json',
         model_template='Exp2Syn',
         delay=2.0
@@ -274,7 +273,8 @@ def build_external_network(internal):
 
     cm = external.add_edges(
         target=internal.nodes(model_type='point_neuron'), source=external.nodes(),
-        connection_rule=lambda *_: np.random.randint(0, 5),
+        connection_rule=connect_external,
+        iterator='one_to_all',
         dynamics_params='instanteneousExc.json',
         delay=2.0
     )
@@ -292,4 +292,3 @@ def build_external_network(internal):
 if __name__ == '__main__':
     internal_net = build_internal_network()
     external_net = build_external_network(internal_net)
-

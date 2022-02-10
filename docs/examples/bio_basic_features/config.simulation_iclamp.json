@@ -1,8 +1,6 @@
 {
-  "network": "./network_config.json",
-
   "manifest": {
-    "$BASE_DIR": "${configdir}",
+    "$BASE_DIR": ".",
     "$OUTPUT_DIR": "$BASE_DIR/output_iclamp",
     "$INPUT_DIR": "$BASE_DIR/inputs",
     "$NETWORK_DIR": "$BASE_DIR/network",
@@ -65,14 +63,6 @@
     "spikes_sort_order": "time"
   },
 
-  "components": {
-    "morphologies_dir": "$COMPONENT_DIR/morphologies",
-    "synaptic_models_dir": "$COMPONENT_DIR/synaptic_models",
-    "mechanisms_dir":"$COMPONENT_DIR/mechanisms",
-    "biophysical_neuron_models_dir": "$COMPONENT_DIR/biophysical_neuron_templates/nml",
-    "point_neuron_models_dir": "$COMPONENT_DIR/point_neuron_templates"
-  },
-
 
   "reports": {
     "calcium_concentration": {
@@ -90,5 +80,21 @@
       "file_name": "v_report.h5",
       "sections": "soma"
     }
+  },
+
+  "components": {
+    "morphologies_dir": "$COMPONENT_DIR/morphologies",
+    "synaptic_models_dir": "$COMPONENT_DIR/synaptic_models",
+    "mechanisms_dir":"$COMPONENT_DIR/mechanisms",
+    "biophysical_neuron_models_dir": "$COMPONENT_DIR/biophysical_neuron_templates"
+  },
+
+  "networks": {
+    "nodes": [
+      {
+        "nodes_file": "$NETWORK_DIR/bio_nodes.h5",
+        "node_types_file": "$NETWORK_DIR/bio_node_types.csv"
+      }
+    ]
   }
 }

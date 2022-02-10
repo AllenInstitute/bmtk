@@ -1,0 +1,7 @@
+edge_type_id target_query source_query model_template dynamics_params delay
+100 ei=='e'&model_type=='biophysical' ei=='e' Exp2Syn AMPA_ExcToExc.json 2.0
+101 ei=='i'&model_type=='biophysical' ei=='e' Exp2Syn AMPA_ExcToInh.json 2.0
+102 ei=='e'&model_type=='biophysical' ei=='i' Exp2Syn GABA_InhToExc.json 2.0
+103 ei=='i'&model_type=='biophysical' ei=='i' Exp2Syn GABA_InhToInh.json 2.0
+104 model_type=='point_neuron' ei=='e' NULL instanteneousExc.json 2.0
+105 model_type=='point_neuron' ei=='i' NULL instanteneousInh.json 2.0
