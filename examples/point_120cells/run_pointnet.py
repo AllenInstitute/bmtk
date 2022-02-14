@@ -15,4 +15,4 @@ def run(config_file):
 if __name__ == '__main__':
     # Find the appropriate config.json file
     run('config.simulation.json')
-    # run('config_perturbations.json')
+    # run('config.simulation_perturbations.json')

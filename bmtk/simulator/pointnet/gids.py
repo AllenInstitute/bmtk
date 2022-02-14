@@ -41,6 +41,7 @@ class GidPool(object):
             new_df = new_df.set_index('node_ids')
             lu_table = self._nestid_lu[name]
             lu_table = lu_table.append(new_df)
+            # lu_table = lu_table.reindex(lu_table.index.values)
 
         self._nestid_lu[name] = lu_table
 

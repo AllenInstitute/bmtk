@@ -37,12 +37,12 @@ the input file used to generated incoming spike trains ("inputs" section), and t
 
 To run a simulation
 ```
-$ python run_pointnet.py config.json
+$ python run_pointnet.py config.simulation.json
 ```
 
 If you have access to a HPC with MPI libraries installed:
 ```
-$ mpirun -n <N> python run_point.py config.json
+$ mpirun -n <N> python run_point.py config.simulation.json
 ```
 
 When it's finsihed an *output/* directory that contains spikes (and other variables if specified in "reports" section). You
