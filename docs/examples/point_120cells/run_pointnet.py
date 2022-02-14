@@ -3,7 +3,7 @@ import os, sys
 from bmtk.simulator import pointnet
 
 
-def main(config_file):
+def run(config_file):
     configure = pointnet.Config.from_json(config_file)
     configure.build_env()
 
@@ -13,7 +13,6 @@ def main(config_file):
 
 
 if __name__ == '__main__':
-    if __file__ != sys.argv[-1]:
-        main(sys.argv[-1])
-    else:
-        main('config.json')
+    # Find the appropriate config.json file
+    run('config.simulation.json')
+    # run('config_perturbations.json')

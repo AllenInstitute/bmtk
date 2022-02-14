@@ -11,4 +11,4 @@ def main(config_file):
 
 
 if __name__ == '__main__':
-    main('config.json')
+    main('config.simulation.json')

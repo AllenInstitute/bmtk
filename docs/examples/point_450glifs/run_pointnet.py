@@ -1,15 +1,8 @@
 import os, sys
 from bmtk.simulator import pointnet
 
-import nest
 
-try:
-    nest.Install('glifmodule')
-except Exception as e:
-    pass
-
-
-def main(config_file):
+def run(config_file):
     configure = pointnet.Config.from_json(config_file)
     configure.build_env()
 
@@ -19,4 +12,4 @@ def main(config_file):
 
 
 if __name__ == '__main__':
-    main('config.json')
+    run('config.simulation.json')

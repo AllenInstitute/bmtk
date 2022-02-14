@@ -9,7 +9,7 @@ Uses PointNet simulator and will require NEURON to run.
 ## Running:
 To run a simulation, install bmtk and run the following:
 ```
-$ python run_bionet.py config.json
+$ python run_bionet.py config.simulation.json
 ```
 If successful, will create a *output* directory containing log, spike trains and recorded cell variables.
 

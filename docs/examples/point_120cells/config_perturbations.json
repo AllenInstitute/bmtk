@@ -1,17 +1,15 @@
 {
   "manifest": {
-	"$BASE_DIR": "${configdir}",
-    "$NETWORK_DIR": "$BASE_DIR/network",
-    "$MODELS_DIR": "$BASE_DIR/../point_components",
+	"$BASE_DIR": ".",
     "$OUTPUT_DIR": "$BASE_DIR/output",
-    "$INPUT_DIR": "$BASE_DIR/../NWB_files"
+    "$INPUT_DIR": "$BASE_DIR/inputs"
   },
+
+  "target_simulator":"NEST",
 
   "run": {
     "tstop": 3000.0,
-    "dt": 0.001,
-    "block_run": false,
-    "block_size": 1000.0
+    "dt": 0.001
   },
 
   "inputs": {
@@ -21,6 +19,7 @@
       "input_file": "thalamus_spikes.csv",
       "node_set": "thalamus"
     },
+
     "exc_perturbation": {
       "input_type": "current_clamp",
       "module": "IClamp",
@@ -66,36 +65,5 @@
     "quiet_simulator": true
   },
 
-
-  "target_simulator":"NEST",
-
-  "components": {
-    "point_neuron_models_dir": "$MODELS_DIR/cell_models",
-	"synaptic_models_dir": "$MODELS_DIR/synaptic_models",
-    "weight_functions": "$BASE_DIR/weight_funcs.py"
-  },
-
-  "networks": {
-    "nodes": [
-      {
-        "nodes_file": "$NETWORK_DIR/cortex_nodes.h5",
-        "node_types_file": "$NETWORK_DIR/cortex_node_types.csv"
-      },
-      {
-        "nodes_file": "$NETWORK_DIR/thalamus_nodes.h5",
-        "node_types_file": "$NETWORK_DIR/thalamus_node_types.csv"
-      }
-    ],
-    "edges": [
-      {
-        "edges_file": "$NETWORK_DIR/cortex_cortex_edges.h5",
-        "edge_types_file": "$NETWORK_DIR/cortex_cortex_edge_types.csv"
-      },
-      {
-        "edges_file": "$NETWORK_DIR/thalamus_cortex_edges.h5",
-        "edge_types_file": "$NETWORK_DIR/thalamus_cortex_edge_types.csv",
-        "enabled": true
-      }
-    ]
-  }
+  "network": "config.circuit.json"
 }

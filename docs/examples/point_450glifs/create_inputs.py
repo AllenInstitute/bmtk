@@ -16,7 +16,7 @@ def create_inputs_sigmoid(pop, min_rate=1.0, max_rate=10.0, onset=0.5, ts_begin=
     rates = (max_rate-min_rate)/(1.0 + np.exp(-(times-onset)*20)) + min_rate
 
     psg = PoissonSpikeGenerator()
-    psg.add(node_ids='network/{}_nodes.h5'.format(pop), firing_rate=rates, times=times, population='external')
+    psg.add(node_ids='network/{}_nodes.h5'.format(pop), firing_rate=rates, times=times, population=pop)
     psg.to_sonata('inputs/{}_spikes.h5'.format(pop))
     # psg.to_csv('inputs/{}_spikes.csv'.format(pop)
 
@@ -28,7 +28,7 @@ def copy_spikes(pop):
     )
     node_ids = net.nodes[pop].node_ids
 
-    orig_spikes = SpikeTrains.load('../../docs/examples/spikes_inputs/{}_spikes.h5'.format(pop))
+    orig_spikes = SpikeTrains.load('../spikes_inputs/{}_spikes.h5'.format(pop))
     spikes_writer = SpikeTrains()
     for node_id in node_ids:
         spikes_writer.add_spikes(node_ids=node_id, timestamps=orig_spikes.get_times(node_id), population=pop)
@@ -41,4 +41,3 @@ if __name__ == '__main__':
     # create_inputs_const(pop='lgn', firing_rate_hz=10.0)
     # create_inputs_sigmoid(pop='lgn')
     copy_spikes(pop='lgn')
-    copy_spikes(pop='tw')

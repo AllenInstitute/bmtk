@@ -6,7 +6,7 @@ A small network of 120 point-neurons. Uses PointNet and will require NEST to run
 ## Running:
 To run a simulation, install bmtk and run the following:
 ```
-$ python run_pointnet.py config.json
+$ python run_pointnet.py config.simulation.json
 ```
 If successful, will create a *output* directory containing log, spike trains and recorded cell variables.
 
