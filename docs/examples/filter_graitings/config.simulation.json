@@ -37,7 +37,7 @@
     }
   },
 
-  "output":{ 
+  "output":{
     "log_file": "log.txt",
     "output_dir": "$OUTPUT_DIR",
     "rates_csv": "rates.csv",
@@ -46,16 +46,5 @@
     "overwrite_output_dir": true
   },
 
-  "components": {
-    "filter_models_dir": "$COMPONENT_DIR/model_templates"
-  },
-
-  "networks": {
-    "nodes": [
-      {
-        "nodes_file": "$NETWORK_DIR/lgn_nodes.h5",
-        "node_types_file": "$NETWORK_DIR/lgn_node_types.csv"
-      }
-    ]
-  }
+  "network": "config.circuit.json"
 }
