@@ -26,8 +26,8 @@ class XStimMod(SimulatorMod):
         self._local_gids = []
         self._fih = None
 
-    #def __set_extracellular_mechanism(self):
-    #    for gid in self._local_gids:
+    # def __set_extracellular_mechanism(self):
+    #     for gid in self._local_gids:
 
     def initialize(self, sim):
         if self._cells is None:
@@ -47,7 +47,7 @@ class XStimMod(SimulatorMod):
         def set_pointers():
             for gid in self._local_gids:
                 cell = sim.net.get_cell_gid(gid)
-                #cell = sim.net.get_local_cell(gid)
+                # cell = sim.net.get_local_cell(gid)
                 cell.set_ptr2e_extracellular()
 
         self._fih = sim.h.FInitializeHandler(0, set_pointers)
@@ -72,7 +72,10 @@ class StimXElectrode(object):
 
         stimelectrode_position_df = pd.read_csv(positions_file, sep=' ')
 
-        self.elmesh_files = stimelectrode_position_df['electrode_mesh_file']
+        if 'electrode_mesh_file' in stimelectrode_position_df.columns:
+            self.elmesh_files = stimelectrode_position_df['electrode_mesh_file']
+        else:
+            self.elmesh_files = None
         self.elpos = stimelectrode_position_df[['pos_x', 'pos_y', 'pos_z']].T.values
         self.elrot = stimelectrode_position_df[['rotation_x', 'rotation_y', 'rotation_z']].values
         self.elnsites = self.elpos.shape[1]  # Number of electrodes in electrode file
@@ -88,23 +91,30 @@ class StimXElectrode(object):
         self.place_the_electrodes()
 
     def read_electrode_mesh(self):
-        el_counter = 0
-        for mesh_file in self.elmesh_files:
-            file_path = mesh_file if os.path.isabs(mesh_file) else os.path.join(self._mesh_files_dir, mesh_file)
-            mesh = pd.read_csv(file_path, sep=" ")
-            mesh_size = mesh.shape[0]
-            self.el_mesh_size.append(mesh_size)
+        if self.elmesh_files is None:
+            # if electrode_mesh_file is missing then we still treat the electrode as a mesh on a grid of size 1 with
+            # single point at the (0, 0, 0) relative to electrode position
+            for el_counter in range(self.elnsites):
+                self.el_mesh_size.append(1)
+                self.el_mesh[el_counter] = np.zeros((3, 1))
 
-            self.el_mesh[el_counter] = np.zeros((3, mesh_size))
-            self.el_mesh[el_counter][0] = mesh['x_pos']
-            self.el_mesh[el_counter][1] = mesh['y_pos']
-            self.el_mesh[el_counter][2] = mesh['z_pos']
-            el_counter += 1
+        else:
+            # Each electrode has an associate mesh file
+            el_counter = 0
+            for mesh_file in self.elmesh_files:
+                file_path = mesh_file if os.path.isabs(mesh_file) else os.path.join(self._mesh_files_dir, mesh_file)
+                mesh = pd.read_csv(file_path, sep=" ")
+                mesh_size = mesh.shape[0]
+                self.el_mesh_size.append(mesh_size)
+
+                self.el_mesh[el_counter] = np.zeros((3, mesh_size))
+                self.el_mesh[el_counter][0] = mesh['x_pos']
+                self.el_mesh[el_counter][1] = mesh['y_pos']
+                self.el_mesh[el_counter][2] = mesh['z_pos']
+                el_counter += 1
 
     def place_the_electrodes(self):
-
         transfer_vector = np.zeros((self.elnsites, 3))
-
         for el in range(self.elnsites):
             mesh_mean = np.mean(self.el_mesh[el], axis=1)
             transfer_vector[el] = self.elpos[:, el] - mesh_mean[:]
@@ -128,17 +138,13 @@ class StimXElectrode(object):
             self.el_mesh[el] = new_mesh
 
     def set_transfer_resistance(self, gid, seg_coords):
-
         rho = 300.0  # ohm cm
         r05 = seg_coords['p05']
         nseg = r05.shape[1]
         cell_map = np.zeros((self.elnsites, nseg))
         for el in six.moves.range(self.elnsites):
-
             mesh_size = self.el_mesh_size[el]
-
             for k in range(mesh_size):
-
                 rel = np.expand_dims(self.el_mesh[el][:, k], axis=1)
                 rel_05 = rel - r05
                 r2 = np.einsum('ij,ij->j', rel_05, rel_05)

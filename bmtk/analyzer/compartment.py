@@ -65,7 +65,7 @@ def _find_nodes(population, config=None, nodes_file=None, node_types_file=None):
 def plot_traces(config_file=None, report_name=None, population=None, report_path=None, group_by=None,
                 group_excludes=None, nodes_file=None, node_types_file=None,
                 node_ids=None, sections='origin', average=False, times=None, title=None,
-                show_legend=None, show=True):
+                show_legend=None, show=True, save_as=None):
     """Plot compartment variables (eg Membrane Voltage, Calcium conc.) traces from the output of simulation. Will
     attempt to look in the SONATA simulation configuration json "reports" sections for any matching "membrane_report"
     outputs with a matching report_name::
@@ -115,6 +115,8 @@ def plot_traces(config_file=None, report_name=None, population=None, report_path
     :param show_legend: Set True or False to determine if legend should be displayed on the plot. The default (None)
            function itself will guess if legend should be shown.
     :param show: bool to display or not display plot. default True.
+    :param save_as: None or str: file-name/path to save the plot as a png/jpeg/etc. If None or empty string will not
+        save plot.
     :return: matplotlib figure.Figure object
     """
 
@@ -176,5 +178,6 @@ def plot_traces(config_file=None, report_name=None, population=None, report_path
         times=times,
         title=title,
         show_legend=show_legend,
-        show=show
+        show=show,
+        save_as=save_as
     )
