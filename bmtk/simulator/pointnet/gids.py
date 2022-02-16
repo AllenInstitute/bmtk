@@ -1,7 +1,24 @@
 from collections import namedtuple
 import pandas as pd
+import nest
+
+from .nest_utils import nest_version
 
 PopulationID = namedtuple('PopulationID', 'node_id population')
+
+
+def ids2list_nest2(nest_ids):
+    return nest_ids
+
+
+def ids2list_nest3(nest_ids):
+    if isinstance(nest_ids, nest.NodeCollection):
+        return nest_ids.tolist()
+    else:
+        return nest_ids
+
+
+ids2list = ids2list_nest3 if nest_version[0] >= 3 else ids2list_nest2
 
 
 class GidPool(object):
@@ -33,6 +50,9 @@ class GidPool(object):
         pass
 
     def add_nestids(self, name, node_ids, nest_ids):
+        # in NEST 3.0+ nest.Create() returns a NodeCollection instead of a list of ids, need to convert
+        nest_ids = ids2list(nest_ids)
+
         if name not in self._nestid_lu:
             lu_table = pd.DataFrame({'nest_ids': nest_ids, 'node_ids': node_ids})
             lu_table = lu_table.set_index('node_ids')

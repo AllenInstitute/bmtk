@@ -45,3 +45,7 @@ nest_version = get_version()
 if nest_version is None:
     # For now default to assume NEST 2.*.* is being used
     nest_version = [2, None, None]
+
+
+NEST_SYNAPSE_MODEL_PROP = 'model' if nest_version[0] == 2 else 'synapse_model'
+NEST_SPIKE_DETECTOR = 'spike_detector' if nest_version[0] == 2 else 'spike_recorder'
