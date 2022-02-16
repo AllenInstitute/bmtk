@@ -1,0 +1,39 @@
+{
+  "manifest": {
+    "$BASE_DIR": ".",
+    "$OUTPUT_DIR": "$BASE_DIR/output",
+    "$INPUT_DIR": "$BASE_DIR/inputs"
+  },
+
+  "run": {
+    "tstop": 1500.0,
+    "dt": 0.002
+  },
+
+  "inputs": {
+    "LGN_spikes": {
+      "input_type": "spikes",
+      "module": "sonata",
+      "input_file": "$INPUT_DIR/lgn_spikes.h5",
+      "node_set": "lgn"
+    },
+
+    "TW_spikes": {
+      "input_type": "spikes",
+      "module": "h5",
+      "input_file": "$INPUT_DIR/tw_spikes.h5",
+      "node_set": "tw"
+    }
+  },
+
+  "output": {
+    "output_dir": "$OUTPUT_DIR",
+	"log_file": "logging.txt",
+    "rates_file": "spike_rates.csv",
+    "overwrite_output_dir": true
+  },
+
+  "target_simulator":"DiPDE",
+
+  "network": "config.circuit.json"
+}

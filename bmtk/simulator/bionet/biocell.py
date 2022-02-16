@@ -292,7 +292,6 @@ class BioCell(Cell):
         synapse_fnc = nrn.py_modules.synapse_model(edge_prop['model_template'])
         syn = synapse_fnc(edge_prop['dynamics_params'], sec_x, section)
 
-
         if stim is not None:
             nc = h.NetCon(stim.hobj, syn)  # stim.hobj - source, syn - target
         else:

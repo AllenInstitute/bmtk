@@ -1,0 +1,32 @@
+{
+  "manifest": {
+    "$BASE_DIR": ".",
+    "$OUTPUT_DIR": "$BASE_DIR/output",
+    "$INPUT_DIR": "$BASE_DIR/inputs"
+  },
+
+  "target_simulator":"DiPDE",
+
+  "run": {
+    "tstop": 1500.0,
+    "dt": 0.002
+  },
+
+  "inputs": {
+    "external_pop_rates": {
+      "input_type": "csv",
+      "module": "pop_rates",
+      "rates": "$INPUT_DIR/external_rates.csv",
+      "node_set": "external"
+    }
+  },
+
+  "output": {
+    "output_dir": "$OUTPUT_DIR",
+    "rates_file": "spike_rates.csv",
+	"log_file": "log.txt",
+    "overwrite_output_dir": true
+  },
+
+  "network": "config.circuit.json"
+}

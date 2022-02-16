@@ -1,0 +1,37 @@
+{
+  "manifest": {
+    "$BASE_DIR": ".",
+    "$NETWORK_DIR": "$BASE_DIR/network",
+    "$COMPONENT_DIR": "$BASE_DIR/../bio_components"
+  },
+
+  "components": {
+    "morphologies_dir": "$COMPONENT_DIR/morphologies",
+    "synaptic_models_dir": "$COMPONENT_DIR/synaptic_models",
+    "mechanisms_dir":"$COMPONENT_DIR/mechanisms",
+    "biophysical_neuron_models_dir": "$COMPONENT_DIR/biophysical_neuron_templates/ctdb",
+    "point_neuron_models_dir": "$COMPONENT_DIR/point_neuron_templates"
+  },
+
+  "networks": {
+    "nodes": [
+      {
+        "name": "slice",
+        "nodes_file": "$NETWORK_DIR/slice_nodes.h5",
+        "node_types_file": "$NETWORK_DIR/slice_node_types.csv"
+      },
+      {
+        "name": "ext",
+        "nodes_file": "$NETWORK_DIR/ext_nodes.h5",
+        "node_types_file":  "$NETWORK_DIR/ext_node_types.csv"
+      }
+    ],
+
+    "edges": [
+      {
+        "edges_file": "$NETWORK_DIR/ext_to_slice_edges.h5",
+        "edge_types_file": "$NETWORK_DIR/ext_to_slice_edge_types.csv"
+      }
+    ]
+  }
+}
