@@ -1,5 +1,6 @@
 try:
     from bmtk.simulator import pointnet
+    from bmtk.simulator.pointnet.nest_utils import NEST_SYNAPSE_MODEL_PROP
     import nest
 
     nest_installed = True
@@ -67,7 +68,7 @@ class MockEdges(object):
         def __init__(self, delay):
             self.source_node_ids = range(100)
             self.target_node_ids = range(100)
-            self.nest_params = {'model': 'static_synapse', 'delay': delay,  'weight': 2.0}
+            self.nest_params = {NEST_SYNAPSE_MODEL_PROP: 'static_synapse', 'delay': [delay]*100,  'weight': [2.0]*100}
 
 
 class MockNodeSet(object):

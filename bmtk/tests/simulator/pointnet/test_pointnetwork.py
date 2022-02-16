@@ -105,6 +105,6 @@ def test_add_spike_trains_badtimes(spike_times):
 if __name__ == '__main__':
     # test_add_nodes(batched=False)
     # test_add_multi_nodes(batched=False)
-    # test_add_edges()
+    test_add_edges()
     # test_add_edges_baddelay()
-    test_add_spike_trains(spike_trains=None)
+    # test_add_spike_trains(spike_trains=None)

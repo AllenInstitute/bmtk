@@ -41,10 +41,11 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'Topic :: Scientific/Engineering :: Bio-Informatics'
     ],
 
-    setup_requires=['pytest-runner', 'flake8'],
+    # setup_requires=['pytest-runner', 'flake8'],
     tests_require=['pytest'],
     install_requires=[
         'jsonschema',

@@ -23,15 +23,12 @@
 import numpy as np
 import re
 
-try:
-    import nest
-    m = re.search(r'.*(\d+)\.(\d+)\.(\d+).*', nest.version())
-    ver_major = int(m.group(1))
-    ver_minor = int(m.group(2))
-    built_in_glifs = ver_major >= 2 and ver_minor >= 20
+from .nest_utils import nest_version
 
-except Exception as e:
-    built_in_glifs = False
+# GLIFs are built-in NEST models in version 2.20 and above.
+ver_major = nest_version[0]
+ver_minor = nest_version[1] if nest_version[1] is not None else 0
+built_in_glifs = ver_major >= 3 or (ver_major == 2 and ver_minor >= 20)
 
 
 def lif_aibs_converter(config, tau_syn=[5.5, 8.5, 2.8, 5.8]):

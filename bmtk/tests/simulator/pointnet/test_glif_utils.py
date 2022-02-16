@@ -5,6 +5,7 @@ import numpy as np
 
 nest = pytest.importorskip('nest')
 from bmtk.simulator.pointnet.glif_utils import convert_aibs2nest
+from bmtk.simulator.pointnet.nest_utils import NEST_SPIKE_DETECTOR
 
 try:
     nest.Install('glifmodule')
@@ -29,7 +30,7 @@ def test_converter_psc(model_name, dynamics_params, expected):
     model_name = model_name.split(':')[-1]
     nrn = nest.Create(model_name, 1, model_params)
 
-    sr = nest.Create('spike_detector', params={"precise_times": True})
+    sr = nest.Create(NEST_SPIKE_DETECTOR)
     espikes = nest.Create(
         'spike_generator',
         params={'spike_times': [5.0, 7.0, 8.0, 9.0, 10.0, 12.0], 'spike_weights': [100.0]*6}
