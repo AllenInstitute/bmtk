@@ -16,6 +16,6 @@ def run(config_file):
     sim.run()
 
 
-mem = memory_usage((run, ('config.json',)))
+mem = memory_usage((run, ('config.simulation.json',)))
 print(max(mem))
 pc.done()

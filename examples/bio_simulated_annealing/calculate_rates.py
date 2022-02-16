@@ -1,11 +1,10 @@
 from bmtk.simulator import bionet
 from bmtk.utils.reports.spike_trains import SpikeTrains
 
-config_file = 'config.json'
+config_file = 'config.simulation.json'
 
 conf = bionet.Config.from_json(config_file, validate=True)
-#conf.build_env()
-
+# conf.build_env()
 graph = bionet.BioNetwork.from_config(conf)
 graph.build()
 node_props = graph.node_properties()
