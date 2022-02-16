@@ -44,7 +44,7 @@ setup(
         'Topic :: Scientific/Engineering :: Bio-Informatics'
     ],
 
-    setup_requires=['pytest-runner', 'flake8'],
+    # setup_requires=['pytest-runner', 'flake8'],
     tests_require=['pytest'],
     install_requires=[
         'jsonschema',
