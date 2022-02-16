@@ -10,6 +10,7 @@ def run(config_file):
     graph = bionet.BioNetwork.from_config(conf)
     sim = bionet.BioSimulator.from_config(conf, network=graph)
     sim.run()
+
     bionet.nrn.quit_execution()
 
 

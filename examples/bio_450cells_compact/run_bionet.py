@@ -11,6 +11,7 @@ def run(config_file):
     net = bionet.BioNetwork.from_config(conf)
     sim = bionet.BioSimulator.from_config(conf, network=net)
     sim.run()
+
     bionet.nrn.quit_execution()
 
 
@@ -27,6 +28,6 @@ if __name__ == '__main__':
                 config_path = cfg_path
                 break
         else:
-            raise AttributeError('Could not find an appropriate configuration json file.')
+            raise AttributeError('Could not find configuration json file.')
 
     run(config_path)
