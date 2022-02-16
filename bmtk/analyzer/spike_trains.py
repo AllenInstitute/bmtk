@@ -94,7 +94,7 @@ def _find_nodes(population, config=None, nodes_file=None, node_types_file=None):
     raise ValueError('Could not find nodes file with node population "{}".'.format(population))
 
 
-def _plot_helper(plot_fnc, config_file=None, population=None, times=None, title=None, show=True,
+def _plot_helper(plot_fnc, config_file=None, population=None, times=None, title=None, show=True, save_as=None,
                  group_by=None, group_excludes=None,
                  spikes_file=None, nodes_file=None, node_types_file=None):
     sonata_config = SonataConfig.from_json(config_file) if config_file else None
@@ -136,11 +136,14 @@ def _plot_helper(plot_fnc, config_file=None, population=None, times=None, title=
     else:
         node_groups = None
 
-    return plot_fnc(spike_trains=spike_trains, node_groups=node_groups, population=pop, times=times, title=title, show=show)
+    return plot_fnc(
+        spike_trains=spike_trains, node_groups=node_groups, population=pop, times=times, title=title, show=show,
+        save_as=save_as
+    )
 
 
 def plot_raster(config_file=None, population=None, with_histogram=True, times=None, title=None, show=True,
-                group_by=None, group_excludes=None,
+                save_as=None, group_by=None, group_excludes=None,
                 spikes_file=None, nodes_file=None, node_types_file=None):
     """Create a raster plot (plus optional histogram) from the results of the simulation.
 
@@ -170,6 +173,8 @@ def plot_raster(config_file=None, population=None, with_histogram=True, times=No
     :param title: str, adds a title to the plot. If None (default) then name will be automatically generated using the
         report_name.
     :param show: bool to display or not display plot. default True.
+    :param save_as: None or str: file-name/path to save the plot as a png/jpeg/etc. If None or empty string will not
+        save plot.
     :param group_by: Attribute of the "nodes" file used to group and average subsets of nodes.
     :param group_excludes: list of strings or None. When using the "group_by", allows users to exclude certain groupings
         based on the attribute value.
@@ -181,15 +186,17 @@ def plot_raster(config_file=None, population=None, with_histogram=True, times=No
     :return: matplotlib figure.Figure object
     """
     plot_fnc = partial(plotting.plot_raster, with_histogram=with_histogram)
-    return _plot_helper(plot_fnc,
-                        config_file=config_file, population=population, times=times, title=title, show=show,
-                        group_by=group_by, group_excludes=group_excludes,
-                        spikes_file=spikes_file, nodes_file=nodes_file, node_types_file=node_types_file
+    return _plot_helper(
+        plot_fnc,
+        config_file=config_file, population=population, times=times, title=title, show=show, save_as=save_as,
+        group_by=group_by, group_excludes=group_excludes,
+        spikes_file=spikes_file, nodes_file=nodes_file, node_types_file=node_types_file
     )
 
 
 def plot_rates(config_file=None, population=None, smoothing=False, smoothing_params=None, times=None, title=None,
-               show=True, group_by=None, group_excludes=None, spikes_file=None, nodes_file=None, node_types_file=None):
+               show=True, save_as=None, group_by=None, group_excludes=None, spikes_file=None, nodes_file=None,
+               node_types_file=None):
     """Calculate and plot the rates of each node recorded during the simulation - averaged across the entirety of the
     simulation.
 
@@ -221,6 +228,8 @@ def plot_rates(config_file=None, population=None, smoothing=False, smoothing_par
     :param title: str, adds a title to the plot. If None (default) then name will be automatically generated using the
         report_name.
     :param show: bool to display or not display plot. default True.
+    :param save_as: None or str: file-name/path to save the plot as a png/jpeg/etc. If None or empty string will not
+        save plot.
     :param group_by: Attribute of the "nodes" file used to group and average subsets of nodes.
     :param group_excludes: list of strings or None. When using the "group_by", allows users to exclude certain groupings
         based on the attribute value.
@@ -232,14 +241,15 @@ def plot_rates(config_file=None, population=None, smoothing=False, smoothing_par
     :return: matplotlib figure.Figure object
     """
     plot_fnc = partial(plotting.plot_rates, smoothing=smoothing, smoothing_params=smoothing_params)
-    return _plot_helper(plot_fnc,
-                        config_file=config_file, population=population, times=times, title=title, show=show,
-                        group_by=group_by, group_excludes=group_excludes,
-                        spikes_file=spikes_file, nodes_file=nodes_file, node_types_file=node_types_file
+    return _plot_helper(
+        plot_fnc,
+        config_file=config_file, population=population, times=times, title=title, show=show, save_as=save_as,
+        group_by=group_by, group_excludes=group_excludes,
+        spikes_file=spikes_file, nodes_file=nodes_file, node_types_file=node_types_file
     )
 
 
-def plot_rates_boxplot(config_file=None, population=None, times=None, title=None, show=True,
+def plot_rates_boxplot(config_file=None, population=None, times=None, title=None, show=True, save_as=None,
                        group_by=None, group_excludes=None,
                        spikes_file=None, nodes_file=None, node_types_file=None):
     """Creates a box plot of the firing rates taken from nodes recorded during the simulation.
@@ -268,6 +278,8 @@ def plot_rates_boxplot(config_file=None, population=None, times=None, title=None
     :param title: str, adds a title to the plot. If None (default) then name will be automatically generated using the
         report_name.
     :param show: bool to display or not display plot. default True.
+    :param save_as: None or str: file-name/path to save the plot as a png/jpeg/etc. If None or empty string will not
+        save plot.
     :param group_by: Attribute of the "nodes" file used to group and average subsets of nodes.
     :param group_excludes: list of strings or None. When using the "group_by", allows users to exclude certain groupings
         based on the attribute value.
@@ -279,8 +291,9 @@ def plot_rates_boxplot(config_file=None, population=None, times=None, title=None
     :return: matplotlib figure.Figure object
     """
     plot_fnc = partial(plotting.plot_rates_boxplot)
-    return _plot_helper(plot_fnc,
-        config_file=config_file, population=population, times=times, title=title, show=show,
+    return _plot_helper(
+        plot_fnc,
+        config_file=config_file, population=population, times=times, title=title, show=show, save_as=save_as,
         group_by=group_by, group_excludes=group_excludes,
         spikes_file=spikes_file, nodes_file=nodes_file, node_types_file=node_types_file
     )
@@ -344,8 +357,6 @@ def to_dataframe(config_file, spikes_file=None, population=None):
     :param population:
     :return:
     """
-
-
     # _, spike_trains = _find_spikes(config_file=config_file, spikes_file=spikes_file, population=population)
     pop, spike_trains = _find_spikes(config_file=config_file, spikes_file=spikes_file, population=population)
 

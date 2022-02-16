@@ -43,7 +43,7 @@ def __get_node_groups(report, node_groups, population):
 
 
 def plot_traces(report, population=None, node_ids=None, sections='origin', average=False, node_groups=None, times=None,
-                title=None, show_legend=None, show=True):
+                title=None, show_legend=None, show=True, save_as=None):
     """Displays the time trace of one or more nodes from a SONATA CompartmentReport file.
 
     To plot a group of individual variable traces (based on their soma)::
@@ -79,6 +79,8 @@ def plot_traces(report, population=None, node_ids=None, sections='origin', avera
     :param show_legend: Set True or False to determine if legend should be displayed on the plot. The default (None)
            function itself will guess if legend should be shown.
     :param show: bool to display or not display plot. default True.
+    :param save_as: None or str: file-name/path to save the plot as a png/jpeg/etc. If None or empty string will not
+        save plot.
     :return: matplotlib figure.Figure object
     """
     if node_groups is not None and node_ids is not None:
@@ -89,26 +91,26 @@ def plot_traces(report, population=None, node_ids=None, sections='origin', avera
             node_groups = {'node_ids': node_ids, 'label': average}
             return plot_traces_averaged(report=report, population=population, sections=sections,
                                         node_groups=node_groups, times=times, title=title, show_legend=show_legend,
-                                        show=show)
+                                        show=show, save_as=save_as)
 
         return plot_traces_individual(report=report, population=population, node_ids=node_ids, sections=sections,
-                                      times=times, title=title, show_legend=show_legend, show=show)
+                                      times=times, title=title, show_legend=show_legend, show=show, save_as=save_as)
 
     elif node_groups is not None:
         return plot_traces_averaged(report=report, population=population, sections=sections, node_groups=node_groups,
-                                    times=times, title=title, show_legend=show_legend, show=show)
+                                    times=times, title=title, show_legend=show_legend, show=show, save_as=save_as)
 
     elif average is not None:
         return plot_traces_averaged(report=report, population=population, sections=sections, times=times, title=title,
-                                    show_legend=show_legend, show=show)
+                                    show_legend=show_legend, show=show, save_as=save_as)
 
     else:
         return plot_traces_individual(report=report, population=population, sections=sections, times=times, title=title,
-                                      show_legend=show_legend, show=show)
+                                      show_legend=show_legend, show=show, save_as=save_as)
 
 
 def plot_traces_individual(report, population=None, node_ids=None, sections='origin', times=None, title=None,
-                show_legend=None, show=True):
+                           show_legend=None, show=True, save_as=None):
     """Used the plot time traces of individual nodes from a SONATA compartment report file.
 
     Recommended use plot_traces instead, which will call this function if necessarcy.
@@ -124,6 +126,8 @@ def plot_traces_individual(report, population=None, node_ids=None, sections='ori
     :param show_legend: Set True or False to determine if legend should be displayed on the plot. The default (None)
            function itself will guess if legend should be shown.
     :param show: bool to display or not display plot. default True.
+    :param save_as: None or str: file-name/path to save the plot as a png/jpeg/etc. If None or empty string will not
+        save plot.
     :return: matplotlib figure.Figure object
     """
 
@@ -157,6 +161,9 @@ def plot_traces_individual(report, population=None, node_ids=None, sections='ori
     if title:
         axes.set_title(title)
 
+    if save_as:
+        plt.savefig(save_as)
+
     if show:
         plt.show()
 
@@ -164,7 +171,7 @@ def plot_traces_individual(report, population=None, node_ids=None, sections='ori
 
 
 def plot_traces_averaged(report, population=None, sections='origin', node_groups=None, times=None, title=None,
-                         show_background=True, show_legend=None, show=True):
+                         show_background=True, show_legend=None, show=True, save_as=None):
     """Used to plot averages across multiple nodes in a SONATA Compartment Report file.
 
     Recommended that you use "plot_traces" function.
@@ -192,6 +199,8 @@ def plot_traces_averaged(report, population=None, sections='origin', node_groups
     :param show_legend: Set True or False to determine if legend should be displayed on the plot. The default (None)
            function itself will guess if legend should be shown.
     :param show: bool to display or not display plot. default True.
+    :param save_as: None or str: file-name/path to save the plot as a png/jpeg/etc. If None or empty string will not
+        save plot.
     :return: matplotlib figure.Figure object
     """
     cr = CompartmentReport.load(report)
@@ -220,7 +229,6 @@ def plot_traces_averaged(report, population=None, sections='origin', node_groups
         background_data = traces_data[:, nodes_indx]
         axes.plot(trace_times, background_data, c='lightgray')
 
-
     for node_grp in node_groups:
         grp_ids = node_grp.pop('node_ids')
         has_labels = has_labels or 'label' in node_grp
@@ -247,6 +255,9 @@ def plot_traces_averaged(report, population=None, sections='origin', node_groups
 
     if (show_legend is None or show_legend) and has_labels:
         axes.legend()
+
+    if save_as:
+        plt.savefig(save_as)
 
     if show:
         plt.show()
