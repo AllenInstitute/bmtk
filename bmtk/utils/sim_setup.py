@@ -632,6 +632,24 @@ class FilterNetEnvBuilder(EnvBuilder):
         self._simulation_config['output']['spikes_file_h5'] = 'spikes.h5'
 
 
+class PopNetEnvBuilder(EnvBuilder):
+    @property
+    def examples_dir(self):
+        return os.path.join(self.scripts_root, 'popnet')
+
+    @property
+    def target_simulator(self):
+        return 'DiPDE'
+
+    @property
+    def bmtk_simulator(self):
+        return 'popnet'
+
+    def _add_output_section(self):
+        super(PopNetEnvBuilder, self)._add_output_section()
+        self._simulation_config['output']['rates_file'] = "firing_rates.csv"
+
+
 def build_env_bionet(base_dir='.', network_dir=None, components_dir=None, node_sets_file=None, include_examples=False,
                      tstart=0.0, tstop=1000.0, dt=0.001, dL=20.0, spikes_threshold=-15.0, nsteps_block=5000,
                      v_init=-80.0, celsius=34.0,
@@ -676,7 +694,7 @@ def build_env_pointnet(base_dir='.', network_dir=None, components_dir=None, node
 
 
 def build_env_filternet(base_dir='.', network_dir=None, components_dir=None,
-                        node_sets_file=None, include_examples=False, tstart=0.0, tstop=1000.0, config_file=None):
+                        node_sets_file=None, include_examples=False, tstart=0.0, tstop=1000.0, config_file='config.json'):
     env_builder = FilterNetEnvBuilder(base_dir=base_dir, network_dir=network_dir, components_dir=components_dir,
                                      node_sets_file=node_sets_file)
 
@@ -685,9 +703,17 @@ def build_env_filternet(base_dir='.', network_dir=None, components_dir=None,
                       tstop=tstop, config_file=config_file)
 
 
+def build_env_popnet(base_dir='.', network_dir=None, components_dir=None, node_sets_file=None, reports=None,
+                     include_examples=True, config_file=None, tstart=0.0, tstop=1000.0, dt=0.001, **args):
+    # raise NotImplementedError()
 
-def build_env_popnet(base_dir='.', network_dir=None, reports=None, with_examples=True, tstop=1000.0, dt=0.001, **args):
-    raise NotImplementedError()
+    env_builder = PopNetEnvBuilder(base_dir=base_dir, network_dir=network_dir, components_dir=components_dir,
+                                     node_sets_file=node_sets_file)
+
+    env_builder.build(include_examples=include_examples,
+                      base_dir=base_dir, network_dir=network_dir, components_dir=components_dir, tstart=tstart,
+                      tstop=tstop, config_file=config_file)
+
     # simulator='popnet'
     # target_simulator='DiPDE'
     # components_dir='pop_components'
@@ -756,7 +782,7 @@ if __name__ == '__main__':
                       help='Copies component files used by examples and tutorials.')
     parser.add_option('--compile-mechanisms', dest='compile_mechanisms', action='store_true', default=False,
                       help='Will try to compile the NEURON mechanisms (BioNet only).')
-    parser.add_option('--config', dest='config_file', type='string', default=None,
+    parser.add_option('--config', dest='config_file', type='string', default='config.json',
                       help='Name of conguration json file.')
 
     options, args = parser.parse_args()
