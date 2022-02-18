@@ -646,14 +646,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1">#</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">six</span>
-
 
 
 <div class="viewcode-block" id="IDGenerator"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.id_generator.IDGenerator">[docs]</a><span class="k">class</span> <span class="nc">IDGenerator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; A simple class for fetching global ids. To get a unqiue global ID class next(), which should be thread-safe. It</span>
 <span class="sd">    Also has a remove_id(gid) in which case next() will never return the gid. The remove_id function is used for cases</span>
-<span class="sd">    when using imported networks and we want to elimnate previously created id.</span>
+<span class="sd">    when using imported networks and we want to eliminate previously created id.</span>
 
 <span class="sd">    TODO:</span>
 <span class="sd">     * Implement a bit array to keep track of already existing gids</span>
@@ -666,32 +664,37 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="IDGenerator.remove_id"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.id_generator.IDGenerator.remove_id">[docs]</a>    <span class="k">def</span> <span class="nf">remove_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gid</span><span class="p">):</span>
         <span class="k">assert</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">gid</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">gid</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__counter</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__taken</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__taken</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="IDGenerator.next"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.id_generator.IDGenerator.next">[docs]</a>    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
         <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">__counter</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__taken</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__taken</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__counter</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__counter</span> <span class="o">+=</span> <span class="mi">1</span>
 
-        <span class="n">nid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__counter</span>
+        <span class="n">gid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__counter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove_id</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__counter</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">gid</span></div>
 
-        <span class="k">return</span> <span class="n">nid</span></div>
+<div class="viewcode-block" id="IDGenerator.get_ids"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.html#bmtk.builder.id_generator.IDGenerator.get_ids">[docs]</a>    <span class="k">def</span> <span class="nf">get_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">)]</span></div>
 
     <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gid</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">gid</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">__counter</span>
+        <span class="k">return</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__taken</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">N</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="s1">&#39;N&#39;</span> <span class="ow">in</span> <span class="s1">&#39;kwargs&#39;</span><span class="p">:</span>
-            <span class="n">N</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="s1">&#39;N&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
 
-        <span class="k">assert</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">integer_types</span><span class="p">))</span>
-        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">moves</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="n">N</span><span class="p">)]</span></div>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ids</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">elif</span> <span class="s1">&#39;N&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_ids</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;N&#39;</span><span class="p">])</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Uknown input to id_generator(): </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kwargs</span><span class="p">))</span></div>
 </pre></div>
 
             <div class="clearer"></div>

@@ -17,9 +17,7 @@
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="bmtk.tests package" href="bmtk.tests.html" />
-    <link rel="prev" title="bmtk.simulator.utils package" href="bmtk.simulator.utils.html" /> 
+    <link rel="search" title="Search" href="../search.html" /> 
   </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
 <style>
@@ -628,88 +626,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-bmtk.simulator.utils.tools.process_spikes">
-<span id="bmtk-simulator-utils-tools-process-spikes-module"></span><h2>bmtk.simulator.utils.tools.process_spikes module<a class="headerlink" href="#module-bmtk.simulator.utils.tools.process_spikes" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
-<dt id="bmtk.simulator.utils.tools.process_spikes.read_spk_h5">
-<code class="sig-prename descclassname">bmtk.simulator.utils.tools.process_spikes.</code><code class="sig-name descname">read_spk_h5</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/tools/process_spikes.html#read_spk_h5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.tools.process_spikes.read_spk_h5" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>f_name: string</strong></dt><dd><p>Full path to a file containing cell IDs and spike times.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt>A dataframe containing two columns: spike times and cell IDs.</dt><dd></dd>
-<dt>Usage:</dt><dd></dd>
-<dt>x = read_spk_h5(‘output/spk.h5’)</dt><dd></dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="bmtk.simulator.utils.tools.process_spikes.read_spk_txt">
-<code class="sig-prename descclassname">bmtk.simulator.utils.tools.process_spikes.</code><code class="sig-name descname">read_spk_txt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/tools/process_spikes.html#read_spk_txt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.tools.process_spikes.read_spk_txt" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>f_name: string</strong></dt><dd><p>Full path to a file containing cell IDs and spike times.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt>A dataframe containing two columns: spike times and cell IDs.</dt><dd></dd>
-<dt>Usage:</dt><dd></dd>
-<dt>x = read_spk_txt(‘output/spk.dat’)</dt><dd></dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="bmtk.simulator.utils.tools.process_spikes.spikes_to_mean_f_rate">
-<code class="sig-prename descclassname">bmtk.simulator.utils.tools.process_spikes.</code><code class="sig-name descname">spikes_to_mean_f_rate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cells_f</span></em>, <em class="sig-param"><span class="n">spk_f</span></em>, <em class="sig-param"><span class="n">t_window</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/tools/process_spikes.html#spikes_to_mean_f_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.tools.process_spikes.spikes_to_mean_f_rate" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>cells_f: string</strong></dt><dd><p>Full path to a file containing information about all cells (in particular, all cell IDs,
-and not just those that fired spikes in a simulation).</p>
-</dd>
-<dt><strong>spk_f: string</strong></dt><dd><p>Full path to a file containing cell IDs and spike times.</p>
-</dd>
-<dt><strong>t_window: a tuple of two floats</strong></dt><dd><p>Start and stop time for the window within which the firing rate is computed.</p>
-</dd>
-<dt><strong>**kwargs</strong></dt><dd></dd>
-<dt><strong>spk_f_type: string with accepted values ‘txt’ or ‘h5’</strong></dt><dd><p>Type of the file from which spike times should be extracted.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt>A dataframe containing a column of cell IDs and a column of corresponding</dt><dd></dd>
-<dt>average firing rates.</dt><dd></dd>
-<dt>Usage:</dt><dd></dd>
-<dt>x = spikes_to_mean_f_rate(‘../network_model/cells.csv’, ‘output/spk.dat’, (500.0, 3000.0))</dt><dd></dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
+<div class="section" id="bmtk-simulator-utils-tools-process-spikes-module">
+<h2>bmtk.simulator.utils.tools.process_spikes module<a class="headerlink" href="#bmtk-simulator-utils-tools-process-spikes-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-bmtk.simulator.utils.tools.spatial">
-<span id="bmtk-simulator-utils-tools-spatial-module"></span><h2>bmtk.simulator.utils.tools.spatial module<a class="headerlink" href="#module-bmtk.simulator.utils.tools.spatial" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
-<dt id="bmtk.simulator.utils.tools.spatial.example">
-<code class="sig-prename descclassname">bmtk.simulator.utils.tools.spatial.</code><code class="sig-name descname">example</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/utils/tools/spatial.html#example"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.simulator.utils.tools.spatial.example" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="bmtk-simulator-utils-tools-spatial-module">
+<h2>bmtk.simulator.utils.tools.spatial module<a class="headerlink" href="#bmtk-simulator-utils-tools-spatial-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-bmtk.simulator.utils.tools">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.simulator.utils.tools" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -721,7 +645,7 @@ and not just those that fired spikes in a simulation).</p>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
 <h3><a href="../index.html">Contents</a></h3>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../builder.html">Building Networks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../simulators.html">Simulation Engines</a><ul>
@@ -746,10 +670,10 @@ and not just those that fired spikes in a simulation).</p>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
 </ul>

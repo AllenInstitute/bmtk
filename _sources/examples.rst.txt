@@ -29,6 +29,6 @@ Exc-Inh Network Model
 providing a good example of how to compare simulations ran across different levels of resolution:
 
 
-https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/ei_networks
+https://github.com/AllenInstitute/bmtk/tree/develop/examples/ei_networks
 
 

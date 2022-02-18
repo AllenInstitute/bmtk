@@ -637,7 +637,16 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">if</span> <span class="n">all_ranks</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpi_rank</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FilterNetIOUtils.log_debug"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.filternet.html#bmtk.simulator.filternet.io_tools.FilterNetIOUtils.log_debug">[docs]</a>    <span class="k">def</span> <span class="nf">log_debug</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">all_ranks</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">all_ranks</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpi_rank</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FilterNetIOUtils.barrier"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.filternet.html#bmtk.simulator.filternet.io_tools.FilterNetIOUtils.barrier">[docs]</a>    <span class="k">def</span> <span class="nf">barrier</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">bmtk_world_comm</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span></div></div>
 
 
 <span class="n">io</span> <span class="o">=</span> <span class="n">FilterNetIOUtils</span><span class="p">()</span>

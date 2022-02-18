@@ -101,7 +101,7 @@ Through Neuroscience Gateway (NSG)
 ++++++++++++++++++++++++++++++++++
 The bmtk can be ran through the Neuroscience Gateway for anyone who has an account.
 
-For running multi-core BioNet (NEURON based) simulations on the NSG please refer to `Readme file <https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/bio_nsg_template>`_.
+For running multi-core BioNet (NEURON based) simulations on the NSG please refer to `Readme file <https://github.com/AllenInstitute/bmtk/tree/develop/examples/bio_nsg_template>`_.
 
 
 Running Simulations

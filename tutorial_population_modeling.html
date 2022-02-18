@@ -886,17 +886,17 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area rendered_html docutils container">
 <div>
-<style>
-    .dataframe thead tr:only-child th {
-        text-align: right;
-    }
-
-    .dataframe thead th {
-        text-align: left;
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
     }
 
     .dataframe tbody tr th {
         vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
     }
 </style>
 <table border="1" class="dataframe">
@@ -983,17 +983,17 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area rendered_html docutils container">
 <div>
-<style>
-    .dataframe thead tr:only-child th {
-        text-align: right;
-    }
-
-    .dataframe thead th {
-        text-align: left;
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
     }
 
     .dataframe tbody tr th {
         vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
     }
 </style>
 <table border="1" class="dataframe">
@@ -1083,19 +1083,22 @@ div.rendered_html tbody tr:hover {
 
 
 <span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;V1&#39;</span><span class="p">)</span>
-<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;excitatory&#39;</span><span class="p">,</span>  <span class="c1"># name of specific population optional</span>
-              <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span>  <span class="c1"># Optional</span>
-              <span class="n">location</span><span class="o">=</span><span class="s1">&#39;VisL4&#39;</span><span class="p">,</span>  <span class="c1"># Optional</span>
-              <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;population&#39;</span><span class="p">,</span>  <span class="c1"># Required, indicates what types of cells are being model</span>
-              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;dipde:Internal&#39;</span><span class="p">,</span>  <span class="c1"># Required, instructs what DiPDE objects will be created</span>
-              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;exc_model.json&#39;</span>  <span class="c1"># Required, contains parameters used by DiPDE during initialization of object</span>
-             <span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;excitatory&#39;</span><span class="p">,</span>  <span class="c1"># name of specific population optional</span>
+    <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span>  <span class="c1"># Optional</span>
+    <span class="n">location</span><span class="o">=</span><span class="s1">&#39;VisL4&#39;</span><span class="p">,</span>  <span class="c1"># Optional</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;population&#39;</span><span class="p">,</span>  <span class="c1"># Required, indicates what types of cells are being model</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;dipde:Internal&#39;</span><span class="p">,</span>  <span class="c1"># Required, instructs what DiPDE objects will be created</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;exc_model.json&#39;</span>  <span class="c1"># Required, contains parameters used by DiPDE during initialization of object</span>
+<span class="p">)</span>
 
-<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;inhibitory&#39;</span><span class="p">,</span>
-              <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">,</span>
-              <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;population&#39;</span><span class="p">,</span>
-              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;dipde:Internal&#39;</span><span class="p">,</span>
-              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;inh_model.json&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;inhibitory&#39;</span><span class="p">,</span>
+    <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;population&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;dipde:Internal&#39;</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;inh_model.json&#39;</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1105,17 +1108,21 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">},</span>
-              <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span>
-              <span class="n">nsyns</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
-              <span class="n">delay</span><span class="o">=</span><span class="mf">0.002</span><span class="p">,</span>
-              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;ExcToInh.json&#39;</span><span class="p">)</span>
+<span></span><span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
+    <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">},</span>
+    <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span>
+    <span class="n">nsyns</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">delay</span><span class="o">=</span><span class="mf">0.002</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;ExcToInh.json&#39;</span>
+<span class="p">)</span>
 
-<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">},</span>
-              <span class="n">syn_weight</span><span class="o">=-</span><span class="mf">0.002</span><span class="p">,</span>
-              <span class="n">nsyns</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-              <span class="n">delay</span><span class="o">=</span><span class="mf">0.002</span><span class="p">,</span>
-              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;InhToExc.json&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
+    <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;e&#39;</span><span class="p">},</span>
+    <span class="n">syn_weight</span><span class="o">=-</span><span class="mf">0.002</span><span class="p">,</span>
+    <span class="n">nsyns</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">delay</span><span class="o">=</span><span class="mf">0.002</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;InhToExc.json&#39;</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1125,7 +1132,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;bmtk.builder.connection_map.ConnectionMap at 0x7f9b7b1c0710&gt;
+&lt;bmtk.builder.connection_map.ConnectionMap at 0x7f41abb8fb38&gt;
 </pre></div></div>
 </div>
 <p>and finally we must build and save the network</p>
@@ -1135,8 +1142,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-<span class="n">net</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;network&#39;</span><span class="p">)</span>
-<span class="n">net</span><span class="o">.</span><span class="n">save_edges</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;network&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch06/network&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1150,19 +1156,22 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">input_net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;LGN&#39;</span><span class="p">)</span>
-<span class="n">input_net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;tON&#39;</span><span class="p">,</span>
-                    <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span>
-                    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;virtual&#39;</span><span class="p">)</span>
+<span class="n">input_net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;tON&#39;</span><span class="p">,</span>
+    <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;virtual&#39;</span>
+<span class="p">)</span>
 
-<span class="n">input_net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">),</span>
-                    <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.0025</span><span class="p">,</span>
-                    <span class="n">nsyns</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-                    <span class="n">delay</span><span class="o">=</span><span class="mf">0.002</span><span class="p">,</span>
-                    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;input_ExcToExc.json&#39;</span><span class="p">)</span>
+<span class="n">input_net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
+    <span class="n">target</span><span class="o">=</span><span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">),</span>
+    <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.0025</span><span class="p">,</span>
+    <span class="n">nsyns</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">delay</span><span class="o">=</span><span class="mf">0.002</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;input_ExcToExc.json&#39;</span>
+<span class="p">)</span>
 
 <span class="n">input_net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-<span class="n">input_net</span><span class="o">.</span><span class="n">save_nodes</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;network&#39;</span><span class="p">)</span>
-<span class="n">input_net</span><span class="o">.</span><span class="n">save_edges</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;network&#39;</span><span class="p">)</span>
+<span class="n">input_net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch06/network&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1179,7 +1188,8 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="Inputs">
 <h3>Inputs<a class="headerlink" href="#Inputs" title="Permalink to this headline">¶</a></h3>
 <p>We next need to set the firing rates of the External Population. There are multiple ways to set this value which will be discussed later. The best way is to set the firing rates using a input-rates file for each External Population, we can fetch an existing one using the command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ wget https://github.com/AllenInstitute/bmtk/raw/develop/docs/examples/pop_2pops/lgn_rates.csv
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> sim_ch06
+$ wget https://github.com/AllenInstitute/bmtk/raw/develop/examples/pop_2pops/external_rates.csv -O lgn_rates.csv
 </pre></div>
 </div>
 <p>Then we must open the simulation_config.json file with a text editor and add the lgn_rates.csv file as a part of our inputs:</p>
@@ -1205,13 +1215,13 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>Or we can run it directly using the following python code:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.simulator</span> <span class="kn">import</span> <span class="n">popnet</span>
 
-<span class="n">configure</span> <span class="o">=</span> <span class="n">popnet</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;simulation_config.json&#39;</span><span class="p">)</span>
+<span class="n">configure</span> <span class="o">=</span> <span class="n">popnet</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;sim_ch06/config.json&#39;</span><span class="p">)</span>
 <span class="n">configure</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 <span class="n">network</span> <span class="o">=</span> <span class="n">popnet</span><span class="o">.</span><span class="n">PopNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">configure</span><span class="p">)</span>
 <span class="n">sim</span> <span class="o">=</span> <span class="n">popnet</span><span class="o">.</span><span class="n">PopSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">configure</span><span class="p">,</span> <span class="n">network</span><span class="p">)</span>
@@ -1224,13 +1234,14 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2018-09-20 09:43:43,783 [INFO] Created log file
-2018-09-20 09:43:43,841 [INFO] Building cells.
-2018-09-20 09:43:43,845 [INFO] Building recurrent connections
-2018-09-20 09:43:43,852 [INFO] Build virtual cell stimulations for LGN_pop_rates
-2018-09-20 09:43:43,867 [INFO] Network created.
-running simulation...
-done simulation.
+2022-02-18 09:13:19,953 [WARNING] Directory /home/kael/Workspace/bmtk/docs/tutorial/sim_ch06/output already exists.
+2022-02-18 09:13:19,954 [INFO] Created log file
+2022-02-18 09:13:20,000 [INFO] Building cells.
+2022-02-18 09:13:20,001 [INFO] Building recurrent connections
+2022-02-18 09:13:20,007 [INFO] Build virtual cell stimulations for LGN_pop_rates
+2022-02-18 09:13:20,017 [INFO] Network created.
+2022-02-18 09:13:20,018 [INFO] Running simulation.
+2022-02-18 09:13:23,629 [INFO] Finished simulation.
 </pre></div></div>
 </div>
 </div>
@@ -1238,13 +1249,13 @@ done simulation.
 <h2>4. Analyzing results<a class="headerlink" href="#4.-Analyzing-results" title="Permalink to this headline">¶</a></h2>
 <p>As specified in the “output” section of simulation_config.json, the results will be written to ouput/spike_rates.csv. The BMTK analyzer includes code for ploting and analyzing the firing rates of our network:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.visualization.spikes</span> <span class="kn">import</span> <span class="n">plot_rates_popnet</span>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.firing_rates</span> <span class="kn">import</span> <span class="n">plot_rates_popnet</span>
 
-<span class="n">plot_rates_popnet</span><span class="p">(</span><span class="s1">&#39;network/V1_node_types.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;output/firing_rates.csv&#39;</span><span class="p">,</span> <span class="n">model_keys</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">)</span>
+<span class="n">plot_rates_popnet</span><span class="p">(</span><span class="s1">&#39;sim_ch06/network/V1_node_types.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;sim_ch06/output/spike_rates.csv&#39;</span><span class="p">,</span> <span class="n">model_keys</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

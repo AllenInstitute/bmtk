@@ -698,13 +698,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="viewcode-block" id="Node"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.node.Node">[docs]</a><span class="k">class</span> <span class="nc">Node</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="c1"># TODO: include population name/reference</span>
     <span class="c1"># TODO: make a dictionary (or preferably a collections.MutableMap</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">node_type_id</span><span class="p">,</span> <span class="n">node_types_props</span><span class="p">,</span> <span class="n">group_id</span><span class="p">,</span> <span class="n">group_props</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">,</span> <span class="n">gid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">pop_name</span><span class="p">,</span> <span class="n">node_type_id</span><span class="p">,</span> <span class="n">node_types_props</span><span class="p">,</span> <span class="n">group_id</span><span class="p">,</span> <span class="n">group_props</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">,</span> <span class="n">gid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_node_id</span> <span class="o">=</span> <span class="n">node_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gid</span> <span class="o">=</span> <span class="n">gid</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_node_type_id</span> <span class="o">=</span> <span class="n">node_type_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_node_type_props</span> <span class="o">=</span> <span class="n">node_types_props</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_group_id</span> <span class="o">=</span> <span class="n">group_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_group_props</span> <span class="o">=</span> <span class="n">group_props</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pop_name</span> <span class="o">=</span> <span class="n">pop_name</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">node_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -713,6 +714,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">gid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">population_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_name</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">group_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

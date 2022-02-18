@@ -908,7 +908,7 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="2.-Setting-up-the-simulation-enviornment">
 <h3>2. Setting up the simulation enviornment<a class="headerlink" href="#2.-Setting-up-the-simulation-enviornment" title="Permalink to this headline">¶</a></h3>
 <p>The following will create the necessarcy python and configuration files to run a simulation, all placed in the <strong>sim_ch07</strong> directory.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
@@ -922,6 +922,14 @@ div.rendered_html tbody tr:hover {
     <span class="n">include_examples</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>          <span class="c1"># includes example model files which we&#39;ll use in this tutorial</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+config.json
+</pre></div></div>
 </div>
 <p>The most important file that we will want to change is the <strong>simulation_config.json</strong> which contains information about the simulation.</p>
 <p>By default the config file does not contain any stimulus so the firing rate will simply be at the baseline firing rate. To change this and play a certain type of movie/stimulus, which here we’ll use a movie with a bright flash full-screen for an extend period of time. To do so open up simulation_config.json and add the following inputs section:</p>
@@ -960,7 +968,7 @@ div.rendered_html tbody tr:hover {
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.simulator</span> <span class="kn">import</span> <span class="n">filternet</span>
 
-<span class="n">config</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;sim_ch07/simulation_config.json&#39;</span><span class="p">)</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;sim_ch07/config.json&#39;</span><span class="p">)</span>
 <span class="n">config</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 <span class="n">net</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">FilterNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 <span class="n">sim</span> <span class="o">=</span> <span class="n">filternet</span><span class="o">.</span><span class="n">FilterSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">net</span><span class="p">)</span>
@@ -973,7 +981,23 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2020-04-19 13:06:34,784 [INFO] Created log file
+2022-02-18 09:16:25,630 [WARNING] Directory /home/kael/Workspace/bmtk/docs/tutorial/sim_ch07/output already exists.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING:FilterNetIOUtils:Directory /home/kael/Workspace/bmtk/docs/tutorial/sim_ch07/output already exists.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+2022-02-18 09:16:25,631 [INFO] Created log file
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -989,7 +1013,7 @@ INFO:FilterNetIOUtils:Created log file
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2020-04-19 13:06:34,817 [INFO] Building cells.
+2022-02-18 09:16:25,722 [INFO] Building cells.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1005,7 +1029,7 @@ INFO:FilterNetIOUtils:Building cells.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2020-04-19 13:06:36,197 [INFO] Evaluating rates.
+2022-02-18 09:16:26,983 [INFO] Evaluating rates.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1021,7 +1045,7 @@ INFO:FilterNetIOUtils:Evaluating rates.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2020-04-19 13:06:37,089 [INFO] Done.
+2022-02-18 09:16:27,153 [INFO] Done.
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1038,27 +1062,18 @@ INFO:FilterNetIOUtils:Done.
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.visualization.spikes</span> <span class="kn">import</span> <span class="n">plot_raster</span>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.spike_trains</span> <span class="kn">import</span> <span class="n">plot_raster</span>
 
-<span class="n">plot_raster</span><span class="p">(</span><span class="s1">&#39;sim_ch07/output/spikes.h5&#39;</span><span class="p">,</span> <span class="n">nodes_file</span><span class="o">=</span><span class="s1">&#39;sim_ch07/network/lgn_nodes.h5&#39;</span><span class="p">,</span>
-            <span class="n">node_types_file</span><span class="o">=</span><span class="s1">&#39;sim_ch07/network/lgn_node_types.csv&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;model_template&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch07/config.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;model_template&#39;</span><span class="p">)</span>
+
 </pre></div>
 </div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/kael/Workspace/bmtk/bmtk/simulator/utils/config.py:4: UserWarning: Please use bmtk.simulator.core.simulation_config instead.
-  warnings.warn(&#39;Please use bmtk.simulator.core.simulation_config instead.&#39;)
-</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/tutorial_filter_models_9_1.png" src="_images/tutorial_filter_models_9_1.png" />
+<img alt="_images/tutorial_filter_models_9_0.png" src="_images/tutorial_filter_models_9_0.png" />
 </div>
 </div>
 <p>As expected, the flash from 1 to 2 seconds caused the ON cells to temporary increase firing while also supressing the OFF cells.</p>
@@ -1160,8 +1175,8 @@ maximum constrast, must be between 0 and 1.0 (default: 1.0)</p>
 <p>These are cells that respond by either increasing or decreasing firing rates to brightness changes in their receptive fields. They are also the basis for more advanced cell types. When building a network you can set a cell or set of cells with <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:tON'</span></code> or <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:tOFF'</span></code> during the call to <code class="docutils literal notranslate"><span class="pre">add_nodes(...)</span></code>. There are also a number of special types
 (<code class="docutils literal notranslate"><span class="pre">tON_TF8,</span> <span class="pre">sON_TF1,</span> <span class="pre">sON_TF2,</span> <span class="pre">sON_TF4,</span> <span class="pre">sON_TF8,</span> <span class="pre">sON_TF15,</span> <span class="pre">tOFF_TF1,</span> <span class="pre">tOFF_TF2,</span> <span class="pre">tOFF_TF4,</span> <span class="pre">tOFF_TF8,</span> <span class="pre">tOFF_TF15,</span> <span class="pre">sOFF_TF1,</span> <span class="pre">sOFF_TF2,</span> <span class="pre">sOFF_TF4,</span> <span class="pre">sOFF_TF8,</span> <span class="pre">sOFF_TF15</span></code>) which have properties that have been pre-calculated using electrophysiological recordings from the mouse LGN (Durant et. al 2016, Billeh et. al 2019).</p>
 <p>A combination of a Gaussian spatial filter and double cosine temporal filter are used to filter the receptive field.</p>
-<div class="row"><div class="col-md-4"><p><img alt="74c83e5fadea4c3bbaa6ef9d9f64ea36" class="no-scaled-link" src="_images/filternet_spat_filter.png" style="width: 1000px; height: 1000px;" /></p>
-</div><div class="col-md-4"><p><img alt="fb4c205bea884c898b602fb59cf9d9a0" class="no-scaled-link" src="_images/filternet_temp_filter.png" style="width: 300px; height: 300px;" /></p>
+<div class="row"><div class="col-md-4"><p><img alt="1ecaec43d64841a48c48bc43a0c68b8b" class="no-scaled-link" src="_images/filternet_spat_filter.png" style="width: 1000px; height: 1000px;" /></p>
+</div><div class="col-md-4"><p><img alt="81b8263ab1ff4d78bcad79de55b4306e" class="no-scaled-link" src="_images/filternet_temp_filter.png" style="width: 300px; height: 300px;" /></p>
 </div></div></div>
 <div class="section" id="parameters">
 <h3>parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h3>

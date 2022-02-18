@@ -800,6 +800,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="s1">&#39;tmp_dir&#39;</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;output_dir&#39;</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">default_dir</span><span class="p">),</span>
             <span class="s1">&#39;cache_to_disk&#39;</span><span class="p">:</span> <span class="n">output_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;cache_to_disk&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="p">}</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;spikes_file&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;spikes_file_csv&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;spikes_file_nwb&#39;</span><span class="p">]):</span>
             <span class="c1"># User hasn&#39;t specified any spikes file</span>
             <span class="n">params</span><span class="p">[</span><span class="s1">&#39;enabled&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
@@ -923,6 +924,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="n">has_spikes_report</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">for</span> <span class="n">report_name</span><span class="p">,</span> <span class="n">report_params</span> <span class="ow">in</span> <span class="n">cfg</span><span class="o">.</span><span class="n">reports</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="c1"># Get the Report class from the module_name parameter</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="n">report_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;enabled&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
             <span class="c1"># not a part of the standard but will help skip modules</span>
             <span class="k">continue</span>

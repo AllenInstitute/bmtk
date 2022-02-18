@@ -644,7 +644,50 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</span>
 <span class="c1"># OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c1">#</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.utils.graph</span> <span class="kn">import</span> <span class="n">SimNode</span>
+
+
+<div class="viewcode-block" id="SimNode"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.popnode.SimNode">[docs]</a><span class="k">class</span> <span class="nc">SimNode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_id</span> <span class="o">=</span> <span class="n">node_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span> <span class="o">=</span> <span class="n">graph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_graph_params</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_node_type_id</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_network</span> <span class="o">=</span> <span class="n">network</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_updated_params</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_params</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">node_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">node_type_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_type_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">network</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Name of network node belongs too.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">model_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Parameters (json file, nml, dictionary) that describe a specific node&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_params</span>
+
+    <span class="nd">@model_params</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">model_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_params</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_updated_params</span> <span class="ow">or</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph_params</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_updated_params</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_updated_params</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph_params</span><span class="p">[</span><span class="n">item</span><span class="p">]</span></div>
+
 
 <div class="viewcode-block" id="PopNode"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.popnode.PopNode">[docs]</a><span class="k">class</span> <span class="nc">PopNode</span><span class="p">(</span><span class="n">SimNode</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">graph</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
@@ -698,20 +741,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="InternalNode"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.popnode.InternalNode">[docs]</a><span class="k">class</span> <span class="nc">InternalNode</span><span class="p">(</span><span class="n">PopNode</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    def __init__(self, node_id, graph, network, params):</span>
-<span class="sd">        super(InternalNode, self).__init__(node_id, graph, network, params)</span>
-<span class="sd">        #self._pop_id = node_id</span>
-<span class="sd">        #self._graph = graph</span>
-<span class="sd">        #self._network = network</span>
-<span class="sd">        #self._graph_params = params</span>
-<span class="sd">        #self._dynamics_params = {}</span>
-<span class="sd">        #self._update_params = {&#39;dynamics_params&#39;: self._dynamics_params}</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tau_m</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;tau_m&#39;</span><span class="p">]</span>
-        <span class="c1">#return self._dynamics_params.get(&#39;tau_m&#39;, None)</span>
 
     <span class="nd">@tau_m</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">tau_m</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>

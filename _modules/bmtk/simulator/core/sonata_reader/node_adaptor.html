@@ -638,6 +638,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prop_adaptor</span><span class="o">.</span><span class="n">node_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">)</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">population_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="o">.</span><span class="n">population_name</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">gid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prop_adaptor</span><span class="o">.</span><span class="n">gid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">)</span>
 
@@ -761,7 +765,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="n">model_type</span> <span class="o">=</span> <span class="n">node_type</span><span class="p">[</span><span class="s1">&#39;model_type&#39;</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;biophysical&#39;</span><span class="p">:</span>
                     <span class="n">params_dir</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">&#39;biophysical_neuron_models_dir&#39;</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;point_process&#39;</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">model_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;point_process&#39;</span><span class="p">,</span> <span class="s1">&#39;point_neuron&#39;</span><span class="p">]:</span>
                     <span class="n">params_dir</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">&#39;point_neuron_models_dir&#39;</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="s1">&#39;point_soma&#39;</span><span class="p">:</span>
                     <span class="n">params_dir</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_component</span><span class="p">(</span><span class="s1">&#39;point_neuron_models_dir&#39;</span><span class="p">)</span>

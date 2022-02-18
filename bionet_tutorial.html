@@ -623,7 +623,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             
   <div class="section" id="simulating-example-networks-with-bionet">
 <h1>Simulating example networks with BioNet<a class="headerlink" href="#simulating-example-networks-with-bionet" title="Permalink to this headline">¶</a></h1>
-<p>To get started with running simulations with BioNet, we recommend to run network examples provided in the directory docs/examples/simulators/bionet:</p>
+<p>To get started with running simulations with BioNet, we recommend to run network examples provided in the directory examples/simulators/bionet:</p>
 <ul class="simple">
 <li><p>/14cells : network of 14 cell receiving an external input.</p></li>
 <li><p>/450cells : network of 450 cells receiving an external input</p></li>
@@ -699,8 +699,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </tbody>
 </table>
 <p>Please refer to the <a class="reference external" href="./network_file_formats.html">network file format documentation</a> for details.</p>
-<p>The spikes times of external cells are precomuted and provided in the directory docs/examples/simulator/NWB_files.</p>
-<p>Each network utilizes models of individual cells, synapses and recording electrodes defined in the docs/examples/simulators/bionet/components/mechanisms directory.</p>
+<p>The spikes times of external cells are precomuted and provided in the directory examples/simulator/NWB_files.</p>
+<p>Each network utilizes models of individual cells, synapses and recording electrodes defined in the examples/simulators/bionet/components/mechanisms directory.</p>
 <p>The paths to each of these files and directories are specified in the configuration file (see above).</p>
 </div>
 <div class="section" id="running-simulation">
@@ -710,7 +710,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <p><cite>set_cell_params.py</cite>: module setting properties of cells</p>
 <p><cite>set_syn_params.py</cite>: module setting properties of synapses</p>
 <p><cite>set_weights.py</cite> : modules allowign to set parameter dependent connection weights</p>
-<p>The example networks use biophysically-detailed models of individual cells, and require additional NEURON channel mechanisms describing dynamics of ionic channels. To compile these NEURON mechanims go to the subdirectory docs/examples/simulators/bionet/components/mechanisms and run the NEURON command:</p>
+<p>The example networks use biophysically-detailed models of individual cells, and require additional NEURON channel mechanisms describing dynamics of ionic channels. To compile these NEURON mechanims go to the subdirectory examples/simulators/bionet/components/mechanisms and run the NEURON command:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nrnivmodl</span> <span class="n">modfiles</span><span class="o">/</span>
 </pre></div>
 </div>
@@ -750,7 +750,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div>
 <div class="section" id="simulating-your-network-models">
 <h2>Simulating your network models<a class="headerlink" href="#simulating-your-network-models" title="Permalink to this headline">¶</a></h2>
-<p>To run simulations of your network with BioNet, you will first need to provide a pre-built network in the format understood by BioNet. We recommend using <a class="reference external" href="builder">BMTK’s network builder api</a>, but you may also use your own scripts or a third party tool to build a network. As a start we suggest to modify the existing network examples as a quick way of customizing network models and then build your own model following <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/builder/bionet_14cells">builder examples tutorial</a>.</p>
+<p>To run simulations of your network with BioNet, you will first need to provide a pre-built network in the format understood by BioNet. We recommend using <a class="reference external" href="builder">BMTK’s network builder api</a>, but you may also use your own scripts or a third party tool to build a network. As a start we suggest to modify the existing network examples as a quick way of customizing network models and then build your own model following <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples/builder/bionet_14cells">builder examples tutorial</a>.</p>
 <p>When you have your custom model built, you will need to specify in your configuration file the paths to the network, components as well as simulation run parameters.</p>
 <p>Just as in the above examples, your run folder should include Python modules: set_cell_params.py, set_syn_params.py, set_weights.py specifying how models of cells, synapses and connection weights are created, as well as a main python script.</p>
 <p>When running different simulations you will rarely need to modify the main Python script running BioNet. Instead, you will commonly need to modify paths to network files or run parameters in the configuration file  to instruct BioNet which model to run and how to run it. Please refer to the <a class="reference external" href="./bionet_config.html">configuration file documentation</a> for details.</p>

@@ -18,7 +18,7 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="bmtk.analyzer.visualization package" href="bmtk.analyzer.visualization.html" />
+    <link rel="next" title="bmtk.builder package" href="bmtk.builder.html" />
     <link rel="prev" title="bmtk package" href="bmtk.html" /> 
   </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
@@ -625,21 +625,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             
   <div class="section" id="bmtk-analyzer-package">
 <h1>bmtk.analyzer package<a class="headerlink" href="#bmtk-analyzer-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="bmtk.analyzer.visualization.html">bmtk.analyzer.visualization package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.visualization.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.visualization.html#module-bmtk.analyzer.visualization.rasters">bmtk.analyzer.visualization.rasters module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.visualization.html#module-bmtk.analyzer.visualization.spikes">bmtk.analyzer.visualization.spikes module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.visualization.html#module-bmtk.analyzer.visualization.widgets">bmtk.analyzer.visualization.widgets module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.visualization.html#module-bmtk.analyzer.visualization">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
@@ -650,7 +635,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span id="bmtk-analyzer-compartment-module"></span><h2>bmtk.analyzer.compartment module<a class="headerlink" href="#module-bmtk.analyzer.compartment" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="bmtk.analyzer.compartment.plot_traces">
-<code class="sig-prename descclassname">bmtk.analyzer.compartment.</code><code class="sig-name descname">plot_traces</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">report_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">population</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">report_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">group_by</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">group_excludes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nodes_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_types_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sections</span><span class="o">=</span><span class="default_value">'origin'</span></em>, <em class="sig-param"><span class="n">average</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">times</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show_legend</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/compartment.html#plot_traces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.compartment.plot_traces" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.compartment.</code><code class="sig-name descname">plot_traces</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">report_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">population</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">report_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">group_by</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">group_excludes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nodes_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_types_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_ids</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sections</span><span class="o">=</span><span class="default_value">'origin'</span></em>, <em class="sig-param"><span class="n">average</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">times</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show_legend</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_as</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/compartment.html#plot_traces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.compartment.plot_traces" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot compartment variables (eg Membrane Voltage, Calcium conc.) traces from the output of simulation. Will
 attempt to look in the SONATA simulation configuration json “reports” sections for any matching “membrane_report”
 outputs with a matching report_name:</p>
@@ -703,6 +688,8 @@ report_name.</p></li>
 <li><p><strong>show_legend</strong> – Set True or False to determine if legend should be displayed on the plot. The default (None)
 function itself will guess if legend should be shown.</p></li>
 <li><p><strong>show</strong> – bool to display or not display plot. default True.</p></li>
+<li><p><strong>save_as</strong> – None or str: file-name/path to save the plot as a png/jpeg/etc. If None or empty string will not
+save plot.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -710,6 +697,14 @@ function itself will guess if legend should be shown.</p></li>
 </dd>
 </dl>
 </dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.analyzer.ecp">
+<span id="bmtk-analyzer-ecp-module"></span><h2>bmtk.analyzer.ecp module<a class="headerlink" href="#module-bmtk.analyzer.ecp" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="bmtk.analyzer.ecp.plot_ecp">
+<code class="sig-prename descclassname">bmtk.analyzer.ecp.</code><code class="sig-name descname">plot_ecp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">report_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ecp_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/ecp.html#plot_ecp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.ecp.plot_ecp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 <div class="section" id="module-bmtk.analyzer.firing_rates">
@@ -724,6 +719,26 @@ function itself will guess if legend should be shown.</p></li>
 <code class="sig-prename descclassname">bmtk.analyzer.firing_rates.</code><code class="sig-name descname">firing_rates_equal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rates_file1</span></em>, <em class="sig-param"><span class="n">rates_file2</span></em>, <em class="sig-param"><span class="n">err</span><span class="o">=</span><span class="default_value">0.0001</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/firing_rates.html#firing_rates_equal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.firing_rates.firing_rates_equal" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py function">
+<dt id="bmtk.analyzer.firing_rates.plot_rates_popnet">
+<code class="sig-prename descclassname">bmtk.analyzer.firing_rates.</code><code class="sig-name descname">plot_rates_popnet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cell_models_file</span></em>, <em class="sig-param"><span class="n">rates_file</span></em>, <em class="sig-param"><span class="n">model_keys</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_as</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show_plot</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/firing_rates.html#plot_rates_popnet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.firing_rates.plot_rates_popnet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initial method for plotting popnet output</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cell_models_file</strong> – </p></li>
+<li><p><strong>rates_file</strong> – </p></li>
+<li><p><strong>model_keys</strong> – </p></li>
+<li><p><strong>save_as</strong> – </p></li>
+<li><p><strong>show_plot</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 <div class="section" id="module-bmtk.analyzer.io_tools">
 <span id="bmtk-analyzer-io-tools-module"></span><h2>bmtk.analyzer.io_tools module<a class="headerlink" href="#module-bmtk.analyzer.io_tools" title="Permalink to this headline">¶</a></h2>
@@ -737,7 +752,7 @@ function itself will guess if legend should be shown.</p></li>
 <span id="bmtk-analyzer-spike-trains-module"></span><h2>bmtk.analyzer.spike_trains module<a class="headerlink" href="#module-bmtk.analyzer.spike_trains" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="bmtk.analyzer.spike_trains.plot_raster">
-<code class="sig-prename descclassname">bmtk.analyzer.spike_trains.</code><code class="sig-name descname">plot_raster</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">population</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">with_histogram</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">times</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">group_by</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">group_excludes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">spikes_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nodes_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_types_file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spike_trains.html#plot_raster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.plot_raster" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.spike_trains.</code><code class="sig-name descname">plot_raster</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">population</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">with_histogram</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">times</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_as</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">group_by</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">group_excludes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">spikes_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nodes_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_types_file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spike_trains.html#plot_raster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.plot_raster" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a raster plot (plus optional histogram) from the results of the simulation.</p>
 <p>Will using the SONATA simulation configs “output” section to locate where the spike-trains file was created and
 display them:</p>
@@ -768,6 +783,8 @@ configs “run” section.</p></li>
 <li><p><strong>title</strong> – str, adds a title to the plot. If None (default) then name will be automatically generated using the
 report_name.</p></li>
 <li><p><strong>show</strong> – bool to display or not display plot. default True.</p></li>
+<li><p><strong>save_as</strong> – None or str: file-name/path to save the plot as a png/jpeg/etc. If None or empty string will not
+save plot.</p></li>
 <li><p><strong>group_by</strong> – Attribute of the “nodes” file used to group and average subsets of nodes.</p></li>
 <li><p><strong>group_excludes</strong> – list of strings or None. When using the “group_by”, allows users to exclude certain groupings
 based on the attribute value.</p></li>
@@ -786,7 +803,7 @@ the config.</p></li>
 
 <dl class="py function">
 <dt id="bmtk.analyzer.spike_trains.plot_rates">
-<code class="sig-prename descclassname">bmtk.analyzer.spike_trains.</code><code class="sig-name descname">plot_rates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">population</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">smoothing</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">smoothing_params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">times</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">group_by</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">group_excludes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">spikes_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nodes_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_types_file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spike_trains.html#plot_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.plot_rates" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.spike_trains.</code><code class="sig-name descname">plot_rates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">population</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">smoothing</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">smoothing_params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">times</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_as</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">group_by</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">group_excludes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">spikes_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nodes_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_types_file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spike_trains.html#plot_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.plot_rates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate and plot the rates of each node recorded during the simulation - averaged across the entirety of the
 simulation.</p>
 <p>Will using the SONATA simulation configs “output” section to locate where the spike-trains file was created and
@@ -819,6 +836,8 @@ configs “run” section.</p></li>
 <li><p><strong>title</strong> – str, adds a title to the plot. If None (default) then name will be automatically generated using the
 report_name.</p></li>
 <li><p><strong>show</strong> – bool to display or not display plot. default True.</p></li>
+<li><p><strong>save_as</strong> – None or str: file-name/path to save the plot as a png/jpeg/etc. If None or empty string will not
+save plot.</p></li>
 <li><p><strong>group_by</strong> – Attribute of the “nodes” file used to group and average subsets of nodes.</p></li>
 <li><p><strong>group_excludes</strong> – list of strings or None. When using the “group_by”, allows users to exclude certain groupings
 based on the attribute value.</p></li>
@@ -837,7 +856,7 @@ the config.</p></li>
 
 <dl class="py function">
 <dt id="bmtk.analyzer.spike_trains.plot_rates_boxplot">
-<code class="sig-prename descclassname">bmtk.analyzer.spike_trains.</code><code class="sig-name descname">plot_rates_boxplot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">population</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">times</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">group_by</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">group_excludes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">spikes_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nodes_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_types_file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spike_trains.html#plot_rates_boxplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.plot_rates_boxplot" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bmtk.analyzer.spike_trains.</code><code class="sig-name descname">plot_rates_boxplot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">population</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">times</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_as</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">group_by</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">group_excludes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">spikes_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nodes_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">node_types_file</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/analyzer/spike_trains.html#plot_rates_boxplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.plot_rates_boxplot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a box plot of the firing rates taken from nodes recorded during the simulation.</p>
 <p>Will using the SONATA simulation configs “output” section to locate where the spike-trains file was created and
 display them:</p>
@@ -866,6 +885,8 @@ configs “run” section.</p></li>
 <li><p><strong>title</strong> – str, adds a title to the plot. If None (default) then name will be automatically generated using the
 report_name.</p></li>
 <li><p><strong>show</strong> – bool to display or not display plot. default True.</p></li>
+<li><p><strong>save_as</strong> – None or str: file-name/path to save the plot as a png/jpeg/etc. If None or empty string will not
+save plot.</p></li>
 <li><p><strong>group_by</strong> – Attribute of the “nodes” file used to group and average subsets of nodes.</p></li>
 <li><p><strong>group_excludes</strong> – list of strings or None. When using the “group_by”, allows users to exclude certain groupings
 based on the attribute value.</p></li>

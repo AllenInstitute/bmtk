@@ -670,27 +670,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_rates_file</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># name of file where the output is saved</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">__population_list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of all populations, internal and external</span>
-        <span class="c1">#self.__population_table = {graph: {} for graph in self._graph.networks}  # population lookup by [network][id]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__connection_list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of all connections</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dipde_network</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># reference to dipde.Network object</span>
 
-        <span class="c1"># diction of rates for every external network/pop_id. Prepopulate dictionary with populations whose rates</span>
-        <span class="c1"># have already been manually set, otherwise they should use one of the add_rates_* function.</span>
-        <span class="c1">#self._rates = {network: {pop.pop_id: pop.firing_rate for pop in self._graph.get_populations(network)</span>
-        <span class="c1">#                         if not pop.is_internal and pop.is_firing_rate_set}</span>
-        <span class="c1">#               for network in self._graph.networks}</span>
-
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        for network in self._graph.networks:</span>
-<span class="sd">            for pop in self._graph.get_populations(network):</span>
-
-<span class="sd">                if pop.is_internal:</span>
-<span class="sd">                    dipde_pop = self.__create_internal_pop(pop)</span>
-
-<span class="sd">                else:</span>
-<span class="sd">                    if pop.is_firing_rate_set:</span>
-<span class="sd">                        rates = pop.firing_rate</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">io</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">io</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tstop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -746,7 +729,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">if</span> <span class="n">pop</span><span class="o">.</span><span class="n">is_internal</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="k">elif</span> <span class="ow">not</span> <span class="n">force</span> <span class="ow">and</span> <span class="n">pop</span><span class="o">.</span><span class="n">pop_id</span> <span class="ow">in</span> <span class="n">existing_rates</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Firing rate for </span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1"> has already been set, skipping.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">pop</span><span class="o">.</span><span class="n">pop_id</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Firing rate for </span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1"> has already been set, skipping.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">pop</span><span class="o">.</span><span class="n">pop_id</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">selected_pops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
 
@@ -846,29 +829,19 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="viewcode-block" id="PopSimulator.run"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.popsimulator.PopSimulator.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tstop</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># TODO: Check if cells/connections need to be rebuilt.</span>
 
-        <span class="c1"># Create the networ</span>
+        <span class="c1"># Create the network</span>
         <span class="n">dipde_pops</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">dipde_obj</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">populations</span><span class="p">]</span>
         <span class="n">dipde_conns</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">dipde_obj</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">connections</span><span class="p">]</span>
-        <span class="c1">#print dipde_pops</span>
-        <span class="c1">#print dipde_conns</span>
-        <span class="c1">#exit()</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_dipde_network</span> <span class="o">=</span> <span class="n">dipde</span><span class="o">.</span><span class="n">Network</span><span class="p">(</span><span class="n">population_list</span><span class="o">=</span><span class="n">dipde_pops</span><span class="p">,</span> <span class="n">connection_list</span><span class="o">=</span><span class="n">dipde_conns</span><span class="p">)</span>
-
-        <span class="c1">#self._dipde_network = dipde.Network(population_list=self._graph.populations,</span>
-        <span class="c1">#                                    connection_list=self._graph.connections)</span>
 
         <span class="k">if</span> <span class="n">tstop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">tstop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tstop</span>
 
-        <span class="c1">#print tstop, self.dt</span>
-        <span class="c1">#print self._graph.populations</span>
-        <span class="c1">#exit()</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;running simulation...&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s2">&quot;Running simulation.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dipde_network</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">t0</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">tf</span><span class="o">=</span><span class="n">tstop</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
         <span class="c1"># TODO: make record_rates optional?</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__record_rates</span><span class="p">()</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;done simulation.&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s2">&quot;Finished simulation.&quot;</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">__create_internal_pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
         <span class="c1"># TODO: use getter methods directly in case arguments are not stored in dynamics params</span>
@@ -889,82 +862,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="k">if</span> <span class="n">pop</span><span class="o">.</span><span class="n">record</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">time</span><span class="p">,</span> <span class="n">rate</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">dipde_obj</span><span class="o">.</span><span class="n">t_record</span><span class="p">,</span> <span class="n">pop</span><span class="o">.</span><span class="n">dipde_obj</span><span class="o">.</span><span class="n">firing_rate_record</span><span class="p">):</span>
                         <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">pop_id</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">rate</span><span class="p">))</span>
-
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    @classmethod</span>
-<span class="sd">    def from_config(cls, configure, graph):</span>
-<span class="sd">        # load the json file or object</span>
-<span class="sd">        if isinstance(configure, basestring):</span>
-<span class="sd">            config = cfg.from_json(configure, validate=True)</span>
-<span class="sd">        elif isinstance(configure, dict):</span>
-<span class="sd">            config = configure</span>
-<span class="sd">        else:</span>
-<span class="sd">            raise Exception(&#39;Could not convert {} (type &quot;{}&quot;) to json.&#39;.format(configure, type(configure)))</span>
-<span class="sd">        network = cls(graph)</span>
-
-<span class="sd">        if &#39;run&#39; not in config:</span>
-<span class="sd">            raise Exception(&#39;Json file is missing &quot;run&quot; entry. Unable to build Bionetwork.&#39;)</span>
-<span class="sd">        run_dict = config[&#39;run&#39;]</span>
-
-<span class="sd">        # Create the output file</span>
-<span class="sd">        if &#39;output&#39; in config:</span>
-<span class="sd">            out_dict = config[&#39;output&#39;]</span>
-
-<span class="sd">            rates_file = out_dict.get(&#39;rates_file&#39;, None)</span>
-<span class="sd">            if rates_file is not None:</span>
-<span class="sd">                # create directory if required</span>
-<span class="sd">                network.rates_file = rates_file</span>
-<span class="sd">                parent_dir = os.path.dirname(rates_file)</span>
-<span class="sd">                if not os.path.exists(parent_dir):</span>
-<span class="sd">                    os.makedirs(parent_dir)</span>
-
-<span class="sd">            if &#39;log_file&#39; in out_dict:</span>
-<span class="sd">                log_file = out_dict[&#39;log_file&#39;]</span>
-<span class="sd">                network.set_logging(log_file)</span>
-
-<span class="sd">        # get network parameters</span>
-<span class="sd">        if &#39;duration&#39; in run_dict:</span>
-<span class="sd">            network.duration = run_dict[&#39;duration&#39;]</span>
-
-<span class="sd">        if &#39;dt&#39; in run_dict:</span>
-<span class="sd">            network.dt = run_dict[&#39;dt&#39;]</span>
-
-<span class="sd">        # TODO: need to get firing rates before building populations</span>
-<span class="sd">        if &#39;input&#39; in config:</span>
-<span class="sd">            for netinput in config[&#39;input&#39;]:</span>
-<span class="sd">                if netinput[&#39;type&#39;] == &#39;external_spikes&#39; and netinput[&#39;format&#39;] == &#39;nwb&#39; and netinput[&#39;active&#39;]:</span>
-<span class="sd">                    # Load external network spike trains from an NWB file.</span>
-<span class="sd">                    print(&#39;Setting firing rates for {} from {}.&#39;.format(netinput[&#39;source_nodes&#39;], netinput[&#39;file&#39;]))</span>
-<span class="sd">                    network.add_rates_nwb(netinput[&#39;source_nodes&#39;], netinput[&#39;file&#39;], netinput[&#39;trial&#39;])</span>
-
-<span class="sd">                if netinput[&#39;type&#39;] == &#39;pop_rate&#39;:</span>
-<span class="sd">                    print(&#39;Setting {}/{} to fire at {} Hz.&#39;.format(netinput[&#39;source_nodes&#39;], netinput[&#39;pop_id&#39;], netinput[&#39;rate&#39;]))</span>
-<span class="sd">                    network.add_rate_hz(netinput[&#39;source_nodes&#39;], netinput[&#39;pop_id&#39;], netinput[&#39;rate&#39;])</span>
-
-<span class="sd">                # TODO: take input as function with Population argument</span>
-
-<span class="sd">        # Build populations</span>
-<span class="sd">        print(&#39;Building Populations&#39;)</span>
-<span class="sd">        network.build_populations()</span>
-
-<span class="sd">        # Build recurrent connections</span>
-<span class="sd">        if run_dict[&#39;connect_internal&#39;]:</span>
-<span class="sd">            print(&#39;Building recurrention connections&#39;)</span>
-<span class="sd">            network.set_recurrent_connections()</span>
-
-<span class="sd">        # Build external connections. Set connection to default True and turn off only if explicitly stated.</span>
-<span class="sd">        # NOTE: It might be better to set to default off?!?! Need to dicuss what would be more intuitive for the users.</span>
-<span class="sd">        # TODO: ignore case of network name</span>
-<span class="sd">        external_network_settings = {name: True for name in graph.external_networks()}</span>
-<span class="sd">        if &#39;connect_external&#39; in run_dict:</span>
-<span class="sd">            external_network_settings.update(run_dict[&#39;connect_external&#39;])</span>
-<span class="sd">        for netname, connect in external_network_settings.items():</span>
-<span class="sd">            if connect:</span>
-<span class="sd">                print(&#39;Setting external connections for {}&#39;.format(netname))</span>
-<span class="sd">                network.set_external_connections(netname)</span>
-
-<span class="sd">        return network</span>
-<span class="sd">    &#39;&#39;&#39;</span>
 
 <div class="viewcode-block" id="PopSimulator.from_config"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.popsimulator.PopSimulator.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">configure</span><span class="p">,</span> <span class="n">graph</span><span class="p">):</span>
@@ -1035,42 +932,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">if</span> <span class="s1">&#39;log_file&#39;</span> <span class="ow">in</span> <span class="n">out_dict</span><span class="p">:</span>
                 <span class="n">log_file</span> <span class="o">=</span> <span class="n">out_dict</span><span class="p">[</span><span class="s1">&#39;log_file&#39;</span><span class="p">]</span>
                 <span class="n">network</span><span class="o">.</span><span class="n">set_logging</span><span class="p">(</span><span class="n">log_file</span><span class="p">)</span>
-
-
-        <span class="c1"># exit()</span>
-
-
-        <span class="c1"># build the cells</span>
-        <span class="c1">#io.log(&#39;Building cells&#39;)</span>
-        <span class="c1">#network.build_cells()</span>
-
-        <span class="c1"># Build internal connections</span>
-        <span class="c1">#if run_dict[&#39;connect_internal&#39;]:</span>
-        <span class="c1">#    io.log(&#39;Creating recurrent connections&#39;)</span>
-        <span class="c1">#    network.set_recurrent_connections()</span>
-
-        <span class="c1"># Build external connections. Set connection to default True and turn off only if explicitly stated.</span>
-        <span class="c1"># NOTE: It might be better to set to default off?!?! Need to dicuss what would be more intuitive for the users.</span>
-        <span class="c1"># TODO: ignore case of network name</span>
-
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        external_network_settings = {name: True for name in graph.external_networks()}</span>
-<span class="sd">        if &#39;connect_external&#39; in run_dict:</span>
-<span class="sd">            external_network_settings.update(run_dict[&#39;connect_external&#39;])</span>
-<span class="sd">        for netname, connect in external_network_settings.items():</span>
-<span class="sd">            if connect:</span>
-<span class="sd">                io.log(&#39;Setting external connections for {}&#39;.format(netname))</span>
-<span class="sd">                network.set_external_connections(netname)</span>
-
-<span class="sd">        # Build inputs</span>
-<span class="sd">        if &#39;input&#39; in config:</span>
-<span class="sd">            for netinput in config[&#39;input&#39;]:</span>
-<span class="sd">                if netinput[&#39;type&#39;] == &#39;external_spikes&#39; and netinput[&#39;format&#39;] == &#39;nwb&#39; and netinput[&#39;active&#39;]:</span>
-<span class="sd">                    network.add_spikes_nwb(netinput[&#39;source_nodes&#39;], netinput[&#39;file&#39;], netinput[&#39;trial&#39;])</span>
-
-<span class="sd">            io.log_info(&#39;Adding stimulations&#39;)</span>
-<span class="sd">            network.make_stims()</span>
-<span class="sd">        &#39;&#39;&#39;</span>
 
         <span class="n">graph</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Network created.&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">network</span></div></div>

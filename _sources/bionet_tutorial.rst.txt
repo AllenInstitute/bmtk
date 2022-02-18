@@ -3,7 +3,7 @@
 Simulating example networks with BioNet
 =======================================
 
-To get started with running simulations with BioNet, we recommend to run network examples provided in the directory docs/examples/simulators/bionet:
+To get started with running simulations with BioNet, we recommend to run network examples provided in the directory examples/simulators/bionet:
 
 * /14cells : network of 14 cell receiving an external input.
 * /450cells : network of 450 cells receiving an external input
@@ -63,9 +63,9 @@ A network can be viewed as a graph. Description of a graph needs to specify the 
 
 Please refer to the `network file format documentation <./network_file_formats.html>`_ for details.
 
-The spikes times of external cells are precomuted and provided in the directory docs/examples/simulator/NWB_files.
+The spikes times of external cells are precomuted and provided in the directory examples/simulator/NWB_files.
 
-Each network utilizes models of individual cells, synapses and recording electrodes defined in the docs/examples/simulators/bionet/components/mechanisms directory.
+Each network utilizes models of individual cells, synapses and recording electrodes defined in the examples/simulators/bionet/components/mechanisms directory.
 
 The paths to each of these files and directories are specified in the configuration file (see above).
 
@@ -84,7 +84,7 @@ Running simualtions requires the following Python scripts
 
 `set_weights.py` : modules allowign to set parameter dependent connection weights
 
-The example networks use biophysically-detailed models of individual cells, and require additional NEURON channel mechanisms describing dynamics of ionic channels. To compile these NEURON mechanims go to the subdirectory docs/examples/simulators/bionet/components/mechanisms and run the NEURON command:
+The example networks use biophysically-detailed models of individual cells, and require additional NEURON channel mechanisms describing dynamics of ionic channels. To compile these NEURON mechanims go to the subdirectory examples/simulators/bionet/components/mechanisms and run the NEURON command:
 ::
 
    nrnivmodl modfiles/
@@ -142,7 +142,7 @@ Upon completion you may run the script plot_rasters.py to plot spike rasters of 
 Simulating your network models
 ------------------------------
 
-To run simulations of your network with BioNet, you will first need to provide a pre-built network in the format understood by BioNet. We recommend using `BMTK's network builder api <builder>`_, but you may also use your own scripts or a third party tool to build a network. As a start we suggest to modify the existing network examples as a quick way of customizing network models and then build your own model following `builder examples tutorial <https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/builder/bionet_14cells>`_.
+To run simulations of your network with BioNet, you will first need to provide a pre-built network in the format understood by BioNet. We recommend using `BMTK's network builder api <builder>`_, but you may also use your own scripts or a third party tool to build a network. As a start we suggest to modify the existing network examples as a quick way of customizing network models and then build your own model following `builder examples tutorial <https://github.com/AllenInstitute/bmtk/tree/develop/examples/builder/bionet_14cells>`_.
 
 When you have your custom model built, you will need to specify in your configuration file the paths to the network, components as well as simulation run parameters.
 

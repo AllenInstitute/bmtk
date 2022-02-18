@@ -869,7 +869,7 @@ reproducability of simulations.</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.builder</span> <span class="kn">import</span> <span class="n">NetworkBuilder</span>
 
 <span class="c1"># Initialize our network</span>
@@ -914,7 +914,7 @@ and it also makes easier to change properties (like updating ephys params or usi
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer</span> <span class="kn">import</span> <span class="n">nodes_table</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;mcortex_nodes.h5&#39;</span><span class="p">)</span>
 <span class="n">nodes_table</span><span class="p">(</span><span class="n">nodes_file</span><span class="o">=</span><span class="s1">&#39;network/mcortex_nodes.h5&#39;</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="s1">&#39;mcortex&#39;</span><span class="p">)</span>
@@ -1015,7 +1015,7 @@ mcortex_nodes.h5
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer</span> <span class="kn">import</span> <span class="n">node_types_table</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;mcortex_node_types.h5&#39;</span><span class="p">)</span>
 <span class="n">node_types_table</span><span class="p">(</span><span class="n">node_types_file</span><span class="o">=</span><span class="s1">&#39;network/mcortex_node_types.csv&#39;</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="s1">&#39;mcortex&#39;</span><span class="p">)</span>
@@ -1089,7 +1089,7 @@ mcortex_node_types.h5
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s2">&quot;mcortex2&quot;</span><span class="p">)</span>
@@ -1118,7 +1118,7 @@ mcortex_node_types.h5
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer</span> <span class="kn">import</span> <span class="n">nodes_table</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;mcortex_nodes.h5&#39;</span><span class="p">)</span>
 <span class="n">nodes_table</span><span class="p">(</span><span class="n">nodes_file</span><span class="o">=</span><span class="s1">&#39;network/mcortex2_nodes.h5&#39;</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="s1">&#39;mcortex2&#39;</span><span class="p">)</span>
@@ -1292,7 +1292,7 @@ mcortex_nodes.h5
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer</span> <span class="kn">import</span> <span class="n">node_types_table</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;mcortex_node_types.h5&#39;</span><span class="p">)</span>
 <span class="n">node_types_table</span><span class="p">(</span><span class="n">node_types_file</span><span class="o">=</span><span class="s1">&#39;network/mcortex2_node_types.csv&#39;</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="s1">&#39;mcortex&#39;</span><span class="p">)</span>
@@ -1376,7 +1376,7 @@ mcortex_node_types.h5
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="c1"># Create connections between pyr --&gt; izh cells</span>
 <span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;pyr&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;izh&#39;</span><span class="p">},</span>
               <span class="n">connection_rule</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
@@ -1421,7 +1421,7 @@ mcortex_node_types.h5
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="k">def</span> <span class="nf">like2like</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">min_syns</span><span class="p">,</span> <span class="n">max_syns</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A simple function for setting # of synaptic connections based on pop-name attribute. &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]:</span>
@@ -1460,7 +1460,7 @@ connections for a pair the function should return 0.</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="k">def</span> <span class="nf">rand_syn_weight</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">min_weight</span><span class="p">,</span> <span class="n">max_weight</span><span class="p">):</span>
@@ -1494,7 +1494,7 @@ connections for a pair the function should return 0.</p>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>
 </pre></div>
 </div>

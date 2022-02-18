@@ -633,6 +633,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="n">sonata_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;element_ids&#39;</span><span class="p">,</span> <span class="s1">&#39;element_pos&#39;</span><span class="p">,</span> <span class="s1">&#39;index_pointer&#39;</span><span class="p">,</span> <span class="s1">&#39;node_ids&#39;</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pop_grp</span><span class="p">,</span> <span class="n">pop_name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pop_grp</span> <span class="o">=</span> <span class="n">pop_grp</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data_grp</span> <span class="o">=</span> <span class="n">pop_grp</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mapping</span> <span class="o">=</span> <span class="n">pop_grp</span><span class="p">[</span><span class="s1">&#39;mapping&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_population</span> <span class="o">=</span> <span class="n">pop_name</span>
@@ -656,6 +657,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                              <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sonata_columns</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">grp</span><span class="p">,</span> <span class="n">h5py</span><span class="o">.</span><span class="n">Dataset</span><span class="p">)}</span>
 
     <span class="k">def</span> <span class="nf">_get_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">node_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid2data_table</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;node_id </span><span class="si">{}</span><span class="s1"> not found in </span><span class="si">{}</span><span class="s1">/mapping/node_ids in file </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">node_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_grp</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_grp</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span>
+            <span class="p">))</span>
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid2data_table</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span>
 
     <span class="nd">@property</span>

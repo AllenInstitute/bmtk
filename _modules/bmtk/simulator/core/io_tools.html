@@ -643,9 +643,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">mpi_size</span> <span class="o">=</span> <span class="mi">1</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_log_format</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> [</span><span class="si">%(levelname)s</span><span class="s2">] </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_log_level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_log_to_console</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Used by log_warning to keep track of previous shown messages</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_warn_messages</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">log_to_console</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -701,9 +704,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_dir</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">overwrite</span><span class="p">:</span>
                     <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;Directory already exists (remove or set to overwrite).&#39;</span><span class="p">)</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="s1">&#39;Directory </span><span class="si">{}</span><span class="s1"> already exists.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output_dir</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>  <span class="c1"># other ranks wait for output directory to be created.</span>
 
         <span class="c1"># Create logger handle for writing to log.txt file</span>
@@ -719,18 +724,30 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="IOUtils.log_warning"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.io_tools.IOUtils.log_warning">[docs]</a>    <span class="k">def</span> <span class="nf">log_warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">all_ranks</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="IOUtils.log_warning"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.io_tools.IOUtils.log_warning">[docs]</a>    <span class="k">def</span> <span class="nf">log_warning</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">all_ranks</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">display_once</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">all_ranks</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpi_rank</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span>
 
+        <span class="c1"># Prevent the spaming of the same warning message multiple times, keep track of previous messages and if</span>
+        <span class="c1"># display_once is true don&#39;t log.</span>
+        <span class="c1"># TODO: Won&#39;t work across multiple ranks in MPI, is it possible?</span>
+        <span class="n">msg_hash</span> <span class="o">=</span> <span class="nb">hash</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">display_once</span> <span class="ow">and</span> <span class="n">msg_hash</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_warn_messages</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_warn_messages</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">msg_hash</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="IOUtils.log_exception"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.io_tools.IOUtils.log_exception">[docs]</a>    <span class="k">def</span> <span class="nf">log_exception</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+<div class="viewcode-block" id="IOUtils.log_error"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.io_tools.IOUtils.log_error">[docs]</a>    <span class="k">def</span> <span class="nf">log_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IOUtils.log_exception"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.io_tools.IOUtils.log_exception">[docs]</a>    <span class="k">def</span> <span class="nf">log_exception</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">raise_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mpi_rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div></div>
+        <span class="k">if</span> <span class="n">raise_exception</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div></div>
 
 
 <span class="n">io</span> <span class="o">=</span> <span class="n">IOUtils</span><span class="p">()</span>

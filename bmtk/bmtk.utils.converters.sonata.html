@@ -17,9 +17,7 @@
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="bmtk.utils.io package" href="bmtk.utils.io.html" />
-    <link rel="prev" title="bmtk.utils.converters package" href="bmtk.utils.converters.html" /> 
+    <link rel="search" title="Search" href="../search.html" /> 
   </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
 <style>
@@ -628,77 +626,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-bmtk.utils.converters.sonata.edge_converters">
-<span id="bmtk-utils-converters-sonata-edge-converters-module"></span><h2>bmtk.utils.converters.sonata.edge_converters module<a class="headerlink" href="#module-bmtk.utils.converters.sonata.edge_converters" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
-<dt id="bmtk.utils.converters.sonata.edge_converters.convert_edges">
-<code class="sig-prename descclassname">bmtk.utils.converters.sonata.edge_converters.</code><code class="sig-name descname">convert_edges</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edges_file</span></em>, <em class="sig-param"><span class="n">edge_types_file</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/converters/sonata/edge_converters.html#convert_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.converters.sonata.edge_converters.convert_edges" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="bmtk.utils.converters.sonata.edge_converters.create_index">
-<code class="sig-prename descclassname">bmtk.utils.converters.sonata.edge_converters.</code><code class="sig-name descname">create_index</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids_ds</span></em>, <em class="sig-param"><span class="n">output_grp</span></em>, <em class="sig-param"><span class="n">index_type</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/converters/sonata/edge_converters.html#create_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.converters.sonata.edge_converters.create_index" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="bmtk.utils.converters.sonata.edge_converters.edges_csv2h5">
-<code class="sig-prename descclassname">bmtk.utils.converters.sonata.edge_converters.</code><code class="sig-name descname">edges_csv2h5</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edges_file</span></em>, <em class="sig-param"><span class="n">edge_types_file</span></em>, <em class="sig-param"><span class="n">src_network</span></em>, <em class="sig-param"><span class="n">src_nodes</span></em>, <em class="sig-param"><span class="n">src_node_types</span></em>, <em class="sig-param"><span class="n">trg_network</span></em>, <em class="sig-param"><span class="n">trg_nodes</span></em>, <em class="sig-param"><span class="n">trg_node_types</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">'network'</span></em>, <em class="sig-param"><span class="n">src_label</span><span class="o">=</span><span class="default_value">'location'</span></em>, <em class="sig-param"><span class="n">trg_label</span><span class="o">=</span><span class="default_value">'pop_name'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/converters/sonata/edge_converters.html#edges_csv2h5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.converters.sonata.edge_converters.edges_csv2h5" title="Permalink to this definition">¶</a></dt>
-<dd><p>Used to convert oldest (isee engine) edges files</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>edges_file</strong> – </p></li>
-<li><p><strong>edge_types_file</strong> – </p></li>
-<li><p><strong>src_network</strong> – </p></li>
-<li><p><strong>src_nodes</strong> – </p></li>
-<li><p><strong>src_node_types</strong> – </p></li>
-<li><p><strong>trg_network</strong> – </p></li>
-<li><p><strong>trg_nodes</strong> – </p></li>
-<li><p><strong>trg_node_types</strong> – </p></li>
-<li><p><strong>output_dir</strong> – </p></li>
-<li><p><strong>src_label</strong> – </p></li>
-<li><p><strong>trg_label</strong> – </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="bmtk.utils.converters.sonata.edge_converters.update_aibs_edges">
-<code class="sig-prename descclassname">bmtk.utils.converters.sonata.edge_converters.</code><code class="sig-name descname">update_aibs_edges</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edges_file</span></em>, <em class="sig-param"><span class="n">edge_types_file</span></em>, <em class="sig-param"><span class="n">trg_network</span></em>, <em class="sig-param"><span class="n">src_network</span></em>, <em class="sig-param"><span class="n">population_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">'output'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/converters/sonata/edge_converters.html#update_aibs_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.converters.sonata.edge_converters.update_aibs_edges" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="bmtk.utils.converters.sonata.edge_converters.update_edge_types_file">
-<code class="sig-prename descclassname">bmtk.utils.converters.sonata.edge_converters.</code><code class="sig-name descname">update_edge_types_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edge_types_file</span></em>, <em class="sig-param"><span class="n">src_network</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">trg_network</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">'network'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/converters/sonata/edge_converters.html#update_edge_types_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.converters.sonata.edge_converters.update_edge_types_file" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="bmtk.utils.converters.sonata.edge_converters.update_h5_edges">
-<code class="sig-prename descclassname">bmtk.utils.converters.sonata.edge_converters.</code><code class="sig-name descname">update_h5_edges</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">edges_file</span></em>, <em class="sig-param"><span class="n">edge_types_file</span></em>, <em class="sig-param"><span class="n">src_network</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">population_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">trg_network</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">'network'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/converters/sonata/edge_converters.html#update_h5_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.converters.sonata.edge_converters.update_h5_edges" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="bmtk-utils-converters-sonata-edge-converters-module">
+<h2>bmtk.utils.converters.sonata.edge_converters module<a class="headerlink" href="#bmtk-utils-converters-sonata-edge-converters-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-bmtk.utils.converters.sonata.node_converters">
-<span id="bmtk-utils-converters-sonata-node-converters-module"></span><h2>bmtk.utils.converters.sonata.node_converters module<a class="headerlink" href="#module-bmtk.utils.converters.sonata.node_converters" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
-<dt id="bmtk.utils.converters.sonata.node_converters.convert_nodes">
-<code class="sig-prename descclassname">bmtk.utils.converters.sonata.node_converters.</code><code class="sig-name descname">convert_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes_file</span></em>, <em class="sig-param"><span class="n">node_types_file</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/converters/sonata/node_converters.html#convert_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.converters.sonata.node_converters.convert_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="bmtk.utils.converters.sonata.node_converters.update_csv_nodes">
-<code class="sig-prename descclassname">bmtk.utils.converters.sonata.node_converters.</code><code class="sig-name descname">update_csv_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes_file</span></em>, <em class="sig-param"><span class="n">node_types_file</span></em>, <em class="sig-param"><span class="n">network_name</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">'network'</span></em>, <em class="sig-param"><span class="n">column_order</span><span class="o">=</span><span class="default_value">'node_type_id', 'model_type', 'model_template', 'model_processing', 'dynamics_params', 'morphology'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/converters/sonata/node_converters.html#update_csv_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.converters.sonata.node_converters.update_csv_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt id="bmtk.utils.converters.sonata.node_converters.update_h5_nodes">
-<code class="sig-prename descclassname">bmtk.utils.converters.sonata.node_converters.</code><code class="sig-name descname">update_h5_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes_file</span></em>, <em class="sig-param"><span class="n">node_types_file</span></em>, <em class="sig-param"><span class="n">network_name</span></em>, <em class="sig-param"><span class="n">output_dir</span><span class="o">=</span><span class="default_value">'output'</span></em>, <em class="sig-param"><span class="n">column_order</span><span class="o">=</span><span class="default_value">'node_type_id', 'model_type', 'model_template', 'model_processing', 'dynamics_params', 'morphology'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/converters/sonata/node_converters.html#update_h5_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.converters.sonata.node_converters.update_h5_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="bmtk-utils-converters-sonata-node-converters-module">
+<h2>bmtk.utils.converters.sonata.node_converters module<a class="headerlink" href="#bmtk-utils-converters-sonata-node-converters-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-bmtk.utils.converters.sonata">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.utils.converters.sonata" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -710,7 +645,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
 <h3><a href="../index.html">Contents</a></h3>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../builder.html">Building Networks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../simulators.html">Simulation Engines</a><ul>
@@ -735,12 +670,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.tests.html">bmtk.tests package</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>
 </ul>

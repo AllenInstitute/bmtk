@@ -17,9 +17,7 @@
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="bmtk.simulator package" href="bmtk.simulator.html" />
-    <link rel="prev" title="bmtk.builder.bionet package" href="bmtk.builder.bionet.html" /> 
+    <link rel="search" title="Search" href="../search.html" /> 
   </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
 <style>
@@ -628,193 +626,20 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-bmtk.builder.networks.dm_network">
-<span id="bmtk-builder-networks-dm-network-module"></span><h2>bmtk.builder.networks.dm_network module<a class="headerlink" href="#module-bmtk.builder.networks.dm_network" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt id="bmtk.builder.networks.dm_network.DenseNetwork">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.builder.networks.dm_network.</code><code class="sig-name descname">DenseNetwork</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">network_props</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/networks/dm_network.html#DenseNetwork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.dm_network.DenseNetwork" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.builder.html#bmtk.builder.network.Network" title="bmtk.builder.network.Network"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.builder.network.Network</span></code></a></p>
-<dl class="py class">
-<dt id="bmtk.builder.networks.dm_network.DenseNetwork.EdgeTable">
-<em class="property">class </em><code class="sig-name descname">EdgeTable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">connection_map</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/networks/dm_network.html#DenseNetwork.EdgeTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.dm_network.DenseNetwork.EdgeTable" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt id="bmtk.builder.networks.dm_network.DenseNetwork.EdgeTable.has_target">
-<code class="sig-name descname">has_target</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/networks/dm_network.html#DenseNetwork.EdgeTable.has_target"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.dm_network.DenseNetwork.EdgeTable.has_target" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.builder.networks.dm_network.DenseNetwork.EdgeTable.nsyn_table">
-<em class="property">property </em><code class="sig-name descname">nsyn_table</code><a class="headerlink" href="#bmtk.builder.networks.dm_network.DenseNetwork.EdgeTable.nsyn_table" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.builder.networks.dm_network.DenseNetwork.EdgeTable.source_ids">
-<em class="property">property </em><code class="sig-name descname">source_ids</code><a class="headerlink" href="#bmtk.builder.networks.dm_network.DenseNetwork.EdgeTable.source_ids" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.builder.networks.dm_network.DenseNetwork.EdgeTable.target_ids">
-<em class="property">property </em><code class="sig-name descname">target_ids</code><a class="headerlink" href="#bmtk.builder.networks.dm_network.DenseNetwork.EdgeTable.target_ids" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.builder.networks.dm_network.DenseNetwork.EdgeTable.trg_itr">
-<code class="sig-name descname">trg_itr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trg_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/networks/dm_network.html#DenseNetwork.EdgeTable.trg_itr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.dm_network.DenseNetwork.EdgeTable.trg_itr" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="bmtk.builder.networks.dm_network.DenseNetwork.PropertyTable">
-<em class="property">class </em><code class="sig-name descname">PropertyTable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nvalues</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/networks/dm_network.html#DenseNetwork.PropertyTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.dm_network.DenseNetwork.PropertyTable" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt id="bmtk.builder.networks.dm_network.DenseNetwork.PropertyTable.itr_vals">
-<code class="sig-name descname">itr_vals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src_id</span></em>, <em class="sig-param"><span class="n">trg_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/networks/dm_network.html#DenseNetwork.PropertyTable.itr_vals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.dm_network.DenseNetwork.PropertyTable.itr_vals" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.builder.networks.dm_network.DenseNetwork.edges_iter">
-<code class="sig-name descname">edges_iter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trg_gids</span></em>, <em class="sig-param"><span class="n">src_network</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">trg_network</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/networks/dm_network.html#DenseNetwork.edges_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.dm_network.DenseNetwork.edges_iter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a list of target gids, returns a generator for iteratoring over all possible edges.</p>
-<p>It is preferable to use edges() method instead, it allows more flexibility in the input and can better
-indicate if their is a problem.</p>
-<p>The order of the edges returned will be in the same order as the trg_gids list, but does not guarentee any
-secondary ordering by source-nodes and/or edge-type. If their isn’t a edge with a matching target-id then
-it will skip that gid in the list, the size of the generator can 0 to arbitrarly large.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>trg_gids</strong> – list of gids to match with an edge’s target.</p></li>
-<li><p><strong>src_network</strong> – str, only returns edges coming from the specified source network.</p></li>
-<li><p><strong>trg_network</strong> – str, only returns edges coming from the specified target network.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>iteration of bmtk.build.edge.Edge objects representing given edge.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.builder.networks.dm_network.DenseNetwork.edges_table">
-<code class="sig-name descname">edges_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/networks/dm_network.html#DenseNetwork.edges_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.dm_network.DenseNetwork.edges_table" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.builder.networks.dm_network.DenseNetwork.import_nodes">
-<code class="sig-name descname">import_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes_file_name</span></em>, <em class="sig-param"><span class="n">node_types_file_name</span></em>, <em class="sig-param"><span class="n">population</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/networks/dm_network.html#DenseNetwork.import_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.dm_network.DenseNetwork.import_nodes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.builder.networks.dm_network.DenseNetwork.nedges">
-<em class="property">property </em><code class="sig-name descname">nedges</code><a class="headerlink" href="#bmtk.builder.networks.dm_network.DenseNetwork.nedges" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the total number of edges for this network.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.builder.networks.dm_network.DenseNetwork.nnodes">
-<em class="property">property </em><code class="sig-name descname">nnodes</code><a class="headerlink" href="#bmtk.builder.networks.dm_network.DenseNetwork.nnodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the number of nodes for this network.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.builder.networks.dm_network.DenseNetwork.nodes_iter">
-<code class="sig-name descname">nodes_iter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_ids</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/networks/dm_network.html#DenseNetwork.nodes_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.dm_network.DenseNetwork.nodes_iter" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt id="bmtk.builder.networks.dm_network.add_hdf5_attrs">
-<code class="sig-prename descclassname">bmtk.builder.networks.dm_network.</code><code class="sig-name descname">add_hdf5_attrs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hdf5_handle</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/networks/dm_network.html#add_hdf5_attrs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.dm_network.add_hdf5_attrs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<div class="section" id="bmtk-builder-networks-dm-network-module">
+<h2>bmtk.builder.networks.dm_network module<a class="headerlink" href="#bmtk-builder-networks-dm-network-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-bmtk.builder.networks.input_network">
-<span id="bmtk-builder-networks-input-network-module"></span><h2>bmtk.builder.networks.input_network module<a class="headerlink" href="#module-bmtk.builder.networks.input_network" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="bmtk-builder-networks-input-network-module">
+<h2>bmtk.builder.networks.input_network module<a class="headerlink" href="#bmtk-builder-networks-input-network-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-bmtk.builder.networks.mpi_network">
-<span id="bmtk-builder-networks-mpi-network-module"></span><h2>bmtk.builder.networks.mpi_network module<a class="headerlink" href="#module-bmtk.builder.networks.mpi_network" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt id="bmtk.builder.networks.mpi_network.MPINetwork">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.builder.networks.mpi_network.</code><code class="sig-name descname">MPINetwork</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">network_props</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/networks/mpi_network.html#MPINetwork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.mpi_network.MPINetwork" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#bmtk.builder.networks.dm_network.DenseNetwork" title="bmtk.builder.networks.dm_network.DenseNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.builder.networks.dm_network.DenseNetwork</span></code></a></p>
-<dl class="py method">
-<dt id="bmtk.builder.networks.mpi_network.MPINetwork.edges_iter">
-<code class="sig-name descname">edges_iter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">trg_gids</span></em>, <em class="sig-param"><span class="n">src_network</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">trg_network</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/networks/mpi_network.html#MPINetwork.edges_iter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.mpi_network.MPINetwork.edges_iter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a list of target gids, returns a generator for iteratoring over all possible edges.</p>
-<p>It is preferable to use edges() method instead, it allows more flexibility in the input and can better
-indicate if their is a problem.</p>
-<p>The order of the edges returned will be in the same order as the trg_gids list, but does not guarentee any
-secondary ordering by source-nodes and/or edge-type. If their isn’t a edge with a matching target-id then
-it will skip that gid in the list, the size of the generator can 0 to arbitrarly large.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>trg_gids</strong> – list of gids to match with an edge’s target.</p></li>
-<li><p><strong>src_network</strong> – str, only returns edges coming from the specified source network.</p></li>
-<li><p><strong>trg_network</strong> – str, only returns edges coming from the specified target network.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>iteration of bmtk.build.edge.Edge objects representing given edge.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.builder.networks.mpi_network.MPINetwork.save_nodes">
-<code class="sig-name descname">save_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nodes_file_name</span></em>, <em class="sig-param"><span class="n">node_types_file_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/networks/mpi_network.html#MPINetwork.save_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.mpi_network.MPINetwork.save_nodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save the instantiated nodes in SONATA format files.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>nodes_file_name</strong> – file-name of hdf5 nodes file. By default will use &lt;network.name&gt;_nodes.h5.</p></li>
-<li><p><strong>node_types_file_name</strong> – file-name of the csv node-types file. By default will use
-&lt;network.name&gt;_node_types.csv</p></li>
-<li><p><strong>output_dir</strong> – Directory where network files will be generated. Default, current working directory.</p></li>
-<li><p><strong>force_overwrite</strong> – Overwrites existing network files.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="bmtk-builder-networks-mpi-network-module">
+<h2>bmtk.builder.networks.mpi_network module<a class="headerlink" href="#bmtk-builder-networks-mpi-network-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-bmtk.builder.networks.nxnetwork">
-<span id="bmtk-builder-networks-nxnetwork-module"></span><h2>bmtk.builder.networks.nxnetwork module<a class="headerlink" href="#module-bmtk.builder.networks.nxnetwork" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt id="bmtk.builder.networks.nxnetwork.NxNetwork">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.builder.networks.nxnetwork.</code><code class="sig-name descname">NxNetwork</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">network_props</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/networks/nxnetwork.html#NxNetwork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.nxnetwork.NxNetwork" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.builder.html#bmtk.builder.network.Network" title="bmtk.builder.network.Network"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.builder.network.Network</span></code></a></p>
-<dl class="py method">
-<dt id="bmtk.builder.networks.nxnetwork.NxNetwork.nedges">
-<em class="property">property </em><code class="sig-name descname">nedges</code><a class="headerlink" href="#bmtk.builder.networks.nxnetwork.NxNetwork.nedges" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the total number of edges for this network.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.builder.networks.nxnetwork.NxNetwork.nnodes">
-<em class="property">property </em><code class="sig-name descname">nnodes</code><a class="headerlink" href="#bmtk.builder.networks.nxnetwork.NxNetwork.nnodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the number of nodes for this network.</p>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="bmtk-builder-networks-nxnetwork-module">
+<h2>bmtk.builder.networks.nxnetwork module<a class="headerlink" href="#bmtk-builder-networks-nxnetwork-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-bmtk.builder.networks.sparse_network">
-<span id="bmtk-builder-networks-sparse-network-module"></span><h2>bmtk.builder.networks.sparse_network module<a class="headerlink" href="#module-bmtk.builder.networks.sparse_network" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt id="bmtk.builder.networks.sparse_network.SparseNetwork">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.builder.networks.sparse_network.</code><code class="sig-name descname">SparseNetwork</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">network_props</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/networks/sparse_network.html#SparseNetwork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.builder.networks.sparse_network.SparseNetwork" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="bmtk.builder.html#bmtk.builder.network.Network" title="bmtk.builder.network.Network"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.builder.network.Network</span></code></a></p>
-</dd></dl>
-
+<div class="section" id="bmtk-builder-networks-sparse-network-module">
+<h2>bmtk.builder.networks.sparse_network module<a class="headerlink" href="#bmtk-builder-networks-sparse-network-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-bmtk.builder.networks">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.builder.networks" title="Permalink to this headline">¶</a></h2>
@@ -829,7 +654,7 @@ it will skip that gid in the list, the size of the generator can 0 to arbitrarly
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
 <h3><a href="../index.html">Contents</a></h3>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../builder.html">Building Networks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../simulators.html">Simulation Engines</a><ul>
@@ -854,9 +679,9 @@ it will skip that gid in the list, the size of the generator can 0 to arbitrarly
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.tests.html">bmtk.tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>

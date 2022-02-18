@@ -667,7 +667,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="plot_traces"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.plotting.plot_traces">[docs]</a><span class="k">def</span> <span class="nf">plot_traces</span><span class="p">(</span><span class="n">report</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="s1">&#39;origin&#39;</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">node_groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show_legend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show_legend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Displays the time trace of one or more nodes from a SONATA CompartmentReport file.</span>
 
 <span class="sd">    To plot a group of individual variable traces (based on their soma)::</span>
@@ -703,6 +703,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">    :param show_legend: Set True or False to determine if legend should be displayed on the plot. The default (None)</span>
 <span class="sd">           function itself will guess if legend should be shown.</span>
 <span class="sd">    :param show: bool to display or not display plot. default True.</span>
+<span class="sd">    :param save_as: None or str: file-name/path to save the plot as a png/jpeg/etc. If None or empty string will not</span>
+<span class="sd">        save plot.</span>
 <span class="sd">    :return: matplotlib figure.Figure object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">node_groups</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">node_ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -713,26 +715,26 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">node_groups</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="n">node_ids</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="n">average</span><span class="p">}</span>
             <span class="k">return</span> <span class="n">plot_traces_averaged</span><span class="p">(</span><span class="n">report</span><span class="o">=</span><span class="n">report</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="n">sections</span><span class="p">,</span>
                                         <span class="n">node_groups</span><span class="o">=</span><span class="n">node_groups</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">show_legend</span><span class="o">=</span><span class="n">show_legend</span><span class="p">,</span>
-                                        <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">)</span>
+                                        <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="n">save_as</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">plot_traces_individual</span><span class="p">(</span><span class="n">report</span><span class="o">=</span><span class="n">report</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="n">node_ids</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="n">sections</span><span class="p">,</span>
-                                      <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">show_legend</span><span class="o">=</span><span class="n">show_legend</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">)</span>
+                                      <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">show_legend</span><span class="o">=</span><span class="n">show_legend</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="n">save_as</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">node_groups</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">plot_traces_averaged</span><span class="p">(</span><span class="n">report</span><span class="o">=</span><span class="n">report</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="n">sections</span><span class="p">,</span> <span class="n">node_groups</span><span class="o">=</span><span class="n">node_groups</span><span class="p">,</span>
-                                    <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">show_legend</span><span class="o">=</span><span class="n">show_legend</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">)</span>
+                                    <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">show_legend</span><span class="o">=</span><span class="n">show_legend</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="n">save_as</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">average</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">plot_traces_averaged</span><span class="p">(</span><span class="n">report</span><span class="o">=</span><span class="n">report</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="n">sections</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
-                                    <span class="n">show_legend</span><span class="o">=</span><span class="n">show_legend</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">)</span>
+                                    <span class="n">show_legend</span><span class="o">=</span><span class="n">show_legend</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="n">save_as</span><span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">plot_traces_individual</span><span class="p">(</span><span class="n">report</span><span class="o">=</span><span class="n">report</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="n">sections</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
-                                      <span class="n">show_legend</span><span class="o">=</span><span class="n">show_legend</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">)</span></div>
+                                      <span class="n">show_legend</span><span class="o">=</span><span class="n">show_legend</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="n">save_as</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="plot_traces_individual"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.plotting.plot_traces_individual">[docs]</a><span class="k">def</span> <span class="nf">plot_traces_individual</span><span class="p">(</span><span class="n">report</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="s1">&#39;origin&#39;</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                <span class="n">show_legend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                           <span class="n">show_legend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Used the plot time traces of individual nodes from a SONATA compartment report file.</span>
 
 <span class="sd">    Recommended use plot_traces instead, which will call this function if necessarcy.</span>
@@ -748,6 +750,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">    :param show_legend: Set True or False to determine if legend should be displayed on the plot. The default (None)</span>
 <span class="sd">           function itself will guess if legend should be shown.</span>
 <span class="sd">    :param show: bool to display or not display plot. default True.</span>
+<span class="sd">    :param save_as: None or str: file-name/path to save the plot as a png/jpeg/etc. If None or empty string will not</span>
+<span class="sd">        save plot.</span>
 <span class="sd">    :return: matplotlib figure.Figure object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -781,6 +785,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
         <span class="n">axes</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="n">save_as</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_as</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
@@ -788,7 +795,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="plot_traces_averaged"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.plotting.plot_traces_averaged">[docs]</a><span class="k">def</span> <span class="nf">plot_traces_averaged</span><span class="p">(</span><span class="n">report</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="s1">&#39;origin&#39;</span><span class="p">,</span> <span class="n">node_groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                         <span class="n">show_background</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_legend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                         <span class="n">show_background</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show_legend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Used to plot averages across multiple nodes in a SONATA Compartment Report file.</span>
 
 <span class="sd">    Recommended that you use &quot;plot_traces&quot; function.</span>
@@ -816,6 +823,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">    :param show_legend: Set True or False to determine if legend should be displayed on the plot. The default (None)</span>
 <span class="sd">           function itself will guess if legend should be shown.</span>
 <span class="sd">    :param show: bool to display or not display plot. default True.</span>
+<span class="sd">    :param save_as: None or str: file-name/path to save the plot as a png/jpeg/etc. If None or empty string will not</span>
+<span class="sd">        save plot.</span>
 <span class="sd">    :return: matplotlib figure.Figure object</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">cr</span> <span class="o">=</span> <span class="n">CompartmentReport</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">report</span><span class="p">)</span>
@@ -844,7 +853,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">background_data</span> <span class="o">=</span> <span class="n">traces_data</span><span class="p">[:,</span> <span class="n">nodes_indx</span><span class="p">]</span>
         <span class="n">axes</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">trace_times</span><span class="p">,</span> <span class="n">background_data</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;lightgray&#39;</span><span class="p">)</span>
 
-
     <span class="k">for</span> <span class="n">node_grp</span> <span class="ow">in</span> <span class="n">node_groups</span><span class="p">:</span>
         <span class="n">grp_ids</span> <span class="o">=</span> <span class="n">node_grp</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;node_ids&#39;</span><span class="p">)</span>
         <span class="n">has_labels</span> <span class="o">=</span> <span class="n">has_labels</span> <span class="ow">or</span> <span class="s1">&#39;label&#39;</span> <span class="ow">in</span> <span class="n">node_grp</span>
@@ -871,6 +879,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
     <span class="k">if</span> <span class="p">(</span><span class="n">show_legend</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">show_legend</span><span class="p">)</span> <span class="ow">and</span> <span class="n">has_labels</span><span class="p">:</span>
         <span class="n">axes</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">save_as</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_as</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">show</span><span class="p">:</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>

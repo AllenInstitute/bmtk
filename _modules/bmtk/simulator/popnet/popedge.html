@@ -644,7 +644,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</span>
 <span class="c1"># OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c1">#</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.utils.graph</span> <span class="kn">import</span> <span class="n">SimEdge</span>
+
+
+<div class="viewcode-block" id="SimEdge"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.popedge.SimEdge">[docs]</a><span class="k">class</span> <span class="nc">SimEdge</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">original_params</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_orig_params</span> <span class="o">=</span> <span class="n">original_params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dynamics_params</span> <span class="o">=</span> <span class="n">dynamics_params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_updated_params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dynamics_params</span><span class="p">}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">edge_type_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orig_params</span><span class="p">[</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_updated_params</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_updated_params</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orig_params</span><span class="p">[</span><span class="n">item</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="PopEdge"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.popnet.html#bmtk.simulator.popnet.popedge.PopEdge">[docs]</a><span class="k">class</span> <span class="nc">PopEdge</span><span class="p">(</span><span class="n">SimEdge</span><span class="p">):</span>

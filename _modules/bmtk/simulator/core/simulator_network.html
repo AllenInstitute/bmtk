@@ -763,8 +763,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">if</span> <span class="s1">&#39;population&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node_pop_df</span><span class="p">:</span>
                 <span class="n">node_pop_df</span><span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">name</span>
 
-            <span class="c1">#node_pop_df = node_pop_df.set_index([node_pop_df.index.astype(dtype=np.uint64)])</span>
-
             <span class="k">if</span> <span class="n">all_nodes_df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">all_nodes_df</span> <span class="o">=</span> <span class="n">node_pop_df</span>
             <span class="k">else</span><span class="p">:</span>
@@ -823,7 +821,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="viewcode-block" id="SimNetwork.build_nodes"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.simulator_network.SimNetwork.build_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">build_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="SimNetwork.build_recurrent_edges"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.simulator_network.SimNetwork.build_recurrent_edges">[docs]</a>    <span class="k">def</span> <span class="nf">build_recurrent_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SimNetwork.build_recurrent_edges"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.simulator_network.SimNetwork.build_recurrent_edges">[docs]</a>    <span class="k">def</span> <span class="nf">build_recurrent_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">opts</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SimNetwork.build_virtual_connections"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.simulator_network.SimNetwork.build_virtual_connections">[docs]</a>    <span class="k">def</span> <span class="nf">build_virtual_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

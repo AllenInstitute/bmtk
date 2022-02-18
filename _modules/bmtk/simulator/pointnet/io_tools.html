@@ -654,8 +654,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <span class="c1"># Want users to be able to use NEST whether or not it is compiled in parallel mode or not, which means checking if</span>
 <span class="c1"># the method nest.SyncPRocesses (aka MPI Barrier) exists. If it doesn&#39;t try getting barrier from mpi4py</span>
-<span class="n">rank</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">Rank</span><span class="p">()</span>
-<span class="n">n_nodes</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">NumProcesses</span><span class="p">()</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">rank</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">Rank</span><span class="p">()</span>
+    <span class="n">n_nodes</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">NumProcesses</span><span class="p">()</span>
+
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="n">rank</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">n_nodes</span> <span class="o">=</span> <span class="mi">1</span>
+
+
 <span class="k">try</span><span class="p">:</span>
     <span class="n">barrier</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">SyncProcesses</span>
 <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>

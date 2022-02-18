@@ -48,6 +48,6 @@ tutorials will have the folder prefix *pop_* and to run them in the command-line
 
 Current examples
 ++++++++++++++++
-* `pop_2pop <https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/pop_2pops>`_ - A simple recurrently connected network with one excitatory and one inhibitory population.
-* `pop_7pops_converted <https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/pop_7pops_converted>`_ - A conversion our a mouse cortex L4 spiking network into a population rates network.
+* `pop_2pop <https://github.com/AllenInstitute/bmtk/tree/develop/examples/pop_2pops>`_ - A simple recurrently connected network with one excitatory and one inhibitory population.
+* `pop_7pops_converted <https://github.com/AllenInstitute/bmtk/tree/develop/examples/pop_7pops_converted>`_ - A conversion our a mouse cortex L4 spiking network into a population rates network.
 

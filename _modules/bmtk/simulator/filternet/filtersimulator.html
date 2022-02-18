@@ -624,6 +624,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h1>Source code for bmtk.simulator.filternet.filtersimulator</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">csv</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">six</span> <span class="kn">import</span> <span class="n">string_types</span>
 
 <span class="kn">from</span> <span class="nn">bmtk.simulator.core.simulator</span> <span class="kn">import</span> <span class="n">Simulator</span>
 <span class="kn">import</span> <span class="nn">bmtk.simulator.utils.simulation_inputs</span> <span class="k">as</span> <span class="nn">inputs</span>
@@ -631,7 +632,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">from</span> <span class="nn">bmtk.simulator.filternet.lgnmodel.movie</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.filternet</span> <span class="kn">import</span> <span class="n">modules</span> <span class="k">as</span> <span class="n">mods</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.filternet.io_tools</span> <span class="kn">import</span> <span class="n">io</span>
-<span class="kn">from</span> <span class="nn">six</span> <span class="kn">import</span> <span class="n">string_types</span>
+<span class="kn">from</span> <span class="nn">bmtk.utils.io.ioutils</span> <span class="kn">import</span> <span class="n">bmtk_world_comm</span>
 
 
 <div class="viewcode-block" id="FilterSimulator"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.filternet.html#bmtk.simulator.filternet.filtersimulator.FilterSimulator">[docs]</a><span class="k">class</span> <span class="nc">FilterSimulator</span><span class="p">(</span><span class="n">Simulator</span><span class="p">):</span>
@@ -640,10 +641,19 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_network</span> <span class="o">=</span> <span class="n">network</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> <span class="o">=</span> <span class="n">dt</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tstop</span> <span class="o">=</span> <span class="n">tstop</span><span class="o">/</span><span class="mf">1000.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_io</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">io</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">rates_csv</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_movies</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_eval_options</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">io</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_io</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">dt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span>
 
 <div class="viewcode-block" id="FilterSimulator.add_movie"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.filternet.html#bmtk.simulator.filternet.filtersimulator.FilterSimulator.add_movie">[docs]</a>    <span class="k">def</span> <span class="nf">add_movie</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">movie_type</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
         <span class="c1"># TODO: Move this into its own factory</span>
@@ -657,6 +667,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                     <span class="n">m_data</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Could not find movie &quot;data_file&quot; in config to use as input.&#39;</span><span class="p">)</span>
+
+                <span class="n">contrast_min</span><span class="p">,</span> <span class="n">contrast_max</span> <span class="o">=</span> <span class="n">m_data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">m_data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+                <span class="n">normalize_data</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;normalize&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">contrast_min</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">1.0</span> <span class="ow">or</span> <span class="n">contrast_max</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">normalize_data</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Normalizing movie data to (-1.0, 1.0).&#39;</span><span class="p">)</span>
+                        <span class="n">m_data</span> <span class="o">=</span> <span class="n">m_data</span><span class="o">*</span><span class="mf">2.0</span><span class="o">/</span><span class="p">(</span><span class="n">contrast_max</span> <span class="o">-</span> <span class="n">contrast_min</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Movie data range is not normalized to (-1.0, 1.0).&#39;</span><span class="p">)</span>
 
                 <span class="n">init_params</span> <span class="o">=</span> <span class="n">FilterSimulator</span><span class="o">.</span><span class="n">find_params</span><span class="p">([</span><span class="s1">&#39;row_range&#39;</span><span class="p">,</span> <span class="s1">&#39;col_range&#39;</span><span class="p">,</span> <span class="s1">&#39;labels&#39;</span><span class="p">,</span> <span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="s1">&#39;frame_rate&#39;</span><span class="p">,</span>
                                                            <span class="s1">&#39;t_range&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
@@ -674,6 +693,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">del</span> <span class="n">init_params</span><span class="p">[</span><span class="s1">&#39;col_size&#39;</span><span class="p">]</span>
             <span class="n">init_params</span><span class="p">[</span><span class="s1">&#39;t_on&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_params</span><span class="p">[</span><span class="s1">&#39;t_on&#39;</span><span class="p">]</span><span class="o">/</span><span class="mf">1000.0</span>
             <span class="n">init_params</span><span class="p">[</span><span class="s1">&#39;t_off&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_params</span><span class="p">[</span><span class="s1">&#39;t_off&#39;</span><span class="p">]</span><span class="o">/</span><span class="mf">1000.0</span>
+            <span class="n">init_params</span><span class="p">[</span><span class="s1">&#39;max_intensity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;max_intensity&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="c1"># *-1.0</span>
 
             <span class="n">ffm</span> <span class="o">=</span> <span class="n">FullFieldFlashMovie</span><span class="p">(</span><span class="o">**</span><span class="n">init_params</span><span class="p">)</span>
             <span class="n">mv</span> <span class="o">=</span> <span class="n">ffm</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">t_max</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tstop</span><span class="p">)</span>
@@ -683,6 +703,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">init_params</span> <span class="o">=</span> <span class="n">FilterSimulator</span><span class="o">.</span><span class="n">find_params</span><span class="p">([</span><span class="s1">&#39;row_size&#39;</span><span class="p">,</span> <span class="s1">&#39;col_size&#39;</span><span class="p">,</span> <span class="s1">&#39;frame_rate&#39;</span><span class="p">],</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
             <span class="n">create_params</span> <span class="o">=</span> <span class="n">FilterSimulator</span><span class="o">.</span><span class="n">find_params</span><span class="p">([</span><span class="s1">&#39;gray_screen_dur&#39;</span><span class="p">,</span> <span class="s1">&#39;cpd&#39;</span><span class="p">,</span> <span class="s1">&#39;temporal_f&#39;</span><span class="p">,</span> <span class="s1">&#39;theta&#39;</span><span class="p">,</span> <span class="s1">&#39;contrast&#39;</span><span class="p">],</span>
                                                         <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+
+            <span class="n">create_params</span><span class="p">[</span><span class="s1">&#39;gray_screen_dur&#39;</span><span class="p">]</span> <span class="o">/=</span> <span class="mf">1000.0</span>
             <span class="n">gm</span> <span class="o">=</span> <span class="n">GratingMovie</span><span class="p">(</span><span class="o">**</span><span class="n">init_params</span><span class="p">)</span>
             <span class="n">graiting_movie</span> <span class="o">=</span> <span class="n">gm</span><span class="o">.</span><span class="n">create_movie</span><span class="p">(</span><span class="n">t_min</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">t_max</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_tstop</span><span class="p">,</span> <span class="o">**</span><span class="n">create_params</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_movies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">graiting_movie</span><span class="p">)</span>
@@ -707,8 +729,16 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">mod</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Evaluating rates.&#39;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network</span><span class="o">.</span><span class="n">cells</span><span class="p">():</span>
+
+        <span class="n">cells_on_rank</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_cells</span><span class="p">()</span>
+        <span class="n">n_cells_on_rank</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cells_on_rank</span><span class="p">)</span>
+        <span class="n">ten_percent</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">n_cells_on_rank</span><span class="o">*</span><span class="mf">0.1</span><span class="p">))</span>
+        <span class="n">rank_msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">bmtk_world_comm</span><span class="o">.</span><span class="n">MPI_size</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="s1">&#39; (on rank </span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bmtk_world_comm</span><span class="o">.</span><span class="n">MPI_rank</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">cell_num</span><span class="p">,</span> <span class="n">cell</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cells_on_rank</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">movie</span><span class="p">,</span> <span class="n">options</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_movies</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eval_options</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">cell_num</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">cell_num</span> <span class="o">%</span> <span class="n">ten_percent</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">io</span><span class="o">.</span><span class="n">log_debug</span><span class="p">(</span><span class="s1">&#39; Processing cell </span><span class="si">{}</span><span class="s1"> of </span><span class="si">{}{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cell_num</span><span class="p">,</span> <span class="n">n_cells_on_rank</span><span class="p">,</span> <span class="n">rank_msg</span><span class="p">))</span>
                 <span class="n">ts</span><span class="p">,</span> <span class="n">f_rates</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">lgn_cell_obj</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
 
                 <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_mods</span><span class="p">:</span>
@@ -717,6 +747,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Done.&#39;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_mods</span><span class="p">:</span>
             <span class="n">mod</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FilterSimulator.local_cells"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.filternet.html#bmtk.simulator.filternet.filtersimulator.FilterSimulator.local_cells">[docs]</a>    <span class="k">def</span> <span class="nf">local_cells</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network</span><span class="o">.</span><span class="n">cells</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="FilterSimulator.find_params"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.filternet.html#bmtk.simulator.filternet.filtersimulator.FilterSimulator.find_params">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">find_params</span><span class="p">(</span><span class="n">param_names</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -743,55 +776,26 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">jitter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">network</span><span class="o">.</span><span class="n">jitter</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">jitter</span>
 
-        <span class="n">network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Building cells.&#39;</span><span class="p">)</span>
-        <span class="n">network</span><span class="o">.</span><span class="n">build_nodes</span><span class="p">()</span>
-
-        <span class="c1"># TODO: Need to create a gid selector</span>
         <span class="k">for</span> <span class="n">sim_input</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">input_type</span> <span class="o">==</span> <span class="s1">&#39;movie&#39;</span><span class="p">:</span>
                 <span class="n">sim</span><span class="o">.</span><span class="n">add_movie</span><span class="p">(</span><span class="n">sim_input</span><span class="o">.</span><span class="n">module</span><span class="p">,</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Unable to load input type </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sim_input</span><span class="o">.</span><span class="n">input_type</span><span class="p">))</span>
 
+        <span class="n">network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Building cells.&#39;</span><span class="p">)</span>
+        <span class="n">network</span><span class="o">.</span><span class="n">build_nodes</span><span class="p">()</span>
+
         <span class="n">rates_csv</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rates_csv&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">rates_h5</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rates_h5&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">rates_csv</span> <span class="ow">or</span> <span class="n">rates_h5</span><span class="p">:</span>
             <span class="n">sim</span><span class="o">.</span><span class="n">add_mod</span><span class="p">(</span><span class="n">mods</span><span class="o">.</span><span class="n">RecordRates</span><span class="p">(</span><span class="n">rates_csv</span><span class="p">,</span> <span class="n">rates_h5</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">output_dir</span><span class="p">))</span>
 
-        <span class="n">spikes_csv</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_csv&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">spikes_h5</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_h5&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">spikes_nwb</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_nwb&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">spikes_csv</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_csv&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_file_csv&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">spikes_h5</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_h5&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_file&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">spikes_nwb</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_nwb&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;spikes_file_nwb&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">spikes_csv</span> <span class="ow">or</span> <span class="n">spikes_h5</span> <span class="ow">or</span> <span class="n">spikes_nwb</span><span class="p">:</span>
             <span class="n">sim</span><span class="o">.</span><span class="n">add_mod</span><span class="p">(</span><span class="n">mods</span><span class="o">.</span><span class="n">SpikesGenerator</span><span class="p">(</span><span class="n">spikes_csv</span><span class="p">,</span> <span class="n">spikes_h5</span><span class="p">,</span> <span class="n">spikes_nwb</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">output_dir</span><span class="p">))</span>
 
-        <span class="c1"># Parse the &quot;reports&quot; section of the config and load an associated output module for each report</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        sim_reports = reports.from_config(config)</span>
-<span class="sd">        for report in sim_reports:</span>
-<span class="sd">            if isinstance(report, reports.SpikesReport):</span>
-<span class="sd">                mod = mods.SpikesMod(**report.params)</span>
-
-<span class="sd">            elif isinstance(report, reports.MembraneReport):</span>
-<span class="sd">                if report.params[&#39;sections&#39;] == &#39;soma&#39;:</span>
-<span class="sd">                    mod = mods.SomaReport(**report.params)</span>
-
-<span class="sd">                else:</span>
-<span class="sd">                    #print report.params</span>
-<span class="sd">                    mod = mods.MembraneReport(**report.params)</span>
-
-<span class="sd">            elif isinstance(report, reports.ECPReport):</span>
-<span class="sd">                mod = mods.EcpMod(**report.params)</span>
-<span class="sd">                # Set up the ability for ecp on all relevant cells</span>
-<span class="sd">                # TODO: According to spec we need to allow a different subset other than only biophysical cells</span>
-<span class="sd">                for gid, cell in network.cell_type_maps(&#39;biophysical&#39;).items():</span>
-<span class="sd">                    cell.setup_ecp()</span>
-<span class="sd">            else:</span>
-<span class="sd">                # TODO: Allow users to register customized modules using pymodules</span>
-<span class="sd">                io.log_warning(&#39;Unrecognized module {}, skipping.&#39;.format(report.module))</span>
-<span class="sd">                continue</span>
-
-<span class="sd">            sim.add_mod(mod)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">sim</span></div></div>
 </pre></div>
 

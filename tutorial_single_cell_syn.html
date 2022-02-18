@@ -873,13 +873,15 @@ div.rendered_html tbody tr:hover {
 
 
 <span class="n">cortex</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;mcortex&#39;</span><span class="p">)</span>
-<span class="n">cortex</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">cell_name</span><span class="o">=</span><span class="s1">&#39;Scnn1a_473845048&#39;</span><span class="p">,</span>
-                 <span class="n">potental</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span>
-                 <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
-                 <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;ctdb:Biophys1.hoc&#39;</span><span class="p">,</span>
-                 <span class="n">model_processing</span><span class="o">=</span><span class="s1">&#39;aibs_perisomatic&#39;</span><span class="p">,</span>
-                 <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;472363762_fit.json&#39;</span><span class="p">,</span>
-                 <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;Scnn1a_473845048_m.swc&#39;</span><span class="p">)</span>
+<span class="n">cortex</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">cell_name</span><span class="o">=</span><span class="s1">&#39;Scnn1a_473845048&#39;</span><span class="p">,</span>
+    <span class="n">potental</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;ctdb:Biophys1.hoc&#39;</span><span class="p">,</span>
+    <span class="n">model_processing</span><span class="o">=</span><span class="s1">&#39;aibs_perisomatic&#39;</span><span class="p">,</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;472363762_fit.json&#39;</span><span class="p">,</span>
+    <span class="n">morphology</span><span class="o">=</span><span class="s1">&#39;Scnn1a_473845048_m.swc&#39;</span>
+<span class="p">)</span>
 
 </pre></div>
 </div>
@@ -901,10 +903,12 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">thalamus</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;mthalamus&#39;</span><span class="p">)</span>
-<span class="n">thalamus</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-                   <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;tON&#39;</span><span class="p">,</span>
-                   <span class="n">potential</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span>
-                   <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;virtual&#39;</span><span class="p">)</span>
+<span class="n">thalamus</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;tON&#39;</span><span class="p">,</span>
+    <span class="n">potential</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;virtual&#39;</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -914,15 +918,17 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">thalamus</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;tON&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="n">cortex</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span>
-                   <span class="n">connection_rule</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-                   <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
-                   <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
-                   <span class="n">weight_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                   <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;basal&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">],</span>
-                   <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">],</span>
-                   <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;AMPA_ExcToExc.json&#39;</span><span class="p">,</span>
-                   <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span><span class="p">)</span>
+<span></span><span class="n">thalamus</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
+    <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;pop_name&#39;</span><span class="p">:</span> <span class="s1">&#39;tON&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="n">cortex</span><span class="o">.</span><span class="n">nodes</span><span class="p">(),</span>
+    <span class="n">connection_rule</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">syn_weight</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
+    <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+    <span class="n">weight_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">target_sections</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;basal&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">],</span>
+    <span class="n">distance_range</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">],</span>
+    <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;AMPA_ExcToExc.json&#39;</span><span class="p">,</span>
+    <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;exp2syn&#39;</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -932,7 +938,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;bmtk.builder.connection_map.ConnectionMap at 0x7f71d3f59438&gt;
+&lt;bmtk.builder.connection_map.ConnectionMap at 0x7fc0219a3128&gt;
 </pre></div></div>
 </div>
 <p>Let us break down how this method call works:</p>
@@ -994,9 +1000,11 @@ div.rendered_html tbody tr:hover {
 <span></span><span class="kn">from</span> <span class="nn">bmtk.utils.reports.spike_trains</span> <span class="kn">import</span> <span class="n">PoissonSpikeGenerator</span>
 
 <span class="n">psg</span> <span class="o">=</span> <span class="n">PoissonSpikeGenerator</span><span class="p">(</span><span class="n">population</span><span class="o">=</span><span class="s1">&#39;mthalamus&#39;</span><span class="p">)</span>
-<span class="n">psg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span>  <span class="c1"># Have 10 nodes to match mthalamus</span>
-        <span class="n">firing_rate</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>    <span class="c1"># 10 Hz, we can also pass in a nonhomoegenous function/array</span>
-        <span class="n">times</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">))</span>    <span class="c1"># Firing starts at 0 s up to 3 s</span>
+<span class="n">psg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+    <span class="n">node_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span>  <span class="c1"># Have 10 nodes to match mthalamus</span>
+    <span class="n">firing_rate</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>    <span class="c1"># 10 Hz, we can also pass in a nonhomoegenous function/array</span>
+    <span class="n">times</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)</span>    <span class="c1"># Firing starts at 0 s up to 3 s</span>
+<span class="p">)</span>
 <span class="n">psg</span><span class="o">.</span><span class="n">to_sonata</span><span class="p">(</span><span class="s1">&#39;sim_ch02/inputs/mthalamus_spikes.h5&#39;</span><span class="p">)</span>
 
 </pre></div>
@@ -1020,7 +1028,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Number of spikes: 294
+Number of spikes: 313
 Units: ms
 </pre></div></div>
 </div>
@@ -1056,31 +1064,31 @@ Units: ms
     <tr>
       <th>0</th>
       <td>0</td>
-      <td>17.496766</td>
+      <td>50.454101</td>
       <td>mthalamus</td>
     </tr>
     <tr>
       <th>1</th>
       <td>0</td>
-      <td>125.003370</td>
+      <td>304.683694</td>
       <td>mthalamus</td>
     </tr>
     <tr>
       <th>2</th>
       <td>0</td>
-      <td>262.061478</td>
+      <td>341.404725</td>
       <td>mthalamus</td>
     </tr>
     <tr>
       <th>3</th>
       <td>0</td>
-      <td>321.393195</td>
+      <td>426.215779</td>
       <td>mthalamus</td>
     </tr>
     <tr>
       <th>4</th>
       <td>0</td>
-      <td>380.575289</td>
+      <td>610.815828</td>
       <td>mthalamus</td>
     </tr>
   </tbody>
@@ -1106,24 +1114,34 @@ Units: ms
 </pre></div>
 </div>
 <p>Or call the function directly in python</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.utils.sim_setup</span> <span class="kn">import</span> <span class="n">build_env_bionet</span>
 
-<span class="n">build_env_bionet</span><span class="p">(</span><span class="n">base_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch02&#39;</span><span class="p">,</span>
-                 <span class="n">network_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch02/network&#39;</span><span class="p">,</span>
-                 <span class="n">tstop</span><span class="o">=</span><span class="mf">3000.0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
-                 <span class="n">report_vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="s1">&#39;cai&#39;</span><span class="p">],</span>     <span class="c1"># Record membrane potential and calcium (default soma)</span>
-                 <span class="n">spikes_inputs</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;mthalamus&#39;</span><span class="p">,</span>   <span class="c1"># Name of population which spikes will be generated for</span>
-                                <span class="s1">&#39;sim_ch02/inputs/mthalamus_spikes.h5&#39;</span><span class="p">)],</span>
-                 <span class="n">include_examples</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>    <span class="c1"># Copies components files</span>
-                 <span class="n">compile_mechanisms</span><span class="o">=</span><span class="kc">True</span>   <span class="c1"># Will try to compile NEURON mechanisms</span>
-                <span class="p">)</span>
+<span class="n">build_env_bionet</span><span class="p">(</span>
+    <span class="n">base_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch02&#39;</span><span class="p">,</span>
+    <span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">,</span>
+    <span class="n">network_dir</span><span class="o">=</span><span class="s1">&#39;sim_ch02/network&#39;</span><span class="p">,</span>
+    <span class="n">tstop</span><span class="o">=</span><span class="mf">3000.0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">report_vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="s1">&#39;cai&#39;</span><span class="p">],</span>    <span class="c1"># Record membrane potential and calcium (default soma)</span>
+    <span class="n">spikes_inputs</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;mthalamus&#39;</span><span class="p">,</span> <span class="c1"># Name of population which spikes will be generated for</span>
+                    <span class="s1">&#39;sim_ch02/inputs/mthalamus_spikes.h5&#39;</span><span class="p">)],</span>
+    <span class="n">include_examples</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>       <span class="c1"># Copies components files</span>
+    <span class="n">compile_mechanisms</span><span class="o">=</span><span class="kc">True</span>      <span class="c1"># Will try to compile NEURON mechanisms</span>
+<span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+config.json
+</pre></div></div>
 </div>
 <p>The last thing that we need to do is to update the configuration file to read “thalamus_spikes.csv”. To do so we open simulation_config.json in a text editor and add the following to the <strong>input</strong> section.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -1143,7 +1161,8 @@ Units: ms
 <div class="section" id="3.-Running-the-simulation">
 <h2>3. Running the simulation<a class="headerlink" href="#3.-Running-the-simulation" title="Permalink to this headline">¶</a></h2>
 <p>Once our config file is setup we can run a simulation either through the command line:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python run_bionet.py simulation_config.json
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> sim_ch02/
+$ python run_bionet.py config.json
 </pre></div>
 </div>
 <p>or through the script</p>
@@ -1155,7 +1174,7 @@ Units: ms
 <span></span><span class="kn">from</span> <span class="nn">bmtk.simulator</span> <span class="kn">import</span> <span class="n">bionet</span>
 
 
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;sim_ch02/simulation_config.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;sim_ch02/config.json&#39;</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 <span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
 <span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
@@ -1168,7 +1187,7 @@ Units: ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2020-08-25 13:48:11,754 [INFO] Created log file
+2022-02-18 07:21:56,940 [INFO] Created log file
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1184,7 +1203,7 @@ INFO:NEURONIOUtils:Created log file
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2020-08-25 13:48:11,850 [INFO] Building cells.
+2022-02-18 07:21:57,024 [INFO] Building cells.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1200,7 +1219,7 @@ INFO:NEURONIOUtils:Building cells.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2020-08-25 13:48:12,026 [INFO] Building recurrent connections
+2022-02-18 07:21:57,183 [INFO] Building recurrent connections
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1216,7 +1235,7 @@ INFO:NEURONIOUtils:Building recurrent connections
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2020-08-25 13:48:12,028 [INFO] Building virtual cell stimulations for mthalamus_spikes
+2022-02-18 07:21:57,185 [INFO] Building virtual cell stimulations for mthalamus_spikes
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1232,7 +1251,7 @@ INFO:NEURONIOUtils:Building virtual cell stimulations for mthalamus_spikes
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2020-08-25 13:48:12,127 [INFO] Running simulation for 3000.000 ms with the time step 0.100 ms
+2022-02-18 07:21:57,271 [INFO] Running simulation for 3000.000 ms with the time step 0.100 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1248,7 +1267,7 @@ INFO:NEURONIOUtils:Running simulation for 3000.000 ms with the time step 0.100 m
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2020-08-25 13:48:12,128 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
+2022-02-18 07:21:57,272 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1264,7 +1283,7 @@ INFO:NEURONIOUtils:Starting timestep: 0 at t_sim: 0.000 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2020-08-25 13:48:12,129 [INFO] Block save every 5000 steps
+2022-02-18 07:21:57,273 [INFO] Block save every 5000 steps
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1280,7 +1299,7 @@ INFO:NEURONIOUtils:Block save every 5000 steps
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2020-08-25 13:48:12,526 [INFO]     step:5000 t_sim:500.00 ms
+2022-02-18 07:21:57,582 [INFO]     step:5000 t_sim:500.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1296,7 +1315,7 @@ INFO:NEURONIOUtils:    step:5000 t_sim:500.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2020-08-25 13:48:12,991 [INFO]     step:10000 t_sim:1000.00 ms
+2022-02-18 07:21:57,877 [INFO]     step:10000 t_sim:1000.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1312,7 +1331,7 @@ INFO:NEURONIOUtils:    step:10000 t_sim:1000.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2020-08-25 13:48:13,520 [INFO]     step:15000 t_sim:1500.00 ms
+2022-02-18 07:21:58,168 [INFO]     step:15000 t_sim:1500.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1328,7 +1347,7 @@ INFO:NEURONIOUtils:    step:15000 t_sim:1500.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2020-08-25 13:48:14,028 [INFO]     step:20000 t_sim:2000.00 ms
+2022-02-18 07:21:58,485 [INFO]     step:20000 t_sim:2000.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1344,7 +1363,7 @@ INFO:NEURONIOUtils:    step:20000 t_sim:2000.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2020-08-25 13:48:14,403 [INFO]     step:25000 t_sim:2500.00 ms
+2022-02-18 07:21:58,844 [INFO]     step:25000 t_sim:2500.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1360,7 +1379,7 @@ INFO:NEURONIOUtils:    step:25000 t_sim:2500.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2020-08-25 13:48:14,838 [INFO]     step:30000 t_sim:3000.00 ms
+2022-02-18 07:21:59,137 [INFO]     step:30000 t_sim:3000.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1376,7 +1395,7 @@ INFO:NEURONIOUtils:    step:30000 t_sim:3000.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2020-08-25 13:48:14,851 [INFO] Simulation completed in 2.724 seconds
+2022-02-18 07:21:59,150 [INFO] Simulation completed in 1.879 seconds
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1384,7 +1403,7 @@ INFO:NEURONIOUtils:    step:30000 t_sim:3000.00 ms
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-INFO:NEURONIOUtils:Simulation completed in 2.724 seconds
+INFO:NEURONIOUtils:Simulation completed in 1.879 seconds
 </pre></div></div>
 </div>
 </div>
@@ -1397,7 +1416,7 @@ INFO:NEURONIOUtils:Simulation completed in 2.724 seconds
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.spike_trains</span> <span class="kn">import</span> <span class="n">to_dataframe</span>
 
-<span class="n">results_df</span> <span class="o">=</span> <span class="n">to_dataframe</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch02/simulation_config.json&#39;</span><span class="p">)</span>
+<span class="n">results_df</span> <span class="o">=</span> <span class="n">to_dataframe</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch02/config.json&#39;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Number of Spikes: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">results_df</span><span class="p">)))</span>
 <span class="n">results_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
@@ -1408,16 +1427,7 @@ INFO:NEURONIOUtils:Simulation completed in 2.724 seconds
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Number of Spikes: 49
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/kael/Workspace/bmtk/bmtk/simulator/utils/config.py:4: UserWarning: Please use bmtk.simulator.core.simulation_config instead.
-  warnings.warn(&#39;Please use bmtk.simulator.core.simulation_config instead.&#39;)
+Number of Spikes: 52
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1451,31 +1461,31 @@ Number of Spikes: 49
   <tbody>
     <tr>
       <th>0</th>
-      <td>15.1</td>
+      <td>38.3</td>
       <td>0</td>
       <td>mcortex</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>1441.6</td>
+      <td>1618.1</td>
       <td>0</td>
       <td>mcortex</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>1457.0</td>
+      <td>1641.9</td>
       <td>0</td>
       <td>mcortex</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>1483.0</td>
+      <td>1727.2</td>
       <td>0</td>
       <td>mcortex</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>1523.2</td>
+      <td>1739.9</td>
       <td>0</td>
       <td>mcortex</td>
     </tr>
@@ -1490,8 +1500,8 @@ Number of Spikes: 49
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.compartment</span> <span class="kn">import</span> <span class="n">plot_traces</span>
 
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch01/simulation_config.json&#39;</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;v_report&#39;</span><span class="p">)</span>
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch01/simulation_config.json&#39;</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;cai_report&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch02/config.json&#39;</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;v_report&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch02/config.json&#39;</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;cai_report&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1516,7 +1526,7 @@ Number of Spikes: 49
 <h3>Changing edge properties<a class="headerlink" href="#Changing-edge-properties" title="Permalink to this headline">¶</a></h3>
 <p>When using the Network Builder add_edges method, we gave all the edges the same parameter values (delay, weight, target_section, etc.). All connection created by this method call constitute an single edge-type that share the same parameters, and are specified in the mthalamic_edge_type.csv file</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1526,7 +1536,7 @@ Number of Spikes: 49
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="output_area rendered_html docutils container">
@@ -1553,11 +1563,11 @@ Number of Spikes: 49
       <th>source_query</th>
       <th>target_sections</th>
       <th>weight_function</th>
+      <th>dynamics_params</th>
       <th>model_template</th>
       <th>distance_range</th>
       <th>delay</th>
       <th>syn_weight</th>
-      <th>dynamics_params</th>
     </tr>
   </thead>
   <tbody>
@@ -1568,11 +1578,11 @@ Number of Spikes: 49
       <td>pop_name=='tON'</td>
       <td>['basal', 'apical']</td>
       <td>NaN</td>
+      <td>AMPA_ExcToExc.json</td>
       <td>exp2syn</td>
       <td>[0.0, 150.0]</td>
       <td>2.0</td>
       <td>0.001</td>
-      <td>AMPA_ExcToExc.json</td>
     </tr>
   </tbody>
 </table>

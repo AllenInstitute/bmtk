@@ -648,6 +648,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">from</span> <span class="nn">array</span> <span class="kn">import</span> <span class="n">array</span>
 
 <span class="kn">from</span> <span class="nn">.core</span> <span class="kn">import</span> <span class="n">SortOrder</span><span class="p">,</span> <span class="n">pop_na</span><span class="p">,</span> <span class="n">comm</span><span class="p">,</span> <span class="n">MPI_size</span><span class="p">,</span> <span class="n">MPI_rank</span><span class="p">,</span> <span class="n">comm_barrier</span>
@@ -1087,6 +1088,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_handle</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer_filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="s1">&#39;ms&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pop_metadata</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_counts</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># all spikes added on rank, for each individual pop spike count stored in _pop_metadata</span>
 
     <span class="k">def</span> <span class="nf">_cache_fname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache_dir</span><span class="p">):</span>
         <span class="c1"># TODO: Potential problem if multiple SpikeTrains are opened at the same time, add salt to prevent collisions</span>
@@ -1105,7 +1107,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">if</span> <span class="n">population</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_metadata</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pop_metadata</span><span class="p">[</span><span class="n">population</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="nb">set</span><span class="p">(),</span> <span class="s1">&#39;n_spikes&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pop_metadata</span><span class="p">[</span><span class="n">population</span><span class="p">][</span><span class="s1">&#39;node_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_pop_metadata</span><span class="p">[</span><span class="n">population</span><span class="p">][</span><span class="s1">&#39;n_spikes&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pop_metadata</span><span class="p">[</span><span class="n">population</span><span class="p">][</span><span class="s1">&#39;n_spikes&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_counts</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
 <div class="viewcode-block" id="STCSVBuffer.add_spikes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.add_spikes">[docs]</a>    <span class="k">def</span> <span class="nf">add_spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">,</span> <span class="n">timestamps</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">node_ids</span><span class="p">):</span>
@@ -1173,7 +1176,20 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="n">ret_df</span></div>
 
 <div class="viewcode-block" id="STCSVBuffer.flush"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.flush">[docs]</a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_handle</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_handle</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="c1"># Found an issue with even after flushing the csv there can be a lag before data is actually cached to the disk.</span>
+        <span class="c1"># this can have problems with other processes on a different rank tries open the file that hasn&#39;t been</span>
+        <span class="c1"># completely saved. This hack should hopefully ensure that each rank has fully cached their spikes to disk.</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+                <span class="n">fcount</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fh</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
+                <span class="k">if</span> <span class="n">fcount</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spike_counts</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Warning: spike counts on rank </span><span class="si">{}</span><span class="s1"> cache does not match total added.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">MPI_rank</span><span class="p">))</span></div>
+
 
 <div class="viewcode-block" id="STCSVBuffer.close"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_train_buffer.STCSVBuffer.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_handle</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
@@ -1471,6 +1487,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">elif</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_id</span><span class="p">:</span>
                 <span class="n">ret_df</span> <span class="o">=</span> <span class="n">ret_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">col_node_ids</span><span class="p">)</span>
 
+        <span class="n">comm_barrier</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">ret_df</span></div></div>
 </pre></div>
 
