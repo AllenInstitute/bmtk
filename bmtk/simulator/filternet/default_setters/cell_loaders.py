@@ -59,6 +59,25 @@ def get_tf_params(node, dynamics_params, non_dom_props=False):
     return weights, kpeaks, delays
 
 
+def get_sigma(node, dynamics_params):
+    if 'spatial_size' in node:
+        sigma = node['spatial_size']
+    elif 'sigma' in node:
+        sigma = node['sigma']
+    elif 'spatial_size' in dynamics_params:
+        sigma = dynamics_params['spatial_size']
+    elif 'sigma' in dynamics_params:
+        sigma = dynamics_params['spatial_size']
+    else:
+        # TODO: Raise warning
+        sigma = (1.0, 1.0)
+
+    if np.isscalar(sigma):
+        sigma = (sigma, sigma) # convert from degree to SD
+
+    return sigma[0]/3.0, sigma[1]/3.0
+
+
 def default_cell_loader(node, template_name, dynamics_params):
     """
 
@@ -70,9 +89,8 @@ def default_cell_loader(node, template_name, dynamics_params):
     # Create the spatial filter
     origin = (0.0, 0.0)
     translate = (node['x'], node['y'])
-    sigma = node['spatial_size'] / 3.0  # convert from degree to SD
-    if np.isscalar(sigma):
-        sigma = (sigma, sigma)
+
+    sigma = get_sigma(node, dynamics_params)
     if 'spatial_rotation' in node:
         rotation = node['spatial_rotation']
     else:
