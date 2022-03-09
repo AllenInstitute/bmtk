@@ -4,17 +4,25 @@ import random
 import six
 
 from .base import SimModule
-from bmtk.utils.reports.spike_trains import SpikeTrains, pop_na
+from bmtk.utils.reports.spike_trains import SpikeTrains, pop_na, sort_order, sort_order_lu
 from bmtk.simulator.filternet.lgnmodel import poissongeneration as pg
+from bmtk.utils.io.ioutils import bmtk_world_comm
 
 
 class SpikesGenerator(SimModule):
-    def __init__(self, spikes_file_csv=None, spikes_file=None, spikes_file_nwb=None, tmp_dir='output'):
+    def __init__(self, spikes_file_csv=None, spikes_file=None, spikes_file_nwb=None, tmp_dir='output',
+                 sort_order='node_id'):
         def _get_file_path(file_name):
             if file_name is None or os.path.isabs(file_name):
                 return file_name
 
-            return os.path.join(tmp_dir, file_name)
+            else:
+                rel_tmp = os.path.realpath(tmp_dir)
+                rel_fname = os.path.realpath(file_name)
+                if not rel_fname.startswith(rel_tmp):
+                    return os.path.join(tmp_dir, file_name)
+                else:
+                    return file_name
 
         self._csv_fname = _get_file_path(spikes_file_csv)
         self._save_csv = spikes_file_csv is not None
@@ -29,6 +37,7 @@ class SpikesGenerator(SimModule):
 
         # self._spike_writer = SpikeTrainWriter(tmp_dir=tmp_dir)
         self._spike_writer = SpikeTrains(cache_dir=tmp_dir)
+        self._sort_order = sort_order_lu[sort_order]
 
     def save(self, sim, cell, times, rates):
         try:
@@ -39,21 +48,19 @@ class SpikesGenerator(SimModule):
             spike_trains = 1000.0*np.array(pg.generate_inhomogenous_poisson(times, rates,
                                                                             seed=np.random.randint(10000)))
 
-        # self._spike_writer.add_spikes(times=spike_trains, gid=gid)
         self._spike_writer.add_spikes(node_ids=cell.gid, timestamps=spike_trains, population=cell.population)
-
 
     def finalize(self, sim):
         self._spike_writer.flush()
 
         if self._save_csv:
-            self._spike_writer.to_csv(self._csv_fname)
+            self._spike_writer.to_csv(self._csv_fname, sort_order=self._sort_order)
 
         if self._save_h5:
-            self._spike_writer.to_sonata(self._h5_fname)
+            self._spike_writer.to_sonata(self._h5_fname, sort_order=self._sort_order)
 
         if self._save_nwb:
-            self._spike_writer.to_nwb(self._nwb_fname)
+            self._spike_writer.to_nwb(self._nwb_fname, sort_order=self._sort_order)
 
         self._spike_writer.close()
 

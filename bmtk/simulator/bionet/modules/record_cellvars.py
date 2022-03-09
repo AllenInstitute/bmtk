@@ -68,6 +68,7 @@ class MembraneReport(SimulatorMod):
         """
         self._all_variables = list(variable_name)
         self._variables = list(variable_name)
+        self._report_name = self._variables[0]
         self._transforms = {}
         # self._special_variables = []
         for var_name, fnc_name in transform.items():
@@ -81,15 +82,13 @@ class MembraneReport(SimulatorMod):
 
         self._tmp_dir = tmp_dir
 
+        # TODO: Full path should be determined by config/simulation_reports module
         self._file_name = file_name if os.path.isabs(file_name) else os.path.join(tmp_dir, file_name)
         self._all_gids = cells
         self._local_gids = []
         self._sections = sections
 
         self._var_recorder = None
-        #self._var_recorder = MembraneRecorder(self._file_name, self._tmp_dir, self._all_variables,
-        #                                      buffer_data=buffer_data, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)
-
         self._gid_list = gids  # list of all gids that will have their variables saved
         self._data_block = {}  # table of variable data indexed by [gid][variable]
         self._block_step = 0  # time step within a given block
@@ -104,13 +103,10 @@ class MembraneReport(SimulatorMod):
         self._local_gids = list(set(sim.biophysical_gids) & selected_gids)
 
     def _save_sim_data(self, sim):
-        #self._var_recorder.tstart = 0.0
-        #self._var_recorder.tstop = sim.tstop
-        #self._var_recorder.dt = sim.dt
         pass
 
     def initialize(self, sim):
-        self._var_recorder = MembraneRecorder(self._file_name, mode='w', variable=self._variables[0],
+        self._var_recorder = MembraneRecorder(self._file_name, mode='w', variable=self._report_name,
                                               buffer_size=sim.nsteps_block, tstart=0.0, tstop=sim.tstop, dt=sim.dt)
         self._gid_map = sim.net.gid_pool
 
@@ -131,11 +127,9 @@ class MembraneReport(SimulatorMod):
                     sec_list.append(sec_id)
                     seg_list.append(seg.x)
 
-            #self._var_recorder.add_cell(gid, sec_list, seg_list)
             self._var_recorder.add_cell(node_id=pop_id.node_id, population=pop_id.population, element_ids=sec_list,
                                         element_pos=seg_list)
 
-        #self._var_recorder.initialize(sim.n_steps, sim.nsteps_block)
         self._var_recorder.initialize()
 
     def step(self, sim, tstep):
@@ -174,16 +168,13 @@ class SomaReport(MembraneReport):
                                          sections=sections, buffer_data=buffer_data, transform=transform, **kwargs)
 
     def initialize(self, sim):
-        self._var_recorder = MembraneRecorder(self._file_name, mode='w', variable=self._variables[0],
+        self._var_recorder = MembraneRecorder(self._file_name, mode='w', variable=self._report_name,
                                               buffer_size=sim.nsteps_block, tstart=0.0, tstop=sim.tstop, dt=sim.dt)
         self._gid_map = sim.net.gid_pool
-
         self._get_gids(sim)
-        # self._save_sim_data(sim)
 
         for gid in self._local_gids:
             pop_id = self._gid_map.get_pool_id(gid)
-            # self._var_recorder.add_cell(gid, [0], [0.5])
             self._var_recorder.add_cell(pop_id.node_id, population=pop_id.population, element_ids=[0],
                                         element_pos=[0.5])
 
@@ -197,14 +188,12 @@ class SomaReport(MembraneReport):
             cell = sim.net.get_cell_gid(gid)
             for var_name in self._variables:
                 var_val = getattr(cell.hobj.soma[0](0.5), var_name)
-                # self._var_recorder.record_cell(gid, var_name, [var_val], tstep)
                 self._var_recorder.record_cell(pop_id.node_id, population=pop_id.population, vals=[var_val],
                                                tstep=tstep)
 
             for var_name, fnc in self._transforms.items():
                 var_val = getattr(cell.hobj.soma[0](0.5), var_name)
                 new_val = fnc(var_val)
-                # self._var_recorder.record_cell(gid, var_name, [new_val], tstep)
                 self._var_recorder.record_cell(pop_id.node_id, population=pop_id.population, vals=[new_val],
                                                tstep=tstep)
 

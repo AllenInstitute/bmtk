@@ -101,7 +101,7 @@ class ClampReport(SimulatorMod):
             all_currents = []
             for i in range(N_HOSTS):
                 tmp_file = h5py.File(self._tmp_files[i], 'r')
-                data = tmp_file['data'].value
+                data = tmp_file['data'][()]
                 for current in data:
                     if len(current) > 0:
                         all_currents.append(current)

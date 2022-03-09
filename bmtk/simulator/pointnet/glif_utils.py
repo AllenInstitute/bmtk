@@ -21,9 +21,17 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import numpy as np
+import re
+
+from .nest_utils import nest_version
+
+# GLIFs are built-in NEST models in version 2.20 and above.
+ver_major = nest_version[0]
+ver_minor = nest_version[1] if nest_version[1] is not None else 0
+built_in_glifs = ver_major >= 3 or (ver_major == 2 and ver_minor >= 20)
 
 
-def lif_aibs_converter(config):
+def lif_aibs_converter(config, tau_syn=[5.5, 8.5, 2.8, 5.8]):
     """
 
     :param config:
@@ -36,11 +44,12 @@ def lif_aibs_converter(config):
               'C_m': coeffs['C'] * config['C'] * 1.0e12,
               't_ref': config['spike_cut_length'] * config['dt'] * 1.0e03,
               'V_reset': config['El_reference'] * 1.0e03,
+              'tau_syn': tau_syn,
               'V_dynamics_method': 'linear_exact'}  # 'linear_forward_euler' or 'linear_exact'
     return params
 
 
-def lif_asc_aibs_converter(config):
+def lif_asc_aibs_converter(config, tau_syn=[5.5, 8.5, 2.8, 5.8]):
     """
 
     :param config:
@@ -55,8 +64,11 @@ def lif_asc_aibs_converter(config):
               'V_reset': config['El_reference'] * 1.0e03,
               'asc_init': np.array(config['init_AScurrents']) * 1.0e12,
               'k': 1.0 / np.array(config['asc_tau_array']) * 1.0e-03,
+              'tau_syn': tau_syn,
+              'asc_decay': 1.0 / np.array(config['asc_tau_array']) * 1.0e-03,
               'asc_amps': np.array(config['asc_amp_array']) * np.array(coeffs['asc_amp_array']) * 1.0e12,
-              'V_dynamics_method': 'linear_exact'}
+              'V_dynamics_method': 'linear_exact'
+              }
     return params
 
 
@@ -237,8 +249,134 @@ converter_map = {
 }
 
 
-def convert_aibs2nest(model_template, dynamics_params):
+def converter_modules(model_template, dynamics_params):
     if model_template in converter_map:
-        return converter_map[model_template](dynamics_params)
+        return model_template, converter_map[model_template](dynamics_params)
     else:
-        return dynamics_params
+        return model_template, dynamics_params
+
+
+def converter_builtin(model_template, dynamics_params):
+    if model_template == 'nest:glif_lif_psc':
+        config = dynamics_params
+        coeffs = config['coeffs']
+        model_params = {
+            'V_m': config['El'] * 1.0e03 + config['El_reference'] * 1.0e03,
+            'V_th': coeffs['th_inf'] * config['th_inf'] * 1.0e03 + config['El_reference'] * 1.0e03,
+            'g': coeffs['G'] / config['R_input'] * 1.0e09,
+            'E_L': config['El'] * 1.0e03 + config['El_reference'] * 1.0e03,
+            'C_m': coeffs['C'] * config['C'] * 1.0e12,
+            't_ref': config['spike_cut_length'] * config['dt'] * 1.0e03,
+            'V_reset': config['El_reference'] * 1.0e03,
+            'tau_syn': np.array([5.5, 8.5, 2.8, 5.8]),  # in ms
+            'spike_dependent_threshold': False,
+            'after_spike_currents': False,
+            'adapting_threshold': False
+        }
+        return 'nest:glif_psc', model_params
+
+    elif model_template == 'nest:glif_lif_r_psc':
+        config = dynamics_params
+        coeffs = config['coeffs']
+        threshold_params = config['threshold_dynamics_method']['params']
+        reset_params = config['voltage_reset_method']['params']
+        model_params = {
+            'V_m': config['El'] * 1.0e03 + config['El_reference'] * 1.0e03,
+            'V_th': coeffs['th_inf'] * config['th_inf'] * 1.0e03 + config['El_reference'] * 1.0e03,
+            'g': coeffs['G'] / config['R_input'] * 1.0e09,
+            'E_L': config['El'] * 1.0e03 + config['El_reference'] * 1.0e03,
+            'C_m': coeffs['C'] * config['C'] * 1.0e12,
+            't_ref': config['spike_cut_length'] * config['dt'] * 1.0e03,
+            'th_spike_add': threshold_params['a_spike'] * 1.0e03,
+            'th_spike_decay': threshold_params['b_spike'] * 1.0e-03,
+            'voltage_reset_fraction': reset_params['a'],
+            'voltage_reset_add': reset_params['b'] * 1.0e03,
+            'tau_syn': np.array([5.5, 8.5, 2.8, 5.8]),  # in ms
+            'spike_dependent_threshold': True,
+            'after_spike_currents': False,
+            'adapting_threshold': False
+        }
+        return 'nest:glif_psc', model_params
+
+    elif model_template == 'nest:glif_lif_asc_psc':
+        config = dynamics_params
+        coeffs = config['coeffs']
+        model_params = {
+            'V_m': config['El'] * 1.0e03 + config['El_reference'] * 1.0e03,
+            'V_th': coeffs['th_inf'] * config['th_inf'] * 1.0e03 + config['El_reference'] * 1.0e03,
+            'g': coeffs['G'] / config['R_input'] * 1.0e09,
+            'E_L': config['El'] * 1.0e03 + config['El_reference'] * 1.0e03,
+            'C_m': coeffs['C'] * config['C'] * 1.0e12,
+            't_ref': config['spike_cut_length'] * config['dt'] * 1.0e03,
+            'V_reset': config['El_reference'] * 1.0e03,
+            'asc_init': np.array(config['init_AScurrents']) * 1.0e12,
+            'asc_decay': 1.0 / np.array(config['asc_tau_array']) * 1.0e-03,
+            'asc_amps': np.array(config['asc_amp_array']) * np.array(coeffs['asc_amp_array']) * 1.0e12,
+            'tau_syn': np.array([5.5, 8.5, 2.8, 5.8]),  # in ms
+            'spike_dependent_threshold': False,
+            'after_spike_currents': True,
+            'adapting_threshold': False
+        }
+        return 'nest:glif_psc', model_params
+
+    elif model_template == 'nest:glif_lif_r_asc_psc':
+        config = dynamics_params
+        coeffs = config['coeffs']
+        threshold_params = config['threshold_dynamics_method']['params']
+        reset_params = config['voltage_reset_method']['params']
+        model_params = {
+            'V_m': config['El'] * 1.0e03 + config['El_reference'] * 1.0e03,
+            'V_th': coeffs['th_inf'] * config['th_inf'] * 1.0e03 + config['El_reference'] * 1.0e03,
+            'g': coeffs['G'] / config['R_input'] * 1.0e09,
+            'E_L': config['El'] * 1.0e03 + config['El_reference'] * 1.0e03,
+            'C_m': coeffs['C'] * config['C'] * 1.0e12,
+            't_ref': config['spike_cut_length'] * config['dt'] * 1.0e03,
+            'th_spike_add': threshold_params['a_spike'] * 1.0e03,
+            'th_spike_decay': threshold_params['b_spike'] * 1.0e-03,
+            'voltage_reset_fraction': reset_params['a'],
+            'voltage_reset_add': reset_params['b'] * 1.0e03,
+            'asc_init': np.array(config['init_AScurrents']) * 1.0e12,
+            'asc_decay': 1.0 / np.array(config['asc_tau_array']) * 1.0e-03,
+            'asc_amps': np.array(config['asc_amp_array']) * np.array(coeffs['asc_amp_array']) * 1.0e12,
+            'tau_syn': np.array([5.5, 8.5, 2.8, 5.8]),
+            'asc_r': (1.0, 1.0),
+            'spike_dependent_threshold': True,
+            'after_spike_currents': True,
+            'adapting_threshold': False
+        }
+        return 'nest:glif_psc', model_params
+
+    elif model_template == 'nest:glif_lif_r_asc_a_psc':
+        config = dynamics_params
+        coeffs = config['coeffs']
+        threshold_params = config['threshold_dynamics_method']['params']
+        reset_params = config['voltage_reset_method']['params']
+        model_params = {
+            'V_m': config['El'] * 1.0e03 + config['El_reference'] * 1.0e03,
+            'V_th': coeffs['th_inf'] * config['th_inf'] * 1.0e03 + config['El_reference'] * 1.0e03,
+            'g': coeffs['G'] / config['R_input'] * 1.0e09,
+            'E_L': config['El'] * 1.0e03 + config['El_reference'] * 1.0e03,
+            'C_m': coeffs['C'] * config['C'] * 1.0e12,
+            't_ref': config['spike_cut_length'] * config['dt'] * 1.0e03,
+            'th_spike_add': threshold_params['a_spike'] * 1.0e03,
+            'th_spike_decay': threshold_params['b_spike'] * 1.0e-03,
+            'th_voltage_index': threshold_params['a_voltage'] * coeffs['a'] * 1.0e-03,
+            'th_voltage_decay': threshold_params['b_voltage'] * coeffs['b'] * 1.0e-03,
+            'voltage_reset_fraction': reset_params['a'],
+            'voltage_reset_add': reset_params['b'] * 1.0e03,
+            'asc_init': np.array(config['init_AScurrents']) * 1.0e12,
+            'asc_decay': 1.0 / np.array(config['asc_tau_array']) * 1.0e-03,
+            'asc_amps': np.array(config['asc_amp_array']) * np.array(coeffs['asc_amp_array']) * 1.0e12,
+            'tau_syn': np.array([5.5, 8.5, 2.8, 5.8]),
+            'asc_r': (1.0, 1.0),
+            'spike_dependent_threshold': True,
+            'after_spike_currents': True,
+            'adapting_threshold': True
+        }
+        return 'nest:glif_psc', model_params
+
+    else:
+        return model_template, dynamics_params
+
+
+convert_aibs2nest = converter_builtin if built_in_glifs else converter_modules

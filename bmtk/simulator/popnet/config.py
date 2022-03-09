@@ -20,7 +20,6 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-# import bmtk.simulator.utils.config as msdk_config
 from bmtk.simulator.core.simulation_config import SimulationConfig
 from bmtk.simulator.core.io_tools import io
 

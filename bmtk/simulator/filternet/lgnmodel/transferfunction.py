@@ -1,4 +1,5 @@
 from sympy.utilities.lambdify import lambdify
+from sympy import Matrix
 import sympy.parsing.sympy_parser as symp
 import sympy.abc
 import numpy as np
@@ -8,8 +9,10 @@ class ScalarTransferFunction(object):
     def __init__(self, transfer_function_string, symbol=sympy.abc.s):
         self.symbol = symbol
         self.transfer_function_string = transfer_function_string
-        self.closure = lambdify(self.symbol, symp.parse_expr(self.transfer_function_string), modules=['sympy'])
-        
+        # replacing sympy.Heaviside() with np.heaviside() for better performance
+        modules = [{'Heaviside': lambda x, y=0.5: np.heaviside(x, 0.5)}, 'numpy', 'sympy']
+        self.closure = lambdify(self.symbol, symp.parse_expr(self.transfer_function_string), modules=modules)
+
     def __call__(self, s):
         return self.closure(s)
     
@@ -42,7 +45,8 @@ class MultiTransferFunction(object):
     def __init__(self, symbol_tuple, transfer_function_string):
         self.symbol_tuple = symbol_tuple
         self.transfer_function_string = transfer_function_string
-        self.closure = lambdify(self.symbol_tuple, symp.parse_expr(self.transfer_function_string), modules=['sympy'])
+        modules = [{'Heaviside': lambda x, y=0.5: np.heaviside(x, 0.5)}, 'numpy', 'sympy']
+        self.closure = lambdify(self.symbol_tuple,symp.parse_expr(self.transfer_function_string), modules=modules)
 
     def __call__(self, *s):
         if isinstance(s[0], (float,)):

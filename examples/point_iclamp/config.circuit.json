@@ -1,0 +1,83 @@
+{
+  "manifest": {
+    "$BASE_DIR": ".",
+    "$OUTPUT_DIR": "$BASE_DIR/output",
+    "$NETWORK_DIR": "$BASE_DIR/network",
+    "$COMPONENT_DIR": "$BASE_DIR/../point_components"
+  },
+
+  "run": {
+    "tstop": 1500.0,
+    "dt": 0.001
+  },
+
+  "target_simulator":"NEST",
+
+  "conditions": {
+    "celsius": 34.0,
+    "v_init": -80
+  },
+
+  "inputs": {
+ 	"current_clamp_1": {
+      "input_type": "current_clamp",
+      "module": "IClamp",
+      "node_set": "exc_nodes",
+      "amp": 190.0,
+      "delay": 500.0,
+      "duration": 500.0
+    }
+  },
+
+  "output":{
+    "log_file": "log.txt",
+    "output_dir": "$OUTPUT_DIR",
+    "spikes_file": "spikes.h5",
+    "spikes_file_csv": "spikes.csv",
+    "spikes_sort_order": "time",
+    "quiet_simulator": true
+  },
+
+  "components": {
+    "point_neuron_models_dir": "$COMPONENT_DIR/cell_models",
+	  "synaptic_models_dir": "$COMPONENT_DIR/synaptic_models"
+  },
+
+  "node_sets": {
+  	"point_nodes": {
+      "model_type": "point_neuron"
+    },
+
+    "exc_nodes": {
+      "population": "FridayHarborBiophysics",
+      "ei": "e"
+    }
+  },
+
+  "reports": {
+    "membrane_potential": {
+      "cells": "point_nodes",
+      "variable_name": "V_m",
+      "module": "multimeter_report",
+      "sections": "soma",
+      "enabled": true
+    }
+  },
+
+
+  "networks": {
+    "nodes": [
+      {
+        "nodes_file": "$NETWORK_DIR/recurrent_network/nodes.h5",
+        "node_types_file": "$NETWORK_DIR/recurrent_network/node_types.csv"
+      }
+    ],
+
+    "edges": [
+      {
+        "edges_file": "$NETWORK_DIR/recurrent_network/edges.h5",
+        "edge_types_file": "$NETWORK_DIR/recurrent_network/edge_types.csv"
+      }
+    ]
+  }
+}

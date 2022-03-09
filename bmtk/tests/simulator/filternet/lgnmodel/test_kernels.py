@@ -15,7 +15,7 @@ def test_spatialfilter_kernel():
     kernel = gsf.get_kernel(row_range=mv.row_range, col_range=mv.col_range)
     assert(isinstance(kernel, Kernel2D))
     assert(kernel.full().shape == (120, 240))
-    assert(np.sum(kernel.full()) == 1.0)
+    assert(np.isclose(np.sum(kernel.full()), 1.0))
 
 
 def test_temporalfilter_kernel():
@@ -27,7 +27,7 @@ def test_temporalfilter_kernel():
     assert(kernel.full().shape == (478,))
     assert(sum(kernel.full()) > 1.0)
     kernel.normalize()
-    assert(sum(kernel.full()) == 1.0)
+    assert(np.isclose(sum(kernel.full()), 1.0))
 
 
 def test_spatiotemporalfilter_kernel():

@@ -1,5 +1,8 @@
-from bmtk.analyzer.visualization.spikes import plot_spikes, plot_rates
+import matplotlib.pyplot as plt
 
-#plot_spikes('network/V1_nodes.h5', 'network/V1_node_types.csv', 'output/spikes.txt', group_key='pop_name')
+from bmtk.analyzer.spike_trains import plot_raster, plot_rates_boxplot
 
-plot_rates('network/V1_nodes.h5', 'network/V1_node_types.csv', 'output/spikes.txt', group_key='pop_name', smoothed=True)
+
+plot_raster(config_file='sim_ch04/simulation_config.json', group_by='pop_name', show=False)
+plot_rates_boxplot(config_file='sim_ch04/simulation_config.json', group_by='pop_name', show=False)
+plt.show()

@@ -24,7 +24,18 @@ import numpy as np
 import math
 
 
-def positions_columinar(N=1, center=[0.0, 50.0, 0.0], height=100.0, min_radius=0.0, max_radius=1.0, distribution='uniform'):
+def positions_columinar(N=1, center=[0.0, 50.0, 0.0], height=100.0, min_radius=0.0, max_radius=1.0,
+                        distribution='uniform'):
+    """Returns a set of random x,y,z coordinates within a given sphere. Height is given as the y (index 1) coordates
+
+    :param N: Number of points to return
+    :param center: center of sphere
+    :param height: maximum length of sphere (y coord)
+    :param min_radius: minimum horizontal radius on x-z plane
+    :param max_radius: maximum horizontal radius on x-z plane
+    :param distribution: Not yet implementd
+    :return: A (N, 3) matrix
+    """
     phi = 2.0 * math.pi * np.random.random([N])
     r = np.sqrt((min_radius**2 - max_radius**2) * np.random.random([N]) + max_radius**2)
     x = center[0] + r * np.cos(phi)
@@ -33,41 +44,51 @@ def positions_columinar(N=1, center=[0.0, 50.0, 0.0], height=100.0, min_radius=0
 
     return np.column_stack((x, y, z))
 
-# This function distributes the cells in a 3D cuboid (x,y,z sides may have different lengths). 
-# The method used assures cells cannot be placed too close to one another (must be > min_dist apart)
-# WARNING: If cell density is high and there is more than 1 population of cells, there is a high chance...
-# ... cells will be placed on top of one another. You can use positions_list() to avoid this...
-# ... but you must create your own array of cell positions
-# Written by Ben Latimer at University of Missouri (latimerb@missouri.edu)
+
 def positions_cuboid(N=1, center=[0.0, 0.0, 0.0], height=100.0, xside_length=100.0, yside_length=100.0, min_dist=20.0):
+    """This function distributes the cells in a 3D cuboid (x,y,z sides may have different lengths). The method used
+    assures cells cannot be placed too close to one another (must be > min_dist apart)
+    WARNING: If cell density is high and there is more than 1 population of cells, there is a high chance cells will be
+    placed on top of one another. You can use positions_list() to avoid this...
+
+    Written by Ben Latimer at University of Missouri (latimerb@missouri.edu)
+
+    :return: A (N, 3) matrix
+    """
     
     # Create the possible x,y,z coordinates
-    x_grid = np.arange(center[0],xside_length+min_dist,min_dist)
-    y_grid = np.arange(center[1],yside_length+min_dist,min_dist)
-    z_grid = np.arange(center[2],height+min_dist,min_dist)
+    x_grid = np.arange(center[0], xside_length+min_dist, min_dist)
+    y_grid = np.arange(center[1], yside_length+min_dist, min_dist)
+    z_grid = np.arange(center[2], height+min_dist, min_dist)
     xx, yy, zz = np.meshgrid(x_grid, y_grid, z_grid)
     positions = np.vstack([xx.ravel(), yy.ravel(), zz.ravel()]).T
 
     # Pick N indices for the positions matrix randomly, without replacement (so coordinates are unique)
-    inds = np.random.choice(np.arange(0,np.size(positions,0)),N,replace=False)
+    inds = np.random.choice(np.arange(0, np.size(positions, 0)), N, replace=False)
 
     # Assign positions
-    x = positions[inds][:,0]
-    y = positions[inds][:,1]
-    z = positions[inds][:,2]
+    x = positions[inds][:, 0]
+    y = positions[inds][:, 1]
+    z = positions[inds][:, 2]
 
     return np.column_stack((x, y, z))
 
-# This function is designed to be used with an externally supplied array of x,y,z coordinates. 
-# It is useful to avoid cell overlap in high density situations or to make some unique geometry.
-# After you create each population, delete those positions from the "master" list of coordinates.
-# This will assure that no cells are placed on top of one another. 
-# Written by Ben Latimer at University of Missouri (latimerb@missouri.edu)
-def positions_list(positions=np.array([(0,0,0),(0,0,1)])):
+
+def positions_list(positions=np.array([(0, 0, 0), (0, 0, 1)])):
+    """This function is designed to be used with an externally supplied array of x,y,z coordinates. It is useful to
+    avoid cell overlap in high density situations or to make some unique geometry. After you create each population,
+    delete those positions from the "master" list of coordinates. This will assure that no cells are placed on top of
+    one another.
+
+    Written by Ben Latimer at University of Missouri (latimerb@missouri.edu)
+
+    :param positions:
+    :return:
+    """
     
-    x = positions[:,0]
-    y = positions[:,1]
-    z = positions[:,2]
+    x = positions[:, 0]
+    y = positions[:, 1]
+    z = positions[:, 2]
 
     return np.column_stack((x, y, z))
 

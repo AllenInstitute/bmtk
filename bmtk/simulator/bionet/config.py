@@ -42,6 +42,8 @@ class Config(SimulationConfig):
         nrn.load_neuron_modules(self.mechanisms_dir, self.templates_dir)
 
     def build_env(self):
+        self.io = io
+        self._set_logging()
         self.create_output_dir()
         self.copy_to_output()
         if io.mpi_size > 1:

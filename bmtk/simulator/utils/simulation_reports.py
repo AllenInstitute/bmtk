@@ -2,6 +2,19 @@ import os
 
 
 class SimReport(object):
+    """Used for parsing reports section from a SONATA configuration file. It will take care of implicit and default
+    values.
+
+    Use the build() method to convert a "reports" section dictionary to a SimReport object. The SimReport object has
+    properties that can be used to instantiate a simualtion report, particular properties **module** and **params**::
+
+        report = SimReport.build(
+            report_name='my_report',
+            params = {'module': 'my_mod', ...})
+        ...
+        MyReport(**report.params)
+    """
+
     default_dir = '.'
     registry = {}  # Used by factory to keep track of subclasses
 
@@ -163,6 +176,7 @@ class SpikesReport(SimReport):
             'tmp_dir': output_dict.get('output_dir', cls.default_dir),
             'cache_to_disk': output_dict.get('cache_to_disk', True)
         }
+
         if not (params['spikes_file'] or params['spikes_file_csv'] or params['spikes_file_nwb']):
             # User hasn't specified any spikes file
             params['enabled'] = False
@@ -202,6 +216,7 @@ class ClampReport(SimReport):
             file_name = '{}.h5'.format(self.report_name)
 
         return [('file_name', file_name), ('tmp_dir', tmp_dir)]
+
 
 @SimReport.register_module
 class SEClampReport(SimReport):
@@ -285,11 +300,15 @@ def from_config(cfg):
     has_spikes_report = False
     for report_name, report_params in cfg.reports.items():
         # Get the Report class from the module_name parameter
+
         if not report_params.get('enabled', True):
             # not a part of the standard but will help skip modules
             continue
 
         report = SimReport.build(report_name, report_params)
+
+        if isinstance(report, SpikesReport):
+            has_spikes_report = True
 
         if isinstance(report, MembraneReport):
             # When possible for membrane reports combine multiple reports into one module if all the parameters

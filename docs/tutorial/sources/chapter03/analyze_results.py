@@ -1,3 +1,4 @@
-from bmtk.analyzer.visualization.spikes import plot_spikes
+from bmtk.analyzer.spike_trains import plot_raster
 
-plot_spikes('network/mcortex_nodes.h5', 'network/mcortex_node_types.csv', 'output/spikes.txt')
+
+plot_raster(config_file='simulation_config.json', show=True)

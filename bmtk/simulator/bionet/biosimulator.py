@@ -194,8 +194,8 @@ class BioSimulator(Simulator):
             pc.spike_record(gid, tvec, gidvec)
             self._spikes[gid] = tvec
 
-    def attach_current_clamp(self, amplitude, delay, duration, gids=None):
-
+    def attach_current_clamp(self, amplitude, delay, duration, gids=None, section_name='soma', section_index=0,
+                             section_dist=0.5):
         # TODO: Create appropiate module
         if gids is None or gids=='all':
             gids = self.biophysical_gids
@@ -207,15 +207,19 @@ class BioSimulator(Simulator):
         elif isinstance(gids, NodeSet):
             gids = gids.gids()
 
-
         gids = list(set(self.local_gids) & set(gids))
+        n_gids = len(gids)
         
-        if len(gids)!=len(amplitude):
-            amplitude = amplitude * len(gids)
+        if len(gids) != len(amplitude):
+            amplitude = amplitude * n_gids  # len(gids)
 
-        for idx,gid in enumerate(gids):
+        if len(gids) != len(delay):
+            delay = delay * n_gids
+            duration = duration * n_gids
+
+        for idx, gid in enumerate(gids):
             cell = self.net.get_cell_gid(gid)
-            Ic = IClamp(amplitude[idx], delay[idx], duration[idx])
+            Ic = IClamp(amplitude[idx], delay[idx], duration[idx], section_name, section_index, section_dist)
             
             Ic.attach_current(cell)
             self._iclamps.append(Ic)
@@ -381,10 +385,19 @@ class BioSimulator(Simulator):
 
     @classmethod
     def from_config(cls, config, network, set_recordings=True):
-        # TODO: convert from json to sonata config if necessary
+        simulation_inputs = inputs.from_config(config)
 
-        #The network must be built before initializing the simulator because
-        #gap junctions must be set up before the simulation is initialized.
+        # Special case for setting synapses to spontaneously (for a given set of pre-synaptic cell-types). Using this
+        # input will change the way the network builds cells/connections and thus needs to be set first.
+        for sim_input in simulation_inputs:
+            if sim_input.input_type == 'syn_activity':
+                network.set_spont_syn_activity(
+                    precell_filter=sim_input.params['precell_filter'],
+                    timestamps=sim_input.params['timestamps']
+                )
+
+        # The network must be built before initializing the simulator because
+        # gap junctions must be set up before the simulation is initialized.
         network.io.log_info('Building cells.')
         network.build_nodes()
 
@@ -440,7 +453,17 @@ class BioSimulator(Simulator):
                 amplitude = sim_input.params['amp']
                 delay = sim_input.params['delay']
                 duration = sim_input.params['duration']
-                
+
+                # specificed for location to place iclamp hobj.<section_name>[<section_index>](<section_dist>). The
+                # default is hobj.soma[0](0.5), the center of the soma
+                section_name = sim_input.params.get('section_name', 'soma')
+                section_index = sim_input.params.get('section_index', 0)
+                section_dist = sim_input.params.get('section_dist', 0.5)
+
+                # section_name = section_name if isinstance(section_name, (list, tuple)) else [section_name]
+                # section_index = section_index if isinstance(section_index, (list, tuple)) else [section_index]
+                # section_dist = section_dist if isinstance(section_dist, (list, tuple)) else [section_dist]
+
                 try:
                     sim_input.params['gids']
                 except:
@@ -450,7 +473,7 @@ class BioSimulator(Simulator):
                 else:
                     gids = list(node_set.gids())
 
-                sim.attach_current_clamp(amplitude, delay, duration, gids)
+                sim.attach_current_clamp(amplitude, delay, duration, gids, section_name, section_index, section_dist)
 
             elif sim_input.module == "SEClamp":
                 try: 
@@ -490,6 +513,9 @@ class BioSimulator(Simulator):
             elif sim_input.module == 'xstim':
                 sim.add_mod(mods.XStimMod(**sim_input.params))
 
+            elif sim_input.module == 'syn_activity':
+                pass
+
             else:
                 io.log_exception('Can not parse input format {}'.format(sim_input.name))
 
@@ -520,8 +546,6 @@ class BioSimulator(Simulator):
 
             elif report.module == 'save_synapses':
                 mod = mods.SaveSynapses(**report.params)
-
-
 
             else:
                 # TODO: Allow users to register customized modules using pymodules

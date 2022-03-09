@@ -43,7 +43,19 @@ class SpikesMod(SimulatorMod):
         def _file_path(file_name):
             if file_name is None:
                 return None
-            return file_name if os.path.isabs(file_name) else os.path.join(tmp_dir, file_name)
+
+            if os.path.isabs(file_name):
+                return file_name
+
+            else:
+                rel_tmp = os.path.realpath(tmp_dir)
+                rel_fname = os.path.realpath(file_name)
+                if not rel_fname.startswith(rel_tmp):
+                    return os.path.join(tmp_dir, file_name)
+                else:
+                    return file_name
+
+            # return file_name if os.path.isabs(file_name) else os.path.join(tmp_dir, file_name)
 
         self._csv_fname = _file_path(spikes_file_csv)
         self._save_csv = spikes_file_csv is not None

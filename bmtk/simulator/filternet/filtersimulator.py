@@ -1,5 +1,6 @@
 import csv
 import numpy as np
+from six import string_types
 
 from bmtk.simulator.core.simulator import Simulator
 import bmtk.simulator.utils.simulation_inputs as inputs
@@ -7,7 +8,7 @@ from bmtk.simulator.filternet.config import Config
 from bmtk.simulator.filternet.lgnmodel.movie import *
 from bmtk.simulator.filternet import modules as mods
 from bmtk.simulator.filternet.io_tools import io
-from six import string_types
+from bmtk.utils.io.ioutils import bmtk_world_comm
 
 
 class FilterSimulator(Simulator):
@@ -16,10 +17,19 @@ class FilterSimulator(Simulator):
         self._network = network
         self._dt = dt
         self._tstop = tstop/1000.0
+        self._io = network.io
 
         self.rates_csv = None
         self._movies = []
         self._eval_options = []
+
+    @property
+    def io(self):
+        return self._io
+
+    @property
+    def dt(self):
+        return self._dt
 
     def add_movie(self, movie_type, params):
         # TODO: Move this into its own factory
@@ -33,6 +43,15 @@ class FilterSimulator(Simulator):
                     m_data = params['data']
                 else:
                     raise Exception('Could not find movie "data_file" in config to use as input.')
+
+                contrast_min, contrast_max = m_data.min(), m_data.max()
+                normalize_data = params.get('normalize', False)
+                if contrast_min < -1.0 or contrast_max > 1.0:
+                    if normalize_data:
+                        self.io.log_info('Normalizing movie data to (-1.0, 1.0).')
+                        m_data = m_data*2.0/(contrast_max - contrast_min) - 1.0
+                    else:
+                        self.io.log_info('Movie data range is not normalized to (-1.0, 1.0).')
 
                 init_params = FilterSimulator.find_params(['row_range', 'col_range', 'labels', 'units', 'frame_rate',
                                                            't_range'], **params)
@@ -50,6 +69,7 @@ class FilterSimulator(Simulator):
             del init_params['col_size']
             init_params['t_on'] = init_params['t_on']/1000.0
             init_params['t_off'] = init_params['t_off']/1000.0
+            init_params['max_intensity'] = init_params.get('max_intensity', 1)# *-1.0
 
             ffm = FullFieldFlashMovie(**init_params)
             mv = ffm.full(t_max=self._tstop)
@@ -59,6 +79,8 @@ class FilterSimulator(Simulator):
             init_params = FilterSimulator.find_params(['row_size', 'col_size', 'frame_rate'], **params)
             create_params = FilterSimulator.find_params(['gray_screen_dur', 'cpd', 'temporal_f', 'theta', 'contrast'],
                                                         **params)
+
+            create_params['gray_screen_dur'] /= 1000.0
             gm = GratingMovie(**init_params)
             graiting_movie = gm.create_movie(t_min=0.0, t_max=self._tstop, **create_params)
             self._movies.append(graiting_movie)
@@ -83,8 +105,16 @@ class FilterSimulator(Simulator):
             mod.initialize(self)
 
         io.log_info('Evaluating rates.')
-        for cell in self._network.cells():
+
+        cells_on_rank = self.local_cells()
+        n_cells_on_rank = len(cells_on_rank)
+        ten_percent = int(np.ceil(n_cells_on_rank*0.1))
+        rank_msg = '' if bmtk_world_comm.MPI_size < 2 else ' (on rank {})'.format(bmtk_world_comm.MPI_rank)
+
+        for cell_num, cell in enumerate(cells_on_rank):
             for movie, options in zip(self._movies, self._eval_options):
+                if cell_num > 0 and cell_num % ten_percent == 0:
+                    io.log_debug(' Processing cell {} of {}{}.'.format(cell_num, n_cells_on_rank, rank_msg))
                 ts, f_rates = cell.lgn_cell_obj.evaluate(movie, **options)
 
                 for mod in self._sim_mods:
@@ -93,6 +123,9 @@ class FilterSimulator(Simulator):
         io.log_info('Done.')
         for mod in self._sim_mods:
             mod.finalize(self)
+
+    def local_cells(self):
+        return self._network.cells()
 
     @staticmethod
     def find_params(param_names, **kwargs):
@@ -119,53 +152,24 @@ class FilterSimulator(Simulator):
         if config.jitter is not None:
             network.jitter = config.jitter
 
-        network.io.log_info('Building cells.')
-        network.build_nodes()
-
-        # TODO: Need to create a gid selector
         for sim_input in inputs.from_config(config):
             if sim_input.input_type == 'movie':
                 sim.add_movie(sim_input.module, sim_input.params)
             else:
                 raise Exception('Unable to load input type {}'.format(sim_input.input_type))
 
+        network.io.log_info('Building cells.')
+        network.build_nodes()
+
         rates_csv = config.output.get('rates_csv', None)
         rates_h5 = config.output.get('rates_h5', None)
         if rates_csv or rates_h5:
             sim.add_mod(mods.RecordRates(rates_csv, rates_h5, config.output_dir))
 
-        spikes_csv = config.output.get('spikes_csv', None)
-        spikes_h5 = config.output.get('spikes_h5', None)
-        spikes_nwb = config.output.get('spikes_nwb', None)
+        spikes_csv = config.output.get('spikes_csv', None) or config.output.get('spikes_file_csv', None)
+        spikes_h5 = config.output.get('spikes_h5', None) or config.output.get('spikes_file', None)
+        spikes_nwb = config.output.get('spikes_nwb', None) or config.output.get('spikes_file_nwb', None)
         if spikes_csv or spikes_h5 or spikes_nwb:
             sim.add_mod(mods.SpikesGenerator(spikes_csv, spikes_h5, spikes_nwb, config.output_dir))
 
-        # Parse the "reports" section of the config and load an associated output module for each report
-        """
-        sim_reports = reports.from_config(config)
-        for report in sim_reports:
-            if isinstance(report, reports.SpikesReport):
-                mod = mods.SpikesMod(**report.params)
-
-            elif isinstance(report, reports.MembraneReport):
-                if report.params['sections'] == 'soma':
-                    mod = mods.SomaReport(**report.params)
-
-                else:
-                    #print report.params
-                    mod = mods.MembraneReport(**report.params)
-
-            elif isinstance(report, reports.ECPReport):
-                mod = mods.EcpMod(**report.params)
-                # Set up the ability for ecp on all relevant cells
-                # TODO: According to spec we need to allow a different subset other than only biophysical cells
-                for gid, cell in network.cell_type_maps('biophysical').items():
-                    cell.setup_ecp()
-            else:
-                # TODO: Allow users to register customized modules using pymodules
-                io.log_warning('Unrecognized module {}, skipping.'.format(report.module))
-                continue
-
-            sim.add_mod(mod)
-        """
         return sim

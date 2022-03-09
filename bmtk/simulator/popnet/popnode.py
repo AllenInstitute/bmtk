@@ -20,7 +20,50 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-from bmtk.simulator.utils.graph import SimNode
+
+
+class SimNode(object):
+    def __init__(self, node_id, graph, network, params):
+        self._node_id = node_id
+        self._graph = graph
+        self._graph_params = params
+        self._node_type_id = params['node_type_id']
+        self._network = network
+        self._updated_params = {}
+
+        self._model_params = {}
+
+    @property
+    def node_id(self):
+        return self._node_id
+
+    @property
+    def node_type_id(self):
+        return self._node_type_id
+
+    @property
+    def network(self):
+        """Name of network node belongs too."""
+        return self._network
+
+    @property
+    def model_params(self):
+        """Parameters (json file, nml, dictionary) that describe a specific node"""
+        return self._model_params
+
+    @model_params.setter
+    def model_params(self, value):
+        self._model_params = value
+
+    def __contains__(self, item):
+        return item in self._updated_params or item in self._graph_params
+
+    def __getitem__(self, item):
+        if item in self._updated_params:
+            return self._updated_params[item]
+        else:
+            return self._graph_params[item]
+
 
 class PopNode(SimNode):
     def __init__(self, node_id, graph, network, params):
@@ -74,20 +117,9 @@ class PopNode(SimNode):
 
 
 class InternalNode(PopNode):
-    """
-    def __init__(self, node_id, graph, network, params):
-        super(InternalNode, self).__init__(node_id, graph, network, params)
-        #self._pop_id = node_id
-        #self._graph = graph
-        #self._network = network
-        #self._graph_params = params
-        #self._dynamics_params = {}
-        #self._update_params = {'dynamics_params': self._dynamics_params}
-    """
     @property
     def tau_m(self):
         return self['tau_m']
-        #return self._dynamics_params.get('tau_m', None)
 
     @tau_m.setter
     def tau_m(self, value):

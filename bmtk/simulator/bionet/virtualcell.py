@@ -21,6 +21,9 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 from neuron import h
+import numpy as np
+
+from bmtk.simulator.bionet.io_tools import io
 
 
 class VirtualCell(object):
@@ -47,7 +50,20 @@ class VirtualCell(object):
 
     def set_stim(self, stim_prop, spike_train):
         """Gets the spike trains for each individual cell."""
-        self._train_vec = h.Vector(spike_train.get_times(node_id=self.node_id)) #, population=self._population))
+        spikes = spike_train.get_times(node_id=self.node_id)
+
+        if spikes is None:
+            spikes = []
+
+        if np.any(np.array(spikes) < 0.0):
+            # NRN will fail if VecStim contains negative spike-time, throw an exception and log info for user
+            io.log_exception('spike train {} contains negative number, unable to run virtual cell in NEURON'.format(
+                spikes
+            ))
+
+        spikes = np.sort(spikes)  # sort the spikes for NEURON, will throw a segfault if not sorted
+
+        self._train_vec = h.Vector(spikes)
         vecstim = h.VecStim()
         vecstim.play(self._train_vec)
         self._hobj = vecstim

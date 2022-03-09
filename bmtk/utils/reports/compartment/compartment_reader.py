@@ -9,6 +9,7 @@ class _CompartmentPopulationReaderVer01(CompartmentReaderABC):
     sonata_columns = ['element_ids', 'element_pos', 'index_pointer', 'node_ids', 'time']
 
     def __init__(self, pop_grp, pop_name):
+        self._pop_grp = pop_grp
         self._data_grp = pop_grp['data']
         self._mapping = pop_grp['mapping']
         self._population = pop_name
@@ -32,6 +33,11 @@ class _CompartmentPopulationReaderVer01(CompartmentReaderABC):
                              col not in self.sonata_columns and isinstance(grp, h5py.Dataset)}
 
     def _get_index(self, node_id):
+        if node_id not in self._gid2data_table:
+            raise KeyError('node_id {} not found in {}/mapping/node_ids in file {}'.format(
+                node_id, self._pop_grp.name, self._pop_grp.file.filename
+            ))
+
         return self._gid2data_table[node_id]
 
     @property
@@ -129,7 +135,6 @@ class _CompartmentPopulationReaderVer01(CompartmentReaderABC):
 
         filtered_data = np.array(self._data_grp[time_slice, gid_slice])
         return filtered_data if multi_compartments else filtered_data[:]
-
 
     def custom_columns(self, population=None):
         return {k: v[()] for k,v in self._custom_cols.items()}

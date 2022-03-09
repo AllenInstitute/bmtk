@@ -61,6 +61,7 @@ def write_sonata(path, spiketrain_reader, mode='w', sort_order=SortOrder.none, u
                 spikes_pop_grp.attrs['sorting'] = sort_order.value
 
             spikes_pop_grp.create_dataset('timestamps', data=pop_df['timestamps'])
+            spikes_pop_grp['timestamps'].attrs['units'] = spiketrain_reader.units()
             spikes_pop_grp.create_dataset('node_ids', data=pop_df['node_ids'])
     comm_barrier()
 

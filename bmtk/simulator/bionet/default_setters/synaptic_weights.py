@@ -49,3 +49,4 @@ def gaussianLL(edge_props, src_props, trg_props):
 add_weight_function(wmax, 'wmax', overwrite=False)
 add_weight_function(gaussianLL, 'gaussianLL', overwrite=False)
 add_weight_function(default_weight_fnc, 'default_weight_fnc', overwrite=False)
+add_weight_function(default_weight_fnc, 'set_syn_weight', overwrite=False)

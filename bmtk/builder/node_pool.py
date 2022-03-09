@@ -32,11 +32,11 @@ class NodePool(object):
     nodes.
 
     TODO:
-    * Implement a collection-set algebra including | and not operators. ie.
-        nodes = net.nodes(type=1) | net.nodes(type=2)
-    * Implement operators on properties
-        nodes = net.nodes(val) > 100
-        nodes = 100 in net.nodes(val)
+        * Implement a collection-set algebra including | and not operators. ie.
+            nodes = net.nodes(type=1) | net.nodes(type=2)
+        * Implement operators on properties
+            nodes = net.nodes(val) > 100
+            nodes = 100 in net.nodes(val)
     """
 
     def __init__(self, network, **properties):

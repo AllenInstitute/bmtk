@@ -38,6 +38,7 @@ def _get_cell_report(config_file, report_name):
 
 
 def load_reports(config_file):
+    """"""
     cfg = ConfigDict.from_json(config_file)
     reports = []
     for report_name, report in cfg.reports.items():

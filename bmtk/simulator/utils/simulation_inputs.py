@@ -1,5 +1,44 @@
 
 class SimInput(object):
+    """A helper class for parsing the "inputs" section of a SONATA config file. Separate the actual parameters needed
+    to instantiate a module from the metadata parameters (eg, name, module, input_type)
+
+    Use the build() method to parse the json/dictionary of a section of input, then **params** to get a dictionary
+    of the values used to instantiate::
+
+        input = SimInput.Build(
+                  'spikes_inputs',
+                  {'module': 'spikes', 'input_type': 'hdf5', input_file: 'my_spikes.h5', 'time_scale': 'ms'}
+        )
+
+        if input.module == 'spike':
+            SpikesInput(**params)
+            ...
+
+    Attributes:
+
+        * **name** - str, name of module
+        * **input_type** - str
+        * **module** - str,
+        * **params** - dictionary, all parameters (not including name, input_type, module)
+
+    Custom Modules:
+
+        Sometimes certain input types may require extra steps in processing, like auto-conversion of filling in missing
+        parameters. In this case use the register module method::
+
+            class MyVClampInput(SimInput):
+                def avail_module():
+                    return ['vclamp', 'voltage_clamp']
+
+                def build():
+                    ....
+
+            SimInput.registerModule(MyVClampInput)
+
+        Then when SimInput.build() is called and the 'module_name'=='vclamp' (or 'voltage_clamp') it will pass the parsing
+        to the MyVClampInput class.
+    """
     registry = {}  # For factory function
 
     def __init__(self, input_name, input_type, module, params):
@@ -16,7 +55,7 @@ class SimInput(object):
         # Special variable, not a part of standard but still want for ease of testing
         if 'enabled' in params:
             self.enabled = params['enabled']
-            del params['enabled']
+            del self.params['enabled']
         else:
             self.enabled = True
 
@@ -36,6 +75,12 @@ class SimInput(object):
 
     @classmethod
     def build(cls, input_name, params):
+        """Creates a SimInput object with parsed out parameters
+
+        :param input_name: name of specific input
+        :param params: dictionary of input parameters
+        :return: SimInput object, or subclass that matches the specified 'module' value
+        """
         params = params.copy()
         if 'module' not in params:
             raise Exception('inputs setting {} does not specify the "module".'.format(input_name))
@@ -51,6 +96,10 @@ class SimInput(object):
 
     @classmethod
     def register_module(cls, subclass):
+        """
+
+        :param subclass:
+        """
         # For factory, register subclass based on the module name(s)
         assert(issubclass(subclass, cls))
         mod_registry = cls.registry
@@ -65,6 +114,12 @@ class SimInput(object):
 
 
 def from_config(cfg):
+    """Takes in a bmtk.utils.Config instance and will automatically parse each "input" in the config sections,
+    returning a list of SimInput objects. If an input has "enabled" = False then it will automatically be excluded.
+
+    :param cfg: A SONATAConfig object
+    :return: A list of SimInput modules corresponding to the parsed inputs of a config.
+    """
     inputs_list = []
     for input_name, input_params in cfg.inputs.items():
         input_setting = SimInput.build(input_name, input_params)

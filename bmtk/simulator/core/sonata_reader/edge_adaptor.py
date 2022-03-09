@@ -165,7 +165,7 @@ class EdgeAdaptor(object):
             raise Exception('Could not find syn_weight or weight_function properties. Cannot create connections.')
 
         # For determining the synapse placement
-        if 'sec_id' in edge_group.all_columns:
+        if 'sec_id' in edge_group.all_columns or 'afferent_section_id' in edge_group.all_columns:
             adaptor.preselected_targets = True
             adaptor.nsyns = types.MethodType(no_nsyns, adaptor)
         elif 'nsyns' in edge_group.all_columns:

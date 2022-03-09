@@ -1,0 +1,73 @@
+{
+    "manifest": {
+      "$BASE_DIR": "${configdir}",
+      "$NETWORK_DIR": "$BASE_DIR/network",
+      "$MODELS_DIR": "$BASE_DIR/../../point_components",
+      "$OUTPUT_DIR": "$BASE_DIR/output",
+      "$INPUT_DIR": "$BASE_DIR/inputs"
+    },
+
+    "run": {
+      "duration": 3000.0,
+      "dt": 0.01
+    },
+
+    "target_simulator":"NEST",
+
+    "inputs": {
+      "input_spikes": {
+        "input_type": "spikes",
+        "module": "h5",
+        "input_file": "$INPUT_DIR/injective_500hz.h5",
+        "node_set": "external"
+      }
+    },
+
+    "reports": {
+   
+        "membrane_potential": {
+        "cells": {"population": "external", "node_ids": [0,2500,5000,7500,10000,12000]},
+        "variable_name": "V_m",
+        "module": "membrane_report",
+        "file_name": "$OUTPUT_DIR/cell_vars.h5",
+        "enabled": true
+        }
+      },
+
+    "output": {
+      "log_file": "$OUTPUT_DIR/log.txt",
+      "spikes_file": "$OUTPUT_DIR/spikes.h5",
+      "spikes_file_csv": "$OUTPUT_DIR/spikes.csv",
+      "output_dir": "$OUTPUT_DIR",
+      "overwrite_output_dir": true
+    },
+
+    "components": {
+      "point_neuron_models_dir": "$MODELS_DIR/cell_models",
+      "synaptic_models_dir": "$MODELS_DIR/synaptic_models"
+    },
+
+
+    "networks": {
+      "nodes": [
+        {
+          "nodes_file": "$NETWORK_DIR/internal_nodes.h5",
+          "node_types_file": "$NETWORK_DIR/internal_node_types.csv"
+        },
+        {
+          "nodes_file": "$NETWORK_DIR/external_nodes.h5",
+          "node_types_file": "$NETWORK_DIR/external_node_types.csv"
+        }
+      ],
+      "edges": [
+        {
+          "edges_file": "$NETWORK_DIR/internal_internal_edges.h5",
+          "edge_types_file": "$NETWORK_DIR/internal_internal_edge_types.csv"
+        },
+        {
+          "edges_file": "$NETWORK_DIR/external_internal_edges.h5",
+          "edge_types_file": "$NETWORK_DIR/external_internal_edge_types.csv"
+        }
+      ]
+    }
+  }

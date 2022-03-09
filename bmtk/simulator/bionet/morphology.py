@@ -49,7 +49,7 @@ class Morphology(object):
         n3dsoma = 0
         r3dsoma = np.zeros(3)
         for sec in self.hobj.soma:
-            n3d = int(h.n3d())  # get number of n3d points in each section
+            n3d = int(h.n3d(sec=sec))  # get number of n3d points in each section
             r3d = np.zeros((3, n3d))  # to hold locations of 3D morphology for the current section
             n3dsoma += n3d
 
@@ -76,17 +76,17 @@ class Morphology(object):
         d05 = np.zeros(self.nseg)
 
         for sec in self.hobj.all:
-            n3d = int(h.n3d())  # get number of n3d points in each section
+            n3d = int(h.n3d(sec=sec))  # get number of n3d points in each section
             p3d = np.zeros((3, n3d))  # to hold locations of 3D morphology for the current section
             l3d = np.zeros(n3d)  # to hold locations of 3D morphology for the current section
             diam3d = np.zeros(n3d)  # to diameters
 
             for i in range(n3d):
-                p3d[0, i] = h.x3d(i) - p3dsoma[0]
-                p3d[1, i] = h.y3d(i) - p3dsoma[1]  # shift coordinates such to place soma at the origin.
-                p3d[2, i] = h.z3d(i) - p3dsoma[2]
-                diam3d[i] = h.diam3d(i)
-                l3d[i] = h.arc3d(i)
+                p3d[0, i] = h.x3d(i, sec=sec) - p3dsoma[0]
+                p3d[1, i] = h.y3d(i, sec=sec) - p3dsoma[1]  # shift coordinates such to place soma at the origin.
+                p3d[2, i] = h.z3d(i, sec=sec) - p3dsoma[2]
+                diam3d[i] = h.diam3d(i, sec=sec)
+                l3d[i] = h.arc3d(i, sec=sec)
 
             l3d /= sec.L                  # normalize
             nseg = sec.nseg
@@ -116,7 +116,6 @@ class Morphology(object):
             p05[2,ix:ix+nseg] = np.interp(l05, l3d, p3d[2,:])
 
             ix += nseg
-
         self.seg_coords = {}
 
         self.seg_coords['p0'] = p0
@@ -150,7 +149,8 @@ class Morphology(object):
                 seg_x.append(seg.x)
                 seg_length.append(sec.L/sec.nseg)
                 seg_type.append(sec_type_swc)           # record section type in a list
-                seg_dist.append(h.distance(seg.x))  # distance to the center of the segment
+                # seg_dist.append(h.distance(seg.x))  # distance to the center of the segment
+                seg_dist.append(h.distance(seg))
 
         self.seg_prop = {}
         self.seg_prop['type'] = np.array(seg_type)

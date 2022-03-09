@@ -86,6 +86,7 @@ class EcpMod(SimulatorMod):
         # create file to temporary store ecp data on each rank
         self._tmp_ecp_handle = h5py.File(self._tmp_ecp_file, 'a')
         self._tmp_ecp_handle.create_dataset('/ecp/data', (self._nsteps, self._rel_nsites), maxshape=(None, self._rel_nsites),
+                                            dtype=np.float64,
                                             chunks=True)
 
         # only the primary node will need to save the final ecp
@@ -94,6 +95,7 @@ class EcpMod(SimulatorMod):
                 add_hdf5_magic(f5)
                 add_hdf5_version(f5)
                 f5.create_dataset('/ecp/data', (self._nsteps, self._rel_nsites), maxshape=(None, self._rel_nsites),
+                                  dtype=np.float64,
                                   chunks=True)
                 f5['/ecp/data'].attrs['units'] = 'mV'
                 #f5.attrs['dt'] = dt

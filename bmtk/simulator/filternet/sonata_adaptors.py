@@ -191,6 +191,11 @@ def find_delays_params(node_group, node_adaptor):
     elif 'delays_dom_0' in node_group.all_columns and 'delays_dom_1' in node_group.all_columns:
         node_adaptor.delays = types.MethodType(lambda self, node: [node['delays_dom_0'], node['delays_dom_1']],
                                                 node_adaptor)
+
+    elif 'delay_dom_0' in node_group.all_columns and 'delay_dom_1' in node_group.all_columns:
+        node_adaptor.delays = types.MethodType(lambda self, node: [node['delay_dom_0'], node['delay_dom_1']],
+                                                node_adaptor)
+
     else:
         node_adaptor.delays = types.MethodType(return_none, node_adaptor)
 

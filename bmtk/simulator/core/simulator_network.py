@@ -4,7 +4,6 @@ import os
 import h5py
 
 from bmtk.simulator.core.io_tools import io
-#from bmtk.simulator.core.config import ConfigDict
 from .simulation_config import SimulationConfig
 from bmtk.simulator.core.node_sets import NodeSet, NodeSetAll
 from bmtk.simulator.core import sonata_reader
@@ -140,8 +139,6 @@ class SimNetwork(object):
             if 'population' not in node_pop_df:
                 node_pop_df['population'] = node_pop.name
 
-            #node_pop_df = node_pop_df.set_index([node_pop_df.index.astype(dtype=np.uint64)])
-
             if all_nodes_df is None:
                 all_nodes_df = node_pop_df
             else:
@@ -200,7 +197,7 @@ class SimNetwork(object):
     def build_nodes(self):
         raise NotImplementedError()
 
-    def build_recurrent_edges(self):
+    def build_recurrent_edges(self, **opts):
         raise NotImplementedError()
 
     def build_virtual_connections(self):

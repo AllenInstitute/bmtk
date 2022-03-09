@@ -1,0 +1,61 @@
+{
+  "manifest": {
+    "$BASE_DIR": ".",
+    "$OUTPUT_DIR": "$BASE_DIR/output",
+    "$INPUT_DIR": "$BASE_DIR/inputs",
+    "$NETWORK_DIR": "$BASE_DIR/network",
+    "$COMPONENT_DIR": "$BASE_DIR/../population_components"
+  },
+
+  "run": {
+    "tstop": 1500.0,
+    "dt": 0.002
+  },
+
+  "inputs": {
+    "LGN_pop_rates": {
+      "input_type": "csv",
+      "module": "pop_rates",
+      "rates": "$INPUT_DIR/lgn_rates.csv",
+      "node_set": "external"
+    }
+  },
+
+  "output": {
+    "output_dir": "$OUTPUT_DIR",
+    "rates_file": "spike_rates.csv",
+	"log_file": "log.txt",
+    "overwrite_output_dir": true
+  },
+
+  "target_simulator":"DiPDE",
+
+  "components": {
+    "population_models_dir": "$COMPONENT_DIR/pop_models",
+    "synaptic_models_dir": "$COMPONENT_DIR/synaptic_models"
+  },
+
+  "networks": {
+    "nodes": [
+      {
+        "nodes_file": "$NETWORK_DIR/internal_nodes.h5",
+        "node_types_file": "$NETWORK_DIR/internal_node_types.csv"
+      },
+      {
+        "nodes_file": "$NETWORK_DIR/external_nodes.h5",
+        "node_types_file": "$NETWORK_DIR/external_node_types.csv"
+      }
+    ],
+
+    "edges": [
+      {
+        "edges_file": "$NETWORK_DIR/internal_internal_edges.h5",
+        "edge_types_file": "$NETWORK_DIR/internal_internal_edge_types.csv"
+      },
+      {
+        "edges_file": "$NETWORK_DIR/external_internal_edges.h5",
+        "edge_types_file": "$NETWORK_DIR/external_internal_edge_types.csv"
+      }
+    ]
+  }
+}

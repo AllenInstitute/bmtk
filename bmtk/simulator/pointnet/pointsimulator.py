@@ -73,8 +73,6 @@ class PointSimulator(Simulator):
         nest.ResetKernel()
         nest.SetKernelStatus({"resolution": self._dt, "overwrite_files": self._overwrite, "print_time": print_time})
 
-
-
     @property
     def tstart(self):
         return 0.0
@@ -93,7 +91,7 @@ class PointSimulator(Simulator):
 
     @property
     def n_steps(self):
-        return long((self.tstop-self.tstart)/self.dt)
+        return int((self.tstop-self.tstart)/self.dt)
 
     @property
     def net(self):
@@ -149,7 +147,8 @@ class PointSimulator(Simulator):
 
         # Convert node set into list of gids and then look-up the nest-ids
         for pop_name in node_set.population_names():
-            nest_ids = self.net.gid_map.get_nestids(pop_name, node_set.gids())
+            # nest_ids = self.net.gid_map.get_nestids(pop_name, list(node_set.gids()))
+            nest_ids = node_set.gids()
             nest.Connect(scg, list(nest_ids), syn_spec={'delay': self.dt})
 
     def run(self, tstop=None):

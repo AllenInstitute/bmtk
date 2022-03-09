@@ -1,0 +1,130 @@
+{
+  "manifest": {
+    "$BASE_DIR": ".",
+    "$OUTPUT_DIR": "$BASE_DIR/output_xstim",
+    "$COMPONENT_DIR": "$BASE_DIR/../bio_components",
+    "$STIM_DIR": "$BASE_DIR/../bio_components/stimulations",
+    "$NETWORK_DIR": "$BASE_DIR/network"
+  },
+
+  "run": {
+    "tstop": 4000.0,
+    "dt": 0.1,
+    "dL": 20.0,
+    "spike_threshold": -15,
+    "nsteps_block": 10000
+  },
+
+  "target_simulator":"NEURON",
+
+  "conditions": {
+    "celsius": 34.0,
+    "v_init": -80
+  },
+
+  "inputs": {
+    "Extracellular_Stim": {
+      "input_type": "lfp",
+      "node_set": "all",
+      "module": "xstim",
+      "positions_file": "$STIM_DIR/485058595_0000.csv",
+      "mesh_files_dir": "$STIM_DIR",
+      "waveform": {
+        "shape": "sin",
+        "del": 1000.0,
+        "amp": 0.100,
+        "dur": 2000.0,
+        "freq": 8.0
+      }
+    }
+  },
+
+  "output":{
+    "log_file": "log.txt",
+    "output_dir": "$OUTPUT_DIR",
+    "spikes_file": "spikes.h5",
+    "spikes_file_csv": "spikes.csv",
+    "spikes_sort_order": "time"
+  },
+
+  "node_sets": {
+    "biophys_cells": {
+      "model_type": "biophysical"
+    }
+  },
+
+  "reports": {
+    "calcium_concentration": {
+      "cells": "biophys_cells",
+      "variable_name": "cai",
+      "module": "membrane_report",
+      "file_name": "cai_report.h5",
+      "sections": "soma",
+      "enabled": true
+    },
+
+    "membrane_potential": {
+      "cells": "biophys_cells",
+      "variable_name": "v",
+      "module": "membrane_report",
+      "file_name": "v_report.h5",
+      "sections": "soma",
+      "enabled": true
+    },
+
+    "extracellular": {
+      "cells": "biophys_cells",
+      "variable_name": "e_extracellular",
+      "module": "membrane_report",
+      "file_name": "e_report.h5",
+      "sections": "soma",
+      "enabled": true
+    },
+
+    "im": {
+      "cells": "biophys_cells",
+      "variable_name": "i_membrane",
+      "module": "membrane_report",
+      "file_name": "i_report.h5",
+      "sections": "soma",
+      "enabled": true
+    },
+
+    "vext": {
+      "cells": "biophys_cells",
+      "variable_name": "vext",
+      "module": "membrane_report",
+      "file_name": "vext_report.h5",
+      "sections": "soma",
+      "transform": "first_element",
+      "enabled": true
+    },
+
+    "ecp": {
+      "cells": "biophys_cells",
+      "variable_name": "v",
+      "module": "extracellular",
+      "electrode_positions": "$COMPONENT_DIR/recXelectrodes/linear_electrode.csv",
+      "file_name": "ecp.h5",
+      "electrode_channels": "soma",
+      "contributions_dir": "ecp_contributions",
+      "enabled": true
+    }
+  },
+
+  "components": {
+    "morphologies_dir": "$COMPONENT_DIR/morphologies",
+    "synaptic_models_dir": "$COMPONENT_DIR/synaptic_models",
+    "mechanisms_dir":"$COMPONENT_DIR/mechanisms",
+    "biophysical_neuron_models_dir": "$COMPONENT_DIR/biophysical_neuron_templates/ctdb"
+  },
+
+  "networks": {
+    "nodes": [
+      {
+        "nodes_file": "$NETWORK_DIR/bio_nodes.h5",
+        "node_types_file": "$NETWORK_DIR/bio_node_types.csv"
+      }
+    ]
+  }
+}

@@ -158,8 +158,16 @@ class SonataSTReader(SpikeTrainsReadOnlyAPI):
         self._build_node_index()
 
         # units are not instrinsic to a csv file, but allow users to pass it in if they know
-        # TODO: Should check the populations for the units
-        self._units = kwargs.get('units', 'ms')
+        self._units_maps = {}
+        for pop_name, pop_grp in self._population_map.items():
+            if 'units' in pop_grp['timestamps'].attrs:
+                pop_units = pop_grp['timestamps'].attrs['units']
+            elif 'units' in kwargs:
+                pop_units = kwargs['units']
+            else:
+                pop_units = 'ms'
+
+            self._units_maps[pop_name] = pop_units
 
     def _build_node_index(self):
         self._indexed = False
@@ -191,13 +199,12 @@ class SonataSTReader(SpikeTrainsReadOnlyAPI):
     def populations(self):
         return list(self._population_map.keys())
 
-    @property
     def units(self, population=None):
-        return self._units
+        population = population if population is not None else self._default_pop
+        return self._units_maps[population]
 
-    @units.setter
-    def units(self, u, population=None):
-        self._units = u
+    def set_units(self, u, population=None):
+        self._units_maps[population] = u
 
     def sort_order(self, population=None):
         return self._population_sorting_map[population]
@@ -359,7 +366,6 @@ class SonataSTReader(SpikeTrainsReadOnlyAPI):
 
 class SonataOldReader(SonataSTReader):
     """Older version of SONATA
-
     """
 
     def node_ids(self, population=None):

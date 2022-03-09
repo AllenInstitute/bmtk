@@ -74,13 +74,14 @@ class NodeSet(object):
 class Node(object):
     # TODO: include population name/reference
     # TODO: make a dictionary (or preferably a collections.MutableMap
-    def __init__(self, node_id, node_type_id, node_types_props, group_id, group_props, dynamics_params, gid=None):
+    def __init__(self, node_id, pop_name, node_type_id, node_types_props, group_id, group_props, dynamics_params, gid=None):
         self._node_id = node_id
         self._gid = gid
         self._node_type_id = node_type_id
         self._node_type_props = node_types_props
         self._group_id = group_id
         self._group_props = group_props
+        self._pop_name = pop_name
 
     @property
     def node_id(self):
@@ -89,6 +90,10 @@ class Node(object):
     @property
     def gid(self):
         return self._gid
+
+    @property
+    def population_name(self):
+        return self._pop_name
 
     @property
     def group_id(self):

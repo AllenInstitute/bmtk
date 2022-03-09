@@ -24,6 +24,7 @@ import os
 import json
 import functools
 import nest
+
 from six import string_types
 import numpy as np
 
@@ -31,7 +32,39 @@ from bmtk.simulator.core.simulator_network import SimNetwork
 from bmtk.simulator.pointnet.sonata_adaptors import PointNodeAdaptor, PointEdgeAdaptor
 from bmtk.simulator.pointnet import pyfunction_cache
 from bmtk.simulator.pointnet.io_tools import io
+from bmtk.simulator.pointnet.nest_utils import nest_version
 from .gids import GidPool
+
+
+def set_spikes_nest2(node_id, nest_obj, spike_trains):
+    st = spike_trains.get_times(node_id=node_id)
+    if st is None or len(st) == 0:
+        return
+
+    st = np.array(st)
+    if np.any(st <= 0.0):
+        # NRN will fail if VecStim contains negative spike-time, throw an exception and log info for user
+        io.log_exception('spike train {} contains negative/zero time, unable to run virtual cell in NEST'.format(st))
+    st.sort()
+    nest.SetStatus([nest_obj], {'spike_times': st})
+
+
+def set_spikes_nest3(node_id, nest_obj, spike_trains):
+    st = spike_trains.get_times(node_id=node_id)
+    if st is None or len(st) == 0:
+        return
+
+    st = np.array(st)
+    if np.any(st <= 0.0):
+        io.log_exception('spike train {} contains negative/zero time, unable to run virtual cell in NEST'.format(st))
+    st.sort()
+    nest.SetStatus(nest_obj, {'spike_times': st})
+
+
+if nest_version[0] >= 3:
+    set_spikes = set_spikes_nest3
+else:
+    set_spikes = set_spikes_nest2
 
 
 class PointNetwork(SimNetwork):
@@ -63,6 +96,10 @@ class PointNetwork(SimNetwork):
 
     @property
     def gid_map(self):
+        return self._gid_map
+
+    @property
+    def gid_pool(self):
         return self._gid_map
 
     def get_nodes_df(self, population):
@@ -111,38 +148,18 @@ class PointNetwork(SimNetwork):
             gid_map = self.gid_map
 
             gid_map.create_pool(pop_name)
-            # nid2nest_map = {}
-            # nest2nid_map = {}
             if node_pop.internal_nodes_only:
                 for node in node_pop.get_nodes():
                     node.build()
                     gid_map.add_nestids(name=pop_name, node_ids=node.node_ids, nest_ids=node.nest_ids)
-                    '''
-                    for nid, gid, nest_id in zip(node.node_ids, node.gids, node.nest_ids):
-                        # gid_map.add(name=pop_name, node_id=nid, gid=nest_id)
-
-                        self._nestid2gid[nest_id] = gid
-                        self._gid2nestid[gid] = nest_id
-                        nid2nest_map[nid] = nest_id
-                        nest2nid_map[nest_id] = nid
-                    '''
 
             elif node_pop.mixed_nodes:
                 for node in node_pop.get_nodes():
                     if node.model_type != 'virtual':
                         node.build()
                         gid_map.add_nestids(name=pop_name, node_ids=node.node_ids, nest_ids=node.nest_ids)
-                        '''
-                        for nid, gid, nest_id in zip(node.node_ids, node.gids, node.nest_ids):
-                            gid_map.add(name=pop_name, node_id=nid, gid=nest_id)
-                            nid2nest_map[nid] = nest_id
-                            nest2nid_map[nest_id] = nid
-                        '''
 
-            #self._nest_id_map[node_pop.name] = nid2nest_map
-            #self._nestid2nodeid_map[node_pop.name] = nest2nid_map
-
-    def build_recurrent_edges(self):
+    def build_recurrent_edges(self, force_resolution=False):
         recurrent_edge_pops = [ep for ep in self._edge_populations if not ep.virtual_connections]
         if not recurrent_edge_pops:
             return
@@ -151,7 +168,7 @@ class PointNetwork(SimNetwork):
             for edge in edge_pop.get_edges():
                 nest_srcs = self.gid_map.get_nestids(edge_pop.source_nodes, edge.source_node_ids)
                 nest_trgs = self.gid_map.get_nestids(edge_pop.target_nodes, edge.target_node_ids)
-                nest.Connect(nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=edge.nest_params)
+                self._nest_connect(nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=edge.nest_params)
 
     def find_edges(self, source_nodes=None, target_nodes=None):
         # TODO: Move to parent
@@ -176,16 +193,13 @@ class PointNetwork(SimNetwork):
             virt_node_map = {}
             if node_pop.virtual_nodes_only:
                 for node in node_pop.get_nodes():
-                    nest_ids = nest.Create('spike_generator', node.n_nodes, sg_params)
-                    virt_gid_map.add_nestids(name=node_pop.name, nest_ids=nest_ids, node_ids=node.node_ids)
-                    for node_id, nest_id in zip(node.node_ids, nest_ids):
-                        virt_node_map[node_id] = nest_id
+                    nest_objs = nest.Create('spike_generator', node.n_nodes, sg_params)
+                    nest_ids = nest_objs.tolist() if nest_version[0] >= 3 else nest_objs
 
-                        st = np.array(spike_trains.get_times(node_id=node_id))
-                        if len(st) == 0:
-                            continue
-                        st.sort()
-                        nest.SetStatus([nest_id], {'spike_times': st})
+                    virt_gid_map.add_nestids(name=node_pop.name, nest_ids=nest_ids, node_ids=node.node_ids)
+                    for node_id, nest_obj, nest_id in zip(node.node_ids, nest_objs, nest_ids):
+                        virt_node_map[node_id] = nest_id
+                        set_spikes(node_id=node_id, nest_obj=nest_obj, spike_trains=spike_trains)
 
             elif node_pop.mixed_nodes:
                 for node in node_pop.get_nodes():
@@ -195,7 +209,7 @@ class PointNetwork(SimNetwork):
                     nest_ids = nest.Create('spike_generator', node.n_nodes, sg_params)
                     for node_id, nest_id in zip(node.node_ids, nest_ids):
                         virt_node_map[node_id] = nest_id
-                        nest.SetStatus([nest_id], {'spike_times': np.array(spike_trains.get_times(node_id=node_id))})
+                        set_spikes(node_id=node_id, nest_id=nest_id, spike_trains=spike_trains)
 
             self._virtual_ids_map[node_pop.name] = virt_node_map
 
@@ -205,4 +219,25 @@ class PointNetwork(SimNetwork):
                 for edge in edge_pop.get_edges():
                     nest_trgs = self.gid_map.get_nestids(edge_pop.target_nodes, edge.target_node_ids)
                     nest_srcs = virt_gid_map.get_nestids(edge_pop.source_nodes, edge.source_node_ids)
-                    nest.Connect(nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=edge.nest_params)
+                    self._nest_connect(nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=edge.nest_params)
+
+    def _nest_connect(self, nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=None):
+        """Calls nest.Connect but with some extra error logging and exception handling."""
+        try:
+            nest.Connect(nest_srcs, nest_trgs, conn_spec=conn_spec, syn_spec=syn_spec)
+
+        except nest.kernel.NESTErrors.BadDelay as bde:
+            # An occuring issue is when dt > delay, add some extra messaging in log to help users fix problem.
+            res_kernel = nest.GetKernelStatus().get('resolution', 'NaN')
+            delay_edges = syn_spec.get('delay', 'NaN')
+            msg = 'synaptic "delay" value in edges ({}) is not compatable with simulator resolution/"dt" ({})'.format(
+                delay_edges, res_kernel
+            )
+            self.io.log_error('{}{}'.format(bde.errorname, bde.errormessage))
+            self.io.log_error(msg)
+            raise
+
+        except Exception as e:
+            # Record exception to log file.
+            self.io.log_error(str(e))
+            raise

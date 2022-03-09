@@ -31,10 +31,20 @@ class Edge(object):
 
     @property
     def source_gid(self):
+        # TODO: Depreciate
+        return self.__src_gid
+
+    @property
+    def source_node_id(self):
         return self.__src_gid
 
     @property
     def target_gid(self):
+        # TODO: Depreciate
+        return self.__trg_gid
+
+    @property
+    def target_node_id(self):
         return self.__trg_gid
 
     @property

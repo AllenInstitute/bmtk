@@ -114,20 +114,23 @@ class PoissonSpikeGenerator(SpikeTrains):
     """
     max_spikes_per_node = 10000000
 
-    def __init__(self, population=None, seed=None, **kwargs):
+    def __init__(self, population=None, seed=None, output_units='ms', **kwargs):
         if population is not None and 'default_population' not in kwargs:
             kwargs['default_population'] = population
 
         if seed:
             np.random.seed(seed)
 
-        # if buffer_dir is not None:
-        #     adaptor = STCSVBuffer(cache_dir=buffer_dir, **kwargs)
-        # else:
-        #     adaptor = STMemoryBuffer(**kwargs)
-
-        super(PoissonSpikeGenerator, self).__init__(**kwargs)
-        self.units = 's'
+        super(PoissonSpikeGenerator, self).__init__(units=output_units, **kwargs)
+        # self.units = units
+        if output_units.lower() in ['ms', 'millisecond', 'milliseconds']:
+            self._units = 'ms'
+            self.output_conversion = 1000.0
+        elif output_units.lower() in ['s', 'second', 'seconds']:
+            self._units = 's'
+            self.output_conversion = 1.0
+        else:
+            raise AttributeError('Unknown output_units value {}'.format(output_units))
 
     def add(self, node_ids, firing_rate, population=None, times=(0.0, 1.0)):
         # TODO: Add refactory period
@@ -166,7 +169,7 @@ class PoissonSpikeGenerator(SpikeTrains):
                 if c_time > tstop:
                     break
 
-                self.add_spike(node_id=node_id, population=population, timestamp=c_time)
+                self.add_spike(node_id=node_id, population=population, timestamp=c_time*self.output_conversion)
 
     def _build_inhomegeous_fr(self, node_ids, population, fr, times):
         if np.min(fr) <= 0:
@@ -196,9 +199,9 @@ class PoissonSpikeGenerator(SpikeTrains):
                                        fr[time_indx-1], fr[time_indx])
 
                 if not fr_i/max_fr < np.random.uniform():
-                    self.add_spike(node_id=node_id, population=population, timestamp=c_time)
+                    self.add_spike(node_id=node_id, population=population, timestamp=c_time*self.output_conversion)
 
 
 def _interpolate_fr(t, t0, t1, fr0, fr1):
     # Used to interpolate the firing rate at time t from a discrete list of firing rates
-    return fr0 + (fr1 - fr0)*(t - t0)/t1
+    return fr0 + (fr1 - fr0)*(t - t0)/(t1 - t0)

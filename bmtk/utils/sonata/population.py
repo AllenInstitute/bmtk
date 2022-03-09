@@ -261,7 +261,7 @@ class NodePopulation(Population):
         node_group_props = self.get_group(node_group_id)[node_group_index]
         node_gid = self._gid_lookup_fnc(row_indx)
 
-        return Node(node_id, node_type_id, node_type_props, node_group_id, node_group_props, None, gid=node_gid)
+        return Node(node_id, self._pop_name, node_type_id, node_type_props, node_group_id, node_group_props, None, gid=node_gid)
 
     def get_rows(self, row_indicies):
         """Returns a set of all nodes based on list of row indicies.
@@ -610,8 +610,8 @@ class EdgePopulation(Population):
     def _get_index(self, index_struct, lookup_id):
         # TODO: Use a EdgeSet instead
         if lookup_id >= len(index_struct.lookup_table):
-            # TODO: Store length in index
-            raise StopIteration
+            return []
+            # raise StopIteration
 
         edges_table = index_struct.edge_table
         lookup_beg, lookup_end = index_struct.lookup_table[lookup_id]

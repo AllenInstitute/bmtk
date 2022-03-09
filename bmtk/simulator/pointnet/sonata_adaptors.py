@@ -9,6 +9,10 @@ from bmtk.simulator.core.sonata_reader import NodeAdaptor, SonataBaseNode, EdgeA
 from bmtk.simulator.pointnet.io_tools import io
 from bmtk.simulator.pointnet.pyfunction_cache import py_modules
 from bmtk.simulator.pointnet.glif_utils import convert_aibs2nest
+from bmtk.simulator.pointnet.nest_utils import nest_version
+
+NEST_SYNAPSE_MODEL_PROP = 'model' if nest_version[0] == 2 else 'synapse_model'
+
 
 
 def all_null(node_group, column_name):
@@ -26,6 +30,7 @@ class PointNodeBatched(object):
         self._gids = gids
         self._nt_table = node_types_table
         self._nt_id = node_type_id
+        self._nest_objs = []
         self._nest_ids = []
 
     @property
@@ -57,12 +62,14 @@ class PointNodeBatched(object):
         return self._nt_table[self._nt_id]['model_type']
 
     def build(self):
-        self._nest_ids = nest.Create(self.nest_model, self.n_nodes, self.nest_params)
+        self._nest_objs = nest.Create(self.nest_model, self.n_nodes, self.nest_params)
+        self._nest_ids = self._nest_objs.tolist() if nest_version[0] >= 3 else self._nest_objs
 
 
 class PointNode(SonataBaseNode):
     def __init__(self, node, prop_adaptor):
         super(PointNode, self).__init__(node, prop_adaptor)
+        self._nest_objs = []
         self._nest_ids = []
 
     @property
@@ -94,10 +101,12 @@ class PointNode(SonataBaseNode):
         dynamics_params = self.dynamics_params
         fnc_name = self._node['model_processing']
         if fnc_name is None:
-            self._nest_ids = nest.Create(nest_model, 1, dynamics_params)
+            self._nest_objs = nest.Create(nest_model, 1, dynamics_params)
         else:
             cell_fnc = py_modules.cell_processor(fnc_name)
-            self._nest_ids = cell_fnc(nest_model, self._node, dynamics_params)
+            self._nest_objs = cell_fnc(nest_model, self._node, dynamics_params)
+
+        self._nest_ids = self._nest_objs.tolist() if nest_version[0] >= 3 else self._nest_objs
 
 
 class PointNodeAdaptor(NodeAdaptor):
@@ -153,8 +162,9 @@ class PointNodeAdaptor(NodeAdaptor):
                 mtemplate = node_type_attrs['model_template']
                 dyn_params = node_type_attrs['dynamics_params']
                 if mtemplate.startswith('nest:glif') and dyn_params.get('type', None) == 'GLIF':
-                    node_type_attrs['dynamics_params'] = convert_aibs2nest(mtemplate, dyn_params)
-
+                    model_template, dynamics_params = convert_aibs2nest(mtemplate, dyn_params)
+                    node_type_attrs['model_template'] = model_template
+                    node_type_attrs['dynamics_params'] = dynamics_params
 
     @staticmethod
     def patch_adaptor(adaptor, node_group, network):
@@ -254,8 +264,6 @@ class PointEdgeAdaptor(EdgeAdaptor):
                 model_template = edge_type['model_template']
                 if model_template.startswith('nest'):
                     edge_type['model_template'] = model_template[5:]
-                    # print edge_type['model_template']
-
 
     def get_batches(self, edge_group):
         src_ids = {}
@@ -290,9 +298,10 @@ class PointEdgeAdaptor(EdgeAdaptor):
         trg_nodes_df = None
         for edge_id, grp_vals in tmp_df.groupby('etid'):
             edge_props = edge_types_table[edge_id]
+            n_edges = len(grp_vals)
 
             # Get the model type
-            type_params[edge_id]['model'] = edge_props['model_template']
+            type_params[edge_id][NEST_SYNAPSE_MODEL_PROP] = edge_props['model_template']
 
             # Add dynamics params
             # TODO: Add to dataframe and if a part of hdf5 we can return any dynamics params as a list
@@ -302,7 +311,10 @@ class PointEdgeAdaptor(EdgeAdaptor):
             if 'delay' in grp_vals.columns:
                 type_params[edge_id]['delay'] = grp_vals['delay']
             elif 'delay' in edge_props.keys():
-                type_params[edge_id]['delay'] = edge_props['delay']
+                delay = edge_props['delay']
+                # For NEST 2.* 'delay' can be a single value, but for 3.* it requires a full array for each edge
+                delay = np.full(n_edges, delay) if nest_version[0] >= 3 else delay
+                type_params[edge_id]['delay'] = delay
 
             weight_function = edge_types_table[edge_id].get('weight_function', None)
             if weight_function is not None:
@@ -337,22 +349,6 @@ class PointEdgeAdaptor(EdgeAdaptor):
 
             yield PointEdgeBatched(source_nids=grp_vals['src_nids'].values, target_nids=grp_vals['trg_nids'].values,
                                    nest_params=type_params[edge_id])
-
-            #print(type_params[edge_id])
-            #print(src_ids[edge_id])
-            #print(grp_vals['src_nids'].values)
-            #print(trg_ids[edge_id])
-            #print(grp_vals['trg_nids'].values)
-            #exit()
-
-
-        '''
-        batched_edges = []
-        for et_id in et_id_counter.keys():
-            batched_edges.append(PointEdgeBatched(src_ids[et_id], trg_ids[et_id], type_params[et_id]))
-
-        return batched_edges
-        '''
 
     @staticmethod
     def patch_adaptor(adaptor, edge_group):

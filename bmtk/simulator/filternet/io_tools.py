@@ -15,5 +15,14 @@ class FilterNetIOUtils(IOUtils):
 
         self.logger.info(message)
 
+    def log_debug(self, message, all_ranks=False):
+        if all_ranks is False and self.mpi_rank != 0:
+            return
+
+        self.logger.debug(message)
+
+    def barrier(self):
+        bmtk_world_comm.barrier()
+
 
 io = FilterNetIOUtils()
