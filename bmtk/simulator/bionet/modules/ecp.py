@@ -126,7 +126,7 @@ class EcpMod(SimulatorMod):
             cell = sim.net.get_cell_gid(gid)
             #cell = sim.net.get_local_cell(gid)
             # cell = sim.net.cells[gid]
-            self._rel.calc_transfer_resistance(gid, cell.get_seg_coords())
+            self._rel.calc_transfer_resistance(gid, cell.get_seg_coords(), cell.morphology.seg_coords)
 
         self._rel_nsites = self._rel.nsites
         sim.h.cvode.use_fast_imem(1)  # make i_membrane_ a range variable
@@ -259,12 +259,13 @@ class RecXElectrode(object):
     def get_transfer_resistance(self, gid):
         return self.transfer_resistances[gid]
 
-    def calc_transfer_resistance(self, gid, seg_coords):
+    def calc_transfer_resistance(self, gid, seg_coords, morph_coords):
         """Precompute mapping from segment to electrode locations"""
         sigma = 0.3  # mS/mm
 
         r05 = (seg_coords['p0'] + seg_coords['p1']) / 2
         dl = seg_coords['p1'] - seg_coords['p0']
+        d05 = morph_coords['d05'] / 2 # radius at segment center
 
         nseg = r05.shape[1]
 
@@ -284,6 +285,9 @@ class RecXElectrode(object):
             rT2 = r2 - rll ** 2  # square of perpendicular component
             up = rll + dlmag / 2
             low = rll - dlmag / 2
+            # If the electrode enters a cylinder whose surface is at least d05 away from the centerline of a segment 
+            # set the perpendicular component to d05 of the segment
+            np.fmax(rT2, d05 ** 2, out=rT2, where= low - d05 < 0)
             num = up + np.sqrt(up ** 2 + rT2)
             den = low + np.sqrt(low ** 2 + rT2)
             tr[j, :] = np.log(num / den) / dlmag  # units of (um) use with im_ (total seg current)
