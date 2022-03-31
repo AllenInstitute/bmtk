@@ -36,8 +36,6 @@ class GidPool(object):
         return list(self._nestid_lu.keys())
 
     def add(self, name, node_id, gid):
-        #self._popid2gid[name][node_id] = gid
-        #self._gid2pop_id[gid] = PopulationID(population=name, node_id=node_id)
         raise NotImplementedError()
 
     def get_gid(self, name, node_id):
@@ -60,7 +58,7 @@ class GidPool(object):
             new_df = pd.DataFrame({'nest_ids': nest_ids, 'node_ids': node_ids})
             new_df = new_df.set_index('node_ids')
             lu_table = self._nestid_lu[name]
-            lu_table = lu_table.append(new_df)
+            lu_table = pd.concat((lu_table, new_df))
             # lu_table = lu_table.reindex(lu_table.index.values)
 
         self._nestid_lu[name] = lu_table
