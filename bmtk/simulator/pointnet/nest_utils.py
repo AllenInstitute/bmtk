@@ -40,7 +40,7 @@ def get_version():
         ver_patch = int(m.group(3)) if n_groups >= 3 and m.group(3) is not None else None
         return [ver_major, ver_minor, ver_patch]
 
-    except (AttributeError, IndexError, ValueError) as err:
+    except (AttributeError, IndexError, ValueError, TypeError) as err:
         return None
 
 
