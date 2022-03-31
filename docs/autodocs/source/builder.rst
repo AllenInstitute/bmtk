@@ -140,7 +140,7 @@ Building Edges
 To define different types of edges between two subsets of nodes you should use the
 :py:meth:`NetworkBuilder.add_edges() <bmtk.builder.network.Network.add_edges>` method. Then once
 :py:meth:`NetworkBuilder.build() <bmtk.builder.network.Network.build>` method is called the the actual connections will
-be instantiated based on the **connectivity_rule**s the user defines. A typical call to add_edges would be the following
+be instantiated based on the **connectivity_rule** property the user defines. A typical call to add_edges would be the following
 
 .. code:: python
 
