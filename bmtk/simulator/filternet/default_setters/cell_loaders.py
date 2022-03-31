@@ -51,7 +51,7 @@ def get_tf_params(node, dynamics_params, non_dom_props=False):
         delays = node.delays_non_dom if node.delays_non_dom is not None else dp.get('opt_delays', None)
 
     if node.predefined_jitter:
-        jitter_fnc = np.vectorize(lambda a: np.random.uniform(a * node.jitter[0], a * node.jitter[0]))
+        jitter_fnc = lambda a: np.array([np.random.uniform(x*node.jitter[0], x*node.jitter[1]) for x in a])
         weights = jitter_fnc(weights) if weights is not None else weights
         kpeaks = jitter_fnc(kpeaks) if kpeaks is not None else kpeaks
         delays = jitter_fnc(delays) if delays is not None else delays
@@ -109,7 +109,6 @@ def default_cell_loader(node, template_name, dynamics_params):
         # sON temporal filter
         t_weights_nd, t_kpeaks_nd, t_delays_nd = get_tf_params(node, node.non_dom_params, non_dom_props=True)
         sON_filt_new, sON_sum = createOneUnitOfTwoSubunitFilter(t_weights_nd, t_kpeaks_nd, t_delays_nd, 121.0)
-
         sOFF_filt_new, sOFF_sum = createOneUnitOfTwoSubunitFilter(t_weights, t_kpeaks, t_delays, 115.0)
 
         amp_on = 1.0  # set the non-dominant subunit amplitude to unity
@@ -126,7 +125,7 @@ def default_cell_loader(node, template_name, dynamics_params):
 
         sf_sep = node.sf_sep
         if node.predefined_jitter:
-            sf_sep = np.random.uniform(node.lower_jitter*sf_sep, node.upper_jitter*sf_sep)
+            sf_sep = np.random.uniform(node.jitter[0]*sf_sep, node.jitter[1]*sf_sep)
 
         sep_ss_onoff_cell = create_two_sub_cell(linear_filter_soff, linear_filter_son, 0.5 * spont, 0.5 * spont,
                                                 node.tuning_angle, sf_sep, translate)
@@ -152,7 +151,7 @@ def default_cell_loader(node, template_name, dynamics_params):
 
         sf_sep = node.sf_sep
         if node.predefined_jitter:
-            sf_sep = np.random.uniform(node.lower_jitter*sf_sep, node.upper_jitter*sf_sep)
+            sf_sep = np.random.uniform(node.jitter[0]*sf_sep, node.jitter[1]*sf_sep)
 
         sep_ts_onoff_cell = create_two_sub_cell(linear_filter_toff, linear_filter_son, 0.5 * spont, 0.5 * spont,
                                                 node.tuning_angle, sf_sep, translate)
