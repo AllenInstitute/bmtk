@@ -4,19 +4,18 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Tutorial 4: Muti-population recurrent network (with BioNet) &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Tutorial 5: Point-Neuron Network Models (with PointNet)" href="tutorial_pointnet_modeling.html" />
@@ -629,21 +628,35 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 /* CSS for nbsphinx extension */
 
 /* remove conflicting styling from Sphinx themes */
-div.nbinput.container,
-div.nbinput.container div.prompt,
-div.nbinput.container div.input_area,
-div.nbinput.container div[class*=highlight],
-div.nbinput.container div[class*=highlight] pre,
-div.nboutput.container,
-div.nboutput.container div.prompt,
-div.nboutput.container div.output_area,
-div.nboutput.container div[class*=highlight],
-div.nboutput.container div[class*=highlight] pre {
-    background: none;
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
     border: none;
-    padding: 0 0;
+    padding: 0;
     margin: 0;
     box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
 }
 
 /* avoid gaps between output lines */
@@ -744,7 +757,7 @@ div.nboutput.container div.output_area {
 div.nbinput.container div.input_area {
     border: 1px solid #e0e0e0;
     border-radius: 2px;
-    background: #f5f5f5;
+    /*background: #f5f5f5;*/
 }
 
 /* override MathJax center alignment in output cells */
@@ -810,6 +823,7 @@ div.nboutput.container div.output_area.rendered_html,
 div.nboutput.container div.output_area > div.output_javascript,
 div.nboutput.container div.output_area:not(.rendered_html) > img{
     padding: 5px;
+    margin: 0;
 }
 
 /* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
@@ -859,7 +873,7 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="Tutorial-4:-Muti-population-recurrent-network-(with-BioNet)">
 <h1>Tutorial 4: Muti-population recurrent network (with BioNet)<a class="headerlink" href="#Tutorial-4:-Muti-population-recurrent-network-(with-BioNet)" title="Permalink to this headline">¶</a></h1>
-<p>Here we will create a heterogenous yet relatively small network consisting of hundreds of cells recurrently connected. All cells will belong to one of four “cell-types”. Two of these cell types will be biophysically detailed cells, i.e. containing a full morphology and somatic and dendritic channels and receptors. The other two will be point-neuron models, which lack a full morphology or channels but still act to provide inhibitory and excitory dynamics.</p>
+<p>Here we will create a heterogenous yet relatively small network consisting of hundreds of cells recurrently connected. All cells will belong to one of four “cell-types”. Two of these cell types will be biophysically detailed cells, i.e. containing a full morphology and somatic and dendritic channels and receptors. The other two will be point-neuron models, which lack a full morphology or channels but still act to provide inhibitory and excitory dynamics.</p>
 <p>As input to drive the simulation, we will also create an external network of “virtual cells” that synapse directly onto our internal cells and provide spike trains stimulus</p>
 <p><strong>Note</strong> - scripts and files for running this tutorial can be found in the directory <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/sources/chapter04">sources/chapter04/</a></p>
 <p>requirements: * bmtk * NEURON 7.4+</p>
@@ -1003,8 +1017,8 @@ properties for creating connections and running simulations.</p>
 </div>
 <p>This first two parameters of this function is “source” and “target” and are required for all custom connector functions. These are node objects which gives a representation of a single source and target cell, with properties that can be accessed like a python dictionary. When The Network Builder is creating the connection matrix, it will call this function for all possible source-target pairs. The user doesn’t call this function directly.</p>
 <p>The remaining parameters are optional. Using these parameters, plus the distance and angles between source and target cells, this function determines the number of connections between each given source and target cell. If there are none you can return either None or 0.</p>
-<p>To create these connections we call add_edges method of the builder. We use the source and target parameter to filter out only excitory-to-excitory connections. We must also take into consideration the model type (biophysical or integrate-and-fire) of the target when setting parameters. We pass in the function throught the connection_rule parameter, and the function parameters (except source and target) through connection_params. (If our dist_tuning_connector function didn’t have any
-parameters other than source and target, we could just not set connection_params).</p>
+<p>To create these connections we call add_edges method of the builder. We use the source and target parameter to filter out only excitory-to-excitory connections. We must also take into consideration the model type (biophysical or integrate-and-fire) of the target when setting parameters. We pass in the function throught the connection_rule parameter, and the function parameters (except source and target) through connection_params. (If our dist_tuning_connector function didn’t have any parameters
+other than source and target, we could just not set connection_params).</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
@@ -1188,7 +1202,7 @@ parameters other than source and target, we could just not set connection_params
 </div>
 <p>But for our LGN –&gt; V1 connection, we do things a bit differently. We want to make sure that for every source cell, there are a limited number of presynaptic targets. This is a not really possible with a function that iterates on a one-to-one basis. So instead we have a connector function who’s first parameter is a list of all N source cell, and the second parameter is a single target cell. We return an array of integers, size N; which each index representing the number of synaptics between
 sources and the target.</p>
-<p>To tell the builder to use this schema, we must set iterator=’all_to_one’ in the add_edges method. (By default this is set to ‘one_to_one’. You can also use ‘one_to_all’ iterator which will pass in a single source and all possible targets).</p>
+<p>To tell the builder to use this schema, we must set iterator=‘all_to_one’ in the add_edges method. (By default this is set to ‘one_to_one’. You can also use ‘one_to_all’ iterator which will pass in a single source and all possible targets).</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
@@ -1337,8 +1351,8 @@ sources and the target.</p>
 <section id="3.-Running-the-simulation">
 <h2>3. Running the simulation<a class="headerlink" href="#3.-Running-the-simulation" title="Permalink to this headline">¶</a></h2>
 <p>We are close to running our simulation, however unlike in previous chapters we need a little more programming before we can begin.</p>
-<p>For most of the connections we added the parameter weight_function=’wmax’. This is a built-in function that tells the simulator when creating a connection between two cells, just use the ‘weight_max’ value assigned to that given edge-type.</p>
-<p>However, when creating excitatory-to-excitatory connections we used weight_function=’gaussianLL’. This is because we want to use the tuning_angle parameter, when avaiable, to determine the synaptic strength between two connections. First we create the function which takes in target, source and connection properties (which are just the edge-type and properties set in the add_edges method). Then we must register the function with the BioNet simulator:</p>
+<p>For most of the connections we added the parameter weight_function=‘wmax’. This is a built-in function that tells the simulator when creating a connection between two cells, just use the ‘weight_max’ value assigned to that given edge-type.</p>
+<p>However, when creating excitatory-to-excitatory connections we used weight_function=‘gaussianLL’. This is because we want to use the tuning_angle parameter, when avaiable, to determine the synaptic strength between two connections. First we create the function which takes in target, source and connection properties (which are just the edge-type and properties set in the add_edges method). Then we must register the function with the BioNet simulator:</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
@@ -1735,7 +1749,7 @@ INFO:NEURONIOUtils:Simulation completed in 3.0 minutes, 54.96 seconds
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

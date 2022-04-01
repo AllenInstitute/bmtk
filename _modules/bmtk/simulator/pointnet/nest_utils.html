@@ -4,18 +4,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>bmtk.simulator.pointnet.nest_utils &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/aibs_sphinx.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
-    <script src="../../../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
@@ -645,6 +642,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># For NEST 3.1 it uses __version__ attribute to store string</span>
             <span class="n">version_str</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">__version__</span>
+            <span class="k">if</span> <span class="n">version_str</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;UNKNOWN&#39;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="k">pass</span>
 
@@ -667,8 +667,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <span class="n">nest_version</span> <span class="o">=</span> <span class="n">get_version</span><span class="p">()</span>
 <span class="k">if</span> <span class="n">nest_version</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="c1"># For now default to assume NEST 2.*.* is being used</span>
-    <span class="n">nest_version</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="c1"># For now default to assume NEST 3.*.* is being used</span>
+    <span class="n">nest_version</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
 
 
 <span class="n">NEST_SYNAPSE_MODEL_PROP</span> <span class="o">=</span> <span class="s1">&#39;model&#39;</span> <span class="k">if</span> <span class="n">nest_version</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="s1">&#39;synapse_model&#39;</span>
@@ -721,7 +721,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

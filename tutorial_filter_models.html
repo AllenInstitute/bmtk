@@ -4,19 +4,18 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>Chapter 7: Modeling the visual field (with FilterNet) &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Example Networks and Simulations" href="examples.html" />
@@ -629,21 +628,35 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 /* CSS for nbsphinx extension */
 
 /* remove conflicting styling from Sphinx themes */
-div.nbinput.container,
-div.nbinput.container div.prompt,
-div.nbinput.container div.input_area,
-div.nbinput.container div[class*=highlight],
-div.nbinput.container div[class*=highlight] pre,
-div.nboutput.container,
-div.nboutput.container div.prompt,
-div.nboutput.container div.output_area,
-div.nboutput.container div[class*=highlight],
-div.nboutput.container div[class*=highlight] pre {
-    background: none;
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
     border: none;
-    padding: 0 0;
+    padding: 0;
     margin: 0;
     box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
 }
 
 /* avoid gaps between output lines */
@@ -744,7 +757,7 @@ div.nboutput.container div.output_area {
 div.nbinput.container div.input_area {
     border: 1px solid #e0e0e0;
     border-radius: 2px;
-    background: #f5f5f5;
+    /*background: #f5f5f5;*/
 }
 
 /* override MathJax center alignment in output cells */
@@ -810,6 +823,7 @@ div.nboutput.container div.output_area.rendered_html,
 div.nboutput.container div.output_area > div.output_javascript,
 div.nboutput.container div.output_area:not(.rendered_html) > img{
     padding: 5px;
+    margin: 0;
 }
 
 /* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
@@ -860,7 +874,7 @@ div.rendered_html tbody tr:hover {
 <section id="Chapter-7:-Modeling-the-visual-field-(with-FilterNet)">
 <h1>Chapter 7: Modeling the visual field (with FilterNet)<a class="headerlink" href="#Chapter-7:-Modeling-the-visual-field-(with-FilterNet)" title="Permalink to this headline">¶</a></h1>
 <p>FilterNet is a part of the BMTK that simulates the effects of visual input onto cells in the LGN. It uses LGNModel as a backend, which uses neural-filters to simulate firing rates and spike-trains one may expect given a stimulus on (especially mouse) visual field. FilterNet supports a number of visual stimuli including static-graitings, moving-graiting, full-field flashes, static images and even movies.</p>
-<p>Filternet uses a <a class="reference external" href="https://en.wikipedia.org/wiki/Linear-nonlinear-Poisson_cascade_model">**linear-nonlinear-Poisson (lnp) model**</a>, using a spatial-temporal linear filter to convert a movie into a series of spike trains.</p>
+<p>Filternet uses a <a class="reference external" href="https://en.wikipedia.org/wiki/Linear-nonlinear-Poisson_cascade_model">linear-nonlinear-Poisson (lnp) model</a>, using a spatial-temporal linear filter to convert a movie into a series of spike trains.</p>
 <p><img alt="FilterNet LNP" src="_images/bmtk_lnp.png" /></p>
 <section id="A-simple-example">
 <h2>A simple example<a class="headerlink" href="#A-simple-example" title="Permalink to this headline">¶</a></h2>
@@ -1176,8 +1190,8 @@ maximum constrast, must be between 0 and 1.0 (default: 1.0)</p>
 <p>These are cells that respond by either increasing or decreasing firing rates to brightness changes in their receptive fields. They are also the basis for more advanced cell types. When building a network you can set a cell or set of cells with <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:tON'</span></code> or <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:tOFF'</span></code> during the call to <code class="docutils literal notranslate"><span class="pre">add_nodes(...)</span></code>. There are also a number of special types
 (<code class="docutils literal notranslate"><span class="pre">tON_TF8,</span> <span class="pre">sON_TF1,</span> <span class="pre">sON_TF2,</span> <span class="pre">sON_TF4,</span> <span class="pre">sON_TF8,</span> <span class="pre">sON_TF15,</span> <span class="pre">tOFF_TF1,</span> <span class="pre">tOFF_TF2,</span> <span class="pre">tOFF_TF4,</span> <span class="pre">tOFF_TF8,</span> <span class="pre">tOFF_TF15,</span> <span class="pre">sOFF_TF1,</span> <span class="pre">sOFF_TF2,</span> <span class="pre">sOFF_TF4,</span> <span class="pre">sOFF_TF8,</span> <span class="pre">sOFF_TF15</span></code>) which have properties that have been pre-calculated using electrophysiological recordings from the mouse LGN (Durant et. al 2016, Billeh et. al 2019).</p>
 <p>A combination of a Gaussian spatial filter and double cosine temporal filter are used to filter the receptive field.</p>
-<div class="row"><div class="col-md-4"><p><img alt="dc09258c44c342c4af88f1f3a1b63aa0" class="no-scaled-link" src="_images/filternet_spat_filter.png" style="width: 1000px; height: 1000px;" /></p>
-</div><div class="col-md-4"><p><img alt="b732e4d649da41348bb3b910c9b7caa9" class="no-scaled-link" src="_images/filternet_temp_filter.png" style="width: 300px; height: 300px;" /></p>
+<div class="row"><div class="col-md-4"><p><img alt="256aeaa1769b4865bb1241bc9b45454a" class="no-scaled-link" src="_images/filternet_spat_filter.png" style="width: 1000px; height: 1000px;" /></p>
+</div><div class="col-md-4"><p><img alt="5445b78ffe5c457b8ddc2853d88cbc22" class="no-scaled-link" src="_images/filternet_temp_filter.png" style="width: 300px; height: 300px;" /></p>
 </div></div></section>
 <section id="parameters">
 <h3>parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h3>
@@ -1190,22 +1204,22 @@ maximum constrast, must be between 0 and 1.0 (default: 1.0)</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>*spatial filter parameters*</strong> * <em>spatial_size</em>: (float, float) - the row and column spread of the gaussian filter, default: (1.0, 1.0) * <em>spatial_rotation</em>: float - the gaussian rotation in degrees, default: 0.0</p>
+<p><strong>spatial filter parameters</strong> * <em>spatial_size</em>: (float, float) - the row and column spread of the gaussian filter, default: (1.0, 1.0) * <em>spatial_rotation</em>: float - the gaussian rotation in degrees, default: 0.0</p>
 <p><img alt="image0" src="_images/filternet_sfilt_params.png" /></p>
-<p><strong>*temporal filter parameters*</strong> * <em>weights</em>: (float, float) - used to control amplitude of the the two bumps in cosine filter. The first value is used to set the major bump and must have weights[0] &gt; weights[1] * <em>kpeaks</em>: (float, float) - used to control the spread of the two bumps, the first value for the initial larger peak and the second for the smaller peak. The second peak must have a greater spread than the first. * <em>delays</em>: (float, float) - controls the delays of the first and
-second bumps</p>
+<p><strong>temporal filter parameters</strong> * <em>weights</em>: (float, float) - used to control amplitude of the the two bumps in cosine filter. The first value is used to set the major bump and must have weights[0] &gt; weights[1] * <em>kpeaks</em>: (float, float) - used to control the spread of the two bumps, the first value for the initial larger peak and the second for the smaller peak. The second peak must have a greater spread than the first. * <em>delays</em>: (float, float) - controls the delays of the first and second
+bumps</p>
 <p><img alt="image1" src="_images/filternet_tfilt_params.png" /></p>
-<p><strong>*non-linear filter parameters*</strong> * <em>spont_fr</em>: float - The spontaneous/resting firing rate of the cell. ON/OFF cells use the function <span class="math notranslate nohighlight">\(Heaviside(s+spont\_fr)*(s+spont\_fr)\)</span> to filter the firing rate following the spatialtemporal filter.</p>
+<p><strong>non-linear filter parameters</strong> * <em>spont_fr</em>: float - The spontaneous/resting firing rate of the cell. ON/OFF cells use the function <span class="math notranslate nohighlight">\(Heaviside(s+spont\_fr)*(s+spont\_fr)\)</span> to filter the firing rate following the spatialtemporal filter.</p>
 <section id="Spatial-Mixture-cells">
 <h4>Spatial Mixture cells<a class="headerlink" href="#Spatial-Mixture-cells" title="Permalink to this headline">¶</a></h4>
 <p>These types of units combine two spatial filters to create a <a class="reference external" href="https://en.wikipedia.org/w/index.php?title=Mexican_Hat_Function">Mexican hat</a> filter so the spatial filter responds to a bright area surrounded by darkness (or vice-versa). To use set <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:LGNOnOFFCell'</span></code></p>
-<p><strong>*parameters*</strong> * <em>sigma_on</em>: (float, float) - spread of the ON region of the spatial filter. * <em>sigma_off</em>: (float, float) - spread of the OFF region of the spatial filter.</p>
+<p><strong>parameters</strong> * <em>sigma_on</em>: (float, float) - spread of the ON region of the spatial filter. * <em>sigma_off</em>: (float, float) - spread of the OFF region of the spatial filter.</p>
 <p>The temporal filter is set using the same parameters as a simple cell.</p>
 </section>
 <section id="Dual-filter-cells-(sONtOFF,-sONsOFF)">
 <h4>Dual filter cells (sONtOFF, sONsOFF)<a class="headerlink" href="#Dual-filter-cells-(sONtOFF,-sONsOFF)" title="Permalink to this headline">¶</a></h4>
 <p>These units combine two simple linear filters into one, and can be set using either <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:sONsOFF'</span></code> or <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:sONtOFF'</span></code>, both with a non-dominate spatial-off filter.</p>
-<p><strong>*parameters*</strong></p>
+<p><strong>parameters</strong></p>
 <p>The parameters for the first filter (tOFF or sOFF subunit) is set using the same parameters as a simple cell. You can set non-dominate secondary subunit parameters in two ways: 1. Adding parameter <em>non_dom_params</em> that points to a second dynamics_params .json file. (eg. <code class="docutils literal notranslate"><span class="pre">non_dom_params='sON_TF8.json'</span></code>) 2. add the postfix *_non_dom* to the specified params (eg. weights_non_dom, kpeaks_non_dom, delays_non_dom)</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -1268,7 +1282,7 @@ second bumps</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

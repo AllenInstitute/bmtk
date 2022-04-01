@@ -4,19 +4,18 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>BMTK Builder (A Quick Introduction) &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Tutorial 1: Single cell simulation with current injection (with BioNet)" href="tutorial_single_cell_clamped.html" />
@@ -629,21 +628,35 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 /* CSS for nbsphinx extension */
 
 /* remove conflicting styling from Sphinx themes */
-div.nbinput.container,
-div.nbinput.container div.prompt,
-div.nbinput.container div.input_area,
-div.nbinput.container div[class*=highlight],
-div.nbinput.container div[class*=highlight] pre,
-div.nboutput.container,
-div.nboutput.container div.prompt,
-div.nboutput.container div.output_area,
-div.nboutput.container div[class*=highlight],
-div.nboutput.container div[class*=highlight] pre {
-    background: none;
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
     border: none;
-    padding: 0 0;
+    padding: 0;
     margin: 0;
     box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
 }
 
 /* avoid gaps between output lines */
@@ -744,7 +757,7 @@ div.nboutput.container div.output_area {
 div.nbinput.container div.input_area {
     border: 1px solid #e0e0e0;
     border-radius: 2px;
-    background: #f5f5f5;
+    /*background: #f5f5f5;*/
 }
 
 /* override MathJax center alignment in output cells */
@@ -810,6 +823,7 @@ div.nboutput.container div.output_area.rendered_html,
 div.nboutput.container div.output_area > div.output_javascript,
 div.nboutput.container div.output_area:not(.rendered_html) > img{
     padding: 5px;
+    margin: 0;
 }
 
 /* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
@@ -898,8 +912,8 @@ reproducability of simulations.</p>
 </div>
 <p>When the NetworkBuilder is instantiated we pass in a name, in this case calling it “<strong>mcortex</strong>” because we will be using mouse-cortex models - But you can use any name you want. Just be careful, as often a complete simulation will contain multiple networks (the bmtk/SONATA was designed largely to allow different parts of the network to be built indepenently), so having descriptive naming convention is important.</p>
 <p>The add_nodes method is then used to add nodes to the network. The first parameter, <strong>N=10</strong>, indicates that we are adding 10 individual nodes each sharing the same pop_name, mem_potential, model_type etc.</p>
-<p>All of the other parameters are completely dependent on the type of network we are looking to build. In this case we want to build a network that runs in BioNet so the parameters are carefully choosen with: * <strong>*pop_name*</strong>, <strong>*mem_potential*</strong> - optional parameters, not directly used by BioNet but will be helpfull in the descripion * <strong>*model_type*</strong>, <strong>*model_template*</strong>, <strong>*model_processing*</strong> - <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#nodes---required-attributes">Attributes used by
-BioNet</a> as instructions on how to build our NEURON-based cell models. All our cells are biophysically-detailed models, using customized templates and functions to build each cell. * <strong>*dynamics_params*</strong>, <strong>*morphology*</strong> - Indicates to BioNet the electrophysiological and morphology files used to build each cell. These files can be downloaded from the <a class="reference external" href="http://celltypes.brain-map.org/data">Allen Cell-Types
+<p>All of the other parameters are completely dependent on the type of network we are looking to build. In this case we want to build a network that runs in BioNet so the parameters are carefully choosen with: * <strong>pop_name</strong>, <strong>mem_potential</strong> - optional parameters, not directly used by BioNet but will be helpfull in the descripion * <strong>model_type</strong>, <strong>model_template</strong>, <strong>model_processing</strong> - <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#nodes---required-attributes">Attributes used by
+BioNet</a> as instructions on how to build our NEURON-based cell models. All our cells are biophysically-detailed models, using customized templates and functions to build each cell. * <strong>dynamics_params</strong>, <strong>morphology</strong> - Indicates to BioNet the electrophysiological and morphology files used to build each cell. These files can be downloaded from the <a class="reference external" href="http://celltypes.brain-map.org/data">Allen Cell-Types
 Database</a>.</p>
 <p>However the NetworkBuilder is simulator agnositc allowing modelers to choose whatever parameters they need depending on simulator and/or required to describe the models. For example the following could be used by another simulator to build a network describing 100 Izhikevich point neurons. Notice we no longer need parameters like morphology or model_processing, but have new parameter a, b, c, and d which would be required by any Izhikevich neuron model.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
@@ -908,8 +922,8 @@ Database</a>.</p>
               <span class="n">param_a</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">param_b</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">param_c</span><span class="o">=-</span><span class="mf">55.0</span><span class="p">,</span> <span class="n">parm_d</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Finally the network is built and saved into the <em>network/</em> folder. When we look in the network folder there are two different files - mcortex_nodes.h5 and mcortex_node_types.csv. The individual cells are stored in the *nodes.h5 file. But properties that are shared by a group of nodes are stored in the *node_types.csv. <strong>Node types</strong> not only makes the format more compact and faster to read (probably not important for 10 cells, but very important when trying to run a simulation of 100K+
-cells), and it also makes easier to change properties (like updating ephys params or using a different morphology) between simulations.</p>
+<p>Finally the network is built and saved into the <em>network/</em> folder. When we look in the network folder there are two different files - mcortex_nodes.h5 and mcortex_node_types.csv. The individual cells are stored in the *nodes.h5 file. But properties that are shared by a group of nodes are stored in the *node_types.csv. <strong>Node types</strong> not only makes the format more compact and faster to read (probably not important for 10 cells, but very important when trying to run a simulation of 100K+ cells),
+and it also makes easier to change properties (like updating ephys params or using a different morphology) between simulations.</p>
 <p>Looking at the files</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
@@ -1551,7 +1565,7 @@ connections for a pair the function should return 0.</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
