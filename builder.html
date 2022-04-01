@@ -4,18 +4,16 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>The Network Builder &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Simulation Engines" href="simulators.html" />
@@ -623,12 +621,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="the-network-builder">
+  <section id="the-network-builder">
 <h1>The Network Builder<a class="headerlink" href="#the-network-builder" title="Permalink to this headline">¶</a></h1>
-<div class="figure align-default">
+<figure class="align-default">
 <a class="reference internal image-reference" href="_images/bmtk_architecture_builder_highlight.jpg"><img alt="_images/bmtk_architecture_builder_highlight.jpg" src="_images/bmtk_architecture_builder_highlight.jpg" style="width: 433.6px; height: 167.20000000000002px;" /></a>
-</div>
-<p>The class for building a brain network is <a class="reference internal" href="bmtk/bmtk.builder.html#bmtk.builder.network.Network" title="bmtk.builder.network.Network"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.builder.NetworkBuilder</span></code></a>. This
+</figure>
+<p>The class for building a brain network is <code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.builder.NetworkBuilder</span></code>. This
 should be used whether one is building a biophysically detailed network for BioNet, a point-neuron network for PointNet,
 A filter-based lnp network for FitlerNet, or a population-level network for PopNet. In general it can be used to build
 any type of heterogeneous parameter multi-graph.</p>
@@ -643,43 +641,43 @@ being model</p></li>
 </pre></div>
 </div>
 <ol class="arabic simple" start="2">
-<li><p>Create the nodes (ie. cells) using the <a class="reference internal" href="bmtk/bmtk.builder.html#bmtk.builder.network.Network.add_nodes" title="bmtk.builder.network.Network.add_nodes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_nodes()</span></code></a> method. For
+<li><p>Create the nodes (ie. cells) using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">add_nodes()</span></code> method. For
 different types/models of cells we can use separate calls to add_nodes (often with different model parameters).</p></li>
 </ol>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;Biophysical&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">)</span>
 <span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;IntFire&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;inh&#39;</span><span class="p">,</span> <span class="n">vrest</span><span class="o">=-</span><span class="mf">50.0</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="figure align-default">
+<figure class="align-default">
 <a class="reference internal image-reference" href="_images/builder_add_nodes.jpg"><img alt="_images/builder_add_nodes.jpg" src="_images/builder_add_nodes.jpg" style="width: 370.40000000000003px; height: 199.20000000000002px;" /></a>
-</div>
+</figure>
 <ol class="arabic simple" start="3">
-<li><p>Create Connection rules between different subsets of nodes using <a class="reference internal" href="bmtk/bmtk.builder.html#bmtk.builder.network.Network.add_edges" title="bmtk.builder.network.Network.add_edges"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_edges()</span></code></a>
+<li><p>Create Connection rules between different subsets of nodes using <code class="xref py py-meth docutils literal notranslate"><span class="pre">add_edges()</span></code>
 method.</p></li>
 </ol>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;exc&#39;</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;inh&#39;</span><span class="p">},</span> <span class="n">connection_rule</span><span class="o">=</span><span class="n">my_conn_func</span><span class="p">,</span> <span class="n">synaptic_model</span><span class="o">=</span><span class="s1">&#39;e2i&#39;</span><span class="p">)</span>
 <span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="n">inh</span><span class="p">},</span> <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;exc&#39;</span><span class="p">},</span> <span class="n">connection_rule</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">synaptic_model</span><span class="o">=</span><span class="s1">&#39;i2e&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="figure align-default">
+<figure class="align-default">
 <a class="reference internal image-reference" href="_images/builder_add_edges.jpg"><img alt="_images/builder_add_edges.jpg" src="_images/builder_add_edges.jpg" style="width: 366.75px; height: 254.25px;" /></a>
-</div>
+</figure>
 <ol class="arabic simple" start="4">
-<li><p>Finally use <a class="reference internal" href="bmtk/bmtk.builder.html#bmtk.builder.network.Network.build" title="bmtk.builder.network.Network.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build()</span></code></a> and <a class="reference internal" href="bmtk/bmtk.builder.html#bmtk.builder.network.Network.save" title="bmtk.builder.network.Network.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a>
+<li><p>Finally use <code class="xref py py-meth docutils literal notranslate"><span class="pre">build()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code>
 methods to build and save the model to the file</p></li>
 </ol>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
 <span class="n">net</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s1">&#39;/path/to/network/output/&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="figure align-default">
+<figure class="align-default">
 <a class="reference internal image-reference" href="_images/builder_complete_network.jpg"><img alt="_images/builder_complete_network.jpg" src="_images/builder_complete_network.jpg" style="width: 229.0px; height: 188.0px;" /></a>
-</div>
-<div class="section" id="building-nodes">
+</figure>
+<section id="building-nodes">
 <h2>Building Nodes<a class="headerlink" href="#building-nodes" title="Permalink to this headline">¶</a></h2>
 <p>In BMTK and SONATA a node usually is synonymous with a cell (although a node can be used to represent population of
 cells with <a class="reference external" href="./popnet.html">PopNet</a>). To add a group of nodes to a network is to use the
-<a class="reference internal" href="bmtk/bmtk.builder.html#bmtk.builder.network.Network.add_nodes" title="bmtk.builder.network.Network.add_nodes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.add_nodes()</span></code></a>.</p>
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.add_nodes()</span></code>.</p>
 <p>The only thing that is required is an integer value N for the number of individual nodes. The modeler can also pass in
 any parameter they want to describe their model - although SONATA/BMTK does contain a number of reserved node parameters
 that will be useful in generating a instantiatable model.</p>
@@ -705,12 +703,12 @@ cell’s position by a range:</p>
         <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="section" id="node-representation">
+<section id="node-representation">
 <h3>Node Representation<a class="headerlink" href="#node-representation" title="Permalink to this headline">¶</a></h3>
-<p>When <a class="reference internal" href="bmtk/bmtk.builder.html#bmtk.builder.network.Network.build" title="bmtk.builder.network.Network.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.build()</span></code></a> is called, each node will be given a unique
+<p>When <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.build()</span></code> is called, each node will be given a unique
 <strong>node_id</strong> value, and each type model (eg each call to add_nodes) will also be given a <strong>node_type_id</strong>. It is possible
 to set the <strong>node_id</strong> and <strong>node_type_id</strong> parameter yourself but it’s generally not a good idea.</p>
-<p>The <a class="reference internal" href="bmtk/bmtk.builder.html#bmtk.builder.network.Network.nodes" title="bmtk.builder.network.Network.nodes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.nodes()</span></code></a> will return an iterator of the nodes in a
+<p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.nodes()</span></code> will return an iterator of the nodes in a
 network. By default it returns all nodes but one can filter by specific property values. The nodes themselves can have
 their properties accessed like a dictionary. For example to get all biophysically detailed inh neurons:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;inh&#39;</span><span class="p">):</span>
@@ -718,8 +716,8 @@ their properties accessed like a dictionary. For example to get all biophysicall
    <span class="o">...</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="useful-node-parameters">
+</section>
+<section id="useful-node-parameters">
 <h3>Useful Node Parameters<a class="headerlink" href="#useful-node-parameters" title="Permalink to this headline">¶</a></h3>
 <p>As mentioned above the modeler can use any parameters and values they require to represent their models. The following
 are parameters that will be recognized and used by the BMTK simulator (but not necessarily required). For a complete
@@ -758,14 +756,14 @@ list see <a class="reference external" href="https://github.com/AllenInstitute/s
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-<div class="section" id="building-edges">
+</section>
+</section>
+<section id="building-edges">
 <h2>Building Edges<a class="headerlink" href="#building-edges" title="Permalink to this headline">¶</a></h2>
 <p>To define different types of edges between two subsets of nodes you should use the
-<a class="reference internal" href="bmtk/bmtk.builder.html#bmtk.builder.network.Network.add_edges" title="bmtk.builder.network.Network.add_edges"><code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.add_edges()</span></code></a> method. Then once
-<a class="reference internal" href="bmtk/bmtk.builder.html#bmtk.builder.network.Network.build" title="bmtk.builder.network.Network.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.build()</span></code></a> method is called the the actual connections will
-be instantiated based on the <a href="#id1"><span class="problematic" id="id2">**</span></a>connectivity_rule**s the user defines. A typical call to add_edges would be the following</p>
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.add_edges()</span></code> method. Then once
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.build()</span></code> method is called the the actual connections will
+be instantiated based on the <strong>connectivity_rule</strong> property the user defines. A typical call to add_edges would be the following</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
       <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;inh&#39;</span><span class="p">},</span>                                 <span class="c1"># 1</span>
       <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="s1">&#39;ephys_type&#39;</span><span class="p">:</span> <span class="s1">&#39;fast_spiking&#39;</span><span class="p">},</span>
@@ -792,7 +790,7 @@ parameters pre-defined by BMTK and SONATA is described below.</p></li>
 </ol>
 <p>Also like the nodes it is possible to have unique values for every individual edges, but it is a little more difficult.
 See section on ConnectionMap for more info.</p>
-<div class="section" id="connection-rules">
+<section id="connection-rules">
 <h3>Connection rules<a class="headerlink" href="#connection-rules" title="Permalink to this headline">¶</a></h3>
 <p>The connection_rule parameter of add_edges() method will usually be a user defined function (but may also be an integer,
 list-of-lists, or matrix). The function’s first two parameters will be source and target, Node objects whose properties
@@ -828,7 +826,7 @@ target, 0 or None if there is no connection.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>When <a class="reference internal" href="bmtk/bmtk.builder.html#bmtk.builder.network.Network.build" title="bmtk.builder.network.Network.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.build()</span></code></a> is executed my_connection_func() will be
+<p>When <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.build()</span></code> is executed my_connection_func() will be
 automatically called for all possible source/target pair of nodes and the connectivity matrix will be called.</p>
 <p>Sometimes it may be more efficient or necessary to set all incoming (or outgoing) connections in one function. For
 example we may need to limit the total number of synapses on a target. The <code class="docutils literal notranslate"><span class="pre">iterator</span></code> parameter allows the modeler to
@@ -845,8 +843,8 @@ corresponding list of size N</p>
 </pre></div>
 </div>
 <p>There is also a <strong>all_to_one</strong> iterator option that will pair each source node with a list of all available target nodes.</p>
-</div>
-<div class="section" id="individual-edge-properties-the-connectionmap">
+</section>
+<section id="individual-edge-properties-the-connectionmap">
 <h3>Individual Edge Properties (The ConnectionMap)<a class="headerlink" href="#individual-edge-properties-the-connectionmap" title="Permalink to this headline">¶</a></h3>
 <p>Sometimes it is necessary for each edge to have unique property values. For example the individual syn_weight value for
 each individual synapse may varying depending on the location and type of the pre- and post-synaptic nodes. With nodes
@@ -894,8 +892,8 @@ and <code class="docutils literal notranslate"><span class="pre">dtypes</span></
 <span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="intra-network-connections">
+</section>
+<section id="intra-network-connections">
 <h3>Intra-Network Connections<a class="headerlink" href="#intra-network-connections" title="Permalink to this headline">¶</a></h3>
 <p>Both BMTK and SONATA supports for a network to be built piecemeal and combined into one at simulation time. A cortical
 region will receive inputs from many other regions, and a modeler may want to test the dynamics when different
@@ -904,7 +902,7 @@ instead we can build the nodes, recurrent and inter-network connection each regi
 off during the simulation (see <a class="reference external" href="./simulators.html#configuration-files">simulation config</a>)</p>
 <p>Creating connections between two different networks is very similar to creating recurrent connections and still use the
 add_edges method. The main difference is for our <code class="docutils literal notranslate"><span class="pre">source</span></code> or <code class="docutils literal notranslate"><span class="pre">target</span></code> argument, instead of using a dictionary we must
-use the <a class="reference internal" href="bmtk/bmtk.builder.html#bmtk.builder.network.Network.nodes" title="bmtk.builder.network.Network.nodes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.nodes()</span></code></a> method of another network. For example we
+use the <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.nodes()</span></code> method of another network. For example we
 have two networks called <strong>LGN</strong> and <strong>V1</strong> and we want to create a connect type from LGN’s excitatory neurons (ei=exc)
 V1’s pyramidal cells</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">v1</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;V1&#39;</span><span class="p">)</span>
@@ -923,16 +921,16 @@ V1’s pyramidal cells</p>
 </div>
 <p>When creating intra-network connections the <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.import()</span></code>
 method can be very useful.</p>
-</div>
-<div class="section" id="edge-accessor-methods">
+</section>
+<section id="edge-accessor-methods">
 <h3>Edge Accessor methods<a class="headerlink" href="#edge-accessor-methods" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="networkbuilder-edges">
-<h4><a class="reference internal" href="bmtk/bmtk.builder.html#bmtk.builder.network.Network.edges" title="bmtk.builder.network.Network.edges"><code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.edges()</span></code></a><a class="headerlink" href="#networkbuilder-edges" title="Permalink to this headline">¶</a></h4>
+<section id="networkbuilder-edges">
+<h4><code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.edges()</span></code><a class="headerlink" href="#networkbuilder-edges" title="Permalink to this headline">¶</a></h4>
 <p>Method will return an iterator of edges filtered by edge and/or node properties. Each individual edge will be
 represented using a <a class="reference internal" href="bmtk/bmtk.builder.html#bmtk.builder.edge.Edge" title="bmtk.builder.edge.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a> object</p>
-</div>
-</div>
-<div class="section" id="useful-edge-parameters">
+</section>
+</section>
+<section id="useful-edge-parameters">
 <h3>Useful Edge Parameters<a class="headerlink" href="#useful-edge-parameters" title="Permalink to this headline">¶</a></h3>
 <table class="colwidths-given docutils align-default">
 <colgroup>
@@ -974,24 +972,24 @@ represented using a <a class="reference internal" href="bmtk/bmtk.builder.html#b
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-<div class="section" id="saving-and-building">
+</section>
+</section>
+<section id="saving-and-building">
 <h2>Saving and Building<a class="headerlink" href="#saving-and-building" title="Permalink to this headline">¶</a></h2>
 <p>Once all calls to add_nodes and ad_edges have been made, use the build() method to actually complete and fully
 instantiate the network. Certain accessor functions, like
-<a class="reference internal" href="bmtk/bmtk.builder.html#bmtk.builder.network.Network.nodes" title="bmtk.builder.network.Network.nodes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.nodes()</span></code></a> and
-<a class="reference internal" href="bmtk/bmtk.builder.html#bmtk.builder.network.Network.edges" title="bmtk.builder.network.Network.edges"><code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.edges()</span></code></a> will not work until all the edges have been
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.nodes()</span></code> and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.edges()</span></code> will not work until all the edges have been
 completed. Depending on the size of the network and the complexity of the connectivity rules, it can take anywhere from
 less than a second to days to build the full model.</p>
-<p>The <a class="reference internal" href="bmtk/bmtk.builder.html#bmtk.builder.network.Network.save" title="bmtk.builder.network.Network.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.save(output_dir=’/path/to/output/net/’)</span></code></a> method will
+<p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.save(output_dir=’/path/to/output/net/’)</span></code> method will
 write the network to a disk in SONATA format at the given output_dir path. By default nodes and edges will be written to
 different files using the network names to determine the sonata file names. The
-<a class="reference internal" href="bmtk/bmtk.builder.html#bmtk.builder.network.Network.save_nodes" title="bmtk.builder.network.Network.save_nodes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.save_nodes()</span></code></a> and
-<a class="reference internal" href="bmtk/bmtk.builder.html#bmtk.builder.network.Network.save_edges" title="bmtk.builder.network.Network.save_edges"><code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.save_edges()</span></code></a> functions may also used to only write
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.save_nodes()</span></code> and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">NetworkBuilder.save_edges()</span></code> functions may also used to only write
 out the nodes or the edges, respectively.</p>
-</div>
-<div class="section" id="network-format">
+</section>
+<section id="network-format">
 <h2>Network Format<a class="headerlink" href="#network-format" title="Permalink to this headline">¶</a></h2>
 <p>This is a brief overview of how NetworkBuilder saves the network’s nodes and edges files. As mentioned BMTK uses the
 SONATA format, so more in-depth descriptions may be
@@ -999,14 +997,14 @@ SONATA format, so more in-depth descriptions may be
 Opening the HDF5 file will require a hdf browser like HDFView, or a library like h5py. You can also use
 <a class="reference external" href="https://github.com/AllenInstitute/sonata/tree/master/src/pysonata">pySONATA</a> or
 <a class="reference external" href="https://github.com/BlueBrain/libsonata">libSONATA</a> which are API’s for reading in SONATA files</p>
-<div class="figure align-default">
+<figure class="align-default">
 <a class="reference internal image-reference" href="_images/sonata_structure.jpg"><img alt="_images/sonata_structure.jpg" src="_images/sonata_structure.jpg" style="width: 732.6px; height: 363.6px;" /></a>
-</div>
-</div>
-<div class="section" id="advanced-features">
+</figure>
+</section>
+<section id="advanced-features">
 <h2>Advanced Features<a class="headerlink" href="#advanced-features" title="Permalink to this headline">¶</a></h2>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -1055,7 +1053,7 @@ Opening the HDF5 file will require a hdf browser like HDFView, or a library like
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

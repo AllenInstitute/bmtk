@@ -10,8 +10,7 @@ A network can be viewed as a graph (Figure 1) that is fully described by specify
 
 **Figure 1.** Graph is described by the properties of the nodes and edges.
 
-In order to make the description more concrete we will be using the 14 cell example network found in
-docs/examples/simulators/bionet.
+In order to make the description more concrete we will be using the 14 cell example network found in examples/simulators/bionet.
 
 Nodes
 -----

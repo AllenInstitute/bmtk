@@ -4,18 +4,16 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Installing the BMTK &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="The Network Builder" href="builder.html" />
@@ -623,7 +621,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="installing-the-bmtk">
+  <section id="installing-the-bmtk">
 <h1>Installing the BMTK<a class="headerlink" href="#installing-the-bmtk" title="Permalink to this headline">¶</a></h1>
 <p>The BMTK was developed for use for Python 2.7+ and Python 3.6+. Previous releases can be downloaded from
 <a class="reference external" href="https://github.com/AllenInstitute/bmtk/releases">here</a>. The latest code including newest features and bug fixes
@@ -645,27 +643,27 @@ HPC clusters, and requires the following to be installed:</p>
 </ul>
 <p>For running network simulations BMTK uses existing software which varies depending on the type of simulation you want
 to run. Individual instructions are done for the various requirements of the different simulation engines.</p>
-<div class="section" id="installing-latest-from-source">
+<section id="installing-latest-from-source">
 <h2>Installing latest from source<a class="headerlink" href="#installing-latest-from-source" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/AllenInstitute/bmtk.git
 $ cd bmtk
 $ python setup.py install
 </pre></div>
 </div>
-</div>
-<div class="section" id="installing-with-pip">
+</section>
+<section id="installing-with-pip">
 <h2>Installing with pip<a class="headerlink" href="#installing-with-pip" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install bmtk
 </pre></div>
 </div>
-</div>
-<div class="section" id="installing-with-conda">
+</section>
+<section id="installing-with-conda">
 <h2>Installing with conda<a class="headerlink" href="#installing-with-conda" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ conda install -c kaeldai bmtk
 </pre></div>
 </div>
-</div>
-<div class="section" id="using-the-docker-image">
+</section>
+<section id="using-the-docker-image">
 <h2>Using the Docker Image<a class="headerlink" href="#using-the-docker-image" title="Permalink to this headline">¶</a></h2>
 <p>The BMTK docker container lets you build and simulate networks without requiring installing all the BMTK prerequisites on
 your computer. All you need is the <a class="reference external" href="https://docs.docker.com/install/">docker client</a> installed on your machine.</p>
@@ -674,7 +672,7 @@ your computer. All you need is the <a class="reference external" href="https://d
 </div>
 <p>There are two main ways of using the bmtk-docker image, either like a command-line application or as a Jupyter Notebook
 server</p>
-<div class="section" id="through-the-command-line">
+<section id="through-the-command-line">
 <h3>Through the command line<a class="headerlink" href="#through-the-command-line" title="Permalink to this headline">¶</a></h3>
 <p>Go to the directory where your BMTK network-builder and/or network-simualtion scripts and supporting files are located
 (<em>local/path</em>) and run the following in a command-line terminal</p>
@@ -690,8 +688,8 @@ If you are running BioNet and have special mechanims/mod files that need to be c
 $ docker run -v $(pwd):/home/shared/workspace/mechanisms alleninstitute/bmtk nrnivmodl modfiles/
 </pre></div>
 </div>
-</div>
-<div class="section" id="through-jupyter-notebooks">
+</section>
+<section id="through-jupyter-notebooks">
 <h3>Through Jupyter Notebooks<a class="headerlink" href="#through-jupyter-notebooks" title="Permalink to this headline">¶</a></h3>
 <p>The bmtk-docker image can be run as a jupyter notebook server. Not only will it contain the examples and notebook tutorials
 for you to run, but you can use it to create new bmtk notebooks. In a command line run</p>
@@ -700,16 +698,16 @@ for you to run, but you can use it to create new bmtk notebooks. In a command li
 </div>
 <p>Then open a browser to 127.0.0.1:8888/. Any new files/notebooks should be saved to <em>workspace</em> directory, otherwise they
 will be lost once the container is closed.</p>
-</div>
-<div class="section" id="through-neuroscience-gateway-nsg">
+</section>
+<section id="through-neuroscience-gateway-nsg">
 <h3>Through Neuroscience Gateway (NSG)<a class="headerlink" href="#through-neuroscience-gateway-nsg" title="Permalink to this headline">¶</a></h3>
 <p>The bmtk can be ran through the Neuroscience Gateway for anyone who has an account.</p>
-<p>For running multi-core BioNet (NEURON based) simulations on the NSG please refer to <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/bio_nsg_template">Readme file</a>.</p>
-</div>
-</div>
-<div class="section" id="running-simulations">
+<p>For running multi-core BioNet (NEURON based) simulations on the NSG please refer to <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples/bio_nsg_template">Readme file</a>.</p>
+</section>
+</section>
+<section id="running-simulations">
 <h2>Running Simulations<a class="headerlink" href="#running-simulations" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="biophysically-detailed-simulations">
+<section id="biophysically-detailed-simulations">
 <h3>Biophysically detailed simulations<a class="headerlink" href="#biophysically-detailed-simulations" title="Permalink to this headline">¶</a></h3>
 <p>Running simulations of biophysically detailed, multi-compartmental neuronal models is done with <a class="reference external" href="bionet">BioNet</a> which
 uses the NEURON simulator, version 7.4 and above. Precompiled version of NEURON can be downloaded and installed from
@@ -722,19 +720,19 @@ for compiling NEURON for <a class="reference external" href="https://www.neuron.
 <ul class="simple">
 <li><p><strong>NOTE</strong> - BioNet does not use the NEURON GUI (iv package) and we recommend you compile with the –without-iv option</p></li>
 </ul>
-</div>
-<div class="section" id="point-neuron-simulations">
+</section>
+<section id="point-neuron-simulations">
 <h3>Point-Neuron simulations<a class="headerlink" href="#point-neuron-simulations" title="Permalink to this headline">¶</a></h3>
 <p>The PointNet simulation engine is responsible for running point-neuron networks using the <a class="reference external" href="http://www.nest-simulator.org/">NEST simulator</a>,
 version 2.11 and above. Instructions for installing NEST can be found <a class="reference external" href="http://www.nest-simulator.org/installation/">here</a>.</p>
-</div>
-<div class="section" id="filter-models">
+</section>
+<section id="filter-models">
 <h3>Filter Models<a class="headerlink" href="#filter-models" title="Permalink to this headline">¶</a></h3>
 <p>FilterNet is the simulation engine responsible for simulating firing rate responses to stimuli onto the visual fields. It
 uses a piece of simulation software called LGNModel developed at the Allen Institute for Brain Science. Luckily, LGNModel
 is already built into the BMTK and no extra installation instructions are required.</p>
-</div>
-<div class="section" id="population-level-models">
+</section>
+<section id="population-level-models">
 <h3>Population Level Models<a class="headerlink" href="#population-level-models" title="Permalink to this headline">¶</a></h3>
 <p>PopNet will simulate population level firing rate dynamics using <a class="reference external" href="https://github.com/AllenInstitute/dipde">DiPDE</a>. Instructions
 for installing DiPDE can be found <a class="reference external" href="http://alleninstitute.github.io/dipde/user.html#quick-start-install-using-pip">here</a>.
@@ -742,9 +740,9 @@ However we recommend installing DiPDE using anaconda:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ conda install -c nicholasc dipde
 </pre></div>
 </div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -793,7 +791,7 @@ However we recommend installing DiPDE using anaconda:</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

@@ -4,18 +4,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>bmtk.simulator.bionet.bionetwork &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/aibs_sphinx.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
-    <script src="../../../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
@@ -649,8 +646,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">from</span> <span class="nn">neuron</span> <span class="kn">import</span> <span class="n">h</span>
 
 <span class="kn">from</span> <span class="nn">bmtk.simulator.core.simulator_network</span> <span class="kn">import</span> <span class="n">SimNetwork</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.biocell</span> <span class="kn">import</span> <span class="n">BioCell</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.pointprocesscell</span> <span class="kn">import</span> <span class="n">PointProcessCell</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.biocell</span> <span class="kn">import</span> <span class="n">BioCell</span><span class="p">,</span> <span class="n">BioCellSpontSyn</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.pointprocesscell</span> <span class="kn">import</span> <span class="n">PointProcessCell</span><span class="p">,</span> <span class="n">PointProcessCellSpontSyns</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.pointsomacell</span> <span class="kn">import</span> <span class="n">PointSomaCell</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.virtualcell</span> <span class="kn">import</span> <span class="n">VirtualCell</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.morphology</span> <span class="kn">import</span> <span class="n">Morphology</span>
@@ -679,6 +676,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_model_type_map</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;biophysical&#39;</span><span class="p">:</span> <span class="n">BioCell</span><span class="p">,</span>
             <span class="s1">&#39;point_process&#39;</span><span class="p">:</span> <span class="n">PointProcessCell</span><span class="p">,</span>
+            <span class="s1">&#39;point_neuron&#39;</span><span class="p">:</span> <span class="n">PointProcessCell</span><span class="p">,</span>
             <span class="s1">&#39;point_soma&#39;</span><span class="p">:</span> <span class="n">PointSomaCell</span><span class="p">,</span>
             <span class="s1">&#39;virtual&#39;</span><span class="p">:</span> <span class="n">VirtualCell</span>
         <span class="p">}</span>
@@ -697,6 +695,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_gid_pool</span> <span class="o">=</span> <span class="n">GidPool</span><span class="p">()</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_spont_syns</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spont_syns_filter</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spont_syns_times</span> <span class="o">=</span> <span class="kc">None</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">gid_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid_pool</span>
@@ -704,6 +706,19 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">py_function_caches</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">nrn</span>
+
+<div class="viewcode-block" id="BioNetwork.set_spont_syn_activity"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.bionetwork.BioNetwork.set_spont_syn_activity">[docs]</a>    <span class="k">def</span> <span class="nf">set_spont_syn_activity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">precell_filter</span><span class="p">,</span> <span class="n">timestamps</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_type_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;biophysical&#39;</span><span class="p">:</span> <span class="n">BioCellSpontSyn</span><span class="p">,</span>
+            <span class="s1">&#39;point_process&#39;</span><span class="p">:</span> <span class="n">PointProcessCellSpontSyns</span><span class="p">,</span>
+            <span class="s1">&#39;point_neuron&#39;</span><span class="p">:</span> <span class="n">PointProcessCellSpontSyns</span><span class="p">,</span>
+            <span class="s1">&#39;point_soma&#39;</span><span class="p">:</span> <span class="n">PointSomaCell</span><span class="p">,</span>
+            <span class="s1">&#39;virtual&#39;</span><span class="p">:</span> <span class="n">VirtualCell</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_spont_syns</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spont_syns_filter</span> <span class="o">=</span> <span class="n">precell_filter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spont_syns_times</span> <span class="o">=</span> <span class="n">timestamps</span></div>
 
 <div class="viewcode-block" id="BioNetwork.get_node_id"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.bionetwork.BioNetwork.get_node_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_node_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">node_id</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank_node_ids</span><span class="p">[</span><span class="n">population</span><span class="p">]:</span>
@@ -994,7 +1009,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

@@ -4,18 +4,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>bmtk.simulator.core.simulator_network &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/aibs_sphinx.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
-    <script src="../../../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
@@ -763,8 +760,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">if</span> <span class="s1">&#39;population&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">node_pop_df</span><span class="p">:</span>
                 <span class="n">node_pop_df</span><span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">name</span>
 
-            <span class="c1">#node_pop_df = node_pop_df.set_index([node_pop_df.index.astype(dtype=np.uint64)])</span>
-
             <span class="k">if</span> <span class="n">all_nodes_df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">all_nodes_df</span> <span class="o">=</span> <span class="n">node_pop_df</span>
             <span class="k">else</span><span class="p">:</span>
@@ -823,7 +818,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="viewcode-block" id="SimNetwork.build_nodes"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.simulator_network.SimNetwork.build_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">build_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="SimNetwork.build_recurrent_edges"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.simulator_network.SimNetwork.build_recurrent_edges">[docs]</a>    <span class="k">def</span> <span class="nf">build_recurrent_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SimNetwork.build_recurrent_edges"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.simulator_network.SimNetwork.build_recurrent_edges">[docs]</a>    <span class="k">def</span> <span class="nf">build_recurrent_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">opts</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SimNetwork.build_virtual_connections"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.core.html#bmtk.simulator.core.simulator_network.SimNetwork.build_virtual_connections">[docs]</a>    <span class="k">def</span> <span class="nf">build_virtual_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -949,7 +944,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

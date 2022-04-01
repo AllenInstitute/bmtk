@@ -4,18 +4,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>bmtk.simulator.bionet.modules.record_cellvars &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/aibs_sphinx.css" />
+    <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
     <script src="../../../../../_static/jquery.js"></script>
     <script src="../../../../../_static/underscore.js"></script>
     <script src="../../../../../_static/doctools.js"></script>
-    <script src="../../../../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
   </head><body>
@@ -692,6 +689,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_all_variables</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">variable_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">variable_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_report_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_transforms</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="c1"># self._special_variables = []</span>
         <span class="k">for</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">fnc_name</span> <span class="ow">in</span> <span class="n">transform</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -712,9 +710,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span> <span class="o">=</span> <span class="n">sections</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="c1">#self._var_recorder = MembraneRecorder(self._file_name, self._tmp_dir, self._all_variables,</span>
-        <span class="c1">#                                      buffer_data=buffer_data, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_gid_list</span> <span class="o">=</span> <span class="n">gids</span>  <span class="c1"># list of all gids that will have their variables saved</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># table of variable data indexed by [gid][variable]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_block_step</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># time step within a given block</span>
@@ -729,13 +724,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_local_gids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">biophysical_gids</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">selected_gids</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_save_sim_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
-        <span class="c1">#self._var_recorder.tstart = 0.0</span>
-        <span class="c1">#self._var_recorder.tstop = sim.tstop</span>
-        <span class="c1">#self._var_recorder.dt = sim.dt</span>
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="MembraneReport.initialize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_cellvars.MembraneReport.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span> <span class="o">=</span> <span class="n">MembraneRecorder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_name</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_variables</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span> <span class="o">=</span> <span class="n">MembraneRecorder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_name</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_report_name</span><span class="p">,</span>
                                               <span class="n">buffer_size</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">nsteps_block</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">tstop</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">tstop</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">gid_pool</span>
 
@@ -756,11 +748,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                     <span class="n">sec_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec_id</span><span class="p">)</span>
                     <span class="n">seg_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
 
-            <span class="c1">#self._var_recorder.add_cell(gid, sec_list, seg_list)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">add_cell</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">pop_id</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">pop_id</span><span class="o">.</span><span class="n">population</span><span class="p">,</span> <span class="n">element_ids</span><span class="o">=</span><span class="n">sec_list</span><span class="p">,</span>
                                         <span class="n">element_pos</span><span class="o">=</span><span class="n">seg_list</span><span class="p">)</span>
 
-        <span class="c1">#self._var_recorder.initialize(sim.n_steps, sim.nsteps_block)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="MembraneReport.step"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_cellvars.MembraneReport.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">tstep</span><span class="p">):</span>
@@ -799,16 +789,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                                          <span class="n">sections</span><span class="o">=</span><span class="n">sections</span><span class="p">,</span> <span class="n">buffer_data</span><span class="o">=</span><span class="n">buffer_data</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SomaReport.initialize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_cellvars.SomaReport.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span> <span class="o">=</span> <span class="n">MembraneRecorder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_name</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_variables</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span> <span class="o">=</span> <span class="n">MembraneRecorder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_name</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_report_name</span><span class="p">,</span>
                                               <span class="n">buffer_size</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">nsteps_block</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">tstop</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">tstop</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">gid_pool</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_get_gids</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
-        <span class="c1"># self._save_sim_data(sim)</span>
 
         <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_gids</span><span class="p">:</span>
             <span class="n">pop_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span><span class="o">.</span><span class="n">get_pool_id</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span>
-            <span class="c1"># self._var_recorder.add_cell(gid, [0], [0.5])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">add_cell</span><span class="p">(</span><span class="n">pop_id</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">pop_id</span><span class="o">.</span><span class="n">population</span><span class="p">,</span> <span class="n">element_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                                         <span class="n">element_pos</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">])</span>
 
@@ -822,14 +809,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">cell</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">get_cell_gid</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span><span class="p">:</span>
                 <span class="n">var_val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">soma</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">var_name</span><span class="p">)</span>
-                <span class="c1"># self._var_recorder.record_cell(gid, var_name, [var_val], tstep)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">record_cell</span><span class="p">(</span><span class="n">pop_id</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">pop_id</span><span class="o">.</span><span class="n">population</span><span class="p">,</span> <span class="n">vals</span><span class="o">=</span><span class="p">[</span><span class="n">var_val</span><span class="p">],</span>
                                                <span class="n">tstep</span><span class="o">=</span><span class="n">tstep</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">fnc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transforms</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">var_val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">soma</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">var_name</span><span class="p">)</span>
                 <span class="n">new_val</span> <span class="o">=</span> <span class="n">fnc</span><span class="p">(</span><span class="n">var_val</span><span class="p">)</span>
-                <span class="c1"># self._var_recorder.record_cell(gid, var_name, [new_val], tstep)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">record_cell</span><span class="p">(</span><span class="n">pop_id</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">pop_id</span><span class="o">.</span><span class="n">population</span><span class="p">,</span> <span class="n">vals</span><span class="o">=</span><span class="p">[</span><span class="n">new_val</span><span class="p">],</span>
                                                <span class="n">tstep</span><span class="o">=</span><span class="n">tstep</span><span class="p">)</span>
 
@@ -882,7 +867,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

@@ -4,18 +4,16 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>bmtk &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/aibs_sphinx.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" /> 
   </head><body>
@@ -621,17 +619,17 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="bmtk">
+  <section id="bmtk">
 <h1>bmtk<a class="headerlink" href="#bmtk" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="bmtk.html">bmtk package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk.html#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.analyzer.html#subpackages">Subpackages</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.analyzer.html#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.analyzer.html#module-bmtk.analyzer.cell_vars">bmtk.analyzer.cell_vars module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.analyzer.html#module-bmtk.analyzer.compartment">bmtk.analyzer.compartment module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.analyzer.html#module-bmtk.analyzer.ecp">bmtk.analyzer.ecp module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.analyzer.html#module-bmtk.analyzer.firing_rates">bmtk.analyzer.firing_rates module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.analyzer.html#module-bmtk.analyzer.io_tools">bmtk.analyzer.io_tools module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.analyzer.html#module-bmtk.analyzer.spike_trains">bmtk.analyzer.spike_trains module</a></li>
@@ -644,13 +642,16 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l3"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.builder.html#subpackages">Subpackages</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.builder.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.html#module-bmtk.builder.builder_utils">bmtk.builder.builder_utils module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.builder.html#module-bmtk.builder.connection_map">bmtk.builder.connection_map module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.builder.html#module-bmtk.builder.connector">bmtk.builder.connector module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.builder.html#module-bmtk.builder.edge">bmtk.builder.edge module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.builder.html#module-bmtk.builder.functor_cache">bmtk.builder.functor_cache module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.builder.html#module-bmtk.builder.id_generator">bmtk.builder.id_generator module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.html#module-bmtk.builder.index_builders">bmtk.builder.index_builders module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.builder.html#module-bmtk.builder.iterator">bmtk.builder.iterator module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.html#module-bmtk.builder.network">bmtk.builder.network module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.html#module-bmtk.builder.network_builder">bmtk.builder.network_builder module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bmtk.builder.html#module-bmtk.builder.networks">bmtk.builder.networks module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.builder.html#module-bmtk.builder.node">bmtk.builder.node module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.builder.html#module-bmtk.builder.node_pool">bmtk.builder.node_pool module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.builder.html#module-bmtk.builder.node_set">bmtk.builder.node_set module</a></li>
@@ -671,7 +672,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l4"><a class="reference internal" href="bmtk.utils.html#subpackages">Subpackages</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.utils.html#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.utils.html#module-bmtk.utils.hdf5_helper">bmtk.utils.hdf5_helper module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="bmtk.utils.html#module-bmtk.utils.property_schema">bmtk.utils.property_schema module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.utils.html#module-bmtk.utils.sim_setup">bmtk.utils.sim_setup module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="bmtk.utils.html#module-bmtk.utils">Module contents</a></li>
 </ul>
@@ -683,7 +683,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </li>
 </ul>
 </div>
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -732,7 +732,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

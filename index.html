@@ -4,18 +4,16 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Welcome to the Brain Modeling Toolkit &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Installing the BMTK" href="installation.html" /> 
@@ -622,7 +620,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="welcome-to-the-brain-modeling-toolkit">
+  <section id="welcome-to-the-brain-modeling-toolkit">
 <h1>Welcome to the Brain Modeling Toolkit<a class="headerlink" href="#welcome-to-the-brain-modeling-toolkit" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
@@ -630,9 +628,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 neural network models. It supports the building and simulation of models of varying levels-of-resolution; from
 multi-compartment biophysically detailed networks, to point-neuron models, to filter-based models, and even
 population-level firing rate models.</p>
-<div class="figure align-default">
+<figure class="align-default">
 <a class="reference internal image-reference" href="_images/levels_of_resolution_noml.png"><img alt="_images/levels_of_resolution_noml.png" src="_images/levels_of_resolution_noml.png" style="width: 876.4px; height: 287.7px;" /></a>
-</div>
+</figure>
 <p>The BMTK is not itself a simulator and will utilize existing simulators, like NEURON and NEST, to run different types of
 models. What BMTK does provide:</p>
 <ul class="simple">
@@ -646,16 +644,16 @@ across different simulators without having to learn how to use each tool.</p></l
 released under a BSD 3-clause license. We encourage others to use the BMTK for their own research, and suggestions and
 contributions to the BMTK are welcome.</p>
 <p>The latest release, previous releases, and current development can be found at <a class="reference external" href="https://github.com/AllenInstitute/bmtk">https://github.com/AllenInstitute/bmtk</a></p>
-<div class="section" id="the-bmtk-workflow-and-architecture">
+<section id="the-bmtk-workflow-and-architecture">
 <h2>The BMTK Workflow and architecture<a class="headerlink" href="#the-bmtk-workflow-and-architecture" title="Permalink to this headline">¶</a></h2>
 <p>BMTK can readily scale to run models of single neurons, and even single compartments, and for all different types of
 neuronal networks. However BMTK was designed for very-large, highly optimized mammalian cortical network models.
 Generating the connectivity matrix could take hours or even days to complete. Plus once we had the base-line model we
 wanted to run against a large variety of conditions and stimuli, so that we could directly compare with existing in-vivo
 recordings (see Allen Brain Observatory).</p>
-<div class="figure align-default">
+<figure class="align-default">
 <a class="reference internal image-reference" href="_images/bmtk_workflow.jpg"><img alt="_images/bmtk_workflow.jpg" src="_images/bmtk_workflow.jpg" style="width: 883.0px; height: 286.0px;" /></a>
-</div>
+</figure>
 <p>Unlike other simulators, BMTK separates the process of building, simulating, and analyzing the results. First a fully
 instantiated base-line version of the model is built and saved to a file so each time a simulation is ran it takes only
 a small fraction of the time to instantiate the simulation. Results are also automatically saved to a disk. BMTK and
@@ -671,32 +669,32 @@ iterations of a simulation be done as fast as possible</p>
 </dl>
 </li>
 </ul>
-<div class="figure align-default">
+<figure class="align-default">
 <a class="reference internal image-reference" href="_images/bmtk_architecture.jpg"><img alt="_images/bmtk_architecture.jpg" src="_images/bmtk_architecture.jpg" style="width: 896.85px; height: 412.2px;" /></a>
-</div>
+</figure>
 <p>The components can be as one workflow or separately by themselves. BMTK utilizes the SONATA Data format (see next section)
 to allow sharing of large-scale network data. As such, it is possible to use the Network Builder to build the model but
 another tool to run the model. Or if another model has been built by someone else and saved in SONATA format BMTK will
 be able to simulate it.</p>
-</div>
-<div class="section" id="sonata">
+</section>
+<section id="sonata">
 <h2>SONATA<a class="headerlink" href="#sonata" title="Permalink to this headline">¶</a></h2>
 <p>SONATA is a multi-institutional developed standardized, cross-platform data format for storing large scale networks and
 simulation results. The BMTK utilizes SONATA when building and simulating networks, so much of what is being described
 in the documentation and tutorials will be based on SONATA. For more information see the
 <a class="reference external" href="https://github.com/AllenInstitute/sonata">SONATA github page</a>.</p>
-</div>
-<div class="section" id="references">
+</section>
+<section id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
 <p>See the paper about BMTK: <a class="reference external" href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008386">link</a>.</p>
 <p>Please cite BMTK as follows:</p>
 <p>Dai et al. Brain Modeling ToolKit: An open source software suite for multiscale modeling of brain circuits. PLoS Comput Biol 16(11): e1008386. <a class="reference external" href="https://doi.org/10.1371/journal.pcbi.1008386">https://doi.org/10.1371/journal.pcbi.1008386</a></p>
-</div>
-<div class="section" id="acknowledgements">
+</section>
+<section id="acknowledgements">
 <h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permalink to this headline">¶</a></h2>
 <p>We wish to thank the Allen Institute for Brain Science founder, Paul G. Allen, for their vision, encouragement, and support.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -745,7 +743,7 @@ in the documentation and tutorials will be based on SONATA. For more information
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

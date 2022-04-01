@@ -4,18 +4,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>bmtk.analyzer.firing_rates &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="../../../_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/aibs_sphinx.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
@@ -646,6 +643,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1">#</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
 
 <div class="viewcode-block" id="convert_rates"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.firing_rates.convert_rates">[docs]</a><span class="k">def</span> <span class="nf">convert_rates</span><span class="p">(</span><span class="n">rates_file</span><span class="p">):</span>
     <span class="n">rates_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">rates_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;gid&#39;</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;rate&#39;</span><span class="p">])</span>
@@ -653,7 +652,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="n">rates_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">gid</span><span class="p">,</span> <span class="n">rates</span> <span class="ow">in</span> <span class="n">rates_sorted_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;gid&#39;</span><span class="p">):</span>
         <span class="n">start</span> <span class="o">=</span> <span class="n">rates</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="c1">#start = rates[&#39;rate&#39;][0]</span>
         <span class="n">end</span> <span class="o">=</span> <span class="n">rates</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">rates</span><span class="p">)</span>
         <span class="n">rates_dict</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span> <span class="n">end</span><span class="p">,</span> <span class="s1">&#39;dt&#39;</span><span class="p">:</span> <span class="n">dt</span><span class="p">,</span> <span class="s1">&#39;rates&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">rates</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">])}</span>
@@ -677,6 +675,39 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="plot_rates_popnet"><a class="viewcode-back" href="../../../bmtk/bmtk.analyzer.html#bmtk.analyzer.firing_rates.plot_rates_popnet">[docs]</a><span class="k">def</span> <span class="nf">plot_rates_popnet</span><span class="p">(</span><span class="n">cell_models_file</span><span class="p">,</span> <span class="n">rates_file</span><span class="p">,</span> <span class="n">model_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">save_as</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Initial method for plotting popnet output</span>
+
+<span class="sd">    :param cell_models_file:</span>
+<span class="sd">    :param rates_file:</span>
+<span class="sd">    :param model_keys:</span>
+<span class="sd">    :param save_as:</span>
+<span class="sd">    :param show_plot:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">pops_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">cell_models_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+    <span class="n">lookup_col</span> <span class="o">=</span> <span class="n">model_keys</span> <span class="k">if</span> <span class="n">model_keys</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s1">&#39;node_type_id&#39;</span>
+    <span class="n">pop_keys</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;node_type_id&#39;</span><span class="p">]):</span> <span class="n">r</span><span class="p">[</span><span class="n">lookup_col</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">pops_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()}</span>
+
+    <span class="c1"># organize the rates file by population</span>
+    <span class="c1"># rates = {pop_name: ([], []) for pop_name in pop_keys.keys()}</span>
+    <span class="n">rates_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">rates_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;times&#39;</span><span class="p">,</span> <span class="s1">&#39;rates&#39;</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">grp_key</span><span class="p">,</span> <span class="n">grp_df</span> <span class="ow">in</span> <span class="n">rates_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">):</span>
+        <span class="n">grp_label</span> <span class="o">=</span> <span class="n">pop_keys</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">grp_key</span><span class="p">)]</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">grp_df</span><span class="p">[</span><span class="s1">&#39;times&#39;</span><span class="p">],</span> <span class="n">grp_df</span><span class="p">[</span><span class="s1">&#39;rates&#39;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">grp_label</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="s1">&#39;x-small&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;time (s)&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;firing rates (Hz)&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">save_as</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">save_as</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">show_plot</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 </pre></div>
 
             <div class="clearer"></div>
@@ -725,7 +756,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

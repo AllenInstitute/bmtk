@@ -4,18 +4,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>bmtk.utils.io.cell_vars &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/aibs_sphinx.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
-    <script src="../../../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
@@ -635,12 +632,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <span class="sd">    For parallel simulations this class will write to a seperate tmp file on each rank, then use the merge method to</span>
 <span class="sd">    combine the results. This is less efficent, but doesn&#39;t require the user to install mpi4py and build h5py in</span>
-<span class="sd">    parallel mode. For better performance use the CellVarRecorderParrallel class instead.</span>
+<span class="sd">    parallel mode. For better performance use the CellVarRecorderParallel class instead.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_io</span> <span class="o">=</span> <span class="n">io</span>
 
 <div class="viewcode-block" id="CellVarRecorder.DataTable"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.io.html#bmtk.utils.io.cell_vars.CellVarRecorder.DataTable">[docs]</a>    <span class="k">class</span> <span class="nc">DataTable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;A small struct to keep track of different */data (and buffer) tables&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;A small struct to keep track of different \*/data (and buffer) tables&quot;&quot;&quot;</span>
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_name</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">var_name</span> <span class="o">=</span> <span class="n">var_name</span>
             <span class="c1"># If buffering data, buffer_block will be an in-memory array and will write to data_block during when</span>
@@ -1032,7 +1029,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

@@ -4,18 +4,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>bmtk.simulator.filternet.lgnmodel.temporalfilter &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/aibs_sphinx.css" />
+    <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
     <script src="../../../../../_static/jquery.js"></script>
     <script src="../../../../../_static/underscore.js"></script>
     <script src="../../../../../_static/doctools.js"></script>
-    <script src="../../../../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
   </head><body>
@@ -695,7 +692,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="c1"># Not likely to change defaults:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">neye</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="o">.</span><span class="mi">3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="mf">.3</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nkt</span> <span class="o">=</span> <span class="mi">600</span>
 
         <span class="c1"># Parameters</span>
@@ -715,7 +712,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">nkt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nkt</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kernel_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">fitfuns</span><span class="o">.</span><span class="n">makeBasis_StimKernel</span><span class="p">(</span><span class="n">kbasprs</span><span class="p">,</span> <span class="n">nkt</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">t_support</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_data</span><span class="p">)</span><span class="o">*.</span><span class="mi">001</span><span class="p">,</span> <span class="o">.</span><span class="mi">001</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t_support</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_data</span><span class="p">)</span><span class="o">*</span><span class="mf">.001</span><span class="p">,</span> <span class="mf">.001</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kbasprs</span> <span class="o">=</span> <span class="n">kbasprs</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_support</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_data</span><span class="p">)</span>
         
@@ -723,7 +720,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolation_function</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
         
 <div class="viewcode-block" id="TemporalFilterCosineBump.get_default_t_grid"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilterCosineBump.get_default_t_grid">[docs]</a>    <span class="k">def</span> <span class="nf">get_default_t_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nkt</span><span class="p">)</span><span class="o">*.</span><span class="mi">001</span></div>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nkt</span><span class="p">)</span><span class="o">*</span><span class="mf">.001</span></div>
     
 <div class="viewcode-block" id="TemporalFilterCosineBump.to_dict"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.temporalfilter.TemporalFilterCosineBump.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">param_dict</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">TemporalFilterCosineBump</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
@@ -777,7 +774,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

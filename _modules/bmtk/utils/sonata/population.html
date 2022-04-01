@@ -4,18 +4,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>bmtk.utils.sonata.population &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/aibs_sphinx.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
-    <script src="../../../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
@@ -885,7 +882,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">node_group_props</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">node_group_id</span><span class="p">)[</span><span class="n">node_group_index</span><span class="p">]</span>
         <span class="n">node_gid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid_lookup_fnc</span><span class="p">(</span><span class="n">row_indx</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">Node</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="n">node_type_id</span><span class="p">,</span> <span class="n">node_type_props</span><span class="p">,</span> <span class="n">node_group_id</span><span class="p">,</span> <span class="n">node_group_props</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">gid</span><span class="o">=</span><span class="n">node_gid</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">Node</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pop_name</span><span class="p">,</span> <span class="n">node_type_id</span><span class="p">,</span> <span class="n">node_type_props</span><span class="p">,</span> <span class="n">node_group_id</span><span class="p">,</span> <span class="n">node_group_props</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">gid</span><span class="o">=</span><span class="n">node_gid</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="NodePopulation.get_rows"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.sonata.html#bmtk.utils.sonata.population.NodePopulation.get_rows">[docs]</a>    <span class="k">def</span> <span class="nf">get_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row_indicies</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns a set of all nodes based on list of row indicies.</span>
@@ -1234,8 +1231,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="k">def</span> <span class="nf">_get_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index_struct</span><span class="p">,</span> <span class="n">lookup_id</span><span class="p">):</span>
         <span class="c1"># TODO: Use a EdgeSet instead</span>
         <span class="k">if</span> <span class="n">lookup_id</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">index_struct</span><span class="o">.</span><span class="n">lookup_table</span><span class="p">):</span>
-            <span class="c1"># TODO: Store length in index</span>
-            <span class="k">raise</span> <span class="ne">StopIteration</span>
+            <span class="k">return</span> <span class="p">[]</span>
+            <span class="c1"># raise StopIteration</span>
 
         <span class="n">edges_table</span> <span class="o">=</span> <span class="n">index_struct</span><span class="o">.</span><span class="n">edge_table</span>
         <span class="n">lookup_beg</span><span class="p">,</span> <span class="n">lookup_end</span> <span class="o">=</span> <span class="n">index_struct</span><span class="o">.</span><span class="n">lookup_table</span><span class="p">[</span><span class="n">lookup_id</span><span class="p">]</span>
@@ -1306,7 +1303,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

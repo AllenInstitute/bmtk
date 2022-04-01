@@ -4,18 +4,16 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Network file formats &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
   </head><body>
@@ -621,14 +619,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="network-file-formats">
+  <section id="network-file-formats">
 <h1>Network file formats<a class="headerlink" href="#network-file-formats" title="Permalink to this headline">¶</a></h1>
 <p>A network can be viewed as a graph (Figure 1) that is fully described by specifying the properties of the nodes and edges.</p>
 <a class="reference internal image-reference" href="_images/graph_structure.png"><img alt="_images/graph_structure.png" src="_images/graph_structure.png" style="width: 565.9499999999999px; height: 247.5px;" /></a>
 <p><strong>Figure 1.</strong> Graph is described by the properties of the nodes and edges.</p>
-<p>In order to make the description more concrete we will be using the 14 cell example network found in
-docs/examples/simulators/bionet.</p>
-<div class="section" id="nodes">
+<p>In order to make the description more concrete we will be using the 14 cell example network found in examples/simulators/bionet.</p>
+<section id="nodes">
 <h2>Nodes<a class="headerlink" href="#nodes" title="Permalink to this headline">¶</a></h2>
 <p>When describing properties of nodes, it is convenient to introduce the notion of the node type, which may include multiple properties depending on a particular application. Each node then belongs to a particular node type, thus possessing all of the properties of that node type, but in addition possessing properties specific to that individual node. The node type may correspond to the biological cell-type or be based on a different set of properties convenient for parsimonious description of simulated nodes. The information unique to individual nodes is saved in the HDF5 file format and about node types in the CSV file.</p>
 <p>The HDF5 file may include nodes utilizing multiple types of cell models that are described by different number of parameters. The HDF5 file utilizes groups to group properties of nodes described by the same set of attributes. For example in Figure 2, group “0” includes properties of the biophysically detailed neurons and group “1” of LIF neurons:</p>
@@ -653,8 +650,8 @@ docs/examples/simulators/bionet.</p>
 </div></blockquote>
 <p>Then there could be also optional columns such as “rotational_angle_zaxis”, “location”,etc.</p>
 <p>The optional properties could be included either in the HDF5 file or in the CSV file depending on whether they are specific to each node or node type.</p>
-</div>
-<div class="section" id="edges">
+</section>
+<section id="edges">
 <h2>Edges<a class="headerlink" href="#edges" title="Permalink to this headline">¶</a></h2>
 <p>Similarly to nodes, in order to allow for describing edges at various levels of detail, we introduce the concept of an edge type. Each connection thus belongs to a particular edge type and possesses all properties of that type, as well as individual properties. The edge type may correspond to the synaptic connections between biological cell-types or can even be defined to conveniently represent common properties of connections for a particular network model.  These common connection properties are designated as attributes of an edge type and stored in the edge type file in the CSV format, whereas properties specific to the individual edges are stored in the HDF5 file.</p>
 <p>The HDF5 edges file may include edges utilizing multiple types of synaptic model types that are described by different number of parameters. The HDF5 file utilizes groups to group properties of edges described by the same set of attributes. For example in Figure 4, group “0” includes properties of synapses onto biophysically detailed neurons and group “1” onto LIF neurons.</p>
@@ -683,8 +680,8 @@ docs/examples/simulators/bionet.</p>
 </div></blockquote>
 <p>The target_query and source_query fiels are optional reserved attributes and provide an information describing the selection of target and source cells describied by this edge type.</p>
 <p>The optional properties could be included either in the HDF5 file or in the CSV file depending on whether they are specific to each edge or edge type. For instance, for networks edged in Figure 6 the “delay” column describing the conduction delay property is specified in the edge type meaning that all edges of a particular edge type will have an identical “delay” value. However, for other networks the “delay” property may be specific for each edge, in which case the “delay” will be stored in the HDF5 file.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -733,7 +730,7 @@ docs/examples/simulators/bionet.</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

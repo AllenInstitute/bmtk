@@ -4,18 +4,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>bmtk.simulator.bionet.iclamp &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/aibs_sphinx.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
-    <script src="../../../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
@@ -648,14 +645,22 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="IClamp"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.iclamp.IClamp">[docs]</a><span class="k">class</span> <span class="nc">IClamp</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="n">duration</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">section_name</span><span class="o">=</span><span class="s1">&#39;soma&#39;</span><span class="p">,</span> <span class="n">section_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">section_dist</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_iclamp_amp</span> <span class="o">=</span> <span class="n">amplitude</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_iclamp_del</span> <span class="o">=</span> <span class="n">delay</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_iclamp_dur</span> <span class="o">=</span> <span class="n">duration</span>
+
+        <span class="c1"># Determine what neuronal struction (axon, soma, dend, etc.), section/branch index, and where along the branch</span>
+        <span class="c1"># it will occur. default is center of first soma section; hobj.soma[0](0.5)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_section_name</span> <span class="o">=</span> <span class="n">section_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_section_index</span> <span class="o">=</span> <span class="n">section_index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_section_dist</span> <span class="o">=</span> <span class="n">section_dist</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stim</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="IClamp.attach_current"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.iclamp.IClamp.attach_current">[docs]</a>    <span class="k">def</span> <span class="nf">attach_current</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_stim</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">IClamp</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">soma</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="mf">0.5</span><span class="p">))</span>
+        <span class="c1"># self._stim = h.IClamp(cell.hobj.soma[0](0.5))</span>
+        <span class="n">hboj_sec</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">hobj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_section_name</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">_section_index</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">_section_dist</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stim</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">IClamp</span><span class="p">(</span><span class="n">hboj_sec</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stim</span><span class="o">.</span><span class="n">delay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iclamp_del</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stim</span><span class="o">.</span><span class="n">dur</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iclamp_dur</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stim</span><span class="o">.</span><span class="n">amp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iclamp_amp</span>
@@ -671,7 +676,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="viewcode-block" id="FileIClamp.attach_current"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.iclamp.FileIClamp.attach_current">[docs]</a>    <span class="k">def</span> <span class="nf">attach_current</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stim</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">IClamp</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">soma</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="mf">0.5</span><span class="p">))</span>
 
-        <span class="c1">#Listed as necessary values in the docs to use play() with an IClamp.</span>
+        <span class="c1"># Listed as necessary values in the docs to use play() with an IClamp.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stim</span><span class="o">.</span><span class="n">delay</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stim</span><span class="o">.</span><span class="n">dur</span> <span class="o">=</span> <span class="mf">1e9</span>
 
@@ -728,7 +733,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
