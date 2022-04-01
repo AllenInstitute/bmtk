@@ -667,7 +667,19 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">def</span> <span class="nf">_file_path</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span>
-            <span class="k">return</span> <span class="n">file_name</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span> <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">file_name</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rel_tmp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">)</span>
+                <span class="n">rel_fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">rel_fname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">rel_tmp</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">file_name</span>
+
+            <span class="c1"># return file_name if os.path.isabs(file_name) else os.path.join(tmp_dir, file_name)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_csv_fname</span> <span class="o">=</span> <span class="n">_file_path</span><span class="p">(</span><span class="n">spikes_file_csv</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_save_csv</span> <span class="o">=</span> <span class="n">spikes_file_csv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>

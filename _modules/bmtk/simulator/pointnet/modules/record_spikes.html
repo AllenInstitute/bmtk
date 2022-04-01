@@ -647,14 +647,72 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
 <span class="kn">from</span> <span class="nn">bmtk.utils.reports.spike_trains</span> <span class="kn">import</span> <span class="n">SpikeTrains</span><span class="p">,</span> <span class="n">sort_order</span><span class="p">,</span> <span class="n">sort_order_lu</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.pointnet.io_tools</span> <span class="kn">import</span> <span class="n">io</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.pointnet.nest_utils</span> <span class="kn">import</span> <span class="n">nest_version</span>
 
 <span class="kn">import</span> <span class="nn">nest</span>
 
 
-<span class="n">MPI_RANK</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">Rank</span><span class="p">()</span>
-<span class="n">N_HOSTS</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">NumProcesses</span><span class="p">()</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">MPI_RANK</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">Rank</span><span class="p">()</span>
+    <span class="n">N_HOSTS</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">NumProcesses</span><span class="p">()</span>
+
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="n">MPI_RANK</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">N_HOSTS</span> <span class="o">=</span> <span class="mi">1</span>
+
+
+<div class="viewcode-block" id="create_spike_detector_nest2"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.record_spikes.create_spike_detector_nest2">[docs]</a><span class="k">def</span> <span class="nf">create_spike_detector_nest2</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">nest</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span>
+        <span class="s2">&quot;spike_detector&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="n">label</span><span class="p">,</span>
+            <span class="s1">&#39;withtime&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;withgid&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;to_file&#39;</span><span class="p">:</span> <span class="kc">True</span>
+        <span class="p">}</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="create_spike_detector_nest3"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.record_spikes.create_spike_detector_nest3">[docs]</a><span class="k">def</span> <span class="nf">create_spike_detector_nest3</span><span class="p">(</span><span class="n">label</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">nest</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span>
+        <span class="s2">&quot;spike_recorder&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="n">label</span><span class="p">,</span>
+            <span class="s1">&#39;record_to&#39;</span><span class="p">:</span> <span class="s1">&#39;ascii&#39;</span>
+        <span class="p">}</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="read_spikes_file_nest2"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.record_spikes.read_spikes_file_nest2">[docs]</a><span class="k">def</span> <span class="nf">read_spikes_file_nest2</span><span class="p">(</span><span class="n">spike_trains_writer</span><span class="p">,</span> <span class="n">gid_map</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">gdf_path</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">label</span> <span class="o">+</span> <span class="s1">&#39;*.gdf&#39;</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">gdf_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csv_file</span><span class="p">:</span>
+            <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">csv_file</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">gid_map</span><span class="o">.</span><span class="n">get_pool_id</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+                <span class="n">spike_trains_writer</span><span class="o">.</span><span class="n">add_spike</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">population</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">population</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="read_spikes_file_nest3"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.record_spikes.read_spikes_file_nest3">[docs]</a><span class="k">def</span> <span class="nf">read_spikes_file_nest3</span><span class="p">(</span><span class="n">spike_trains_writer</span><span class="p">,</span> <span class="n">gid_map</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">dat_path</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">label</span> <span class="o">+</span> <span class="s1">&#39;*.dat&#39;</span><span class="p">):</span>
+        <span class="n">report_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">dat_path</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s1">&#39;#&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">nest_id</span><span class="p">,</span> <span class="n">spikes_grp</span> <span class="ow">in</span> <span class="n">report_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;sender&#39;</span><span class="p">):</span>
+            <span class="n">gid</span> <span class="o">=</span> <span class="n">gid_map</span><span class="o">.</span><span class="n">get_pool_id</span><span class="p">(</span><span class="n">nest_id</span><span class="p">)</span>
+            <span class="n">timestamps</span> <span class="o">=</span> <span class="n">spikes_grp</span><span class="p">[</span><span class="s1">&#39;time_ms&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">spike_trains_writer</span><span class="o">.</span><span class="n">add_spikes</span><span class="p">(</span><span class="n">node_ids</span><span class="o">=</span><span class="n">gid</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">timestamps</span><span class="o">=</span><span class="n">timestamps</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">gid</span><span class="o">.</span><span class="n">population</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="n">nest_version</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+    <span class="n">create_spike_detector</span> <span class="o">=</span> <span class="n">create_spike_detector_nest3</span>
+    <span class="n">read_spikes_file</span> <span class="o">=</span> <span class="n">read_spikes_file_nest3</span>
+    <span class="n">NEST_spikes_file_format</span> <span class="o">=</span> <span class="s1">&#39;dat&#39;</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">create_spike_detector</span> <span class="o">=</span> <span class="n">create_spike_detector_nest2</span>
+    <span class="n">read_spikes_file</span> <span class="o">=</span> <span class="n">read_spikes_file_nest2</span>
+    <span class="n">NEST_spikes_file_format</span> <span class="o">=</span> <span class="s1">&#39;gdf&#39;</span>
 
 
 <div class="viewcode-block" id="SpikesMod"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.record_spikes.SpikesMod">[docs]</a><span class="k">class</span> <span class="nc">SpikesMod</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -668,7 +726,16 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="c1"># Unless file-name is an absolute path then it should be placed in the $OUTPUT_DIR</span>
             <span class="k">if</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span>
-            <span class="k">return</span> <span class="n">file_name</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span> <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">file_name</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">file_name</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">abs_tmp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">)</span>
+                <span class="n">abs_fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">abs_fname</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">abs_tmp</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">file_name</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_csv_fname</span> <span class="o">=</span> <span class="n">_get_path</span><span class="p">(</span><span class="n">spikes_file_csv</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_h5_fname</span> <span class="o">=</span> <span class="n">_get_path</span><span class="p">(</span><span class="n">spikes_file</span><span class="p">)</span>
@@ -679,7 +746,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_labels</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmp_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tmp_file_base</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span> <span class="o">=</span> <span class="n">SpikeTrains</span><span class="p">(</span><span class="n">cache_dir</span><span class="o">=</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="n">cache_to_disk</span><span class="o">=</span><span class="n">cache_to_disk</span><span class="p">)</span>
-        <span class="c1"># self._spike_writer = SpikeTrainWriter(tmp_dir=tmp_dir, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">delimiter</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">gid_col</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">time_col</span> <span class="o">=</span> <span class="mi">1</span>
@@ -688,22 +754,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_detector</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="SpikesMod.initialize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.record_spikes.SpikesMod.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_detector</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="s2">&quot;spike_detector&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spike_labels</span><span class="p">,</span> <span class="s1">&#39;withtime&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                                                                 <span class="s1">&#39;withgid&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;to_file&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_detector</span> <span class="o">=</span> <span class="n">create_spike_detector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spike_labels</span><span class="p">)</span>
         <span class="n">nest</span><span class="o">.</span><span class="n">Connect</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">gid_map</span><span class="o">.</span><span class="n">gids</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spike_detector</span><span class="p">)</span></div>
-        <span class="c1">#print(sim.net.gid_map.gids)</span>
-        <span class="c1">#exit()</span>
-        <span class="c1">#for pop_name, pop in sim._graph._nestid2nodeid_map.items():</span>
-        <span class="c1">#    nest.Connect(list(pop.keys()), self._spike_detector)</span>
 
 <div class="viewcode-block" id="SpikesMod.finalize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.record_spikes.SpikesMod.finalize">[docs]</a>    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
         <span class="c1"># convert NEST gdf files into SONATA spikes/ format</span>
         <span class="c1"># TODO: Create a gdf_adaptor in bmtk/utils/reports/spike_trains to improve conversion speed.</span>
         <span class="k">if</span> <span class="n">MPI_RANK</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">gdf_file</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spike_labels</span> <span class="o">+</span> <span class="s1">&#39;*.gdf&#39;</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">__parse_gdf</span><span class="p">(</span><span class="n">gdf_file</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">gid_map</span><span class="p">)</span>
-                <span class="c1"># self._spike_writer.add_spikes_file(gdf_file)</span>
+            <span class="n">gid_map</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">gid_map</span>
+            <span class="n">read_spikes_file</span><span class="p">(</span><span class="n">spike_trains_writer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="p">,</span> <span class="n">gid_map</span><span class="o">=</span><span class="n">gid_map</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_spike_labels</span><span class="p">)</span>
         <span class="n">io</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_csv_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -720,21 +779,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="c1"># io.barrier()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__clean_gdf_files</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clean_files</span><span class="p">()</span></div>
 
-    <span class="k">def</span> <span class="nf">__parse_gdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdf_path</span><span class="p">,</span> <span class="n">gid_map</span><span class="p">):</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">gdf_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csv_file</span><span class="p">:</span>
-            <span class="c1">#print(gdf_path)</span>
-            <span class="n">csv_reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">csv_file</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">csv_reader</span><span class="p">:</span>
-                <span class="c1">#print(r)</span>
-                <span class="n">p</span> <span class="o">=</span> <span class="n">gid_map</span><span class="o">.</span><span class="n">get_pool_id</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_spike_writer</span><span class="o">.</span><span class="n">add_spike</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">population</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">population</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">__clean_gdf_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_clean_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">MPI_RANK</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">gdf_file</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spike_labels</span> <span class="o">+</span> <span class="s1">&#39;*.gdf&#39;</span><span class="p">):</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">gdf_file</span><span class="p">)</span></div>
+            <span class="k">for</span> <span class="n">nest_file</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spike_labels</span> <span class="o">+</span> <span class="s1">&#39;*.&#39;</span> <span class="o">+</span> <span class="n">NEST_spikes_file_format</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">nest_file</span><span class="p">)</span></div>
 </pre></div>
 
             <div class="clearer"></div>

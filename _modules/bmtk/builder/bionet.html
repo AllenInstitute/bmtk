@@ -5,19 +5,19 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>bmtk.simulator.bionet.virtualcell &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
-    <script src="../../../../_static/jquery.js"></script>
-    <script src="../../../../_static/underscore.js"></script>
-    <script src="../../../../_static/doctools.js"></script>
-    <script src="../../../../_static/language_data.js"></script>
+    <title>bmtk.builder.bionet &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <link rel="stylesheet" href="../../../_static/aibs_sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    <link rel="index" title="Index" href="../../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../../search.html" /> 
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
 <style>
@@ -621,79 +621,21 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <h1>Source code for bmtk.simulator.bionet.virtualcell</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Copyright 2017. Allen Institute. All rights reserved</span>
-<span class="c1">#</span>
-<span class="c1"># Redistribution and use in source and binary forms, with or without modification, are permitted provided that the</span>
-<span class="c1"># following conditions are met:</span>
-<span class="c1">#</span>
-<span class="c1"># 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following</span>
-<span class="c1"># disclaimer.</span>
-<span class="c1">#</span>
-<span class="c1"># 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following</span>
-<span class="c1"># disclaimer in the documentation and/or other materials provided with the distribution.</span>
-<span class="c1">#</span>
-<span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
-<span class="c1"># products derived from this software without specific prior written permission.</span>
-<span class="c1">#</span>
-<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
-<span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
-<span class="c1"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
-<span class="c1"># SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</span>
-<span class="c1"># SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,</span>
-<span class="c1"># WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</span>
-<span class="c1"># OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
-<span class="c1">#</span>
-<span class="kn">from</span> <span class="nn">neuron</span> <span class="kn">import</span> <span class="n">h</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.io_tools</span> <span class="kn">import</span> <span class="n">io</span>
+  <h1>Source code for bmtk.builder.bionet</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">.swc_reader</span> <span class="kn">import</span> <span class="n">SWCReader</span>
+<span class="kn">from</span> <span class="nn">.swc_reader</span> <span class="kn">import</span> <span class="n">get_swc</span>
 
 
-<div class="viewcode-block" id="VirtualCell"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.virtualcell.VirtualCell">[docs]</a><span class="k">class</span> <span class="nc">VirtualCell</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Representation of a Virtual/External node&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="rand_syn_locations"><a class="viewcode-back" href="../../../bmtk/bmtk.builder.bionet.html#bmtk.builder.bionet.rand_syn_locations">[docs]</a><span class="k">def</span> <span class="nf">rand_syn_locations</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">trg</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;soma&#39;</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">,</span> <span class="s1">&#39;basal&#39;</span><span class="p">),</span> <span class="n">distance_range</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0e20</span><span class="p">),</span>
+                       <span class="n">morphology_dir</span><span class="o">=</span><span class="s1">&#39;./components/morphologies&#39;</span><span class="p">):</span>
+    <span class="n">trg_swc</span> <span class="o">=</span> <span class="n">get_swc</span><span class="p">(</span><span class="n">trg</span><span class="p">,</span> <span class="n">morphology_dir</span><span class="o">=</span><span class="n">morphology_dir</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">spike_train_dataset</span><span class="p">):</span>
-        <span class="c1"># VirtualCell is currently not a subclass of bionet.Cell class b/c the parent has a bunch of properties that</span>
-        <span class="c1"># just don&#39;t apply to a virtual cell. May want to make bionet.Cell more generic in the future.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_node_id</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">node_id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_node</span> <span class="o">=</span> <span class="n">node</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_population</span> <span class="o">=</span> <span class="n">population</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_hobj</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_train_dataset</span> <span class="o">=</span> <span class="n">spike_train_dataset</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_train_vec</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_stim</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spike_train_dataset</span><span class="p">)</span>
-        
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">node_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_id</span>
+    <span class="n">sec_ids</span><span class="p">,</span> <span class="n">seg_xs</span> <span class="o">=</span> <span class="n">trg_swc</span><span class="o">.</span><span class="n">choose_sections</span><span class="p">(</span><span class="n">sections</span><span class="p">,</span> <span class="n">distance_range</span><span class="p">,</span> <span class="n">n_sections</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">sec_id</span><span class="p">,</span> <span class="n">seg_x</span> <span class="o">=</span> <span class="n">sec_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">seg_xs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">swc_id</span><span class="p">,</span> <span class="n">swc_dist</span> <span class="o">=</span> <span class="n">trg_swc</span><span class="o">.</span><span class="n">get_swc_id</span><span class="p">(</span><span class="n">sec_id</span><span class="p">,</span> <span class="n">seg_x</span><span class="p">)</span>
+    <span class="c1"># coords = trg_swc.get_coords(sec_id, seg_x)</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">hobj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hobj</span>
-
-<div class="viewcode-block" id="VirtualCell.set_stim"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.virtualcell.VirtualCell.set_stim">[docs]</a>    <span class="k">def</span> <span class="nf">set_stim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stim_prop</span><span class="p">,</span> <span class="n">spike_train</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Gets the spike trains for each individual cell.&quot;&quot;&quot;</span>
-        <span class="n">spikes</span> <span class="o">=</span> <span class="n">spike_train</span><span class="o">.</span><span class="n">get_times</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">spikes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">spikes</span> <span class="o">=</span> <span class="p">[]</span>
-
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">spikes</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">):</span>
-            <span class="c1"># NRN will fail if VecStim contains negative spike-time, throw an exception and log info for user</span>
-            <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;spike train </span><span class="si">{}</span><span class="s1"> contains negative number, unable to run virtual cell in NEURON&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">spikes</span>
-            <span class="p">))</span>
-
-        <span class="n">spikes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">spikes</span><span class="p">)</span>  <span class="c1"># sort the spikes for NEURON, will throw a segfault if not sorted</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_train_vec</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="n">spikes</span><span class="p">)</span>
-        <span class="n">vecstim</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">VecStim</span><span class="p">()</span>
-        <span class="n">vecstim</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_train_vec</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_hobj</span> <span class="o">=</span> <span class="n">vecstim</span></div>
-
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="n">item</span><span class="p">]</span></div>
+    <span class="k">return</span> <span class="p">[</span><span class="n">sec_id</span><span class="p">,</span> <span class="n">seg_x</span><span class="p">,</span> <span class="n">swc_id</span><span class="p">,</span> <span class="n">swc_dist</span><span class="p">]</span>  <span class="c1"># coords[0], coords[y], coords[z]</span></div>
 </pre></div>
 
             <div class="clearer"></div>
@@ -702,38 +644,38 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h3><a href="../../../../index.html">Contents</a></h3>
+<h3><a href="../../../index.html">Contents</a></h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../builder.html">Building Networks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../simulators.html">Simulation Engines</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bionet.html">BioNet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../pointnet.html">PointNet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../popnet.html">PopNet</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../filternet.html">FilterNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../builder.html">Building Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../simulators.html">Simulation Engines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../pointnet.html">PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../analyzer.html">Analyzing the Results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../examples.html">Example Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Example Networks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../contributors.html">Contributors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../bmtk/bmtk.html">Source Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>
 </ul>
@@ -741,7 +683,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
-    <form class="search" action="../../../../search.html" method="get">
+    <form class="search" action="../../../search.html" method="get">
       <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>

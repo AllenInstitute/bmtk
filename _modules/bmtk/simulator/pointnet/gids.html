@@ -624,8 +624,25 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h1>Source code for bmtk.simulator.pointnet.gids</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">nest</span>
+
+<span class="kn">from</span> <span class="nn">.nest_utils</span> <span class="kn">import</span> <span class="n">nest_version</span>
 
 <span class="n">PopulationID</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;PopulationID&#39;</span><span class="p">,</span> <span class="s1">&#39;node_id population&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ids2list_nest2"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.gids.ids2list_nest2">[docs]</a><span class="k">def</span> <span class="nf">ids2list_nest2</span><span class="p">(</span><span class="n">nest_ids</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">nest_ids</span></div>
+
+
+<div class="viewcode-block" id="ids2list_nest3"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.gids.ids2list_nest3">[docs]</a><span class="k">def</span> <span class="nf">ids2list_nest3</span><span class="p">(</span><span class="n">nest_ids</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nest_ids</span><span class="p">,</span> <span class="n">nest</span><span class="o">.</span><span class="n">NodeCollection</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">nest_ids</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">nest_ids</span></div>
+
+
+<span class="n">ids2list</span> <span class="o">=</span> <span class="n">ids2list_nest3</span> <span class="k">if</span> <span class="n">nest_version</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">ids2list_nest2</span>
 
 
 <div class="viewcode-block" id="GidPool"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.gids.GidPool">[docs]</a><span class="k">class</span> <span class="nc">GidPool</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -657,6 +674,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="GidPool.add_nestids"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.gids.GidPool.add_nestids">[docs]</a>    <span class="k">def</span> <span class="nf">add_nestids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">,</span> <span class="n">nest_ids</span><span class="p">):</span>
+        <span class="c1"># in NEST 3.0+ nest.Create() returns a NodeCollection instead of a list of ids, need to convert</span>
+        <span class="n">nest_ids</span> <span class="o">=</span> <span class="n">ids2list</span><span class="p">(</span><span class="n">nest_ids</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nestid_lu</span><span class="p">:</span>
             <span class="n">lu_table</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;nest_ids&#39;</span><span class="p">:</span> <span class="n">nest_ids</span><span class="p">,</span> <span class="s1">&#39;node_ids&#39;</span><span class="p">:</span> <span class="n">node_ids</span><span class="p">})</span>
             <span class="n">lu_table</span> <span class="o">=</span> <span class="n">lu_table</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;node_ids&#39;</span><span class="p">)</span>
@@ -665,6 +685,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">new_df</span> <span class="o">=</span> <span class="n">new_df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;node_ids&#39;</span><span class="p">)</span>
             <span class="n">lu_table</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nestid_lu</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
             <span class="n">lu_table</span> <span class="o">=</span> <span class="n">lu_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_df</span><span class="p">)</span>
+            <span class="c1"># lu_table = lu_table.reindex(lu_table.index.values)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_nestid_lu</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">lu_table</span>
 
@@ -679,7 +700,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="n">nestids_table</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">node_ids</span><span class="p">][</span><span class="s1">&#39;nest_ids&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span></div>
 
 <div class="viewcode-block" id="GidPool.get_gids"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.gids.GidPool.get_gids">[docs]</a>    <span class="k">def</span> <span class="nf">get_gids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nestids</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="n">node_ids</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nestids</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="n">node_ids</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gids</span><span class="p">)</span></div>
 </pre></div>
 
             <div class="clearer"></div>

@@ -818,8 +818,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">pc</span><span class="o">.</span><span class="n">spike_record</span><span class="p">(</span><span class="n">gid</span><span class="p">,</span> <span class="n">tvec</span><span class="p">,</span> <span class="n">gidvec</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_spikes</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span> <span class="o">=</span> <span class="n">tvec</span></div>
 
-<div class="viewcode-block" id="BioSimulator.attach_current_clamp"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biosimulator.BioSimulator.attach_current_clamp">[docs]</a>    <span class="k">def</span> <span class="nf">attach_current_clamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">gids</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-
+<div class="viewcode-block" id="BioSimulator.attach_current_clamp"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biosimulator.BioSimulator.attach_current_clamp">[docs]</a>    <span class="k">def</span> <span class="nf">attach_current_clamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">gids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">section_name</span><span class="o">=</span><span class="s1">&#39;soma&#39;</span><span class="p">,</span> <span class="n">section_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                             <span class="n">section_dist</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
         <span class="c1"># TODO: Create appropiate module</span>
         <span class="k">if</span> <span class="n">gids</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">gids</span><span class="o">==</span><span class="s1">&#39;all&#39;</span><span class="p">:</span>
             <span class="n">gids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">biophysical_gids</span>
@@ -831,15 +831,19 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">gids</span><span class="p">,</span> <span class="n">NodeSet</span><span class="p">):</span>
             <span class="n">gids</span> <span class="o">=</span> <span class="n">gids</span><span class="o">.</span><span class="n">gids</span><span class="p">()</span>
 
-
         <span class="n">gids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">local_gids</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">gids</span><span class="p">))</span>
+        <span class="n">n_gids</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">gids</span><span class="p">)</span>
         
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gids</span><span class="p">)</span><span class="o">!=</span><span class="nb">len</span><span class="p">(</span><span class="n">amplitude</span><span class="p">):</span>
-            <span class="n">amplitude</span> <span class="o">=</span> <span class="n">amplitude</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">gids</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gids</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">amplitude</span><span class="p">):</span>
+            <span class="n">amplitude</span> <span class="o">=</span> <span class="n">amplitude</span> <span class="o">*</span> <span class="n">n_gids</span>  <span class="c1"># len(gids)</span>
 
-        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span><span class="n">gid</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">gids</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">gids</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">delay</span><span class="p">):</span>
+            <span class="n">delay</span> <span class="o">=</span> <span class="n">delay</span> <span class="o">*</span> <span class="n">n_gids</span>
+            <span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span> <span class="o">*</span> <span class="n">n_gids</span>
+
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">gid</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">gids</span><span class="p">):</span>
             <span class="n">cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">get_cell_gid</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span>
-            <span class="n">Ic</span> <span class="o">=</span> <span class="n">IClamp</span><span class="p">(</span><span class="n">amplitude</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">delay</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">duration</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+            <span class="n">Ic</span> <span class="o">=</span> <span class="n">IClamp</span><span class="p">(</span><span class="n">amplitude</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">delay</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">duration</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">section_name</span><span class="p">,</span> <span class="n">section_index</span><span class="p">,</span> <span class="n">section_dist</span><span class="p">)</span>
             
             <span class="n">Ic</span><span class="o">.</span><span class="n">attach_current</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_iclamps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Ic</span><span class="p">)</span></div>
@@ -1005,10 +1009,19 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="BioSimulator.from_config"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biosimulator.BioSimulator.from_config">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">network</span><span class="p">,</span> <span class="n">set_recordings</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="c1"># TODO: convert from json to sonata config if necessary</span>
+        <span class="n">simulation_inputs</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 
-        <span class="c1">#The network must be built before initializing the simulator because</span>
-        <span class="c1">#gap junctions must be set up before the simulation is initialized.</span>
+        <span class="c1"># Special case for setting synapses to spontaneously (for a given set of pre-synaptic cell-types). Using this</span>
+        <span class="c1"># input will change the way the network builds cells/connections and thus needs to be set first.</span>
+        <span class="k">for</span> <span class="n">sim_input</span> <span class="ow">in</span> <span class="n">simulation_inputs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">input_type</span> <span class="o">==</span> <span class="s1">&#39;syn_activity&#39;</span><span class="p">:</span>
+                <span class="n">network</span><span class="o">.</span><span class="n">set_spont_syn_activity</span><span class="p">(</span>
+                    <span class="n">precell_filter</span><span class="o">=</span><span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;precell_filter&#39;</span><span class="p">],</span>
+                    <span class="n">timestamps</span><span class="o">=</span><span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;timestamps&#39;</span><span class="p">]</span>
+                <span class="p">)</span>
+
+        <span class="c1"># The network must be built before initializing the simulator because</span>
+        <span class="c1"># gap junctions must be set up before the simulation is initialized.</span>
         <span class="n">network</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Building cells.&#39;</span><span class="p">)</span>
         <span class="n">network</span><span class="o">.</span><span class="n">build_nodes</span><span class="p">()</span>
 
@@ -1064,7 +1077,17 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="n">amplitude</span> <span class="o">=</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;amp&#39;</span><span class="p">]</span>
                 <span class="n">delay</span> <span class="o">=</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span>
                 <span class="n">duration</span> <span class="o">=</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span>
-                
+
+                <span class="c1"># specificed for location to place iclamp hobj.&lt;section_name&gt;[&lt;section_index&gt;](&lt;section_dist&gt;). The</span>
+                <span class="c1"># default is hobj.soma[0](0.5), the center of the soma</span>
+                <span class="n">section_name</span> <span class="o">=</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;section_name&#39;</span><span class="p">,</span> <span class="s1">&#39;soma&#39;</span><span class="p">)</span>
+                <span class="n">section_index</span> <span class="o">=</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;section_index&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="n">section_dist</span> <span class="o">=</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;section_dist&#39;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+
+                <span class="c1"># section_name = section_name if isinstance(section_name, (list, tuple)) else [section_name]</span>
+                <span class="c1"># section_index = section_index if isinstance(section_index, (list, tuple)) else [section_index]</span>
+                <span class="c1"># section_dist = section_dist if isinstance(section_dist, (list, tuple)) else [section_dist]</span>
+
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;gids&#39;</span><span class="p">]</span>
                 <span class="k">except</span><span class="p">:</span>
@@ -1074,7 +1097,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">gids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">node_set</span><span class="o">.</span><span class="n">gids</span><span class="p">())</span>
 
-                <span class="n">sim</span><span class="o">.</span><span class="n">attach_current_clamp</span><span class="p">(</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">gids</span><span class="p">)</span>
+                <span class="n">sim</span><span class="o">.</span><span class="n">attach_current_clamp</span><span class="p">(</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">gids</span><span class="p">,</span> <span class="n">section_name</span><span class="p">,</span> <span class="n">section_index</span><span class="p">,</span> <span class="n">section_dist</span><span class="p">)</span>
 
             <span class="k">elif</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="s2">&quot;SEClamp&quot;</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span> 
@@ -1114,6 +1137,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">elif</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="s1">&#39;xstim&#39;</span><span class="p">:</span>
                 <span class="n">sim</span><span class="o">.</span><span class="n">add_mod</span><span class="p">(</span><span class="n">mods</span><span class="o">.</span><span class="n">XStimMod</span><span class="p">(</span><span class="o">**</span><span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="p">))</span>
 
+            <span class="k">elif</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="s1">&#39;syn_activity&#39;</span><span class="p">:</span>
+                <span class="k">pass</span>
+
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;Can not parse input format </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sim_input</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
 
@@ -1144,8 +1170,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
             <span class="k">elif</span> <span class="n">report</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="s1">&#39;save_synapses&#39;</span><span class="p">:</span>
                 <span class="n">mod</span> <span class="o">=</span> <span class="n">mods</span><span class="o">.</span><span class="n">SaveSynapses</span><span class="p">(</span><span class="o">**</span><span class="n">report</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
-
-
 
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># TODO: Allow users to register customized modules using pymodules</span>

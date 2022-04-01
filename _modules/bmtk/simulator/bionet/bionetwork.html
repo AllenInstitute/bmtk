@@ -649,8 +649,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">from</span> <span class="nn">neuron</span> <span class="kn">import</span> <span class="n">h</span>
 
 <span class="kn">from</span> <span class="nn">bmtk.simulator.core.simulator_network</span> <span class="kn">import</span> <span class="n">SimNetwork</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.biocell</span> <span class="kn">import</span> <span class="n">BioCell</span>
-<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.pointprocesscell</span> <span class="kn">import</span> <span class="n">PointProcessCell</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.biocell</span> <span class="kn">import</span> <span class="n">BioCell</span><span class="p">,</span> <span class="n">BioCellSpontSyn</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.pointprocesscell</span> <span class="kn">import</span> <span class="n">PointProcessCell</span><span class="p">,</span> <span class="n">PointProcessCellSpontSyns</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.pointsomacell</span> <span class="kn">import</span> <span class="n">PointSomaCell</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.virtualcell</span> <span class="kn">import</span> <span class="n">VirtualCell</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.morphology</span> <span class="kn">import</span> <span class="n">Morphology</span>
@@ -679,6 +679,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_model_type_map</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;biophysical&#39;</span><span class="p">:</span> <span class="n">BioCell</span><span class="p">,</span>
             <span class="s1">&#39;point_process&#39;</span><span class="p">:</span> <span class="n">PointProcessCell</span><span class="p">,</span>
+            <span class="s1">&#39;point_neuron&#39;</span><span class="p">:</span> <span class="n">PointProcessCell</span><span class="p">,</span>
             <span class="s1">&#39;point_soma&#39;</span><span class="p">:</span> <span class="n">PointSomaCell</span><span class="p">,</span>
             <span class="s1">&#39;virtual&#39;</span><span class="p">:</span> <span class="n">VirtualCell</span>
         <span class="p">}</span>
@@ -697,6 +698,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_gid_pool</span> <span class="o">=</span> <span class="n">GidPool</span><span class="p">()</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_spont_syns</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spont_syns_filter</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spont_syns_times</span> <span class="o">=</span> <span class="kc">None</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">gid_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid_pool</span>
@@ -704,6 +709,19 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">py_function_caches</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">nrn</span>
+
+<div class="viewcode-block" id="BioNetwork.set_spont_syn_activity"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.bionetwork.BioNetwork.set_spont_syn_activity">[docs]</a>    <span class="k">def</span> <span class="nf">set_spont_syn_activity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">precell_filter</span><span class="p">,</span> <span class="n">timestamps</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_type_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;biophysical&#39;</span><span class="p">:</span> <span class="n">BioCellSpontSyn</span><span class="p">,</span>
+            <span class="s1">&#39;point_process&#39;</span><span class="p">:</span> <span class="n">PointProcessCellSpontSyns</span><span class="p">,</span>
+            <span class="s1">&#39;point_neuron&#39;</span><span class="p">:</span> <span class="n">PointProcessCellSpontSyns</span><span class="p">,</span>
+            <span class="s1">&#39;point_soma&#39;</span><span class="p">:</span> <span class="n">PointSomaCell</span><span class="p">,</span>
+            <span class="s1">&#39;virtual&#39;</span><span class="p">:</span> <span class="n">VirtualCell</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_spont_syns</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spont_syns_filter</span> <span class="o">=</span> <span class="n">precell_filter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spont_syns_times</span> <span class="o">=</span> <span class="n">timestamps</span></div>
 
 <div class="viewcode-block" id="BioNetwork.get_node_id"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.bionetwork.BioNetwork.get_node_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_node_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">node_id</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank_node_ids</span><span class="p">[</span><span class="n">population</span><span class="p">]:</span>

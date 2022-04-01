@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>bmtk.tests.simulator.pointnet package &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -623,15 +624,96 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="bmtk-tests-simulator-pointnet-package">
+  <section id="bmtk-tests-simulator-pointnet-package">
 <h1>bmtk.tests.simulator.pointnet package<a class="headerlink" href="#bmtk-tests-simulator-pointnet-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="submodules">
+<section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="bmtk-tests-simulator-pointnet-conftest-module">
-<h2>bmtk.tests.simulator.pointnet.conftest module<a class="headerlink" href="#bmtk-tests-simulator-pointnet-conftest-module" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-bmtk.tests.simulator.pointnet.pointnet_virtual_files">
+</section>
+<section id="module-bmtk.tests.simulator.pointnet.conftest">
+<span id="bmtk-tests-simulator-pointnet-conftest-module"></span><h2>bmtk.tests.simulator.pointnet.conftest module<a class="headerlink" href="#module-bmtk.tests.simulator.pointnet.conftest" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="bmtk.tests.simulator.pointnet.conftest.MockEdges">
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.tests.simulator.pointnet.conftest.</code><code class="sig-name descname">MockEdges</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">source_nodes</span></em>, <em class="sig-param"><span class="n">target_nodes</span></em>, <em class="sig-param"><span class="n">delay</span><span class="o">=</span><span class="default_value">2.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/conftest.html#MockEdges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.conftest.MockEdges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py class">
+<dt id="bmtk.tests.simulator.pointnet.conftest.MockEdges.MockEdge">
+<em class="property">class </em><code class="sig-name descname">MockEdge</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">delay</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/conftest.html#MockEdges.MockEdge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.conftest.MockEdges.MockEdge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bmtk.tests.simulator.pointnet.conftest.MockEdges.get_edges">
+<code class="sig-name descname">get_edges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/conftest.html#MockEdges.get_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.conftest.MockEdges.get_edges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="bmtk.tests.simulator.pointnet.conftest.MockEdges.initialize">
+<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">net</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/conftest.html#MockEdges.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.conftest.MockEdges.initialize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="bmtk.tests.simulator.pointnet.conftest.MockEdges.set_connection_type">
+<code class="sig-name descname">set_connection_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src_pop</span></em>, <em class="sig-param"><span class="n">trg_pop</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/conftest.html#MockEdges.set_connection_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.conftest.MockEdges.set_connection_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="bmtk.tests.simulator.pointnet.conftest.MockNodePop">
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.tests.simulator.pointnet.conftest.</code><code class="sig-name descname">MockNodePop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">nnodes</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">batched</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">virtual</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/conftest.html#MockNodePop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.conftest.MockNodePop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py class">
+<dt id="bmtk.tests.simulator.pointnet.conftest.MockNodePop.MockNode">
+<em class="property">class </em><code class="sig-name descname">MockNode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n_nodes</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">node_id</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/conftest.html#MockNodePop.MockNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.conftest.MockNodePop.MockNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="bmtk.tests.simulator.pointnet.conftest.MockNodePop.MockNode.build">
+<code class="sig-name descname">build</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/conftest.html#MockNodePop.MockNode.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.conftest.MockNodePop.MockNode.build" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt id="bmtk.tests.simulator.pointnet.conftest.MockNodePop.filter">
+<code class="sig-name descname">filter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filter</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/conftest.html#MockNodePop.filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.conftest.MockNodePop.filter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="bmtk.tests.simulator.pointnet.conftest.MockNodePop.get_nodes">
+<code class="sig-name descname">get_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/conftest.html#MockNodePop.get_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.conftest.MockNodePop.get_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="bmtk.tests.simulator.pointnet.conftest.MockNodePop.initialize">
+<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">net</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/conftest.html#MockNodePop.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.conftest.MockNodePop.initialize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="bmtk.tests.simulator.pointnet.conftest.MockNodeSet">
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.tests.simulator.pointnet.conftest.</code><code class="sig-name descname">MockNodeSet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">population_names</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/conftest.html#MockNodeSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.conftest.MockNodeSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="bmtk.tests.simulator.pointnet.conftest.MockNodeSet.population_names">
+<code class="sig-name descname">population_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/conftest.html#MockNodeSet.population_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.conftest.MockNodeSet.population_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="bmtk.tests.simulator.pointnet.conftest.MockSpikes">
+<em class="property">class </em><code class="sig-prename descclassname">bmtk.tests.simulator.pointnet.conftest.</code><code class="sig-name descname">MockSpikes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">spike_times</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/conftest.html#MockSpikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.conftest.MockSpikes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="bmtk.tests.simulator.pointnet.conftest.MockSpikes.get_times">
+<code class="sig-name descname">get_times</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">node_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/conftest.html#MockSpikes.get_times"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.conftest.MockSpikes.get_times" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-bmtk.tests.simulator.pointnet.pointnet_virtual_files">
 <span id="bmtk-tests-simulator-pointnet-pointnet-virtual-files-module"></span><h2>bmtk.tests.simulator.pointnet.pointnet_virtual_files module<a class="headerlink" href="#module-bmtk.tests.simulator.pointnet.pointnet_virtual_files" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="bmtk.tests.simulator.pointnet.pointnet_virtual_files.EdgeRow">
@@ -725,23 +807,73 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 </dd></dl>
 
-</div>
-<div class="section" id="bmtk-tests-simulator-pointnet-test-glif-utils-module">
-<h2>bmtk.tests.simulator.pointnet.test_glif_utils module<a class="headerlink" href="#bmtk-tests-simulator-pointnet-test-glif-utils-module" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="bmtk-tests-simulator-pointnet-test-multimeter-report-module">
-<h2>bmtk.tests.simulator.pointnet.test_multimeter_report module<a class="headerlink" href="#bmtk-tests-simulator-pointnet-test-multimeter-report-module" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="bmtk-tests-simulator-pointnet-test-pointgraph-module">
-<h2>bmtk.tests.simulator.pointnet.test_pointgraph module<a class="headerlink" href="#bmtk-tests-simulator-pointnet-test-pointgraph-module" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="bmtk-tests-simulator-pointnet-test-pointnetwork-module">
-<h2>bmtk.tests.simulator.pointnet.test_pointnetwork module<a class="headerlink" href="#bmtk-tests-simulator-pointnet-test-pointnetwork-module" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-bmtk.tests.simulator.pointnet">
+</section>
+<section id="module-bmtk.tests.simulator.pointnet.test_glif_utils">
+<span id="bmtk-tests-simulator-pointnet-test-glif-utils-module"></span><h2>bmtk.tests.simulator.pointnet.test_glif_utils module<a class="headerlink" href="#module-bmtk.tests.simulator.pointnet.test_glif_utils" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="bmtk.tests.simulator.pointnet.test_glif_utils.test_converter_psc">
+<code class="sig-prename descclassname">bmtk.tests.simulator.pointnet.test_glif_utils.</code><code class="sig-name descname">test_converter_psc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_name</span></em>, <em class="sig-param"><span class="n">dynamics_params</span></em>, <em class="sig-param"><span class="n">expected</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/test_glif_utils.html#test_converter_psc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.test_glif_utils.test_converter_psc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-bmtk.tests.simulator.pointnet.test_multimeter_report">
+<span id="bmtk-tests-simulator-pointnet-test-multimeter-report-module"></span><h2>bmtk.tests.simulator.pointnet.test_multimeter_report module<a class="headerlink" href="#module-bmtk.tests.simulator.pointnet.test_multimeter_report" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="bmtk.tests.simulator.pointnet.test_multimeter_report.test_multimeter_dt">
+<code class="sig-prename descclassname">bmtk.tests.simulator.pointnet.test_multimeter_report.</code><code class="sig-name descname">test_multimeter_dt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dt</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/test_multimeter_report.html#test_multimeter_dt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.test_multimeter_report.test_multimeter_dt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-bmtk.tests.simulator.pointnet.test_pointgraph">
+<span id="bmtk-tests-simulator-pointnet-test-pointgraph-module"></span><h2>bmtk.tests.simulator.pointnet.test_pointgraph module<a class="headerlink" href="#module-bmtk.tests.simulator.pointnet.test_pointgraph" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="bmtk.tests.simulator.pointnet.test_pointgraph.test_add_edges">
+<code class="sig-prename descclassname">bmtk.tests.simulator.pointnet.test_pointgraph.</code><code class="sig-name descname">test_add_edges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/test_pointgraph.html#test_add_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.test_pointgraph.test_add_edges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="bmtk.tests.simulator.pointnet.test_pointgraph.test_add_nodes">
+<code class="sig-prename descclassname">bmtk.tests.simulator.pointnet.test_pointgraph.</code><code class="sig-name descname">test_add_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/test_pointgraph.html#test_add_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.test_pointgraph.test_add_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-bmtk.tests.simulator.pointnet.test_pointnetwork">
+<span id="bmtk-tests-simulator-pointnet-test-pointnetwork-module"></span><h2>bmtk.tests.simulator.pointnet.test_pointnetwork module<a class="headerlink" href="#module-bmtk.tests.simulator.pointnet.test_pointnetwork" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="bmtk.tests.simulator.pointnet.test_pointnetwork.test_add_edges">
+<code class="sig-prename descclassname">bmtk.tests.simulator.pointnet.test_pointnetwork.</code><code class="sig-name descname">test_add_edges</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/test_pointnetwork.html#test_add_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.test_pointnetwork.test_add_edges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="bmtk.tests.simulator.pointnet.test_pointnetwork.test_add_edges_baddelay">
+<code class="sig-prename descclassname">bmtk.tests.simulator.pointnet.test_pointnetwork.</code><code class="sig-name descname">test_add_edges_baddelay</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/test_pointnetwork.html#test_add_edges_baddelay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.test_pointnetwork.test_add_edges_baddelay" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="bmtk.tests.simulator.pointnet.test_pointnetwork.test_add_multi_nodes">
+<code class="sig-prename descclassname">bmtk.tests.simulator.pointnet.test_pointnetwork.</code><code class="sig-name descname">test_add_multi_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">batched</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/test_pointnetwork.html#test_add_multi_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.test_pointnetwork.test_add_multi_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="bmtk.tests.simulator.pointnet.test_pointnetwork.test_add_nodes">
+<code class="sig-prename descclassname">bmtk.tests.simulator.pointnet.test_pointnetwork.</code><code class="sig-name descname">test_add_nodes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">batched</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/test_pointnetwork.html#test_add_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.test_pointnetwork.test_add_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="bmtk.tests.simulator.pointnet.test_pointnetwork.test_add_spike_trains">
+<code class="sig-prename descclassname">bmtk.tests.simulator.pointnet.test_pointnetwork.</code><code class="sig-name descname">test_add_spike_trains</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">spike_times</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/test_pointnetwork.html#test_add_spike_trains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.test_pointnetwork.test_add_spike_trains" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="bmtk.tests.simulator.pointnet.test_pointnetwork.test_add_spike_trains_badtimes">
+<code class="sig-prename descclassname">bmtk.tests.simulator.pointnet.test_pointnetwork.</code><code class="sig-name descname">test_add_spike_trains_badtimes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">spike_times</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/tests/simulator/pointnet/test_pointnetwork.html#test_add_spike_trains_badtimes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.tests.simulator.pointnet.test_pointnetwork.test_add_spike_trains_badtimes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-bmtk.tests.simulator.pointnet">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.tests.simulator.pointnet" title="Permalink to this headline">¶</a></h2>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

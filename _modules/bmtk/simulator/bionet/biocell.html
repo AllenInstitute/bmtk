@@ -647,6 +647,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.bionet</span> <span class="kn">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">nrn</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.cell</span> <span class="kn">import</span> <span class="n">Cell</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.io_tools</span> <span class="kn">import</span> <span class="n">io</span>
 <span class="kn">import</span> <span class="nn">six</span>
 
 <span class="kn">from</span> <span class="nn">neuron</span> <span class="kn">import</span> <span class="n">h</span>
@@ -752,7 +753,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="c1">#  Need someone with graphics experience to check they are being done correctly (I&#39;m not sure atm).</span>
         <span class="n">RotX</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">rotation_matrix</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">phi_x</span><span class="p">)</span>
         <span class="n">RotY</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">rotation_matrix</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">phi_y</span><span class="p">)</span>  <span class="c1"># rotate segments around yaxis normal to pia</span>
-        <span class="n">RotZ</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">rotation_matrix</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="n">phi_z</span><span class="p">)</span>  <span class="c1"># rotate segments around zaxis to get a proper orientation</span>
+        <span class="n">RotZ</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">rotation_matrix</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">phi_z</span><span class="p">)</span>  <span class="c1"># rotate segments around zaxis to get a proper orientation</span>
         <span class="n">RotXYZ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">RotX</span><span class="p">,</span> <span class="n">RotY</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">RotZ</span><span class="p">))</span>
 
         <span class="c1"># rotated coordinates around z axis first then shift relative to the soma</span>
@@ -837,8 +838,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">if</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">nsyns</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">1</span>
 
-        <span class="n">sec_x</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="p">[</span><span class="s1">&#39;sec_x&#39;</span><span class="p">]</span>
-        <span class="n">sec_id</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="p">[</span><span class="s1">&#39;sec_id&#39;</span><span class="p">]</span>
+        <span class="n">sec_x</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">afferent_section_pos</span>
+        <span class="n">sec_id</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">afferent_section_id</span>
         <span class="n">section</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_secs_by_id</span><span class="p">[</span><span class="n">sec_id</span><span class="p">]</span>
 
         <span class="c1">#Sets up the section to be connected to the gap junction.</span>
@@ -906,8 +907,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
     <span class="k">def</span> <span class="nf">_set_connection_preselected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># TODO: synapses should be loaded by edge_prop.load_synapse</span>
-        <span class="n">sec_x</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="p">[</span><span class="s1">&#39;sec_x&#39;</span><span class="p">]</span>
-        <span class="n">sec_id</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="p">[</span><span class="s1">&#39;sec_id&#39;</span><span class="p">]</span>
+        <span class="n">sec_x</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">afferent_section_pos</span>
+        <span class="n">sec_id</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">afferent_section_id</span>
+
         <span class="n">section</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_secs_by_id</span><span class="p">[</span><span class="n">sec_id</span><span class="p">]</span>
         <span class="c1"># section = self._secs[sec_id]</span>
         <span class="n">delay</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span>
@@ -917,7 +919,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">if</span> <span class="n">stim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">nc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">NetCon</span><span class="p">(</span><span class="n">stim</span><span class="o">.</span><span class="n">hobj</span><span class="p">,</span> <span class="n">syn</span><span class="p">)</span>  <span class="c1"># stim.hobj - source, syn - target</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">nc</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">gid_connect</span><span class="p">(</span><span class="n">src_node</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">syn</span><span class="p">)</span>
+            <span class="n">src_gid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network</span><span class="o">.</span><span class="n">gid_pool</span><span class="o">.</span><span class="n">get_gid</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">src_node</span><span class="o">.</span><span class="n">population_name</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="n">src_node</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span>
+            <span class="n">nc</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">gid_connect</span><span class="p">(</span><span class="n">src_gid</span><span class="p">,</span> <span class="n">syn</span><span class="p">)</span>
 
         <span class="n">nc</span><span class="o">.</span><span class="n">weight</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">syn_weight</span>
         <span class="n">nc</span><span class="o">.</span><span class="n">delay</span> <span class="o">=</span> <span class="n">delay</span>
@@ -934,10 +937,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
     <span class="k">def</span> <span class="nf">_set_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">tar_seg_ix</span><span class="p">,</span> <span class="n">tar_seg_prob</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morph</span><span class="o">.</span><span class="n">get_target_segments</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">)</span>
-        <span class="n">src_gid</span> <span class="o">=</span> <span class="n">src_node</span><span class="o">.</span><span class="n">node_id</span>
         <span class="n">nsyns</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">nsyns</span>
 
-        <span class="c1"># choose nsyn elements from seg_ix with probability proportional to segment area</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tar_seg_ix</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Could not find target synaptic location for edge-type </span><span class="si">{}</span><span class="s1">, Please check target_section and/or distance_range properties&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge_prop</span><span class="o">.</span><span class="n">edge_type_id</span><span class="p">)</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">log_warning</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">all_ranks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">display_once</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
         <span class="n">segs_ix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">tar_seg_ix</span><span class="p">,</span> <span class="n">nsyns</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">tar_seg_prob</span><span class="p">)</span>
         <span class="n">secs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_secs</span><span class="p">[</span><span class="n">segs_ix</span><span class="p">]</span>  <span class="c1"># sections where synapases connect</span>
         <span class="n">xs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morph</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">][</span><span class="n">segs_ix</span><span class="p">]</span>  <span class="c1"># distance along the section where synapse connects, i.e., seg_x</span>
@@ -956,6 +962,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">if</span> <span class="n">stim</span><span class="p">:</span>
                 <span class="n">nc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">NetCon</span><span class="p">(</span><span class="n">stim</span><span class="o">.</span><span class="n">hobj</span><span class="p">,</span> <span class="n">syn</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
+                <span class="n">src_gid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network</span><span class="o">.</span><span class="n">gid_pool</span><span class="o">.</span><span class="n">get_gid</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">src_node</span><span class="o">.</span><span class="n">population_name</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="n">src_node</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span>
                 <span class="n">nc</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">gid_connect</span><span class="p">(</span><span class="n">src_gid</span><span class="p">,</span> <span class="n">syn</span><span class="p">)</span>
 
             <span class="n">nc</span><span class="o">.</span><span class="n">weight</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">syn_weight</span>
@@ -1047,6 +1054,100 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                                                            <span class="bp">self</span><span class="o">.</span><span class="n">netcons</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">delay</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_syn_seg_ix</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
                                                            <span class="bp">self</span><span class="o">.</span><span class="n">_syn_sec_x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">rstr</span></div></div>
+
+
+<div class="viewcode-block" id="BioCellSpontSyn"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.biocell.BioCellSpontSyn">[docs]</a><span class="k">class</span> <span class="nc">BioCellSpontSyn</span><span class="p">(</span><span class="n">BioCell</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Special class that allows certain synapses to spontaneously fire (without spiking) at a specific time.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">population_name</span><span class="p">,</span> <span class="n">bionetwork</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BioCellSpontSyn</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">population_name</span><span class="o">=</span><span class="n">population_name</span><span class="p">,</span> <span class="n">bionetwork</span><span class="o">=</span><span class="n">bionetwork</span><span class="p">)</span>
+
+        <span class="c1"># Get the timestamp at which synapses</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_syn_timestamps</span> <span class="o">=</span> <span class="n">bionetwork</span><span class="o">.</span><span class="n">spont_syns_times</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_syn_timestamps</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_syn_timestamps</span><span class="p">]</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_syn_timestamps</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_syn_timestamps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_trains</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_syn_timestamps</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vecstim</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">VecStim</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vecstim</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spike_trains</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_precell_filter</span> <span class="o">=</span> <span class="n">bionetwork</span><span class="o">.</span><span class="n">spont_syns_filter</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_precell_filter</span><span class="p">,</span> <span class="nb">dict</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_matches_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check to see if the presynaptic cell matches the criteria specified&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_precell_filter</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">src_node</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">src_node</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">!=</span> <span class="n">v</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_set_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">tar_seg_ix</span><span class="p">,</span> <span class="n">tar_seg_prob</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morph</span><span class="o">.</span><span class="n">get_target_segments</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">)</span>
+        <span class="n">src_gid</span> <span class="o">=</span> <span class="n">src_node</span><span class="o">.</span><span class="n">node_id</span>
+        <span class="n">nsyns</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">nsyns</span>
+
+        <span class="c1"># choose nsyn elements from seg_ix with probability proportional to segment area</span>
+        <span class="n">segs_ix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">tar_seg_ix</span><span class="p">,</span> <span class="n">nsyns</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">tar_seg_prob</span><span class="p">)</span>
+        <span class="n">secs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_secs</span><span class="p">[</span><span class="n">segs_ix</span><span class="p">]</span>  <span class="c1"># sections where synapases connect</span>
+        <span class="n">xs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morph</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">][</span><span class="n">segs_ix</span><span class="p">]</span>  <span class="c1"># distance along the section where synapse connects, i.e., seg_x</span>
+
+        <span class="n">synapses</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge_prop</span><span class="o">.</span><span class="n">load_synapses</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">sec</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">sec</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">secs</span><span class="p">)]</span>
+
+        <span class="n">delay</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_synapses</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">synapses</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">syn</span> <span class="ow">in</span> <span class="n">synapses</span><span class="p">:</span>
+            <span class="c1"># connect synapses</span>
+            <span class="k">if</span> <span class="n">stim</span><span class="p">:</span>
+                <span class="n">nc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">NetCon</span><span class="p">(</span><span class="n">stim</span><span class="o">.</span><span class="n">hobj</span><span class="p">,</span> <span class="n">syn</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matches_filter</span><span class="p">(</span><span class="n">src_node</span><span class="p">):</span>
+                <span class="n">nc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">NetCon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vecstim</span><span class="p">,</span> <span class="n">syn</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">nc</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">gid_connect</span><span class="p">(</span><span class="n">src_gid</span><span class="p">,</span> <span class="n">syn</span><span class="p">)</span>
+                <span class="n">syn_weight</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+            <span class="n">nc</span><span class="o">.</span><span class="n">weight</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">syn_weight</span>
+            <span class="n">nc</span><span class="o">.</span><span class="n">delay</span> <span class="o">=</span> <span class="n">delay</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">netcons</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ConnectionStruct</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">syn</span><span class="p">,</span> <span class="n">nc</span><span class="p">,</span> <span class="n">stim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">nsyns</span>
+
+    <span class="k">def</span> <span class="nf">_set_connection_preselected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">syn_weight</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># TODO: synapses should be loaded by edge_prop.load_synapse</span>
+        <span class="n">sec_x</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">afferent_section_pos</span>
+        <span class="n">sec_id</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">afferent_section_id</span>
+        <span class="n">section</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_secs_by_id</span><span class="p">[</span><span class="n">sec_id</span><span class="p">]</span>
+        <span class="c1"># section = self._secs[sec_id]</span>
+        <span class="n">delay</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span>
+        <span class="n">synapse_fnc</span> <span class="o">=</span> <span class="n">nrn</span><span class="o">.</span><span class="n">py_modules</span><span class="o">.</span><span class="n">synapse_model</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">[</span><span class="s1">&#39;model_template&#39;</span><span class="p">])</span>
+        <span class="n">syn</span> <span class="o">=</span> <span class="n">synapse_fnc</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">[</span><span class="s1">&#39;dynamics_params&#39;</span><span class="p">],</span> <span class="n">sec_x</span><span class="p">,</span> <span class="n">section</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">stim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">nc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">NetCon</span><span class="p">(</span><span class="n">stim</span><span class="o">.</span><span class="n">hobj</span><span class="p">,</span> <span class="n">syn</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matches_filter</span><span class="p">(</span><span class="n">src_node</span><span class="p">):</span>
+            <span class="n">nc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">NetCon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vecstim</span><span class="p">,</span> <span class="n">syn</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nc</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">gid_connect</span><span class="p">(</span><span class="n">src_node</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">syn</span><span class="p">)</span>
+            <span class="n">syn_weight</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="n">nc</span><span class="o">.</span><span class="n">weight</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">syn_weight</span>
+        <span class="n">nc</span><span class="o">.</span><span class="n">delay</span> <span class="o">=</span> <span class="n">delay</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ConnectionStruct</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">syn</span><span class="p">,</span> <span class="n">nc</span><span class="p">,</span> <span class="n">stim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_netcons</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_synapses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">syn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge_prop</span><span class="o">.</span><span class="n">edge_type_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_conn</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_save_connection</span><span class="p">(</span><span class="n">src_gid</span><span class="o">=</span><span class="n">src_node</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">src_net</span><span class="o">=</span><span class="n">src_node</span><span class="o">.</span><span class="n">network</span><span class="p">,</span> <span class="n">sec_x</span><span class="o">=</span><span class="n">sec_x</span><span class="p">,</span> <span class="n">seg_ix</span><span class="o">=</span><span class="n">sec_id</span><span class="p">,</span>
+                                  <span class="n">edge_type_id</span><span class="o">=</span><span class="n">edge_prop</span><span class="o">.</span><span class="n">edge_type_id</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="mi">1</span></div>
 </pre></div>
 
             <div class="clearer"></div>

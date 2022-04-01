@@ -793,12 +793,61 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="viewcode-block" id="BioEdge"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.sonata_adaptors.BioEdge">[docs]</a><span class="k">class</span> <span class="nc">BioEdge</span><span class="p">(</span><span class="n">SonataBaseEdge</span><span class="p">):</span>
 <div class="viewcode-block" id="BioEdge.load_synapses"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.sonata_adaptors.BioEdge.load_synapses">[docs]</a>    <span class="k">def</span> <span class="nf">load_synapses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section_x</span><span class="p">,</span> <span class="n">section_id</span><span class="p">):</span>
         <span class="n">synapse_fnc</span> <span class="o">=</span> <span class="n">nrn</span><span class="o">.</span><span class="n">py_modules</span><span class="o">.</span><span class="n">synapse_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_template</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">synapse_fnc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dynamics_params</span><span class="p">,</span> <span class="n">section_x</span><span class="p">,</span> <span class="n">section_id</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">synapse_fnc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dynamics_params</span><span class="p">,</span> <span class="n">section_x</span><span class="p">,</span> <span class="n">section_id</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">afferent_section_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prop_adaptor</span><span class="o">.</span><span class="n">aff_sec_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">afferent_section_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prop_adaptor</span><span class="o">.</span><span class="n">aff_sec_pos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_edge</span><span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="BioEdgeAdaptor"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.sonata_adaptors.BioEdgeAdaptor">[docs]</a><span class="k">class</span> <span class="nc">BioEdgeAdaptor</span><span class="p">(</span><span class="n">EdgeAdaptor</span><span class="p">):</span>
 <div class="viewcode-block" id="BioEdgeAdaptor.get_edge"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.sonata_adaptors.BioEdgeAdaptor.get_edge">[docs]</a>    <span class="k">def</span> <span class="nf">get_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sonata_edge</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">BioEdge</span><span class="p">(</span><span class="n">sonata_edge</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">BioEdge</span><span class="p">(</span><span class="n">sonata_edge</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BioEdgeAdaptor.patch_adaptor"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.sonata_adaptors.BioEdgeAdaptor.patch_adaptor">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">patch_adaptor</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">,</span> <span class="n">edge_group</span><span class="p">):</span>
+        <span class="n">edge_adaptor</span> <span class="o">=</span> <span class="n">EdgeAdaptor</span><span class="o">.</span><span class="n">patch_adaptor</span><span class="p">(</span><span class="n">adaptor</span><span class="p">,</span> <span class="n">edge_group</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;sec_id&#39;</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">all_columns</span><span class="p">:</span>
+            <span class="n">edge_adaptor</span><span class="o">.</span><span class="n">aff_sec_id</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">aff_sec_id_old</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="s1">&#39;afferent_section_id&#39;</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">all_columns</span><span class="p">:</span>
+            <span class="n">edge_adaptor</span><span class="o">.</span><span class="n">aff_sec_id</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">aff_sec_id</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">edge_adaptor</span><span class="o">.</span><span class="n">aff_sec_id</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">ret_none_function</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;sec_x&#39;</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">all_columns</span><span class="p">:</span>
+            <span class="n">edge_adaptor</span><span class="o">.</span><span class="n">aff_sec_pos</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">aff_sec_pos_old</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="s1">&#39;afferent_section_pos&#39;</span> <span class="ow">in</span> <span class="n">edge_group</span><span class="o">.</span><span class="n">all_columns</span><span class="p">:</span>
+            <span class="n">edge_adaptor</span><span class="o">.</span><span class="n">aff_sec_pos</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">aff_sec_pos</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">edge_adaptor</span><span class="o">.</span><span class="n">aff_sec_pos</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">(</span><span class="n">ret_none_function</span><span class="p">,</span> <span class="n">adaptor</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">edge_adaptor</span></div></div>
+
+
+<div class="viewcode-block" id="ret_none_function"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.sonata_adaptors.ret_none_function">[docs]</a><span class="k">def</span> <span class="nf">ret_none_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="aff_sec_id"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.sonata_adaptors.aff_sec_id">[docs]</a><span class="k">def</span> <span class="nf">aff_sec_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;afferent_section_id&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="aff_sec_id_old"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.sonata_adaptors.aff_sec_id_old">[docs]</a><span class="k">def</span> <span class="nf">aff_sec_id_old</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;sec_id&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="aff_sec_pos"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.sonata_adaptors.aff_sec_pos">[docs]</a><span class="k">def</span> <span class="nf">aff_sec_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;afferent_section_pos&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="aff_sec_pos_old"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.sonata_adaptors.aff_sec_pos_old">[docs]</a><span class="k">def</span> <span class="nf">aff_sec_pos_old</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">edge</span><span class="p">[</span><span class="s1">&#39;sec_x&#39;</span><span class="p">]</span></div>
 </pre></div>
 
             <div class="clearer"></div>

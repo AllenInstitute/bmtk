@@ -633,6 +633,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">from</span> <span class="nn">bmtk.simulator.pointnet.io_tools</span> <span class="kn">import</span> <span class="n">io</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.pointnet.pyfunction_cache</span> <span class="kn">import</span> <span class="n">py_modules</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.pointnet.glif_utils</span> <span class="kn">import</span> <span class="n">convert_aibs2nest</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.pointnet.nest_utils</span> <span class="kn">import</span> <span class="n">nest_version</span>
+
+<span class="n">NEST_SYNAPSE_MODEL_PROP</span> <span class="o">=</span> <span class="s1">&#39;model&#39;</span> <span class="k">if</span> <span class="n">nest_version</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="s1">&#39;synapse_model&#39;</span>
+
 
 
 <div class="viewcode-block" id="all_null"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.sonata_adaptors.all_null">[docs]</a><span class="k">def</span> <span class="nf">all_null</span><span class="p">(</span><span class="n">node_group</span><span class="p">,</span> <span class="n">column_name</span><span class="p">):</span>
@@ -650,6 +654,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_gids</span> <span class="o">=</span> <span class="n">gids</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nt_table</span> <span class="o">=</span> <span class="n">node_types_table</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nt_id</span> <span class="o">=</span> <span class="n">node_type_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nest_objs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nest_ids</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="nd">@property</span>
@@ -681,12 +686,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nt_table</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_nt_id</span><span class="p">][</span><span class="s1">&#39;model_type&#39;</span><span class="p">]</span>
 
 <div class="viewcode-block" id="PointNodeBatched.build"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.sonata_adaptors.PointNodeBatched.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_nest_ids</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nest_model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nest_params</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nest_objs</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nest_model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nest_params</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nest_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nest_objs</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">if</span> <span class="n">nest_version</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">3</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nest_objs</span></div></div>
 
 
 <div class="viewcode-block" id="PointNode"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.sonata_adaptors.PointNode">[docs]</a><span class="k">class</span> <span class="nc">PointNode</span><span class="p">(</span><span class="n">SonataBaseNode</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">prop_adaptor</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">PointNode</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">prop_adaptor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nest_objs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nest_ids</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="nd">@property</span>
@@ -718,10 +725,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">dynamics_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dynamics_params</span>
         <span class="n">fnc_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="s1">&#39;model_processing&#39;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">fnc_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_nest_ids</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="n">nest_model</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_nest_objs</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="n">nest_model</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">cell_fnc</span> <span class="o">=</span> <span class="n">py_modules</span><span class="o">.</span><span class="n">cell_processor</span><span class="p">(</span><span class="n">fnc_name</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_nest_ids</span> <span class="o">=</span> <span class="n">cell_fnc</span><span class="p">(</span><span class="n">nest_model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">)</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_nest_objs</span> <span class="o">=</span> <span class="n">cell_fnc</span><span class="p">(</span><span class="n">nest_model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nest_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nest_objs</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">if</span> <span class="n">nest_version</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">3</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nest_objs</span></div></div>
 
 
 <div class="viewcode-block" id="PointNodeAdaptor"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.sonata_adaptors.PointNodeAdaptor">[docs]</a><span class="k">class</span> <span class="nc">PointNodeAdaptor</span><span class="p">(</span><span class="n">NodeAdaptor</span><span class="p">):</span>
@@ -913,9 +922,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">trg_nodes_df</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">edge_id</span><span class="p">,</span> <span class="n">grp_vals</span> <span class="ow">in</span> <span class="n">tmp_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;etid&#39;</span><span class="p">):</span>
             <span class="n">edge_props</span> <span class="o">=</span> <span class="n">edge_types_table</span><span class="p">[</span><span class="n">edge_id</span><span class="p">]</span>
+            <span class="n">n_edges</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">grp_vals</span><span class="p">)</span>
 
             <span class="c1"># Get the model type</span>
-            <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_props</span><span class="p">[</span><span class="s1">&#39;model_template&#39;</span><span class="p">]</span>
+            <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">][</span><span class="n">NEST_SYNAPSE_MODEL_PROP</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_props</span><span class="p">[</span><span class="s1">&#39;model_template&#39;</span><span class="p">]</span>
 
             <span class="c1"># Add dynamics params</span>
             <span class="c1"># TODO: Add to dataframe and if a part of hdf5 we can return any dynamics params as a list</span>
@@ -925,7 +935,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">if</span> <span class="s1">&#39;delay&#39;</span> <span class="ow">in</span> <span class="n">grp_vals</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
                 <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">][</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">grp_vals</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span>
             <span class="k">elif</span> <span class="s1">&#39;delay&#39;</span> <span class="ow">in</span> <span class="n">edge_props</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">][</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_props</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span>
+                <span class="n">delay</span> <span class="o">=</span> <span class="n">edge_props</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span>
+                <span class="c1"># For NEST 2.* &#39;delay&#39; can be a single value, but for 3.* it requires a full array for each edge</span>
+                <span class="n">delay</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n_edges</span><span class="p">,</span> <span class="n">delay</span><span class="p">)</span> <span class="k">if</span> <span class="n">nest_version</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">delay</span>
+                <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">][</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">delay</span>
 
             <span class="n">weight_function</span> <span class="o">=</span> <span class="n">edge_types_table</span><span class="p">[</span><span class="n">edge_id</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;weight_function&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">weight_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>

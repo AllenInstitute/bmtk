@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>bmtk.simulator.filternet.lgnmodel.poissongeneration &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <title>bmtk.tests.simulator.pointnet.conftest &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
@@ -621,93 +621,94 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <h1>Source code for bmtk.simulator.filternet.lgnmodel.poissongeneration</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">scipy.interpolate</span> <span class="k">as</span> <span class="nn">sinterp</span>
-<span class="kn">import</span> <span class="nn">scipy.integrate</span> <span class="k">as</span> <span class="nn">spi</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">import</span> <span class="nn">scipy.optimize</span> <span class="k">as</span> <span class="nn">sopt</span>
-<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">sps</span>
+  <h1>Source code for bmtk.tests.simulator.pointnet.conftest</h1><div class="highlight"><pre>
+<span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">bmtk.simulator</span> <span class="kn">import</span> <span class="n">pointnet</span>
+    <span class="kn">from</span> <span class="nn">bmtk.simulator.pointnet.nest_utils</span> <span class="kn">import</span> <span class="n">NEST_SYNAPSE_MODEL_PROP</span>
+    <span class="kn">import</span> <span class="nn">nest</span>
+
+    <span class="n">nest_installed</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">nest</span><span class="o">.</span><span class="n">set_verbosity</span><span class="p">(</span><span class="s1">&#39;M_QUIET&#39;</span><span class="p">)</span>
+    <span class="n">nest</span><span class="o">.</span><span class="n">ResetKernel</span><span class="p">()</span>
+    <span class="n">nest</span><span class="o">.</span><span class="n">SetKernelStatus</span><span class="p">({</span><span class="s2">&quot;resolution&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s2">&quot;print_time&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
 
 
-<div class="viewcode-block" id="generate_renewal_process"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_renewal_process">[docs]</a><span class="k">def</span> <span class="nf">generate_renewal_process</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="n">renewal_distribution</span><span class="p">):</span>
-    <span class="n">last_event_time</span> <span class="o">=</span> <span class="n">t0</span>
-    <span class="n">curr_interevent_time</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">renewal_distribution</span><span class="p">())</span>
-    <span class="n">event_time_list</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">while</span> <span class="n">last_event_time</span><span class="o">+</span><span class="n">curr_interevent_time</span> <span class="o">&lt;=</span> <span class="n">t1</span><span class="p">:</span>
-        <span class="n">event_time_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">last_event_time</span><span class="o">+</span><span class="n">curr_interevent_time</span><span class="p">)</span>
-        <span class="n">curr_interevent_time</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">renewal_distribution</span><span class="p">())</span>
-        <span class="n">last_event_time</span> <span class="o">=</span> <span class="n">event_time_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        
-    <span class="k">return</span> <span class="n">event_time_list</span> </div>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">nest_installed</span> <span class="o">=</span> <span class="kc">False</span>
 
 
-<div class="viewcode-block" id="generate_poisson_process"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_poisson_process">[docs]</a><span class="k">def</span> <span class="nf">generate_poisson_process</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="n">rate</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">rate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Rate cannot be None&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">rate</span> <span class="o">&gt;</span> <span class="mi">10000</span><span class="p">:</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Very high rate encountered: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">rate</span><span class="p">)</span>
+<div class="viewcode-block" id="MockNodePop"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.pointnet.html#bmtk.tests.simulator.pointnet.conftest.MockNodePop">[docs]</a><span class="k">class</span> <span class="nc">MockNodePop</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">nnodes</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">batched</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">virtual</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mixed_nodes</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">internal_nodes_only</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">virtual</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">virtual_nodes_only</span> <span class="o">=</span> <span class="n">virtual</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span> <span class="o">=</span> <span class="n">nnodes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batched</span> <span class="o">=</span> <span class="n">batched</span>
 
-    <span class="k">try</span><span class="p">:</span> 
-        <span class="k">assert</span> <span class="n">rate</span> <span class="o">&gt;=</span> <span class="mi">0</span>
-    <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span> 
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Negative rate (</span><span class="si">%s</span><span class="s1">) not allowed&#39;</span> <span class="o">%</span> <span class="n">rate</span><span class="p">)</span>
-    
-    <span class="k">try</span><span class="p">:</span> 
-        <span class="k">assert</span> <span class="n">rate</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
-    <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span> 
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Rate (</span><span class="si">%s</span><span class="s1">) must be finite&#39;</span> <span class="o">%</span> <span class="n">rate</span><span class="p">)</span> 
+<div class="viewcode-block" id="MockNodePop.initialize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.pointnet.html#bmtk.tests.simulator.pointnet.conftest.MockNodePop.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="p">):</span>
+        <span class="k">pass</span></div>
 
-    <span class="k">if</span> <span class="n">rate</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">[]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">generate_renewal_process</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="n">sps</span><span class="o">.</span><span class="n">expon</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.</span><span class="o">/</span><span class="n">rate</span><span class="p">)</span><span class="o">.</span><span class="n">rvs</span><span class="p">)</span></div>
+<div class="viewcode-block" id="MockNodePop.get_nodes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.pointnet.html#bmtk.tests.simulator.pointnet.conftest.MockNodePop.get_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">get_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">batched</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">MockNode</span><span class="p">(</span><span class="n">n_nodes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">MockNode</span><span class="p">(</span><span class="n">n_nodes</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="MockNodePop.filter"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.pointnet.html#bmtk.tests.simulator.pointnet.conftest.MockNodePop.filter">[docs]</a>    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">filter</span><span class="p">):</span>
+        <span class="c1"># return [self.MockNode(nnodes=self.nnodes) for _ in range(self.nnodes)]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">MockNode</span><span class="p">(</span><span class="n">n_nodes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="MockNodePop.MockNode"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.pointnet.html#bmtk.tests.simulator.pointnet.conftest.MockNodePop.MockNode">[docs]</a>    <span class="k">class</span> <span class="nc">MockNode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_nodes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span> <span class="o">=</span> <span class="n">n_nodes</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_nodes</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node_id</span> <span class="o">=</span> <span class="n">node_id</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nest_ids</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="MockNodePop.MockNode.build"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.pointnet.html#bmtk.tests.simulator.pointnet.conftest.MockNodePop.MockNode.build">[docs]</a>        <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nest_ids</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="s1">&#39;iaf_psc_delta&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">,</span> <span class="p">{})</span></div></div></div>
 
 
-<div class="viewcode-block" id="generate_inhomogenous_poisson"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_inhomogenous_poisson">[docs]</a><span class="k">def</span> <span class="nf">generate_inhomogenous_poisson</span><span class="p">(</span><span class="n">t_range</span><span class="p">,</span> <span class="n">y_range</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">seed</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span> 
-    <span class="n">spike_list</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">tl</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">t_range</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">t_range</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">y_range</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
-        <span class="n">spike_list</span> <span class="o">+=</span> <span class="n">generate_poisson_process</span><span class="p">(</span><span class="n">tl</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> 
-    <span class="k">return</span> <span class="n">spike_list</span></div>
+<div class="viewcode-block" id="MockEdges"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.pointnet.html#bmtk.tests.simulator.pointnet.conftest.MockEdges">[docs]</a><span class="k">class</span> <span class="nc">MockEdges</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">source_nodes</span><span class="p">,</span> <span class="n">target_nodes</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="mf">2.0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_nodes</span> <span class="o">=</span> <span class="n">source_nodes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_nodes</span> <span class="o">=</span> <span class="n">target_nodes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connection_type</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">virtual_connections</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delay</span> <span class="o">=</span> <span class="n">delay</span>
+
+<div class="viewcode-block" id="MockEdges.initialize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.pointnet.html#bmtk.tests.simulator.pointnet.conftest.MockEdges.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">net</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="MockEdges.set_connection_type"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.pointnet.html#bmtk.tests.simulator.pointnet.conftest.MockEdges.set_connection_type">[docs]</a>    <span class="k">def</span> <span class="nf">set_connection_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_pop</span><span class="p">,</span> <span class="n">trg_pop</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="MockEdges.get_edges"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.pointnet.html#bmtk.tests.simulator.pointnet.conftest.MockEdges.get_edges">[docs]</a>    <span class="k">def</span> <span class="nf">get_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">MockEdge</span><span class="p">(</span><span class="n">delay</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">delay</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="MockEdges.MockEdge"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.pointnet.html#bmtk.tests.simulator.pointnet.conftest.MockEdges.MockEdge">[docs]</a>    <span class="k">class</span> <span class="nc">MockEdge</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delay</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">source_node_ids</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_node_ids</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nest_params</span> <span class="o">=</span> <span class="p">{</span><span class="n">NEST_SYNAPSE_MODEL_PROP</span><span class="p">:</span> <span class="s1">&#39;static_synapse&#39;</span><span class="p">,</span> <span class="s1">&#39;delay&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">delay</span><span class="p">]</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span>  <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mf">2.0</span><span class="p">]</span><span class="o">*</span><span class="mi">100</span><span class="p">}</span></div></div>
 
 
-<div class="viewcode-block" id="generate_poisson_rescaling"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_poisson_rescaling">[docs]</a><span class="k">def</span> <span class="nf">generate_poisson_rescaling</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">y</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">f</span> <span class="o">=</span> <span class="n">sinterp</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">generate_poisson_rescaling_function</span><span class="p">(</span><span class="k">lambda</span> <span class="n">y</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">f</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span></div>
-    
+<div class="viewcode-block" id="MockNodeSet"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.pointnet.html#bmtk.tests.simulator.pointnet.conftest.MockNodeSet">[docs]</a><span class="k">class</span> <span class="nc">MockNodeSet</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population_names</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_population_names</span> <span class="o">=</span> <span class="n">population_names</span>
 
-<div class="viewcode-block" id="generate_poisson_rescaling_function"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.lgnmodel.html#bmtk.simulator.filternet.lgnmodel.poissongeneration.generate_poisson_rescaling_function">[docs]</a><span class="k">def</span> <span class="nf">generate_poisson_rescaling_function</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">t_min</span><span class="p">,</span> <span class="n">t_max</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">integrator</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">spi</span><span class="o">.</span><span class="n">odeint</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">])[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-    
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">seed</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
-    
-    <span class="n">spike_train</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">while</span> <span class="n">t_min</span> <span class="o">&lt;</span> <span class="n">t_max</span><span class="p">:</span>
-        <span class="n">e0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">exponential</span><span class="p">()</span>
+<div class="viewcode-block" id="MockNodeSet.population_names"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.pointnet.html#bmtk.tests.simulator.pointnet.conftest.MockNodeSet.population_names">[docs]</a>    <span class="k">def</span> <span class="nf">population_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_population_names</span></div></div>
 
-        <span class="k">def</span> <span class="nf">root_function</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">e0</span> <span class="o">-</span> <span class="n">integrator</span><span class="p">(</span><span class="n">t_min</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
-        
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">(</span><span class="n">record</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">w</span><span class="p">:</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="n">sopt</span><span class="o">.</span><span class="n">root</span><span class="p">(</span><span class="n">root_function</span><span class="p">,</span> <span class="mf">.1</span><span class="p">)</span>
-            <span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">success</span>
-        <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">e0</span> <span class="o">&lt;</span> <span class="n">integrator</span><span class="p">(</span><span class="n">t_min</span><span class="p">,</span> <span class="n">t_max</span><span class="p">):</span>
-                <span class="k">assert</span> <span class="ne">Exception</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">break</span>
 
-        <span class="n">t_min</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">spike_train</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t_min</span><span class="p">)</span>
+<div class="viewcode-block" id="MockSpikes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.pointnet.html#bmtk.tests.simulator.pointnet.conftest.MockSpikes">[docs]</a><span class="k">class</span> <span class="nc">MockSpikes</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spike_times</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spikes</span> <span class="o">=</span> <span class="n">spike_times</span>
 
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">spike_train</span><span class="p">)</span></div>
+<div class="viewcode-block" id="MockSpikes.get_times"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.pointnet.html#bmtk.tests.simulator.pointnet.conftest.MockSpikes.get_times">[docs]</a>    <span class="k">def</span> <span class="nf">get_times</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">spikes</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>

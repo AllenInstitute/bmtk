@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Tutorial 4: Muti-population recurrent network (with BioNet) &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -856,15 +857,15 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<div class="section" id="Tutorial-4:-Muti-population-recurrent-network-(with-BioNet)">
+<section id="Tutorial-4:-Muti-population-recurrent-network-(with-BioNet)">
 <h1>Tutorial 4: Muti-population recurrent network (with BioNet)<a class="headerlink" href="#Tutorial-4:-Muti-population-recurrent-network-(with-BioNet)" title="Permalink to this headline">¶</a></h1>
-<p>Here we will create a heterogenous yet relatively small network consisting of hundreds of cells recurrently connected. All cells will belong to one of four “cell-types”. Two of these cell types will be biophysically detailed cells, i.e. containing a full morphology and somatic and dendritic channels and receptors. The other two will be point-neuron models, which lack a full morphology or channels but still act to provide inhibitory and excitory dynamics.</p>
+<p>Here we will create a heterogenous yet relatively small network consisting of hundreds of cells recurrently connected. All cells will belong to one of four “cell-types”. Two of these cell types will be biophysically detailed cells, i.e. containing a full morphology and somatic and dendritic channels and receptors. The other two will be point-neuron models, which lack a full morphology or channels but still act to provide inhibitory and excitory dynamics.</p>
 <p>As input to drive the simulation, we will also create an external network of “virtual cells” that synapse directly onto our internal cells and provide spike trains stimulus</p>
 <p><strong>Note</strong> - scripts and files for running this tutorial can be found in the directory <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/sources/chapter04">sources/chapter04/</a></p>
 <p>requirements: * bmtk * NEURON 7.4+</p>
-<div class="section" id="1.-Building-the-network">
+<section id="1.-Building-the-network">
 <h2>1. Building the network<a class="headerlink" href="#1.-Building-the-network" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="cells">
+<section id="cells">
 <h3>cells<a class="headerlink" href="#cells" title="Permalink to this headline">¶</a></h3>
 <p>This network will loosely resemble the mouse V1 cortical column. Along the center of the column will be a population of 50 biophysically detailed neurons: 40 excitatory Scnn1a cells and 10 inhibitory PV cells.</p>
 <div class="nbinput nblast docutils container">
@@ -941,8 +942,8 @@ properties for creating connections and running simulations.</p>
 </pre></div>
 </div>
 </div>
-</div>
-<div class="section" id="connections">
+</section>
+<section id="connections">
 <h3>connections<a class="headerlink" href="#connections" title="Permalink to this headline">¶</a></h3>
 <p>Now we want to create connections between the cells. Depending on the model type, and whether or not the presynpatic “source” cell is excitory or inhibitory, we will have different synpatic model and parameters. Using the source and target filter parameters, we can create different connection types.</p>
 <p>To determine excitory-to-excitory connection matrix we want to use distance and tuning_angle property. To do this we create a customized function “dist_tuning_connector”</p>
@@ -1002,8 +1003,8 @@ properties for creating connections and running simulations.</p>
 </div>
 <p>This first two parameters of this function is “source” and “target” and are required for all custom connector functions. These are node objects which gives a representation of a single source and target cell, with properties that can be accessed like a python dictionary. When The Network Builder is creating the connection matrix, it will call this function for all possible source-target pairs. The user doesn’t call this function directly.</p>
 <p>The remaining parameters are optional. Using these parameters, plus the distance and angles between source and target cells, this function determines the number of connections between each given source and target cell. If there are none you can return either None or 0.</p>
-<p>To create these connections we call add_edges method of the builder. We use the source and target parameter to filter out only excitory-to-excitory connections. We must also take into consideration the model type (biophysical or integrate-and-fire) of the target when setting parameters. We pass in the function throught the connection_rule parameter, and the function parameters (except source and target) through connection_params. (If our dist_tuning_connector function didn’t have any parameters
-other than source and target, we could just not set connection_params).</p>
+<p>To create these connections we call add_edges method of the builder. We use the source and target parameter to filter out only excitory-to-excitory connections. We must also take into consideration the model type (biophysical or integrate-and-fire) of the target when setting parameters. We pass in the function throught the connection_rule parameter, and the function parameters (except source and target) through connection_params. (If our dist_tuning_connector function didn’t have any
+parameters other than source and target, we could just not set connection_params).</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
@@ -1154,7 +1155,7 @@ other than source and target, we could just not set connection_params).</p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="Building-external-network">
+<section id="Building-external-network">
 <h4>Building external network<a class="headerlink" href="#Building-external-network" title="Permalink to this headline">¶</a></h4>
 <p>Next we want to create an external network consisting of virtual cells that form a feedforward network onto our V1, which will provide input during the simulation. We will call this LGN, since the LGN is the primary input the layer 4 cells of the V1 (if we wanted to we could also create multiple external networks and run simulations on any number of them).</p>
 <p>First we build our LGN nodes. Then we must import the V1 network nodes, and create connections between LGN –&gt; V1.</p>
@@ -1187,7 +1188,7 @@ other than source and target, we could just not set connection_params).</p>
 </div>
 <p>But for our LGN –&gt; V1 connection, we do things a bit differently. We want to make sure that for every source cell, there are a limited number of presynaptic targets. This is a not really possible with a function that iterates on a one-to-one basis. So instead we have a connector function who’s first parameter is a list of all N source cell, and the second parameter is a single target cell. We return an array of integers, size N; which each index representing the number of synaptics between
 sources and the target.</p>
-<p>To tell the builder to use this schema, we must set iterator=‘all_to_one’ in the add_edges method. (By default this is set to ‘one_to_one’. You can also use ‘one_to_all’ iterator which will pass in a single source and all possible targets).</p>
+<p>To tell the builder to use this schema, we must set iterator=’all_to_one’ in the add_edges method. (By default this is set to ‘one_to_one’. You can also use ‘one_to_all’ iterator which will pass in a single source and all possible targets).</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
@@ -1259,12 +1260,12 @@ sources and the target.</p>
 </pre></div>
 </div>
 </div>
-</div>
-</div>
-</div>
-<div class="section" id="2.-Setting-up-BioNet">
+</section>
+</section>
+</section>
+<section id="2.-Setting-up-BioNet">
 <h2>2. Setting up BioNet<a class="headerlink" href="#2.-Setting-up-BioNet" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="file-structure.">
+<section id="file-structure.">
 <h3>file structure.<a class="headerlink" href="#file-structure." title="Permalink to this headline">¶</a></h3>
 <p>Before running a simulation, we will need to create the runtime environment, including parameter files, run-script and configuration files. You can copy the files from an existing simuatlion, execute the following command:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m bmtk.utils.sim_setup  <span class="se">\</span>
@@ -1309,8 +1310,8 @@ sources and the target.</p>
 <li><p><strong>components/point_neuron_models/</strong> - The parameter file for our LIF_exc and LIF_inh cells.</p></li>
 <li><p><strong>components/synaptic_models/</strong> - Parameter files used to create different types of synapses.</p></li>
 </ul>
-</div>
-<div class="section" id="lgn-input">
+</section>
+<section id="lgn-input">
 <h3>lgn input<a class="headerlink" href="#lgn-input" title="Permalink to this headline">¶</a></h3>
 <p>We need to provide our LGN external network cells with spike-trains so they can activate our recurrent network. Previously we showed how to do this by generating csv files. We can also use NWB files, which are a common format for saving electrophysiological data in neuroscience.</p>
 <p>We can use any NWB file generated experimentally or computationally, but for this example we will use a preexsting one. First download the file:</p>
@@ -1319,25 +1320,25 @@ sources and the target.</p>
 </div>
 <p>or copy from <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/spikes_inputs/lgn_spikes.nwb">here</a>.</p>
 <p>Then we must edit the <strong>simulation_config.json</strong> file to tell the simulator to find the nwb file and which network to associate it with.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;sonata&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;input_file&quot;</span><span class="p">:</span> <span class="s2">&quot;$BASE_DIR/lgn_spikes.h5&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="s2">&quot;LGN&quot;</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sonata&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$BASE_DIR/lgn_spikes.h5&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGN&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="3.-Running-the-simulation">
+</section>
+</section>
+<section id="3.-Running-the-simulation">
 <h2>3. Running the simulation<a class="headerlink" href="#3.-Running-the-simulation" title="Permalink to this headline">¶</a></h2>
 <p>We are close to running our simulation, however unlike in previous chapters we need a little more programming before we can begin.</p>
-<p>For most of the connections we added the parameter weight_function=‘wmax’. This is a built-in function that tells the simulator when creating a connection between two cells, just use the ‘weight_max’ value assigned to that given edge-type.</p>
-<p>However, when creating excitatory-to-excitatory connections we used weight_function=‘gaussianLL’. This is because we want to use the tuning_angle parameter, when avaiable, to determine the synaptic strength between two connections. First we create the function which takes in target, source and connection properties (which are just the edge-type and properties set in the add_edges method). Then we must register the function with the BioNet simulator:</p>
+<p>For most of the connections we added the parameter weight_function=’wmax’. This is a built-in function that tells the simulator when creating a connection between two cells, just use the ‘weight_max’ value assigned to that given edge-type.</p>
+<p>However, when creating excitatory-to-excitatory connections we used weight_function=’gaussianLL’. This is because we want to use the tuning_angle parameter, when avaiable, to determine the synaptic strength between two connections. First we create the function which takes in target, source and connection properties (which are just the edge-type and properties set in the add_edges method). Then we must register the function with the BioNet simulator:</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
@@ -1601,8 +1602,8 @@ INFO:NEURONIOUtils:    step:30000 t_sim:3000.00 ms
 INFO:NEURONIOUtils:Simulation completed in 3.0 minutes, 54.96 seconds
 </pre></div></div>
 </div>
-</div>
-<div class="section" id="4.-Analyzing-results">
+</section>
+<section id="4.-Analyzing-results">
 <h2>4. Analyzing results<a class="headerlink" href="#4.-Analyzing-results" title="Permalink to this headline">¶</a></h2>
 <p>Results of the simulation, as specified in the config, are saved into the output directory. Using the analyzer functions, we can do things like plot the raster plot</p>
 <div class="nbinput docutils container">
@@ -1684,8 +1685,8 @@ INFO:NEURONIOUtils:Simulation completed in 3.0 minutes, 54.96 seconds
 </pre></div>
 </div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

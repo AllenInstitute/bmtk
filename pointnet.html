@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>PointNet &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -623,11 +624,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="pointnet">
+  <section id="pointnet">
 <h1>PointNet<a class="headerlink" href="#pointnet" title="Permalink to this headline">¶</a></h1>
-<div class="figure align-default">
+<figure class="align-default">
 <a class="reference internal image-reference" href="_images/bmtk_architecture_pointnet_highlight.jpg"><img alt="_images/bmtk_architecture_pointnet_highlight.jpg" src="_images/bmtk_architecture_pointnet_highlight.jpg" style="width: 433.6px; height: 167.20000000000002px;" /></a>
-</div>
+</figure>
 <p>PointNet is a simulation engine that utilizes <a class="reference external" href="http://www.nest-simulator.org/">NEST</a> to run large-scale point
 neuron network models. Features including:</p>
 <ul class="simple">
@@ -635,26 +636,26 @@ neuron network models. Features including:</p>
 <li><p>Supports any spiking neuron models (rates models in development) available in NEST or with user contributed modules.</p></li>
 <li><p>Records neuron spiking, multi-meter recorded variables into the optimized SONATA data format.</p></li>
 </ul>
-<div class="section" id="inputs">
+<section id="inputs">
 <h2>Inputs<a class="headerlink" href="#inputs" title="Permalink to this headline">¶</a></h2>
 <p>Inputs can be specified in the “inputs” sections of the <a class="reference external" href="simulators.html#configuration-files">simulation config</a>,
 following the rules specified in the
 <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#simulation-input---stimuli">SONATA Data format</a>.</p>
-<div class="section" id="spike-trains">
+<section id="spike-trains">
 <h3>Spike-Trains<a class="headerlink" href="#spike-trains" title="Permalink to this headline">¶</a></h3>
 <p>Cells with <code class="docutils literal notranslate"><span class="pre">model_type</span></code> value <code class="docutils literal notranslate"><span class="pre">virtual</span></code> are equivalent to NEST’s spike_generator models which will play a
 pre-recorded series of spikes throughout the simulation. You may use either a
 <a class="reference external" href="./analyzer.html#spike-trains">SONATA spike-train file</a>, an NWB file, or a space-separated csv file with columns
 <strong>node_id</strong>, <strong>population</strong>, and <strong>timestamps</strong>. Examples of how to create your own spike-train files can be found
 <a class="reference external" href="./analyzer.html#creating-spike-trains">here</a>.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;sonata&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;input_file&quot;</span><span class="p">:</span> <span class="s2">&quot;./inputs/lgn_spikes.h5&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span> <span class="s2">&quot;lgn&quot;</span><span class="p">}</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sonata&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./inputs/lgn_spikes.h5&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lgn&quot;</span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -662,20 +663,20 @@ pre-recorded series of spikes throughout the simulation. You may use either a
 <li><p><a class="reference external" href="./simulators.html#node-sets">node_set</a>: used to filter which cells will receive the inputs</p></li>
 <li><p>input_file: path to file contain spike-trains for one or mode node</p></li>
 </ul>
-</div>
-<div class="section" id="current-clamps">
+</section>
+<section id="current-clamps">
 <h3>Current-Clamps<a class="headerlink" href="#current-clamps" title="Permalink to this headline">¶</a></h3>
 <p>May use one step current clamp on multiple nodes, or have one node receive multiple current injections.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="nt">&quot;current_clamp_1&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="s2">&quot;biophys_cells&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;amp&quot;</span><span class="p">:</span> <span class="mf">0.1500</span><span class="p">,</span>
-        <span class="nt">&quot;delay&quot;</span><span class="p">:</span> <span class="mf">500.0</span><span class="p">,</span>
-        <span class="nt">&quot;duration&quot;</span><span class="p">:</span> <span class="mf">500.0</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;current_clamp_1&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;biophys_cells&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1500</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -685,25 +686,25 @@ pre-recorded series of spikes throughout the simulation. You may use either a
 <li><p>delay: onset of current injection in ms</p></li>
 <li><p>duration: duration of current injection in ms</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="outputs">
+</section>
+</section>
+<section id="outputs">
 <h2>Outputs<a class="headerlink" href="#outputs" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="spikes">
+<section id="spikes">
 <h3>Spikes<a class="headerlink" href="#spikes" title="Permalink to this headline">¶</a></h3>
 <p>By default all non-virtual cells in the circuit will have all their spikes at the soma recorded.</p>
-</div>
-<div class="section" id="membrane-and-intracellular-variables">
+</section>
+<section id="membrane-and-intracellular-variables">
 <h3>Membrane and Intracellular Variables<a class="headerlink" href="#membrane-and-intracellular-variables" title="Permalink to this headline">¶</a></h3>
 <p>Used to record the time trace of specific cell variables, usually the membrane potential (v). This is equivalent to NEST’s multimeter object.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-    <span class="nt">&quot;membrane_potential&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;multimeter_report&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;cells&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span> <span class="s2">&quot;V1&quot;</span><span class="p">},</span>
-        <span class="nt">&quot;variable_name&quot;</span><span class="p">:</span> <span class="s2">&quot;V_m&quot;</span>
-        <span class="s2">&quot;file_name&quot;</span><span class="p">:</span> <span class="s2">&quot;cai_traces.h5&quot;</span>
-    <span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;membrane_potential&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;multimeter_report&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;V1&quot;</span><span class="p">},</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;variable_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="nt">&quot;V_m&quot;</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;file_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cai_traces.h5&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -716,9 +717,9 @@ pre-recorded series of spikes throughout the simulation. You may use either a
 </dl>
 </li>
 </ul>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>

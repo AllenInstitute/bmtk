@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>BMTK Builder (A Quick Introduction) &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -856,12 +857,12 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<div class="section" id="BMTK-Builder-(A-Quick-Introduction)">
+<section id="BMTK-Builder-(A-Quick-Introduction)">
 <h1>BMTK Builder (A Quick Introduction)<a class="headerlink" href="#BMTK-Builder-(A-Quick-Introduction)" title="Permalink to this headline">¶</a></h1>
 <p>The Brain Modeling Toolkit (bmtk) was designed to handle large-scale network simulations with pre-set connectivity matrices. Whereas other simulation tools will build and simulate a network in a single script, the bmtk splits up these two processes by saving networks to a file. The advantages of doing it this way includes: * Significantly faster when running multiple simulations on the same network. * Easy to update and adjust parameters with little-to-no programming required. * Improves
 reproducability of simulations.</p>
 <p>Before running a simulation, users should either obtain existing network model files, or as described in this tutorial use the BMTK Builder to create their own from scratch. By default, the bmtk uses the recently developed SONATA dataformat to represent networks and network parameters - for a further information please see the <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md">SONATA documentation</a>.</p>
-<div class="section" id="Nodes">
+<section id="Nodes">
 <h2>Nodes<a class="headerlink" href="#Nodes" title="Permalink to this headline">¶</a></h2>
 <p>Brain networks are represented with directed graph so every network needs nodes. (The simplest network consisting of one node and no edges, usually for single-cell simulations). The bmtk is designed to work across different levels of abstraction, so a node can represent a single biophysically detailed cell, a point-cell model, a population of cells, or even an entire brain region.</p>
 <p>To create our node(s) we use the NetworkBuilder class in bmtk.builder, then simply build and save the network.</p>
@@ -897,8 +898,8 @@ reproducability of simulations.</p>
 </div>
 <p>When the NetworkBuilder is instantiated we pass in a name, in this case calling it “<strong>mcortex</strong>” because we will be using mouse-cortex models - But you can use any name you want. Just be careful, as often a complete simulation will contain multiple networks (the bmtk/SONATA was designed largely to allow different parts of the network to be built indepenently), so having descriptive naming convention is important.</p>
 <p>The add_nodes method is then used to add nodes to the network. The first parameter, <strong>N=10</strong>, indicates that we are adding 10 individual nodes each sharing the same pop_name, mem_potential, model_type etc.</p>
-<p>All of the other parameters are completely dependent on the type of network we are looking to build. In this case we want to build a network that runs in BioNet so the parameters are carefully choosen with: * <strong>pop_name</strong>, <strong>mem_potential</strong> - optional parameters, not directly used by BioNet but will be helpfull in the descripion * <strong>model_type</strong>, <strong>model_template</strong>, <strong>model_processing</strong> - <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#nodes---required-attributes">Attributes used by
-BioNet</a> as instructions on how to build our NEURON-based cell models. All our cells are biophysically-detailed models, using customized templates and functions to build each cell. * <strong>dynamics_params</strong>, <strong>morphology</strong> - Indicates to BioNet the electrophysiological and morphology files used to build each cell. These files can be downloaded from the <a class="reference external" href="http://celltypes.brain-map.org/data">Allen Cell-Types
+<p>All of the other parameters are completely dependent on the type of network we are looking to build. In this case we want to build a network that runs in BioNet so the parameters are carefully choosen with: * <strong>*pop_name*</strong>, <strong>*mem_potential*</strong> - optional parameters, not directly used by BioNet but will be helpfull in the descripion * <strong>*model_type*</strong>, <strong>*model_template*</strong>, <strong>*model_processing*</strong> - <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#nodes---required-attributes">Attributes used by
+BioNet</a> as instructions on how to build our NEURON-based cell models. All our cells are biophysically-detailed models, using customized templates and functions to build each cell. * <strong>*dynamics_params*</strong>, <strong>*morphology*</strong> - Indicates to BioNet the electrophysiological and morphology files used to build each cell. These files can be downloaded from the <a class="reference external" href="http://celltypes.brain-map.org/data">Allen Cell-Types
 Database</a>.</p>
 <p>However the NetworkBuilder is simulator agnositc allowing modelers to choose whatever parameters they need depending on simulator and/or required to describe the models. For example the following could be used by another simulator to build a network describing 100 Izhikevich point neurons. Notice we no longer need parameters like morphology or model_processing, but have new parameter a, b, c, and d which would be required by any Izhikevich neuron model.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
@@ -907,8 +908,8 @@ Database</a>.</p>
               <span class="n">param_a</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">param_b</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">param_c</span><span class="o">=-</span><span class="mf">55.0</span><span class="p">,</span> <span class="n">parm_d</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Finally the network is built and saved into the <em>network/</em> folder. When we look in the network folder there are two different files - mcortex_nodes.h5 and mcortex_node_types.csv. The individual cells are stored in the *nodes.h5 file. But properties that are shared by a group of nodes are stored in the *node_types.csv. <strong>Node types</strong> not only makes the format more compact and faster to read (probably not important for 10 cells, but very important when trying to run a simulation of 100K+ cells),
-and it also makes easier to change properties (like updating ephys params or using a different morphology) between simulations.</p>
+<p>Finally the network is built and saved into the <em>network/</em> folder. When we look in the network folder there are two different files - mcortex_nodes.h5 and mcortex_node_types.csv. The individual cells are stored in the *nodes.h5 file. But properties that are shared by a group of nodes are stored in the *node_types.csv. <strong>Node types</strong> not only makes the format more compact and faster to read (probably not important for 10 cells, but very important when trying to run a simulation of 100K+
+cells), and it also makes easier to change properties (like updating ephys params or using a different morphology) between simulations.</p>
 <p>Looking at the files</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
@@ -1080,8 +1081,8 @@ mcortex_node_types.h5
 </div></div>
 </div>
 <p>The nodes and node-types are linked together by the node_type_id foreign key. In this case all information (expect each of the 10 unique cell ids, which were autogenerated during the build processes) is stored in the node_types file because all the properties are shared among every node.</p>
-</div>
-<div class="section" id="Unique-node-properties">
+</section>
+<section id="Unique-node-properties">
 <h2>Unique node properties<a class="headerlink" href="#Unique-node-properties" title="Permalink to this headline">¶</a></h2>
 <p>Suppose we have some properties that are unqiue to each individual nodes within a node-type. Instead of calling add_nodes N times, we can just pass in a list of size N.</p>
 <p>In the following example we have two types of nodes, 10 biophysical pyramidal type cells and 5 point izhikevich type cells. For the pyramidal cells we have a new parameter ‘tuning_angle’ which is uniquly assigned a different value to each cell. Similarly for the Izhikevich cells the param_a and param_b parameters are now unqily assigned.</p>
@@ -1368,8 +1369,8 @@ mcortex_node_types.h5
 </div></div>
 </div>
 <p>We see that tuning_angle, param’s a and b are stored individually for each node where applicable.</p>
-</div>
-<div class="section" id="Edges">
+</section>
+<section id="Edges">
 <h2>Edges<a class="headerlink" href="#Edges" title="Permalink to this headline">¶</a></h2>
 <p>After building our nodes we want to create directed connections between them by using the add_edges method. For the simpliest types of edges, we just need to specify the number of connections between any subset of source and target nodes. For instance if we want to create synaptic connections from every pyr cell to every izh cell:</p>
 <div class="nbinput nblast docutils container">
@@ -1414,7 +1415,7 @@ mcortex_node_types.h5
 </div>
 <p>These are properties used by BioNet/NEURON to build synapses. Like with nodes, these properties are the same for all 50 x 12 = 600 synapses. These parameters are optional, and depending on the requirements of the model/simulator, we can add or remove parameters are needed.</p>
 <p>After building and saving the edges, you’ll see in the network folder two edge files were created; mocrtex2_mcortex2_edges.h5 and mocrtex2_mcortex2_edge_types.csv. Like nodes and node-types, we have edges and edge-types - although adding individual edge properties is a bit more complex.</p>
-<div class="section" id="Custom-connection-rules">
+<section id="Custom-connection-rules">
 <h3>Custom connection rules<a class="headerlink" href="#Custom-connection-rules" title="Permalink to this headline">¶</a></h3>
 <p>In the previous example the number of synapses/connections between any pair of source/target nodes was constant. In many cases we will need to adjust the number of connections based on the types of cells, distance between source and target, etc. Instead of passing an integer to connection_rule we can pass in a function:</p>
 <div class="nbinput nblast docutils container">
@@ -1451,8 +1452,8 @@ mcortex_node_types.h5
 <p>The like2like() function will be called during the build process for every possible source-target pair (for very larget networks with complex rules the buidling of the edges can take a very long time). All custom functions take as the first two parameters source and target. These two parameters can be used like dictionary objects to get any node property. Using the source and target properties, the function should return an integer representing the number of synapses/connections. If there are no
 connections for a pair the function should return 0.</p>
 <p>Besides source and target, the function also has params min_syns and max_syns. These are optional params and set through connection_params in add_edges. This will allow modelers to reuse the same connection_rule for different edge-types.</p>
-</div>
-<div class="section" id="Individual-edge-properties">
+</section>
+<section id="Individual-edge-properties">
 <h3>Individual edge properties<a class="headerlink" href="#Individual-edge-properties" title="Permalink to this headline">¶</a></h3>
 <p>So far the edge properties like syn_weight and delay are being stored in the edge_types.cvs file. This means that all synapses created by the same add_edges call will share these values. Often this is desirable - the bmtk simulators have a way of altering synaptic weight during run-time. But other times we may want to have a unique syn_weight, or other property, for each individual connection.</p>
 <p>Unfortantely we can’t just pass in a list since, if you’re using a custom connection_rule, it’s hard to predetermine the total number of connections. Instead we need to again create a custom rule for setting individual synaptic parameters inside the edges.h5 file</p>
@@ -1499,9 +1500,9 @@ connections for a pair the function should return 0.</p>
 </pre></div>
 </div>
 </div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>

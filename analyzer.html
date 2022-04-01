@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Analyzing the Results &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -623,11 +624,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="analyzing-the-results">
+  <section id="analyzing-the-results">
 <h1>Analyzing the Results<a class="headerlink" href="#analyzing-the-results" title="Permalink to this headline">¶</a></h1>
-<div class="figure align-default">
+<figure class="align-default">
 <a class="reference internal image-reference" href="_images/bmtk_architecture_analyzer_highlight.jpg"><img alt="_images/bmtk_architecture_analyzer_highlight.jpg" src="_images/bmtk_architecture_analyzer_highlight.jpg" style="width: 433.6px; height: 167.20000000000002px;" /></a>
-</div>
+</figure>
 <p>After a simulation has completed BMTK will automatically save the results to the output folder. It is possible to have
 BMTK read and analyze the results before the simulation has exited but usually not required. The type of results saved
 during the simulation is determined by the “reports” section of the <a class="reference external" href="./simulators.html#configuration-files">simulation config</a>.
@@ -637,7 +638,7 @@ case of PopNet a report of the firing rate dynamics.</p>
 <a class="reference external" href="https://github.com/AllenInstitute/sonata/tree/master/src/pysonata">pySONATA</a>  or
 <a class="reference external" href="https://github.com/BlueBrain/libsonata">libSONATA</a> can be used to read them. The following consists of a high-level
 overview of these different formats and how you can use BMTK to find the results.</p>
-<div class="section" id="spike-trains">
+<section id="spike-trains">
 <h2>Spike-Trains<a class="headerlink" href="#spike-trains" title="Permalink to this headline">¶</a></h2>
 <p>Contains action-potentials/spikes for all the nodes within a given population. In the HDF5 the spikes are stored under
 /spikes/_&lt;population_name&gt;_/ and contains two data-sets:</p>
@@ -645,12 +646,12 @@ overview of these different formats and how you can use BMTK to find the results
 <li><p>timestamps (size N): A list of all the spikes during the simulation</p></li>
 <li><p>node_ids (size N): A list of corresponding node_ids for each spike</p></li>
 </ul>
-<div class="figure align-default">
+<figure class="align-default">
 <a class="reference internal image-reference" href="_images/spikes_report.png"><img alt="_images/spikes_report.png" src="_images/spikes_report.png" style="width: 511.20000000000005px; height: 273.6px;" /></a>
-</div>
+</figure>
 <p>The group may contain an attribute “sorting” with values none, by_id, and by_time to indicate if and how the spikes are
 sorted (default none). There is also an optional attribute “units” for the timestamps, but defaults to milliseconds.</p>
-<div class="section" id="reading">
+<section id="reading">
 <h3>Reading<a class="headerlink" href="#reading" title="Permalink to this headline">¶</a></h3>
 <p>You can use the <a class="reference internal" href="bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI" title="bmtk.utils.reports.spike_trains.spike_trains_api.SpikeTrainsAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpikeTrains</span></code></a> class to load
 a sonata spikes files (or csv or nwb) into memory:</p>
@@ -680,14 +681,14 @@ all node_ids plus timestamps</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">spikes</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">())</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="plotting">
+</section>
+<section id="plotting">
 <h3>Plotting<a class="headerlink" href="#plotting" title="Permalink to this headline">¶</a></h3>
-</div>
-<div class="section" id="analysis">
+</section>
+<section id="analysis">
 <h3>Analysis<a class="headerlink" href="#analysis" title="Permalink to this headline">¶</a></h3>
-</div>
-<div class="section" id="creating-spike-trains">
+</section>
+<section id="creating-spike-trains">
 <h3>Creating Spike Trains<a class="headerlink" href="#creating-spike-trains" title="Permalink to this headline">¶</a></h3>
 <p>Commonly it’s necessary to generate spike-trains to use as inputs for a simulation. One option is to use FilterNet to
 generate inputs from external stimuli. You can also use the output of one simulation as the input to the next. But if
@@ -714,9 +715,9 @@ is to use the <a class="reference internal" href="bmtk/bmtk.utils.reports.spike_
 <span class="n">psg</span><span class="o">.</span><span class="n">to_sonata</span><span class="p">(</span><span class="s1">&#39;./inputs/thamlamus_inputs.h5&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="cell-variable-report">
+</section>
+</section>
+<section id="cell-variable-report">
 <h2>Cell Variable Report<a class="headerlink" href="#cell-variable-report" title="Permalink to this headline">¶</a></h2>
 <p>Used to record the traces of intracellular and membrane variables over the course of the simulation, like membrane
 potential V. In the HDF5 cell-reports are stored under /report/&lt;population_name&gt;/ with the most relevant datasets:</p>
@@ -728,16 +729,16 @@ the dataset contains 3 values: start_time, stop_time, and time_step (all in ms).
 for each recording time since start of simulation.</p></li>
 <li><p>node_ids: used to map each column to a specific cell</p></li>
 </ul>
-<div class="figure align-default">
+<figure class="align-default">
 <a class="reference internal image-reference" href="_images/cell_reports.png"><img alt="_images/cell_reports.png" src="_images/cell_reports.png" style="width: 597.0px; height: 249.6px;" /></a>
-</div>
+</figure>
 <p>If recording is done on point-neurons or one is only recording from the soma, there will be one column in “data” for
 each node. If recording different sections from a multi-compartmental neuron then <em>mapping/index_pointers</em> should be
 used:</p>
-<div class="figure align-default">
+<figure class="align-default">
 <a class="reference internal image-reference" href="_images/segmentation_indexing.jpg"><img alt="_images/segmentation_indexing.jpg" src="_images/segmentation_indexing.jpg" style="width: 712.8000000000001px; height: 256.8px;" /></a>
-</div>
-<div class="section" id="reading-cell-variables">
+</figure>
+<section id="reading-cell-variables">
 <h3>Reading Cell Variables<a class="headerlink" href="#reading-cell-variables" title="Permalink to this headline">¶</a></h3>
 <p>The <a class="reference internal" href="bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.core.CompartmentReaderABC" title="bmtk.utils.reports.compartment.core.CompartmentReaderABC"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompartmentReport</span></code></a> class should be used to
 pull data from a cell report.</p>
@@ -762,15 +763,15 @@ pull data from a cell report.</p>
      <span class="o">...</span><span class="p">]</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="extracellular-potential">
+</section>
+</section>
+<section id="extracellular-potential">
 <h2>Extracellular Potential<a class="headerlink" href="#extracellular-potential" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="rates">
+</section>
+<section id="rates">
 <h2>Rates<a class="headerlink" href="#rates" title="Permalink to this headline">¶</a></h2>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>

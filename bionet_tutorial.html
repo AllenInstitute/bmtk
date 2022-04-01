@@ -4,7 +4,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Simulating example networks with BioNet &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -621,7 +622,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="simulating-example-networks-with-bionet">
+  <section id="simulating-example-networks-with-bionet">
 <h1>Simulating example networks with BioNet<a class="headerlink" href="#simulating-example-networks-with-bionet" title="Permalink to this headline">¶</a></h1>
 <p>To get started with running simulations with BioNet, we recommend to run network examples provided in the directory examples/simulators/bionet:</p>
 <ul class="simple">
@@ -629,12 +630,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li><p>/450cells : network of 450 cells receiving an external input</p></li>
 </ul>
 <p>Working through the sections below, you will learn about contents of folders in each example and how to use them to run a simulation.</p>
-<div class="section" id="configuring-simulation">
+<section id="configuring-simulation">
 <h2>Configuring simulation<a class="headerlink" href="#configuring-simulation" title="Permalink to this headline">¶</a></h2>
 <p>All the files listed below and describing the network are listed in the configuration file <cite>config.json</cite> to instruct BioNet where to look for files describing network. Please note that all directory and file names can be adjusted by users as they wish, as long as those names are reflected in the config file. Additionally, the configuration file includes simulation parameters (e.g. duration of simulation and time step, etc).</p>
 <p>Please refer to the <a class="reference external" href="./bionet_config.html">configuration file documentation</a> for details.</p>
-</div>
-<div class="section" id="model-description">
+</section>
+<section id="model-description">
 <h2>Model description<a class="headerlink" href="#model-description" title="Permalink to this headline">¶</a></h2>
 <p>The directory <cite>network</cite> contains files that describe parameters of the cells and their connections.</p>
 <p>Cells in modeled networks may be generally categorized as: 1) the simulated cells for which dynamics is explicitly simulated using NEURON and 2) external input cells for which spiking dynamics is not simulated explicitly, but instead loaded from files. The external input cells can influence the simulated cells, but not vice versa.  Thus, such an abstraction is convenient for simulating feedforward inputs.</p>
@@ -702,8 +703,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <p>The spikes times of external cells are precomuted and provided in the directory examples/simulator/NWB_files.</p>
 <p>Each network utilizes models of individual cells, synapses and recording electrodes defined in the examples/simulators/bionet/components/mechanisms directory.</p>
 <p>The paths to each of these files and directories are specified in the configuration file (see above).</p>
-</div>
-<div class="section" id="running-simulation">
+</section>
+<section id="running-simulation">
 <h2>Running simulation<a class="headerlink" href="#running-simulation" title="Permalink to this headline">¶</a></h2>
 <p>Running simualtions requires the following Python scripts</p>
 <p><cite>run_bionet.py</cite> : main python script which calls BioNet to run simulation</p>
@@ -726,8 +727,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <p>When simulation is finished, you will see a message “Simulation completed”.</p>
 <p>BioNet allows saving simulation output in blocks while simulation is still running, giving users an ability to check and analyze intermediate output. During the run you will see some output reporting on the progress of a simulation as follows:</p>
 <p>When simulation completed you will see a message “Simulation completed”.</p>
-</div>
-<div class="section" id="simulation-output">
+</section>
+<section id="simulation-output">
 <h2>Simulation output<a class="headerlink" href="#simulation-output" title="Permalink to this headline">¶</a></h2>
 <p>The output directory includes:</p>
 <ul class="simple">
@@ -747,15 +748,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </div>
 <a class="reference internal image-reference" href="_images/v1_raster.png"><img alt="_images/v1_raster.png" src="_images/v1_raster.png" style="width: 571.1999999999999px; height: 420.0px;" /></a>
 <p><strong>Figure 3.</strong> Spike raster of the simulated (V1) cells.</p>
-</div>
-<div class="section" id="simulating-your-network-models">
+</section>
+<section id="simulating-your-network-models">
 <h2>Simulating your network models<a class="headerlink" href="#simulating-your-network-models" title="Permalink to this headline">¶</a></h2>
 <p>To run simulations of your network with BioNet, you will first need to provide a pre-built network in the format understood by BioNet. We recommend using <a class="reference external" href="builder">BMTK’s network builder api</a>, but you may also use your own scripts or a third party tool to build a network. As a start we suggest to modify the existing network examples as a quick way of customizing network models and then build your own model following <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples/builder/bionet_14cells">builder examples tutorial</a>.</p>
 <p>When you have your custom model built, you will need to specify in your configuration file the paths to the network, components as well as simulation run parameters.</p>
 <p>Just as in the above examples, your run folder should include Python modules: set_cell_params.py, set_syn_params.py, set_weights.py specifying how models of cells, synapses and connection weights are created, as well as a main python script.</p>
 <p>When running different simulations you will rarely need to modify the main Python script running BioNet. Instead, you will commonly need to modify paths to network files or run parameters in the configuration file  to instruct BioNet which model to run and how to run it. Please refer to the <a class="reference external" href="./bionet_config.html">configuration file documentation</a> for details.</p>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
