@@ -4,18 +4,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>bmtk.simulator.bionet.pointprocesscell &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/aibs_sphinx.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
-    <script src="../../../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
@@ -646,6 +643,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1">#</span>
 <span class="kn">from</span> <span class="nn">neuron</span> <span class="kn">import</span> <span class="n">h</span>
 <span class="kn">import</span> <span class="nn">six</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
 <span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.cell</span> <span class="kn">import</span> <span class="n">Cell</span>
 
 
@@ -708,7 +707,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="c1">#src_gid = src_node.node_id</span>
             <span class="n">nc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">NetCon</span><span class="p">(</span><span class="n">stim</span><span class="o">.</span><span class="n">hobj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">src_gid</span> <span class="o">=</span> <span class="n">src_node</span><span class="o">.</span><span class="n">node_id</span>
+            <span class="c1"># src_gid = src_node.node_id</span>
+            <span class="n">src_gid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network</span><span class="o">.</span><span class="n">gid_pool</span><span class="o">.</span><span class="n">get_gid</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">src_node</span><span class="o">.</span><span class="n">population_name</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="n">src_node</span><span class="o">.</span><span class="n">node_id</span><span class="p">)</span>
             <span class="n">nc</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">gid_connect</span><span class="p">(</span><span class="n">src_gid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="p">)</span>
 
         <span class="n">weight</span> <span class="o">=</span> <span class="n">syn_weight</span>
@@ -739,6 +739,65 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                                                    <span class="bp">self</span><span class="o">.</span><span class="n">netcons</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">delay</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">rstr</span></div></div>
+
+
+<div class="viewcode-block" id="PointProcessCellSpontSyns"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.pointprocesscell.PointProcessCellSpontSyns">[docs]</a><span class="k">class</span> <span class="nc">PointProcessCellSpontSyns</span><span class="p">(</span><span class="n">PointProcessCell</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Special class that allows certain synapses to spontaneously fire (without spiking) at a specific time.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">population_name</span><span class="p">,</span> <span class="n">bionetwork</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PointProcessCellSpontSyns</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">population_name</span><span class="o">=</span><span class="n">population_name</span><span class="p">,</span> <span class="n">bionetwork</span><span class="o">=</span><span class="n">bionetwork</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_syn_timestamps</span> <span class="o">=</span> <span class="n">bionetwork</span><span class="o">.</span><span class="n">spont_syns_times</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_syn_timestamps</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_syn_timestamps</span><span class="p">]</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_syn_timestamps</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_syn_timestamps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spike_trains</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">Vector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_syn_timestamps</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vecstim</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">VecStim</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vecstim</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spike_trains</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_precell_filter</span> <span class="o">=</span> <span class="n">bionetwork</span><span class="o">.</span><span class="n">spont_syns_filter</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_precell_filter</span><span class="p">,</span> <span class="nb">dict</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_matches_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src_node</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_precell_filter</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">src_node</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">src_node</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">!=</span> <span class="n">v</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="PointProcessCellSpontSyns.set_syn_connection"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.pointprocesscell.PointProcessCellSpontSyns.set_syn_connection">[docs]</a>    <span class="k">def</span> <span class="nf">set_syn_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">syn_params</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">dynamics_params</span>
+        <span class="n">nsyns</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">nsyns</span>
+        <span class="n">delay</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">delay</span>
+
+        <span class="n">syn_weight</span> <span class="o">=</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">syn_weight</span><span class="p">(</span><span class="n">src_node</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">edge_prop</span><span class="o">.</span><span class="n">preselected_targets</span><span class="p">:</span>
+            <span class="c1"># TODO: this is not very robust, need some other way</span>
+            <span class="n">syn_weight</span> <span class="o">*=</span> <span class="n">syn_params</span><span class="p">[</span><span class="s1">&#39;sign&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">nsyns</span>
+
+        <span class="n">src_gid</span> <span class="o">=</span> <span class="n">src_node</span><span class="o">.</span><span class="n">node_id</span>
+
+        <span class="k">if</span> <span class="n">stim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">src_gid</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">nc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">NetCon</span><span class="p">(</span><span class="n">stim</span><span class="o">.</span><span class="n">hobj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matches_filter</span><span class="p">(</span><span class="n">src_node</span><span class="p">):</span>
+            <span class="n">nc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">NetCon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vecstim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nc</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">gid_connect</span><span class="p">(</span><span class="n">src_gid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="p">)</span>
+            <span class="n">syn_weight</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="n">weight</span> <span class="o">=</span> <span class="n">syn_weight</span>
+        <span class="n">nc</span><span class="o">.</span><span class="n">weight</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">weight</span>
+        <span class="n">nc</span><span class="o">.</span><span class="n">delay</span> <span class="o">=</span> <span class="n">delay</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_netcons</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_src_gids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">src_gid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_src_nets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_type_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge_prop</span><span class="o">.</span><span class="n">edge_type_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_edge_props</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ConnectionStruct</span><span class="p">(</span><span class="n">edge_prop</span><span class="p">,</span> <span class="n">src_node</span><span class="p">,</span> <span class="n">nc</span><span class="p">,</span> <span class="n">stim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">))</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>
@@ -787,7 +846,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

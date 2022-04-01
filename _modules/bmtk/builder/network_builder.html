@@ -4,18 +4,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>bmtk.builder.network_builder &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="../../../_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/aibs_sphinx.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
   </head><body>
@@ -1002,7 +999,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">            cell. If using models from Allen Cell-Type Database then passing in the name of &lt;model&gt;_fit.json file will</span>
 <span class="sd">            apply the same model params to all N cells. If you want unique params for each cell pass in a dictionary</span>
 <span class="sd">            where each key has an associated list of size N::</span>
+
 <span class="sd">                dynamics_params={&#39;g_bar&#39;: [0.5, 0.2, ...], &#39;na_bar&#39;: [1.653e-5, 9.235e-6, ...]}</span>
+
 <span class="sd">        :param morphology: string, name of morphology swc file used for creating model_type=biophysical cells</span>
 <span class="sd">        :param x: list/array of size N floats for each cell&#39;s x-axis soma position</span>
 <span class="sd">        :param y: list/array of size N floats for each cell&#39;s y-axis soma position</span>
@@ -1089,7 +1088,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">        :param dynamics_params: A file-name or a dictionary of cell-dynamics parameter values used for generating the</span>
 <span class="sd">            cell, with parameters matching that of the parameters used to initialize NEST model_template cell. If you</span>
 <span class="sd">            want unique params for each cell pass in a dictionary where each key has an associated list of size N::</span>
+<span class="sd">                </span>
 <span class="sd">                dynamics_params={&#39;v_init&#39;: [-90, -85, ...], &#39;v_reset&#39;: [-20, -20, ...]}</span>
+<span class="sd">                </span>
 <span class="sd">        :param x: list/array of size N floats for each cell&#39;s x-axis position</span>
 <span class="sd">        :param y: list/array of size N floats for each cell&#39;s y-axis position</span>
 <span class="sd">        :param z: list/array of size N floats for each cell&#39;s z-axis position</span>
@@ -1239,7 +1240,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

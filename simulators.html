@@ -4,18 +4,16 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Simulation Engines &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="BioNet" href="bionet.html" />
@@ -623,13 +621,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="simulation-engines">
+  <section id="simulation-engines">
 <h1>Simulation Engines<a class="headerlink" href="#simulation-engines" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<div class="figure align-default">
+<figure class="align-default">
 <a class="reference internal image-reference" href="_images/bmtk_architecture_simulator_highlight.jpg"><img alt="_images/bmtk_architecture_simulator_highlight.jpg" src="_images/bmtk_architecture_simulator_highlight.jpg" style="width: 433.6px; height: 167.20000000000002px;" /></a>
-</div>
+</figure>
 <p>The <a class="reference internal" href="bmtk/bmtk.simulator.html#module-bmtk.simulator" title="bmtk.simulator"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bmtk.simulator</span></code></a> module contains classes for simulating a network under a variety of different simulators.
 BMTK doesn’t actually do the simulation itself, but processes the inputs and passes it off to an existing engine. At the
 moment there are four different simulation engines for running a network at different levels-of-resolution:</p>
@@ -643,9 +641,9 @@ moment there are four different simulation engines for running a network at diff
 </dl>
 </li>
 </ul>
-<div class="figure align-default">
+<figure class="align-default">
 <a class="reference internal image-reference" href="_images/brunel_comparisons.jpg"><img alt="_images/brunel_comparisons.jpg" src="_images/brunel_comparisons.jpg" style="width: 590.0px; height: 345.20000000000005px;" /></a>
-</div>
+</figure>
 <p>usually capture a neuron’s membrane potential trace (when the model_template supports it) that doesn’t isn’t possible on
 a population or filter-based level of resolution. And specific dynamics may occur at one level and not another. Thus it
 is important for the modeler to choose what levels they use. However running simulations across the different engines is
@@ -659,13 +657,13 @@ command-line script. The process for setting up and running a simulation usually
 <li><p>Modifying the configuration files with a text-editor</p></li>
 <li><p>Executing the simulation</p></li>
 </ol>
-<div class="section" id="the-simulation-environment">
+<section id="the-simulation-environment">
 <h2>The Simulation Environment<a class="headerlink" href="#the-simulation-environment" title="Permalink to this headline">¶</a></h2>
 <p>The standard BMTK directory structure for running one or more simulations will typically have all the necessary files
 contained within their own directory as such:</p>
-<div class="figure align-default">
+<figure class="align-default">
 <a class="reference internal image-reference" href="_images/bmtk_sim_env.png"><img alt="_images/bmtk_sim_env.png" src="_images/bmtk_sim_env.png" style="width: 289.2px; height: 282.0px;" /></a>
-</div>
+</figure>
 <ul class="simple">
 <li><dl class="simple">
 <dt><strong>network/</strong> - directory containing the SONATA Network files, either built using the <a class="reference external" href="./builder.html">NetworkBuilder</a></dt><dd><p>or provided to us from another source.</p>
@@ -690,7 +688,7 @@ contained within their own directory as such:</p>
 everything be contained within the same directory. For example different networks may share the same neuron/synaptic
 component files, thus it would make sense to move the <em>components</em> directory to a location that can be accessed by
 all simulations. As described below the location of the directories and files are specified in the configuration files.</p>
-<div class="section" id="creating-the-environment">
+<section id="creating-the-environment">
 <h3>Creating the environment<a class="headerlink" href="#creating-the-environment" title="Permalink to this headline">¶</a></h3>
 <p>A good way to create a working simulation directory is to copy an existing one and make modifications as needed. The
 <a class="reference external" href="https://github.com/AllenInstitute/bmtk">BMTK</a> and <a class="reference external" href="https://github.com/AllenInstitute/sonata">SONATA</a> github page
@@ -708,9 +706,9 @@ modify the configuration, using a text editor, as required. And finally the netw
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m bmtk.utils.sim_setup -h
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="configuration-files">
+</section>
+</section>
+<section id="configuration-files">
 <h2>Configuration Files<a class="headerlink" href="#configuration-files" title="Permalink to this headline">¶</a></h2>
 <p>Under most circumstances setting up and/or modifying a simulation involves adding and altering values within the JSON
 configuration files. The SONATA standard specifies two configuration files; a circuit_config.json containing information
@@ -719,81 +717,81 @@ allows modelers to combine the two configs into one (but other SONATA support so
 <p>The following breaks down the different sections found in the SONATA configs. See the
 <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md">SONATA documentation</a> for
 more details. Some simulation engines may allow for additional options that will be described in their respective docs.</p>
-<div class="section" id="manifest">
+<section id="manifest">
 <h3>manifest<a class="headerlink" href="#manifest" title="Permalink to this headline">¶</a></h3>
 <p>The “manifest” section is optional and allows modelers to define aliases within the config, which are signified by the
 dollar-sign like shell variables; eg <code class="docutils literal notranslate"><span class="pre">$VARNAME</span></code> or <code class="docutils literal notranslate"><span class="pre">${VARNAME}</span></code>. For example if the manifest contains the following:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-   <span class="nt">&quot;manifest&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;$COMP_DIR&quot;</span><span class="p">:</span> <span class="s2">&quot;/home/ahodgkin/workspace/shared/bionet/components&quot;</span><span class="p">:</span>
-   <span class="p">},</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;manifest&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;$COMP_DIR&quot;</span><span class="p">:</span><span class="w"> </span><span class="nt">&quot;/home/ahodgkin/workspace/shared/bionet/components&quot;</span><span class="p">:</span><span class="w"></span>
+<span class="w">   </span><span class="p">},</span><span class="w"></span>
 
-   <span class="nt">&quot;components&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;morphologies_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;$COMP_DIR/morphologies&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;synaptic_models_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;$COMP_DIR/synaptic_models&quot;</span>
-   <span class="p">}</span>
-<span class="p">}</span>
+<span class="w">   </span><span class="nt">&quot;components&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;morphologies_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$COMP_DIR/morphologies&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;synaptic_models_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$COMP_DIR/synaptic_models&quot;</span><span class="w"></span>
+<span class="w">   </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="networks">
+</section>
+<section id="networks">
 <h3>networks<a class="headerlink" href="#networks" title="Permalink to this headline">¶</a></h3>
 <p>contains locations of the node and edges files used to build the circuit, such that multiple node and edge files may be
 combined into one circuit. For example the following contains V1 network, with their recurrent connections
 (v1_v1_edges*) plus input from LGN nodes (lgn_v1_edges*)</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-   <span class="nt">&quot;networks&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;nodes&quot;</span><span class="p">:</span> <span class="p">[</span>
-      <span class="p">{</span>
-         <span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span> <span class="s2">&quot;$NETWORK_DIR/v1_nodes.h5&quot;</span><span class="p">,</span>
-         <span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span> <span class="s2">&quot;$NETWORK_DIR/v1_node_types.csv&quot;</span>
-      <span class="p">},</span>
-      <span class="p">{</span>
-         <span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span> <span class="s2">&quot;$NETWORK_DIR/lgn_nodes.h5&quot;</span><span class="p">,</span>
-         <span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span> <span class="s2">&quot;$NETWORK_DIR/lgn_node_types.csv&quot;</span>
-      <span class="p">}</span>
-      <span class="p">],</span>
-      <span class="nt">&quot;edges&quot;</span><span class="p">:</span> <span class="p">[</span>
-      <span class="p">{</span>
-         <span class="nt">&quot;edges_file&quot;</span><span class="p">:</span> <span class="s2">&quot;$NETWORK_DIR/v1_v1_edges.h5&quot;</span><span class="p">,</span>
-         <span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span> <span class="s2">&quot;$NETWORK_DIR/v1_v1_edge_types.csv&quot;</span>
-      <span class="p">},</span>
-      <span class="p">{</span>
-         <span class="nt">&quot;edges_file&quot;</span><span class="p">:</span> <span class="s2">&quot;$NETWORK_DIR/lgn_v1_edges.h5&quot;</span><span class="p">,</span>
-         <span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span> <span class="s2">&quot;$NETWORK_DIR/lgn_v1_edge_types.csv&quot;</span>
-      <span class="p">}</span>
-      <span class="p">]</span>
-   <span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;networks&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">      </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/v1_nodes.h5&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/v1_node_types.csv&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">},</span><span class="w"></span>
+<span class="w">      </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;nodes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/lgn_nodes.h5&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;node_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/lgn_node_types.csv&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="p">],</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;edges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">      </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/v1_v1_edges.h5&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/v1_v1_edge_types.csv&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">},</span><span class="w"></span>
+<span class="w">      </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/lgn_v1_edges.h5&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/lgn_v1_edge_types.csv&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="p">]</span><span class="w"></span>
+<span class="w">   </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>Changing the network can be done by removing or adding nodes or edges. BMTK also has the “enabled” option (not a part
 of SONATA)</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-   <span class="nt">&quot;edges_file&quot;</span><span class="p">:</span> <span class="s2">&quot;$NETWORK_DIR/lgn_v1_edges.h5&quot;</span><span class="p">,</span>
-   <span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span> <span class="s2">&quot;$NETWORK_DIR/lgn_v1_edge_types.csv&quot;</span><span class="p">,</span>
-   <span class="nt">&quot;enabled&quot;</span><span class="p">:</span> <span class="kc">false</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;edges_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/lgn_v1_edges.h5&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;edge_types_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$NETWORK_DIR/lgn_v1_edge_types.csv&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="components">
+</section>
+<section id="components">
 <h3>components<a class="headerlink" href="#components" title="Permalink to this headline">¶</a></h3>
 <p>links to external directories and files required to fully instantiate all the models and parameters of the network,
 see <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#tying-it-all-together---the-networkcircuit-config-file">SONATA circuit config documentation</a>
 for a full description</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-   <span class="nt">&quot;components&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;morphologies_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;./components/morphologies&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;synaptic_models_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;./components/synaptic_models&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;mechanisms_dir&quot;</span><span class="p">:</span><span class="s2">&quot;./components/mechanisms&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;point_neuron_models_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;./components/point_neuron_models_dir&quot;</span>
-   <span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;components&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;morphologies_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./components/morphologies&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;synaptic_models_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./components/synaptic_models&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;mechanisms_dir&quot;</span><span class="p">:</span><span class="s2">&quot;./components/mechanisms&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;point_neuron_models_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./components/point_neuron_models_dir&quot;</span><span class="w"></span>
+<span class="w">   </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="run">
+</section>
+<section id="run">
 <h3>run<a class="headerlink" href="#run" title="Permalink to this headline">¶</a></h3>
 <p>contains simulation parameters. most importantly are</p>
 <ul class="simple">
@@ -802,124 +800,124 @@ for a full description</p>
 <li><p>dt: time step parameter</p></li>
 <li><p>overwrite_output_dir: overwrites any previous ran results</p></li>
 </ul>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-   <span class="nt">&quot;run&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;tstop&quot;</span><span class="p">:</span> <span class="mf">3000.0</span><span class="p">,</span>
-      <span class="nt">&quot;dt&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
-      <span class="nt">&quot;overwrite_output_dir&quot;</span><span class="p">:</span> <span class="kc">true</span>
-   <span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;run&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;tstop&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">3000.0</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;dt&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;overwrite_output_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"></span>
+<span class="w">   </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="output">
+</section>
+<section id="output">
 <h3>output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h3>
 <p>Sections contain general information about where to output the results on the simulation. When the simulation starts
 the output_dir will be automatically created (and will overwrite existing output if overwrite_output_dir is true) as
 well as the log_file. By default BMTK will always record and save the spikes of all the nodes of the simulation
 (see “reports” section for how to change this) into the “spikes_file”.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-   <span class="nt">&quot;output&quot;</span><span class="p">:{</span>
-      <span class="nt">&quot;output_dir&quot;</span><span class="p">:</span> <span class="s2">&quot;./output&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;log_file&quot;</span><span class="p">:</span> <span class="s2">&quot;log.txt&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;spikes_file&quot;</span><span class="p">:</span> <span class="s2">&quot;spikes.h5&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;spikes_sort_order&quot;</span><span class="p">:</span> <span class="s2">&quot;time&quot;</span>
-   <span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;output&quot;</span><span class="p">:{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;output_dir&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./output&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;log_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;log.txt&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;spikes_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes.h5&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;spikes_sort_order&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;time&quot;</span><span class="w"></span>
+<span class="w">   </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="inputs">
+</section>
+<section id="inputs">
 <h3>inputs<a class="headerlink" href="#inputs" title="Permalink to this headline">¶</a></h3>
 <p>Contains different inputs that will drive the simulation. In BioNet and PointNet usually the inputs involves either
 spike trains injected into the network using external <strong>virtual</strong> nodes, or the use of current clamps. The following
 example does both:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-   <span class="nt">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;virtual_spikes&quot;</span><span class="p">:</span> <span class="p">{</span>
-         <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
-         <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;h5&quot;</span><span class="p">,</span>
-         <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span> <span class="s2">&quot;LGN&quot;</span><span class="p">},</span>
-         <span class="nt">&quot;input_file&quot;</span><span class="p">:</span> <span class="s2">&quot;$INPUT_DIR/lgn_spikes.h5&quot;</span>
-      <span class="p">},</span>
-      <span class="nt">&quot;current_clamp&quot;</span><span class="p">:</span> <span class="p">{</span>
-         <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
-         <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
-         <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;node_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">100</span><span class="p">]},</span>
-         <span class="nt">&quot;amp&quot;</span><span class="p">:</span> <span class="mf">0.1500</span><span class="p">,</span>
-         <span class="nt">&quot;delay&quot;</span><span class="p">:</span> <span class="mf">500.0</span><span class="p">,</span>
-         <span class="nt">&quot;duration&quot;</span><span class="p">:</span> <span class="mf">500.0</span>
-      <span class="p">}</span>
-   <span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;virtual_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;h5&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGN&quot;</span><span class="p">},</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$INPUT_DIR/lgn_spikes.h5&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">},</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;current_clamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;node_ids&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">]},</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1500</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="w">   </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">input_type</span></code> and <code class="docutils literal notranslate"><span class="pre">module</span></code> parameters for each input describes the method and type of input. The <code class="docutils literal notranslate"><span class="pre">node_set</span></code>,
 described below, filters the cells for which the stimulus will be applied too. Other types of stimuli are specific to
 only certain engines; like extracellular potentiation in BioNet or movies in FilterNet.</p>
-</div>
-<div class="section" id="reports">
+</section>
+<section id="reports">
 <h3>reports<a class="headerlink" href="#reports" title="Permalink to this headline">¶</a></h3>
 <p>Contains information about what variables will be recorded during the simulation. For example to record membrane
 potential in all the biophysically detailed cells in the V1 population:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-   <span class="nt">&quot;reports&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;membrane_potential&quot;</span><span class="p">:</span> <span class="p">{</span>
-         <span class="nt">&quot;cells&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span> <span class="s2">&quot;V1&quot;</span><span class="p">,</span> <span class="nt">&quot;model_type&quot;</span><span class="p">:</span> <span class="s2">&quot;biophysical&quot;</span><span class="p">},</span>
-         <span class="nt">&quot;variable_name&quot;</span><span class="p">:</span> <span class="s2">&quot;v&quot;</span><span class="p">,</span>
-         <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;membrane_report&quot;</span><span class="p">,</span>
-         <span class="nt">&quot;file_name&quot;</span><span class="p">:</span> <span class="s2">&quot;cell_vars.h5&quot;</span><span class="p">,</span>
-         <span class="nt">&quot;sections&quot;</span><span class="p">:</span> <span class="s2">&quot;soma&quot;</span>
-      <span class="p">}</span>
-   <span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;reports&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;membrane_potential&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;V1&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;model_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;biophysical&quot;</span><span class="p">},</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;variable_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;membrane_report&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;file_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cell_vars.h5&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;sections&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;soma&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="w">   </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>By default BMTK will record the spike-trains of all non-virtual cells as specified in the <code class="docutils literal notranslate"><span class="pre">outputs</span></code> section, so it is not
 necessary to create a <code class="docutils literal notranslate"><span class="pre">&quot;module&quot;:</span> <span class="pre">&quot;spike_trians&quot;</span></code> report. But you may if, for example, you only want to record for
 part of the full simulation time or record from a subset of all cells.</p>
-</div>
-<div class="section" id="node-sets">
+</section>
+<section id="node-sets">
 <h3>node_sets<a class="headerlink" href="#node-sets" title="Permalink to this headline">¶</a></h3>
 <p><a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#node-sets-file">node_sets</a>
 are filters for specific nodes within the circuit, mainly used to determine which cells to apply an “input” or a
 “report”. For example say we want to split the spike-train output of V1’s pvalb and pyramidal cells into different
 reports</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-   <span class="nt">&quot;node_sets&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;pvalb_cells&quot;</span><span class="p">:</span> <span class="p">{</span>
-         <span class="nt">&quot;population&quot;</span><span class="p">:</span> <span class="s2">&quot;V1&quot;</span><span class="p">,</span>
-         <span class="nt">&quot;cell_type&quot;</span><span class="p">:</span> <span class="s2">&quot;pvalb&quot;</span>
-      <span class="p">},</span>
-      <span class="nt">&quot;pyr_cells&quot;</span><span class="p">::</span> <span class="p">{</span>
-         <span class="nt">&quot;population&quot;</span><span class="p">:</span> <span class="s2">&quot;V1&quot;</span><span class="p">,</span>
-         <span class="nt">&quot;cell_type&quot;</span><span class="p">:</span> <span class="s2">&quot;pyramidal&quot;</span>
-      <span class="p">},</span>
-   <span class="p">},</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">   </span><span class="nt">&quot;node_sets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;pvalb_cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;V1&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;cell_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pvalb&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">},</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;pyr_cells&quot;</span><span class="p">::</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;V1&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;cell_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pyramidal&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">},</span><span class="w"></span>
+<span class="w">   </span><span class="p">},</span><span class="w"></span>
 
-   <span class="nt">&quot;reports&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;pvalb_spikes&quot;</span><span class="p">:</span> <span class="p">{</span>
-         <span class="nt">&quot;cells&quot;</span><span class="p">:</span> <span class="s2">&quot;pvalb_cells&quot;</span><span class="p">,</span>
-         <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;spikes_report&quot;</span><span class="p">,</span>
-         <span class="nt">&quot;file_name&quot;</span><span class="p">:</span> <span class="s2">&quot;pvalb_spikes.h5&quot;</span><span class="p">,</span>
-         <span class="nt">&quot;sort_by&quot;</span><span class="p">:</span> <span class="s2">&quot;node_id&quot;</span>
-      <span class="p">},</span>
-      <span class="nt">&quot;pyr_spikes&quot;</span><span class="p">:</span> <span class="p">{</span>
-         <span class="nt">&quot;cells&quot;</span><span class="p">:</span> <span class="s2">&quot;pyr_cells&quot;</span><span class="p">,</span>
-         <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;spikes_report&quot;</span><span class="p">,</span>
-         <span class="nt">&quot;file_name&quot;</span><span class="p">:</span> <span class="s2">&quot;pyr_spikes.h5&quot;</span><span class="p">,</span>
-         <span class="nt">&quot;sort_by&quot;</span><span class="p">:</span> <span class="s2">&quot;node_id&quot;</span>
-      <span class="p">}</span>
-   <span class="p">}</span>
-<span class="p">}</span>
+<span class="w">   </span><span class="nt">&quot;reports&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;pvalb_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pvalb_cells&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes_report&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;file_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pvalb_spikes.h5&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;sort_by&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;node_id&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">},</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;pyr_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pyr_cells&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes_report&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;file_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pyr_spikes.h5&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="nt">&quot;sort_by&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;node_id&quot;</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="w">   </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">node_sets</span></code> may also be a reference to an external json file.</p>
 <p>If the node_set value is just a name, ie <code class="docutils literal notranslate"><span class="pre">&quot;cells&quot;:</span> <span class="pre">&quot;V1&quot;</span></code> then it will automatically include cells in the “V1”
 population. You may also reference individual nodes by their “node_id” - <code class="docutils literal notranslate"><span class="pre">&quot;cells&quot;:</span> <span class="pre">[0,</span> <span class="pre">1,</span> <span class="pre">2]</span></code></p>
-</div>
-</div>
-<div class="section" id="running-a-simulation">
+</section>
+</section>
+<section id="running-a-simulation">
 <h2>Running a Simulation<a class="headerlink" href="#running-a-simulation" title="Permalink to this headline">¶</a></h2>
 <p>To run a simulation, open a command line and execute the run_&lt;simulation&gt;.py script:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python run_simulation.py simulation_config.json
@@ -934,8 +932,8 @@ population. You may also reference individual nodes by their “node_id” - <co
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ mpirun -np &lt;N&gt; nrniv -mpi -python run_simulation.py simulation_config.json
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -984,7 +982,7 @@ population. You may also reference individual nodes by their “node_id” - <co
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

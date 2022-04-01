@@ -4,18 +4,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>bmtk.simulator.pointnet.pointnetwork &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="../../../../_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/aibs_sphinx.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
-    <script src="../../../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
   </head><body>
@@ -648,6 +645,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">nest</span>
+
 <span class="kn">from</span> <span class="nn">six</span> <span class="kn">import</span> <span class="n">string_types</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -655,7 +653,39 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">from</span> <span class="nn">bmtk.simulator.pointnet.sonata_adaptors</span> <span class="kn">import</span> <span class="n">PointNodeAdaptor</span><span class="p">,</span> <span class="n">PointEdgeAdaptor</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.pointnet</span> <span class="kn">import</span> <span class="n">pyfunction_cache</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.pointnet.io_tools</span> <span class="kn">import</span> <span class="n">io</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.pointnet.nest_utils</span> <span class="kn">import</span> <span class="n">nest_version</span>
 <span class="kn">from</span> <span class="nn">.gids</span> <span class="kn">import</span> <span class="n">GidPool</span>
+
+
+<div class="viewcode-block" id="set_spikes_nest2"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointnetwork.set_spikes_nest2">[docs]</a><span class="k">def</span> <span class="nf">set_spikes_nest2</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="n">nest_obj</span><span class="p">,</span> <span class="n">spike_trains</span><span class="p">):</span>
+    <span class="n">st</span> <span class="o">=</span> <span class="n">spike_trains</span><span class="o">.</span><span class="n">get_times</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">st</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">st</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">st</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">st</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">st</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">):</span>
+        <span class="c1"># NRN will fail if VecStim contains negative spike-time, throw an exception and log info for user</span>
+        <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;spike train </span><span class="si">{}</span><span class="s1"> contains negative/zero time, unable to run virtual cell in NEST&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">st</span><span class="p">))</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="n">nest</span><span class="o">.</span><span class="n">SetStatus</span><span class="p">([</span><span class="n">nest_obj</span><span class="p">],</span> <span class="p">{</span><span class="s1">&#39;spike_times&#39;</span><span class="p">:</span> <span class="n">st</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="set_spikes_nest3"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointnetwork.set_spikes_nest3">[docs]</a><span class="k">def</span> <span class="nf">set_spikes_nest3</span><span class="p">(</span><span class="n">node_id</span><span class="p">,</span> <span class="n">nest_obj</span><span class="p">,</span> <span class="n">spike_trains</span><span class="p">):</span>
+    <span class="n">st</span> <span class="o">=</span> <span class="n">spike_trains</span><span class="o">.</span><span class="n">get_times</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">st</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">st</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">st</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">st</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">st</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">):</span>
+        <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;spike train </span><span class="si">{}</span><span class="s1"> contains negative/zero time, unable to run virtual cell in NEST&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">st</span><span class="p">))</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="n">nest</span><span class="o">.</span><span class="n">SetStatus</span><span class="p">(</span><span class="n">nest_obj</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;spike_times&#39;</span><span class="p">:</span> <span class="n">st</span><span class="p">})</span></div>
+
+
+<span class="k">if</span> <span class="n">nest_version</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+    <span class="n">set_spikes</span> <span class="o">=</span> <span class="n">set_spikes_nest3</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">set_spikes</span> <span class="o">=</span> <span class="n">set_spikes_nest2</span>
 
 
 <div class="viewcode-block" id="PointNetwork"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointnetwork.PointNetwork">[docs]</a><span class="k">class</span> <span class="nc">PointNetwork</span><span class="p">(</span><span class="n">SimNetwork</span><span class="p">):</span>
@@ -739,38 +769,18 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">gid_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gid_map</span>
 
             <span class="n">gid_map</span><span class="o">.</span><span class="n">create_pool</span><span class="p">(</span><span class="n">pop_name</span><span class="p">)</span>
-            <span class="c1"># nid2nest_map = {}</span>
-            <span class="c1"># nest2nid_map = {}</span>
             <span class="k">if</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">internal_nodes_only</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">():</span>
                     <span class="n">node</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
                     <span class="n">gid_map</span><span class="o">.</span><span class="n">add_nestids</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">pop_name</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">node_ids</span><span class="p">,</span> <span class="n">nest_ids</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">nest_ids</span><span class="p">)</span>
-                    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">                    for nid, gid, nest_id in zip(node.node_ids, node.gids, node.nest_ids):</span>
-<span class="sd">                        # gid_map.add(name=pop_name, node_id=nid, gid=nest_id)</span>
-
-<span class="sd">                        self._nestid2gid[nest_id] = gid</span>
-<span class="sd">                        self._gid2nestid[gid] = nest_id</span>
-<span class="sd">                        nid2nest_map[nid] = nest_id</span>
-<span class="sd">                        nest2nid_map[nest_id] = nid</span>
-<span class="sd">                    &#39;&#39;&#39;</span>
 
             <span class="k">elif</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">mixed_nodes</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">():</span>
                     <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">model_type</span> <span class="o">!=</span> <span class="s1">&#39;virtual&#39;</span><span class="p">:</span>
                         <span class="n">node</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
-                        <span class="n">gid_map</span><span class="o">.</span><span class="n">add_nestids</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">pop_name</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">node_ids</span><span class="p">,</span> <span class="n">nest_ids</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">nest_ids</span><span class="p">)</span>
-                        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">                        for nid, gid, nest_id in zip(node.node_ids, node.gids, node.nest_ids):</span>
-<span class="sd">                            gid_map.add(name=pop_name, node_id=nid, gid=nest_id)</span>
-<span class="sd">                            nid2nest_map[nid] = nest_id</span>
-<span class="sd">                            nest2nid_map[nest_id] = nid</span>
-<span class="sd">                        &#39;&#39;&#39;</span></div>
+                        <span class="n">gid_map</span><span class="o">.</span><span class="n">add_nestids</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">pop_name</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">node_ids</span><span class="p">,</span> <span class="n">nest_ids</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">nest_ids</span><span class="p">)</span></div>
 
-            <span class="c1">#self._nest_id_map[node_pop.name] = nid2nest_map</span>
-            <span class="c1">#self._nestid2nodeid_map[node_pop.name] = nest2nid_map</span>
-
-<div class="viewcode-block" id="PointNetwork.build_recurrent_edges"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointnetwork.PointNetwork.build_recurrent_edges">[docs]</a>    <span class="k">def</span> <span class="nf">build_recurrent_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PointNetwork.build_recurrent_edges"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointnetwork.PointNetwork.build_recurrent_edges">[docs]</a>    <span class="k">def</span> <span class="nf">build_recurrent_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force_resolution</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="n">recurrent_edge_pops</span> <span class="o">=</span> <span class="p">[</span><span class="n">ep</span> <span class="k">for</span> <span class="n">ep</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_edge_populations</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">ep</span><span class="o">.</span><span class="n">virtual_connections</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">recurrent_edge_pops</span><span class="p">:</span>
             <span class="k">return</span>
@@ -779,7 +789,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edge_pop</span><span class="o">.</span><span class="n">get_edges</span><span class="p">():</span>
                 <span class="n">nest_srcs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gid_map</span><span class="o">.</span><span class="n">get_nestids</span><span class="p">(</span><span class="n">edge_pop</span><span class="o">.</span><span class="n">source_nodes</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">source_node_ids</span><span class="p">)</span>
                 <span class="n">nest_trgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gid_map</span><span class="o">.</span><span class="n">get_nestids</span><span class="p">(</span><span class="n">edge_pop</span><span class="o">.</span><span class="n">target_nodes</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">target_node_ids</span><span class="p">)</span>
-                <span class="n">nest</span><span class="o">.</span><span class="n">Connect</span><span class="p">(</span><span class="n">nest_srcs</span><span class="p">,</span> <span class="n">nest_trgs</span><span class="p">,</span> <span class="n">conn_spec</span><span class="o">=</span><span class="s1">&#39;one_to_one&#39;</span><span class="p">,</span> <span class="n">syn_spec</span><span class="o">=</span><span class="n">edge</span><span class="o">.</span><span class="n">nest_params</span><span class="p">)</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_nest_connect</span><span class="p">(</span><span class="n">nest_srcs</span><span class="p">,</span> <span class="n">nest_trgs</span><span class="p">,</span> <span class="n">conn_spec</span><span class="o">=</span><span class="s1">&#39;one_to_one&#39;</span><span class="p">,</span> <span class="n">syn_spec</span><span class="o">=</span><span class="n">edge</span><span class="o">.</span><span class="n">nest_params</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PointNetwork.find_edges"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.pointnet.html#bmtk.simulator.pointnet.pointnetwork.PointNetwork.find_edges">[docs]</a>    <span class="k">def</span> <span class="nf">find_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># TODO: Move to parent</span>
@@ -804,16 +814,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">virt_node_map</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="k">if</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">virtual_nodes_only</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">():</span>
-                    <span class="n">nest_ids</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="s1">&#39;spike_generator&#39;</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">sg_params</span><span class="p">)</span>
-                    <span class="n">virt_gid_map</span><span class="o">.</span><span class="n">add_nestids</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">node_pop</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">nest_ids</span><span class="o">=</span><span class="n">nest_ids</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">node_ids</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">nest_id</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">node_ids</span><span class="p">,</span> <span class="n">nest_ids</span><span class="p">):</span>
-                        <span class="n">virt_node_map</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">nest_id</span>
+                    <span class="n">nest_objs</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="s1">&#39;spike_generator&#39;</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">sg_params</span><span class="p">)</span>
+                    <span class="n">nest_ids</span> <span class="o">=</span> <span class="n">nest_objs</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">if</span> <span class="n">nest_version</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">nest_objs</span>
 
-                        <span class="n">st</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">spike_trains</span><span class="o">.</span><span class="n">get_times</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">))</span>
-                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">st</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                            <span class="k">continue</span>
-                        <span class="n">st</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
-                        <span class="n">nest</span><span class="o">.</span><span class="n">SetStatus</span><span class="p">([</span><span class="n">nest_id</span><span class="p">],</span> <span class="p">{</span><span class="s1">&#39;spike_times&#39;</span><span class="p">:</span> <span class="n">st</span><span class="p">})</span>
+                    <span class="n">virt_gid_map</span><span class="o">.</span><span class="n">add_nestids</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">node_pop</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">nest_ids</span><span class="o">=</span><span class="n">nest_ids</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">node_ids</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">nest_obj</span><span class="p">,</span> <span class="n">nest_id</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">node_ids</span><span class="p">,</span> <span class="n">nest_objs</span><span class="p">,</span> <span class="n">nest_ids</span><span class="p">):</span>
+                        <span class="n">virt_node_map</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">nest_id</span>
+                        <span class="n">set_spikes</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span> <span class="n">nest_obj</span><span class="o">=</span><span class="n">nest_obj</span><span class="p">,</span> <span class="n">spike_trains</span><span class="o">=</span><span class="n">spike_trains</span><span class="p">)</span>
 
             <span class="k">elif</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">mixed_nodes</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">get_nodes</span><span class="p">():</span>
@@ -823,7 +830,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                     <span class="n">nest_ids</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="s1">&#39;spike_generator&#39;</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">,</span> <span class="n">sg_params</span><span class="p">)</span>
                     <span class="k">for</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">nest_id</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">node_ids</span><span class="p">,</span> <span class="n">nest_ids</span><span class="p">):</span>
                         <span class="n">virt_node_map</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">nest_id</span>
-                        <span class="n">nest</span><span class="o">.</span><span class="n">SetStatus</span><span class="p">([</span><span class="n">nest_id</span><span class="p">],</span> <span class="p">{</span><span class="s1">&#39;spike_times&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">spike_trains</span><span class="o">.</span><span class="n">get_times</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">))})</span>
+                        <span class="n">set_spikes</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span> <span class="n">nest_id</span><span class="o">=</span><span class="n">nest_id</span><span class="p">,</span> <span class="n">spike_trains</span><span class="o">=</span><span class="n">spike_trains</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_virtual_ids_map</span><span class="p">[</span><span class="n">node_pop</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">virt_node_map</span>
 
@@ -833,7 +840,28 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">edge_pop</span><span class="o">.</span><span class="n">get_edges</span><span class="p">():</span>
                     <span class="n">nest_trgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gid_map</span><span class="o">.</span><span class="n">get_nestids</span><span class="p">(</span><span class="n">edge_pop</span><span class="o">.</span><span class="n">target_nodes</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">target_node_ids</span><span class="p">)</span>
                     <span class="n">nest_srcs</span> <span class="o">=</span> <span class="n">virt_gid_map</span><span class="o">.</span><span class="n">get_nestids</span><span class="p">(</span><span class="n">edge_pop</span><span class="o">.</span><span class="n">source_nodes</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">source_node_ids</span><span class="p">)</span>
-                    <span class="n">nest</span><span class="o">.</span><span class="n">Connect</span><span class="p">(</span><span class="n">nest_srcs</span><span class="p">,</span> <span class="n">nest_trgs</span><span class="p">,</span> <span class="n">conn_spec</span><span class="o">=</span><span class="s1">&#39;one_to_one&#39;</span><span class="p">,</span> <span class="n">syn_spec</span><span class="o">=</span><span class="n">edge</span><span class="o">.</span><span class="n">nest_params</span><span class="p">)</span></div></div>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_nest_connect</span><span class="p">(</span><span class="n">nest_srcs</span><span class="p">,</span> <span class="n">nest_trgs</span><span class="p">,</span> <span class="n">conn_spec</span><span class="o">=</span><span class="s1">&#39;one_to_one&#39;</span><span class="p">,</span> <span class="n">syn_spec</span><span class="o">=</span><span class="n">edge</span><span class="o">.</span><span class="n">nest_params</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_nest_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nest_srcs</span><span class="p">,</span> <span class="n">nest_trgs</span><span class="p">,</span> <span class="n">conn_spec</span><span class="o">=</span><span class="s1">&#39;one_to_one&#39;</span><span class="p">,</span> <span class="n">syn_spec</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calls nest.Connect but with some extra error logging and exception handling.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">nest</span><span class="o">.</span><span class="n">Connect</span><span class="p">(</span><span class="n">nest_srcs</span><span class="p">,</span> <span class="n">nest_trgs</span><span class="p">,</span> <span class="n">conn_spec</span><span class="o">=</span><span class="n">conn_spec</span><span class="p">,</span> <span class="n">syn_spec</span><span class="o">=</span><span class="n">syn_spec</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="n">nest</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">NESTErrors</span><span class="o">.</span><span class="n">BadDelay</span> <span class="k">as</span> <span class="n">bde</span><span class="p">:</span>
+            <span class="c1"># An occuring issue is when dt &gt; delay, add some extra messaging in log to help users fix problem.</span>
+            <span class="n">res_kernel</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">GetKernelStatus</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;resolution&#39;</span><span class="p">,</span> <span class="s1">&#39;NaN&#39;</span><span class="p">)</span>
+            <span class="n">delay_edges</span> <span class="o">=</span> <span class="n">syn_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;delay&#39;</span><span class="p">,</span> <span class="s1">&#39;NaN&#39;</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;synaptic &quot;delay&quot; value in edges (</span><span class="si">{}</span><span class="s1">) is not compatable with simulator resolution/&quot;dt&quot; (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">delay_edges</span><span class="p">,</span> <span class="n">res_kernel</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bde</span><span class="o">.</span><span class="n">errorname</span><span class="p">,</span> <span class="n">bde</span><span class="o">.</span><span class="n">errormessage</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">raise</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># Record exception to log file.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">log_error</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">raise</span></div>
 </pre></div>
 
             <div class="clearer"></div>
@@ -882,7 +910,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

@@ -4,18 +4,16 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>bmtk.utils.io package &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="../_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/aibs_sphinx.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="bmtk.utils.reports package" href="bmtk.utils.reports.html" />
@@ -623,67 +621,67 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="bmtk-utils-io-package">
+  <section id="bmtk-utils-io-package">
 <h1>bmtk.utils.io package<a class="headerlink" href="#bmtk-utils-io-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="submodules">
+<section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-bmtk.utils.io.cell_vars">
+</section>
+<section id="module-bmtk.utils.io.cell_vars">
 <span id="bmtk-utils-io-cell-vars-module"></span><h2>bmtk.utils.io.cell_vars module<a class="headerlink" href="#module-bmtk.utils.io.cell_vars" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="bmtk.utils.io.cell_vars.CellVarRecorder">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.io.cell_vars.</code><code class="sig-name descname">CellVarRecorder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_name</span></em>, <em class="sig-param"><span class="n">tmp_dir</span></em>, <em class="sig-param"><span class="n">variables</span></em>, <em class="sig-param"><span class="n">buffer_data</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">mpi_rank</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">mpi_size</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.cell_vars.CellVarRecorder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.io.cell_vars.</span></span><span class="sig-name descname"><span class="pre">CellVarRecorder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmp_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpi_rank</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpi_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Used to save cell membrane variables (V, Ca2+, etc) to the described hdf5 format.</p>
 <p>For parallel simulations this class will write to a seperate tmp file on each rank, then use the merge method to
 combine the results. This is less efficent, but doesn’t require the user to install mpi4py and build h5py in
-parallel mode. For better performance use the CellVarRecorderParrallel class instead.</p>
+parallel mode. For better performance use the CellVarRecorderParallel class instead.</p>
 <dl class="py class">
-<dt id="bmtk.utils.io.cell_vars.CellVarRecorder.DataTable">
-<em class="property">class </em><code class="sig-name descname">DataTable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">var_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorder.DataTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.DataTable" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.cell_vars.CellVarRecorder.DataTable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DataTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorder.DataTable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.DataTable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A small struct to keep track of different <a href="#id1"><span class="problematic" id="id2">*</span></a>/data (and buffer) tables</p>
+<p>A small struct to keep track of different */data (and buffer) tables</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.utils.io.cell_vars.CellVarRecorder.add_cell">
-<code class="sig-name descname">add_cell</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gid</span></em>, <em class="sig-param"><span class="n">sec_list</span></em>, <em class="sig-param"><span class="n">seg_list</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">map_attrs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorder.add_cell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.add_cell" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.cell_vars.CellVarRecorder.add_cell">
+<span class="sig-name descname"><span class="pre">add_cell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sec_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seg_list</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">map_attrs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorder.add_cell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.add_cell" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.utils.io.cell_vars.CellVarRecorder.close">
-<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorder.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.close" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.cell_vars.CellVarRecorder.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorder.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.io.cell_vars.CellVarRecorder.dt">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dt</span></span><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.dt" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.utils.io.cell_vars.CellVarRecorder.dt">
-<em class="property">property </em><code class="sig-name descname">dt</code><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.dt" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.utils.io.cell_vars.CellVarRecorder.flush">
-<code class="sig-name descname">flush</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorder.flush"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.flush" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.cell_vars.CellVarRecorder.flush">
+<span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorder.flush"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.flush" title="Permalink to this definition">¶</a></dt>
 <dd><p>Move data from memory to dataset</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.utils.io.cell_vars.CellVarRecorder.initialize">
-<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n_steps</span></em>, <em class="sig-param"><span class="n">buffer_size</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorder.initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.initialize" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.cell_vars.CellVarRecorder.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_steps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorder.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.initialize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.io.cell_vars.CellVarRecorder.is_initialized">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_initialized</span></span><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.is_initialized" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.utils.io.cell_vars.CellVarRecorder.is_initialized">
-<em class="property">property </em><code class="sig-name descname">is_initialized</code><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.is_initialized" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.cell_vars.CellVarRecorder.merge">
+<span class="sig-name descname"><span class="pre">merge</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorder.merge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.merge" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.utils.io.cell_vars.CellVarRecorder.merge">
-<code class="sig-name descname">merge</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorder.merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.merge" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.utils.io.cell_vars.CellVarRecorder.record_cell">
-<code class="sig-name descname">record_cell</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gid</span></em>, <em class="sig-param"><span class="n">var_name</span></em>, <em class="sig-param"><span class="n">seg_vals</span></em>, <em class="sig-param"><span class="n">tstep</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorder.record_cell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.record_cell" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.cell_vars.CellVarRecorder.record_cell">
+<span class="sig-name descname"><span class="pre">record_cell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seg_vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstep</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorder.record_cell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.record_cell" title="Permalink to this definition">¶</a></dt>
 <dd><p>Record cell parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -698,8 +696,8 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 </dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.utils.io.cell_vars.CellVarRecorder.record_cell_block">
-<code class="sig-name descname">record_cell_block</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gid</span></em>, <em class="sig-param"><span class="n">var_name</span></em>, <em class="sig-param"><span class="n">seg_vals</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorder.record_cell_block"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.record_cell_block" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.cell_vars.CellVarRecorder.record_cell_block">
+<span class="sig-name descname"><span class="pre">record_cell_block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seg_vals</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorder.record_cell_block"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.record_cell_block" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save cell parameters one block at a time</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -712,289 +710,289 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.io.cell_vars.CellVarRecorder.tstart">
-<em class="property">property </em><code class="sig-name descname">tstart</code><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.tstart" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.io.cell_vars.CellVarRecorder.tstart">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tstart</span></span><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.tstart" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.io.cell_vars.CellVarRecorder.tstop">
-<em class="property">property </em><code class="sig-name descname">tstop</code><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.tstop" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.io.cell_vars.CellVarRecorder.tstop">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tstop</span></span><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorder.tstop" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="bmtk.utils.io.cell_vars.CellVarRecorderParallel">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.io.cell_vars.</code><code class="sig-name descname">CellVarRecorderParallel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_name</span></em>, <em class="sig-param"><span class="n">tmp_dir</span></em>, <em class="sig-param"><span class="n">variables</span></em>, <em class="sig-param"><span class="n">buffer_data</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorderParallel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorderParallel" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.cell_vars.CellVarRecorderParallel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.io.cell_vars.</span></span><span class="sig-name descname"><span class="pre">CellVarRecorderParallel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tmp_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorderParallel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorderParallel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.cell_vars.CellVarRecorder" title="bmtk.utils.io.cell_vars.CellVarRecorder"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.cell_vars.CellVarRecorder</span></code></a></p>
 <p>Unlike the parent, this take advantage of parallel h5py to writting to the results file across different ranks.</p>
 <dl class="py method">
-<dt id="bmtk.utils.io.cell_vars.CellVarRecorderParallel.merge">
-<code class="sig-name descname">merge</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorderParallel.merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorderParallel.merge" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.cell_vars.CellVarRecorderParallel.merge">
+<span class="sig-name descname"><span class="pre">merge</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/cell_vars.html#CellVarRecorderParallel.merge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.cell_vars.CellVarRecorderParallel.merge" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-bmtk.utils.io.firing_rates">
+</section>
+<section id="module-bmtk.utils.io.firing_rates">
 <span id="bmtk-utils-io-firing-rates-module"></span><h2>bmtk.utils.io.firing_rates module<a class="headerlink" href="#module-bmtk.utils.io.firing_rates" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="bmtk.utils.io.firing_rates.RatesInput">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.io.firing_rates.</code><code class="sig-name descname">RatesInput</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/firing_rates.html#RatesInput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.firing_rates.RatesInput" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.firing_rates.RatesInput">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.io.firing_rates.</span></span><span class="sig-name descname"><span class="pre">RatesInput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/firing_rates.html#RatesInput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.firing_rates.RatesInput" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
-<dt id="bmtk.utils.io.firing_rates.RatesInput.get_rate">
-<code class="sig-name descname">get_rate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gid</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/firing_rates.html#RatesInput.get_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.firing_rates.RatesInput.get_rate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.firing_rates.RatesInput.get_rate">
+<span class="sig-name descname"><span class="pre">get_rate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/firing_rates.html#RatesInput.get_rate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.firing_rates.RatesInput.get_rate" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.io.firing_rates.RatesInput.populations">
-<em class="property">property </em><code class="sig-name descname">populations</code><a class="headerlink" href="#bmtk.utils.io.firing_rates.RatesInput.populations" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.io.firing_rates.RatesInput.populations">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">populations</span></span><a class="headerlink" href="#bmtk.utils.io.firing_rates.RatesInput.populations" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="bmtk.utils.io.firing_rates.RatesWriter">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.io.firing_rates.</code><code class="sig-name descname">RatesWriter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/firing_rates.html#RatesWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.firing_rates.RatesWriter" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.firing_rates.RatesWriter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.io.firing_rates.</span></span><span class="sig-name descname"><span class="pre">RatesWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/firing_rates.html#RatesWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.firing_rates.RatesWriter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
-<dt id="bmtk.utils.io.firing_rates.RatesWriter.add_rates">
-<code class="sig-name descname">add_rates</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gid</span></em>, <em class="sig-param"><span class="n">times</span></em>, <em class="sig-param"><span class="n">rates</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/firing_rates.html#RatesWriter.add_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.firing_rates.RatesWriter.add_rates" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.firing_rates.RatesWriter.add_rates">
+<span class="sig-name descname"><span class="pre">add_rates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rates</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/firing_rates.html#RatesWriter.add_rates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.firing_rates.RatesWriter.add_rates" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.utils.io.firing_rates.RatesWriter.to_csv">
-<code class="sig-name descname">to_csv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/firing_rates.html#RatesWriter.to_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.firing_rates.RatesWriter.to_csv" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.firing_rates.RatesWriter.to_csv">
+<span class="sig-name descname"><span class="pre">to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/firing_rates.html#RatesWriter.to_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.firing_rates.RatesWriter.to_csv" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.utils.io.firing_rates.RatesWriter.to_h5">
-<code class="sig-name descname">to_h5</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/firing_rates.html#RatesWriter.to_h5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.firing_rates.RatesWriter.to_h5" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.firing_rates.RatesWriter.to_h5">
+<span class="sig-name descname"><span class="pre">to_h5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/firing_rates.html#RatesWriter.to_h5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.firing_rates.RatesWriter.to_h5" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-bmtk.utils.io.ioutils">
+</section>
+<section id="module-bmtk.utils.io.ioutils">
 <span id="bmtk-utils-io-ioutils-module"></span><h2>bmtk.utils.io.ioutils module<a class="headerlink" href="#module-bmtk.utils.io.ioutils" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="bmtk.utils.io.ioutils.BMTKWorldComm">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.io.ioutils.</code><code class="sig-name descname">BMTKWorldComm</code><a class="reference internal" href="../_modules/bmtk/utils/io/ioutils.html#BMTKWorldComm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.ioutils.BMTKWorldComm" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.ioutils.BMTKWorldComm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.io.ioutils.</span></span><span class="sig-name descname"><span class="pre">BMTKWorldComm</span></span><a class="reference internal" href="../_modules/bmtk/utils/io/ioutils.html#BMTKWorldComm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.ioutils.BMTKWorldComm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt id="bmtk.utils.io.ioutils.BMTKWorldComm.MPI_rank">
-<em class="property">property </em><code class="sig-name descname">MPI_rank</code><a class="headerlink" href="#bmtk.utils.io.ioutils.BMTKWorldComm.MPI_rank" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.io.ioutils.BMTKWorldComm.MPI_rank">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MPI_rank</span></span><a class="headerlink" href="#bmtk.utils.io.ioutils.BMTKWorldComm.MPI_rank" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.io.ioutils.BMTKWorldComm.MPI_size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MPI_size</span></span><a class="headerlink" href="#bmtk.utils.io.ioutils.BMTKWorldComm.MPI_size" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.utils.io.ioutils.BMTKWorldComm.MPI_size">
-<em class="property">property </em><code class="sig-name descname">MPI_size</code><a class="headerlink" href="#bmtk.utils.io.ioutils.BMTKWorldComm.MPI_size" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.ioutils.BMTKWorldComm.barrier">
+<span class="sig-name descname"><span class="pre">barrier</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/ioutils.html#BMTKWorldComm.barrier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.ioutils.BMTKWorldComm.barrier" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.io.ioutils.BMTKWorldComm.barrier">
-<code class="sig-name descname">barrier</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/ioutils.html#BMTKWorldComm.barrier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.ioutils.BMTKWorldComm.barrier" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.utils.io.ioutils.BMTKWorldComm.comm">
-<em class="property">property </em><code class="sig-name descname">comm</code><a class="headerlink" href="#bmtk.utils.io.ioutils.BMTKWorldComm.comm" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.io.ioutils.BMTKWorldComm.comm">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">comm</span></span><a class="headerlink" href="#bmtk.utils.io.ioutils.BMTKWorldComm.comm" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
-<dt id="bmtk.utils.io.ioutils.set_world_comm">
-<code class="sig-prename descclassname">bmtk.utils.io.ioutils.</code><code class="sig-name descname">set_world_comm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">comm</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/ioutils.html#set_world_comm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.ioutils.set_world_comm" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.ioutils.set_world_comm">
+<span class="sig-prename descclassname"><span class="pre">bmtk.utils.io.ioutils.</span></span><span class="sig-name descname"><span class="pre">set_world_comm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comm</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/ioutils.html#set_world_comm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.ioutils.set_world_comm" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</div>
-<div class="section" id="module-bmtk.utils.io.spike_trains">
+</section>
+<section id="module-bmtk.utils.io.spike_trains">
 <span id="bmtk-utils-io-spike-trains-module"></span><h2>bmtk.utils.io.spike_trains module<a class="headerlink" href="#module-bmtk.utils.io.spike_trains" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="bmtk.utils.io.spike_trains.DFIndexedGIDs">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.io.spike_trains.</code><code class="sig-name descname">DFIndexedGIDs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">spikes_input_h5</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#DFIndexedGIDs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.DFIndexedGIDs" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.DFIndexedGIDs">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.io.spike_trains.</span></span><span class="sig-name descname"><span class="pre">DFIndexedGIDs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spikes_input_h5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#DFIndexedGIDs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.DFIndexedGIDs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.spike_trains.SONATAIndexer" title="bmtk.utils.io.spike_trains.SONATAIndexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.spike_trains.SONATAIndexer</span></code></a></p>
 <dl class="py method">
-<dt id="bmtk.utils.io.spike_trains.DFIndexedGIDs.get_spikes">
-<code class="sig-name descname">get_spikes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gid</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#DFIndexedGIDs.get_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.DFIndexedGIDs.get_spikes" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.DFIndexedGIDs.get_spikes">
+<span class="sig-name descname"><span class="pre">get_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#DFIndexedGIDs.get_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.DFIndexedGIDs.get_spikes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="bmtk.utils.io.spike_trains.DictIndexedGIDs">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.io.spike_trains.</code><code class="sig-name descname">DictIndexedGIDs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">spikes_input_h5</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#DictIndexedGIDs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.DictIndexedGIDs" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.DictIndexedGIDs">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.io.spike_trains.</span></span><span class="sig-name descname"><span class="pre">DictIndexedGIDs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spikes_input_h5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#DictIndexedGIDs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.DictIndexedGIDs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.spike_trains.SONATAIndexer" title="bmtk.utils.io.spike_trains.SONATAIndexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.spike_trains.SONATAIndexer</span></code></a></p>
 <dl class="py method">
-<dt id="bmtk.utils.io.spike_trains.DictIndexedGIDs.get_spikes">
-<code class="sig-name descname">get_spikes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gid</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#DictIndexedGIDs.get_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.DictIndexedGIDs.get_spikes" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.DictIndexedGIDs.get_spikes">
+<span class="sig-name descname"><span class="pre">get_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#DictIndexedGIDs.get_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.DictIndexedGIDs.get_spikes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="bmtk.utils.io.spike_trains.HDF5IndexedGIDs">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.io.spike_trains.</code><code class="sig-name descname">HDF5IndexedGIDs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">spikes_input_h5</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#HDF5IndexedGIDs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.HDF5IndexedGIDs" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.HDF5IndexedGIDs">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.io.spike_trains.</span></span><span class="sig-name descname"><span class="pre">HDF5IndexedGIDs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spikes_input_h5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#HDF5IndexedGIDs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.HDF5IndexedGIDs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.spike_trains.SONATAIndexer" title="bmtk.utils.io.spike_trains.SONATAIndexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.spike_trains.SONATAIndexer</span></code></a></p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="bmtk.utils.io.spike_trains.PoissonSpikesGenerator">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.io.spike_trains.</code><code class="sig-name descname">PoissonSpikesGenerator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gids</span></em>, <em class="sig-param"><span class="n">firing_rate</span></em>, <em class="sig-param"><span class="n">tstart</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">tstop</span><span class="o">=</span><span class="default_value">1000.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#PoissonSpikesGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.PoissonSpikesGenerator" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.PoissonSpikesGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.io.spike_trains.</span></span><span class="sig-name descname"><span class="pre">PoissonSpikesGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">firing_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstart</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tstop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#PoissonSpikesGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.PoissonSpikesGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
-<dt id="bmtk.utils.io.spike_trains.PoissonSpikesGenerator.to_hdf5">
-<code class="sig-name descname">to_hdf5</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_name</span></em>, <em class="sig-param"><span class="n">sort_order</span><span class="o">=</span><span class="default_value">'gid'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#PoissonSpikesGenerator.to_hdf5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.PoissonSpikesGenerator.to_hdf5" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.PoissonSpikesGenerator.to_hdf5">
+<span class="sig-name descname"><span class="pre">to_hdf5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gid'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#PoissonSpikesGenerator.to_hdf5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.PoissonSpikesGenerator.to_hdf5" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="bmtk.utils.io.spike_trains.SONATAIndexer">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.io.spike_trains.</code><code class="sig-name descname">SONATAIndexer</code><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SONATAIndexer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SONATAIndexer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.SONATAIndexer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.io.spike_trains.</span></span><span class="sig-name descname"><span class="pre">SONATAIndexer</span></span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SONATAIndexer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SONATAIndexer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
-<dt id="bmtk.utils.io.spike_trains.SONATAIndexer.get_spikes">
-<code class="sig-name descname">get_spikes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gid</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SONATAIndexer.get_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SONATAIndexer.get_spikes" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.SONATAIndexer.get_spikes">
+<span class="sig-name descname"><span class="pre">get_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SONATAIndexer.get_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SONATAIndexer.get_spikes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="bmtk.utils.io.spike_trains.SpikeTrainWriter">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.io.spike_trains.</code><code class="sig-name descname">SpikeTrainWriter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tmp_dir</span></em>, <em class="sig-param"><span class="n">mpi_rank</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">mpi_size</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.SpikeTrainWriter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.io.spike_trains.</span></span><span class="sig-name descname"><span class="pre">SpikeTrainWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmp_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpi_rank</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpi_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py class">
-<dt id="bmtk.utils.io.spike_trains.SpikeTrainWriter.TmpFileMetadata">
-<em class="property">class </em><code class="sig-name descname">TmpFileMetadata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_name</span></em>, <em class="sig-param"><span class="n">sort_order</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter.TmpFileMetadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter.TmpFileMetadata" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.SpikeTrainWriter.TmpFileMetadata">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TmpFileMetadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter.TmpFileMetadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter.TmpFileMetadata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.utils.io.spike_trains.SpikeTrainWriter.add_spike">
-<code class="sig-name descname">add_spike</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">gid</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter.add_spike"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter.add_spike" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.SpikeTrainWriter.add_spike">
+<span class="sig-name descname"><span class="pre">add_spike</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter.add_spike"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter.add_spike" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.utils.io.spike_trains.SpikeTrainWriter.add_spikes">
-<code class="sig-name descname">add_spikes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em>, <em class="sig-param"><span class="n">gid</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter.add_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter.add_spikes" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.SpikeTrainWriter.add_spikes">
+<span class="sig-name descname"><span class="pre">add_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter.add_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter.add_spikes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.utils.io.spike_trains.SpikeTrainWriter.add_spikes_file">
-<code class="sig-name descname">add_spikes_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_name</span></em>, <em class="sig-param"><span class="n">sort_order</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter.add_spikes_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter.add_spikes_file" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.SpikeTrainWriter.add_spikes_file">
+<span class="sig-name descname"><span class="pre">add_spikes_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter.add_spikes_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter.add_spikes_file" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.utils.io.spike_trains.SpikeTrainWriter.close">
-<code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter.close" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.SpikeTrainWriter.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter.close" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.utils.io.spike_trains.SpikeTrainWriter.close_tmp_file">
-<code class="sig-name descname">close_tmp_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter.close_tmp_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter.close_tmp_file" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.SpikeTrainWriter.close_tmp_file">
+<span class="sig-name descname"><span class="pre">close_tmp_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter.close_tmp_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter.close_tmp_file" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.utils.io.spike_trains.SpikeTrainWriter.flush">
-<code class="sig-name descname">flush</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter.flush"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter.flush" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.SpikeTrainWriter.flush">
+<span class="sig-name descname"><span class="pre">flush</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter.flush"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter.flush" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.utils.io.spike_trains.SpikeTrainWriter.to_csv">
-<code class="sig-name descname">to_csv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">csv_file</span></em>, <em class="sig-param"><span class="n">sort_order</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">gid_map</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter.to_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter.to_csv" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.SpikeTrainWriter.to_csv">
+<span class="sig-name descname"><span class="pre">to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csv_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter.to_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter.to_csv" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.utils.io.spike_trains.SpikeTrainWriter.to_hdf5">
-<code class="sig-name descname">to_hdf5</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hdf5_file</span></em>, <em class="sig-param"><span class="n">sort_order</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">gid_map</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter.to_hdf5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter.to_hdf5" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.SpikeTrainWriter.to_hdf5">
+<span class="sig-name descname"><span class="pre">to_hdf5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hdf5_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter.to_hdf5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter.to_hdf5" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="bmtk.utils.io.spike_trains.SpikeTrainWriter.to_nwb">
-<code class="sig-name descname">to_nwb</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nwb_file</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter.to_nwb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter.to_nwb" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="bmtk.utils.io.spike_trains.SpikesInput">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.io.spike_trains.</code><code class="sig-name descname">SpikesInput</code><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInput" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt id="bmtk.utils.io.spike_trains.SpikesInput.get_spikes">
-<code class="sig-name descname">get_spikes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gid</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInput.get_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInput.get_spikes" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="bmtk.utils.io.spike_trains.SpikesInput.load">
-<em class="property">static </em><code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">module</span></em>, <em class="sig-param"><span class="n">input_type</span></em>, <em class="sig-param"><span class="n">params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInput.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInput.load" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.SpikeTrainWriter.to_nwb">
+<span class="sig-name descname"><span class="pre">to_nwb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nwb_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikeTrainWriter.to_nwb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikeTrainWriter.to_nwb" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="bmtk.utils.io.spike_trains.SpikesInputCSV">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.io.spike_trains.</code><code class="sig-name descname">SpikesInputCSV</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">module</span></em>, <em class="sig-param"><span class="n">input_type</span></em>, <em class="sig-param"><span class="n">params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInputCSV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputCSV" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.SpikesInput">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.io.spike_trains.</span></span><span class="sig-name descname"><span class="pre">SpikesInput</span></span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInput" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.SpikesInput.get_spikes">
+<span class="sig-name descname"><span class="pre">get_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInput.get_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInput.get_spikes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.SpikesInput.load">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInput.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInput.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.SpikesInputCSV">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.io.spike_trains.</span></span><span class="sig-name descname"><span class="pre">SpikesInputCSV</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInputCSV"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputCSV" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.spike_trains.SpikesInput" title="bmtk.utils.io.spike_trains.SpikesInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.spike_trains.SpikesInput</span></code></a></p>
 <dl class="py method">
-<dt id="bmtk.utils.io.spike_trains.SpikesInputCSV.get_spikes">
-<code class="sig-name descname">get_spikes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gid</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInputCSV.get_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputCSV.get_spikes" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.SpikesInputCSV.get_spikes">
+<span class="sig-name descname"><span class="pre">get_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInputCSV.get_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputCSV.get_spikes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="bmtk.utils.io.spike_trains.SpikesInputH5">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.io.spike_trains.</code><code class="sig-name descname">SpikesInputH5</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">module</span></em>, <em class="sig-param"><span class="n">input_type</span></em>, <em class="sig-param"><span class="n">params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInputH5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputH5" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.SpikesInputH5">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.io.spike_trains.</span></span><span class="sig-name descname"><span class="pre">SpikesInputH5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInputH5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputH5" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.spike_trains.SpikesInput" title="bmtk.utils.io.spike_trains.SpikesInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.spike_trains.SpikesInput</span></code></a></p>
 <dl class="py method">
-<dt id="bmtk.utils.io.spike_trains.SpikesInputH5.get_spikes">
-<code class="sig-name descname">get_spikes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gid</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInputH5.get_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputH5.get_spikes" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.SpikesInputH5.get_spikes">
+<span class="sig-name descname"><span class="pre">get_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInputH5.get_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputH5.get_spikes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.io.spike_trains.SpikesInputH5.gids">
-<em class="property">property </em><code class="sig-name descname">gids</code><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputH5.gids" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.SpikesInputH5.gids">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gids</span></span><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputH5.gids" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt id="bmtk.utils.io.spike_trains.SpikesInputH5.timestamps">
-<em class="property">property </em><code class="sig-name descname">timestamps</code><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputH5.timestamps" title="Permalink to this definition">¶</a></dt>
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.SpikesInputH5.timestamps">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">timestamps</span></span><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputH5.timestamps" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="bmtk.utils.io.spike_trains.SpikesInputNWBv1">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.io.spike_trains.</code><code class="sig-name descname">SpikesInputNWBv1</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">module</span></em>, <em class="sig-param"><span class="n">input_type</span></em>, <em class="sig-param"><span class="n">params</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInputNWBv1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputNWBv1" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.SpikesInputNWBv1">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.io.spike_trains.</span></span><span class="sig-name descname"><span class="pre">SpikesInputNWBv1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInputNWBv1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputNWBv1" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.spike_trains.SpikesInput" title="bmtk.utils.io.spike_trains.SpikesInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.spike_trains.SpikesInput</span></code></a></p>
 <dl class="py method">
-<dt id="bmtk.utils.io.spike_trains.SpikesInputNWBv1.get_spikes">
-<code class="sig-name descname">get_spikes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gid</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInputNWBv1.get_spikes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputNWBv1.get_spikes" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.SpikesInputNWBv1.get_spikes">
+<span class="sig-name descname"><span class="pre">get_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#SpikesInputNWBv1.get_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.SpikesInputNWBv1.get_spikes" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="bmtk.utils.io.spike_trains.UnindexedGIDs">
-<em class="property">class </em><code class="sig-prename descclassname">bmtk.utils.io.spike_trains.</code><code class="sig-name descname">UnindexedGIDs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">spikes_input_h5</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#UnindexedGIDs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.UnindexedGIDs" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.spike_trains.UnindexedGIDs">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.utils.io.spike_trains.</span></span><span class="sig-name descname"><span class="pre">UnindexedGIDs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spikes_input_h5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io/spike_trains.html#UnindexedGIDs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.spike_trains.UnindexedGIDs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#bmtk.utils.io.spike_trains.SONATAIndexer" title="bmtk.utils.io.spike_trains.SONATAIndexer"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.utils.io.spike_trains.SONATAIndexer</span></code></a></p>
 </dd></dl>
 
-</div>
-<div class="section" id="module-bmtk.utils.io">
+</section>
+<section id="module-bmtk.utils.io">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.utils.io" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
-<dt id="bmtk.utils.io.log_warning">
-<code class="sig-prename descclassname">bmtk.utils.io.</code><code class="sig-name descname">log_warning</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io.html#log_warning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.utils.io.log_warning" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="bmtk.utils.io.log_warning">
+<span class="sig-prename descclassname"><span class="pre">bmtk.utils.io.</span></span><span class="sig-name descname"><span class="pre">log_warning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/utils/io.html#log_warning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.utils.io.log_warning" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -1043,7 +1041,7 @@ parallel mode. For better performance use the CellVarRecorderParrallel class ins
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

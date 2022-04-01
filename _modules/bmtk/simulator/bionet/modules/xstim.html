@@ -4,18 +4,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>bmtk.simulator.bionet.modules.xstim &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/aibs_sphinx.css" />
+    <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
     <script src="../../../../../_static/jquery.js"></script>
     <script src="../../../../../_static/underscore.js"></script>
     <script src="../../../../../_static/doctools.js"></script>
-    <script src="../../../../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
   </head><body>
@@ -650,8 +647,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_local_gids</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fih</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="c1">#def __set_extracellular_mechanism(self):</span>
-    <span class="c1">#    for gid in self._local_gids:</span>
+    <span class="c1"># def __set_extracellular_mechanism(self):</span>
+    <span class="c1">#     for gid in self._local_gids:</span>
 
 <div class="viewcode-block" id="XStimMod.initialize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.xstim.XStimMod.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cells</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -671,7 +668,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">def</span> <span class="nf">set_pointers</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_gids</span><span class="p">:</span>
                 <span class="n">cell</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">get_cell_gid</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span>
-                <span class="c1">#cell = sim.net.get_local_cell(gid)</span>
+                <span class="c1"># cell = sim.net.get_local_cell(gid)</span>
                 <span class="n">cell</span><span class="o">.</span><span class="n">set_ptr2e_extracellular</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_fih</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">h</span><span class="o">.</span><span class="n">FInitializeHandler</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">set_pointers</span><span class="p">)</span></div>
@@ -696,7 +693,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="n">stimelectrode_position_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">positions_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">elmesh_files</span> <span class="o">=</span> <span class="n">stimelectrode_position_df</span><span class="p">[</span><span class="s1">&#39;electrode_mesh_file&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s1">&#39;electrode_mesh_file&#39;</span> <span class="ow">in</span> <span class="n">stimelectrode_position_df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">elmesh_files</span> <span class="o">=</span> <span class="n">stimelectrode_position_df</span><span class="p">[</span><span class="s1">&#39;electrode_mesh_file&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">elmesh_files</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elpos</span> <span class="o">=</span> <span class="n">stimelectrode_position_df</span><span class="p">[[</span><span class="s1">&#39;pos_x&#39;</span><span class="p">,</span> <span class="s1">&#39;pos_y&#39;</span><span class="p">,</span> <span class="s1">&#39;pos_z&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">values</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elrot</span> <span class="o">=</span> <span class="n">stimelectrode_position_df</span><span class="p">[[</span><span class="s1">&#39;rotation_x&#39;</span><span class="p">,</span> <span class="s1">&#39;rotation_y&#39;</span><span class="p">,</span> <span class="s1">&#39;rotation_z&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elnsites</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elpos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># Number of electrodes in electrode file</span>
@@ -712,23 +712,30 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">place_the_electrodes</span><span class="p">()</span>
 
 <div class="viewcode-block" id="StimXElectrode.read_electrode_mesh"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.xstim.StimXElectrode.read_electrode_mesh">[docs]</a>    <span class="k">def</span> <span class="nf">read_electrode_mesh</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">el_counter</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">mesh_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elmesh_files</span><span class="p">:</span>
-            <span class="n">file_path</span> <span class="o">=</span> <span class="n">mesh_file</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">mesh_file</span><span class="p">)</span> <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mesh_files_dir</span><span class="p">,</span> <span class="n">mesh_file</span><span class="p">)</span>
-            <span class="n">mesh</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
-            <span class="n">mesh_size</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">el_mesh_size</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mesh_size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">elmesh_files</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># if electrode_mesh_file is missing then we still treat the electrode as a mesh on a grid of size 1 with</span>
+            <span class="c1"># single point at the (0, 0, 0) relative to electrode position</span>
+            <span class="k">for</span> <span class="n">el_counter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elnsites</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">el_mesh_size</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">el_mesh</span><span class="p">[</span><span class="n">el_counter</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">el_mesh</span><span class="p">[</span><span class="n">el_counter</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="n">mesh_size</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">el_mesh</span><span class="p">[</span><span class="n">el_counter</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">[</span><span class="s1">&#39;x_pos&#39;</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">el_mesh</span><span class="p">[</span><span class="n">el_counter</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">[</span><span class="s1">&#39;y_pos&#39;</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">el_mesh</span><span class="p">[</span><span class="n">el_counter</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">[</span><span class="s1">&#39;z_pos&#39;</span><span class="p">]</span>
-            <span class="n">el_counter</span> <span class="o">+=</span> <span class="mi">1</span></div>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Each electrode has an associate mesh file</span>
+            <span class="n">el_counter</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">mesh_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elmesh_files</span><span class="p">:</span>
+                <span class="n">file_path</span> <span class="o">=</span> <span class="n">mesh_file</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">mesh_file</span><span class="p">)</span> <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mesh_files_dir</span><span class="p">,</span> <span class="n">mesh_file</span><span class="p">)</span>
+                <span class="n">mesh</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+                <span class="n">mesh_size</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">el_mesh_size</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mesh_size</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">el_mesh</span><span class="p">[</span><span class="n">el_counter</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="n">mesh_size</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">el_mesh</span><span class="p">[</span><span class="n">el_counter</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">[</span><span class="s1">&#39;x_pos&#39;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">el_mesh</span><span class="p">[</span><span class="n">el_counter</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">[</span><span class="s1">&#39;y_pos&#39;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">el_mesh</span><span class="p">[</span><span class="n">el_counter</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">mesh</span><span class="p">[</span><span class="s1">&#39;z_pos&#39;</span><span class="p">]</span>
+                <span class="n">el_counter</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
 <div class="viewcode-block" id="StimXElectrode.place_the_electrodes"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.xstim.StimXElectrode.place_the_electrodes">[docs]</a>    <span class="k">def</span> <span class="nf">place_the_electrodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
         <span class="n">transfer_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">elnsites</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-
         <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elnsites</span><span class="p">):</span>
             <span class="n">mesh_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">el_mesh</span><span class="p">[</span><span class="n">el</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
             <span class="n">transfer_vector</span><span class="p">[</span><span class="n">el</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elpos</span><span class="p">[:,</span> <span class="n">el</span><span class="p">]</span> <span class="o">-</span> <span class="n">mesh_mean</span><span class="p">[:]</span>
@@ -752,17 +759,13 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="bp">self</span><span class="o">.</span><span class="n">el_mesh</span><span class="p">[</span><span class="n">el</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_mesh</span></div>
 
 <div class="viewcode-block" id="StimXElectrode.set_transfer_resistance"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.xstim.StimXElectrode.set_transfer_resistance">[docs]</a>    <span class="k">def</span> <span class="nf">set_transfer_resistance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gid</span><span class="p">,</span> <span class="n">seg_coords</span><span class="p">):</span>
-
         <span class="n">rho</span> <span class="o">=</span> <span class="mf">300.0</span>  <span class="c1"># ohm cm</span>
         <span class="n">r05</span> <span class="o">=</span> <span class="n">seg_coords</span><span class="p">[</span><span class="s1">&#39;p05&#39;</span><span class="p">]</span>
         <span class="n">nseg</span> <span class="o">=</span> <span class="n">r05</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">cell_map</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">elnsites</span><span class="p">,</span> <span class="n">nseg</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">moves</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elnsites</span><span class="p">):</span>
-
             <span class="n">mesh_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">el_mesh_size</span><span class="p">[</span><span class="n">el</span><span class="p">]</span>
-
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mesh_size</span><span class="p">):</span>
-
                 <span class="n">rel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">el_mesh</span><span class="p">[</span><span class="n">el</span><span class="p">][:,</span> <span class="n">k</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
                 <span class="n">rel_05</span> <span class="o">=</span> <span class="n">rel</span> <span class="o">-</span> <span class="n">r05</span>
                 <span class="n">r2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ij,ij-&gt;j&#39;</span><span class="p">,</span> <span class="n">rel_05</span><span class="p">,</span> <span class="n">rel_05</span><span class="p">)</span>
@@ -833,7 +836,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

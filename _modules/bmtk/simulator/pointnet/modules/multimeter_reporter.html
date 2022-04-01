@@ -4,18 +4,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>bmtk.simulator.pointnet.modules.multimeter_reporter &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="../../../../../_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/aibs_sphinx.css" />
+    <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
     <script src="../../../../../_static/jquery.js"></script>
     <script src="../../../../../_static/underscore.js"></script>
     <script src="../../../../../_static/doctools.js"></script>
-    <script src="../../../../../_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" /> 
   </head><body>
@@ -626,8 +623,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">bmtk.utils.reports</span> <span class="kn">import</span> <span class="n">CompartmentReport</span>
-<span class="c1"># from bmtk.utils.io.cell_vars import CellVarRecorder</span>
 <span class="kn">from</span> <span class="nn">bmtk.simulator.pointnet.io_tools</span> <span class="kn">import</span> <span class="n">io</span>
+<span class="kn">from</span> <span class="nn">bmtk.simulator.pointnet.nest_utils</span> <span class="kn">import</span> <span class="n">nest_version</span>
 
 <span class="kn">import</span> <span class="nn">nest</span>
 
@@ -639,6 +636,53 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
     <span class="n">MPI_RANK</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">N_HOSTS</span> <span class="o">=</span> <span class="mi">1</span>
+
+
+<div class="viewcode-block" id="create_multimeter_nest2"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.multimeter_reporter.create_multimeter_nest2">[docs]</a><span class="k">def</span> <span class="nf">create_multimeter_nest2</span><span class="p">(</span><span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">nest</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span>
+        <span class="s1">&#39;multimeter&#39;</span><span class="p">,</span>
+        <span class="n">params</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">tstart</span><span class="p">,</span>
+            <span class="s1">&#39;stop&#39;</span><span class="p">:</span> <span class="n">tstop</span><span class="p">,</span>
+            <span class="s1">&#39;to_file&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;to_memory&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s1">&#39;withtime&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s1">&#39;record_from&#39;</span><span class="p">:</span> <span class="n">variable_name</span><span class="p">,</span>
+            <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="n">label</span>
+        <span class="p">}</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="create_multimeter_nest3"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.multimeter_reporter.create_multimeter_nest3">[docs]</a><span class="k">def</span> <span class="nf">create_multimeter_nest3</span><span class="p">(</span><span class="n">tstart</span><span class="p">,</span> <span class="n">tstop</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">nest</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span>
+        <span class="s1">&#39;multimeter&#39;</span><span class="p">,</span>
+        <span class="n">params</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="n">tstart</span><span class="p">,</span>
+            <span class="s1">&#39;stop&#39;</span><span class="p">:</span> <span class="n">tstop</span><span class="p">,</span>
+            <span class="s1">&#39;record_to&#39;</span><span class="p">:</span> <span class="s1">&#39;ascii&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;record_from&#39;</span><span class="p">:</span> <span class="n">variable_name</span><span class="p">,</span>
+            <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="n">label</span>
+        <span class="p">}</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="read_dat_nest2"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.multimeter_reporter.read_dat_nest2">[docs]</a><span class="k">def</span> <span class="nf">read_dat_nest2</span><span class="p">(</span><span class="n">dat_file</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">dat_file</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;nest_id&#39;</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">variable_name</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="read_dat_nest3"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.multimeter_reporter.read_dat_nest3">[docs]</a><span class="k">def</span> <span class="nf">read_dat_nest3</span><span class="p">(</span><span class="n">dat_file</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">):</span>
+    <span class="n">report_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">dat_file</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s1">&#39;#&#39;</span><span class="p">)</span>
+    <span class="n">report_df</span> <span class="o">=</span> <span class="n">report_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;sender&#39;</span><span class="p">:</span> <span class="s1">&#39;nest_id&#39;</span><span class="p">,</span> <span class="s1">&#39;time_ms&#39;</span><span class="p">:</span> <span class="s1">&#39;time&#39;</span><span class="p">})</span>
+    <span class="k">return</span> <span class="n">report_df</span></div>
+
+
+
+<span class="k">if</span> <span class="n">nest_version</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+    <span class="n">create_multimeter</span> <span class="o">=</span> <span class="n">create_multimeter_nest3</span>
+    <span class="n">read_dat</span> <span class="o">=</span> <span class="n">read_dat_nest3</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">create_multimeter</span> <span class="o">=</span> <span class="n">create_multimeter_nest2</span>
+    <span class="n">read_dat</span> <span class="o">=</span> <span class="n">read_dat_nest2</span>
 
 
 <div class="viewcode-block" id="MultimeterMod"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.multimeter_reporter.MultimeterMod">[docs]</a><span class="k">class</span> <span class="nc">MultimeterMod</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -657,7 +701,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">        :param delete_dat: True to delete the .dat files created by NEST (default True)</span>
 <span class="sd">        :param opt_params:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_output_dir</span> <span class="o">=</span> <span class="n">tmp_dir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_file_name</span> <span class="o">=</span> <span class="n">file_name</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span> <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_output_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_variable_name</span> <span class="o">=</span> <span class="n">variable_name</span>
@@ -668,8 +711,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_to_h5</span> <span class="o">=</span> <span class="n">to_h5</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_delete_dat</span> <span class="o">=</span> <span class="n">delete_dat</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_gids</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_nest_ids</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gids</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># global ids will be the NEST ids assigned to each cell</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_multimeter</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_population</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -681,20 +723,16 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div class="viewcode-block" id="MultimeterMod.initialize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.multimeter_reporter.MultimeterMod.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
         <span class="n">node_set</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">get_node_set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_node_set</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_gids</span> <span class="o">=</span>  <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">node_set</span><span class="o">.</span><span class="n">gids</span><span class="p">()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">node_set</span><span class="o">.</span><span class="n">gids</span><span class="p">()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gids</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_population</span> <span class="o">=</span> <span class="n">node_set</span><span class="o">.</span><span class="n">population_names</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_nest_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">gid_map</span><span class="o">.</span><span class="n">get_gids</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_population</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_gids</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tstart</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tstart</span> <span class="ow">or</span> <span class="n">sim</span><span class="o">.</span><span class="n">tstart</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tstop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tstop</span> <span class="ow">or</span> <span class="n">sim</span><span class="o">.</span><span class="n">tstop</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_interval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interval</span> <span class="ow">or</span> <span class="n">sim</span><span class="o">.</span><span class="n">dt</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_multimeter</span> <span class="o">=</span> <span class="n">nest</span><span class="o">.</span><span class="n">Create</span><span class="p">(</span><span class="s1">&#39;multimeter&#39;</span><span class="p">,</span>
-                                       <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;interval&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interval</span><span class="p">,</span> <span class="s1">&#39;start&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tstart</span><span class="p">,</span> <span class="s1">&#39;stop&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tstop</span><span class="p">,</span>
-                                               <span class="s1">&#39;to_file&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;to_memory&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-                                               <span class="s1">&#39;withtime&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                                               <span class="s1">&#39;record_from&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variable_name</span><span class="p">,</span>
-                                               <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__output_label</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_multimeter</span> <span class="o">=</span> <span class="n">create_multimeter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tstart</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tstop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variable_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__output_label</span><span class="p">)</span>
 
-        <span class="n">nest</span><span class="o">.</span><span class="n">Connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_multimeter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nest_ids</span><span class="p">)</span></div>
+        <span class="n">nest</span><span class="o">.</span><span class="n">SetStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_multimeter</span><span class="p">,</span> <span class="s1">&#39;interval&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interval</span><span class="p">)</span>
+        <span class="n">nest</span><span class="o">.</span><span class="n">Connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_multimeter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gids</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MultimeterMod.finalize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.pointnet.modules.html#bmtk.simulator.pointnet.modules.multimeter_reporter.MultimeterMod.finalize">[docs]</a>    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
         <span class="n">io</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>  <span class="c1"># Makes sure all nodes finish, but not sure if actually required by nest</span>
@@ -717,18 +755,22 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                                                            <span class="n">mpi_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_h5</span> <span class="ow">and</span> <span class="n">MPI_RANK</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                         <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gids</span><span class="p">:</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">add_cell</span><span class="p">(</span><span class="n">gid</span><span class="p">,</span> <span class="n">element_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">element_pos</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">],</span>
-                                                        <span class="n">population</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_population</span><span class="p">)</span>
+                            <span class="n">pop_id</span> <span class="o">=</span> <span class="n">gid_map</span><span class="o">.</span><span class="n">get_pool_id</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">add_cell</span><span class="p">(</span><span class="n">pop_id</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">element_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">element_pos</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">],</span>
+                                                        <span class="n">population</span><span class="o">=</span><span class="n">pop_id</span><span class="o">.</span><span class="n">population</span><span class="p">)</span>
 
                     <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
 
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span>
 
-            <span class="c1"># gid_map = sim.net._nestid2gid</span>
             <span class="n">gid_map</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">gid_map</span>
             <span class="k">for</span> <span class="n">nest_file</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">*&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__output_label</span><span class="p">)):</span>
-                <span class="n">report_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">nest_file</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;nest_id&#39;</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_variable_name</span><span class="p">,</span>
-                                        <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="c1"># report_df = pd.read_csv(nest_file, index_col=False, names=[&#39;nest_id&#39;, &#39;time&#39;]+self._variable_name,</span>
+                <span class="c1">#                         sep=&#39;\t&#39;, comment=&#39;#&#39;)</span>
+                <span class="n">report_df</span> <span class="o">=</span> <span class="n">read_dat</span><span class="p">(</span><span class="n">nest_file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variable_name</span><span class="p">)</span>
+                <span class="c1"># print(report_df)</span>
+                <span class="c1"># exit()</span>
+
                 <span class="k">for</span> <span class="n">grp_id</span><span class="p">,</span> <span class="n">grp_df</span> <span class="ow">in</span> <span class="n">report_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;nest_id&#39;</span><span class="p">):</span>
                     <span class="n">pop_id</span> <span class="o">=</span> <span class="n">gid_map</span><span class="o">.</span><span class="n">get_pool_id</span><span class="p">(</span><span class="n">grp_id</span><span class="p">)</span>
                     <span class="n">vr</span> <span class="o">=</span> <span class="n">get_var_recorder</span><span class="p">(</span><span class="n">grp_df</span><span class="p">)</span>
@@ -791,7 +833,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

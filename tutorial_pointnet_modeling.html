@@ -4,18 +4,18 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Tutorial 5: Point-Neuron Network Models (with PointNet) &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
-    <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Tutorial 6: Population Level Modeling (with PopNet)" href="tutorial_population_modeling.html" />
@@ -628,21 +628,35 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 /* CSS for nbsphinx extension */
 
 /* remove conflicting styling from Sphinx themes */
-div.nbinput.container,
-div.nbinput.container div.prompt,
-div.nbinput.container div.input_area,
-div.nbinput.container div[class*=highlight],
-div.nbinput.container div[class*=highlight] pre,
-div.nboutput.container,
-div.nboutput.container div.prompt,
-div.nboutput.container div.output_area,
-div.nboutput.container div[class*=highlight],
-div.nboutput.container div[class*=highlight] pre {
-    background: none;
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
     border: none;
-    padding: 0 0;
+    padding: 0;
     margin: 0;
     box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
 }
 
 /* avoid gaps between output lines */
@@ -743,7 +757,7 @@ div.nboutput.container div.output_area {
 div.nbinput.container div.input_area {
     border: 1px solid #e0e0e0;
     border-radius: 2px;
-    background: #f5f5f5;
+    /*background: #f5f5f5;*/
 }
 
 /* override MathJax center alignment in output cells */
@@ -809,6 +823,7 @@ div.nboutput.container div.output_area.rendered_html,
 div.nboutput.container div.output_area > div.output_javascript,
 div.nboutput.container div.output_area:not(.rendered_html) > img{
     padding: 5px;
+    margin: 0;
 }
 
 /* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
@@ -856,15 +871,15 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<div class="section" id="Tutorial-5:-Point-Neuron-Network-Models-(with-PointNet)">
+<section id="Tutorial-5:-Point-Neuron-Network-Models-(with-PointNet)">
 <h1>Tutorial 5: Point-Neuron Network Models (with PointNet)<a class="headerlink" href="#Tutorial-5:-Point-Neuron-Network-Models-(with-PointNet)" title="Permalink to this headline">¶</a></h1>
 <p>In this chapter we will create a heterogeneous network of point-model neurons and use the PointNet simulator which will run the network using the NEST simulator. As with the previous BioNet examples will create both a internal recurrently-connected network of different node types, and an external network of “virtual” neurons that will drive the firing of the internal neurons. And we’ll show how to drive network activity by using a current clamp.</p>
 <p>PointNet, like BioNet and the other simulators, use the SONATA data format for representing networks, setting up simulations and saving results. Thus the tools used to build and display biophysically detailed networks in the previous chapters will work just the same.</p>
 <p>Requirements: * bmtk * NEST 2.11+</p>
-<div class="section" id="1.-Building-the-network">
+<section id="1.-Building-the-network">
 <h2>1. Building the network<a class="headerlink" href="#1.-Building-the-network" title="Permalink to this headline">¶</a></h2>
 <p>There are two ways of generating a network of point-neurons. Either we can take the existing biophysical network created in the previous chapters and make some minor adjustments to the neuron models being used. Or we can build a new network from scratch using the BMTK Builder.</p>
-<div class="section" id="Converting-networks">
+<section id="Converting-networks">
 <h3>Converting networks<a class="headerlink" href="#Converting-networks" title="Permalink to this headline">¶</a></h3>
 <p>We want to take the BioNet V1 network and change parameters so that the individual neurons are using point models. Luckily there parameters are stored in the node and edge “types” csv files, thus we can easily change them with a simple text editor (emacs, vi, sublime-text, etc). Here is an example of the old <em>V1_node_types.csv</em>:</p>
 <div class="nbinput docutils container">
@@ -1233,11 +1248,11 @@ div.rendered_html tbody tr:hover {
 <li><p>It’s important to readjust <strong>syn_weight</strong> as values appropiate for NEURON based models are oftern wrong for NEST based models.</p></li>
 </ul>
 <p>Notice we don’t have to change any of the hdf5 files. The network topology remains the same making it a powerful tool for comparing networks of different levels of resolution.</p>
-</div>
-<div class="section" id="Building-a-model-from-scratch.">
+</section>
+<section id="Building-a-model-from-scratch.">
 <h3>Building a model from scratch.<a class="headerlink" href="#Building-a-model-from-scratch." title="Permalink to this headline">¶</a></h3>
 <p>We can use the BMTK Network Builder to create new network files just for point-based modeling</p>
-<div class="section" id="V1-Network">
+<section id="V1-Network">
 <h4>V1 Network<a class="headerlink" href="#V1-Network" title="Permalink to this headline">¶</a></h4>
 <p>First lets build a “V1” network of 300 cells, split into 4 different populations</p>
 <div class="nbinput nblast docutils container">
@@ -1377,9 +1392,9 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-</div>
-</div>
-<div class="section" id="Building-external-network">
+</section>
+</section>
+<section id="Building-external-network">
 <h3>Building external network<a class="headerlink" href="#Building-external-network" title="Permalink to this headline">¶</a></h3>
 <p>Next we want to create an external network of “virtual cells” with spike-trains that will synapse onto our V1 cells and drive activity. We will call this external network “LGN” and contains 500 excitatory cells.</p>
 <div class="nbinput nblast docutils container">
@@ -1468,11 +1483,11 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-</div>
-</div>
-<div class="section" id="2.-Setting-up-PointNet-Environment">
+</section>
+</section>
+<section id="2.-Setting-up-PointNet-Environment">
 <h2>2. Setting up PointNet Environment<a class="headerlink" href="#2.-Setting-up-PointNet-Environment" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="Directory-Structure">
+<section id="Directory-Structure">
 <h3>Directory Structure<a class="headerlink" href="#Directory-Structure" title="Permalink to this headline">¶</a></h3>
 <p>Before running a simulation, we will need to create the runtime environment, including parameter files, run-script and configuration files. If using the tutorial these files will already be in place. Otherwise we can use a command-line:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m bmtk.utils.sim_setup        <span class="se">\</span>
@@ -1499,8 +1514,9 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<p>The network files are written to <strong>circuit_config.json</strong> and the simulation parameters are set in <strong>simulation_config</strong>. The simulation time is set to run for 3000.0 ms (tstop). We also specify a membrane-report to record V_m property of 4 cells (gids 0, 80, 100, 300 - one from each cell-type). In general, all the parameters needed to setup and start a simulation are found in the config files, and adjusting network/simulation conditions can be done by editing these json files in a text editor.</p>
-<div class="section" id="lgn-input">
+<p>The network files are written to <strong>circuit_config.json</strong> and the simulation parameters are set in <strong>simulation_config</strong>, which are both linked to the main <strong>config.json</strong> file. The simulation time is set to run for 3000.0 ms (tstop). We also specify a membrane-report to record V_m property of 4 cells (gids 0, 80, 100, 300 - one from each cell-type). In general, all the parameters needed to setup and start a simulation are found in the config files, and adjusting network/simulation conditions can
+be done by editing these json files in a text editor.</p>
+<section id="lgn-input">
 <h4>lgn input<a class="headerlink" href="#lgn-input" title="Permalink to this headline">¶</a></h4>
 <p>We need to provide our LGN external network cells with spike-trains so they can activate our recurrent network. Previously we showed how to do this by generating csv files. We can also use NWB files, which are a common format for saving electrophysiological data in neuroscience.</p>
 <p>We can use any NWB file generated experimentally or computationally, but for this example we will use a preexsting one. First download the file:</p>
@@ -1509,22 +1525,22 @@ $ wget https://github.com/AllenInstitute/bmtk/raw/develop/docs/examples/spikes_i
 </pre></div>
 </div>
 <p>Then we must edit the simulation_config.json file to tell the simulator to find the nwb file and which network to associate it with.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;h5&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;input_file&quot;</span><span class="p">:</span> <span class="s2">&quot;$BASE_DIR/lgn_spikes.h5&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="s2">&quot;LGN&quot;</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;spikes&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;h5&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;input_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;$BASE_DIR/lgn_spikes.h5&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;LGN&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-</div>
-</div>
-</div>
-<div class="section" id="3.-Running-the-simulation">
+</section>
+</section>
+</section>
+<section id="3.-Running-the-simulation">
 <h2>3. Running the simulation<a class="headerlink" href="#3.-Running-the-simulation" title="Permalink to this headline">¶</a></h2>
 <p>The call to sim_setup created a file run_pointnet.py which we can run directly in a command line:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python run_pointnet.py config.json
@@ -1542,7 +1558,7 @@ $ wget https://github.com/AllenInstitute/bmtk/raw/develop/docs/examples/spikes_i
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.simulator</span> <span class="kn">import</span> <span class="n">pointnet</span>
 
-<span class="n">configure</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;sim_ch05/simulation_config.json&#39;</span><span class="p">)</span>
+<span class="n">configure</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;sim_ch05/config.json&#39;</span><span class="p">)</span>
 <span class="n">configure</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
 <span class="n">network</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">PointNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">configure</span><span class="p">)</span>
 <span class="n">sim</span> <span class="o">=</span> <span class="n">pointnet</span><span class="o">.</span><span class="n">PointSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">configure</span><span class="p">,</span> <span class="n">network</span><span class="p">)</span>
@@ -1568,8 +1584,8 @@ $ wget https://github.com/AllenInstitute/bmtk/raw/develop/docs/examples/spikes_i
 2020-08-25 15:35:02,240 [INFO] Done.
 </pre></div></div>
 </div>
-</div>
-<div class="section" id="4.-Analyzing-results">
+</section>
+<section id="4.-Analyzing-results">
 <h2>4. Analyzing results<a class="headerlink" href="#4.-Analyzing-results" title="Permalink to this headline">¶</a></h2>
 <p>Results of the simulation, as specified in the config, are saved into the output directory. Using the analyzer functions, we can do things like plot the raster plot</p>
 <div class="nbinput docutils container">
@@ -1579,7 +1595,7 @@ $ wget https://github.com/AllenInstitute/bmtk/raw/develop/docs/examples/spikes_i
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.spike_trains</span> <span class="kn">import</span> <span class="n">plot_raster</span><span class="p">,</span> <span class="n">plot_rates</span>
 
-<span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch05/simulation_config.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">)</span>
+<span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch05/config.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1596,7 +1612,7 @@ $ wget https://github.com/AllenInstitute/bmtk/raw/develop/docs/examples/spikes_i
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">plot_rates</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch05/simulation_config.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">)</span>
+<span></span><span class="n">plot_rates</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch05/config.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1608,25 +1624,25 @@ $ wget https://github.com/AllenInstitute/bmtk/raw/develop/docs/examples/spikes_i
 </div>
 </div>
 <p>In our simulation_config.json in the reports section, we can see we also record the V_m (i.e membrane potential) of a select sample of cells. By default these files are written to an hdf5 file with the same name as the report (membrane_potential.h5), and we can use the analyzer to show the time course of some of these cells.</p>
-</div>
-<div class="section" id="5.-Additional-Information">
+</section>
+<section id="5.-Additional-Information">
 <h2>5. Additional Information<a class="headerlink" href="#5.-Additional-Information" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="Recording-membrane-potential-(and-other-cell-properties).">
+<section id="Recording-membrane-potential-(and-other-cell-properties).">
 <h3>Recording membrane potential (and other cell properties).<a class="headerlink" href="#Recording-membrane-potential-(and-other-cell-properties)." title="Permalink to this headline">¶</a></h3>
 <p>By default bmtk will automatically record and save the spike-trains of our (non-virtual) cells. Sometimes it can be useful to record other properties besides spikes, like the membrane voltage traces, of all or a subsection of the cells. To do so we only need to open the <em>simulation_config.json</em> with our prefered text editor and insert the following section:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;reports&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;membrane_potential&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;cells&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">&quot;population&quot;</span><span class="p">:</span> <span class="s2">&quot;V1&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;node_id&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">100</span><span class="p">]</span>
-      <span class="p">},</span>
-      <span class="nt">&quot;variable_name&quot;</span><span class="p">:</span> <span class="s2">&quot;V_m&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;multimeter_report&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;sections&quot;</span><span class="p">:</span> <span class="s2">&quot;soma&quot;</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;reports&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;membrane_potential&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;V1&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;node_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">60</span><span class="p">,</span><span class="w"> </span><span class="mi">80</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">]</span><span class="w"></span>
+<span class="w">      </span><span class="p">},</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;variable_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;V_m&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;multimeter_report&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;sections&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;soma&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>This will tell bmtk to record the “V_m” variable for selected cells with ids 0, 20, 60, 80, 100 - and save the results in a file <em>output/membrane_potential.h5</em>. After re-running the simulation the file will be generated, <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#frame-oriented-node-element-recordings">according to the SONATA format</a>, which we can read using hdf5 or bmtk like below:</p>
@@ -1637,7 +1653,7 @@ $ wget https://github.com/AllenInstitute/bmtk/raw/develop/docs/examples/spikes_i
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.compartment</span> <span class="kn">import</span> <span class="n">plot_traces</span>
 
-<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch05/simulation_config.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;sim_ch05/config.json&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1648,54 +1664,54 @@ $ wget https://github.com/AllenInstitute/bmtk/raw/develop/docs/examples/spikes_i
 <img alt="_images/tutorial_pointnet_modeling_33_0.png" src="_images/tutorial_pointnet_modeling_33_0.png" />
 </div>
 </div>
-</div>
-<div class="section" id="Perturbation-simulations">
+</section>
+<section id="Perturbation-simulations">
 <h3>Perturbation simulations<a class="headerlink" href="#Perturbation-simulations" title="Permalink to this headline">¶</a></h3>
 <p>A common use case is to mimick a network where the firing rate of select cells are being depressed or stimulated using current clamps or optogenetic methods. The best way to do this is by applying a current clamp in a similar manner used in <a class="reference external" href="http://localhost:32000/notebooks/Workspace/bmtk/docs/tutorial/01_single_cell_clamped.ipynb">bionet</a>.</p>
-<p>The point_120cells network in the bmtk examples consists of 120 recurrently connected excitatory and inhibitory cells with randomized inputs. Normally the results without any type of perturbations will look as follows: <img alt="6788f350ad9044e7be2f723d2276a594" src="_images/raster_120cells_orig.png" /></p>
+<p>The point_120cells network in the bmtk examples consists of 120 recurrently connected excitatory and inhibitory cells with randomized inputs. Normally the results without any type of perturbations will look as follows: <img alt="2a6b40d00dc1402985376bc9841d0665" src="_images/raster_120cells_orig.png" /></p>
 <p>To artifically excite some of the cells we can open the config.json file and add the following section to the “inputs”:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;exc_perturbation&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;population&quot;</span><span class="p">:</span> <span class="s2">&quot;cortex&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;node_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">22</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">27</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">29</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="mi">34</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">37</span><span class="p">,</span> <span class="mi">38</span><span class="p">,</span> <span class="mi">39</span><span class="p">]</span>
-    <span class="p">},</span>
-    <span class="nt">&quot;amp&quot;</span><span class="p">:</span> <span class="mf">230.0</span><span class="p">,</span>
-    <span class="nt">&quot;delay&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
-    <span class="nt">&quot;duration&quot;</span><span class="p">:</span> <span class="mf">3000.0</span>
-  <span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;exc_perturbation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cortex&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;node_ids&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">21</span><span class="p">,</span><span class="w"> </span><span class="mi">22</span><span class="p">,</span><span class="w"> </span><span class="mi">23</span><span class="p">,</span><span class="w"> </span><span class="mi">24</span><span class="p">,</span><span class="w"> </span><span class="mi">25</span><span class="p">,</span><span class="w"> </span><span class="mi">26</span><span class="p">,</span><span class="w"> </span><span class="mi">27</span><span class="p">,</span><span class="w"> </span><span class="mi">28</span><span class="p">,</span><span class="w"> </span><span class="mi">29</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="mi">31</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">,</span><span class="w"> </span><span class="mi">33</span><span class="p">,</span><span class="w"> </span><span class="mi">34</span><span class="p">,</span><span class="w"> </span><span class="mi">35</span><span class="p">,</span><span class="w"> </span><span class="mi">36</span><span class="p">,</span><span class="w"> </span><span class="mi">37</span><span class="p">,</span><span class="w"> </span><span class="mi">38</span><span class="p">,</span><span class="w"> </span><span class="mi">39</span><span class="p">]</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">230.0</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">3000.0</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>This will apply a large step current for the duration of the simulation for cells 20 through 39. In this case we knew the exact node_ids of the cells we want to excite. However it is also possible to get a subset using a specific property, for example if we wanted to only select inhibitory L2/3 cells:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;population&quot;</span><span class="p">:</span> <span class="s2">&quot;cortex&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;ei&quot;</span><span class="p">:</span> <span class="s2">&quot;i&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;L2/3&quot;</span>
-  <span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cortex&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;ei&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;i&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;L2/3&quot;</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 <p>To simulate depression of cells 40 to 49 we will add another current_clamp but with a large negative current:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">&quot;inh_perturbation&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="nt">&quot;population&quot;</span><span class="p">:</span> <span class="s2">&quot;cortex&quot;</span><span class="p">,</span>
-      <span class="nt">&quot;node_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">41</span><span class="p">,</span> <span class="mi">42</span><span class="p">,</span> <span class="mi">43</span><span class="p">,</span> <span class="mi">44</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">46</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span> <span class="mi">48</span><span class="p">,</span> <span class="mi">49</span><span class="p">]</span>
-    <span class="p">},</span>
-    <span class="nt">&quot;amp&quot;</span><span class="p">:</span> <span class="mf">-230.0</span><span class="p">,</span>
-    <span class="nt">&quot;delay&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
-    <span class="nt">&quot;duration&quot;</span><span class="p">:</span> <span class="mf">3000.0</span>
-  <span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nt">&quot;inh_perturbation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;population&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cortex&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="nt">&quot;node_ids&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">40</span><span class="p">,</span><span class="w"> </span><span class="mi">41</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="mi">43</span><span class="p">,</span><span class="w"> </span><span class="mi">44</span><span class="p">,</span><span class="w"> </span><span class="mi">45</span><span class="p">,</span><span class="w"> </span><span class="mi">46</span><span class="p">,</span><span class="w"> </span><span class="mi">47</span><span class="p">,</span><span class="w"> </span><span class="mi">48</span><span class="p">,</span><span class="w"> </span><span class="mi">49</span><span class="p">]</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">-230.0</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">3000.0</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-<p>After we rerun the simulation: <img alt="7d4800feec47456fba9178e2dfc37ab6" src="_images/raster_120cells_perturbed.png" /></p>
+<p>After we rerun the simulation: <img alt="8b9ab287c9ff4c3bb6deea2bc23935e6" src="_images/raster_120cells_perturbed.png" /></p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -1705,9 +1721,9 @@ $ wget https://github.com/AllenInstitute/bmtk/raw/develop/docs/examples/spikes_i
 </pre></div>
 </div>
 </div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -1756,7 +1772,7 @@ $ wget https://github.com/AllenInstitute/bmtk/raw/develop/docs/examples/spikes_i
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
