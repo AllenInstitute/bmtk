@@ -107,7 +107,7 @@ def test_write_sonata_byid(st_cls, write_fnc):
 def test_write_sonata_bytime(st_cls, write_fnc):
     st = create_st_buffer_mpi(st_cls)
     st.add_spikes(population='V1', node_ids=[MPI_rank, MPI_rank],
-                  timestamps=np.array([MPI_rank/10.0, (MPI_size + MPI_rank)/10.0], dtype=np.float))
+                  timestamps=np.array([MPI_rank/10.0, (MPI_size + MPI_rank)/10.0], dtype=float))
 
     tmp_h5 = tmpfile()
     write_fnc(tmp_h5, st, sort_order=sort_order.by_time)
