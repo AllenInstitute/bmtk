@@ -261,7 +261,7 @@ class SonataSTReader(SpikeTrainsReadOnlyAPI):
                 elif sort_order == SortOrder.by_time:
                     pop_df = pop_df.sort_values('timestamps')
 
-                ret_df = pop_df if ret_df is None else ret_df.append(pop_df)
+                ret_df = pop_df if ret_df is None else pd.concat((ret_df, pop_df))
 
         if sort_order == SortOrder.by_time:
             ret_df.sort_values(by=col_timestamps, inplace=True)

@@ -57,7 +57,7 @@ def test_basic(st):
     else:
         assert(len(times) == 0)
     assert(np.allclose(np.sort(st.get_times(population='V2', node_id=MPI_size, on_rank='all')),
-                       np.arange(MPI_size).astype(np.double)))
+                       np.arange(MPI_size).astype(float)))
     assert(np.allclose(st.get_times(population='V2', node_id=MPI_size, on_rank='local'), [float(MPI_rank)]))
 
 
@@ -79,7 +79,7 @@ def test_basic_root(st):
         assert(set(pops) == {'R{}'.format(r+1) for r in range(MPI_size)} | {'V1'})
         assert(n_spikes == MPI_size*2)
         assert(set(node_ids) == {0, 1})
-        assert(np.allclose(np.sort(timestamps), np.arange(MPI_size, dtype=np.double)))
+        assert(np.allclose(np.sort(timestamps), np.arange(MPI_size, dtype=float)))
     else:
         assert(pops is None)
         assert(n_spikes is None)
@@ -151,9 +151,9 @@ def test_iterator(st):
 
     all_spikes = list(st.spikes(on_rank='all'))
     assert(len(all_spikes) == 5*MPI_size + MPI_size + 5*MPI_size)
-    assert(isinstance(all_spikes[0][0], (np.double, np.float)))
+    assert(isinstance(all_spikes[0][0], (float, float)))
     assert(isinstance(all_spikes[0][1], string_types))
-    assert(isinstance(all_spikes[0][2], (np.int, np.uint)))
+    assert(isinstance(all_spikes[0][2], (int, np.uint)))
     assert({s[1] for s in all_spikes} == {'R{}'.format(r) for r in range(MPI_size)} | {'V1'})
     assert({s[2] for s in all_spikes} == {i for i in range(MPI_size+2)})
 

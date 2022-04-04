@@ -186,7 +186,7 @@ class STMemoryBuffer(SpikeTrainsAPI):
             if ret_df is None:
                 ret_df = pop_df
             else:
-                ret_df = ret_df.append(pop_df)
+                ret_df = pd.concat((ret_df, pop_df))
 
         # Make sure ret_df is not None
         ret_df = _create_empty_df(with_population_col) if ret_df is None else ret_df
@@ -235,7 +235,7 @@ class STMPIBuffer(STMemoryBuffer):
 
         local_n_spikes = super(STMPIBuffer, self).n_spikes(population)
         sizes = comm.allgather(local_n_spikes)
-        offsets = np.zeros(MPI_size, dtype=np.int)
+        offsets = np.zeros(MPI_size, dtype=np.int64)
         offsets[1:] = np.cumsum(sizes)[:-1]
         all_n_spikes = np.sum(sizes)
 
@@ -300,7 +300,7 @@ class STMPIBuffer(STMemoryBuffer):
                 if ret_df is None:
                     ret_df = pop_df
                 else:
-                    ret_df = ret_df.append(pop_df)
+                    ret_df = pd.concat((ret_df, pop_df))
 
             elif on_rank == 'root':
                 node_ids, timestamps = self._gatherv(population=pop_name, on_all_ranks=False)
@@ -323,7 +323,7 @@ class STMPIBuffer(STMemoryBuffer):
                 if ret_df is None:
                     ret_df = pop_df
                 else:
-                    ret_df = ret_df.append(pop_df)
+                    ret_df = pd.concat((ret_df, pop_df))
 
         comm_barrier()
         if on_rank == 'all' or MPI_rank == 0:
@@ -547,7 +547,7 @@ class STCSVBuffer(SpikeTrainsAPI):
         if not with_population_col:
             ret_df = ret_df.drop(col_population, axis=1)
 
-        ret_df = ret_df.astype({col_timestamps: np.float, col_node_ids: np.int})
+        ret_df = ret_df.astype({col_timestamps: float, col_node_ids: np.int64})
 
         return ret_df
 
@@ -856,7 +856,7 @@ class STCSVMPIBufferV2(STCSVMPIBuffer):
 
         if ret_df is not None:
             # pandas doesn't always do a good job of reading in the correct dtype for each column
-            ret_df = ret_df.astype({col_timestamps: np.float, col_node_ids: np.int})
+            ret_df = ret_df.astype({col_timestamps: float, col_node_ids: np.int64})
 
             if sort_order == SortOrder.by_time:
                 ret_df = ret_df.sort_values(col_timestamps)

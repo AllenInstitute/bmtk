@@ -127,9 +127,9 @@ def test_csv_reader():
 
     all_spikes = list(st.spikes())
     assert(len(all_spikes) == 10)
-    assert(isinstance(all_spikes[0][0], (np.double, np.float)))
+    assert(isinstance(all_spikes[0][0], (float, float)))
     assert(isinstance(all_spikes[0][1], string_types))
-    assert(isinstance(all_spikes[0][2], (np.int, np.uint, np.integer)))
+    assert(isinstance(all_spikes[0][2], (int, np.uint, np.integer)))
 
 
 def test_csv_reader_nopop():
@@ -161,9 +161,9 @@ def test_csv_reader_nopop():
 
     all_spikes = list(st.spikes())
     assert(len(all_spikes) == 10)
-    assert(isinstance(all_spikes[0][0], (np.double, np.float)))
+    assert(isinstance(all_spikes[0][0], (float, float)))
     assert(isinstance(all_spikes[0][1], string_types))
-    assert(isinstance(all_spikes[0][2], (np.int, np.uint, np.integer)))
+    assert(isinstance(all_spikes[0][2], (int, np.uint, np.integer)))
 
 
 if __name__ == '__main__':
