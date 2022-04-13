@@ -882,7 +882,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="k">elif</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_time</span><span class="p">:</span>
                     <span class="n">pop_df</span> <span class="o">=</span> <span class="n">pop_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;timestamps&#39;</span><span class="p">)</span>
 
-                <span class="n">ret_df</span> <span class="o">=</span> <span class="n">pop_df</span> <span class="k">if</span> <span class="n">ret_df</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">ret_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pop_df</span><span class="p">)</span>
+                <span class="n">ret_df</span> <span class="o">=</span> <span class="n">pop_df</span> <span class="k">if</span> <span class="n">ret_df</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">ret_df</span><span class="p">,</span> <span class="n">pop_df</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">sort_order</span> <span class="o">==</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">by_time</span><span class="p">:</span>
             <span class="n">ret_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="n">col_timestamps</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1327,6 +1327,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l1"><a class="reference internal" href="../../../../../examples.html">Example Networks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../registration.html">Register</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>

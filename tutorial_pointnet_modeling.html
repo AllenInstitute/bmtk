@@ -1668,7 +1668,7 @@ $ wget https://github.com/AllenInstitute/bmtk/raw/develop/docs/examples/spikes_i
 <section id="Perturbation-simulations">
 <h3>Perturbation simulations<a class="headerlink" href="#Perturbation-simulations" title="Permalink to this headline">¶</a></h3>
 <p>A common use case is to mimick a network where the firing rate of select cells are being depressed or stimulated using current clamps or optogenetic methods. The best way to do this is by applying a current clamp in a similar manner used in <a class="reference external" href="http://localhost:32000/notebooks/Workspace/bmtk/docs/tutorial/01_single_cell_clamped.ipynb">bionet</a>.</p>
-<p>The point_120cells network in the bmtk examples consists of 120 recurrently connected excitatory and inhibitory cells with randomized inputs. Normally the results without any type of perturbations will look as follows: <img alt="2a6b40d00dc1402985376bc9841d0665" src="_images/raster_120cells_orig.png" /></p>
+<p>The point_120cells network in the bmtk examples consists of 120 recurrently connected excitatory and inhibitory cells with randomized inputs. Normally the results without any type of perturbations will look as follows: <img alt="1139997fae2745fc83d59afc6fa8fb7a" src="_images/raster_120cells_orig.png" /></p>
 <p>To artifically excite some of the cells we can open the config.json file and add the following section to the “inputs”:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="nt">&quot;exc_perturbation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
@@ -1711,7 +1711,7 @@ $ wget https://github.com/AllenInstitute/bmtk/raw/develop/docs/examples/spikes_i
 <span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-<p>After we rerun the simulation: <img alt="8b9ab287c9ff4c3bb6deea2bc23935e6" src="_images/raster_120cells_perturbed.png" /></p>
+<p>After we rerun the simulation: <img alt="2a47aa68bac14ea587bdbd36f88f5564" src="_images/raster_120cells_perturbed.png" /></p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -1758,6 +1758,7 @@ $ wget https://github.com/AllenInstitute/bmtk/raw/develop/docs/examples/spikes_i
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Example Networks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registration.html">Register</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.builder.html">bmtk.builder package</a></li>

@@ -878,10 +878,10 @@ div.rendered_html tbody tr:hover {
 <p><strong>requirements:</strong> * Python 2.7, 3.6+ * bmtk * NEURON 7.4+</p>
 <section id="1.-Building-the-network">
 <h2>1. Building the network<a class="headerlink" href="#1.-Building-the-network" title="Permalink to this headline">¶</a></h2>
-<p>First step is to use the bmtk Network Builder to create and save the network. First we instantiate a network with a name or our choosing (since throughout this tutorial we will use cell models that from the mouse cortex, let’s call our network ‘mcortex’).</p>
-<p>Once we have a network, we can add a single node by calling the add_nodes method.</p>
+<p>The first step is to use the bmtk Network Builder to create and save the network. First we instantiate a network with a name or our choosing (since throughout this tutorial we will use cell models from the mouse cortex, let’s call our network ‘mcortex’).</p>
+<p>Once we have initialized a network object, we can add a single node by calling the add_nodes method.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -890,7 +890,7 @@ div.rendered_html tbody tr:hover {
 <span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;mcortex&#39;</span><span class="p">)</span>
 <span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span>
     <span class="n">cell_name</span><span class="o">=</span><span class="s1">&#39;Scnn1a_473845048&#39;</span><span class="p">,</span>
-    <span class="n">potental</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span>
+    <span class="n">potential</span><span class="o">=</span><span class="s1">&#39;exc&#39;</span><span class="p">,</span>
     <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;biophysical&#39;</span><span class="p">,</span>
     <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;ctdb:Biophys1.hoc&#39;</span><span class="p">,</span>
     <span class="n">model_processing</span><span class="o">=</span><span class="s1">&#39;aibs_perisomatic&#39;</span><span class="p">,</span>
@@ -900,20 +900,20 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<p>Some of the parameters used to create the node are optional and only for our benefit. Others are necessary for when we will eventually run a simulation: * <em>cell_name</em> (optional) - Name/type of cell we will be modeling. * <em>potential</em> (optional) - Use to indicate that it is an excitatory type cell. * <em>model_type</em> - Used by the simulator to indicate that we are using a biophysical cell. * <em>dynamics_params</em> - Model parameters. File will be downloaded from the Allen Cell Types Database. *
-<em>morphology</em> - Model morphology. File will be downloaded from the Allen Cell Types Database. * <em>model_processing</em> - A custom function used by the simulator to load the model into NEURON using Allen Cell-Types files for perisomatic models</p>
+<p>Some of the parameters used to create the node are optional and only for our benefit. Others are necessary for when we will eventually run a simulation: * <em>cell_name</em> (optional) - Name/type of cell we will be modeling. * <em>potential</em> (optional) - Use to indicate that it is an excitatory type cell. * <em>model_type</em> - Used by the simulator to indicate that we are using a biophysical cell. * <em>model template</em> - NEURON .hoc file, NeuroML file, or other template used in the creation of cell/node
+object. * <em>model_processing</em> - A custom function used by the simulator to load the model into NEURON using Allen Cell Types files for perisomatic models. * <em>dynamics_params</em> - Model parameters. File will be downloaded from the Allen Cell Types Database. * <em>morphology</em> - Model morphology. File will be downloaded from the Allen Cell Types Database.</p>
 <section id="Building-and-saving">
 <h3>Building and saving<a class="headerlink" href="#Building-and-saving" title="Permalink to this headline">¶</a></h3>
 <p>The final thing to do is to build and save the network. If successful, we should see a combination of hdf5 and csv files in the ‘./network’ directory, these files are used describe the network, and can be saved, stored and run at a later date.</p>
 <p>First, it’s a good idea to remove any old files in the “network” folder so they don’t interfere with the current simulation.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ rm network
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ rm -r sim_ch01/network
 </pre></div>
 </div>
 <p>If you get the output:</p>
-<p><code class="docutils literal notranslate"><span class="pre">rm:</span> <span class="pre">cannot</span> <span class="pre">remove</span> <span class="pre">network/*:</span> <span class="pre">No</span> <span class="pre">such</span> <span class="pre">file</span> <span class="pre">or</span> <span class="pre">directory</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">rm:</span> <span class="pre">cannot</span> <span class="pre">remove</span> <span class="pre">sim_ch01/network/*:</span> <span class="pre">No</span> <span class="pre">such</span> <span class="pre">file</span> <span class="pre">or</span> <span class="pre">directory</span></code></p>
 <p>It’s OK. Keep going.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -923,8 +923,8 @@ div.rendered_html tbody tr:hover {
 </div>
 </div>
 <p>Use the NetworkBuilder nodes() method to show that a node of our parameters was created</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -933,31 +933,23 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-{&#39;cell_name&#39;: &#39;Scnn1a_473845048&#39;, &#39;potental&#39;: &#39;exc&#39;, &#39;model_type&#39;: &#39;biophysical&#39;, &#39;model_template&#39;: &#39;ctdb:Biophys1.hoc&#39;, &#39;model_processing&#39;: &#39;aibs_perisomatic&#39;, &#39;dynamics_params&#39;: &#39;472363762_fit.json&#39;, &#39;morphology&#39;: &#39;Scnn1a_473845048_m.swc&#39;, &#39;node_type_id&#39;: 100, &#39;node_id&#39;: 0}
-</pre></div></div>
-</div>
 </section>
 </section>
-<section id="2.-Setting-up-the-simulator-enviornment">
-<h2>2. Setting up the simulator enviornment<a class="headerlink" href="#2.-Setting-up-the-simulator-enviornment" title="Permalink to this headline">¶</a></h2>
+<section id="2.-Setting-up-the-simulator-environment">
+<h2>2. Setting up the simulator environment<a class="headerlink" href="#2.-Setting-up-the-simulator-environment" title="Permalink to this headline">¶</a></h2>
 <p>Now that the network has been built, we can use the BioNet simulator to setup and run it using NEURON. The easiest ways to do this is to copy and modify <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/bio_14cells">existing simulation setup</a>, or use the <code class="docutils literal notranslate"><span class="pre">bmtk.utils.sim_setup</span></code> script which can be called from the command-line</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m bmtk.utils.sim_setup  --report-vars v,cai         <span class="se">\</span>
-                                  --network network/          <span class="se">\</span>
-                                  --iclamp <span class="m">0</span>.12,500.0,1000.0  <span class="se">\</span>
-                                  --dt <span class="m">0</span>.1 --tstop <span class="m">2000</span>.0     <span class="se">\</span>
-                                  --include-examples          <span class="se">\</span>
-                                  --compile-mechanisms        <span class="se">\</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m bmtk.utils.sim_setup  --report-vars v,cai           <span class="se">\</span>
+                                  --network sim_ch01/network/   <span class="se">\</span>
+                                  --iclamp <span class="m">0</span>.12,500.0,1000.0    <span class="se">\</span>
+                                  --dt <span class="m">0</span>.1 --tstop <span class="m">2000</span>.0       <span class="se">\</span>
+                                  --include-examples            <span class="se">\</span>
+                                  --compile-mechanisms          <span class="se">\</span>
                                   bionet sim_ch01
 </pre></div>
 </div>
-<p>Or call the function directly in python</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<p>Or call the function directly in Python:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -969,44 +961,37 @@ div.rendered_html tbody tr:hover {
     <span class="n">network_dir</span><span class="o">=</span><span class="s1">&#39;network&#39;</span><span class="p">,</span>     <span class="c1"># Location of directory containing network files</span>
     <span class="n">tstop</span><span class="o">=</span><span class="mf">2000.0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>      <span class="c1"># Run a simulation for 2000 ms at 0.1 ms intervals</span>
     <span class="n">report_vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;v&#39;</span><span class="p">,</span> <span class="s1">&#39;cai&#39;</span><span class="p">],</span>  <span class="c1"># Tells simulator we want to record membrane potential and calcium traces</span>
-    <span class="n">current_clamp</span><span class="o">=</span><span class="p">{</span>            <span class="c1"># Creates a step current from 500.ms to 1500.0 ms</span>
+    <span class="n">current_clamp</span><span class="o">=</span><span class="p">{</span>            <span class="c1"># Creates a step current from 500.0 ms to 1500.0 ms</span>
         <span class="s1">&#39;amp&#39;</span><span class="p">:</span> <span class="mf">0.120</span><span class="p">,</span>
         <span class="s1">&#39;delay&#39;</span><span class="p">:</span> <span class="mf">500.0</span><span class="p">,</span>
         <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mf">1000.0</span>
     <span class="p">},</span>
-    <span class="n">include_examples</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>    <span class="c1"># Copies components files</span>
+    <span class="n">include_examples</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>    <span class="c1"># Copies components files for tutorial examples</span>
     <span class="n">compile_mechanisms</span><span class="o">=</span><span class="kc">True</span>   <span class="c1"># Will try to compile NEURON mechanisms</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-config.json
-</pre></div></div>
-</div>
 <div class="admonition warning">
-<p class="admonition-title"><strong>Warning</strong>: You may see an error that it failed while trying to compile the NEURON mechanisms - especially if jupyter is unable to find your NEURON environment path. If this happens you will need to manually compile the mechanisms:</p>
+<p class="admonition-title"><strong>Warning</strong>: You may see an error that it failed while trying to compile the NEURON mechanisms - especially if Jupyter is unable to find your NEURON environment path. If this happens you will need to manually compile the mechanisms:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd sim_ch01/components/mechanisms
 nrnivmodl modfiles
 </pre></div>
 </div>
 </div>
-<p>This will create the directory <strong>sim_ch01</strong> (feel free to give it a better name or set it to a different locations) with a number of new files and folders. Some of the more important ones include: * <strong>circuit_config.json</strong> - A configuration file that contains the location of the network files we created above. Plus location of neuron and synpatic models, templates, morphologies and mechanisms required to build our instantiate individual cell models.</p>
+<p>This will create the directory <strong>sim_ch01</strong> (feel free to give it a better name or set it to a different locations) with a number of new files and folders. Some of the more important ones include: * <strong>circuit_config.json</strong> - A configuration file that contains the location of the network files we created above, and the location of neuron and synaptic models, templates, morphologies and mechanisms required to build and instantiate individual cell models.</p>
 <ul class="simple">
-<li><p><strong>simulation_config.json</strong> - contains information about the simulation. Including initial conditions and run-time configuration (<em>run</em> and <em>conditions</em>). In the <em>inputs</em> section we define what external sources we will use to drive the network (in this case a current clamp). And in the <em>reports</em> section we define the variables (soma membrane potential and calcium) that will be recorded during the simulation</p></li>
+<li><p><strong>simulation_config.json</strong> - contains information about the simulation. Including initial conditions and run-time configuration (<em>run</em> and <em>conditions</em>). In the <em>inputs</em> section we define what external sources we will use to drive the network (in this case a current clamp). And in the <em>reports</em> section we define the variables (somatic membrane potential and calcium level) that will be recorded during the simulation.</p></li>
 <li><p><strong>components/biophysical_neuron_models/472363762_fit.json</strong> - The parameter file for the cell we’re modeling. Originally <a class="reference external" href="http://celltypes.brain-map.org/neuronal_model/download/482934212">downloaded from the Allen Cell Types Database</a></p></li>
 <li><p><strong>components/biophysical_neuron_models/Scnn1a_473845048_m.swc</strong> - The morphology file for our cell. Originally <a class="reference external" href="http://celltypes.brain-map.org/neuronal_model/download/482934212">downloaded from the Allen Cell Types Database</a></p></li>
 </ul>
-<p>Modifying these files with a text editor, or swapping out different parameter or morphologies, allows changing the simulation without extra programming.</p>
+<p>Modifying these files with a text editor, or swapping out different parameter or morphologies, allows for changing the simulation without extra programming.</p>
 </section>
 <section id="3.-Running-the-simulation">
 <h2>3. Running the simulation<a class="headerlink" href="#3.-Running-the-simulation" title="Permalink to this headline">¶</a></h2>
 <p>Once our config file is setup we can run a simulation either through the command line:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python run_bionet.py simulation_config.json
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> sim_ch01
+$ python run_bionet.py config.json
 </pre></div>
 </div>
 <p>or through the script</p>
@@ -1017,9 +1002,9 @@ nrnivmodl modfiles
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.simulator</span> <span class="kn">import</span> <span class="n">bionet</span>
 
-
-<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;sim_ch01/config.simulation.json&#39;</span><span class="p">)</span>
+<span class="n">conf</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">from_json</span><span class="p">(</span><span class="s1">&#39;sim_ch01/config.json&#39;</span><span class="p">)</span>
 <span class="n">conf</span><span class="o">.</span><span class="n">build_env</span><span class="p">()</span>
+<span class="n">conf</span>
 <span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
 <span class="n">sim</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioSimulator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
 <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
@@ -1031,7 +1016,7 @@ nrnivmodl modfiles
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:12:43,314 [INFO] Created log file
+2022-04-08 15:39:45,257 [INFO] Created log file
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1047,7 +1032,8 @@ INFO:NEURONIOUtils:Created log file
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:12:43,380 [INFO] Building cells.
+numprocs=1
+2022-04-08 15:39:45,314 [INFO] Building cells.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1063,7 +1049,7 @@ INFO:NEURONIOUtils:Building cells.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:12:43,537 [INFO] Building recurrent connections
+2022-04-08 15:39:45,461 [INFO] Building recurrent connections
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1079,7 +1065,7 @@ INFO:NEURONIOUtils:Building recurrent connections
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:12:43,550 [INFO] Running simulation for 2000.000 ms with the time step 0.100 ms
+2022-04-08 15:39:45,470 [INFO] Running simulation for 2000.000 ms with the time step 0.100 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1095,7 +1081,7 @@ INFO:NEURONIOUtils:Running simulation for 2000.000 ms with the time step 0.100 m
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:12:43,553 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
+2022-04-08 15:39:45,471 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1111,7 +1097,7 @@ INFO:NEURONIOUtils:Starting timestep: 0 at t_sim: 0.000 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:12:43,556 [INFO] Block save every 5000 steps
+2022-04-08 15:39:45,473 [INFO] Block save every 5000 steps
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1127,7 +1113,7 @@ INFO:NEURONIOUtils:Block save every 5000 steps
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:12:43,854 [INFO]     step:5000 t_sim:500.00 ms
+2022-04-08 15:39:45,750 [INFO]     step:5000 t_sim:500.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1143,7 +1129,7 @@ INFO:NEURONIOUtils:    step:5000 t_sim:500.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:12:44,163 [INFO]     step:10000 t_sim:1000.00 ms
+2022-04-08 15:39:46,022 [INFO]     step:10000 t_sim:1000.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1159,7 +1145,7 @@ INFO:NEURONIOUtils:    step:10000 t_sim:1000.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:12:44,444 [INFO]     step:15000 t_sim:1500.00 ms
+2022-04-08 15:39:46,286 [INFO]     step:15000 t_sim:1500.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1175,7 +1161,7 @@ INFO:NEURONIOUtils:    step:15000 t_sim:1500.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:12:44,779 [INFO]     step:20000 t_sim:2000.00 ms
+2022-04-08 15:39:46,551 [INFO]     step:20000 t_sim:2000.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1191,7 +1177,7 @@ INFO:NEURONIOUtils:    step:20000 t_sim:2000.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:12:44,792 [INFO] Simulation completed in 1.242 seconds
+2022-04-08 15:39:46,560 [INFO] Simulation completed in 1.091 seconds
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1199,11 +1185,11 @@ INFO:NEURONIOUtils:    step:20000 t_sim:2000.00 ms
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-INFO:NEURONIOUtils:Simulation completed in 1.242 seconds
+INFO:NEURONIOUtils:Simulation completed in 1.091 seconds
 </pre></div></div>
 </div>
 <div class="admonition warning">
-<p class="admonition-title"><strong>Warning</strong>: If you get the following error argument not a density mechanism name. You will need to compile the NEURON mechanisms</p>
+<p class="admonition-title"><strong>Warning</strong>: If you get the following error argument not a density mechanism name, you will need to compile the NEURON mechanisms</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd sim_ch01/components/mechanisms
 nrnivmodl modfiles
 </pre></div>
@@ -1215,21 +1201,21 @@ nrnivmodl modfiles
 <span class="n">nrn</span><span class="o">.</span><span class="n">load_neuron_modules</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This section loads the configuration file, it setups the output directory and files for writing during the simulation, and loads NEURON mechanisms needed by the cell model(s) during the simulation.</p>
+<p>This section loads the configuration file, it sets up the output directory and files for writing during the simulation, and loads NEURON mechanisms needed by the cell model(s) during the simulation.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">net</span> <span class="o">=</span> <span class="n">bionet</span><span class="o">.</span><span class="n">BioNetwork</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Creates a NEURON representation of the network, including cell models that have been converted into their NEURON equivelents.</p>
+<p>Creates a NEURON representation of the network, including cell models that have been converted into their NEURON equivalents.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sim</span> <span class="o">=</span> <span class="n">Simulation</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">network</span><span class="o">=</span><span class="n">net</span><span class="p">)</span>
 <span class="n">sim</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Sets up and runs the NEURON simulation. When finished the output - spike times, membrane potential and Calcium influx, will be saved into the output directory as specified in the config.</p>
+<p>Sets up and runs the NEURON simulation. When finished, the outputs (e.g., spike times, membrane potential, and Ca2+ concentration) will be saved into the output directory as specified in the config.</p>
 </section>
 <section id="4.-Analyzing-the-run">
 <h2>4. Analyzing the run<a class="headerlink" href="#4.-Analyzing-the-run" title="Permalink to this headline">¶</a></h2>
 <p>The results of the simulation are placed into various files as specified in the “output” section of the config file. We can change this before run-time if required.</p>
-<p>All simulations will save the spike times of the network cells. These are saved in csv format (output/spikes.txt) or hdf5 format(output/spikes.h5). To get the table of spike times for our single-cell network we can run the following method from the analyzer (gid 0 corresponds to our single cell).</p>
+<p>All simulations will save the spike times of the network cells. These are saved in csv format (output/spikes.txt) or hdf5 format(output/spikes.h5). To get the table of spike times for our single-cell network we can run the following method from the analyzer (node_id 0 corresponds to our single cell).</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
@@ -1382,7 +1368,7 @@ nrnivmodl modfiles
 </table>
 </div></div>
 </div>
-<p>When setting up the enviornment and config file we specified cell_vars=[‘v’, ‘cai’]. This indicates to the simulator to also record membrane potential and calcium diffusion (and we can also specify other variables as long as they are supported in NEURON).</p>
+<p>When setting up the environment and config file we specified cell_vars=[‘v’, ‘cai’]. This indicates to the simulator to also record membrane potential and Ca2+ level (and we can also specify other variables as long as they are supported in NEURON).</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
@@ -1428,10 +1414,10 @@ nrnivmodl modfiles
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>tstop - simulation runtime in milliseconds.</p></li>
-<li><p>dt - the time steps of the simulation. decreasing dt should increase accuracy of firing dynamics, but also increase time it takes to complete.</p></li>
-<li><p>spike_threshold - used to determine when to count a action potential</p></li>
-<li><p>dL - length of segments in a section. the number of segments will be forced to an odd number so the actual length may vary.</p></li>
+<li><p><em>tstop</em> - Simulation runtime in milliseconds.</p></li>
+<li><p><em>dt</em> - Time steps of the simulation. Decreasing dt should increase accuracy of firing dynamics, but also increase time it takes to complete.</p></li>
+<li><p><em>spike_threshold</em> - Used to determine when to count an action potential</p></li>
+<li><p><em>dL</em> - Length of segments in a section. The number of segments will be forced to an odd number so the actual length may vary.</p></li>
 </ul>
 <p>Through the conditions section we can adjust simulation temperature (C) and the initial membrane potential of the cells:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
@@ -1500,7 +1486,7 @@ nrnivmodl modfiles
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;network/mcortex_node_types.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;sim_ch01/network/mcortex_node_types.csv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1529,12 +1515,12 @@ nrnivmodl modfiles
       <th></th>
       <th>node_type_id</th>
       <th>model_type</th>
+      <th>cell_name</th>
       <th>model_processing</th>
+      <th>potential</th>
+      <th>model_template</th>
       <th>morphology</th>
       <th>dynamics_params</th>
-      <th>cell_name</th>
-      <th>potental</th>
-      <th>model_template</th>
     </tr>
   </thead>
   <tbody>
@@ -1542,28 +1528,19 @@ nrnivmodl modfiles
       <th>0</th>
       <td>100</td>
       <td>biophysical</td>
-      <td>aibs_perisomatic</td>
-      <td>Scnn1a_473845048_m.swc</td>
-      <td>472363762_fit.json</td>
       <td>Scnn1a_473845048</td>
+      <td>aibs_perisomatic</td>
       <td>exc</td>
       <td>ctdb:Biophys1.hoc</td>
+      <td>Scnn1a_473845048_m.swc</td>
+      <td>472363762_fit.json</td>
     </tr>
   </tbody>
 </table>
 </div></div>
 </div>
-<p>If we want to run the simulation on a different cell model, all we have to do is 1. Download new parameters.json and morphology.swc into components/biophysical 2. Open mcortex_node_types.csv in a text editor and update ‘morphology_file’ and ‘params_file’ accordingly.</p>
+<p>If we want to run the simulation on a different cell model, all we have to do is: 1. Download new parameters.json and morphology.swc into components/biophysical_neuron_models and components/morphologies 2. Open mcortex_node_types.csv in a text editor and update ‘morphology_file’ and ‘params_file’ accordingly.</p>
 <p>In our simple one-cell example, it is likely faster to just rebuild the network. However the advantage of the use of the node types becomes clear once we start dealing with a larger network. For example we may have a network of hundreds of thousands of individual cells with tens of thousands of Scnn1a type cells. The process of adjusting/changing the Scnn1a parameter in the csv then starting another simulation only takes seconds, whereas rebuilding the entire network may take hours.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>
-</pre></div>
-</div>
-</div>
 </section>
 </section>
 </section>
@@ -1601,6 +1578,7 @@ nrnivmodl modfiles
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Example Networks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registration.html">Register</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.builder.html">bmtk.builder package</a></li>
