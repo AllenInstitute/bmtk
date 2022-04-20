@@ -516,6 +516,15 @@ class BioSimulator(Simulator):
             elif sim_input.module == 'syn_activity':
                 pass
 
+            elif sim_input.module == 'disconnected':
+                spikes = SpikeTrains.load(path=sim_input.params['spikes_file'])
+                network.build_disconnected_inputs(
+                    spike_trains=spikes,
+                    edges_path=sim_input.params['edges']['edges_file'],
+                    edge_types_path=sim_input.params['edges']['edge_types_file'],
+                    node_set=sim_input.params['node_set']
+                )
+
             else:
                 io.log_exception('Can not parse input format {}'.format(sim_input.name))
 

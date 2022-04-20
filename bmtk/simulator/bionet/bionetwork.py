@@ -25,6 +25,7 @@ import numpy as np
 from neuron import h
 
 from bmtk.simulator.core.simulator_network import SimNetwork
+from bmtk.simulator.core import sonata_reader
 from bmtk.simulator.bionet.biocell import BioCell, BioCellSpontSyn
 from bmtk.simulator.bionet.pointprocesscell import PointProcessCell, PointProcessCellSpontSyns
 from bmtk.simulator.bionet.pointsomacell import PointSomaCell
@@ -311,6 +312,18 @@ class BioNetwork(SimNetwork):
                         trg_cell.set_syn_connection(edge, src_node)
 
         self.io.barrier()
+
+    def build_disconnected_inputs(self, spike_trains, edges_path, edge_types_path, node_set):
+        edges_pop = sonata_reader.load_edges(edges_path, edge_types_path, adaptor=self.get_edge_adaptor('sonata'))
+        edges_pop = edges_pop[0]  # The load_edges returns a list
+        edges_pop.initialize(self)
+
+        target_population = edges_pop.target_nodes
+        for trg_nid, trg_cell in self._rank_node_ids[target_population].items():
+            for edge in edges_pop.get_target(trg_nid):
+                print(edge.source_node_id, '-->', trg_nid)
+
+        raise NotImplementedError()
 
     def find_edges(self, source_nodes=None, target_nodes=None):
         selected_edges = self._edge_populations[:]
