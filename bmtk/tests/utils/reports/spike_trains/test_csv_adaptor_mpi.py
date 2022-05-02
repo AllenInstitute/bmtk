@@ -13,9 +13,11 @@ try:
     comm = MPI.COMM_WORLD
     MPI_rank = comm.Get_rank()
     MPI_size = comm.Get_size()
+    has_mpi = True
 except:
     MPI_rank = 0
     MPI_size = 1
+    has_mpi = False
 
 
 def create_st_buffer_mpi(st_cls):
@@ -40,6 +42,7 @@ def tmpfile():
     return tmp_file
 
 
+@pytest.mark.skipif(not has_mpi, reason='Can only run test using mpi')
 @pytest.mark.parametrize('st_cls', [
     STMPIBuffer,
     STCSVMPIBufferV2
@@ -68,6 +71,7 @@ def test_write_csv(st_cls, write_fnc):
         assert(np.allclose(np.sort(rank_df['timestamps']), [0.1, 0.2, 0.3, 0.4]))
 
 
+@pytest.mark.skipif(not has_mpi, reason='Can only run test using mpi')
 @pytest.mark.parametrize('st_cls', [
     STMPIBuffer,
     STCSVMPIBufferV2
@@ -89,6 +93,7 @@ def test_write_csv_byid(st_cls, write_fnc):
     assert(np.all(df['node_ids'] == np.arange(MPI_size*2)))
 
 
+@pytest.mark.skipif(not has_mpi, reason='Can only run test using mpi')
 @pytest.mark.parametrize('st_cls', [
     STMPIBuffer,
     STCSVMPIBufferV2
@@ -111,6 +116,7 @@ def test_write_csv_bytime(st_cls, write_fnc):
     assert(np.all(np.diff(df['timestamps']) > 0))
 
 
+@pytest.mark.skipif(not has_mpi, reason='Can only run test using mpi')
 @pytest.mark.parametrize('st_cls', [
     STMPIBuffer,
     STCSVMPIBufferV2

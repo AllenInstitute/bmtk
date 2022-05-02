@@ -9,20 +9,24 @@ from bmtk.utils.reports.spike_trains.spike_train_buffer import STMPIBuffer, STCS
 try:
     from mpi4py import MPI
     comm = MPI.COMM_WORLD
+    bcast = comm.bcast
     MPI_rank = comm.Get_rank()
     MPI_size = comm.Get_size()
+    has_mpi = True
 except:
     MPI_rank = 0
     MPI_size = 1
+    bcast = lambda v, n: v
+    has_mpi = False
 
 
 def tmpdir():
     tmp_dir = tempfile.mkdtemp() if MPI_rank == 0 else None
-    tmp_dir = comm.bcast(tmp_dir, 0)
+    tmp_dir = bcast(tmp_dir, 0)
     return tmp_dir
 
 
-# @pytest.mark.skipif(MPI_size < 2, reason='Can only run test using mpi')
+@pytest.mark.skipif(not has_mpi, reason='Can only run test using mpi')
 @pytest.mark.parametrize('st', [
     STMPIBuffer(default_population='V1'),
     STCSVMPIBufferV2(cache_dir=tmpdir())
@@ -61,7 +65,7 @@ def test_basic(st):
     assert(np.allclose(st.get_times(population='V2', node_id=MPI_size, on_rank='local'), [float(MPI_rank)]))
 
 
-# @pytest.mark.skipif(MPI_size < 2, reason='Can only run test using mpi')
+@pytest.mark.skipif(not has_mpi, reason='Can only run test using mpi')
 @pytest.mark.parametrize('st', [
     STMPIBuffer(default_population='V1'),
     STCSVMPIBufferV2(cache_dir=tmpdir())
@@ -87,7 +91,7 @@ def test_basic_root(st):
         assert(timestamps is None)
 
 
-# @pytest.mark.skipif(MPI_size < 2, reason='Can only run test using mpi')
+@pytest.mark.skipif(not has_mpi, reason='Can only run test using mpi')
 @pytest.mark.parametrize('st', [
     STMPIBuffer(default_population='V1'),
     STCSVMPIBufferV2(cache_dir=tmpdir())
@@ -111,7 +115,7 @@ def test_split_ids(st):
         assert(df is None)
 
 
-# @pytest.mark.skipif(MPI_size < 2, reason='Can only run test using mpi')
+@pytest.mark.skipif(not has_mpi, reason='Can only run test using mpi')
 @pytest.mark.parametrize('st', [
     STMPIBuffer(default_population='V1'),
     STCSVMPIBufferV2(cache_dir=tmpdir())
@@ -139,7 +143,7 @@ def test_to_dataframe(st):
         assert(df is None)
 
 
-# @pytest.mark.skipif(MPI_size < 2, reason='Can only run test using mpi')
+@pytest.mark.skipif(not has_mpi, reason='Can only run test using mpi')
 @pytest.mark.parametrize('st', [
     STMPIBuffer(default_population='V1'),
     STCSVMPIBufferV2(cache_dir=tmpdir())
@@ -169,7 +173,7 @@ def test_iterator(st):
         assert(len(root_spikes) == 0)
 
 
-@pytest.mark.skipif(MPI_size < 2, reason='Can only run test using mpi')
+@pytest.mark.skipif(not has_mpi, reason='Can only run test using mpi')
 @pytest.mark.parametrize('st', [
     STMPIBuffer(default_population='V1'),
     STCSVMPIBufferV2(cache_dir=tmpdir())
@@ -184,7 +188,7 @@ def test_no_root_spikes(st):
     assert(st.to_dataframe(on_rank='local').shape == (0 if MPI_rank == 0 else 5, 3))
 
 
-# @pytest.mark.skipif(MPI_size < 2, reason='Can only run test using mpi')
+@pytest.mark.skipif(not has_mpi, reason='Can only run test using mpi')
 @pytest.mark.parametrize('st', [
     STMPIBuffer(default_population='V1'),
     STCSVMPIBufferV2(cache_dir=tmpdir())
@@ -199,6 +203,7 @@ def test_root_spikesonly(st):
     assert(st.to_dataframe(on_rank='local').shape == (0 if MPI_rank != 0 else 5, 3))
 
 
+@pytest.mark.skipif(not has_mpi, reason='Can only run test using mpi')
 @pytest.mark.parametrize('st', [
     STMPIBuffer(default_population='V1'),
     STCSVMPIBufferV2(cache_dir=tmpdir())

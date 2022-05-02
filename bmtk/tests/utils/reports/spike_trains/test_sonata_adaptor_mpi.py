@@ -15,9 +15,11 @@ try:
     bcast = comm.bcast
     MPI_rank = comm.Get_rank()
     MPI_size = comm.Get_size()
+    has_mpi = True
 except:
     MPI_rank = 0
     MPI_size = 1
+    has_mpi = False
 
 
 def create_st_buffer_mpi(st_cls):
@@ -42,6 +44,7 @@ def tmpfile():
     return tmp_file
 
 
+@pytest.mark.skipif(not has_mpi, reason='Can only run test using mpi')
 @pytest.mark.parametrize('st_cls', [
     STMPIBuffer,
     STCSVMPIBufferV2
@@ -73,6 +76,7 @@ def test_write_sonata(st_cls, write_fnc):
                 assert(np.allclose(grp['timestamps'][()], [0.1, 0.2, 0.3, 0.4]))
 
 
+@pytest.mark.skipif(not has_mpi, reason='Can only run test using mpi')
 @pytest.mark.parametrize('st_cls', [
     STMPIBuffer,
     STCSVMPIBufferV2
@@ -96,6 +100,7 @@ def test_write_sonata_byid(st_cls, write_fnc):
             assert(len(h5['/spikes/V1']['timestamps'][()]) == MPI_size * 2)
 
 
+@pytest.mark.skipif(not has_mpi, reason='Can only run test using mpi')
 @pytest.mark.parametrize('st_cls', [
     STMPIBuffer,
     STCSVMPIBufferV2
@@ -120,6 +125,7 @@ def test_write_sonata_bytime(st_cls, write_fnc):
             assert(np.all(np.diff(h5['/spikes/V1']['timestamps'][()]) > 0))
 
 
+@pytest.mark.skipif(not has_mpi, reason='Can only run test using mpi')
 @pytest.mark.parametrize('st_cls', [
     STMPIBuffer,
     STCSVMPIBufferV2
