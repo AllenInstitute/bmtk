@@ -22,5 +22,6 @@
 #
 from .spike_trains import SpikeTrains
 from .spike_trains import PoissonSpikeGenerator
+from .spike_trains import GammaSpikeGenerator
 from .core import SortOrder as sort_order, sort_order_lu
 from .core import pop_na

@@ -20,7 +20,9 @@ Welcome to the Brain Modeling Toolkit
    Example Networks <examples>
    Github Profile <https://github.com/AllenInstitute/bmtk.git>
    contributors
+   Register <registration>
    Source Documentation <bmtk/bmtk>
+   
 
 
 The Brain Modeling Toolkit (BMTK) is a python-based software package for building, simulating and analyzing large-scale
