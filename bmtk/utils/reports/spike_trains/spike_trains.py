@@ -197,9 +197,9 @@ class PoissonSpikeGenerator(SpikeGenerator):
                     count = count+1
         if (abs_ref != 0) or (tau_ref != 0):
             fr_actual = count/(tstop-tstart)/len(node_ids)
-            str = ('When using refractory periods, the actual firing rate (%.1f spk/s) may be less than '
-                   'the desired firing rate (%.1f spk/s), particularly for high rates, and saturates at 1/abs_ref. '
-                   'See also GammaSpikeGenerator for more exact firing rates with refractory periods.' % (fr_actual,fr))
+            str = (f'When using refractory periods, the actual firing rate ({fr_actual} spk/s) may be less than '
+                   f'the desired firing rate ({fr} spk/s), particularly for high rates, and saturates at 1/abs_ref. '
+                   'See also GammaSpikeGenerator for more exact firing rates with refractory periods.')
             warnings.warn(str)
 
     def _build_inhomogeneous_fr(self, node_ids, population, fr, times, abs_ref, tau_ref):
