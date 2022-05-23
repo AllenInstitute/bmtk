@@ -30,6 +30,8 @@ from functools import partial
 from .spike_trains import SpikeTrains
 from .spike_trains_api import SpikeTrainsAPI
 
+from matplotlib.ticker import MaxNLocator
+
 
 def __get_spike_trains(spike_trains):
     """Make sure SpikeTrainsAPI object is always returned"""
@@ -154,7 +156,9 @@ def plot_raster(spike_trains, with_histogram=True, population=None, node_groups=
         min_id = np.min([np.min(grp_ids), min_id])
         max_id = np.max([np.max(grp_ids), max_id])
 
-        raster_axes.scatter(grp_spikes['timestamps'], grp_spikes['node_ids'], lw=0, s=8, **node_grp)
+        raster_axes.scatter(grp_spikes['timestamps'], grp_spikes['node_ids'], lw=1, s=12, marker='|',**node_grp)
+        #raster_axes.scatter(grp_spikes['timestamps'], grp_spikes['node_ids'], lw=0, s=8, **node_grp)
+        raster_axes.yaxis.set_major_locator(MaxNLocator(integer=True))
 
     if show_legend:
         raster_axes.legend(loc='upper right')
@@ -168,7 +172,7 @@ def plot_raster(spike_trains, with_histogram=True, population=None, node_groups=
     bottom_axes.set_xlabel('timestamps ({})'.format(spike_trains.units(population=pop)))
 
     if with_histogram:
-        # Add a histogram if necessarry
+        # Add a histogram if necessary
         hist_axes.hist(spikes_df['timestamps'], 100)
         hist_axes.set_xlim(min_ts - 0.5, max_ts + 1)
         hist_axes.axes.get_yaxis().set_visible(False)

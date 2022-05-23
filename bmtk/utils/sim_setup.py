@@ -500,12 +500,13 @@ class EnvBuilder(object):
               spikes_inputs=None, config_file='config.json', **run_args):
 
         config_path = config_file if os.path.isabs(config_file) else os.path.join(self._base_dir, config_file)
+        config_filename = os.path.splitext(os.path.basename(config_file))[0]
         if os.path.exists(config_path):
             logger.info('Configuration file {} already exists, skipping.'.format(config_path))
         else:
             base_config = {
-                'network': os.path.join(self._base_dir, 'circuit_config.json'),
-                'simulation': os.path.join(self._base_dir, 'simulation_config.json')
+                'network': os.path.join(self._base_dir, 'circuit_'+config_filename+'.json'),
+                'simulation': os.path.join(self._base_dir, 'simulation_'+config_filename+'.json')
             }
             self._save_config(base_config, config_path)
 
@@ -513,7 +514,7 @@ class EnvBuilder(object):
         self._create_components_dir(self.components_dir, with_examples=include_examples)
         if use_relative_paths:
             self._add_manifest(self._circuit_config, network_dir=self.network_dir, components_dir=self.components_dir)
-        self._save_config(self._circuit_config, 'circuit_config.json')
+        self._save_config(self._circuit_config, os.path.join(self._base_dir, 'circuit_'+config_filename+'.json'))
 
         selected_ns = self._create_node_sets_file(report_nodes)
         self._add_reports(report_vars, selected_ns)
@@ -546,7 +547,7 @@ class EnvBuilder(object):
             self._add_spikes_inputs(spikes_inputs)
         if use_relative_paths:
             self._add_manifest(self._simulation_config, output_dir=self.output_dir)
-        self._save_config(self._simulation_config, 'simulation_config.json')
+        self._save_config(self._simulation_config, os.path.join(self._base_dir, 'simulation_'+config_filename+'.json'))
 
         self._copy_run_script()
 
