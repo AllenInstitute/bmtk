@@ -620,14 +620,14 @@ class Network(object):
         """
         # Make sure edges exists and are built
         if len(self._connection_maps) == 0:
-            logging.warning('No edges have been made for this network, skipping saving.')
+            logging.warning('No edges have been made for this network, skipping saving of edges file.')
             return
 
         if self._edges_built is False:
             if force_build:
                 self.__build_edges()
             else:
-                logger.warning("Edges are not built. Either call build() or use force_build parameter. Skip saving.")
+                logger.warning("Edges are not built. Either call build() or use force_build parameter. Skip saving of edges file.")
                 return
 
         network_params = [(s, t, s+'_'+t+'_edges.h5', s+'_'+t+'_edge_types.csv') for s, t in list(self._network_conns)]
