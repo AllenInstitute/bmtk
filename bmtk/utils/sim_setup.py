@@ -804,7 +804,7 @@ if __name__ == '__main__':
         if len(cc_args) != 3:
             parser.error('Invalid arguments for current clamp, requires three floating point numbers '
                          '<ampage>,<delay>,<duration> (nA, ms, ms)')
-        iclamp_args = {'amp': cc_args[0], 'delay': cc_args[1], 'duration': cc_args[2]}
+        iclamp_args = {'amp': float(cc_args[0]), 'delay': float(cc_args[1]), 'duration': float(cc_args[2])}
     else:
         iclamp_args = None
 

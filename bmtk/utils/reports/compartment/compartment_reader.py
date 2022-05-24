@@ -24,9 +24,9 @@ class _CompartmentPopulationReaderVer01(CompartmentReaderABC):
             self._gid2data_table[gid] = slice(index_pointer_ds[indx], index_pointer_ds[indx+1])
 
         time_ds = self._mapping['time']
-        self._t_start = np.float(time_ds[0])
-        self._t_stop = np.float(time_ds[1])
-        self._dt = np.float(time_ds[2])
+        self._t_start = float(time_ds[0])
+        self._t_stop = float(time_ds[1])
+        self._dt = float(time_ds[2])
         self._n_steps = int((self._t_stop - self._t_start) / self._dt)
 
         self._custom_cols = {col: grp for col, grp in self._mapping.items() if

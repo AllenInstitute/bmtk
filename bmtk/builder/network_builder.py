@@ -378,7 +378,9 @@ class BioNetBuilder(NetworkBuilder):
             cell. If using models from Allen Cell-Type Database then passing in the name of <model>_fit.json file will
             apply the same model params to all N cells. If you want unique params for each cell pass in a dictionary
             where each key has an associated list of size N::
+
                 dynamics_params={'g_bar': [0.5, 0.2, ...], 'na_bar': [1.653e-5, 9.235e-6, ...]}
+
         :param morphology: string, name of morphology swc file used for creating model_type=biophysical cells
         :param x: list/array of size N floats for each cell's x-axis soma position
         :param y: list/array of size N floats for each cell's y-axis soma position
@@ -465,7 +467,9 @@ class PointNetBuilder(NetworkBuilder):
         :param dynamics_params: A file-name or a dictionary of cell-dynamics parameter values used for generating the
             cell, with parameters matching that of the parameters used to initialize NEST model_template cell. If you
             want unique params for each cell pass in a dictionary where each key has an associated list of size N::
+                
                 dynamics_params={'v_init': [-90, -85, ...], 'v_reset': [-20, -20, ...]}
+                
         :param x: list/array of size N floats for each cell's x-axis position
         :param y: list/array of size N floats for each cell's y-axis position
         :param z: list/array of size N floats for each cell's z-axis position

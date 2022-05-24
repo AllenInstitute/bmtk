@@ -94,7 +94,7 @@ def test_save_weights(network_cls):
     net.add_nodes(N=100, position=[(0.0, 1.0, -1.0)]*100, tags=np.linspace(0, 100, 100), cell_type='PV2', ei='i')
     cm = net.add_edges(source={'ei': 'i'}, target={'ei': 'e'}, connection_rule=lambda s, t: 3,
                        p1='e2i', p2='e2i')  # 200*100 = 60000 edges
-    cm.add_properties(names=['segment', 'distance'], rule=lambda s, t: [1, 0.5], dtypes=[np.int, np.float])
+    cm.add_properties(names=['segment', 'distance'], rule=lambda s, t: [1, 0.5], dtypes=[int, float])
 
     net.add_edges(source=net.nodes(cell_type='Scnna1'), target=net.nodes(cell_type='PV1'),
                   connection_rule=lambda s, t: 2, p1='s2p')  # 100*100 = 20000'

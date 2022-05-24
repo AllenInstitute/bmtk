@@ -11,12 +11,12 @@ class CellVarRecorder(object):
 
     For parallel simulations this class will write to a seperate tmp file on each rank, then use the merge method to
     combine the results. This is less efficent, but doesn't require the user to install mpi4py and build h5py in
-    parallel mode. For better performance use the CellVarRecorderParrallel class instead.
+    parallel mode. For better performance use the CellVarRecorderParallel class instead.
     """
     _io = io
 
     class DataTable(object):
-        """A small struct to keep track of different */data (and buffer) tables"""
+        """A small struct to keep track of different \*/data (and buffer) tables"""
         def __init__(self, var_name):
             self.var_name = var_name
             # If buffering data, buffer_block will be an in-memory array and will write to data_block during when

@@ -35,7 +35,7 @@ def _check_edges(h5, n_edges):
 def test_sort(sort_func, sort_params):
     tmp_edges_h5 = tempfile.NamedTemporaryFile(suffix='.h5')
     source_node_ids = np.tile([0, 1], 5)
-    target_node_ids = np.arange(20, 0, -2, dtype=np.int)
+    target_node_ids = np.arange(20, 0, -2, dtype=int)
     edge_type_ids = np.repeat([103, 100, 104, 101, 102], 2)
     edge_group_ids = np.repeat([1, 0], 5)
     edge_group_indices = np.tile(range(5), 2)
