@@ -569,7 +569,7 @@ class Network(object):
         """
         nodes_file = self.__get_path(nodes_file_name, output_dir, 'nodes.h5')
         if not force_overwrite and os.path.exists(nodes_file):
-            raise Exception('File {} exists. Please use different name or use force_overwrite'.format(nodes_file))
+            raise Exception('File {} already exists. Please delete existing file, use a different name, or use force_overwrite.'.format(nodes_file))
         nf_dir = os.path.dirname(nodes_file)
         if not os.path.exists(nf_dir) and mpi_rank == 0:
             os.makedirs(nf_dir)
