@@ -497,30 +497,35 @@ class EnvBuilder(object):
     def build(self, include_examples=False, use_relative_paths=True, report_vars=[],
               report_nodes=None, clamp_reports=[], current_clamp=None, file_current_clamp=None,
               se_voltage_clamp=None,
-              spikes_inputs=None, config_file='config.json', **run_args):
+              spikes_inputs=None, config_file='config.json', overwrite_config=False, **run_args):
 
         config_path = config_file if os.path.isabs(config_file) else os.path.join(self._base_dir, config_file)
-        if os.path.exists(config_path):
-            logger.info('Configuration file {} already exists, skipping.'.format(config_path))
+        config_filename = os.path.splitext(os.path.basename(config_file))[0]
+        base_config = {
+            'network': os.path.join(self._base_dir, 'circuit_' + config_filename + '.json'),
+            'simulation': os.path.join(self._base_dir, 'simulation_' + config_filename + '.json')
+        }
+        if os.path.exists(config_path) and not overwrite_config:
+            logging.warning(f'Configuration file {config_path} already exists, skipping. Please delete existing file, ' 
+                            f'use a different name, or use overwrite_config=True.')
         else:
-            base_config = {
-                'network': os.path.join(self._base_dir, 'circuit_config.json'),
-                'simulation': os.path.join(self._base_dir, 'simulation_config.json')
-            }
             self._save_config(base_config, config_path)
 
         self._parse_network_dir(self.network_dir)
         self._create_components_dir(self.components_dir, with_examples=include_examples)
         if use_relative_paths:
             self._add_manifest(self._circuit_config, network_dir=self.network_dir, components_dir=self.components_dir)
-        self._save_config(self._circuit_config, 'circuit_config.json')
+        if os.path.exists(base_config['network']) and not overwrite_config:
+            logging.warning(f'Configuration file {base_config["network"]} already exists, skipping. '
+                            f'Please delete existing file, use a different name, or use overwrite_config=True.')
+        else:
+            self._save_config(self._circuit_config, os.path.join(self._base_dir, 'circuit_'+config_filename+'.json'))
 
         selected_ns = self._create_node_sets_file(report_nodes)
         self._add_reports(report_vars, selected_ns)
         self._add_clamp_reports(clamp_reports)
         self._add_output_section()
         self._simulation_config['target_simulator'] = self.target_simulator
-        # self._simulation_config['network'] = os.path.join(self.base_dir, 'circuit_config.json')
         self._add_run_params(**run_args)
 
         if current_clamp is not None:
@@ -546,7 +551,11 @@ class EnvBuilder(object):
             self._add_spikes_inputs(spikes_inputs)
         if use_relative_paths:
             self._add_manifest(self._simulation_config, output_dir=self.output_dir)
-        self._save_config(self._simulation_config, 'simulation_config.json')
+        if os.path.exists(base_config['simulation']) and not overwrite_config:
+            logging.warning(f'Configuration file {base_config["simulation"]} already exists, skipping. '
+                            f'Please delete existing file, use a different name, or use overwrite_config=True.')
+        else:
+            self._save_config(self._simulation_config, os.path.join(self._base_dir, 'simulation_'+config_filename+'.json'))
 
         self._copy_run_script()
 
@@ -651,8 +660,8 @@ class PopNetEnvBuilder(EnvBuilder):
 
 
 def build_env_bionet(base_dir='.', network_dir=None, components_dir=None, node_sets_file=None, include_examples=False,
-                     tstart=0.0, tstop=1000.0, dt=0.001, dL=20.0, spikes_threshold=-15.0, nsteps_block=5000,
-                     v_init=-80.0, celsius=34.0,
+                     overwrite_config=False, tstart=0.0, tstop=1000.0, dt=0.001, dL=20.0, spikes_threshold=-15.0,
+                     nsteps_block=5000, v_init=-80.0, celsius=34.0,
                      report_vars=[], report_nodes=None,
                      clamp_reports=[],
                      current_clamp=None,
@@ -667,10 +676,11 @@ def build_env_bionet(base_dir='.', network_dir=None, components_dir=None, node_s
 
     env_builder.build(include_examples=include_examples, use_relative_paths=use_relative_paths,
                       report_vars=report_vars, report_nodes=report_nodes, clamp_reports=clamp_reports,
-                       current_clamp=current_clamp,
+                      current_clamp=current_clamp,
                       file_current_clamp=file_current_clamp, se_voltage_clamp=se_voltage_clamp, spikes_inputs=spikes_inputs,
                       tstart=tstart, tstop=tstop, dt=dt, dL=dL, spikes_threshold=spikes_threshold,
-                      nsteps_block=nsteps_block, v_init=v_init, celsius=celsius, config_file=config_file)
+                      nsteps_block=nsteps_block, v_init=v_init, celsius=celsius, config_file=config_file,
+                      overwrite_config=overwrite_config)
 
     if compile_mechanisms:
         env_builder.compile_mechanisms()

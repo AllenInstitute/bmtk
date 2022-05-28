@@ -101,7 +101,7 @@ def _plot_helper(plot_fnc, config_file=None, population=None, times=None, title=
     pop, spike_trains = _find_spikes(config_file=config_file, spikes_file=spikes_file, population=population)
 
     # Create the title
-    title = title if title is not None else '{} Nodes'.format(pop)
+    title = title if title is not None else "Nodes in network '{}'".format(pop)
 
     # Get start and stop times from config if needed
     if sonata_config and times is None:

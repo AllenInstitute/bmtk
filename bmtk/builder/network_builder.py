@@ -4,7 +4,7 @@ from .network_adaptors.dm_network import DenseNetwork
 """
 NetworkBuilder is just a slim container for the a NetworkAdaptor class object which does all the work of storing/saving
 the network. Should make it easier to 
- 1) Create/update the backend network-builder strageies on the fly by swapping out different network-adaptors
+ 1) Create/update the backend network-builder strategies on the fly by swapping out different network-adaptors
  2) Change the public interface/documentation without having to mess with the adaptor, see BioNetBuilder, 
     PointNetBuilder, etc.
 """
