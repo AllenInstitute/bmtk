@@ -1120,7 +1120,7 @@ argments</p></li>
 <li><p><strong>iterator</strong> – ‘one_to_one’, ‘all_to_one’, ‘one_to_all’. When ‘connection_rule’ is a function this sets
 how the subsets of source/target nodes are passed in. By default (one-to-one) the connection_rule is
 called for every source/target pair. ‘all-to-one’ will pass in a list of all possible source nodes for
-each target, and ‘all-to-one’ will pass in a list of all possible targets for each source.</p></li>
+each target, and ‘one-to-all’ will pass in a list of all possible targets for each source.</p></li>
 <li><p><strong>model_template</strong> – A predefined or user generated NEURON function name for generating connection. (default:
 exp2syn).</p></li>
 <li><p><strong>dynamics_params</strong> – A json file path or a dictionary of edge/synapse dynamics parameter values used for
@@ -1270,7 +1270,7 @@ multi-graph with N connections between each pair use ‘connection_rule’ param
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span>
     <span class="n">source</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;inh&#39;</span><span class="p">},</span>
     <span class="n">target</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;ei&#39;</span><span class="p">:</span> <span class="s1">&#39;exc&#39;</span><span class="p">,</span> <span class="s1">&#39;etype&#39;</span><span class="p">:</span> <span class="s1">&#39;fast-spiking&#39;</span><span class="p">},</span>
-    <span class="n">connection_rule</span><span class="o">=</span><span class="n">M</span><span class="p">,</span>
+    <span class="n">connection_rule</span><span class="o">=</span><span class="n">N</span><span class="p">,</span>
     <span class="o">...</span>
 <span class="p">)</span>
 </pre></div>
@@ -1309,10 +1309,10 @@ return a list of size N:</p>
 <span class="n">net</span><span class="o">.</span><span class="n">add_edges</span><span class="p">(</span><span class="n">connection_rule</span><span class="o">=</span><span class="n">bulk_conn_fnc</span><span class="p">,</span> <span class="n">iterator</span><span class="o">=</span><span class="s1">&#39;all_to_one&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>There is also a ‘all_to_one’ iterator option that will pair each source node with a list of all available
+<p>There is also a ‘one_to_all’ iterator option that will pair each source node with a list of all available
 target nodes.</p>
 </dd>
-<dt>Edge Properties:</dt><dd><p>Normally the properties used when creating a given type of edge will be shared by all the indvidual
+<dt>Edge Properties:</dt><dd><p>Normally the properties used when creating a given type of edge will be shared by all the individual
 connections. To create unique values for each edge, the add_edges() method returns a ConnectionMap object:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_syn_weight_by_dist</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
     <span class="n">src_pos</span><span class="p">,</span> <span class="n">trg_pos</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">],</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span>
@@ -1343,7 +1343,7 @@ argments</p></li>
 <li><p><strong>iterator</strong> – ‘one_to_one’, ‘all_to_one’, ‘one_to_all’. When ‘connection_rule’ is a function this sets
 how the subsets of source/target nodes are passed in. By default (one-to-one) the connection_rule is
 called for every source/target pair. ‘all-to-one’ will pass in a list of all possible source nodes for
-each target, and ‘all-to-one’ will pass in a list of all possible targets for each source.</p></li>
+each target, and ‘one-to-all’ will pass in a list of all possible targets for each source.</p></li>
 <li><p><strong>edge_type_properties</strong> – properties/attributes of the given edge type</p></li>
 </ul>
 </dd>
@@ -1577,7 +1577,7 @@ argments</p></li>
 <li><p><strong>iterator</strong> – ‘one_to_one’, ‘all_to_one’, ‘one_to_all’. When ‘connection_rule’ is a function this sets
 how the subsets of source/target nodes are passed in. By default (one-to-one) the connection_rule is
 called for every source/target pair. ‘all-to-one’ will pass in a list of all possible source nodes for
-each target, and ‘all-to-one’ will pass in a list of all possible targets for each source.</p></li>
+each target, and ‘one-to-all’ will pass in a list of all possible targets for each source.</p></li>
 <li><p><strong>model_template</strong> – A predefined or user generated NEURON function name for generating connection. (default:
 exp2syn).</p></li>
 <li><p><strong>dynamics_params</strong> – A json file path or a dictionary of edge/synapse dynamics parameter values used for
@@ -1832,6 +1832,7 @@ nodes = 100 in net.nodes(val)</p>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../registration.html">Register</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">bmtk.builder package</a></li>
