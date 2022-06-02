@@ -27,7 +27,7 @@ There are examples of building models and running simulations located in docs/ex
 
 ##### Tests
 
-There are a collection of unit-tests in `bmtk.tests` which can be run using pytest
+There are a collection of unit tests in `bmtk.tests` which can be run using pytest
 
 ```bash
   $ cd bmtk
