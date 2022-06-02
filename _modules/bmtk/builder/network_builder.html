@@ -783,7 +783,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">                net.add_edges(</span>
 <span class="sd">                    source={&#39;ei&#39;: &#39;inh&#39;},</span>
 <span class="sd">                    target={&#39;ei&#39;: &#39;exc&#39;, &#39;etype&#39;: &#39;fast-spiking&#39;},</span>
-<span class="sd">                    connection_rule=M,</span>
+<span class="sd">                    connection_rule=N,</span>
 <span class="sd">                    ...</span>
 <span class="sd">                )</span>
 
@@ -821,11 +821,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <span class="sd">                net.add_edges(connection_rule=bulk_conn_fnc, iterator=&#39;all_to_one&#39;, ...)</span>
 
-<span class="sd">            There is also a &#39;all_to_one&#39; iterator option that will pair each source node with a list of all available</span>
+<span class="sd">            There is also a &#39;one_to_all&#39; iterator option that will pair each source node with a list of all available</span>
 <span class="sd">            target nodes.</span>
 
 <span class="sd">        Edge Properties:</span>
-<span class="sd">            Normally the properties used when creating a given type of edge will be shared by all the indvidual</span>
+<span class="sd">            Normally the properties used when creating a given type of edge will be shared by all the individual</span>
 <span class="sd">            connections. To create unique values for each edge, the add_edges() method returns a ConnectionMap object::</span>
 
 <span class="sd">                def set_syn_weight_by_dist(source, target):</span>
@@ -853,7 +853,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">        :param iterator: &#39;one_to_one&#39;, &#39;all_to_one&#39;, &#39;one_to_all&#39;. When &#39;connection_rule&#39; is a function this sets</span>
 <span class="sd">            how the subsets of source/target nodes are passed in. By default (one-to-one) the connection_rule is</span>
 <span class="sd">            called for every source/target pair. &#39;all-to-one&#39; will pass in a list of all possible source nodes for</span>
-<span class="sd">            each target, and &#39;all-to-one&#39; will pass in a list of all possible targets for each source.</span>
+<span class="sd">            each target, and &#39;one-to-all&#39; will pass in a list of all possible targets for each source.</span>
 <span class="sd">        :param edge_type_properties: properties/attributes of the given edge type</span>
 <span class="sd">        :return: A ConnectionMap object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1034,7 +1034,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">        :param iterator: &#39;one_to_one&#39;, &#39;all_to_one&#39;, &#39;one_to_all&#39;. When &#39;connection_rule&#39; is a function this sets</span>
 <span class="sd">            how the subsets of source/target nodes are passed in. By default (one-to-one) the connection_rule is</span>
 <span class="sd">            called for every source/target pair. &#39;all-to-one&#39; will pass in a list of all possible source nodes for</span>
-<span class="sd">            each target, and &#39;all-to-one&#39; will pass in a list of all possible targets for each source.</span>
+<span class="sd">            each target, and &#39;one-to-all&#39; will pass in a list of all possible targets for each source.</span>
 <span class="sd">        :param model_template: A predefined or user generated NEURON function name for generating connection. (default:</span>
 <span class="sd">            exp2syn).</span>
 <span class="sd">        :param dynamics_params: A json file path or a dictionary of edge/synapse dynamics parameter values used for</span>
@@ -1118,7 +1118,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">        :param iterator: &#39;one_to_one&#39;, &#39;all_to_one&#39;, &#39;one_to_all&#39;. When &#39;connection_rule&#39; is a function this sets</span>
 <span class="sd">            how the subsets of source/target nodes are passed in. By default (one-to-one) the connection_rule is</span>
 <span class="sd">            called for every source/target pair. &#39;all-to-one&#39; will pass in a list of all possible source nodes for</span>
-<span class="sd">            each target, and &#39;all-to-one&#39; will pass in a list of all possible targets for each source.</span>
+<span class="sd">            each target, and &#39;one-to-all&#39; will pass in a list of all possible targets for each source.</span>
 <span class="sd">        :param model_template: A predefined or user generated NEURON function name for generating connection. (default:</span>
 <span class="sd">            exp2syn).</span>
 <span class="sd">        :param dynamics_params: A json file path or a dictionary of edge/synapse dynamics parameter values used for</span>
@@ -1226,6 +1226,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Example Networks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../registration.html">Register</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
