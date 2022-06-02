@@ -10,7 +10,7 @@ Dai et al. Brain Modeling Toolkit: An open-source software suite for multiscale 
 
 ## Level of Support
 
-We are releasing this code to the public as a tool we expect others to use. Questions concerning bugs and related issues are welcomed. We expect to address them promptly, pull requests will vetted by our staff before inclusion.
+We are releasing this code to the public as a tool we expect others to use. Questions concerning bugs and related issues are welcomed. We expect to address them promptly and pull requests will be vetted by our staff before inclusion.
 
 ## Quickstart
 
