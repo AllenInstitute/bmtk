@@ -1,7 +1,8 @@
 Installing the BMTK
 ===================
 
-First time users are encouraged to register `here <https://alleninstitute.github.io/bmtk/registration.html>`_. 
+**Users are encouraged to register** `here <https://secure2.convio.net/allins/site/SPageServer/?pagename=modeling_tools>`_ 
+**to receive updates and other communications, but registration is not required to use the package.** 
 
 The BMTK was developed for use for Python 2.7+ and Python 3.6+. Previous releases can be downloaded from
 `here <https://github.com/AllenInstitute/bmtk/releases>`__. The latest code including newest features and bug fixes

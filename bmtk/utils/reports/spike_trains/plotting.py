@@ -81,7 +81,7 @@ def __get_node_groups(spike_trains, node_groups, population):
 
 
 def plot_raster(spike_trains, with_histogram=True, population=None, node_groups=None, times=None, title=None,
-                show=True, save_as=None):
+                show=True, save_as=None, plt_style=None):
     """will create a raster plot (plus optional histogram) from a SpikeTrains object or SONATA Spike-Trains file. Will
     return the figure
 
@@ -111,6 +111,8 @@ def plot_raster(spike_trains, with_histogram=True, population=None, node_groups=
         save plot.
     :return: matplotlib figure.Figure object
     """
+    if plt_style is not None:
+        plt.style.use(plt_style)
 
     spike_trains = __get_spike_trains(spike_trains=spike_trains)
     pop = __get_population(spike_trains=spike_trains, population=population)
@@ -190,7 +192,7 @@ def moving_average(data, window_size=10):
 
 
 def plot_rates(spike_trains, population=None, node_groups=None, times=None, smoothing=False,
-               smoothing_params=None, title=None, show=True, save_as=None):
+               smoothing_params=None, title=None, show=True, save_as=None, plt_style=None):
     """Calculate and plot the rates of each node in a SpikeTrains object or SONATA Spike-Trains file. If start and stop
     times are not specified from the "times" parameter, will try to parse values from the timestamps data.
 
@@ -219,6 +221,8 @@ def plot_rates(spike_trains, population=None, node_groups=None, times=None, smoo
         save plot.
     :return: matplotlib figure.Figure object
     """
+    if plt_style is not None:
+        plt.style.use(plt_style)
 
     spike_trains = __get_spike_trains(spike_trains=spike_trains)
     pop = __get_population(spike_trains=spike_trains, population=population)
@@ -271,7 +275,7 @@ def plot_rates(spike_trains, population=None, node_groups=None, times=None, smoo
 
 
 def plot_rates_boxplot(spike_trains, population=None, node_groups=None, times=None, title=None, show=True,
-                       save_as=None):
+                       save_as=None, plt_style=None):
     """Creates a box plot of the firing rates taken from a SpikeTrains object or SONATA Spike-Trains file. If start
     and stop times are not specified from the "times" parameter, will try to parse values from the timestamps data.
 
@@ -297,6 +301,9 @@ def plot_rates_boxplot(spike_trains, population=None, node_groups=None, times=No
         save plot.
     :return: matplotlib figure.Figure object
     """
+    if (plt_style is not None):
+        plt.style.use(plt_style)
+
     spike_trains = __get_spike_trains(spike_trains=spike_trains)
     pop = __get_population(spike_trains=spike_trains, population=population)
     node_groups, selected_ids = __get_node_groups(spike_trains=spike_trains, node_groups=node_groups, population=pop)
