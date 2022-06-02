@@ -23,7 +23,7 @@ base requirements from a command-line:
  $ python setup.py install
 ```
 
-There are examples of building models and running simulations located in docs/examples/. Some of the simulation engines may require additonal requirements to run.
+There are examples of building models and running simulations located in docs/examples/. Some of the simulation engines may require additional requirements to run.
 
 ##### Tests
 
