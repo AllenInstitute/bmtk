@@ -6,12 +6,12 @@ The Network Builder
 
 The class for building a brain network is :py:class:`bmtk.builder.NetworkBuilder <bmtk.builder.network.Network>`. This
 should be used whether one is building a biophysically detailed network for BioNet, a point-neuron network for PointNet,
-A filter-based lnp network for FitlerNet, or a population-level network for PopNet. In general it can be used to build
+A filter-based lnp network for FitlerNet, or a population-level network for PopNet. In general, it can be used to build
 any type of heterogeneous parameter multi-graph.
 
 The process of building the network can break down into four parts:
 
-1. Initialize the Network. Here all one needs is a unique name to identify the population of nodes - usually the region
+1. Initialize the Network. Here all one needs is a unique name to identify the population of nodes - usually, the region
    being model
 
 .. code:: python
@@ -60,13 +60,13 @@ The process of building the network can break down into four parts:
 
 Building Nodes
 --------------
-In BMTK and SONATA a node usually is synonymous with a cell (although a node can be used to represent population of
+In BMTK and SONATA a node usually is synonymous with a cell (although a node can be used to represent a population of
 cells with `PopNet <./popnet.html>`_). To add a group of nodes to a network is to use the
 :py:meth:`NetworkBuilder.add_nodes() <bmtk.builder.network.Network.add_nodes>`.
 
 The only thing that is required is an integer value N for the number of individual nodes. The modeler can also pass in
 any parameter they want to describe their model - although SONATA/BMTK does contain a number of reserved node parameters
-that will be useful in generating a instantiatable model.
+that will be useful in generating an instantiable model.
 
 .. code:: python
 
@@ -87,7 +87,7 @@ the ``rotation_angle_xaxis`` and ``rotation_angle_yaxis`` will be unique for eve
    )
 
 
-If a parameter requires compounded data you can use a tuple or a list of tuples. For example we may want to represent a
+If a parameter requires compounded data you can use a tuple or a list of tuples. For example, we may want to represent a
 cell’s position by a range:
 
 
@@ -104,7 +104,7 @@ When :py:meth:`NetworkBuilder.build() <bmtk.builder.network.Network.build>` is c
 to set the **node_id** and **node_type_id** parameter yourself but it’s generally not a good idea.
 
 The :py:meth:`NetworkBuilder.nodes() <bmtk.builder.network.Network.nodes>` will return an iterator of the nodes in a
-network. By default it returns all nodes but one can filter by specific property values. The nodes themselves can have
+network. By default, it returns all nodes but one can filter by specific property values. The nodes themselves can have
 their properties accessed like a dictionary. For example to get all biophysically detailed inh neurons:
 
 .. code:: python
@@ -154,26 +154,26 @@ be instantiated based on the **connectivity_rule** property the user defines. A 
          delay=2.0
    )
 
-1. parameters ``source`` and ``target`` are used to filter out the subset of nodes used pre- and post-synapse, respectively.
-   In this case the source population consist of all inhibitory (ei=inh) neurons, while the target population consists
-   only of excitatory (ei=exc) fast-spiking neurons. If source or target is not specified then  all possible nodes will
+1. parameters ``source`` and ``target`` are used to filter out the subset of nodes used pre-and post-synapse, respectively.
+   In this case, the source population consists of all inhibitory (ei=inh) neurons, while the target population consists
+   only of excitatory (ei=exc) fast-spiking neurons. If the source or target is not specified then all possible nodes will
    be used.
 
-2. ``connection_rule`` is used to determine the number of connections between each source and target node. If the value
+2. ``connection_rule`` is used to determine the number of connections between each source and the target node. If the value
    is given as an integer N then all possible source/target pairs with have N different connections. You can also pass
-   in a list-of-list or a matrix. But usually a user-defined function is used, which will be better described in the
+   in a list-of-list or a matrix. But usually, a user-defined function is used, which will be better described in the
    next section.
 
 3. ``dynamic_parameters``, ``synaptic_model``, ``syn_weight``, and ``delay`` are all shared connection parameters. Like
    with nodes, modelers can choose whatever parameters they deem best to represent their network. A list of useful
    parameters pre-defined by BMTK and SONATA is described below.
 
-Also like the nodes it is possible to have unique values for every individual edges, but it is a little more difficult.
-See section on ConnectionMap for more info.
+Also, like the nodes, it is possible to have unique values for every individual edge, but it is a little more difficult.
+See the section on ConnectionMap for more info.
 
 Connection rules
 ++++++++++++++++
-The connection_rule parameter of add_edges() method will usually be a user defined function (but may also be an integer,
+The connection_rule parameter of add_edges() method will usually be a user-defined function (but may also be an integer,
 list-of-lists, or matrix). The function’s first two parameters will be source and target, Node objects whose properties
 can be accessed like a dictionary. It should return an integer N for the number of connections between the source and
 target, 0 or None if there is no connection.
@@ -216,7 +216,7 @@ When :py:meth:`NetworkBuilder.build() <bmtk.builder.network.Network.build>` is e
 automatically called for all possible source/target pair of nodes and the connectivity matrix will be called.
 
 Sometimes it may be more efficient or necessary to set all incoming (or outgoing) connections in one function. For
-example we may need to limit the total number of synapses on a target. The ``iterator`` parameter allows the modeler to
+example, we may need to limit the total number of synapses on a target. The ``iterator`` parameter allows the modeler to
 change the signature and return values of their connection_rule function. By setting ``iterator`` to **all_to_one**,
 instead of passing in a single source neuron it will pass in a list of all N source neurons, and will expect a
 corresponding list of size N
@@ -232,13 +232,13 @@ corresponding list of size N
       return syn_list
 
 
-There is also a **all_to_one** iterator option that will pair each source node with a list of all available target nodes.
+There is also an **all_to_one** iterator option that will pair each source node with a list of all available target nodes.
 
 
 Individual Edge Properties (The ConnectionMap)
 ++++++++++++++++++++++++++++++++++++++++++++++
-Sometimes it is necessary for each edge to have unique property values. For example the individual syn_weight value for
-each individual synapse may varying depending on the location and type of the pre- and post-synaptic nodes. With nodes
+Sometimes it is necessary for each edge to have unique property values. For example, the individual syn_weight value for
+each synapse may vary depending on the location and type of the pre-and post-synaptic nodes. With nodes,
 you can pass in a list or array of size N for each N node. But when edges are built using a connection_rule function
 the exact number of connections will not be known in advance.
 
@@ -276,8 +276,8 @@ If the ``rule`` requires extra arguments we can use the ``rule_params`` option:
    )
 
 
-It is also possible to set multiple parameters in a single function. For example for each synapse we may want to set
-the distance from the soma, and the neuronal area (soma, apical dendrites, basal dendrites, etc). To do so our ``name``
+It is also possible to set multiple parameters in a single function. For example, for each synapse, we may want to set
+the distance between the soma, and the neuronal area (soma, apical dendrites, basal dendrites, etc). To do so our ``name``
 and ``dtypes`` parameters take a list, and our rule function now returns two values
 
 .. code:: python
@@ -295,16 +295,16 @@ and ``dtypes`` parameters take a list, and our rule function now returns two val
 
 Intra-Network Connections
 +++++++++++++++++++++++++
-Both BMTK and SONATA supports for a network to be built piecemeal and combined into one at simulation time. A cortical
-region will receive inputs from many other regions, and a modeler may want to test the dynamics when different
+Both BMTK and SONATA support a network to be built piecemeal and combined into one at simulation time. A cortical
+the region will receive inputs from many other regions, and a modeler may want to test the dynamics when different
 combinations of inputs are turned on and off. Instead of building multiple models of the region with different inputs,
-instead we can build the nodes, recurrent and inter-network connection each region independently and turn them on and
+instead, we can build the nodes, recurrent and inter-network connections each region independently and turn them on and
 off during the simulation (see `simulation config <./simulators.html#configuration-files>`_)
 
 Creating connections between two different networks is very similar to creating recurrent connections and still use the
 add_edges method. The main difference is for our ``source`` or ``target`` argument, instead of using a dictionary we must
-use the :py:meth:`NetworkBuilder.nodes() <bmtk.builder.network.Network.nodes>` method of another network. For example we
-have two networks called **LGN** and **V1** and we want to create a connect type from LGN’s excitatory neurons (ei=exc)
+use the :py:meth:`NetworkBuilder.nodes() <bmtk.builder.network.Network.nodes>` method of another network. For example, we
+have two networks called **LGN** and **V1** and we want to create a connection type from LGN’s excitatory neurons (ei=exc)
 V1’s pyramidal cells
 
 .. code:: python
@@ -331,7 +331,7 @@ Edge Accessor methods
 :py:meth:`NetworkBuilder.edges() <bmtk.builder.network.Network.edges>`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Method will return an iterator of edges filtered by edge and/or node properties. Each individual edge will be
+The method will return an iterator of edges filtered by edge and/or node properties. Each edge will be
 represented using a :py:class:`Edge <bmtk.builder.edge.Edge>` object
 
 

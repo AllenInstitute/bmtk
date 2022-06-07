@@ -621,25 +621,25 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             
   <section id="simulating-example-networks-with-bionet">
 <h1>Simulating example networks with BioNet<a class="headerlink" href="#simulating-example-networks-with-bionet" title="Permalink to this headline">¶</a></h1>
-<p>To get started with running simulations with BioNet, we recommend to run network examples provided in the directory examples/simulators/bionet:</p>
+<p>To get started with running simulations with BioNet, we recommend running network examples provided in the directory examples/simulators/bionet:</p>
 <ul class="simple">
-<li><p>/14cells : network of 14 cell receiving an external input.</p></li>
-<li><p>/450cells : network of 450 cells receiving an external input</p></li>
+<li><p>/14cells : a network of 14 cells receiving an external input.</p></li>
+<li><p>/450cells : a network of 450 cells receiving an external input</p></li>
 </ul>
-<p>Working through the sections below, you will learn about contents of folders in each example and how to use them to run a simulation.</p>
+<p>Working through the sections below, you will learn about the contents of folders in each example and how to use them to run a simulation.</p>
 <section id="configuring-simulation">
 <h2>Configuring simulation<a class="headerlink" href="#configuring-simulation" title="Permalink to this headline">¶</a></h2>
-<p>All the files listed below and describing the network are listed in the configuration file <cite>config.json</cite> to instruct BioNet where to look for files describing network. Please note that all directory and file names can be adjusted by users as they wish, as long as those names are reflected in the config file. Additionally, the configuration file includes simulation parameters (e.g. duration of simulation and time step, etc).</p>
+<p>All the files listed below describing the network are listed in the configuration file <cite>config.json</cite> to instruct BioNet where to look for files describing the network. Please note that all directory and file names can be adjusted by users as they wish, as long as those names are reflected in the config file. Additionally, the configuration file includes simulation parameters (e.g. duration of simulation and time step, etc).</p>
 <p>Please refer to the <a class="reference external" href="./bionet_config.html">configuration file documentation</a> for details.</p>
 </section>
 <section id="model-description">
 <h2>Model description<a class="headerlink" href="#model-description" title="Permalink to this headline">¶</a></h2>
-<p>The directory <cite>network</cite> contains files that describe parameters of the cells and their connections.</p>
+<p>The directory <cite>network</cite> contains files that describe the parameters of the cells and their connections.</p>
 <p>Cells in modeled networks may be generally categorized as: 1) the simulated cells for which dynamics is explicitly simulated using NEURON and 2) external input cells for which spiking dynamics is not simulated explicitly, but instead loaded from files. The external input cells can influence the simulated cells, but not vice versa.  Thus, such an abstraction is convenient for simulating feedforward inputs.</p>
-<p>The example networks include the simulated cells from primary mouse visual cortex (V1) receiving external inputs from the Lateral Geniculate Nucleu (LGN) and also background input in a form of a Travelling Wave (TW) as shown in the Figure 1 below:</p>
+<p>The example networks include the simulated cells from the primary mouse visual cortex (V1) receiving external inputs from the Lateral Geniculate Nucleu (LGN) and also background input in a form of a Travelling Wave (TW) as shown in Figure 1 below:</p>
 <a class="reference internal image-reference" href="_images/all_network_cropped.png"><img alt="_images/all_network_cropped.png" src="_images/all_network_cropped.png" style="width: 675.0px; height: 433.95px;" /></a>
-<p><strong>Figure 1</strong>. Cells in the example network. Simulated network (V1) includes 14 cells: 10 biophysically detailed (depicted as morphological reconstructions) and 4 Leaky Integrate-and-fire (LIF) (showed as circles). Simulated V1 cells have recurrent connections (hollow arrow) as well as receive feedforward external input (solid arrows) in the form of spikes from the LGN (red circles) and TW cells (dark orange circles).</p>
-<p>A network can be viewed as a graph. Description of a graph needs to specify the properties of the nodes (cells) and edges (connections).  In BioNet (and more generally, in BMTK), each node (edge) belongs to a particular node (edge) type, thus possessing all the properties of that type, but also possessing properties specific to that individual node (edge) instance. Thus, properties of nodes are described using two files: node_file and node_type_file. Similarly edges are described using two files: edges_file, edge_types_file. For node_type_file and edge_type_file we use csv format, whereas for node_file and edge_file — HDF5 format.</p>
+<p><strong>Figure 1</strong>. Cells in the example network. The simulated network (V1) includes 14 cells: 10 biophysically detailed (depicted as morphological reconstructions) and 4 Leaky Integrate-and-fire (LIF) (showed as circles). Simulated V1 cells have recurrent connections (hollow arrows) as well as receive feedforward external input (solid arrows) in the form of spikes from the LGN (red circles) and TW cells (dark orange circles).</p>
+<p>A network can be viewed as a graph. The description of a graph needs to specify the properties of the nodes (cells) and edges (connections).  In BioNet (and more generally, in BMTK), each node (edge) belongs to a particular node (edge) type, thus possessing all the properties of that type, but also possessing properties specific to that individual node (edge) instance. Thus, the properties of nodes are described using two files: node_file and node_type_file. Similarly, edges are described using two files: edges_file, edge_types_file. For node_type_file and edge_type_file we use csv format, whereas for node_file and edge_file — HDF5 format.</p>
 <p><strong>Nodes files:</strong></p>
 <table class="docutils align-default">
 <colgroup>
@@ -697,22 +697,22 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </tbody>
 </table>
 <p>Please refer to the <a class="reference external" href="./network_file_formats.html">network file format documentation</a> for details.</p>
-<p>The spikes times of external cells are precomuted and provided in the directory examples/simulator/NWB_files.</p>
-<p>Each network utilizes models of individual cells, synapses and recording electrodes defined in the examples/simulators/bionet/components/mechanisms directory.</p>
+<p>The spikes times of external cells are precomputed and provided in the directory examples/simulator/NWB_files.</p>
+<p>Each network utilizes models of individual cells, synapses, and recording electrodes defined in the examples/simulators/bionet/components/mechanisms directory.</p>
 <p>The paths to each of these files and directories are specified in the configuration file (see above).</p>
 </section>
 <section id="running-simulation">
 <h2>Running simulation<a class="headerlink" href="#running-simulation" title="Permalink to this headline">¶</a></h2>
-<p>Running simualtions requires the following Python scripts</p>
-<p><cite>run_bionet.py</cite> : main python script which calls BioNet to run simulation</p>
+<p>Running simulations requires the following Python scripts</p>
+<p><cite>run_bionet.py</cite> : main python script which calls BioNet to run the simulation</p>
 <p><cite>set_cell_params.py</cite>: module setting properties of cells</p>
 <p><cite>set_syn_params.py</cite>: module setting properties of synapses</p>
-<p><cite>set_weights.py</cite> : modules allowign to set parameter dependent connection weights</p>
-<p>The example networks use biophysically-detailed models of individual cells, and require additional NEURON channel mechanisms describing dynamics of ionic channels. To compile these NEURON mechanims go to the subdirectory examples/simulators/bionet/components/mechanisms and run the NEURON command:</p>
+<p><cite>set_weights.py</cite> : modules allowing to set parameter-dependent connection weights</p>
+<p>The example networks use biophysically-detailed models of individual cells and require additional NEURON channel mechanisms describing the dynamics of ionic channels. To compile these NEURON mechanisms go to the subdirectory examples/simulators/bionet/components/mechanisms and run the NEURON command:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nrnivmodl</span> <span class="n">modfiles</span><span class="o">/</span>
 </pre></div>
 </div>
-<p>From the directory of the network example you can run a simulation on a single core by executing the main python script with configuration file as a command line argument, as follows:</p>
+<p>From the directory of the network example you can simulate a single core by executing the main python script with a configuration file as a command-line argument, as follows:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">run_bionet</span><span class="o">.</span><span class="n">py</span> <span class="n">config</span><span class="o">.</span><span class="n">json</span>
 </pre></div>
 </div>
@@ -721,17 +721,17 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </pre></div>
 </div>
 <p>In either case, the main script will load the configuration file containing paths to files describing the network and will load and simulate the network.</p>
-<p>When simulation is finished, you will see a message “Simulation completed”.</p>
-<p>BioNet allows saving simulation output in blocks while simulation is still running, giving users an ability to check and analyze intermediate output. During the run you will see some output reporting on the progress of a simulation as follows:</p>
-<p>When simulation completed you will see a message “Simulation completed”.</p>
+<p>When the simulation is finished, you will see a message “Simulation completed”.</p>
+<p>BioNet allows saving simulation output in blocks while the simulation is still running, giving users the ability to check and analyze the intermediate output. During the run you will see some output reporting on the progress of a simulation as follows:</p>
+<p>When the simulation is completed you will see a message “Simulation completed”.</p>
 </section>
 <section id="simulation-output">
 <h2>Simulation output<a class="headerlink" href="#simulation-output" title="Permalink to this headline">¶</a></h2>
 <p>The output directory includes:</p>
 <ul class="simple">
-<li><p>spikes.h5 : HDF5 file containg the spikes of the simulated cells.</p></li>
+<li><p>spikes.h5 : HDF5 file containing the spikes of the simulated cells.</p></li>
 <li><p>cellvars/N.h5 : HDF5 file containing time series recordings of somatic variables  (e.g., somatic voltage, [Ca++]) for cell with node_id=N (there might be multiple such files, up to the number of cells in the model, or none at all, depending on the settings in the simulation config).</p></li>
-<li><p>config.json : a copy of configuration for record keeping</p></li>
+<li><p>config.json : a copy of configuration for record-keeping</p></li>
 <li><p>log.txt : run log file including time-stamped information about the progress of a simulation.</p></li>
 </ul>
 <p>Upon completion you may run the script plot_rasters.py to plot spike rasters of external (Figure 2) as well as simulated (Figure 3) cells:</p>
@@ -748,10 +748,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </section>
 <section id="simulating-your-network-models">
 <h2>Simulating your network models<a class="headerlink" href="#simulating-your-network-models" title="Permalink to this headline">¶</a></h2>
-<p>To run simulations of your network with BioNet, you will first need to provide a pre-built network in the format understood by BioNet. We recommend using <a class="reference external" href="builder">BMTK’s network builder api</a>, but you may also use your own scripts or a third party tool to build a network. As a start we suggest to modify the existing network examples as a quick way of customizing network models and then build your own model following <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples/builder/bionet_14cells">builder examples tutorial</a>.</p>
+<p>To run simulations of your network with BioNet, you will first need to provide a pre-built network in the format understood by BioNet. We recommend using <a class="reference external" href="builder">BMTK’s network builder api</a>, but you may also use your scripts or a third-party tool to build a network. As a start, we suggest modifying the existing network examples as a quick way of customizing network models and then building your own model following <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples/builder/bionet_14cells">builder examples tutorial</a>.</p>
 <p>When you have your custom model built, you will need to specify in your configuration file the paths to the network, components as well as simulation run parameters.</p>
-<p>Just as in the above examples, your run folder should include Python modules: set_cell_params.py, set_syn_params.py, set_weights.py specifying how models of cells, synapses and connection weights are created, as well as a main python script.</p>
-<p>When running different simulations you will rarely need to modify the main Python script running BioNet. Instead, you will commonly need to modify paths to network files or run parameters in the configuration file  to instruct BioNet which model to run and how to run it. Please refer to the <a class="reference external" href="./bionet_config.html">configuration file documentation</a> for details.</p>
+<p>Just as in the above examples, your run folder should include Python modules: set_cell_params.py, set_syn_params.py, set_weights.py specifying how models of cells, synapses, and connection weights are created, as well as the main python script.</p>
+<p>When running different simulations you will rarely need to modify the main Python script running BioNet. Instead, you will commonly need to modify paths to network files or run parameters in the configuration file to instruct BioNet on which model to run and how to run it. Please refer to the <a class="reference external" href="./bionet_config.html">configuration file documentation</a> for details.</p>
 </section>
 </section>
 

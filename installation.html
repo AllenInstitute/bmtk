@@ -626,9 +626,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <p><strong>Users are encouraged to register</strong> <a class="reference external" href="https://secure2.convio.net/allins/site/SPageServer/?pagename=modeling_tools">here</a>
 <strong>to receive updates and other communications, but registration is not required to use the package.</strong></p>
 <p>The BMTK was developed for use for Python 2.7+ and Python 3.6+. Previous releases can be downloaded from
-<a class="reference external" href="https://github.com/AllenInstitute/bmtk/releases">here</a>. The latest code including newest features and bug fixes
-can be found on the <a class="reference external" href="https://github.com/AllenInstitute/bmtk">develop branch of our github repo</a>.</p>
-<p>The base installation, which will let you build networks, parse and analyze simulation reports, require the following
+<a class="reference external" href="https://github.com/AllenInstitute/bmtk/releases">here</a>. The latest code including the newest features and bug fixes
+can be found on the <a class="reference external" href="https://github.com/AllenInstitute/bmtk">develop branch of our GitHub repo</a>.</p>
+<p>The base installation, which will let you build networks, parse and analyze simulation reports, requires the following
 dependencies:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="http://www.numpy.org/">numpy</a></p></li>
@@ -638,15 +638,15 @@ dependencies:</p>
 <li><p><a class="reference external" href="https://pypi.python.org/pypi/jsonschema">jsonschema</a></p></li>
 <li><p><a class="reference external" href="https://docs.pytest.org/en/latest/">pytest</a> [optional for running unit tests]</p></li>
 </ul>
-<p>All components of the BMTK will work on a single machine, but some parts can take advantage of parallelism againsts
+<p>All components of the BMTK will work on a single machine, but some parts can take advantage of parallelism against
 HPC clusters, and requires the following to be installed:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://mpi4py.readthedocs.io/en/stable/">mpi4py</a></p></li>
 </ul>
 <p>For running network simulations BMTK uses existing software which varies depending on the type of simulation you want
 to run. Individual instructions are done for the various requirements of the different simulation engines.</p>
-<section id="installing-latest-from-source">
-<h2>Installing latest from source<a class="headerlink" href="#installing-latest-from-source" title="Permalink to this headline">¶</a></h2>
+<section id="installing-the-latest-from-the-source">
+<h2>Installing the latest from the source<a class="headerlink" href="#installing-the-latest-from-the-source" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/AllenInstitute/bmtk.git
 $ cd bmtk
 $ python setup.py install
@@ -672,11 +672,11 @@ your computer. All you need is the <a class="reference external" href="https://d
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker pull alleninstitute/bmtk
 </pre></div>
 </div>
-<p>There are two main ways of using the bmtk-docker image, either like a command-line application or as a Jupyter Notebook
+<p>There are two main ways of using the bmtk-docker image, either as a command-line application or as a Jupyter Notebook
 server</p>
 <section id="through-the-command-line">
 <h3>Through the command line<a class="headerlink" href="#through-the-command-line" title="Permalink to this headline">¶</a></h3>
-<p>Go to the directory where your BMTK network-builder and/or network-simualtion scripts and supporting files are located
+<p>Go to the directory where your BMTK network-builder and/or network-simulation scripts and supporting files are located
 (<em>local/path</em>) and run the following in a command-line terminal</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker run alleninstitute/bmtk -v local/path:/home/shared/workspace python &lt;my_script&gt;.py &lt;opts&gt;
 </pre></div>
@@ -685,7 +685,7 @@ server</p>
 simulator components, output directories, etc. If your config.json files references anything outside the working
 directory branch things will not work as expected.</p>
 <p><strong>NEURON mechanisms:</strong>
-If you are running BioNet and have special mechanims/mod files that need to be compiled, you can do so by running</p>
+If you are running BioNet and have special mechanisms/mod files that need to be compiled, you can do so by running</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd /path/to/mechanims
 $ docker run -v $(pwd):/home/shared/workspace/mechanisms alleninstitute/bmtk nrnivmodl modfiles/
 </pre></div>
@@ -693,8 +693,8 @@ $ docker run -v $(pwd):/home/shared/workspace/mechanisms alleninstitute/bmtk nrn
 </section>
 <section id="through-jupyter-notebooks">
 <h3>Through Jupyter Notebooks<a class="headerlink" href="#through-jupyter-notebooks" title="Permalink to this headline">¶</a></h3>
-<p>The bmtk-docker image can be run as a jupyter notebook server. Not only will it contain the examples and notebook tutorials
-for you to run, but you can use it to create new bmtk notebooks. In a command line run</p>
+<p>The bmtk-docker image can be run as a jupyter notebook server. Not only will it contain examples and notebook tutorials
+for you to run, but you can use it to create new bmtk notebooks. In a command-line run</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker run -v $(pwd):/home/shared/workspace -p 8888:8888 alleninstitute/bmtk jupyter
 </pre></div>
 </div>
@@ -703,19 +703,19 @@ will be lost once the container is closed.</p>
 </section>
 <section id="through-neuroscience-gateway-nsg">
 <h3>Through Neuroscience Gateway (NSG)<a class="headerlink" href="#through-neuroscience-gateway-nsg" title="Permalink to this headline">¶</a></h3>
-<p>The bmtk can be ran through the Neuroscience Gateway for anyone who has an account.</p>
-<p>For running multi-core BioNet (NEURON based) simulations on the NSG please refer to <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples/bio_nsg_template">Readme file</a>.</p>
+<p>The bmtk can be run through the Neuroscience Gateway for anyone who has an account.</p>
+<p>For running multi-core BioNet (NEURON-based) simulations on the NSG please refer to <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples/bio_nsg_template">Readme file</a>.</p>
 </section>
 </section>
 <section id="running-simulations">
 <h2>Running Simulations<a class="headerlink" href="#running-simulations" title="Permalink to this headline">¶</a></h2>
 <section id="biophysically-detailed-simulations">
 <h3>Biophysically detailed simulations<a class="headerlink" href="#biophysically-detailed-simulations" title="Permalink to this headline">¶</a></h3>
-<p>Running simulations of biophysically detailed, multi-compartmental neuronal models is done with <a class="reference external" href="bionet">BioNet</a> which
+<p>Running simulations of biophysically detailed, multi-compartmental neuronal models are done with <a class="reference external" href="bionet">BioNet</a> which
 uses the NEURON simulator, version 7.4 and above. Precompiled version of NEURON can be downloaded and installed from
 <a class="reference external" href="https://www.neuron.yale.edu/neuron/download/precompiled-installers">here</a>. Make sure to install the Python bindings.</p>
-<p>The precompiled installed version of NEURON may have issues if you are using a Anaconda or Python virtual environment.
-Similarly it will not compile with MPI support so you can’t parallelize the simulation. You can find instructions
+<p>The precompiled installed version of NEURON may have issues if you are using an Anaconda or Python virtual environment.
+Similarly, it will not compile with MPI support so you can’t parallelize the simulation. You can find instructions
 for compiling NEURON for <a class="reference external" href="https://www.neuron.yale.edu/neuron/download/compile_linux">Linux</a>,
 <a class="reference external" href="https://www.neuron.yale.edu/neuron/download/compilestd_osx">Mac</a>, and
 <a class="reference external" href="https://www.neuron.yale.edu/neuron/download/compile_mswin">Windows</a>.</p>
@@ -735,10 +735,10 @@ uses a piece of simulation software called LGNModel developed at the Allen Insti
 is already built into the BMTK and no extra installation instructions are required.</p>
 </section>
 <section id="population-level-models">
-<h3>Population Level Models<a class="headerlink" href="#population-level-models" title="Permalink to this headline">¶</a></h3>
-<p>PopNet will simulate population level firing rate dynamics using <a class="reference external" href="https://github.com/AllenInstitute/dipde">DiPDE</a>. Instructions
+<h3>Population-Level Models<a class="headerlink" href="#population-level-models" title="Permalink to this headline">¶</a></h3>
+<p>PopNet will simulate population-level firing rate dynamics using <a class="reference external" href="https://github.com/AllenInstitute/dipde">DiPDE</a>. Instructions
 for installing DiPDE can be found <a class="reference external" href="http://alleninstitute.github.io/dipde/user.html#quick-start-install-using-pip">here</a>.
-However we recommend installing DiPDE using anaconda:</p>
+However, we recommend installing DiPDE using anaconda:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ conda install -c nicholasc dipde
 </pre></div>
 </div>
