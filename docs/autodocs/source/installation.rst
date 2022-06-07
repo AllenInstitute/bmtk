@@ -29,7 +29,7 @@ to run. Individual instructions are done for the various requirements of the dif
 
 
 Installing the latest from the source
------------------------------
+-------------------------------------
 ::
 
   $ git clone https://github.com/AllenInstitute/bmtk.git
