@@ -5,7 +5,7 @@ FilterNet
    :scale: 40%
 
 FilterNet will simulate the effects of visual stimuli onto a receptive field. It uses LGNModel simulator as a backend, which
-uses neural-filters to simulate firing rates and spike-trains over a given time-course and stimuli. It is based on a
+uses neural filters to simulate firing rates and spike trains over a given time course and stimuli. It is based on a
 `linear-nonlinear-Poisson cascade model <https://en.wikipedia.org/wiki/Linear-nonlinear-Poisson_cascade_model>`_
 with options for choosing different types of spatial, temporal, or spatio-temporal units that have already been
 optimized to closely mimic mammalian thalamic cells:
@@ -19,14 +19,14 @@ FilterNet is very useful for generating spike-trains that will be used as the in
 PointNet, or PopNet. The procedure is as follows:
 
 1. Generate the receptive field network.
-2. Use FilterNet to play images and movies against the receptive field and generate responses of each unit.
+2. Use FilterNet to play images and movies against the receptive field and generate responses for each unit.
 3. Connect the receptive field network created in step #1 to some higher-level cortical circuit.
-4. Use the spike-trains generated in Step #2 to see how the high-level cortical circuit would respond to different stimuli.
+4. Use the spike trains generated in Step #2 to see how the high-level cortical circuit would respond to different stimuli.
 
 
 Inputs
 ------
-Currently FilterNet allows for a number of different types of custom and pre-alligned type of stimuli. To change the
+Currently, FilterNet allows for a number of different types of custom and pre-aligned types of stimuli. To change the
 type of stimuli requires updating the inputs section in the simulation_config.json file like above.
 
 Movie
@@ -96,10 +96,10 @@ Creates a bright (or dark) flash on a gray screen for a limited number of second
       }
    }
 
-* row_size, col_size: width and heigth dimensions of screen in pixels.
+* row_size, col_size: width and height dimensions of screen in pixels.
 * t_on: time (ms) from the beginning on when to start the flash
 * t_off: length (ms) of flash
-* max_intensity: intensity of screen during flash (>0.0 is brighter, <0.0 is darker) compared to gray screen.
+* max_intensity: intensity of screen during flash (>0.0 is brighter, <0.0 is darker) compared to a gray screen.
 
 
 Looming
@@ -120,7 +120,7 @@ Creates a spreading black field originating from the center.
       }
    }
 
-* row_size, col_size: width and heigth dimensions of screen in pixels.
+* row_size, col_size: width and height dimensions of screen in pixels.
 * frame_rate: frames per second
-* gray_screen_dur: durating of initial grey screen (seconds)
-* t_looming: time of looming movie (seconds).
+* gray_screen_dur: duration of the initial grey screen (seconds)
+* t_looming: time of the looming movie (seconds).
