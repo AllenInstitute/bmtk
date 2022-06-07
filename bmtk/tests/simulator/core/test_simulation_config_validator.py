@@ -93,6 +93,6 @@ def test_validate_inputs():
 
 
 if __name__ == '__main__':
-    # test_validate_network()
+    test_validate_network()
     # test_validate_components()
-    test_validate_inputs()
+    # test_validate_inputs()

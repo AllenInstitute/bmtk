@@ -65,7 +65,7 @@ def _find_nodes(population, config=None, nodes_file=None, node_types_file=None):
 def plot_traces(config_file=None, report_name=None, population=None, report_path=None, group_by=None,
                 group_excludes=None, nodes_file=None, node_types_file=None,
                 node_ids=None, sections='origin', average=False, times=None, title=None,
-                show_legend=None, show=True, save_as=None):
+                show_legend=None, show=True, save_as=None, plt_style=None):
     """Plot compartment variables (eg Membrane Voltage, Calcium conc.) traces from the output of simulation. Will
     attempt to look in the SONATA simulation configuration json "reports" sections for any matching "membrane_report"
     outputs with a matching report_name::
@@ -179,5 +179,6 @@ def plot_traces(config_file=None, report_name=None, population=None, report_path
         title=title,
         show_legend=show_legend,
         show=show,
-        save_as=save_as
+        save_as=save_as,
+        plt_style=plt_style
     )

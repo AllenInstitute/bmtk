@@ -162,7 +162,7 @@ class NetworkBuilder(object):
                 net.add_edges(
                     source={'ei': 'inh'},
                     target={'ei': 'exc', 'etype': 'fast-spiking'},
-                    connection_rule=M,
+                    connection_rule=N,
                     ...
                 )
 
@@ -200,11 +200,11 @@ class NetworkBuilder(object):
 
                 net.add_edges(connection_rule=bulk_conn_fnc, iterator='all_to_one', ...)
 
-            There is also a 'all_to_one' iterator option that will pair each source node with a list of all available
+            There is also a 'one_to_all' iterator option that will pair each source node with a list of all available
             target nodes.
 
         Edge Properties:
-            Normally the properties used when creating a given type of edge will be shared by all the indvidual
+            Normally the properties used when creating a given type of edge will be shared by all the individual
             connections. To create unique values for each edge, the add_edges() method returns a ConnectionMap object::
 
                 def set_syn_weight_by_dist(source, target):
@@ -232,7 +232,7 @@ class NetworkBuilder(object):
         :param iterator: 'one_to_one', 'all_to_one', 'one_to_all'. When 'connection_rule' is a function this sets
             how the subsets of source/target nodes are passed in. By default (one-to-one) the connection_rule is
             called for every source/target pair. 'all-to-one' will pass in a list of all possible source nodes for
-            each target, and 'all-to-one' will pass in a list of all possible targets for each source.
+            each target, and 'one-to-all' will pass in a list of all possible targets for each source.
         :param edge_type_properties: properties/attributes of the given edge type
         :return: A ConnectionMap object
         """
@@ -378,7 +378,9 @@ class BioNetBuilder(NetworkBuilder):
             cell. If using models from Allen Cell-Type Database then passing in the name of <model>_fit.json file will
             apply the same model params to all N cells. If you want unique params for each cell pass in a dictionary
             where each key has an associated list of size N::
+
                 dynamics_params={'g_bar': [0.5, 0.2, ...], 'na_bar': [1.653e-5, 9.235e-6, ...]}
+
         :param morphology: string, name of morphology swc file used for creating model_type=biophysical cells
         :param x: list/array of size N floats for each cell's x-axis soma position
         :param y: list/array of size N floats for each cell's y-axis soma position
@@ -411,7 +413,7 @@ class BioNetBuilder(NetworkBuilder):
         :param iterator: 'one_to_one', 'all_to_one', 'one_to_all'. When 'connection_rule' is a function this sets
             how the subsets of source/target nodes are passed in. By default (one-to-one) the connection_rule is
             called for every source/target pair. 'all-to-one' will pass in a list of all possible source nodes for
-            each target, and 'all-to-one' will pass in a list of all possible targets for each source.
+            each target, and 'one-to-all' will pass in a list of all possible targets for each source.
         :param model_template: A predefined or user generated NEURON function name for generating connection. (default:
             exp2syn).
         :param dynamics_params: A json file path or a dictionary of edge/synapse dynamics parameter values used for
@@ -465,7 +467,9 @@ class PointNetBuilder(NetworkBuilder):
         :param dynamics_params: A file-name or a dictionary of cell-dynamics parameter values used for generating the
             cell, with parameters matching that of the parameters used to initialize NEST model_template cell. If you
             want unique params for each cell pass in a dictionary where each key has an associated list of size N::
+                
                 dynamics_params={'v_init': [-90, -85, ...], 'v_reset': [-20, -20, ...]}
+                
         :param x: list/array of size N floats for each cell's x-axis position
         :param y: list/array of size N floats for each cell's y-axis position
         :param z: list/array of size N floats for each cell's z-axis position
@@ -493,7 +497,7 @@ class PointNetBuilder(NetworkBuilder):
         :param iterator: 'one_to_one', 'all_to_one', 'one_to_all'. When 'connection_rule' is a function this sets
             how the subsets of source/target nodes are passed in. By default (one-to-one) the connection_rule is
             called for every source/target pair. 'all-to-one' will pass in a list of all possible source nodes for
-            each target, and 'all-to-one' will pass in a list of all possible targets for each source.
+            each target, and 'one-to-all' will pass in a list of all possible targets for each source.
         :param model_template: A predefined or user generated NEURON function name for generating connection. (default:
             exp2syn).
         :param dynamics_params: A json file path or a dictionary of edge/synapse dynamics parameter values used for

@@ -37,8 +37,8 @@ class SimulationConfigValidator(Draft4Validator):
         validator.validate(file.json)
     """
 
-    def __init__(self, schema, types=(), resolver=None, format_checker=None, file_formats=()):
-        super(SimulationConfigValidator, self).__init__(schema, types, resolver, format_checker)
+    def __init__(self, schema, resolver=None, file_formats=(), **kwargs):
+        super(SimulationConfigValidator, self).__init__(schema, resolver, **kwargs)
 
         # custom parameter
         self.VALIDATORS["exists"] = self._check_path
