@@ -621,19 +621,17 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             
   <section id="configuration-file">
 <h1>Configuration file<a class="headerlink" href="#configuration-file" title="Permalink to this headline">¶</a></h1>
-<p>Configuration file defines the files describing the network, its input as well as run-time parameters. For convenience it is grouped into the following categories:</p>
+<p>The configuration file defines the files describing the network, its input as well as run-time parameters. For convenience it is grouped into the following categories:</p>
 <section id="manifest">
 <h2>Manifest<a class="headerlink" href="#manifest" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div><blockquote>
-<div><p>Includes custom path variables that may be used to build full paths to files. The special variable “${configdir}” in the “$BASE_DIR” stands for the directory where configuration file is located. Users may specify any valid directory for “$BASE_DIR” as well.</p>
-</div></blockquote>
+<div><p>Includes custom path variables that may be used to build full paths to files. The special variable “${configdir}” in the “$BASE_DIR” stands for the directory where the configuration file is located. Users may specify any valid directory for “$BASE_DIR” as well.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;manifest&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="s2">&quot;$BASE_DIR&quot;</span><span class="p">:</span>    <span class="s2">&quot;$</span><span class="si">{configdir}</span><span class="s2">&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;$OUTPUT_DIR&quot;</span><span class="p">:</span>  <span class="s2">&quot;$BASE_DIR/output&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;$INPUT_DIR&quot;</span><span class="p">:</span>   <span class="s2">&quot;$BASE_DIR/../../NWB_files&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;$NETWORK_DIR&quot;</span><span class="p">:</span> <span class="s2">&quot;$BASE_DIR/network&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;$COMPONENT_DIR&quot;</span><span class="p">:</span><span class="s2">&quot;$BASE_DIR/../components&quot;</span>
+  <span class="s2">&quot;$BASE_DIR&quot;</span><span class="p">:</span>    <span class="s2">&quot;$</span><span class="si">{configdir}</span><span class="s2">&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;$OUTPUT_DIR&quot;</span><span class="p">:</span>  <span class="s2">&quot;$BASE_DIR/output&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;$INPUT_DIR&quot;</span><span class="p">:</span>   <span class="s2">&quot;$BASE_DIR/../../NWB_files&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;$NETWORK_DIR&quot;</span><span class="p">:</span> <span class="s2">&quot;$BASE_DIR/network&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;$COMPONENT_DIR&quot;</span><span class="p">:</span><span class="s2">&quot;$BASE_DIR/../components&quot;</span>
 <span class="p">},</span>
 </pre></div>
 </div>
@@ -642,18 +640,16 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <section id="run">
 <h2>Run<a class="headerlink" href="#run" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div><blockquote>
-<div><p>Includes run time parameters</p>
-</div></blockquote>
+<div><p>Includes run-time parameters</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;run&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="s2">&quot;tstop&quot;</span><span class="p">:</span><span class="mf">3000.0</span><span class="p">,</span>                 <span class="c1"># run time (ms)</span>
-      <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>                      <span class="c1"># time step (ms)</span>
-      <span class="s2">&quot;dL&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>                       <span class="c1"># length of compartments (i.e., segments) (um)</span>
-      <span class="s2">&quot;overwrite_output_dir&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>   <span class="c1"># if True: will overwrite the output directory; if False: will issue an error that directory exists</span>
-      <span class="s2">&quot;spike_threshold&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">15</span><span class="p">,</span>         <span class="c1"># will record a spike when membrane voltage (mV) is exceeded</span>
-      <span class="s2">&quot;nsteps_block&quot;</span><span class="p">:</span><span class="mi">5000</span><span class="p">,</span>            <span class="c1"># will write to disk data after this many steps</span>
-      <span class="s2">&quot;save_cell_vars&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;v&quot;</span><span class="p">,</span> <span class="s2">&quot;cai&quot;</span><span class="p">],</span> <span class="c1"># save somatic variables in the list</span>
-      <span class="s2">&quot;calc_ecp&quot;</span><span class="p">:</span> <span class="n">true</span>                <span class="c1"># calculate ExtraCellular Potential (ECP): True or False</span>
+  <span class="s2">&quot;tstop&quot;</span><span class="p">:</span><span class="mf">3000.0</span><span class="p">,</span>         <span class="c1"># run time (ms)</span>
+  <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>          <span class="c1"># time step (ms)</span>
+  <span class="s2">&quot;dL&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>           <span class="c1"># length of compartments (i.e., segments) (um)</span>
+  <span class="s2">&quot;overwrite_output_dir&quot;</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>   <span class="c1"># if True: will overwrite the output directory; if False: will issue an error that directory exists</span>
+  <span class="s2">&quot;spike_threshold&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">15</span><span class="p">,</span>     <span class="c1"># will record a spike when membrane voltage (mV) is exceeded</span>
+  <span class="s2">&quot;nsteps_block&quot;</span><span class="p">:</span><span class="mi">5000</span><span class="p">,</span>        <span class="c1"># will write to disk data after this many steps</span>
+  <span class="s2">&quot;save_cell_vars&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;v&quot;</span><span class="p">,</span> <span class="s2">&quot;cai&quot;</span><span class="p">],</span> <span class="c1"># save somatic variables in the list</span>
+  <span class="s2">&quot;calc_ecp&quot;</span><span class="p">:</span> <span class="n">true</span>        <span class="c1"># calculate ExtraCellular Potential (ECP): True or False</span>
 <span class="p">},</span>
 </pre></div>
 </div>
@@ -662,12 +658,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <section id="conditions">
 <h2>Conditions<a class="headerlink" href="#conditions" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div><blockquote>
 <div><p>Includes information about the initial conditions:</p>
-</div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;conditions&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="s2">&quot;celsius&quot;</span><span class="p">:</span> <span class="mf">34.0</span><span class="p">,</span>        <span class="c1"># temperature (C)</span>
-      <span class="s2">&quot;v_init&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">80</span>           <span class="c1"># initial membrane voltage (mV)</span>
+  <span class="s2">&quot;celsius&quot;</span><span class="p">:</span> <span class="mf">34.0</span><span class="p">,</span>    <span class="c1"># temperature (C)</span>
+  <span class="s2">&quot;v_init&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">80</span>       <span class="c1"># initial membrane voltage (mV)</span>
 <span class="p">},</span>
 </pre></div>
 </div>
@@ -676,11 +670,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <section id="node-id-selections">
 <h2>Node_id selections<a class="headerlink" href="#node-id-selections" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div><blockquote>
 <div><p>Defines selections of cells. For example, this way can specify the cells (node_ids) for which variables will be saved</p>
-</div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;node_id_selections&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="s2">&quot;save_cell_vars&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">100</span><span class="p">]</span>
+  <span class="s2">&quot;save_cell_vars&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">100</span><span class="p">]</span>
 <span class="p">},</span>
 </pre></div>
 </div>
@@ -689,19 +681,17 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <section id="input">
 <h2>Input<a class="headerlink" href="#input" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div><blockquote>
-<div><p>Defines spike_trains for the the external inputs</p>
-</div></blockquote>
+<div><p>Defines spike_trains for the external inputs</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="p">[</span>
-      <span class="p">{</span>
-        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;external_spikes&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;nwb&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="s2">&quot;$INPUT_DIR/lgn_spikes.nwb&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;source_nodes&quot;</span><span class="p">:</span> <span class="s2">&quot;LGN&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;trial&quot;</span><span class="p">:</span> <span class="s2">&quot;trial_0&quot;</span>
-      <span class="p">},</span>
-      <span class="o">...</span>
-      <span class="p">]</span>
+  <span class="p">{</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;external_spikes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;nwb&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="s2">&quot;$INPUT_DIR/lgn_spikes.nwb&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;source_nodes&quot;</span><span class="p">:</span> <span class="s2">&quot;LGN&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;trial&quot;</span><span class="p">:</span> <span class="s2">&quot;trial_0&quot;</span>
+  <span class="p">},</span>
+  <span class="o">...</span>
+  <span class="p">]</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -709,16 +699,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <section id="output">
 <h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
 <blockquote>
-<div><blockquote>
 <div><p>Defines file names for the output</p>
-</div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="s2">&quot;log_file&quot;</span><span class="p">:</span>             <span class="s2">&quot;$OUTPUT_DIR/log.txt&quot;</span><span class="p">,</span>          <span class="c1"># log file</span>
-      <span class="s2">&quot;spikes_ascii_file&quot;</span><span class="p">:</span>    <span class="s2">&quot;$OUTPUT_DIR/spikes.txt&quot;</span><span class="p">,</span>       <span class="c1"># file for spikes in ascii format</span>
-      <span class="s2">&quot;spikes_hdf5_file&quot;</span><span class="p">:</span>     <span class="s2">&quot;$OUTPUT_DIR/spikes.h5&quot;</span><span class="p">,</span>        <span class="c1"># file for spikes in HDF5 format</span>
-      <span class="s2">&quot;cell_vars_dir&quot;</span><span class="p">:</span>        <span class="s2">&quot;$OUTPUT_DIR/cellvars&quot;</span><span class="p">,</span>         <span class="c1"># folder to save variables from individual cells</span>
-      <span class="s2">&quot;ecp_file&quot;</span><span class="p">:</span>             <span class="s2">&quot;$OUTPUT_DIR/ecp.h5&quot;</span><span class="p">,</span>           <span class="c1"># file to save extracellular potential</span>
-      <span class="s2">&quot;output_dir&quot;</span><span class="p">:</span>           <span class="s2">&quot;$OUTPUT_DIR&quot;</span>                   <span class="c1"># output directory</span>
+  <span class="s2">&quot;log_file&quot;</span><span class="p">:</span>     <span class="s2">&quot;$OUTPUT_DIR/log.txt&quot;</span><span class="p">,</span>      <span class="c1"># log file</span>
+  <span class="s2">&quot;spikes_ascii_file&quot;</span><span class="p">:</span>    <span class="s2">&quot;$OUTPUT_DIR/spikes.txt&quot;</span><span class="p">,</span>   <span class="c1"># file for spikes in ascii format</span>
+  <span class="s2">&quot;spikes_hdf5_file&quot;</span><span class="p">:</span> <span class="s2">&quot;$OUTPUT_DIR/spikes.h5&quot;</span><span class="p">,</span>    <span class="c1"># file for spikes in HDF5 format</span>
+  <span class="s2">&quot;cell_vars_dir&quot;</span><span class="p">:</span>    <span class="s2">&quot;$OUTPUT_DIR/cellvars&quot;</span><span class="p">,</span>     <span class="c1"># folder to save variables from individual cells</span>
+  <span class="s2">&quot;ecp_file&quot;</span><span class="p">:</span>     <span class="s2">&quot;$OUTPUT_DIR/ecp.h5&quot;</span><span class="p">,</span>       <span class="c1"># file to save extracellular potential</span>
+  <span class="s2">&quot;output_dir&quot;</span><span class="p">:</span>       <span class="s2">&quot;$OUTPUT_DIR&quot;</span>           <span class="c1"># output directory</span>
 <span class="p">},</span>
 </pre></div>
 </div>
@@ -729,24 +717,24 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <blockquote>
 <div><p>The “components” grouping includes paths to directories containing building blocks of a network model</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;components&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="s2">&quot;morphologies_dir&quot;</span><span class="p">:</span>             <span class="s2">&quot;$COMPONENT_DIR/biophysical/morphology&quot;</span><span class="p">,</span>        <span class="c1"># morphologies</span>
-      <span class="s2">&quot;synaptic_models_dir&quot;</span><span class="p">:</span>          <span class="s2">&quot;$COMPONENT_DIR/synaptic_models&quot;</span><span class="p">,</span>               <span class="c1"># synaptic models</span>
-      <span class="s2">&quot;mechanisms_dir&quot;</span><span class="p">:</span>               <span class="s2">&quot;$COMPONENT_DIR/mechanisms&quot;</span><span class="p">,</span>                    <span class="c1"># NEURON mechanisms</span>
-      <span class="s2">&quot;biophysical_neuron_models_dir&quot;</span><span class="p">:</span><span class="s2">&quot;$COMPONENT_DIR/biophysical/electrophysiology&quot;</span><span class="p">,</span> <span class="c1"># parameters of biophysical models</span>
-      <span class="s2">&quot;point_neuron_models_dir&quot;</span><span class="p">:</span>      <span class="s2">&quot;$COMPONENT_DIR/intfire&quot;</span><span class="p">,</span>                       <span class="c1"># parameters of point neuron models</span>
-      <span class="s2">&quot;templates_dir&quot;</span><span class="p">:</span>                <span class="s2">&quot;$COMPONENT_DIR/hoc_templates&quot;</span>                  <span class="c1"># NEURON HOC templates</span>
+  <span class="s2">&quot;morphologies_dir&quot;</span><span class="p">:</span>     <span class="s2">&quot;$COMPONENT_DIR/biophysical/morphology&quot;</span><span class="p">,</span>    <span class="c1"># morphologies</span>
+  <span class="s2">&quot;synaptic_models_dir&quot;</span><span class="p">:</span>      <span class="s2">&quot;$COMPONENT_DIR/synaptic_models&quot;</span><span class="p">,</span>       <span class="c1"># synaptic models</span>
+  <span class="s2">&quot;mechanisms_dir&quot;</span><span class="p">:</span>       <span class="s2">&quot;$COMPONENT_DIR/mechanisms&quot;</span><span class="p">,</span>            <span class="c1"># NEURON mechanisms</span>
+  <span class="s2">&quot;biophysical_neuron_models_dir&quot;</span><span class="p">:</span><span class="s2">&quot;$COMPONENT_DIR/biophysical/electrophysiology&quot;</span><span class="p">,</span> <span class="c1"># parameters of biophysical models</span>
+  <span class="s2">&quot;point_neuron_models_dir&quot;</span><span class="p">:</span>  <span class="s2">&quot;$COMPONENT_DIR/intfire&quot;</span><span class="p">,</span>           <span class="c1"># parameters of point neuron models</span>
+  <span class="s2">&quot;templates_dir&quot;</span><span class="p">:</span>        <span class="s2">&quot;$COMPONENT_DIR/hoc_templates&quot;</span>          <span class="c1"># NEURON HOC templates</span>
 <span class="p">},</span>
 </pre></div>
 </div>
 </div></blockquote>
 </section>
-<section id="recording-extracelullar-electrode">
-<h2>Recording Extracelullar Electrode<a class="headerlink" href="#recording-extracelullar-electrode" title="Permalink to this headline">¶</a></h2>
+<section id="recording-extracellular-electrode">
+<h2>Recording Extracellular Electrode<a class="headerlink" href="#recording-extracellular-electrode" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>Includes parameters defining extracellular electrodes</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;recXelectrode&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="s2">&quot;positions&quot;</span><span class="p">:</span> <span class="s2">&quot;$COMPONENT_DIR/recXelectrodes/linear_electrode.csv&quot;</span>
-      <span class="p">},</span>
+  <span class="s2">&quot;positions&quot;</span><span class="p">:</span> <span class="s2">&quot;$COMPONENT_DIR/recXelectrodes/linear_electrode.csv&quot;</span>
+  <span class="p">},</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -757,24 +745,24 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <div><p>Includes files defining nodes and edges:</p>
 </div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;networks&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="s2">&quot;nodes&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">{</span>
-          <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;V1&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;nodes_file&quot;</span><span class="p">:</span> <span class="s2">&quot;$NETWORK_DIR/v1_nodes.h5&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;node_types_file&quot;</span><span class="p">:</span> <span class="s2">&quot;$NETWORK_DIR/v1_node_types.csv&quot;</span>
-        <span class="p">},</span>
-              <span class="o">...</span>
-      <span class="p">],</span>
-
-      <span class="s2">&quot;edges&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="p">{</span>
-          <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="s2">&quot;V1&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;V1&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;edges_file&quot;</span><span class="p">:</span> <span class="s2">&quot;$NETWORK_DIR/v1_v1_edges.h5&quot;</span><span class="p">,</span>
-          <span class="s2">&quot;edge_types_file&quot;</span><span class="p">:</span> <span class="s2">&quot;$NETWORK_DIR/v1_v1_edge_types.csv&quot;</span>
-        <span class="p">},</span>
+  <span class="s2">&quot;nodes&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;V1&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;nodes_file&quot;</span><span class="p">:</span> <span class="s2">&quot;$NETWORK_DIR/v1_nodes.h5&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;node_types_file&quot;</span><span class="p">:</span> <span class="s2">&quot;$NETWORK_DIR/v1_node_types.csv&quot;</span>
+    <span class="p">},</span>
       <span class="o">...</span>
-      <span class="p">]</span>
+  <span class="p">],</span>
+
+  <span class="s2">&quot;edges&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="s2">&quot;V1&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;V1&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;edges_file&quot;</span><span class="p">:</span> <span class="s2">&quot;$NETWORK_DIR/v1_v1_edges.h5&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;edge_types_file&quot;</span><span class="p">:</span> <span class="s2">&quot;$NETWORK_DIR/v1_v1_edge_types.csv&quot;</span>
+    <span class="p">},</span>
+  <span class="o">...</span>
+  <span class="p">]</span>
 <span class="p">}</span>
 </pre></div>
 </div>

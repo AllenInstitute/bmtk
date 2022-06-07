@@ -627,7 +627,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <a class="reference internal image-reference" href="_images/bmtk_architecture_filternet_highlight.jpg"><img alt="_images/bmtk_architecture_filternet_highlight.jpg" src="_images/bmtk_architecture_filternet_highlight.jpg" style="width: 433.6px; height: 167.20000000000002px;" /></a>
 </figure>
 <p>FilterNet will simulate the effects of visual stimuli onto a receptive field. It uses LGNModel simulator as a backend, which
-uses neural-filters to simulate firing rates and spike-trains over a given time-course and stimuli. It is based on a
+uses neural filters to simulate firing rates and spike trains over a given time course and stimuli. It is based on a
 <a class="reference external" href="https://en.wikipedia.org/wiki/Linear-nonlinear-Poisson_cascade_model">linear-nonlinear-Poisson cascade model</a>
 with options for choosing different types of spatial, temporal, or spatio-temporal units that have already been
 optimized to closely mimic mammalian thalamic cells:</p>
@@ -638,13 +638,13 @@ optimized to closely mimic mammalian thalamic cells:</p>
 PointNet, or PopNet. The procedure is as follows:</p>
 <ol class="arabic simple">
 <li><p>Generate the receptive field network.</p></li>
-<li><p>Use FilterNet to play images and movies against the receptive field and generate responses of each unit.</p></li>
+<li><p>Use FilterNet to play images and movies against the receptive field and generate responses for each unit.</p></li>
 <li><p>Connect the receptive field network created in step #1 to some higher-level cortical circuit.</p></li>
-<li><p>Use the spike-trains generated in Step #2 to see how the high-level cortical circuit would respond to different stimuli.</p></li>
+<li><p>Use the spike trains generated in Step #2 to see how the high-level cortical circuit would respond to different stimuli.</p></li>
 </ol>
 <section id="inputs">
 <h2>Inputs<a class="headerlink" href="#inputs" title="Permalink to this headline">¶</a></h2>
-<p>Currently FilterNet allows for a number of different types of custom and pre-alligned type of stimuli. To change the
+<p>Currently, FilterNet allows for a number of different types of custom and pre-aligned types of stimuli. To change the
 type of stimuli requires updating the inputs section in the simulation_config.json file like above.</p>
 <section id="movie">
 <h3>Movie<a class="headerlink" href="#movie" title="Permalink to this headline">¶</a></h3>
@@ -710,10 +710,10 @@ type of stimuli requires updating the inputs section in the simulation_config.js
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>row_size, col_size: width and heigth dimensions of screen in pixels.</p></li>
+<li><p>row_size, col_size: width and height dimensions of screen in pixels.</p></li>
 <li><p>t_on: time (ms) from the beginning on when to start the flash</p></li>
 <li><p>t_off: length (ms) of flash</p></li>
-<li><p>max_intensity: intensity of screen during flash (&gt;0.0 is brighter, &lt;0.0 is darker) compared to gray screen.</p></li>
+<li><p>max_intensity: intensity of screen during flash (&gt;0.0 is brighter, &lt;0.0 is darker) compared to a gray screen.</p></li>
 </ul>
 </section>
 <section id="looming">
@@ -733,10 +733,10 @@ type of stimuli requires updating the inputs section in the simulation_config.js
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>row_size, col_size: width and heigth dimensions of screen in pixels.</p></li>
+<li><p>row_size, col_size: width and height dimensions of screen in pixels.</p></li>
 <li><p>frame_rate: frames per second</p></li>
-<li><p>gray_screen_dur: durating of initial grey screen (seconds)</p></li>
-<li><p>t_looming: time of looming movie (seconds).</p></li>
+<li><p>gray_screen_dur: duration of the initial grey screen (seconds)</p></li>
+<li><p>t_looming: time of the looming movie (seconds).</p></li>
 </ul>
 </section>
 </section>

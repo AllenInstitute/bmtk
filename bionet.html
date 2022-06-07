@@ -629,10 +629,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <p>BioNet is a high-level interface to <a class="reference external" href="http://neuron.yale.edu/neuron/">NEURON</a> that facilitates simulations of
 large-scale networks of multicompartmental neurons. Some of its main features include:</p>
 <ul class="simple">
-<li><p>Automatically integrates MPI for parallel simulations without the need of extra coding.</p></li>
+<li><p>Automatically integrates MPI for parallel simulations without the need for extra coding.</p></li>
 <li><p>Supports models and morphologies from the Allen <a class="reference external" href="http://celltypes.brain-map.org/data">Cell-Types Database</a>, as well
 as custom hoc and NeuroML2 cell and synapse models.</p></li>
-<li><p>Use spike-trains, synaptic connections, current clamps or even extracellular stimulation to drive network firing.</p></li>
+<li><p>Use spike-trains, synaptic connections, current clamps, or even extracellular stimulation to drive network firing.</p></li>
 <li><p>Can simulate extracellular field recordings.</p></li>
 </ul>
 <section id="inputs">
@@ -644,7 +644,7 @@ following the rules specified in the <a class="reference external" href="https:/
 <p>The modeler may wish to have certain cells in the circuit generate a pre-arranged series of spikes to drive the network.
 These cells must have <code class="docutils literal notranslate"><span class="pre">model_type</span></code> value <code class="docutils literal notranslate"><span class="pre">virtual</span></code> and are not actual cell objects (you can’t record from them). You
 may use either a <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#spike-file">SONATA spike file</a>,
-an NWB file, or a space-separated csv file with columns <strong>node_id</strong>, <strong>population</strong>, and <strong>timestamps</strong>. The following
+an NWB file, or a space-separated CSV file with columns <strong>node_id</strong>, <strong>population</strong>, and <strong>timestamps</strong>. The following
 shows some examples of how to generate <a class="reference external" href="./analyzer.html#creating-spike-trains">spike-train files using bmtk</a>.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
@@ -657,14 +657,14 @@ shows some examples of how to generate <a class="reference external" href="./ana
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>module:  either sonata, hdf5, csv, or nwb: depending on the format of the spikes file</p></li>
+<li><p>module:  either sonata, hdf5, CSV, or nwb: depending on the format of the spikes file</p></li>
 <li><p><a class="reference external" href="./simulators.html#node-sets">node_set</a>: used to filter which cells will receive the inputs</p></li>
 <li><p>input_file: path to file contain spike-trains for one or mode node</p></li>
 </ul>
 </section>
 <section id="current-clamp">
 <h3>Current Clamp<a class="headerlink" href="#current-clamp" title="Permalink to this headline">¶</a></h3>
-<p>May use one step current clamp on multiple nodes, or have one node receive multiple current injections. Currently ;)
+<p>May use one step current clamp-on multiple nodes, or have one node receive multiple current injections. Currently ;)
 only support injections at the soma.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="nt">&quot;current_clamp_1&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
@@ -691,7 +691,7 @@ only support injections at the soma.</p>
 </section>
 <section id="extracellular-stimulation">
 <h3>Extracellular Stimulation<a class="headerlink" href="#extracellular-stimulation" title="Permalink to this headline">¶</a></h3>
-<p>Allows for a set of external electrodes to provide a continuous stimulation in the neuropil. Requires a space-separated csv file with one row for each electrode:</p>
+<p>Allows for a set of external electrodes to provide a continuous stimulation in the neuropil. Requires a space-separated CSV file with one row for each electrode:</p>
 <div class="highlight-default notranslate" id="xstim-electrode-csv"><div class="highlight"><pre><span></span><span class="n">ip</span> <span class="n">pos_x</span> <span class="n">pos_y</span> <span class="n">pos_z</span> <span class="n">rotation_x</span> <span class="n">rotation_y</span> <span class="n">rotation_z</span>
 <span class="mi">0</span> <span class="mf">6.1803398874989481</span> <span class="mf">0.0</span> <span class="mf">19.021130325903069</span> <span class="mf">0.0</span> <span class="mf">0.0</span> <span class="mf">0.0</span>
 </pre></div>
@@ -729,8 +729,8 @@ only support injections at the soma.</p>
 <h2>Outputs<a class="headerlink" href="#outputs" title="Permalink to this headline">¶</a></h2>
 <section id="spikes">
 <h3>Spikes<a class="headerlink" href="#spikes" title="Permalink to this headline">¶</a></h3>
-<p>By default all non-virtual cells in the circuit will have all their spikes at the soma recorded. The “spike_threadhold”
-parameter in the “run” block of the simulation config is used to determine what counts as a spike for a conductance model
+<p>By default, all non-virtual cells in the circuit will have all their spikes at the soma recorded. The “spike_threadhold”
+the parameter in the “run” block of the simulation config is used to determine what counts as a spike for a conductance model
 cell.</p>
 </section>
 <section id="membrane-and-intracellular-variables">
@@ -758,22 +758,22 @@ for more information about how multi-segment recordings are represented.</p>
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>variable_name: name of variable being recorded, will depend on the cell model</p></li>
+<li><p>variable_name: name of the variable being recorded, will depend on the cell model</p></li>
 <li><p>cells: a <a class="reference external" href="./simulators.html#node-sets">node_set</a> to filter out what cells to record.</p></li>
 <li><p>sections: either “all”, “soma”, “basal” or “apical”</p></li>
-<li><p>file_name: name of file where traces will be recorded, under the “output_dir”. If not specified the the report title
+<li><p>file_name: name of the file where traces will be recorded, under the “output_dir”. If not specified the report title
 will be used, eg “calcium_concentration.h5” and “membrane_potential.h5”</p></li>
 </ul>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Disk space can be an issue when recording membrane variables. For large networks recording all segments or all cells, every for a 1 second simulation, can cause BMTK to try to write output files in the 100’s of GB or even TB.</p>
+<p>Disk space can be an issue when recording membrane variables. For large networks recording all segments or all cells, every 1-second simulation, can cause BMTK to try to write output files in the 100s of GB or even TB.</p>
 </div>
 </section>
 <section id="extracellular-potential">
 <h3>Extracellular Potential<a class="headerlink" href="#extracellular-potential" title="Permalink to this headline">¶</a></h3>
 <p>Will simulate recording from an extracellular electrode placed in the neuropil. See
 <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#extracellular-report">SONATA documentation</a>.
-Requires a space-separated csv file to specify the location of each recording channel:</p>
+Requires a space-separated CSV file to specify the location of each recording channel:</p>
 <div class="highlight-default notranslate" id="components-xelectrode-linear-probe-csv"><div class="highlight"><pre><span></span><span class="n">channel</span> <span class="n">x_pos</span> <span class="n">y_pos</span> <span class="n">z_pos</span>
 <span class="mi">0</span> <span class="mf">10.0</span> <span class="mi">0</span> <span class="mf">5.0</span>
 <span class="mi">1</span> <span class="mf">10.0</span> <span class="o">-</span><span class="mi">10</span> <span class="mf">5.0</span>
@@ -796,12 +796,12 @@ Requires a space-separated csv file to specify the location of each recording ch
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>cells: a <a class="reference external" href="./simulators.html#node-sets">node_set</a> to filter out what cells will contribute to the ecp.</p></li>
+<li><p>cells: a <a class="reference external" href="./simulators.html#node-sets">node_set</a> to filter out what cells will contribute to the ECP.</p></li>
 <li><p>variable_name: name of contributing variable, v for membrane potential</p></li>
 <li><p>electrode_positions: name of electrode placement file</p></li>
-<li><p>contributions_dir: The output ecp file will contain the combined contributes from all cells and not possible to
-determine the ecp of each individual cell. But if “contributions_dir” is specified it will also record and save each
-individual cells’ ecp.</p></li>
+<li><p>contributions_dir: The output ECP file will contain the combined contributions from all cells, and not possible to
+determine the ECP of each cell. But if “contributions_dir” is specified it will also record and save each
+cells’ ECP.</p></li>
 </ul>
 </section>
 <section id="synaptic-variables">
@@ -809,7 +809,7 @@ individual cells’ ecp.</p></li>
 <p>Similar to recording from membrane potential, by setting <code class="docutils literal notranslate"><span class="pre">module</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">netcon_report</span></code> you can record the
 variables from a synapse. The output is similar to a
 <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#frame-oriented-node-element-recordings">SONATA membrane report</a>,
-but instead of each column being a segment of a neuron, each column represents a different synapses.</p>
+but instead of each column being a segment of a neuron, each column represents a different synapse.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="nt">&quot;syn_report&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">        </span><span class="nt">&quot;cells&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;model_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;biophysical&quot;</span><span class="p">},</span><span class="w"></span>
@@ -828,21 +828,21 @@ but instead of each column being a segment of a neuron, each column represents a
 <section id="specifying-synapse-locations">
 <h3>Specifying Synapse locations<a class="headerlink" href="#specifying-synapse-locations" title="Permalink to this headline">¶</a></h3>
 <p>In SONATA the location of each synapse is determined by the
-<a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#edges---required-attributes">“afferent_section_id” and “afferent_section_pos”attributes</a>,
+<a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#edges---required-attributes">“afferent_section_id” and “afferent_section_pos” attributes</a>,
 which requires modelers to know how NEURON parses the morphology of each cell. If these parameters are specified in the edges file
 SONATA will use them to place a synapse on the target.</p>
-<p>Alternatively BMTK supports the option parameters “distance_range” and “target_sections”, which if present in the edges
-file, will direct BMTK to randomly choose a target synapse location under the limitations. Here “target_setions” refers
-to a neuronal area (somatic, axon, apical, basal) and “”istance_range” is the minimum and maximum arc-length distance
+<p>Alternatively, BMTK supports the optional parameters “distance_range” and “target_sections”, which are present in the edges
+file, which will direct BMTK to randomly choose a target synapse location under the limitations. Here “target_setions” refers
+to a neuronal area (somatic, axon, apical, basal), and “”istance_range” is the minimum and maximum arc-length distance
 (in um) from the soma to place the synapse. For example to specify synapses be created either at the soma or nearby
 basal dendrites:</p>
 <div class="highlight-default notranslate" id="edge-type-csv"><div class="highlight"><pre><span></span><span class="n">edge_type_id</span> <span class="n">distance_range</span> <span class="n">target_sections</span> <span class="o">...</span>
 <span class="mi">100</span> <span class="s2">&quot;[0.0, 100.0]&quot;</span> <span class="s2">&quot;[&#39;somatic&#39;, &#39;basal&#39;]&quot;</span> <span class="o">...</span>
 </pre></div>
 </div>
-<p>Using parameters “distance_range” and “target_sections” will speed up the instantiation by a bit. And has a benefit
+<p>Using parameters “distance_range” and “target_sections” will speed up the instantiation by a bit. And has the benefit
 that the modeler doesn’t need to know the full details of the target_morphology. It may cause results to vary, but in
-our experience for large-networks usually doesn’t change the dynamics.</p>
+our experience for large-networks usually don’t change the dynamics.</p>
 </section>
 </section>
 </section>
