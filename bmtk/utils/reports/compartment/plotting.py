@@ -43,7 +43,7 @@ def __get_node_groups(report, node_groups, population):
 
 
 def plot_traces(report, population=None, node_ids=None, sections='origin', average=False, node_groups=None, times=None,
-                title=None, show_legend=None, show=True, save_as=None):
+                title=None, show_legend=None, show=True, save_as=None, plt_style=None):
     """Displays the time trace of one or more nodes from a SONATA CompartmentReport file.
 
     To plot a group of individual variable traces (based on their soma)::
@@ -83,6 +83,9 @@ def plot_traces(report, population=None, node_ids=None, sections='origin', avera
         save plot.
     :return: matplotlib figure.Figure object
     """
+    if plt_style is not None:
+        plt.style.use(plt_style)
+
     if node_groups is not None and node_ids is not None:
         warnings.warn('plot_traces is called with both "node_ids" and "node_groups" parameters.', UserWarning)
 
