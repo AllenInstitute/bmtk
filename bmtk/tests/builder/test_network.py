@@ -174,11 +174,11 @@ def test_add_edges_custom_params():
         target={'arg_ctype': 'i'},
         connection_rule=2
     )
-    cm.add_properties('syn_weight', rule=0.5, dtypes=np.float)
+    cm.add_properties('syn_weight', rule=0.5, dtypes=float)
     cm.add_properties(
         ['src_num', 'trg_num'],
         rule=lambda s, t: [s['node_id'], t['node_id']],
-        dtypes=[np.int, np.int]
+        dtypes=[int, int]
     )
     net.build()
 

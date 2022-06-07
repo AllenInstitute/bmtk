@@ -30,7 +30,7 @@ class SpatioTemporalFilter(object):
         spatiiotemporal_coord_array[:, 0:2] = np.kron(np.ones((len(temporal_kernel), 1)), spatial_coord_array)
         spatiiotemporal_coord_array[:, 2] = np.kron(temporal_kernel.t_inds, np.ones(len(spatial_kernel)))
         
-        col_inds, row_inds, t_inds = map(lambda x: x.astype(np.int), spatiiotemporal_coord_array.T)
+        col_inds, row_inds, t_inds = map(lambda x: x.astype(np.int64), spatiiotemporal_coord_array.T)
         kernel = Kernel3D(spatial_kernel.row_range, spatial_kernel.col_range, t_range, row_inds, col_inds, t_inds,
                           spatiotemporal_kernel)
         kernel.apply_threshold(threshold)

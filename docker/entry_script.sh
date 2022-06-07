@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+export NEST_PYTHON_PREFIX="${NEST_INSTALL_DIR}/lib/${PYTHON_ENV}/site-packages"
+export PYTHONPATH="${NEST_PYTHON_PREFIX}:${PYTHONPATH}"
+export PATH="${NEST_INSTALL_DIR}/bin:${PATH}"
+
 if [[ $1 = "nrnivmodl" ]]; then
     shift
     cd /home/shared/workspace/mechanisms

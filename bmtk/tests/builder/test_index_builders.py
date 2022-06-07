@@ -35,7 +35,7 @@ def test_create_index(indexer_func, indexer_args):
     target_node_ids = np.repeat([73, 72, 52, 4], 5)
     edge_type_ids = np.random.choice([100, 102, 103], size=n_edges, replace=True)
     edge_group_ids = np.full(n_edges, fill_value=0)
-    edge_group_indices = np.arange(0, n_edges, dtype=np.int)
+    edge_group_indices = np.arange(0, n_edges, dtype=int)
 
     with h5py.File(tmp_edges_h5.name, 'w') as h5:
         add_hdf5_magic(h5)

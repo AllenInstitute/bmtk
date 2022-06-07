@@ -4,8 +4,8 @@ Analyzing the Results
 .. figure:: _static/images/bmtk_architecture_analyzer_highlight.jpg
    :scale: 40%
 
-After a simulation has completed BMTK will automatically save the results to the output folder. It is possible to have
-BMTK read and analyze the results before the simulation has exited but usually not required. The type of results saved
+After a simulation has been completed BMTK will automatically save the results to the output folder. It is possible to have
+BMTK read and analyzes the results before the simulation has exited but is usually not required. The type of results saved
 during the simulation is determined by the “reports” section of the `simulation config <./simulators.html#configuration-files>`_.
 But most commonly it is a spikes-trains file, a cell-variable report, an extracellular potential recording, and in the
 case of PopNet a report of the firing rate dynamics.
@@ -18,7 +18,7 @@ overview of these different formats and how you can use BMTK to find the results
 
 Spike-Trains
 ------------
-Contains action-potentials/spikes for all the nodes within a given population. In the HDF5 the spikes are stored under
+Contains action potentials/spikes for all the nodes within a given population. In the HDF5 the spikes are stored under
 /spikes/_<population_name>_/ and contains two data-sets:
 
 * timestamps (size N): A list of all the spikes during the simulation
@@ -112,20 +112,20 @@ Or use the :py:class:`PoissonSpikeGenerator <bmtk.utils.reports.spike_trains.spi
 
 Cell Variable Report
 --------------------
-Used to record the traces of intracellular and membrane variables over the course of the simulation, like membrane
-potential V. In the HDF5 cell-reports are stored under /report/<population_name>/ with the most relevant datasets:
+Used to record the traces of intracellular and membrane variables throughout the simulation, like membrane
+potential V. In the HDF5 cell reports are stored under /report/<population_name>/ with the most relevant datasets:
 
 * data (size T_times x N_segments): All the recorded values, each row a different step in time and each column a
   different segment/cell
 * mapping/time (size 3 or T_times): For the exact times of each recording. If the simulation time steps are uniform then
-  the dataset contains 3 values: start_time, stop_time, and time_step (all in ms). Otherwise the will be of size T_times
-  for each recording time since start of simulation.
+  the dataset contains 3 values: start_time, stop_time, and time_step (all in ms). Otherwise, the will be of size T_times
+  for each recording time since the start of the simulation.
 * node_ids: used to map each column to a specific cell
 
 .. figure:: _static/images/cell_reports.png
    :scale: 60%
 
-If recording is done on point-neurons or one is only recording from the soma, there will be one column in “data” for
+If the recording is done on point-neurons or one is only recording from the soma, there will be one column in “data” for
 each node. If recording different sections from a multi-compartmental neuron then *mapping/index_pointers* should be
 used:
 
@@ -158,8 +158,8 @@ pull data from a cell report.
    [0, 1, 2, 2, ...]
    [0.5, 0.5, 0.5, 05, ...]
    [[-50.010, -50.911, -50.995, -51.000, ...]
-	[-49.933, -49.330, -50.011, -50.667, ...]
-	...]
+   [-49.933, -49.330, -50.011, -50.667, ...]
+   ...]
 
 
 Extracellular Potential

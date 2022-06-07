@@ -11,9 +11,11 @@ try:
     comm = MPI.COMM_WORLD
     MPI_rank = comm.Get_rank()
     MPI_size = comm.Get_size()
+    has_mpi = True
 except:
     MPI_rank = 0
     MPI_size = 1
+    has_mpi = False
 
 
 def tmpdir():
@@ -22,6 +24,7 @@ def tmpdir():
     return tmp_dir
 
 
+@pytest.mark.skipif(MPI_size < 2, reason='Can only run test using mpi')
 def test_create_network_dir_mpi():
     # For old MPI issue were both ranks were trying to create the output_dir at the same time.
     tdir = tmpdir()
@@ -32,7 +35,7 @@ def test_create_network_dir_mpi():
 
 
 # check_properties_across_ranks
-
+@pytest.mark.skipif(MPI_size < 2, reason='Can only run test using mpi')
 def test_check_properties_mpi():
     check_properties_across_ranks({
         'p1': 'p1',

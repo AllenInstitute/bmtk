@@ -21,6 +21,9 @@ def get_version():
         try:
             # For NEST 3.1 it uses __version__ attribute to store string
             version_str = nest.__version__
+            if version_str.upper() == 'UNKNOWN':
+                return [3, None, None]
+
         except AttributeError:
             pass
 
@@ -37,14 +40,14 @@ def get_version():
         ver_patch = int(m.group(3)) if n_groups >= 3 and m.group(3) is not None else None
         return [ver_major, ver_minor, ver_patch]
 
-    except (AttributeError, IndexError, ValueError) as err:
+    except (AttributeError, IndexError, ValueError, TypeError) as err:
         return None
 
 
 nest_version = get_version()
 if nest_version is None:
-    # For now default to assume NEST 2.*.* is being used
-    nest_version = [2, None, None]
+    # For now default to assume NEST 3.*.* is being used
+    nest_version = [3, None, None]
 
 
 NEST_SYNAPSE_MODEL_PROP = 'model' if nest_version[0] == 2 else 'synapse_model'

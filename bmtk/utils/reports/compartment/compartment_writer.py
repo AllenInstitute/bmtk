@@ -174,7 +174,7 @@ class PopulationWriterv01(CompartmentWriterABC, CompartmentReader):
         var_grp = base_grp.create_group('mapping')
         var_grp.create_dataset('node_ids', shape=(self._n_gids_all,), dtype=np.uint)
         var_grp.create_dataset('element_ids', shape=(self._n_segments_all,), dtype=np.uint)
-        var_grp.create_dataset('element_pos', shape=(self._n_segments_all,), dtype=np.float)
+        var_grp.create_dataset('element_pos', shape=(self._n_segments_all,), dtype=float)
         var_grp.create_dataset('index_pointer', shape=(self._n_gids_all+1,), dtype=np.uint64)
         var_grp.create_dataset('time', data=[self.tstart(), self.tstop(), self.dt()])
         for k, v in self._element_data.items():
@@ -199,10 +199,10 @@ class PopulationWriterv01(CompartmentWriterABC, CompartmentReader):
         
         if self._buffer_data:
             # Set up in-memory block to buffer recorded variables before writing to the dataset
-            self._data_block.buffer_block = np.zeros((self._buffer_size, self._n_segments_local), dtype=np.float)
+            self._data_block.buffer_block = np.zeros((self._buffer_size, self._n_segments_local), dtype=float)
 
             self._data_block.data_block = base_grp.create_dataset('data', shape=(self.n_steps(), self._n_segments_all),
-                                                                  dtype=np.float, chunks=True)
+                                                                  dtype=float, chunks=True)
             if self._variable is not None:
                 self._data_block.data_block.attrs['variable'] = self._variable
 
@@ -212,7 +212,7 @@ class PopulationWriterv01(CompartmentWriterABC, CompartmentReader):
         else:
             # Since we are not buffering data, we just write directly to the on-disk dataset
             self._data_block.buffer_block = base_grp.create_dataset('data', shape=(self.n_steps(), self._n_segments_all),
-                                                               dtype=np.float, chunks=True)
+                                                               dtype=float, chunks=True)
             if self._variable is not None:
                 self._data_block.buffer_block.attrs['variable'] = self._variable
 
@@ -433,7 +433,7 @@ class CompartmentWriterv01(CompartmentWriterABC):
                 if times is not None and len(times) > 0:
                     mapping_grp.create_dataset('time', data=times)
                 element_id_ds = mapping_grp.create_dataset('element_ids', shape=(total_seg_count,), dtype=np.uint)
-                el_pos_ds = mapping_grp.create_dataset('element_pos', shape=(total_seg_count,), dtype=np.float)
+                el_pos_ds = mapping_grp.create_dataset('element_pos', shape=(total_seg_count,), dtype=float)
                 gids_ds = mapping_grp.create_dataset('node_ids', shape=(total_gid_count,), dtype=np.uint)
                 index_pointer_ds = mapping_grp.create_dataset('index_pointer', shape=(total_gid_count + 1,),
                                                               dtype=np.uint)
@@ -473,7 +473,7 @@ class CompartmentWriterv01(CompartmentWriterABC):
                 # combine the /var/data datasets
                 data_name = '/report/{}/data'.format(pop)
                 # data_name = '/{}/data'.format(var_name)
-                var_data = h5final.create_dataset(data_name, shape=(n_steps, total_seg_count), dtype=np.float)
+                var_data = h5final.create_dataset(data_name, shape=(n_steps, total_seg_count), dtype=float)
                 # var_data.attrs['variable_name'] = var_name
                 i = 0
                 for rpt in tmp_reports:

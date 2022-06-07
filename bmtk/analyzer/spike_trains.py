@@ -144,7 +144,7 @@ def _plot_helper(plot_fnc, config_file=None, population=None, times=None, title=
 
 def plot_raster(config_file=None, population=None, with_histogram=True, times=None, title=None, show=True,
                 save_as=None, group_by=None, group_excludes=None,
-                spikes_file=None, nodes_file=None, node_types_file=None):
+                spikes_file=None, nodes_file=None, node_types_file=None, plt_style=None):
     """Create a raster plot (plus optional histogram) from the results of the simulation.
 
     Will using the SONATA simulation configs "output" section to locate where the spike-trains file was created and
@@ -185,7 +185,7 @@ def plot_raster(config_file=None, population=None, with_histogram=True, times=No
         the config.
     :return: matplotlib figure.Figure object
     """
-    plot_fnc = partial(plotting.plot_raster, with_histogram=with_histogram)
+    plot_fnc = partial(plotting.plot_raster, with_histogram=with_histogram, plt_style=plt_style)
     return _plot_helper(
         plot_fnc,
         config_file=config_file, population=population, times=times, title=title, show=show, save_as=save_as,
@@ -196,7 +196,7 @@ def plot_raster(config_file=None, population=None, with_histogram=True, times=No
 
 def plot_rates(config_file=None, population=None, smoothing=False, smoothing_params=None, times=None, title=None,
                show=True, save_as=None, group_by=None, group_excludes=None, spikes_file=None, nodes_file=None,
-               node_types_file=None):
+               node_types_file=None, plt_style=None):
     """Calculate and plot the rates of each node recorded during the simulation - averaged across the entirety of the
     simulation.
 
@@ -240,7 +240,7 @@ def plot_rates(config_file=None, population=None, smoothing=False, smoothing_par
         the config.
     :return: matplotlib figure.Figure object
     """
-    plot_fnc = partial(plotting.plot_rates, smoothing=smoothing, smoothing_params=smoothing_params)
+    plot_fnc = partial(plotting.plot_rates, smoothing=smoothing, smoothing_params=smoothing_params, plt_style=plt_style)
     return _plot_helper(
         plot_fnc,
         config_file=config_file, population=population, times=times, title=title, show=show, save_as=save_as,
@@ -251,7 +251,7 @@ def plot_rates(config_file=None, population=None, smoothing=False, smoothing_par
 
 def plot_rates_boxplot(config_file=None, population=None, times=None, title=None, show=True, save_as=None,
                        group_by=None, group_excludes=None,
-                       spikes_file=None, nodes_file=None, node_types_file=None):
+                       spikes_file=None, nodes_file=None, node_types_file=None, plt_style=None):
     """Creates a box plot of the firing rates taken from nodes recorded during the simulation.
 
     Will using the SONATA simulation configs "output" section to locate where the spike-trains file was created and
@@ -290,7 +290,7 @@ def plot_rates_boxplot(config_file=None, population=None, times=None, title=None
         the config.
     :return: matplotlib figure.Figure object
     """
-    plot_fnc = partial(plotting.plot_rates_boxplot)
+    plot_fnc = partial(plotting.plot_rates_boxplot, plt_style=plt_style)
     return _plot_helper(
         plot_fnc,
         config_file=config_file, population=population, times=times, title=title, show=show, save_as=save_as,

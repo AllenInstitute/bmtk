@@ -165,9 +165,9 @@ def test_sonata_reader():
         add_hdf5_magic(h5)
         add_hdf5_version(h5)
         h5.create_dataset('/spikes/V1/node_ids', data=[0, 0, 0, 0, 2, 1, 2], dtype=np.uint)
-        h5.create_dataset('/spikes/V1/timestamps', data=[0.25, 0.5, 0.75, 1.0, 3.0, 0.001, 2.0], dtype=np.double)
+        h5.create_dataset('/spikes/V1/timestamps', data=[0.25, 0.5, 0.75, 1.0, 3.0, 0.001, 2.0], dtype=float)
         h5.create_dataset('/spikes/V2/node_ids', data=[10, 10, 10], dtype=np.uint)
-        h5.create_dataset('/spikes/V2/timestamps', data=[4.0, 4.0, 4.0], dtype=np.double)
+        h5.create_dataset('/spikes/V2/timestamps', data=[4.0, 4.0, 4.0], dtype=float)
         h5.create_group('/spikes/V3')
 
     st = SonataSTReader(path=tmp_h5.name, default_population='V1')
@@ -195,9 +195,9 @@ def test_sonata_reader():
 
     all_spikes = list(st.spikes())
     assert(len(all_spikes) == 10)
-    assert(isinstance(all_spikes[0][0], (np.double, np.float)))
+    assert(isinstance(all_spikes[0][0], (float, float)))
     assert(isinstance(all_spikes[0][1], string_types))
-    assert(isinstance(all_spikes[0][2], (np.int, np.uint)))
+    assert(isinstance(all_spikes[0][2], (int, np.uint)))
 
 
 def test_oldsonata_reader():
@@ -207,7 +207,7 @@ def test_oldsonata_reader():
         add_hdf5_magic(h5)
         add_hdf5_version(h5)
         h5.create_dataset('/spikes/gids', data=[0, 0, 0, 0, 2, 1, 2], dtype=np.uint)
-        h5.create_dataset('/spikes/timestamps', data=[0.25, 0.5, 0.75, 1.0, 3.0, 0.001, 2.0], dtype=np.double)
+        h5.create_dataset('/spikes/timestamps', data=[0.25, 0.5, 0.75, 1.0, 3.0, 0.001, 2.0], dtype=float)
 
     st = SonataOldReader(path=tmp_h5.name)
     assert(np.all(st.populations == [pop_na]))
@@ -221,9 +221,9 @@ def test_oldsonata_reader():
 
     all_spikes = list(st.spikes())
     assert(len(all_spikes) == 7)
-    assert(isinstance(all_spikes[0][0], (np.double, np.float)))
+    assert(isinstance(all_spikes[0][0], (float, float)))
     assert(all_spikes[0][1] == pop_na)
-    assert(isinstance(all_spikes[0][2], (np.int, np.uint)))
+    assert(isinstance(all_spikes[0][2], (int, np.uint)))
 
 
 def test_load_sonata():
@@ -235,9 +235,9 @@ def test_load_sonata():
         add_hdf5_magic(h5)
         add_hdf5_version(h5)
         h5.create_dataset('/spikes/V1/node_ids', data=[0, 0, 0, 0, 2, 1, 2], dtype=np.uint)
-        h5.create_dataset('/spikes/V1/timestamps', data=[0.25, 0.5, 0.75, 1.0, 3.0, 0.001, 2.0], dtype=np.double)
+        h5.create_dataset('/spikes/V1/timestamps', data=[0.25, 0.5, 0.75, 1.0, 3.0, 0.001, 2.0], dtype=float)
         h5.create_dataset('/spikes/V2/node_ids', data=[10, 10, 10], dtype=np.uint)
-        h5.create_dataset('/spikes/V2/timestamps', data=[4.0, 4.0, 4.0], dtype=np.double)
+        h5.create_dataset('/spikes/V2/timestamps', data=[4.0, 4.0, 4.0], dtype=float)
         h5.create_group('/spikes/V3')
 
     tmp_sonata_old = tempfile.NamedTemporaryFile(suffix='.h5')
@@ -245,7 +245,7 @@ def test_load_sonata():
         add_hdf5_magic(h5)
         add_hdf5_version(h5)
         h5.create_dataset('/spikes/gids', data=[0, 0, 0, 0, 2, 1, 2], dtype=np.uint)
-        h5.create_dataset('/spikes/timestamps', data=[0.25, 0.5, 0.75, 1.0, 3.0, 0.001, 2.0], dtype=np.double)
+        h5.create_dataset('/spikes/timestamps', data=[0.25, 0.5, 0.75, 1.0, 3.0, 0.001, 2.0], dtype=float)
 
     tmp_sonata_empty = tempfile.NamedTemporaryFile(suffix='.h5')
     with h5py.File(tmp_sonata_empty.name, 'w') as h5:
