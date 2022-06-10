@@ -16,7 +16,9 @@ def run(config_file):
 
 
 if __name__ == '__main__':
+    # run('config.recurrent.json')
+    # run('config.feedforward.json')
     run('config.all_cells.json')
+    # run('config.w_extern.json')
     # run('config.biophys_cells.json')
     # run('config.pv_cells.json')
-    

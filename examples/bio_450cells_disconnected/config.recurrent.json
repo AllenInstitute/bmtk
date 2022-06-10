@@ -1,8 +1,8 @@
 {
   "manifest": {
     "$BASE_DIR": ".",
-    "$OUTPUT_NEW_DIR": "$BASE_DIR/output_biophyscells",
-    "$PREV_RESULTS_DIR": "$BASE_DIR/output_full",
+    "$OUTPUT_NEW_DIR": "$BASE_DIR/output_full",
+    "$INPUT_DIR": "$BASE_DIR/inputs",
     "$NETWORK_DIR": "$BASE_DIR/network",
     "$COMPONENT_DIR": "$BASE_DIR/../bio_components"
   },
@@ -31,18 +31,11 @@
   },
 
   "inputs": {
-    "disconnected_spikes": {
-      "input_type": "recurrent_spikes",
-      "module": "disconnected",
-      "spikes_file": "$PREV_RESULTS_DIR/spikes.h5",
-      "source_node_set": {
-        "population": "internal",
-        "model_type": "biophysical"
-      },
-      "edges": {
-        "edges_file": "$NETWORK_DIR/internal_internal_edges.h5",
-        "edge_types_file": "$NETWORK_DIR/internal_internal_edge_types.csv"
-      }
+    "external_spikes": {
+      "input_type": "spikes",
+      "module": "sonata",
+      "input_file": "$INPUT_DIR/external_spikes.h5",
+      "node_set": "external"
     }
   },
 
@@ -58,6 +51,20 @@
       {
         "nodes_file": "$NETWORK_DIR/internal_nodes.h5",
         "node_types_file": "$NETWORK_DIR/internal_node_types.csv"
+      },
+      {
+        "nodes_file": "$NETWORK_DIR/external_nodes.h5",
+        "node_types_file": "$NETWORK_DIR/external_node_types.csv"
+      }
+    ],
+    "edges": [
+      {
+        "edges_file": "$NETWORK_DIR/internal_internal_edges.h5",
+        "edge_types_file": "$NETWORK_DIR/internal_internal_edge_types.csv"
+      },
+      {
+        "edges_file": "$NETWORK_DIR/external_internal_edges.h5",
+        "edge_types_file": "$NETWORK_DIR/external_internal_edge_types.csv"
       }
     ]
   }

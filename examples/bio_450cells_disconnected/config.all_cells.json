@@ -2,7 +2,7 @@
   "manifest": {
     "$BASE_DIR": ".",
     "$OUTPUT_NEW_DIR": "$BASE_DIR/output_allcells",
-    "$PREV_RESULTS_DIR": "$BASE_DIR/output_prev",
+    "$PREV_RESULTS_DIR": "$BASE_DIR/output_full",
     "$NETWORK_DIR": "$BASE_DIR/network",
     "$COMPONENT_DIR": "$BASE_DIR/../bio_components"
   },
@@ -35,7 +35,6 @@
       "input_type": "recurrent_spikes",
       "module": "disconnected",
       "spikes_file": "$PREV_RESULTS_DIR/spikes.h5",
-      "node_set": {"population": "internal"},
       "edges": {
         "edges_file": "$NETWORK_DIR/internal_internal_edges.h5",
         "edge_types_file": "$NETWORK_DIR/internal_internal_edge_types.csv"

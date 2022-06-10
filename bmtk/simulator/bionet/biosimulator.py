@@ -413,15 +413,12 @@ class BioSimulator(Simulator):
 
         # TODO: Need to create a gid selector
         for sim_input in inputs.from_config(config):
-            try:
-                network.get_node_set(sim_input.node_set)
-            except:
-                print("Parameter node_set must be given in inputs module of simulation_config file. If unsure of what node_set should be, set it to 'all'.")
-            node_set = network.get_node_set(sim_input.node_set)
             if sim_input.input_type == 'spikes':
                 io.log_info('Building virtual cell stimulations for {}'.format(sim_input.name))
                 path = sim_input.params['input_file']
                 spikes = SpikeTrains.load(path=path, file_type=sim_input.module, **sim_input.params)
+                # node_set_opts = sim_input.params.get('node_set', 'all')
+                node_set = network.get_node_set(sim_input.node_set)
                 network.add_spike_trains(spikes, node_set)
 
             elif sim_input.module == "FileIClamp":
@@ -429,7 +426,8 @@ class BioSimulator(Simulator):
 
             elif sim_input.module == 'IClamp':
                 # TODO: Parse from csv file
-                try: 
+                node_set = network.get_node_set(sim_input.node_set)
+                try:
                     len(sim_input.params['amp'])
                 except:
                     sim_input.params['amp']=[float(sim_input.params['amp'])]
@@ -476,7 +474,8 @@ class BioSimulator(Simulator):
                 sim.attach_current_clamp(amplitude, delay, duration, gids, section_name, section_index, section_dist)
 
             elif sim_input.module == "SEClamp":
-                try: 
+                node_set = network.get_node_set(sim_input.node_set)
+                try:
                     len(sim_input.params['amps'])
                 except:
                     sim_input.params['amps']=[float(sim_input.params['amps'])]
@@ -517,12 +516,14 @@ class BioSimulator(Simulator):
                 pass
 
             elif sim_input.module == 'disconnected':
+                io.log_info('Building disconnected connections "{}"'.format(sim_input.name))
                 spikes = SpikeTrains.load(path=sim_input.params['spikes_file'])
                 network.build_disconnected_inputs(
                     spike_trains=spikes,
                     edges_path=sim_input.params['edges']['edges_file'],
                     edge_types_path=sim_input.params['edges']['edge_types_file'],
-                    node_set=sim_input.params['node_set']
+                    source_node_set=sim_input.params.get('source_node_set', 'all'),
+                    target_node_set=sim_input.params.get('target_node_set', 'all')
                 )
 
             else:
