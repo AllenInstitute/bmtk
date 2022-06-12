@@ -337,7 +337,6 @@ class BioNetwork(SimNetwork):
 
         edges_pop_list = sonata_reader.load_edges(edges_path, edge_types_path, adaptor=self.get_edge_adaptor('sonata'))
         for edges_pop in edges_pop_list:
-            # edges_pop = edges_pop[0]  # The load_edges returns a list
             edges_pop.initialize(self)
 
             trg_population = edges_pop.target_nodes
@@ -353,6 +352,7 @@ class BioNetwork(SimNetwork):
                     src_nid = edge.source_node_id
                     if src_nid not in valid_src_ids:
                         continue
+
                     src_cell = self.get_disconnected_cell(src_population, src_nid, spike_trains)
                     trg_cell.set_syn_connection(edge, src_cell, src_cell)
 
