@@ -85,6 +85,14 @@ class PointSimulator(Simulator):
     def tstop(self):
         return self._tstop
 
+    def simulation_time(self, units='ms'):
+        units_lc = units.lower()
+        time_ms = self.tstop - self.tstart
+        if units_lc == 'ms':
+            return time_ms
+        elif units_lc == 's':
+            return time_ms/1000.0
+
     @tstop.setter
     def tstop(self, val):
         self._tstop = val

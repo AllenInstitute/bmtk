@@ -6,3 +6,5 @@ def default_weight_fnc(edge_props, source_node, target_node):
 
 
 add_weight_function(default_weight_fnc, 'default_weight_fnc', overwrite=False)
+add_weight_function(default_weight_fnc, 'set_syn_weight', overwrite=False)
+add_weight_function(default_weight_fnc, 'wmax', overwrite=False)
