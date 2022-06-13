@@ -162,7 +162,7 @@ class NetworkBuilder(object):
                 net.add_edges(
                     source={'ei': 'inh'},
                     target={'ei': 'exc', 'etype': 'fast-spiking'},
-                    connection_rule=M,
+                    connection_rule=N,
                     ...
                 )
 
@@ -200,11 +200,11 @@ class NetworkBuilder(object):
 
                 net.add_edges(connection_rule=bulk_conn_fnc, iterator='all_to_one', ...)
 
-            There is also a 'all_to_one' iterator option that will pair each source node with a list of all available
+            There is also a 'one_to_all' iterator option that will pair each source node with a list of all available
             target nodes.
 
         Edge Properties:
-            Normally the properties used when creating a given type of edge will be shared by all the indvidual
+            Normally the properties used when creating a given type of edge will be shared by all the individual
             connections. To create unique values for each edge, the add_edges() method returns a ConnectionMap object::
 
                 def set_syn_weight_by_dist(source, target):
@@ -232,7 +232,7 @@ class NetworkBuilder(object):
         :param iterator: 'one_to_one', 'all_to_one', 'one_to_all'. When 'connection_rule' is a function this sets
             how the subsets of source/target nodes are passed in. By default (one-to-one) the connection_rule is
             called for every source/target pair. 'all-to-one' will pass in a list of all possible source nodes for
-            each target, and 'all-to-one' will pass in a list of all possible targets for each source.
+            each target, and 'one-to-all' will pass in a list of all possible targets for each source.
         :param edge_type_properties: properties/attributes of the given edge type
         :return: A ConnectionMap object
         """
@@ -413,7 +413,7 @@ class BioNetBuilder(NetworkBuilder):
         :param iterator: 'one_to_one', 'all_to_one', 'one_to_all'. When 'connection_rule' is a function this sets
             how the subsets of source/target nodes are passed in. By default (one-to-one) the connection_rule is
             called for every source/target pair. 'all-to-one' will pass in a list of all possible source nodes for
-            each target, and 'all-to-one' will pass in a list of all possible targets for each source.
+            each target, and 'one-to-all' will pass in a list of all possible targets for each source.
         :param model_template: A predefined or user generated NEURON function name for generating connection. (default:
             exp2syn).
         :param dynamics_params: A json file path or a dictionary of edge/synapse dynamics parameter values used for
@@ -497,7 +497,7 @@ class PointNetBuilder(NetworkBuilder):
         :param iterator: 'one_to_one', 'all_to_one', 'one_to_all'. When 'connection_rule' is a function this sets
             how the subsets of source/target nodes are passed in. By default (one-to-one) the connection_rule is
             called for every source/target pair. 'all-to-one' will pass in a list of all possible source nodes for
-            each target, and 'all-to-one' will pass in a list of all possible targets for each source.
+            each target, and 'one-to-all' will pass in a list of all possible targets for each source.
         :param model_template: A predefined or user generated NEURON function name for generating connection. (default:
             exp2syn).
         :param dynamics_params: A json file path or a dictionary of edge/synapse dynamics parameter values used for
