@@ -327,7 +327,7 @@ class BioNetwork(SimNetwork):
 
         self.io.barrier()
 
-    def build_disconnected_inputs(self, spike_trains, edges_path, edge_types_path, source_node_set, target_node_set):
+    def build_replay_inputs(self, spike_trains, edges_path, edge_types_path, source_node_set, target_node_set):
         self._init_connections()
 
         src_cells = self.get_node_set(source_node_set)

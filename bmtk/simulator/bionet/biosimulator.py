@@ -515,10 +515,10 @@ class BioSimulator(Simulator):
             elif sim_input.module == 'syn_activity':
                 pass
 
-            elif sim_input.module == 'disconnected':
-                io.log_info('Building disconnected connections "{}"'.format(sim_input.name))
+            elif sim_input.module == 'replay':
+                io.log_info('Building replay connections "{}"'.format(sim_input.name))
                 spikes = SpikeTrains.load(path=sim_input.params['spikes_file'])
-                network.build_disconnected_inputs(
+                network.build_replay_inputs(
                     spike_trains=spikes,
                     edges_path=sim_input.params['edges']['edges_file'],
                     edge_types_path=sim_input.params['edges']['edge_types_file'],

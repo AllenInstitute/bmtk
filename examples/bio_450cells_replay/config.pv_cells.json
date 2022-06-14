@@ -1,8 +1,8 @@
 {
   "manifest": {
     "$BASE_DIR": ".",
-    "$OUTPUT_NEW_DIR": "$BASE_DIR/output_biophyscells",
-    "$PREV_RESULTS_DIR": "$BASE_DIR/output_full",
+    "$OUTPUT_NEW_DIR": "$BASE_DIR/output_pvalb",
+    "$PREV_RESULTS_DIR": "$BASE_DIR/output_prev",
     "$NETWORK_DIR": "$BASE_DIR/network",
     "$COMPONENT_DIR": "$BASE_DIR/../bio_components"
   },
@@ -31,13 +31,13 @@
   },
 
   "inputs": {
-    "disconnected_spikes": {
-      "input_type": "recurrent_spikes",
-      "module": "disconnected",
+    "replay_spikes": {
+      "input_type": "replay_spikes",
+      "module": "replay",
       "spikes_file": "$PREV_RESULTS_DIR/spikes.h5",
-      "source_node_set": {
+      "node_set": {
         "population": "internal",
-        "model_type": "biophysical"
+        "model_name": ["PV1", "PV2"]
       },
       "edges": {
         "edges_file": "$NETWORK_DIR/internal_internal_edges.h5",

@@ -151,7 +151,7 @@ pull data from a cell report.
    print(report.element_pos(node_id=0))
    print(report.data(node_id=0))
 
-.. code::
+.. code:: bash
 
    v
    0.0, 3.0, 0.01
