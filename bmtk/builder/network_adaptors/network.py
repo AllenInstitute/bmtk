@@ -175,8 +175,8 @@ class Network(object):
         properties/attributes they require to define the nodes. By default all individual cells will be assigned a
         unique 'node_id' to identify each node in the network and a 'node_type_id' to identify each group of nodes.
 
-        If a property is a singluar value then said property will be shared by all the nodes in the group. If a value
-        is a list of length N then each property will be uniquly assigned the each node. In the below example a group
+        If a property is a singular value then said property will be shared by all the nodes in the group. If a value
+        is a list of length N then each property will be uniquely assigned to each node. In the below example a group
         of 100 nodes is created, all share the same 'model_type' parameter but the pos_x values will be different for
         each node::
 
