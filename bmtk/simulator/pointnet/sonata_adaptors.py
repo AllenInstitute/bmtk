@@ -325,6 +325,12 @@ class PointEdgeAdaptor(EdgeAdaptor):
                 edges = grp_df[grp_df['edge_type_id'] == edge_id]
                 target_nodes = trg_nodes_df.loc[edges['target_node_id'].values]
                 source_nodes = src_nodes_df.loc[edges['source_node_id'].values]
+
+                if not py_modules.has_synaptic_weight(weight_function):
+                    err_msg = 'Unable to calculate synaptic weight for "{}" edges, missing "weight_function" ' \
+                              'attribute value {} function.'.format(edge_group.parent.name, weight_function)
+                    io.log_exception(err_msg)
+
                 weight_fnc = py_modules.synaptic_weight(weight_function)
                 type_params[edge_id]['weight'] = weight_fnc(edges, source_nodes, target_nodes)
 
