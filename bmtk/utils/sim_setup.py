@@ -792,8 +792,8 @@ if __name__ == '__main__':
                       help='Copies component files used by examples and tutorials.')
     parser.add_option('--compile-mechanisms', dest='compile_mechanisms', action='store_true', default=False,
                       help='Will try to compile the NEURON mechanisms (BioNet only).')
-    parser.add_option('--config', dest='config_file', type='string', default='config.json',
-                      help='Name of conguration json file.')
+    parser.add_option('--config-file', dest='config_file', type='string', default='config.json',
+                      help='Name of configuration json file.')
 
     options, args = parser.parse_args()
 
