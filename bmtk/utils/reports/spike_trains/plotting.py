@@ -163,7 +163,7 @@ def plot_raster(spike_trains, with_histogram=True, population=None, node_groups=
         raster_axes.yaxis.set_major_locator(MaxNLocator(integer=True))
 
     if show_legend:
-        raster_axes.legend(loc='upper right')
+        raster_axes.legend(loc='upper right', markerscale=1.5)
 
     if title:
         raster_axes.set_title(title)

@@ -21,5 +21,5 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-# Keeping here for backward compatability.
+# Keeping here for backward compatibility.
 from bmtk.simulator.core.pyfunction_cache import *

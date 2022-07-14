@@ -78,7 +78,7 @@ class _PyFunctions(object):
         self.__cell_processors.clear()
 
     def add_synaptic_weight(self, name, func, overwrite=True):
-        """stores synpatic fuction for given name"""
+        """stores synaptic function for given name"""
         if overwrite or name not in self.__syn_weights:
             self.__syn_weights[name] = func
 
@@ -88,7 +88,7 @@ class _PyFunctions(object):
         return self.__syn_weights.keys()
 
     def synaptic_weight(self, name):
-        """return the synpatic weight function"""
+        """return the synaptic weight function"""
         return self.__syn_weights[name]
 
     def has_synaptic_weight(self, name):
