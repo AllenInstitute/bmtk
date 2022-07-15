@@ -29,6 +29,7 @@ from neuron import h
 from bmtk.simulator.bionet.pyfunction_cache import py_modules
 from bmtk.simulator.bionet.pyfunction_cache import load_py_modules
 from bmtk.simulator.bionet.pyfunction_cache import synapse_model, synaptic_weight, cell_model
+from bmtk.simulator.bionet.io_tools import io
 
 
 pc = h.ParallelContext()
@@ -60,10 +61,16 @@ def load_neuron_modules(mechanisms_dir, templates_dir, default_templates=True):
 
     if isinstance(mechanisms_dir, list):
         for mdir in mechanisms_dir:
-            neuron.load_mechanisms(str(mdir))
+            try:
+                neuron.load_mechanisms(str(mdir))
+            except RuntimeError as rte:
+                io.log_warning('Unable to load NEURON mechanisms.', display_once=True)
 
     elif mechanisms_dir is not None:
-        neuron.load_mechanisms(str(mechanisms_dir))
+        try:
+            neuron.load_mechanisms(str(mechanisms_dir))
+        except RuntimeError as rte:
+            io.log_warning('Unable to load NEURON mechanisms.', display_once=True)
 
     if default_templates:
         load_templates(os.path.join(bionet_dir, 'default_templates'))
