@@ -128,7 +128,7 @@ def plot_raster(spike_trains, with_histogram=True, population=None, node_groups=
     # show these as empty rows. To do this need to keep track of range of all node_ids
     min_id, max_id = np.inf, -1
 
-    spikes_df = spike_trains.to_dataframe(population=pop, with_population_col=False)
+    spikes_df = spike_trains.to_dataframe(populations=pop, with_population_col=False)
     spikes_df = spikes_df[spikes_df['node_ids'].isin(selected_ids)]
     if times is not None:
         min_ts, max_ts = times[0], times[1]
@@ -242,7 +242,7 @@ def plot_rates(spike_trains, population=None, node_groups=None, times=None, smoo
         smoothing_fnc = lambda d: d  # Use a filler function that won't do anything
 
     # get data
-    spikes_df = spike_trains.to_dataframe(population=pop, with_population_col=False)
+    spikes_df = spike_trains.to_dataframe(populations=pop, with_population_col=False)
     spikes_df = spikes_df[spikes_df['node_ids'].isin(selected_ids)]
     if times is not None:
         recording_interval = times[1] - times[0]
@@ -312,7 +312,7 @@ def plot_rates_boxplot(spike_trains, population=None, node_groups=None, times=No
     pop = __get_population(spike_trains=spike_trains, population=population)
     node_groups, selected_ids = __get_node_groups(spike_trains=spike_trains, node_groups=node_groups, population=pop)
 
-    spikes_df = spike_trains.to_dataframe(population=pop, with_population_col=False)
+    spikes_df = spike_trains.to_dataframe(populations=pop, with_population_col=False)
     spikes_df = spikes_df[spikes_df['node_ids'].isin(selected_ids)]
     if times is not None:
         recording_interval = times[1] - times[0]
