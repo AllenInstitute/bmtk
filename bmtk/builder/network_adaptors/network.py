@@ -175,8 +175,8 @@ class Network(object):
         properties/attributes they require to define the nodes. By default all individual cells will be assigned a
         unique 'node_id' to identify each node in the network and a 'node_type_id' to identify each group of nodes.
 
-        If a property is a singluar value then said property will be shared by all the nodes in the group. If a value
-        is a list of length N then each property will be uniquly assigned the each node. In the below example a group
+        If a property is a singular value then said property will be shared by all the nodes in the group. If a value
+        is a list of length N then each property will be uniquely assigned to each node. In the below example a group
         of 100 nodes is created, all share the same 'model_type' parameter but the pos_x values will be different for
         each node::
 
@@ -569,7 +569,7 @@ class Network(object):
         """
         nodes_file = self.__get_path(nodes_file_name, output_dir, 'nodes.h5')
         if not force_overwrite and os.path.exists(nodes_file):
-            raise Exception('File {} exists. Please use different name or use force_overwrite'.format(nodes_file))
+            raise Exception('File {} already exists. Please delete existing file, use a different name, or use force_overwrite.'.format(nodes_file))
         nf_dir = os.path.dirname(nodes_file)
         if not os.path.exists(nf_dir) and mpi_rank == 0:
             os.makedirs(nf_dir)
@@ -620,14 +620,14 @@ class Network(object):
         """
         # Make sure edges exists and are built
         if len(self._connection_maps) == 0:
-            logging.warning('No edges have been made for this network, skipping saving.')
+            logging.warning('No edges have been made for this network, skipping saving of edges file.')
             return
 
         if self._edges_built is False:
             if force_build:
                 self.__build_edges()
             else:
-                logger.warning("Edges are not built. Either call build() or use force_build parameter. Skip saving.")
+                logger.warning("Edges are not built. Either call build() or use force_build parameter. Skip saving of edges file.")
                 return
 
         network_params = [(s, t, s+'_'+t+'_edges.h5', s+'_'+t+'_edge_types.csv') for s, t in list(self._network_conns)]
