@@ -10,7 +10,7 @@ lif_models = {
         'ei': 'e',
         'pop_name': 'LIF_exc',
         'model_type': 'point_neuron',
-        'model_template': 'nest:iaf_psc_delta',
+        'model_template': 'nestml:iaf_psc_delta',
         'dynamics_params': 'iaf_psc_delta_exc.json'
     },
     'LIF_inh': {
@@ -18,7 +18,7 @@ lif_models = {
         'ei': 'i',
         'pop_name': 'LIF_inh',
         'model_type': 'point_neuron',
-        'model_template': 'nest:iaf_psc_delta',
+        'model_template': 'nestml:iaf_psc_delta',
         'dynamics_params': 'iaf_psc_delta_inh.json'
     }
 }

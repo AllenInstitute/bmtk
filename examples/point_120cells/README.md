@@ -1,6 +1,7 @@
 # 120 point neuron network
 
-A small network of 120 point-neurons. Uses PointNet and will require NEST to run.
+A small network of 120 point-neurons. The neuron models are specified as NESTML models. Uses PointNet and will require
+NEST and NESTML to run.
 
 
 ## Running:

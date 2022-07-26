@@ -1,7 +1,9 @@
+import logging
 import numpy as np
 from collections import Counter
 import numbers
 import nest
+import os
 import types
 import pandas as pd
 
@@ -10,6 +12,8 @@ from bmtk.simulator.pointnet.io_tools import io
 from bmtk.simulator.pointnet.pyfunction_cache import py_modules
 from bmtk.simulator.pointnet.glif_utils import convert_aibs2nest
 from bmtk.simulator.pointnet.nest_utils import nest_version
+
+logger = logging.getLogger(__name__)
 
 NEST_SYNAPSE_MODEL_PROP = 'model' if nest_version[0] == 2 else 'synapse_model'
 
@@ -155,6 +159,7 @@ class PointNodeAdaptor(NodeAdaptor):
     def preprocess_node_types(network, node_population):
         NodeAdaptor.preprocess_node_types(network, node_population)
         node_types_table = node_population.types_table
+        load_nestml_module = False
         if 'model_template' in node_types_table.columns and 'dynamics_params' in node_types_table.columns:
             node_type_ids = np.unique(node_population.type_ids)
             for nt_id in node_type_ids:
@@ -165,6 +170,32 @@ class PointNodeAdaptor(NodeAdaptor):
                     model_template, dynamics_params = convert_aibs2nest(mtemplate, dyn_params)
                     node_type_attrs['model_template'] = model_template
                     node_type_attrs['dynamics_params'] = dynamics_params
+
+                if mtemplate.startswith('nestml:'):
+                    # NESTML model was requested
+                    nestml_model_name_suffix = '_nestml'
+
+                    from pynestml.frontend.pynestml_frontend import generate_nest_target
+                    import nest
+
+                    model_name = mtemplate.split(':')[1]
+                    logger.info('Generating NESTML model \'' + model_name + '\'')
+                    models_dir = network.get_component('point_neuron_models_dir')
+                    model_fn = os.path.join(models_dir, model_name + '.nestml')
+                    print('model_fn = ' + str(model_fn))
+                    generate_nest_target(input_path=model_fn,
+                                         logging_level='ERROR',
+                                         suffix=nestml_model_name_suffix)
+                    load_nestml_module = True
+
+                    # replace model_template name with suffixed version
+                    node_types_table[nt_id]['model_template'] = 'nest:' + model_name + nestml_model_name_suffix
+                    node_types_table._df_cache = None   # clear the table internal cache
+
+        if load_nestml_module:
+            # a module by the same name can only be loaded once; do this at the very end of the function
+            nest.Install('nestmlmodule')
+
 
     @staticmethod
     def patch_adaptor(adaptor, node_group, network):
