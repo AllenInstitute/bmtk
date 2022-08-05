@@ -176,19 +176,31 @@ class SonataSTReader(SpikeTrainsReadOnlyAPI):
             nodes_indices = {}
             node_ids_ds = pop_grp[self._DATASET_node_ids]
             if sort_order == SortOrder.by_id:
-                indx_beg = 0
-                last_id = node_ids_ds[0]
-                for indx, cur_id in enumerate(node_ids_ds):
-                    if cur_id != last_id:
-                        # nodes_indices[last_id] = np.arange(indx_beg, indx)
-                        nodes_indices[last_id] = slice(indx_beg, indx)
-                        last_id = cur_id
-                        indx_beg = indx
-                # nodes_indices[last_id] = np.arange(indx_beg, indx + 1)
-                nodes_indices[last_id] = slice(indx_beg, indx + 1)  # capture the last node_id
+                # this code block makes a dictionary of slices for spikes for each node
+                # indx_beg = 0
+                # last_id = node_ids_ds[0]
+                # for indx, cur_id in enumerate(node_ids_ds):
+                #     if cur_id != last_id:
+                #         # nodes_indices[last_id] = np.arange(indx_beg, indx)
+                #         nodes_indices[last_id] = slice(indx_beg, indx)
+                #         last_id = cur_id
+                #         indx_beg = indx
+                # # nodes_indices[last_id] = np.arange(indx_beg, indx + 1)
+                # nodes_indices[last_id] = slice(indx_beg, indx + 1)  # capture the last node_id
+                # a version with vectorization
+                node_ids_np = np.array(node_ids_ds)
+                # detect where they change and get the beginning and ending indices
+                changes = np.where(node_ids_np[:-1] != node_ids_np[1:])[0]
+                endings = np.append(changes, len(node_ids_np) - 1)
+                beginnings = np.append(0, changes + 1)
+                for beg, end in zip(beginnings, endings):
+                    nodes_indices[node_ids_np[beg]] = slice(beg, end)
+                
             else:
                 nodes_indices = {int(node_id): [] for node_id in np.unique(node_ids_ds)}
-                for indx, node_id in enumerate(node_ids_ds):
+                # loop on h5 is slow, so convert it to np before the loop.
+                node_ids_np = np.array(node_ids_ds)
+                for indx, node_id in enumerate(node_ids_np):
                     nodes_indices[node_id].append(indx)
 
             self._index_nids[pop_name] = nodes_indices
