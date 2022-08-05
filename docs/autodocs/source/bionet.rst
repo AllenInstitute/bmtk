@@ -80,7 +80,7 @@ Extracellular Stimulation
 +++++++++++++++++++++++++
 Allows for a set of external electrodes to provide a continuous stimulation in the neuropil. Requires a space-separated CSV file with one row for each electrode:
 
-.. code::
+.. code:: text
     :name: xstim_electrode.csv
 
     ip pos_x pos_y pos_z rotation_x rotation_y rotation_z
@@ -168,7 +168,7 @@ Will simulate recording from an extracellular electrode placed in the neuropil. 
 `SONATA documentation <https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#extracellular-report>`_.
 Requires a space-separated CSV file to specify the location of each recording channel:
 
-.. code::
+.. code:: text
     :name: ./components/xelectrode/linear_probe.csv
 
     channel x_pos y_pos z_pos
@@ -239,7 +239,7 @@ to a neuronal area (somatic, axon, apical, basal), and “"istance_range” is t
 basal dendrites:
 
 
-.. code::
+.. code:: text
     :name: edge_type.csv
 
     edge_type_id distance_range target_sections ...
@@ -250,4 +250,175 @@ that the modeler doesn’t need to know the full details of the target_morpholog
 our experience for large-networks usually don’t change the dynamics.
 
 
+Replaying recurrent activity without inputs
++++++++++++++++++++++++++++++++++++++++++++
+Most of the times when we are running a simulation of a recurrently-connected network, the network is being stimulated
+by some non-recurrent source; like a voltage clamp, current clamp, extraceullar pulse, or being syanptically driven
+by a pre-recorded spike-trains (eg, virtual cells). Thus the firing-times/voltage potentials of our network cells are
+being driven by two primary sources; external inputs and synaptic/electrical activity from other cells in the network.
+Being able to separate the contributions of the two type of drivers is often important for analysis of our network.
+
+Being able to see how our network behaves without recurrent connections is usually trivial to implement using the SONATA
+configuration file. For example, a network called "internal" might have both internal-to-internal recurrent connections
+and external-to-internal connections as represented in the "networks" section of the config
+
+.. code:: json
+
+    {
+      "networks": {
+        "nodes": [
+          {
+          "nodes_file": "$NETWORK_DIR/internal_nodes.h5",
+          "node_types_file": "$NETWORK_DIR/internal_node_types.csv"
+          },
+          {
+            "nodes_file": "$NETWORK_DIR/external_nodes.h5",
+            "node_types_file": "$NETWORK_DIR/external_node_types.csv"
+          }
+        ],
+        "edges": [
+          {
+            "edges_file": "$NETWORK_DIR/internal_internal_edges.h5",
+            "edge_types_file": "$NETWORK_DIR/internal_internal_edge_types.csv"
+          },
+          {
+            "edges_file": "$NETWORK_DIR/external_internal_edges.h5",
+            "edge_types_file": "$NETWORK_DIR/external_internal_edge_types.csv"
+          }
+        ]
+      }
+    }
+
+To run the simulation without the recurrent internal-to-internal connections we just need to remove the relevant
+SONATA network files:
+
+.. code:: json
+
+    {
+      "networks": {
+        "nodes": [
+          {
+            "nodes_file": "$NETWORK_DIR/internal_nodes.h5",
+            "node_types_file": "$NETWORK_DIR/internal_node_types.csv"
+          },
+          {
+            "nodes_file": "$NETWORK_DIR/external_nodes.h5",
+            "node_types_file": "$NETWORK_DIR/external_node_types.csv"
+          }
+        ],
+        "edges": [
+          {
+            "edges_file": "$NETWORK_DIR/external_internal_edges.h5",
+            "edge_types_file": "$NETWORK_DIR/external_internal_edge_types.csv"
+          }
+        ]
+      }
+    }
+
+Plotting the spikes raster we can see how the network behaves without recurrent connections (right) vs. the normal
+fully connected simulation (left):
+
+.. image:: _static/images/disconnected_normal_sims.png
+
+But what if we want to rerun the full simulation but without the external inputs, how see how only the recurrent
+activity affects the full simulation? To do so we must use a special **"replay"** input module. In the
+"inputs" section of the config we add the following:
+
+.. code:: json
+
+    {
+      "inputs": {
+        "recurrent_replay": {
+          "input_type": "replay_spikes",
+          "module": "replay",
+          "spikes_file": "$PREV_RESULTS_DIR/spikes.h5",
+          "edges": {
+            "edges_file": "$NETWORK_DIR/internal_internal_edges.h5",
+            "edge_types_file": "$NETWORK_DIR/internal_internal_edge_types.csv"
+          }
+        }
+      }
+    }
+
+Here we have
+ * "*recurrent_replay*" is the name of this specific input and can be changed to whatever we like.
+ * **input_type** and **module** are always set to *replay_spikes* and *replay*, respecitively, to direct bmtk as to the type of input/module being used.
+ * **spikes_file** is the name of the recurrent spiking activity we want to replay when we rerun the simulation. In this case it is the locations of the output spikes results when we ran the fully connected simulation.
+ * **edges** is the location of the edges and edge-types SONATA network files, in this case it is the files containing the recurrent internal-to-internal connections.
+
+Then we update the "networks" section since we don't want to have any external-to-internal type connections:
+
+.. code:: json
+
+    {
+      "networks": {
+        "nodes": [
+          {
+            "nodes_file": "$NETWORK_DIR/internal_nodes.h5",
+            "node_types_file": "$NETWORK_DIR/internal_node_types.csv"
+          }
+        ]
+      }
+    }
+
+And we can run the simulation with the updated config and see what the network looks like when activity is only being
+drived by recurrent activity
+
+.. image:: _static/images/disconnected_recurrent_only.png
+
+The module also has optional arguments **source_node_set** and **target_node_set** which allows us to rerun recurrent
+connections, but only on edges where the source (pre-synaptic) and target (post-synaptic) cells meet certain criteria.
+For example, we only want to run simulation on edges where the target cells are "biophysically-detailed Scnn1a" cells
+and the source cells are either "Scnn1a", "Rorb", or "Nr5a1" cell-types.
+
+.. code:: json
+
+    {
+      "inputs": {
+        "recurrent_replay": {
+          "input_type": "replay_spikes",
+          "module": "replay",
+          "spikes_file": "$PREV_RESULTS_DIR/spikes.h5",
+          "source_node_set": {
+            "population": "internal",
+            "model_name": ["Scnn1a", "Rorb", "Nr5a1"]
+          },
+          "target_node_set": {
+            "population": "internal",
+            "model_name": "Scnn1a",
+            "model_type": "biophysical"
+          },
+          "edges": {
+            "edges_file": "$NETWORK_DIR/internal_internal_edges.h5",
+            "edge_types_file": "$NETWORK_DIR/internal_internal_edge_types.csv"
+          }
+        }
+      }
+    }
+
+.. image:: _static/images/disconnected_scnn1a.png
+
+
+You can combine "replay" inputs with virtual inputs, current and voltage clamps. And you can have multiple
+"replay" inputs in the same simulation by adding multiple subsections in the "inputs" sections of the config:
+
+.. code:: json
+
+    {
+      "inputs": {
+        "replay_1": {
+          "input_type": "replay_spikes",
+          "module": "replay",
+          ...
+        },
+        "replay_1": {
+          "input_type": "replay_spikes",
+          "module": "replay",
+          ...
+        },
+      }
+    }
+
+See the `examples/bio_450cells_replay/ <https://github.com/AllenInstitute/bmtk/tree/develop/examples/bio_450cells_replay>`_
+folder for examples of running replayed simulations.
 

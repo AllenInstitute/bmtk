@@ -18,9 +18,6 @@ html:
 	sphinx-apidoc -f -o source/bmtk/ ../../bmtk
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-tutorials:
-	cp ../tutorial/\d\d_single_cell_clamped.ipynb source
-
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
