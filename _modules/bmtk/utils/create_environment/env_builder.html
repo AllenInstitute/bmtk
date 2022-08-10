@@ -1,0 +1,1494 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bmtk.utils.create_environment.env_builder &#8212; Brain Modeling Toolkit 1.0.6 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/aibs_sphinx.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+<script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
+<style>
+
+	/* the icon font-family definition and helper classes */
+	@font-face {
+	  font-family: 'portal_icon_font';
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677');
+	  src: url('_static/external_assets/stylesheets/portal_icon_font.eot?39505677#iefix') format('embedded-opentype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.woff?39505677') format('woff'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.ttf?39505677') format('truetype'),
+	       url('_static/external_assets/stylesheets/portal_icon_font.svg?39505677#portal_icon_font') format('svg');
+	  font-weight: normal;
+	  font-style: normal;
+	}
+	 
+	 [class^="icon-"]:before, [class*=" icon-"]:before {
+	  font-family: "portal_icon_font";
+	  font-style: normal;
+	  font-weight: normal;
+	  speak: none;
+	 
+	  display: inline-block;
+	  text-decoration: inherit;
+	  width: 1em;
+	  margin-right: .2em;
+	  text-align: center;
+	  /* opacity: .8; */
+	 
+	  /* For safety - reset parent styles, that can break glyph codes*/
+	  font-variant: normal;
+	  text-transform: none;
+	     
+	  /* fix buttons height, for twitter bootstrap */
+	  line-height: 1em;
+	 
+	  /* Animation center compensation - margins should be symmetric */
+	  /* remove if not needed */
+	  margin-left: .2em;
+	
+	}
+	 
+	.icon-spin5:before { content: '\e806'; } /* '' */
+	.icon-left-open-1:before { content: '\e81e'; } /* '' */
+	.icon-plus-1:before { content: '\e801'; } /* '' */
+	.icon-facebook:before { content: '\e816'; } /* '' */
+	.icon-gplus:before { content: '\e818'; } /* '' */
+	.icon-linkedin-3:before { content: '\e815'; } /* '' */
+	.icon-twitter:before { content: '\e817'; } /* '' */
+	.icon-youtube-play:before { content: '\e805'; } /* '' */
+	.icon-plus-2:before { content: '\e809'; } /* '' */
+	.icon-record-1:before { content: '\e81c'; } /* '' */
+	.icon-cancel:before { content: '\e80b'; } /* '' */
+	.icon-search:before { content: '\e804'; } /* '' */
+	.icon-cancel-2:before { content: '\e80c'; } /* '' */
+	.icon-plus-4:before { content: '\e80d'; } /* '' */
+	.icon-cancel-3:before { content: '\e80e'; } /* '' */
+	.icon-plus:before { content: '\e808'; } /* '' */
+	.icon-down-open:before { content: '\e800'; } /* '' */
+	.icon-right-open:before { content: '\e802'; } /* '' */
+	.icon-up-open:before { content: '\e803'; } /* '' */
+	.icon-stop:before { content: '\e813'; } /* '' */
+	.icon-cancel-1:before { content: '\e820'; } /* '' */
+	.icon-plus-3:before { content: '\e80a'; } /* '' */
+	/* end icon font helpers */
+
+	/* icon font spin animation */
+	.animate-spin {
+	  -moz-animation: spin 2s infinite linear;
+	  -o-animation: spin 2s infinite linear;
+	  -webkit-animation: spin 2s infinite linear;
+	  animation: spin 2s infinite linear;
+	  display: inline-block;
+	}
+	@-moz-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-webkit-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-o-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@-ms-keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	@keyframes spin {
+	  0% {
+	    -moz-transform: rotate(0deg);
+	    -o-transform: rotate(0deg);
+	    -webkit-transform: rotate(0deg);
+	    transform: rotate(0deg);
+	  }
+
+	  100% {
+	    -moz-transform: rotate(359deg);
+	    -o-transform: rotate(359deg);
+	    -webkit-transform: rotate(359deg);
+	    transform: rotate(359deg);
+	  }
+	}
+	/*  end spin animation */	
+
+	@font-face {
+	    font-family: 'bebas_neueregular';
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot');
+	    src: url('_static/external_assets/stylesheets/bebasneue-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.woff') format('woff'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.ttf') format('truetype'),
+	         url('_static/external_assets/stylesheets/bebasneue-webfont.svg#bebas_neueregular') format('svg');
+	    font-weight: normal;
+	    font-style: normal;
+	}
+
+	/* top chrome styles */
+	#top_chrome {
+
+		width:100%;
+		height:28px;
+		background-color:#163E65;
+	}
+
+	.chrome_link_block {
+
+		color:#fff !important;	
+		display:inline-block;
+		height:100%;
+		max-height:28px;
+	}
+
+	.chrome_link_block:hover {
+
+		background-color:#eee;
+		color:#0779BE !important;	
+		cursor:pointer;
+	}
+
+	#top_chrome a {
+
+		color:inherit !important;	
+		text-decoration:none;
+	}
+
+	#top_chrome a:hover {
+
+		color:inherit !important;	
+	}
+
+	#top_chrome_buttons {
+
+		float:right;
+		margin-right:50px;
+	}
+
+	.chrome_button {
+
+		font-family:arial,sans-serif;
+		font-weight:bold;
+		display:inline-block;
+		font-size:9px;
+		text-align:left;
+		text-decoration:none;
+		margin:9px 20px 10px 20px;
+	}
+
+	.chrome_active {
+
+		background-color:#1b7abd;
+		color:#fff;
+	}
+
+
+	/* header element styles*/
+	#header_content {
+
+		font-family: bebas_neueregular, arial, sans-serif;
+		font-size:22px;
+		color:#0779be;		
+		letter-spacing:0.03em;
+
+		position:relative;
+		width:calc(100% - 112px);
+		min-width:800px;
+		height:76px;
+		border-bottom:2px solid #A5A8AB;
+		margin-left:50px;
+		margin-right:50px;
+        z-index:9999; /* IT-9508 */
+	}
+
+	#portal_logo {
+
+		position:absolute;
+		top:20px;
+		left:0px;
+		width:236px;
+	}
+
+	#portal_tabs {
+
+		position: absolute;
+		bottom: 12px;
+		left: 0px;
+		margin-bottom: -12px;
+		display: block;
+	}
+
+	.horizontal_list
+	{
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+		display: inline; 		
+	}
+
+	.horizontal_list li { 
+
+		display: inline; 	
+	}	
+
+	#portal_tab_menu_container {
+
+		display:none;
+	}
+
+	#portal_search_input_group {
+
+		position:absolute;
+		margin: 0;
+		padding: 0;
+		bottom:12px;
+		right:0px;
+		border:1px solid #DAD9D3;
+		color:#DAD9D3;
+	}
+
+	#portal_search_input_group input {
+
+		margin: 0;
+		padding: 0;
+		border:none;
+		width:110px;
+		color:#DAD9D3;
+		font-family:Helvetica,sans-serif;
+		font-size:12px;
+		height:28px;
+		margin-left:10px;
+
+		outline:none;
+	}
+
+	input::-ms-clear {
+		display: none;
+	}
+
+	#portal_search_input_group i {
+
+		font-size:0.8em;
+		cursor:pointer;
+	}
+
+	#pSiteSearchTextInput:focus {
+
+		color:#000;
+	}
+
+	.icon_menu_down {
+
+		font-size: 12px;
+		margin-left: 4px;
+		vertical-align: text-top;
+		padding-top: 4px;
+		display: inline-block;
+	}
+
+	.portal_tab_item {
+
+		background-color: #fff;
+		padding: 12px;
+		padding-left:20px;
+		padding-right:20px;
+		display: inline-block !important;		
+	}
+
+	.portal_tab_item a:hover {
+
+		color:#fbe300;	
+	}
+
+	.portal_tab_item:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}	
+
+
+	.portal_menu_active {
+
+		background-color: #EEEEEE;
+	}	
+
+	.portal_menu_item_active {
+
+		color:#fbe300 !important;	
+	}
+
+	.portal_tab_active {
+
+		color:#a5a8ab !important;
+	}
+
+	#header_content a {		
+
+		color:inherit !important;
+	}
+
+	#header_content a:hover {
+
+		background-color: #0779be;	
+		color:#fbe300 !important;	
+	}
+
+	#header_content ul {
+
+		list-style: none;
+		position: relative;
+		top: 58px;
+		display: inline-table;
+	}
+
+	#header_content ul ul {
+		
+		display:none;
+		opacity:0;
+	}
+
+	/* the fly out menus */
+	#header_content ul li:hover > ul,
+	#header_content ul li.hover > ul {
+
+		position: absolute;
+		top: 48px;
+		z-index:999;
+
+		display: block;
+		width: 152px;
+		padding:0px;
+		padding-top:20px;
+		padding-bottom:10px;
+		font-size: 12px;
+		font-family: Arial,Sans-Serif;
+		font-weight: bold;
+		text-transform: uppercase;
+
+		background-color: rgba(8,122,191,0.98);
+		color: #fff !important;
+		opacity: 1;
+
+		-webkit-animation: fade 0.25s;
+		animation: fade 0.25s;
+	}
+
+	@-webkit-keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}
+	@keyframes fade {
+	    from {opacity: 0}
+	    to {opacity: 1}
+	}	
+
+	#header_content ul li:hover > ul li {
+
+		padding: 10px;
+		padding-top: 0px;
+		padding-left: 20px;
+		display: block;
+		opacity:1;
+	}
+
+	#header_content ul li:hover > ul a {
+
+		display: block;
+		opacity:1;
+		white-space:nowrap;
+	}
+
+	#portal_menu_start_list {
+
+		left: 81px;
+
+		/* IE sauce */
+		left:85px\9;
+
+		/* Safari sauce */
+		(;left:79px;);
+	}
+
+	#portal_menu_atlases_list {
+
+		left: 290px;
+		width: 210px !important;
+        height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 303px\9;
+        height: 225px\9;
+
+		/* Safari sauce */
+		(;left:279px;);
+	}
+
+	#portal_menu_tools_list {
+
+		left: 500px;
+		width: 172px !important;
+		height: 236px;
+
+		padding-bottom:5px !important;
+
+		/* IE sauce */
+		left: 513px\9;
+		height:225px\9;
+
+		/* Safari sauce */
+		(;left:489px;);
+		(;height:227px;);
+	}
+
+	/* mozilla sauce */
+	@-moz-document url-prefix() {
+
+		#header_content {
+
+			height:107px;
+		}
+
+		#portal_menu_start_list {
+
+			left:85px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 302px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 512px;
+			height:236px;
+		}
+	}
+
+
+	/* make it look OK on iPad also */
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:portrait) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}  
+	}
+	@media all and (device-width: 768px) and (device-height: 1024px) and (orientation:landscape) {
+
+		#portal_menu_start_list {
+
+			left:81px;
+		}
+
+		#portal_menu_atlases_list {
+
+			left: 291px;		
+		}
+
+		#portal_menu_tools_list {
+
+			left: 501px;
+			height:236px;
+		}	  
+	}
+
+	.portal_menu_list_heading {
+
+		color:#9ccae5;
+		border-bottom:1px solid #9ccae5;
+		padding-bottom:5px !important;
+	}
+
+	.portal_menu_list_heading + li {
+
+		padding-top:10px !important;
+	}
+
+	.portal_menu_list_heading li {
+
+		padding-bottom:0px;
+	}	
+
+	#portal_menu_atlases_list li:last-of-type {
+
+		padding-bottom:15px !important;
+	}
+
+	.icon-spin5 {
+
+		color:#000;
+	}
+</style>
+<div id="pHeader">
+<div id="top_chrome">
+	<div id="top_chrome_buttons">
+		<div class="chrome_link_block"><a href="http://www.alleninstitute.org" target="_blank" class="chrome_button">ALLEN INSTITUTE</a></div>
+	</div>
+</div>
+
+<div id="header_content">
+
+	<a href="http://AllenInstitute.github.io">
+		<img id="portal_logo" style="border:0;" src="_static/external_assets/images/AIBS_Logo.png"/>
+	</a>
+</div>
+</div>
+
+<script>
+
+jQuery('#portal_tab_menu').bind('touchstart', function() {
+
+	if(window.console)
+		console.log("touchstart");
+});
+</script>
+<link rel="stylesheet" type="text/css" href="_static/external_assets/stylesheets/common_layout.css" />
+
+
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for bmtk.utils.create_environment.env_builder</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright 2022. Allen Institute. All rights reserved</span>
+<span class="c1">#</span>
+<span class="c1"># Redistribution and use in source and binary forms, with or without modification, are permitted provided that the</span>
+<span class="c1"># following conditions are met:</span>
+<span class="c1">#</span>
+<span class="c1"># 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following</span>
+<span class="c1"># disclaimer.</span>
+<span class="c1">#</span>
+<span class="c1"># 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following</span>
+<span class="c1"># disclaimer in the documentation and/or other materials provided with the distribution.</span>
+<span class="c1">#</span>
+<span class="c1"># 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote</span>
+<span class="c1"># products derived from this software without specific prior written permission.</span>
+<span class="c1">#</span>
+<span class="c1"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES,</span>
+<span class="c1"># INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="c1"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</span>
+<span class="c1"># SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR</span>
+<span class="c1"># SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,</span>
+<span class="c1"># WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</span>
+<span class="c1"># OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">six</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">call</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">distutils.dir_util</span> <span class="kn">import</span> <span class="n">copy_tree</span>
+
+<span class="kn">from</span> <span class="nn">bmtk.utils.compile_mechanisms</span> <span class="kn">import</span> <span class="n">copy_modfiles</span><span class="p">,</span> <span class="n">compile_mechanisms</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># Order of the different sections of the config.json. Any non-listed items will be placed at the end of the config</span>
+<span class="n">config_order</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;manifest&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;target_simulator&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;run&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;conditions&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;inputs&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;components&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;output&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;reports&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;networks&#39;</span>
+<span class="p">]</span>
+
+<span class="n">network_dir_synonyms</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">,</span> <span class="s1">&#39;networks&#39;</span><span class="p">,</span> <span class="s1">&#39;circuit&#39;</span><span class="p">,</span> <span class="s1">&#39;circuits&#39;</span><span class="p">,</span> <span class="s1">&#39;network_dir&#39;</span><span class="p">,</span> <span class="s1">&#39;circuit_dir&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="EnvBuilder"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.EnvBuilder">[docs]</a><span class="k">class</span> <span class="nc">EnvBuilder</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_dir</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">network_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">components_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">node_sets_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_base_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_base_dir</span><span class="p">(</span><span class="n">base_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_network_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_network_dir</span><span class="p">(</span><span class="n">network_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_components_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_components_dir</span><span class="p">(</span><span class="n">components_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_output_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_output_dir</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_circuit_config</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">target_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">bmtk_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">base_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_dir</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">scripts_root</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">local_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">local_path</span><span class="p">,</span> <span class="s1">&#39;..&#39;</span><span class="p">,</span> <span class="s1">&#39;scripts&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">examples_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">components_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components_dir</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">output_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_output_dir</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">network_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_network_dir</span>
+
+    <span class="k">def</span> <span class="nf">_get_base_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_dir</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create base-dir, or if it exists make sure&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">base_dir</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Creating directory &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">base_dir</span><span class="p">)))</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">base_dir</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">base_dir</span><span class="p">):</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;simulation directory path </span><span class="si">{}</span><span class="s1"> points to an existing file, cannot create.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">base_dir</span><span class="p">))</span>
+            <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Using existing directory &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">base_dir</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">base_dir</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_network_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">network_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Attempts to get the appropiate path the the directory containing the sonata network files, either as specified</span>
+<span class="sd">        by the user (-n &lt;network_dir&gt; argument) or else attempt to find the location of the network files.</span>
+
+<span class="sd">        :param network_dir:</span>
+<span class="sd">        :return: The absolute path of the directory that does/should contain the network files</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">network_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Check to see if there are any folders in base_dir that might contain SONATA network files</span>
+            <span class="n">sub_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">,</span> <span class="n">dn</span><span class="p">)</span> <span class="k">for</span> <span class="n">dn</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">)</span> <span class="k">if</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">,</span> <span class="n">dn</span><span class="p">))</span>
+                        <span class="ow">and</span> <span class="n">dn</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">network_dir_synonyms</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">sub_dirs</span><span class="p">:</span>
+                <span class="c1"># See if there are any subfolders that might contain network files</span>
+                <span class="n">network_dir_abs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">sub_dirs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s1">&#39;No network folder specified, attempting to use existing folder: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">network_dir_abs</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">network_dir_abs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">,</span> <span class="s1">&#39;network&#39;</span><span class="p">))</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No network folder specified, creating empty folder: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">network_dir_abs</span><span class="p">))</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">network_dir_abs</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">network_dir</span><span class="p">):</span>
+            <span class="c1"># In the case the user specifies the network directory as an absolute path</span>
+            <span class="n">network_dir_abs</span> <span class="o">=</span> <span class="n">network_dir</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Using network directory: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">network_dir_abs</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">network_dir</span><span class="p">):</span>
+            <span class="c1"># In case during calling the script the user was pointing to an already existing directory</span>
+            <span class="n">network_dir_abs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">network_dir</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Using network directory: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">network_dir_abs</span><span class="p">))</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Default case is the to use/add the &lt;network_dir&gt; found under base_dir</span>
+            <span class="n">network_dir_abs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">,</span> <span class="n">network_dir</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">network_dir_abs</span><span class="p">):</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Creating new network directory: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">network_dir_abs</span><span class="p">))</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">network_dir_abs</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Using network directory: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">network_dir_abs</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">network_dir_abs</span>
+
+    <span class="k">def</span> <span class="nf">_parse_network_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">network_dir</span><span class="p">,</span> <span class="n">network_filter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Parsing </span><span class="si">{}</span><span class="s1"> for SONATA network files&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">network_dir</span><span class="p">))</span>
+
+        <span class="c1"># Create a filter function so that only specific files in network_dir are added to configuration, with rules:</span>
+        <span class="c1">#   1. If network_filters is None, then all files in network_dir are included</span>
+        <span class="c1">#   2. If network_filters is a list of files, eg [v1_nodes.h5, v1_node_types.csv, v1_v1_edges.h5, etc] then o</span>
+        <span class="c1">#      only those files in the list are included in the config.</span>
+        <span class="c1">#   3. If network_filters is a list of strings, eg [v1], then only files with v1* are included in final list.</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">network_filter</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+            <span class="n">network_filter</span> <span class="o">=</span> <span class="p">[</span><span class="n">network_filter</span><span class="p">]</span>
+        <span class="k">def</span> <span class="nf">filter_file</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">network_filter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">for</span> <span class="n">filter_cond</span> <span class="ow">in</span> <span class="n">network_filter</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">filter_cond</span> <span class="o">==</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+                <span class="k">elif</span> <span class="n">filter_cond</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">net_nodes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">net_edges</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">net_gaps</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">network_dir</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">network_dir</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span> <span class="ow">or</span> <span class="n">f</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># Check the filter if the current file</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">filter_file</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+                    <span class="k">continue</span>
+
+                <span class="k">if</span> <span class="s1">&#39;_nodes&#39;</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">net_name</span> <span class="o">=</span> <span class="n">f</span><span class="p">[:</span><span class="n">f</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;_nodes&#39;</span><span class="p">)]</span>
+                    <span class="n">nodes_dict</span> <span class="o">=</span> <span class="n">net_nodes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">net_name</span><span class="p">,</span> <span class="p">{})</span>
+                    <span class="n">nodes_dict</span><span class="p">[</span><span class="s1">&#39;nodes_file&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+                    <span class="n">net_nodes</span><span class="p">[</span><span class="n">net_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodes_dict</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;  Adding nodes file: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nodes_dict</span><span class="p">[</span><span class="s1">&#39;nodes_file&#39;</span><span class="p">]))</span>
+
+                <span class="k">elif</span> <span class="s1">&#39;_node_types&#39;</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">net_name</span> <span class="o">=</span> <span class="n">f</span><span class="p">[:</span><span class="n">f</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;_node_types&#39;</span><span class="p">)]</span>
+                    <span class="n">nodes_dict</span> <span class="o">=</span> <span class="n">net_nodes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">net_name</span><span class="p">,</span> <span class="p">{})</span>
+                    <span class="n">nodes_dict</span><span class="p">[</span><span class="s1">&#39;node_types_file&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+                    <span class="n">net_nodes</span><span class="p">[</span><span class="n">net_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodes_dict</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;  Adding node types file: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nodes_dict</span><span class="p">[</span><span class="s1">&#39;node_types_file&#39;</span><span class="p">]))</span>
+
+                <span class="k">elif</span> <span class="s1">&#39;_edges&#39;</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">net_name</span> <span class="o">=</span> <span class="n">f</span><span class="p">[:</span><span class="n">f</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;_edges&#39;</span><span class="p">)]</span>
+                    <span class="n">edges_dict</span> <span class="o">=</span> <span class="n">net_edges</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">net_name</span><span class="p">,</span> <span class="p">{})</span>
+                    <span class="n">edges_dict</span><span class="p">[</span><span class="s1">&#39;edges_file&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+                    <span class="n">net_edges</span><span class="p">[</span><span class="n">net_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges_dict</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;  Adding edges file: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edges_dict</span><span class="p">[</span><span class="s1">&#39;edges_file&#39;</span><span class="p">]))</span>
+
+                <span class="k">elif</span> <span class="s1">&#39;_edge_types&#39;</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">net_name</span> <span class="o">=</span> <span class="n">f</span><span class="p">[:</span><span class="n">f</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;_edge_types&#39;</span><span class="p">)]</span>
+                    <span class="n">edges_dict</span> <span class="o">=</span> <span class="n">net_edges</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">net_name</span><span class="p">,</span> <span class="p">{})</span>
+                    <span class="n">edges_dict</span><span class="p">[</span><span class="s1">&#39;edge_types_file&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+                    <span class="n">net_edges</span><span class="p">[</span><span class="n">net_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">edges_dict</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;  Adding edge types file: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edges_dict</span><span class="p">[</span><span class="s1">&#39;edge_types_file&#39;</span><span class="p">]))</span>
+
+                <span class="k">elif</span> <span class="s1">&#39;_gap_juncs&#39;</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">net_name</span> <span class="o">=</span> <span class="n">f</span><span class="p">[:</span><span class="n">f</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;_gap_juncs&#39;</span><span class="p">)]</span>
+                    <span class="n">gaps_dict</span> <span class="o">=</span> <span class="n">net_gaps</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">net_name</span><span class="p">,</span> <span class="p">{})</span>
+                    <span class="n">gaps_dict</span><span class="p">[</span><span class="s1">&#39;gap_juncs_file&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+                    <span class="n">net_gaps</span><span class="p">[</span><span class="n">net_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">gaps_dict</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;  Adding gap junctions file: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gaps_dict</span><span class="p">[</span><span class="s1">&#39;gap_juncs_file&#39;</span><span class="p">]))</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="s1">&#39;  Skipping file (could not categorize): </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">f</span><span class="p">))))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">net_nodes</span> <span class="ow">or</span> <span class="n">net_edges</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;  Could not find any sonata nodes or edges file(s).&#39;</span><span class="p">)</span>
+
+        <span class="n">network_config</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;nodes&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;edges&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;gap_juncs&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">sect</span> <span class="ow">in</span> <span class="n">net_nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">network_config</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sect</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">sect</span> <span class="ow">in</span> <span class="n">net_edges</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">network_config</span><span class="p">[</span><span class="s1">&#39;edges&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sect</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">sect</span> <span class="ow">in</span> <span class="n">net_gaps</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">network_config</span><span class="p">[</span><span class="s1">&#39;gap_juncs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sect</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_circuit_config</span><span class="p">[</span><span class="s1">&#39;networks&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">network_config</span>
+
+    <span class="k">def</span> <span class="nf">_get_components_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">components_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">components_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">,</span> <span class="s1">&#39;components&#39;</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">components_dir</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">components_dir</span>
+
+        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">components_dir</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">components_dir</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">,</span> <span class="n">components_dir</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_create_components_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">components_dir</span><span class="p">,</span> <span class="n">with_examples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">components_dir</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Creating components directory: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">components_dir</span><span class="p">))</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">components_dir</span><span class="p">)</span>
+
+        <span class="n">components_config</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">comps_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">sd</span> <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">examples_dir</span><span class="p">)</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">examples_dir</span><span class="p">,</span> <span class="n">sd</span><span class="p">))]</span>
+        <span class="k">for</span> <span class="n">sub_dir</span> <span class="ow">in</span> <span class="n">comps_dirs</span><span class="p">:</span>
+            <span class="n">comp_name</span> <span class="o">=</span> <span class="n">sub_dir</span> <span class="o">+</span> <span class="s1">&#39;_dir&#39;</span>
+            <span class="n">src_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">examples_dir</span><span class="p">,</span> <span class="n">sub_dir</span><span class="p">)</span>
+            <span class="n">trg_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">components_dir</span><span class="p">,</span> <span class="n">sub_dir</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">trg_dir</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Creating new components directory: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">trg_dir</span><span class="p">))</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">trg_dir</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Using components directory: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">trg_dir</span><span class="p">))</span>
+
+            <span class="n">components_config</span><span class="p">[</span><span class="n">comp_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">trg_dir</span>
+
+            <span class="k">if</span> <span class="n">with_examples</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;  Copying files from </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">src_dir</span><span class="p">))</span>
+                <span class="n">copy_tree</span><span class="p">(</span><span class="n">src_dir</span><span class="p">,</span> <span class="n">trg_dir</span><span class="p">)</span>
+
+        <span class="c1"># return components_config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_circuit_config</span><span class="p">[</span><span class="s1">&#39;components&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">components_config</span>
+
+    <span class="k">def</span> <span class="nf">_get_output_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">output_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">,</span> <span class="s1">&#39;output&#39;</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">output_dir</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">output_dir</span>
+
+        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_dir</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_add_manifest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_dict</span><span class="p">,</span> <span class="n">network_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">components_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># config_dict[&#39;manifest&#39;] = {&#39;$BASE_DIR&#39;: &#39;${configdir}&#39;}</span>
+        <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;manifest&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;$BASE_DIR&#39;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">)}</span>
+        <span class="n">base_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">)</span>
+
+        <span class="n">replace_str</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">fd</span><span class="p">,</span> <span class="n">bd</span><span class="p">,</span> <span class="n">var_name</span><span class="p">:</span> <span class="n">fd</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">bd</span><span class="p">,</span> <span class="n">var_name</span><span class="p">)</span> <span class="k">if</span> <span class="n">fd</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">bd</span><span class="p">)</span> <span class="k">else</span> <span class="n">fd</span>
+
+        <span class="k">if</span> <span class="n">network_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;manifest&#39;</span><span class="p">][</span><span class="s1">&#39;$NETWORK_DIR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">replace_str</span><span class="p">(</span><span class="n">network_dir</span><span class="p">,</span> <span class="n">base_dir</span><span class="p">,</span> <span class="s1">&#39;$BASE_DIR&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;networks&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;nodes&#39;</span><span class="p">,</span> <span class="p">[]))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;networks&#39;</span><span class="p">][</span><span class="s1">&#39;nodes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">replace_str</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">network_dir</span><span class="p">,</span> <span class="s1">&#39;$NETWORK_DIR&#39;</span><span class="p">)</span>
+                     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span> <span class="k">for</span> <span class="n">nodes</span> <span class="ow">in</span> <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;networks&#39;</span><span class="p">][</span><span class="s1">&#39;nodes&#39;</span><span class="p">]</span>
+                <span class="p">]</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;networks&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;edges&#39;</span><span class="p">,</span> <span class="p">[]))</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;networks&#39;</span><span class="p">][</span><span class="s1">&#39;edges&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">replace_str</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">network_dir</span><span class="p">,</span> <span class="s1">&#39;$NETWORK_DIR&#39;</span><span class="p">)</span>
+                     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">edges</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span> <span class="k">for</span> <span class="n">edges</span> <span class="ow">in</span> <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;networks&#39;</span><span class="p">][</span><span class="s1">&#39;edges&#39;</span><span class="p">]</span>
+                <span class="p">]</span>
+
+        <span class="k">if</span> <span class="s1">&#39;network&#39;</span> <span class="ow">in</span> <span class="n">config_dict</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">],</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+            <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">replace_str</span><span class="p">(</span><span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;network&#39;</span><span class="p">],</span> <span class="n">base_dir</span><span class="p">,</span> <span class="s1">&#39;$BASE_DIR&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">components_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;manifest&#39;</span><span class="p">][</span><span class="s1">&#39;$COMPONENTS_DIR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">replace_str</span><span class="p">(</span><span class="n">components_dir</span><span class="p">,</span> <span class="n">base_dir</span><span class="p">,</span> <span class="s1">&#39;$BASE_DIR&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;components&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;components&#39;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">replace_str</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">components_dir</span><span class="p">,</span> <span class="s1">&#39;$COMPONENTS_DIR&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">output_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;manifest&#39;</span><span class="p">][</span><span class="s1">&#39;$OUTPUT_DIR&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">replace_str</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">base_dir</span><span class="p">,</span> <span class="s1">&#39;$BASE_DIR&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">config_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+                    <span class="n">config_dict</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">replace_str</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="s1">&#39;$OUTPUT_DIR&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">input_dict</span> <span class="ow">in</span> <span class="n">config_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;inputs&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">&#39;input_file&#39;</span> <span class="ow">in</span> <span class="n">input_dict</span><span class="p">:</span>
+                <span class="n">input_dict</span><span class="p">[</span><span class="s1">&#39;input_file&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">replace_str</span><span class="p">(</span><span class="n">input_dict</span><span class="p">[</span><span class="s1">&#39;input_file&#39;</span><span class="p">],</span> <span class="n">base_dir</span><span class="p">,</span> <span class="s1">&#39;$BASE_DIR&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="s1">&#39;file_name&#39;</span> <span class="ow">in</span> <span class="n">input_dict</span><span class="p">:</span>
+                <span class="n">input_dict</span><span class="p">[</span><span class="s1">&#39;file_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">replace_str</span><span class="p">(</span><span class="n">input_dict</span><span class="p">[</span><span class="s1">&#39;file_name&#39;</span><span class="p">],</span> <span class="n">base_dir</span><span class="p">,</span> <span class="s1">&#39;$BASE_DIR&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="s1">&#39;rates&#39;</span> <span class="ow">in</span> <span class="n">input_dict</span><span class="p">:</span>
+                <span class="n">input_dict</span><span class="p">[</span><span class="s1">&#39;rates&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">replace_str</span><span class="p">(</span><span class="n">input_dict</span><span class="p">[</span><span class="s1">&#39;rates&#39;</span><span class="p">],</span> <span class="n">base_dir</span><span class="p">,</span> <span class="s1">&#39;$BASE_DIR&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_reports</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell_vars</span><span class="p">,</span> <span class="n">node_set</span><span class="p">,</span> <span class="n">section</span><span class="o">=</span><span class="s1">&#39;soma&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell_vars</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+            <span class="n">cell_vars</span> <span class="o">=</span> <span class="p">[</span><span class="n">cell_vars</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cell_vars</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Adding membrane report for variable </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+
+        <span class="n">report_config</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">report_var</span> <span class="ow">in</span> <span class="n">cell_vars</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">report_var</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="n">cells</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span> <span class="k">if</span> <span class="n">report_var</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{</span><span class="s1">&#39;population&#39;</span><span class="p">:</span> <span class="n">report_var</span><span class="p">[</span><span class="mi">0</span><span class="p">]}</span>
+                <span class="n">variable_name</span> <span class="o">=</span> <span class="n">report_var</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cells</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span>
+                <span class="n">variable_name</span> <span class="o">=</span> <span class="n">report_var</span>
+
+            <span class="n">report_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_report&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">variable_name</span><span class="p">)</span>
+            <span class="n">report_config</span><span class="p">[</span><span class="n">report_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;variable_name&#39;</span><span class="p">:</span> <span class="n">variable_name</span><span class="p">,</span>
+                <span class="s1">&#39;cells&#39;</span><span class="p">:</span> <span class="n">cells</span><span class="p">,</span>
+                <span class="s1">&#39;module&#39;</span><span class="p">:</span> <span class="s1">&#39;membrane_report&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;sections&#39;</span><span class="p">:</span> <span class="n">section</span>
+            <span class="p">}</span>
+
+        <span class="k">if</span> <span class="s1">&#39;reports&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;reports&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;reports&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">report_config</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_clamp_reports</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clamp_reports</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">clamp_reports</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+            <span class="n">clamp_reports</span> <span class="o">=</span> <span class="p">[</span><span class="n">clamp_reports</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">clamp_reports</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Adding clamp report for </span><span class="si">{}</span><span class="s2"> clamp.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="p">))</span>
+
+        <span class="n">report_config</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_clamp_report&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="p">):</span> <span class="p">{</span>
+                <span class="s1">&#39;variable_name&#39;</span><span class="p">:</span> <span class="n">c</span><span class="p">,</span>
+                <span class="s1">&#39;module&#39;</span><span class="p">:</span> <span class="s1">&#39;clamp_report&#39;</span>
+            <span class="p">}</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">clamp_reports</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="s1">&#39;reports&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;reports&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;reports&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">report_config</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_output_section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">output_section</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;log_file&#39;</span><span class="p">:</span> <span class="s1">&#39;log.txt&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;output_dir&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+            <span class="s1">&#39;spikes_file&#39;</span><span class="p">:</span> <span class="s1">&#39;spikes.h5&#39;</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_section</span>
+
+    <span class="k">def</span> <span class="nf">_add_current_clamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_param</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">current_param</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Adding current clamp&#39;</span><span class="p">)</span>
+
+        <span class="n">iclamp_config</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;node_set&quot;</span><span class="p">:</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;gids&quot;</span><span class="p">:</span> <span class="n">current_param</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;gids&#39;</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">),</span>
+            <span class="s2">&quot;amp&quot;</span><span class="p">:</span> <span class="n">current_param</span><span class="p">[</span><span class="s1">&#39;amp&#39;</span><span class="p">],</span>
+            <span class="s2">&quot;delay&quot;</span><span class="p">:</span> <span class="n">current_param</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">],</span>
+            <span class="s2">&quot;duration&quot;</span><span class="p">:</span> <span class="n">current_param</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="s1">&#39;inputs&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">][</span><span class="s1">&#39;current_clamp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">iclamp_config</span>
+
+    <span class="k">def</span> <span class="nf">_add_file_current_clamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_param</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">current_param</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">amp_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">current_param</span><span class="p">[</span><span class="s2">&quot;input_file&quot;</span><span class="p">])</span>
+
+        <span class="n">f_iclamp_config</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;FileIClamp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;node_set&quot;</span><span class="p">:</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;input_file&quot;</span><span class="p">:</span> <span class="n">amp_file</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="s1">&#39;inputs&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">][</span><span class="s1">&#39;file_current_clamp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">f_iclamp_config</span>
+
+    <span class="k">def</span> <span class="nf">_add_se_voltage_clamp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clamp_param</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">clamp_param</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">seclamp_config</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;voltage_clamp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;SEClamp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;node_set&quot;</span><span class="p">:</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;gids&quot;</span><span class="p">:</span> <span class="n">clamp_param</span><span class="p">[</span><span class="s1">&#39;gids&#39;</span><span class="p">],</span>
+            <span class="s2">&quot;amps&quot;</span><span class="p">:</span> <span class="n">clamp_param</span><span class="p">[</span><span class="s1">&#39;amps&#39;</span><span class="p">],</span>
+            <span class="s2">&quot;durations&quot;</span><span class="p">:</span> <span class="n">clamp_param</span><span class="p">[</span><span class="s2">&quot;durations&quot;</span><span class="p">]</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="s2">&quot;rs&quot;</span> <span class="ow">in</span> <span class="n">clamp_param</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">seclamp_config</span><span class="p">[</span><span class="s2">&quot;rs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">clamp_param</span><span class="p">[</span><span class="s2">&quot;rs&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s1">&#39;inputs&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;se_voltage_clamp&#39;</span>
+        <span class="k">if</span> <span class="s1">&#39;name&#39;</span> <span class="ow">in</span> <span class="n">clamp_param</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">clamp_param</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">][</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">seclamp_config</span>
+
+    <span class="k">def</span> <span class="nf">_add_spikes_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spikes_inputs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">spikes_inputs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">inputs_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">spikes_inputs</span><span class="p">:</span>
+            <span class="n">pop_name</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="s1">&#39;all&#39;</span>
+            <span class="n">input_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_spikes&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="s1">&#39;input&#39;</span><span class="p">)</span>
+            <span class="n">spikes_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="n">spikes_ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">spikes_file</span><span class="p">)[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="n">spikes_ext</span> <span class="o">=</span> <span class="s1">&#39;sonata&#39;</span> <span class="k">if</span> <span class="n">spikes_ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;h5&#39;</span><span class="p">,</span> <span class="s1">&#39;hdf5&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="n">spikes_ext</span>
+
+            <span class="n">inputs_dict</span><span class="p">[</span><span class="n">input_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;spikes&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="n">spikes_ext</span><span class="p">,</span>
+                <span class="s2">&quot;input_file&quot;</span><span class="p">:</span> <span class="n">spikes_file</span><span class="p">,</span>
+                <span class="s2">&quot;node_set&quot;</span><span class="p">:</span> <span class="n">pop_name</span>
+            <span class="p">}</span>
+        <span class="k">if</span> <span class="s1">&#39;inputs&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">inputs_dict</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_rates_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rates_inputs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">rates_inputs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">inputs_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">rates_inputs</span><span class="p">:</span>
+            <span class="n">pop_name</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="s1">&#39;all&#39;</span>
+            <span class="n">input_name</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_rates&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="s1">&#39;input&#39;</span><span class="p">)</span>
+            <span class="n">rates_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="n">rates_ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">rates_file</span><span class="p">)[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="n">rates_ext</span> <span class="o">=</span> <span class="s1">&#39;sonata&#39;</span> <span class="k">if</span> <span class="n">rates_ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;h5&#39;</span><span class="p">,</span> <span class="s1">&#39;hdf5&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="n">rates_ext</span>
+
+            <span class="n">inputs_dict</span><span class="p">[</span><span class="n">input_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;input_type&quot;</span><span class="p">:</span> <span class="n">rates_ext</span><span class="p">,</span>
+                <span class="s2">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;pop_rates&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;rates&quot;</span><span class="p">:</span> <span class="n">rates_file</span><span class="p">,</span>
+                <span class="s2">&quot;node_set&quot;</span><span class="p">:</span> <span class="n">pop_name</span>
+            <span class="p">}</span>
+        <span class="k">if</span> <span class="s1">&#39;inputs&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">inputs_dict</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_run_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">tstop</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;tstart&#39;</span><span class="p">:</span> <span class="n">tstart</span><span class="p">,</span>
+            <span class="s1">&#39;tstop&#39;</span><span class="p">:</span> <span class="n">tstop</span><span class="p">,</span>
+            <span class="s1">&#39;dt&#39;</span><span class="p">:</span> <span class="n">dt</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">_copy_run_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">run_script</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">base_config</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">run_script</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Open the run_script, replace any variables ${...} with the appropiate value</span>
+        <span class="n">orig_run_script</span> <span class="o">=</span> <span class="s1">&#39;run_</span><span class="si">{}</span><span class="s1">.py&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bmtk_simulator</span><span class="p">)</span>
+        <span class="n">orig_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">examples_dir</span><span class="p">,</span> <span class="n">orig_run_script</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">orig_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+            <span class="n">orig_script</span> <span class="o">=</span> <span class="n">fin</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="n">new_script</span> <span class="o">=</span> <span class="n">orig_script</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;$</span><span class="si">{CONFIG}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">base_config</span><span class="p">)</span>
+
+        <span class="c1"># Get the file name of the new run-script file. if &quot;run_script&quot; parameter is a string (eg run_bionet.test.py)</span>
+        <span class="c1">#  then use that as the new script name. Otherwise if run_script==True then just use the old name.</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">run_script</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+            <span class="n">new_run_script</span> <span class="o">=</span> <span class="n">run_script</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">run_script</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="n">new_run_script</span> <span class="o">=</span> <span class="n">orig_run_script</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Unable to create run-script &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">run_script</span><span class="p">))</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Save the run script to</span>
+        <span class="n">new_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">,</span> <span class="n">new_run_script</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">new_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
+            <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">new_script</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_save_to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json_dict</span><span class="p">,</span> <span class="n">config_file_name</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Creating config file: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">config_file_name</span><span class="p">))</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_dir</span><span class="p">,</span> <span class="n">config_file_name</span><span class="p">),</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+            <span class="n">ordered_dict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">json_dict</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>
+                                              <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">config_order</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">config_order</span> <span class="k">else</span> <span class="mi">100</span><span class="p">))</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">ordered_dict</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_save_config_single</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">config_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Saves the simulation and circuit parameters to a single configuration file&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">config_file</span><span class="p">:</span>
+            <span class="c1"># If users specified the --config-file option save the config into the file name specified by the user into</span>
+            <span class="c1"># the given --base-dir, unless the config-file is referencing an absolute path.</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">config_file</span><span class="p">):</span>
+                <span class="n">cfg_path</span> <span class="o">=</span> <span class="n">config_file</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cfg_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_dir</span><span class="p">,</span> <span class="n">config_file</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">config_name</span><span class="p">:</span>
+            <span class="c1"># if users specified a configuration name, eg iclamp, then create config file config.iclamp.json. Take care</span>
+            <span class="c1">#  if users confuse --config-name with --config-file. eg --config-name=config.iclamp.json, don&#39;t convert it</span>
+            <span class="c1">#  to config.config.iclamp.json.json</span>
+            <span class="n">cfg_lower</span> <span class="o">=</span> <span class="n">config_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">cfg_lower</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;config&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">cfg_lower</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;cfg&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;config.&#39;</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">cfg_lower</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;json&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;.json&#39;</span>
+            <span class="n">config_fname</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}{}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">config_name</span><span class="p">,</span> <span class="n">ext</span><span class="p">)</span>
+            <span class="n">config_fname</span> <span class="o">=</span> <span class="n">config_fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span> <span class="c1"># in case user includes spaces in --config-name</span>
+            <span class="n">cfg_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_dir</span><span class="p">,</span> <span class="n">config_fname</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># If neither config_file or config_name just use ./config.json as file name</span>
+            <span class="n">cfg_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;config.</span><span class="si">{}</span><span class="s1">.json&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bmtk_simulator</span><span class="o">.</span><span class="n">lower</span><span class="p">()))</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cfg_path</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+            <span class="c1"># Throw error message if file exists and overwrite option is False</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Configuration file </span><span class="si">{}</span><span class="s1"> already exists, skipping. &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cfg_path</span><span class="p">)</span> <span class="o">+</span>
+                          <span class="s1">&#39;Please delete existing file, use a different name, or use overwrite=True.&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s1">&#39;config.json&#39;</span>
+
+        <span class="n">config_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">cfg_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">config_dir</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">config_dir</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">fne</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="c1"># Merge and the simulation and circuit configuration dictionaries - make sure to combine the &quot;manifest&quot;</span>
+        <span class="c1"># section since it&#39;s the only section that will be in both configs.</span>
+        <span class="n">master_manifest</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">master_manifest</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;manifest&#39;</span><span class="p">,</span> <span class="p">{}))</span>
+        <span class="n">master_manifest</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_circuit_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;manifest&#39;</span><span class="p">,</span> <span class="p">{}))</span>
+        <span class="n">master_config</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">master_config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">)</span>
+        <span class="n">master_config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_circuit_config</span><span class="p">)</span>
+        <span class="n">master_config</span><span class="p">[</span><span class="s1">&#39;manifest&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">master_manifest</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_to_json</span><span class="p">(</span><span class="n">master_config</span><span class="p">,</span> <span class="n">cfg_path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">cfg_path</span>
+
+    <span class="k">def</span> <span class="nf">_save_config_split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">config_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Saves into multiple configuration files, a simulation config, a circuit config, and a master config that</span>
+<span class="sd">        just contains reference to the other two. This is technically more correct in terms with the SONATA</span>
+<span class="sd">        standard.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Try to find a base-name to save all three configs under, eg. config.*.json, config.simulation_*.json and</span>
+        <span class="c1"># config.circuit_*.json. Ideally the users will have specified in the --config-name option, but if not used</span>
+        <span class="c1"># then check the --config-file option to parse out the base name</span>
+        <span class="k">if</span> <span class="n">config_file</span><span class="p">:</span>
+            <span class="n">cfg_base_path</span> <span class="o">=</span> <span class="n">config_file</span>
+            <span class="n">cfg_name</span> <span class="o">=</span> <span class="n">cfg_base_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.json&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">cfg_sim_path</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_simulation.json&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cfg_name</span><span class="p">)</span>
+            <span class="n">cfg_circuit_path</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_circuit.json&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cfg_name</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">config_name</span><span class="p">:</span>
+            <span class="n">cfg_lower</span> <span class="o">=</span> <span class="n">config_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">cfg_lower</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;config&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">cfg_lower</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;cfg&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;config.&#39;</span>
+            <span class="k">if</span> <span class="n">cfg_lower</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.json&#39;</span><span class="p">):</span>
+                <span class="n">config_name</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">config_name</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;.json&#39;</span>
+
+            <span class="n">cfg_base_path</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}{}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">config_name</span><span class="p">,</span> <span class="n">ext</span><span class="p">)</span>
+            <span class="n">cfg_sim_path</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}{}</span><span class="s1">_simulation</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">config_name</span><span class="p">,</span> <span class="n">ext</span><span class="p">)</span>
+            <span class="n">cfg_circuit_path</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}{}</span><span class="s1">_circuit</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">config_name</span><span class="p">,</span> <span class="n">ext</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># If neither config_file or config_name just use ./config.json as file name</span>
+            <span class="n">cfg_base_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;config.</span><span class="si">{}</span><span class="s1">.json&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bmtk_simulator</span><span class="o">.</span><span class="n">lower</span><span class="p">()))</span>
+            <span class="n">cfg_sim_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;config.simulation.json&#39;</span><span class="p">)</span>
+            <span class="n">cfg_circuit_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;config.circuit.json&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Create directory with configs if it doesn&#39;t exists</span>
+        <span class="n">config_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">cfg_base_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">config_dir</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">config_dir</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">fne</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="c1"># Write and save base/combined config</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cfg_base_path</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Configuration file </span><span class="si">{}</span><span class="s1"> already exists, skipping.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cfg_base_path</span><span class="p">)</span> <span class="o">+</span>
+                            <span class="s1">&#39; Please delete existing file, use a different name, or use overwrite=True.&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">base_config</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;network&#39;</span><span class="p">:</span> <span class="n">cfg_circuit_path</span><span class="p">,</span>
+                <span class="s1">&#39;simulation&#39;</span><span class="p">:</span> <span class="n">cfg_sim_path</span>
+            <span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_save_to_json</span><span class="p">(</span><span class="n">base_config</span><span class="p">,</span> <span class="n">cfg_base_path</span><span class="p">)</span>
+
+        <span class="c1"># Write and save circuit config</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cfg_circuit_path</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Configuration file </span><span class="si">{}</span><span class="s1"> already exists, skipping.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cfg_circuit_path</span><span class="p">)</span> <span class="o">+</span>
+                            <span class="s1">&#39; Please delete existing file, use a different name, or use overwrite=True.&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_save_to_json</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_circuit_config</span><span class="p">,</span> <span class="n">cfg_circuit_path</span><span class="p">)</span>
+
+        <span class="c1"># Write and save simulation config</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cfg_sim_path</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Configuration file </span><span class="si">{}</span><span class="s1"> already exists, skipping.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cfg_sim_path</span><span class="p">)</span> <span class="o">+</span>
+                            <span class="s1">&#39; Please delete existing file, use a different name, or use overwrite=True.&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_save_to_json</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">,</span> <span class="n">cfg_sim_path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">cfg_base_path</span>
+
+<div class="viewcode-block" id="EnvBuilder.build"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.EnvBuilder.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_examples</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">use_relative_paths</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">report_vars</span><span class="o">=</span><span class="p">[],</span>
+              <span class="n">report_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">clamp_reports</span><span class="o">=</span><span class="p">[],</span> <span class="n">current_clamp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">file_current_clamp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+              <span class="n">se_voltage_clamp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+              <span class="n">network_filter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+              <span class="n">spikes_inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rates_inputs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">,</span> <span class="n">overwrite_config</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+              <span class="n">config_name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">split_configs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">run_script</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+              <span class="o">**</span><span class="n">run_args</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parse_network_dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">network_dir</span><span class="p">,</span> <span class="n">network_filter</span><span class="o">=</span><span class="n">network_filter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_components_dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">components_dir</span><span class="p">,</span> <span class="n">with_examples</span><span class="o">=</span><span class="n">include_examples</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">use_relative_paths</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_manifest</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_circuit_config</span><span class="p">,</span> <span class="n">network_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">network_dir</span><span class="p">,</span> <span class="n">components_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">components_dir</span><span class="p">)</span>
+
+        <span class="c1"># selected_ns = self._create_node_sets_file(report_nodes)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_reports</span><span class="p">(</span><span class="n">report_vars</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_clamp_reports</span><span class="p">(</span><span class="n">clamp_reports</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_output_section</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;target_simulator&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_simulator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_run_params</span><span class="p">(</span><span class="o">**</span><span class="n">run_args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_current_clamp</span><span class="p">(</span><span class="n">current_clamp</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_file_current_clamp</span><span class="p">(</span><span class="n">file_current_clamp</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_se_voltage_clamp</span><span class="p">(</span><span class="n">se_voltage_clamp</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_spikes_inputs</span><span class="p">(</span><span class="n">spikes_inputs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_rates_inputs</span><span class="p">(</span><span class="n">rates_inputs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">use_relative_paths</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_manifest</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
+
+        <span class="c1"># Write the configurations to disk, either as a single file or split among base, circuit and simulation.</span>
+        <span class="k">if</span> <span class="n">split_configs</span><span class="p">:</span>
+            <span class="n">cfg_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_config_split</span><span class="p">(</span>
+                <span class="n">config_file</span><span class="o">=</span><span class="n">config_file</span><span class="p">,</span> <span class="n">config_name</span><span class="o">=</span><span class="n">config_name</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite_config</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cfg_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_config_single</span><span class="p">(</span>
+                <span class="n">config_file</span><span class="o">=</span><span class="n">config_file</span><span class="p">,</span> <span class="n">config_name</span><span class="o">=</span><span class="n">config_name</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite_config</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">run_script</span><span class="p">:</span>
+            <span class="c1"># Copy the run_{bionet|pointnet|filternet|popnet}.py script to the base-dir.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_copy_run_script</span><span class="p">(</span><span class="n">run_script</span><span class="o">=</span><span class="n">run_script</span><span class="p">,</span> <span class="n">base_config</span><span class="o">=</span><span class="n">cfg_path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EnvBuilder.compile_mechanisms"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.EnvBuilder.compile_mechanisms">[docs]</a>    <span class="k">def</span> <span class="nf">compile_mechanisms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="BioNetEnvBuilder"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.BioNetEnvBuilder">[docs]</a><span class="k">class</span> <span class="nc">BioNetEnvBuilder</span><span class="p">(</span><span class="n">EnvBuilder</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">examples_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scripts_root</span><span class="p">,</span> <span class="s1">&#39;bionet&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">target_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;NEURON&#39;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">bmtk_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;bionet&#39;</span>
+
+    <span class="k">def</span> <span class="nf">_add_run_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">tstop</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">dL</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span> <span class="n">spikes_threshold</span><span class="o">=-</span><span class="mf">15.0</span><span class="p">,</span> <span class="n">nsteps_block</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span>
+                        <span class="n">v_init</span><span class="o">=-</span><span class="mf">80.0</span><span class="p">,</span> <span class="n">celsius</span><span class="o">=</span><span class="mf">34.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;tstart&#39;</span><span class="p">:</span> <span class="n">tstart</span><span class="p">,</span>
+            <span class="s1">&#39;tstop&#39;</span><span class="p">:</span> <span class="n">tstop</span><span class="p">,</span>
+            <span class="s1">&#39;dt&#39;</span><span class="p">:</span> <span class="n">dt</span><span class="p">,</span>
+            <span class="s1">&#39;dL&#39;</span><span class="p">:</span> <span class="n">dL</span><span class="p">,</span>
+            <span class="s1">&#39;spike_threshold&#39;</span><span class="p">:</span> <span class="n">spikes_threshold</span><span class="p">,</span>
+            <span class="s1">&#39;nsteps_block&#39;</span><span class="p">:</span> <span class="n">nsteps_block</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;conditions&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;celsius&#39;</span><span class="p">:</span> <span class="n">celsius</span><span class="p">,</span>
+            <span class="s1">&#39;v_init&#39;</span><span class="p">:</span> <span class="n">v_init</span>
+        <span class="p">}</span>
+
+<div class="viewcode-block" id="BioNetEnvBuilder.compile_mechanisms"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.BioNetEnvBuilder.compile_mechanisms">[docs]</a>    <span class="k">def</span> <span class="nf">compile_mechanisms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">mechanisms_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">components_dir</span><span class="p">,</span> <span class="s1">&#39;mechanisms&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Attempting to compile NEURON mechanims under &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mechanisms_dir</span><span class="p">))</span>
+
+        <span class="n">modfiles_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mechanisms_dir</span><span class="p">,</span> <span class="s1">&#39;modfiles&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">modfiles_dir</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Could not find NEURON modfiles, attempting to copy over Allen Cell-Type modfiles.&#39;</span><span class="p">)</span>
+            <span class="n">copy_modfiles</span><span class="p">(</span><span class="n">mechanisms_dir</span><span class="o">=</span><span class="n">mechanisms_dir</span><span class="p">)</span>
+
+        <span class="n">compile_mechanisms</span><span class="p">(</span><span class="n">mechanisms_dir</span><span class="o">=</span><span class="n">mechanisms_dir</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="PointNetEnvBuilder"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.PointNetEnvBuilder">[docs]</a><span class="k">class</span> <span class="nc">PointNetEnvBuilder</span><span class="p">(</span><span class="n">EnvBuilder</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">examples_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scripts_root</span><span class="p">,</span> <span class="s1">&#39;pointnet&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">target_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;NEST&#39;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">bmtk_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;pointnet&#39;</span>
+
+    <span class="k">def</span> <span class="nf">_add_output_section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PointNetEnvBuilder</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_add_output_section</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;quiet_simulator&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="FilterNetEnvBuilder"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.FilterNetEnvBuilder">[docs]</a><span class="k">class</span> <span class="nc">FilterNetEnvBuilder</span><span class="p">(</span><span class="n">EnvBuilder</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">examples_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scripts_root</span><span class="p">,</span> <span class="s1">&#39;filternet&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">target_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;LGNModel&#39;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">bmtk_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;filternet&#39;</span>
+
+    <span class="k">def</span> <span class="nf">_add_output_section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">FilterNetEnvBuilder</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_add_output_section</span><span class="p">()</span>
+        <span class="c1"># for now not autmoatically includes rates.csv file since it is pretty big.</span>
+        <span class="c1"># self._simulation_config[&#39;output&#39;][&#39;rates_file_csv&#39;] = &#39;rates.csv&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;rates_h5&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;rates.h5&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;spikes_file_csv&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;spikes.csv&#39;</span></div>
+        <span class="c1"># self._simulation_config[&#39;output&#39;][&#39;spikes_file_h5&#39;] = &#39;spikes.h5&#39;</span>
+
+
+<div class="viewcode-block" id="PopNetEnvBuilder"><a class="viewcode-back" href="../../../../bmtk/bmtk.utils.create_environment.html#bmtk.utils.create_environment.env_builder.PopNetEnvBuilder">[docs]</a><span class="k">class</span> <span class="nc">PopNetEnvBuilder</span><span class="p">(</span><span class="n">EnvBuilder</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">examples_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scripts_root</span><span class="p">,</span> <span class="s1">&#39;popnet&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">target_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;DiPDE&#39;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">bmtk_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;popnet&#39;</span>
+
+    <span class="k">def</span> <span class="nf">_add_output_section</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PopNetEnvBuilder</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_add_output_section</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s1">&#39;spikes_file&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">]:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;spikes_file&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simulation_config</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;rates_file&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;firing_rates.csv&quot;</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../../../../index.html">Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../builder.html">Building Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../simulators.html">Simulation Engines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bionet.html">BioNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../pointnet.html">PointNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../filternet.html">FilterNet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../examples.html">Example Networks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../workshop.html">Annual Modeling Software Workshop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../registration.html">Registration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.tests.html">bmtk.tests package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.utils.html">bmtk.utils package</a></li>
+</ul>
+</li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+
+    <div class="footer" role="contentinfo">
+    </div>
+<script type="text/javascript" src="_static/external_assets/javascript/portalFooter.js"></script>
+
+  </body>
+</html>

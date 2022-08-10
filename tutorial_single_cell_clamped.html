@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Tutorial 1: Single cell simulation with current injection (with BioNet) &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <title>Tutorial 1: Single cell simulation with current injection (with BioNet) &#8212; Brain Modeling Toolkit 1.0.6 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -881,7 +881,7 @@ div.rendered_html tbody tr:hover {
 <p>The first step is to use the bmtk Network Builder to create and save the network. First we instantiate a network with a name or our choosing (since throughout this tutorial we will use cell models from the mouse cortex, let’s call our network ‘mcortex’).</p>
 <p>Once we have initialized a network object, we can add a single node by calling the add_nodes method.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -913,7 +913,7 @@ object. * <em>model_processing</em> - A custom function used by the simulator to
 <p><code class="docutils literal notranslate"><span class="pre">rm:</span> <span class="pre">cannot</span> <span class="pre">remove</span> <span class="pre">sim_ch01/network/*:</span> <span class="pre">No</span> <span class="pre">such</span> <span class="pre">file</span> <span class="pre">or</span> <span class="pre">directory</span></code></p>
 <p>It’s OK. Keep going.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -923,8 +923,8 @@ object. * <em>model_processing</em> - A custom function used by the simulator to
 </div>
 </div>
 <p>Use the NetworkBuilder nodes() method to show that a node of our parameters was created</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -932,6 +932,14 @@ object. * <em>model_processing</em> - A custom function used by the simulator to
     <span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{&#39;cell_name&#39;: &#39;Scnn1a_473845048&#39;, &#39;potential&#39;: &#39;exc&#39;, &#39;model_type&#39;: &#39;biophysical&#39;, &#39;model_template&#39;: &#39;ctdb:Biophys1.hoc&#39;, &#39;model_processing&#39;: &#39;aibs_perisomatic&#39;, &#39;dynamics_params&#39;: &#39;472363762_fit.json&#39;, &#39;morphology&#39;: &#39;Scnn1a_473845048_m.swc&#39;, &#39;node_type_id&#39;: 100, &#39;node_id&#39;: 0}
+</pre></div></div>
 </div>
 </section>
 </section>
@@ -948,8 +956,8 @@ object. * <em>model_processing</em> - A custom function used by the simulator to
 </pre></div>
 </div>
 <p>Or call the function directly in Python:</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -971,6 +979,113 @@ object. * <em>model_processing</em> - A custom function used by the simulator to
 <span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch01/config.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
+WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch01/circuit_config.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
+WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch01/simulation_config.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+/home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch01/components/mechanisms
+Mod files: &#34;modfiles/CaDynamics.mod&#34; &#34;modfiles/Ca_HVA.mod&#34; &#34;modfiles/Ca_LVA.mod&#34; &#34;modfiles/Ih.mod&#34; &#34;modfiles/Im.mod&#34; &#34;modfiles/Im_v2.mod&#34; &#34;modfiles/Kd.mod&#34; &#34;modfiles/K_P.mod&#34; &#34;modfiles/K_T.mod&#34; &#34;modfiles/Kv2like.mod&#34; &#34;modfiles/Kv3_1.mod&#34; &#34;modfiles/Nap.mod&#34; &#34;modfiles/NaTa.mod&#34; &#34;modfiles/NaTs.mod&#34; &#34;modfiles/NaV.mod&#34; &#34;modfiles/SK.mod&#34; &#34;modfiles/vecevent.mod&#34;
+
+COBJS=&#39;&#39;
+ -&gt; <span class="ansi-green-fg">Compiling</span> mod_func.cpp
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/CaDynamics.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Ca_HVA.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Ca_LVA.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Ih.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Im.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Im_v2.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Kd.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/K_P.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/K_T.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Kv2like.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Kv3_1.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Nap.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/NaTa.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/NaTs.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/NaV.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/SK.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/vecevent.mod
+ -&gt; <span class="ansi-green-fg">Compiling</span> CaDynamics.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Ca_HVA.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Ca_LVA.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Ih.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Im.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Im_v2.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Kd.c
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Translating Ca_HVA.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch01/components/mechanisms/x86_64/Ca_HVA.c
+Translating Ca_LVA.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch01/components/mechanisms/x86_64/Ca_LVA.c
+Translating CaDynamics.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch01/components/mechanisms/x86_64/CaDynamics.c
+Thread Safe
+Thread Safe
+Thread Safe
+Translating Ih.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch01/components/mechanisms/x86_64/Ih.c
+Translating Im.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch01/components/mechanisms/x86_64/Im.c
+Translating Im_v2.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch01/components/mechanisms/x86_64/Im_v2.c
+Thread Safe
+Thread Safe
+Thread Safe
+Translating Kd.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch01/components/mechanisms/x86_64/Kd.c
+Translating K_P.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch01/components/mechanisms/x86_64/K_P.c
+Translating K_T.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch01/components/mechanisms/x86_64/K_T.c
+Thread Safe
+Thread Safe
+Thread Safe
+Translating Kv2like.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch01/components/mechanisms/x86_64/Kv2like.c
+Translating Kv3_1.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch01/components/mechanisms/x86_64/Kv3_1.c
+Translating Nap.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch01/components/mechanisms/x86_64/Nap.c
+Thread Safe
+Thread Safe
+Thread Safe
+Translating NaTa.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch01/components/mechanisms/x86_64/NaTa.c
+Translating NaTs.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch01/components/mechanisms/x86_64/NaTs.c
+Translating NaV.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch01/components/mechanisms/x86_64/NaV.c
+Thread Safe
+Thread Safe
+NEURON&#39;s CVode method ignores conservation
+Notice: LINEAR is not thread safe.
+Translating SK.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch01/components/mechanisms/x86_64/SK.c
+Translating vecevent.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch01/components/mechanisms/x86_64/vecevent.c
+Notice: VERBATIM blocks are not thread safe
+Thread Safe
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ -&gt; <span class="ansi-green-fg">Compiling</span> K_P.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> K_T.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Kv2like.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Kv3_1.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Nap.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> NaTa.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> NaTs.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> NaV.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> SK.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> vecevent.c
+ =&gt; <span class="ansi-green-fg">LINKING</span> shared library ./libnrnmech.so
+Successfully created x86_64/special
+</pre></div></div>
 </div>
 <div class="admonition warning">
 <p class="admonition-title"><strong>Warning</strong>: You may see an error that it failed while trying to compile the NEURON mechanisms - especially if Jupyter is unable to find your NEURON environment path. If this happens you will need to manually compile the mechanisms:</p>
@@ -1016,7 +1131,7 @@ $ python run_bionet.py config.json
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-04-08 15:39:45,257 [INFO] Created log file
+2022-07-28 12:16:11,159 [INFO] Created log file
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1033,7 +1148,7 @@ INFO:NEURONIOUtils:Created log file
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 numprocs=1
-2022-04-08 15:39:45,314 [INFO] Building cells.
+2022-07-28 12:16:11,226 [INFO] Building cells.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1049,7 +1164,7 @@ INFO:NEURONIOUtils:Building cells.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-04-08 15:39:45,461 [INFO] Building recurrent connections
+2022-07-28 12:16:11,393 [INFO] Building recurrent connections
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1065,7 +1180,7 @@ INFO:NEURONIOUtils:Building recurrent connections
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-04-08 15:39:45,470 [INFO] Running simulation for 2000.000 ms with the time step 0.100 ms
+2022-07-28 12:16:11,402 [INFO] Running simulation for 2000.000 ms with the time step 0.100 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1081,7 +1196,7 @@ INFO:NEURONIOUtils:Running simulation for 2000.000 ms with the time step 0.100 m
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-04-08 15:39:45,471 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
+2022-07-28 12:16:11,403 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1097,7 +1212,7 @@ INFO:NEURONIOUtils:Starting timestep: 0 at t_sim: 0.000 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-04-08 15:39:45,473 [INFO] Block save every 5000 steps
+2022-07-28 12:16:11,404 [INFO] Block save every 5000 steps
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1113,7 +1228,7 @@ INFO:NEURONIOUtils:Block save every 5000 steps
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-04-08 15:39:45,750 [INFO]     step:5000 t_sim:500.00 ms
+2022-07-28 12:16:11,692 [INFO]     step:5000 t_sim:500.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1129,7 +1244,7 @@ INFO:NEURONIOUtils:    step:5000 t_sim:500.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-04-08 15:39:46,022 [INFO]     step:10000 t_sim:1000.00 ms
+2022-07-28 12:16:12,006 [INFO]     step:10000 t_sim:1000.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1145,7 +1260,7 @@ INFO:NEURONIOUtils:    step:10000 t_sim:1000.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-04-08 15:39:46,286 [INFO]     step:15000 t_sim:1500.00 ms
+2022-07-28 12:16:12,299 [INFO]     step:15000 t_sim:1500.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1161,7 +1276,7 @@ INFO:NEURONIOUtils:    step:15000 t_sim:1500.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-04-08 15:39:46,551 [INFO]     step:20000 t_sim:2000.00 ms
+2022-07-28 12:16:12,603 [INFO]     step:20000 t_sim:2000.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1177,7 +1292,7 @@ INFO:NEURONIOUtils:    step:20000 t_sim:2000.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-04-08 15:39:46,560 [INFO] Simulation completed in 1.091 seconds
+2022-07-28 12:16:12,627 [INFO] Simulation completed in 1.225 seconds
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1185,7 +1300,7 @@ INFO:NEURONIOUtils:    step:20000 t_sim:2000.00 ms
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-INFO:NEURONIOUtils:Simulation completed in 1.091 seconds
+INFO:NEURONIOUtils:Simulation completed in 1.225 seconds
 </pre></div></div>
 </div>
 <div class="admonition warning">
@@ -1514,26 +1629,26 @@ nrnivmodl modfiles
     <tr style="text-align: right;">
       <th></th>
       <th>node_type_id</th>
-      <th>model_type</th>
-      <th>cell_name</th>
-      <th>model_processing</th>
-      <th>potential</th>
       <th>model_template</th>
       <th>morphology</th>
+      <th>model_processing</th>
+      <th>potential</th>
+      <th>model_type</th>
       <th>dynamics_params</th>
+      <th>cell_name</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
       <td>100</td>
-      <td>biophysical</td>
-      <td>Scnn1a_473845048</td>
-      <td>aibs_perisomatic</td>
-      <td>exc</td>
       <td>ctdb:Biophys1.hoc</td>
       <td>Scnn1a_473845048_m.swc</td>
+      <td>aibs_perisomatic</td>
+      <td>exc</td>
+      <td>biophysical</td>
       <td>472363762_fit.json</td>
+      <td>Scnn1a_473845048</td>
     </tr>
   </tbody>
 </table>
@@ -1577,8 +1692,9 @@ nrnivmodl modfiles
 </li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Example Networks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workshop.html">Annual Modeling Software Workshop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registration.html">Registration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="registration.html">Register</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.builder.html">bmtk.builder package</a></li>

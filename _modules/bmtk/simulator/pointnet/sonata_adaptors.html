@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>bmtk.simulator.pointnet.sonata_adaptors &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <title>bmtk.simulator.pointnet.sonata_adaptors &#8212; Brain Modeling Toolkit 1.0.6 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/aibs_sphinx.css" />
     <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
@@ -946,6 +946,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="n">edges</span> <span class="o">=</span> <span class="n">grp_df</span><span class="p">[</span><span class="n">grp_df</span><span class="p">[</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">edge_id</span><span class="p">]</span>
                 <span class="n">target_nodes</span> <span class="o">=</span> <span class="n">trg_nodes_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">edges</span><span class="p">[</span><span class="s1">&#39;target_node_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">]</span>
                 <span class="n">source_nodes</span> <span class="o">=</span> <span class="n">src_nodes_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">edges</span><span class="p">[</span><span class="s1">&#39;source_node_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">py_modules</span><span class="o">.</span><span class="n">has_synaptic_weight</span><span class="p">(</span><span class="n">weight_function</span><span class="p">):</span>
+                    <span class="n">err_msg</span> <span class="o">=</span> <span class="s1">&#39;Unable to calculate synaptic weight for &quot;</span><span class="si">{}</span><span class="s1">&quot; edges, missing &quot;weight_function&quot; &#39;</span> \
+                              <span class="s1">&#39;attribute value </span><span class="si">{}</span><span class="s1"> function.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">edge_group</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">weight_function</span><span class="p">)</span>
+                    <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+
                 <span class="n">weight_fnc</span> <span class="o">=</span> <span class="n">py_modules</span><span class="o">.</span><span class="n">synaptic_weight</span><span class="p">(</span><span class="n">weight_function</span><span class="p">)</span>
                 <span class="n">type_params</span><span class="p">[</span><span class="n">edge_id</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">weight_fnc</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="n">source_nodes</span><span class="p">,</span> <span class="n">target_nodes</span><span class="p">)</span>
 
@@ -1019,8 +1025,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples.html">Example Networks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../workshop.html">Annual Modeling Software Workshop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../registration.html">Registration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributors.html">Contributors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../registration.html">Register</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>

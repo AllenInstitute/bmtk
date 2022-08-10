@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Tutorial 2: Single cell simulation with external feedfoward input (with BioNet) &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <title>Tutorial 2: Single cell simulation with external feedfoward input (with BioNet) &#8212; Brain Modeling Toolkit 1.0.6 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -953,7 +953,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;bmtk.builder.connection_map.ConnectionMap at 0x7fc0219a3128&gt;
+&lt;bmtk.builder.connection_map.ConnectionMap at 0x7f71ede5ac40&gt;
 </pre></div></div>
 </div>
 <p>Let us break down how this method call works:</p>
@@ -1043,7 +1043,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Number of spikes: 313
+Number of spikes: 315
 Units: ms
 </pre></div></div>
 </div>
@@ -1079,31 +1079,31 @@ Units: ms
     <tr>
       <th>0</th>
       <td>0</td>
-      <td>50.454101</td>
+      <td>45.327109</td>
       <td>mthalamus</td>
     </tr>
     <tr>
       <th>1</th>
       <td>0</td>
-      <td>304.683694</td>
+      <td>77.644564</td>
       <td>mthalamus</td>
     </tr>
     <tr>
       <th>2</th>
       <td>0</td>
-      <td>341.404725</td>
+      <td>163.482462</td>
       <td>mthalamus</td>
     </tr>
     <tr>
       <th>3</th>
       <td>0</td>
-      <td>426.215779</td>
+      <td>517.296866</td>
       <td>mthalamus</td>
     </tr>
     <tr>
       <th>4</th>
       <td>0</td>
-      <td>610.815828</td>
+      <td>535.154362</td>
       <td>mthalamus</td>
     </tr>
   </tbody>
@@ -1150,12 +1150,111 @@ Units: ms
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/config.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
+WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/circuit_config.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
+WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/simulation_config.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+/home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms
+Mod files: &#34;modfiles/CaDynamics.mod&#34; &#34;modfiles/Ca_HVA.mod&#34; &#34;modfiles/Ca_LVA.mod&#34; &#34;modfiles/Ih.mod&#34; &#34;modfiles/Im.mod&#34; &#34;modfiles/Im_v2.mod&#34; &#34;modfiles/Kd.mod&#34; &#34;modfiles/K_P.mod&#34; &#34;modfiles/K_T.mod&#34; &#34;modfiles/Kv2like.mod&#34; &#34;modfiles/Kv3_1.mod&#34; &#34;modfiles/Nap.mod&#34; &#34;modfiles/NaTa.mod&#34; &#34;modfiles/NaTs.mod&#34; &#34;modfiles/NaV.mod&#34; &#34;modfiles/SK.mod&#34; &#34;modfiles/vecevent.mod&#34;
+
+COBJS=&#39;&#39;
+ -&gt; <span class="ansi-green-fg">Compiling</span> mod_func.cpp
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/CaDynamics.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Ca_HVA.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Ca_LVA.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Ih.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Im.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Im_v2.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Kd.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/K_P.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/K_T.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Kv2like.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Kv3_1.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Nap.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/NaTa.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/NaTs.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/NaV.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/SK.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/vecevent.mod
+ -&gt; <span class="ansi-green-fg">Compiling</span> CaDynamics.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Ca_HVA.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Ca_LVA.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Ih.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Im.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Im_v2.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Kd.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> K_P.c
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Translating Ca_LVA.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/Ca_LVA.c
+Translating Ca_HVA.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/Ca_HVA.c
+Translating CaDynamics.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/CaDynamics.c
+Thread Safe
+Thread Safe
+Thread Safe
+Translating Ih.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/Ih.c
+Translating Im.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/Im.c
+Translating Im_v2.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/Im_v2.c
+Thread Safe
+Thread Safe
+Thread Safe
+Translating K_P.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/K_P.c
+Translating Kd.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/Kd.c
+Translating K_T.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/K_T.c
+Thread Safe
+Thread Safe
+Thread Safe
+Translating Kv2like.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/Kv2like.c
+Translating Kv3_1.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/Kv3_1.c
+Translating Nap.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/Nap.c
+Thread Safe
+Thread Safe
+Thread Safe
+Translating NaTs.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/NaTs.c
+Translating NaTa.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/NaTa.c
+Translating NaV.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/NaV.c
+Thread Safe
+Thread Safe
+NEURON&#39;s CVode method ignores conservation
+Notice: LINEAR is not thread safe.
+Translating SK.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/SK.c
+Translating vecevent.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch02/components/mechanisms/x86_64/vecevent.c
+Notice: VERBATIM blocks are not thread safe
+Thread Safe
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-config.json
+ -&gt; <span class="ansi-green-fg">Compiling</span> K_T.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Kv2like.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Kv3_1.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Nap.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> NaTa.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> NaTs.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> NaV.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> SK.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> vecevent.c
+ =&gt; <span class="ansi-green-fg">LINKING</span> shared library ./libnrnmech.so
+Successfully created x86_64/special
 </pre></div></div>
 </div>
 <p>The last thing that we need to do is to update the configuration file to read “thalamus_spikes.csv”. To do so we open simulation_config.json in a text editor and add the following to the <strong>input</strong> section.</p>
@@ -1202,7 +1301,7 @@ $ python run_bionet.py config.json
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:21:56,940 [INFO] Created log file
+2022-08-08 16:06:48,667 [INFO] Created log file
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1218,7 +1317,8 @@ INFO:NEURONIOUtils:Created log file
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:21:57,024 [INFO] Building cells.
+numprocs=1
+2022-08-08 16:06:48,750 [INFO] Building cells.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1234,7 +1334,7 @@ INFO:NEURONIOUtils:Building cells.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:21:57,183 [INFO] Building recurrent connections
+2022-08-08 16:06:48,919 [INFO] Building recurrent connections
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1250,7 +1350,7 @@ INFO:NEURONIOUtils:Building recurrent connections
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:21:57,185 [INFO] Building virtual cell stimulations for mthalamus_spikes
+2022-08-08 16:06:48,922 [INFO] Building virtual cell stimulations for mthalamus_spikes
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1266,7 +1366,7 @@ INFO:NEURONIOUtils:Building virtual cell stimulations for mthalamus_spikes
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:21:57,271 [INFO] Running simulation for 3000.000 ms with the time step 0.100 ms
+2022-08-08 16:06:48,955 [INFO] Running simulation for 3000.000 ms with the time step 0.100 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1282,7 +1382,7 @@ INFO:NEURONIOUtils:Running simulation for 3000.000 ms with the time step 0.100 m
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:21:57,272 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
+2022-08-08 16:06:48,956 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1298,7 +1398,7 @@ INFO:NEURONIOUtils:Starting timestep: 0 at t_sim: 0.000 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:21:57,273 [INFO] Block save every 5000 steps
+2022-08-08 16:06:48,957 [INFO] Block save every 5000 steps
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1314,7 +1414,7 @@ INFO:NEURONIOUtils:Block save every 5000 steps
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:21:57,582 [INFO]     step:5000 t_sim:500.00 ms
+2022-08-08 16:06:49,289 [INFO]     step:5000 t_sim:500.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1330,7 +1430,7 @@ INFO:NEURONIOUtils:    step:5000 t_sim:500.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:21:57,877 [INFO]     step:10000 t_sim:1000.00 ms
+2022-08-08 16:06:49,582 [INFO]     step:10000 t_sim:1000.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1346,7 +1446,7 @@ INFO:NEURONIOUtils:    step:10000 t_sim:1000.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:21:58,168 [INFO]     step:15000 t_sim:1500.00 ms
+2022-08-08 16:06:49,881 [INFO]     step:15000 t_sim:1500.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1362,7 +1462,7 @@ INFO:NEURONIOUtils:    step:15000 t_sim:1500.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:21:58,485 [INFO]     step:20000 t_sim:2000.00 ms
+2022-08-08 16:06:50,176 [INFO]     step:20000 t_sim:2000.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1378,7 +1478,7 @@ INFO:NEURONIOUtils:    step:20000 t_sim:2000.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:21:58,844 [INFO]     step:25000 t_sim:2500.00 ms
+2022-08-08 16:06:50,495 [INFO]     step:25000 t_sim:2500.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1394,7 +1494,7 @@ INFO:NEURONIOUtils:    step:25000 t_sim:2500.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:21:59,137 [INFO]     step:30000 t_sim:3000.00 ms
+2022-08-08 16:06:50,800 [INFO]     step:30000 t_sim:3000.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1410,7 +1510,7 @@ INFO:NEURONIOUtils:    step:30000 t_sim:3000.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 07:21:59,150 [INFO] Simulation completed in 1.879 seconds
+2022-08-08 16:06:50,808 [INFO] Simulation completed in 1.853 seconds
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1418,7 +1518,7 @@ INFO:NEURONIOUtils:    step:30000 t_sim:3000.00 ms
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-INFO:NEURONIOUtils:Simulation completed in 1.879 seconds
+INFO:NEURONIOUtils:Simulation completed in 1.853 seconds
 </pre></div></div>
 </div>
 </section>
@@ -1442,7 +1542,7 @@ INFO:NEURONIOUtils:Simulation completed in 1.879 seconds
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Number of Spikes: 52
+Number of Spikes: 57
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1476,31 +1576,31 @@ Number of Spikes: 52
   <tbody>
     <tr>
       <th>0</th>
-      <td>38.3</td>
+      <td>45.0</td>
       <td>0</td>
       <td>mcortex</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>1618.1</td>
+      <td>1375.1</td>
       <td>0</td>
       <td>mcortex</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>1641.9</td>
+      <td>1532.4</td>
       <td>0</td>
       <td>mcortex</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>1727.2</td>
+      <td>1686.9</td>
       <td>0</td>
       <td>mcortex</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>1739.9</td>
+      <td>1780.4</td>
       <td>0</td>
       <td>mcortex</td>
     </tr>
@@ -1576,13 +1676,13 @@ Number of Spikes: 52
       <th>edge_type_id</th>
       <th>target_query</th>
       <th>source_query</th>
-      <th>target_sections</th>
-      <th>weight_function</th>
-      <th>dynamics_params</th>
       <th>model_template</th>
-      <th>distance_range</th>
+      <th>weight_function</th>
+      <th>target_sections</th>
       <th>delay</th>
+      <th>dynamics_params</th>
       <th>syn_weight</th>
+      <th>distance_range</th>
     </tr>
   </thead>
   <tbody>
@@ -1591,13 +1691,13 @@ Number of Spikes: 52
       <td>100</td>
       <td>*</td>
       <td>pop_name=='tON'</td>
-      <td>['basal', 'apical']</td>
-      <td>NaN</td>
-      <td>AMPA_ExcToExc.json</td>
       <td>exp2syn</td>
-      <td>[0.0, 150.0]</td>
+      <td>NaN</td>
+      <td>['basal', 'apical']</td>
       <td>2.0</td>
+      <td>AMPA_ExcToExc.json</td>
       <td>0.001</td>
+      <td>[0.0, 150.0]</td>
     </tr>
   </tbody>
 </table>
@@ -1728,8 +1828,9 @@ Number of Spikes: 52
 </li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Example Networks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workshop.html">Annual Modeling Software Workshop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registration.html">Registration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="registration.html">Register</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.builder.html">bmtk.builder package</a></li>

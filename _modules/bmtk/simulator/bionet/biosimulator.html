@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>bmtk.simulator.bionet.biosimulator &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <title>bmtk.simulator.bionet.biosimulator &#8212; Brain Modeling Toolkit 1.0.6 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/aibs_sphinx.css" />
     <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
@@ -1034,15 +1034,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="c1"># TODO: Need to create a gid selector</span>
         <span class="k">for</span> <span class="n">sim_input</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">network</span><span class="o">.</span><span class="n">get_node_set</span><span class="p">(</span><span class="n">sim_input</span><span class="o">.</span><span class="n">node_set</span><span class="p">)</span>
-            <span class="k">except</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Parameter node_set must be given in inputs module of simulation_config file. If unsure of what node_set should be, set it to &#39;all&#39;.&quot;</span><span class="p">)</span>
-            <span class="n">node_set</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_node_set</span><span class="p">(</span><span class="n">sim_input</span><span class="o">.</span><span class="n">node_set</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">input_type</span> <span class="o">==</span> <span class="s1">&#39;spikes&#39;</span><span class="p">:</span>
                 <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Building virtual cell stimulations for </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sim_input</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
                 <span class="n">path</span> <span class="o">=</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;input_file&#39;</span><span class="p">]</span>
                 <span class="n">spikes</span> <span class="o">=</span> <span class="n">SpikeTrains</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">file_type</span><span class="o">=</span><span class="n">sim_input</span><span class="o">.</span><span class="n">module</span><span class="p">,</span> <span class="o">**</span><span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
+                <span class="c1"># node_set_opts = sim_input.params.get(&#39;node_set&#39;, &#39;all&#39;)</span>
+                <span class="n">node_set</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_node_set</span><span class="p">(</span><span class="n">sim_input</span><span class="o">.</span><span class="n">node_set</span><span class="p">)</span>
                 <span class="n">network</span><span class="o">.</span><span class="n">add_spike_trains</span><span class="p">(</span><span class="n">spikes</span><span class="p">,</span> <span class="n">node_set</span><span class="p">)</span>
 
             <span class="k">elif</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="s2">&quot;FileIClamp&quot;</span><span class="p">:</span>
@@ -1050,7 +1047,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
             <span class="k">elif</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="s1">&#39;IClamp&#39;</span><span class="p">:</span>
                 <span class="c1"># TODO: Parse from csv file</span>
-                <span class="k">try</span><span class="p">:</span> 
+                <span class="n">node_set</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_node_set</span><span class="p">(</span><span class="n">sim_input</span><span class="o">.</span><span class="n">node_set</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
                     <span class="nb">len</span><span class="p">(</span><span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;amp&#39;</span><span class="p">])</span>
                 <span class="k">except</span><span class="p">:</span>
                     <span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;amp&#39;</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;amp&#39;</span><span class="p">])]</span>
@@ -1097,7 +1095,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="n">sim</span><span class="o">.</span><span class="n">attach_current_clamp</span><span class="p">(</span><span class="n">amplitude</span><span class="p">,</span> <span class="n">delay</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">gids</span><span class="p">,</span> <span class="n">section_name</span><span class="p">,</span> <span class="n">section_index</span><span class="p">,</span> <span class="n">section_dist</span><span class="p">)</span>
 
             <span class="k">elif</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="s2">&quot;SEClamp&quot;</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span> 
+                <span class="n">node_set</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_node_set</span><span class="p">(</span><span class="n">sim_input</span><span class="o">.</span><span class="n">node_set</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
                     <span class="nb">len</span><span class="p">(</span><span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;amps&#39;</span><span class="p">])</span>
                 <span class="k">except</span><span class="p">:</span>
                     <span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;amps&#39;</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;amps&#39;</span><span class="p">])]</span>
@@ -1136,6 +1135,17 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
             <span class="k">elif</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="s1">&#39;syn_activity&#39;</span><span class="p">:</span>
                 <span class="k">pass</span>
+
+            <span class="k">elif</span> <span class="n">sim_input</span><span class="o">.</span><span class="n">module</span> <span class="o">==</span> <span class="s1">&#39;replay&#39;</span><span class="p">:</span>
+                <span class="n">io</span><span class="o">.</span><span class="n">log_info</span><span class="p">(</span><span class="s1">&#39;Building replay connections &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sim_input</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+                <span class="n">spikes</span> <span class="o">=</span> <span class="n">SpikeTrains</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;spikes_file&#39;</span><span class="p">])</span>
+                <span class="n">network</span><span class="o">.</span><span class="n">build_replay_inputs</span><span class="p">(</span>
+                    <span class="n">spike_trains</span><span class="o">=</span><span class="n">spikes</span><span class="p">,</span>
+                    <span class="n">edges_path</span><span class="o">=</span><span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;edges&#39;</span><span class="p">][</span><span class="s1">&#39;edges_file&#39;</span><span class="p">],</span>
+                    <span class="n">edge_types_path</span><span class="o">=</span><span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;edges&#39;</span><span class="p">][</span><span class="s1">&#39;edge_types_file&#39;</span><span class="p">],</span>
+                    <span class="n">source_node_set</span><span class="o">=</span><span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;source_node_set&#39;</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">),</span>
+                    <span class="n">target_node_set</span><span class="o">=</span><span class="n">sim_input</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;target_node_set&#39;</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">)</span>
+                <span class="p">)</span>
 
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;Can not parse input format </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sim_input</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
@@ -1210,8 +1220,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples.html">Example Networks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../workshop.html">Annual Modeling Software Workshop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../registration.html">Registration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../contributors.html">Contributors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../registration.html">Register</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>

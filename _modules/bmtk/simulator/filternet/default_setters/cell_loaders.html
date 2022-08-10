@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>bmtk.simulator.filternet.default_setters.cell_loaders &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <title>bmtk.simulator.filternet.default_setters.cell_loaders &#8212; Brain Modeling Toolkit 1.0.6 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/aibs_sphinx.css" />
     <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
@@ -672,12 +672,31 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">delays</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">delays_non_dom</span> <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">delays_non_dom</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;opt_delays&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">predefined_jitter</span><span class="p">:</span>
-        <span class="n">jitter_fnc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">node</span><span class="o">.</span><span class="n">jitter</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">a</span> <span class="o">*</span> <span class="n">node</span><span class="o">.</span><span class="n">jitter</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">jitter_fnc</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">node</span><span class="o">.</span><span class="n">jitter</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="o">*</span><span class="n">node</span><span class="o">.</span><span class="n">jitter</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">a</span><span class="p">])</span>
         <span class="n">weights</span> <span class="o">=</span> <span class="n">jitter_fnc</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span> <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">weights</span>
         <span class="n">kpeaks</span> <span class="o">=</span> <span class="n">jitter_fnc</span><span class="p">(</span><span class="n">kpeaks</span><span class="p">)</span> <span class="k">if</span> <span class="n">kpeaks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">kpeaks</span>
         <span class="n">delays</span> <span class="o">=</span> <span class="n">jitter_fnc</span><span class="p">(</span><span class="n">delays</span><span class="p">)</span> <span class="k">if</span> <span class="n">delays</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">delays</span>
 
     <span class="k">return</span> <span class="n">weights</span><span class="p">,</span> <span class="n">kpeaks</span><span class="p">,</span> <span class="n">delays</span></div>
+
+
+<div class="viewcode-block" id="get_sigma"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.default_setters.html#bmtk.simulator.filternet.default_setters.cell_loaders.get_sigma">[docs]</a><span class="k">def</span> <span class="nf">get_sigma</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">):</span>
+    <span class="k">if</span> <span class="s1">&#39;spatial_size&#39;</span> <span class="ow">in</span> <span class="n">node</span><span class="p">:</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;spatial_size&#39;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="s1">&#39;sigma&#39;</span> <span class="ow">in</span> <span class="n">node</span><span class="p">:</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;sigma&#39;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="s1">&#39;spatial_size&#39;</span> <span class="ow">in</span> <span class="n">dynamics_params</span><span class="p">:</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">dynamics_params</span><span class="p">[</span><span class="s1">&#39;spatial_size&#39;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="s1">&#39;sigma&#39;</span> <span class="ow">in</span> <span class="n">dynamics_params</span><span class="p">:</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="n">dynamics_params</span><span class="p">[</span><span class="s1">&#39;spatial_size&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># TODO: Raise warning</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">sigma</span><span class="p">):</span>
+        <span class="n">sigma</span> <span class="o">=</span> <span class="p">(</span><span class="n">sigma</span><span class="p">,</span> <span class="n">sigma</span><span class="p">)</span> <span class="c1"># convert from degree to SD</span>
+
+    <span class="k">return</span> <span class="n">sigma</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">sigma</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mf">3.0</span></div>
 
 
 <div class="viewcode-block" id="default_cell_loader"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.filternet.default_setters.html#bmtk.simulator.filternet.default_setters.cell_loaders.default_cell_loader">[docs]</a><span class="k">def</span> <span class="nf">default_cell_loader</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">template_name</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">):</span>
@@ -691,9 +710,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="c1"># Create the spatial filter</span>
     <span class="n">origin</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
     <span class="n">translate</span> <span class="o">=</span> <span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">])</span>
-    <span class="n">sigma</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;spatial_size&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="mf">3.0</span>  <span class="c1"># convert from degree to SD</span>
-    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">sigma</span><span class="p">):</span>
-        <span class="n">sigma</span> <span class="o">=</span> <span class="p">(</span><span class="n">sigma</span><span class="p">,</span> <span class="n">sigma</span><span class="p">)</span>
+
+    <span class="n">sigma</span> <span class="o">=</span> <span class="n">get_sigma</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">dynamics_params</span><span class="p">)</span>
     <span class="k">if</span> <span class="s1">&#39;spatial_rotation&#39;</span> <span class="ow">in</span> <span class="n">node</span><span class="p">:</span>
         <span class="n">rotation</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;spatial_rotation&#39;</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
@@ -712,7 +730,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="c1"># sON temporal filter</span>
         <span class="n">t_weights_nd</span><span class="p">,</span> <span class="n">t_kpeaks_nd</span><span class="p">,</span> <span class="n">t_delays_nd</span> <span class="o">=</span> <span class="n">get_tf_params</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">non_dom_params</span><span class="p">,</span> <span class="n">non_dom_props</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">sON_filt_new</span><span class="p">,</span> <span class="n">sON_sum</span> <span class="o">=</span> <span class="n">createOneUnitOfTwoSubunitFilter</span><span class="p">(</span><span class="n">t_weights_nd</span><span class="p">,</span> <span class="n">t_kpeaks_nd</span><span class="p">,</span> <span class="n">t_delays_nd</span><span class="p">,</span> <span class="mf">121.0</span><span class="p">)</span>
-
         <span class="n">sOFF_filt_new</span><span class="p">,</span> <span class="n">sOFF_sum</span> <span class="o">=</span> <span class="n">createOneUnitOfTwoSubunitFilter</span><span class="p">(</span><span class="n">t_weights</span><span class="p">,</span> <span class="n">t_kpeaks</span><span class="p">,</span> <span class="n">t_delays</span><span class="p">,</span> <span class="mf">115.0</span><span class="p">)</span>
 
         <span class="n">amp_on</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># set the non-dominant subunit amplitude to unity</span>
@@ -729,7 +746,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="n">sf_sep</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">sf_sep</span>
         <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">predefined_jitter</span><span class="p">:</span>
-            <span class="n">sf_sep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">lower_jitter</span><span class="o">*</span><span class="n">sf_sep</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">upper_jitter</span><span class="o">*</span><span class="n">sf_sep</span><span class="p">)</span>
+            <span class="n">sf_sep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">jitter</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">sf_sep</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">jitter</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">sf_sep</span><span class="p">)</span>
 
         <span class="n">sep_ss_onoff_cell</span> <span class="o">=</span> <span class="n">create_two_sub_cell</span><span class="p">(</span><span class="n">linear_filter_soff</span><span class="p">,</span> <span class="n">linear_filter_son</span><span class="p">,</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">spont</span><span class="p">,</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">spont</span><span class="p">,</span>
                                                 <span class="n">node</span><span class="o">.</span><span class="n">tuning_angle</span><span class="p">,</span> <span class="n">sf_sep</span><span class="p">,</span> <span class="n">translate</span><span class="p">)</span>
@@ -755,7 +772,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="n">sf_sep</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">sf_sep</span>
         <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">predefined_jitter</span><span class="p">:</span>
-            <span class="n">sf_sep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">lower_jitter</span><span class="o">*</span><span class="n">sf_sep</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">upper_jitter</span><span class="o">*</span><span class="n">sf_sep</span><span class="p">)</span>
+            <span class="n">sf_sep</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">jitter</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">sf_sep</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">jitter</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">sf_sep</span><span class="p">)</span>
 
         <span class="n">sep_ts_onoff_cell</span> <span class="o">=</span> <span class="n">create_two_sub_cell</span><span class="p">(</span><span class="n">linear_filter_toff</span><span class="p">,</span> <span class="n">linear_filter_son</span><span class="p">,</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">spont</span><span class="p">,</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">spont</span><span class="p">,</span>
                                                 <span class="n">node</span><span class="o">.</span><span class="n">tuning_angle</span><span class="p">,</span> <span class="n">sf_sep</span><span class="p">,</span> <span class="n">translate</span><span class="p">)</span>
@@ -844,8 +861,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../examples.html">Example Networks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../workshop.html">Annual Modeling Software Workshop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../registration.html">Registration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../contributors.html">Contributors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../registration.html">Register</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../bmtk/bmtk.builder.html">bmtk.builder package</a></li>

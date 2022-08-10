@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Tutorial 6: Population Level Modeling (with PopNet) &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
+    <title>Tutorial 6: Population Level Modeling (with PopNet) &#8212; Brain Modeling Toolkit 1.0.6 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -1147,7 +1147,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;bmtk.builder.connection_map.ConnectionMap at 0x7f41abb8fb38&gt;
+&lt;bmtk.builder.connection_map.ConnectionMap at 0x7f5ea775c940&gt;
 </pre></div></div>
 </div>
 <p>and finally we must build and save the network</p>
@@ -1196,7 +1196,7 @@ div.rendered_html tbody tr:hover {
 <section id="2.-Setting-up-the-PopNet-environment">
 <h2>2. Setting up the PopNet environment<a class="headerlink" href="#2.-Setting-up-the-PopNet-environment" title="Permalink to this headline">¶</a></h2>
 <p>Before running the simulation we need to set up our simulation environment, inlcuding setting up run-scripts, configuration parameters, and placing our parameter files in their appropiate location. The easiest way to do this is through the command-line:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m bmtk.utils.sim_setup -n network --run-time <span class="m">1500</span>.0 popnet
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m bmtk.utils.sim_setup -n network --tstop <span class="m">1500</span>.0 popnet sim_ch06/
 </pre></div>
 </div>
 <p>Which creates initial files to run a 1500 ms simulation using the network files found in our ./network directory.</p>
@@ -1204,7 +1204,7 @@ div.rendered_html tbody tr:hover {
 <h3>Inputs<a class="headerlink" href="#Inputs" title="Permalink to this headline">¶</a></h3>
 <p>We next need to set the firing rates of the External Population. There are multiple ways to set this value which will be discussed later. The best way is to set the firing rates using a input-rates file for each External Population, we can fetch an existing one using the command:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> sim_ch06
-$ wget https://github.com/AllenInstitute/bmtk/raw/develop/examples/pop_2pops/external_rates.csv -O lgn_rates.csv
+$ wget https://github.com/AllenInstitute/bmtk/raw/develop/examples/pop_2pops/inputs/external_rates.csv -O lgn_rates.csv
 </pre></div>
 </div>
 <p>Then we must open the simulation_config.json file with a text editor and add the lgn_rates.csv file as a part of our inputs:</p>
@@ -1249,14 +1249,14 @@ $ wget https://github.com/AllenInstitute/bmtk/raw/develop/examples/pop_2pops/ext
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-02-18 09:13:19,953 [WARNING] Directory /home/kael/Workspace/bmtk/docs/tutorial/sim_ch06/output already exists.
-2022-02-18 09:13:19,954 [INFO] Created log file
-2022-02-18 09:13:20,000 [INFO] Building cells.
-2022-02-18 09:13:20,001 [INFO] Building recurrent connections
-2022-02-18 09:13:20,007 [INFO] Build virtual cell stimulations for LGN_pop_rates
-2022-02-18 09:13:20,017 [INFO] Network created.
-2022-02-18 09:13:20,018 [INFO] Running simulation.
-2022-02-18 09:13:23,629 [INFO] Finished simulation.
+2022-08-09 16:50:15,019 [WARNING] Directory /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch06/output already exists.
+2022-08-09 16:50:15,020 [INFO] Created log file
+2022-08-09 16:50:15,054 [INFO] Building cells.
+2022-08-09 16:50:15,055 [INFO] Building recurrent connections
+2022-08-09 16:50:15,059 [INFO] Build virtual cell stimulations for LGN_pop_rates
+2022-08-09 16:50:15,078 [INFO] Network created.
+2022-08-09 16:50:15,080 [INFO] Running simulation.
+2022-08-09 16:50:18,766 [INFO] Finished simulation.
 </pre></div></div>
 </div>
 </section>
@@ -1270,7 +1270,7 @@ $ wget https://github.com/AllenInstitute/bmtk/raw/develop/examples/pop_2pops/ext
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.analyzer.firing_rates</span> <span class="kn">import</span> <span class="n">plot_rates_popnet</span>
 
-<span class="n">plot_rates_popnet</span><span class="p">(</span><span class="s1">&#39;sim_ch06/network/V1_node_types.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;sim_ch06/output/spike_rates.csv&#39;</span><span class="p">,</span> <span class="n">model_keys</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">)</span>
+<span class="n">plot_rates_popnet</span><span class="p">(</span><span class="s1">&#39;sim_ch06/network/V1_node_types.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;sim_ch06/output/firing_rates.csv&#39;</span><span class="p">,</span> <span class="n">model_keys</span><span class="o">=</span><span class="s1">&#39;pop_name&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1325,8 +1325,9 @@ $ wget https://github.com/AllenInstitute/bmtk/raw/develop/examples/pop_2pops/ext
 </li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Example Networks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workshop.html">Annual Modeling Software Workshop</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registration.html">Registration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="registration.html">Register</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bmtk/bmtk.html">Source Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.builder.html">bmtk.builder package</a></li>
