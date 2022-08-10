@@ -25,6 +25,7 @@ import numpy as np
 from neuron import h
 
 from bmtk.simulator.core.simulator_network import SimNetwork
+from bmtk.simulator.core import sonata_reader
 from bmtk.simulator.bionet.biocell import BioCell, BioCellSpontSyn
 from bmtk.simulator.bionet.pointprocesscell import PointProcessCell, PointProcessCellSpontSyns
 from bmtk.simulator.bionet.pointsomacell import PointSomaCell
@@ -68,6 +69,7 @@ class BioNetwork(SimNetwork):
         self._rank_nodes_by_model = {m_type: {} for m_type in self._model_type_map.keys()}
         self._remote_node_cache = {}
         self._virtual_nodes = {}
+        self._disconnected_source_cells = {}
 
         self._cells_built = False
         self._connections_initialized = False
@@ -140,6 +142,19 @@ class BioNetwork(SimNetwork):
             virt_cell = VirtualCell(node, population, spike_trains)
             self._virtual_nodes[population][node_id] = virt_cell
             return virt_cell
+
+    def get_disconnected_cell(self, population, node_id, spike_trains):
+        if population not in self._disconnected_source_cells:
+            self._disconnected_source_cells[population] = {}
+
+        if node_id in self._disconnected_source_cells[population]:
+            virt_cell = self._disconnected_source_cells[population][node_id]
+        else:
+            node = self.get_node_id(population, node_id)
+            virt_cell = VirtualCell(node, population, spike_trains)
+            self._disconnected_source_cells[population][node_id] = virt_cell
+
+        return virt_cell
 
     def _build_cell(self, bionode, population_name):
         if bionode.model_type in self._model_type_map:
@@ -309,6 +324,37 @@ class BioNetwork(SimNetwork):
                         if src_node.model_type == 'virtual':
                             continue
                         trg_cell.set_syn_connection(edge, src_node)
+
+        self.io.barrier()
+
+    def build_replay_inputs(self, spike_trains, edges_path, edge_types_path, source_node_set, target_node_set):
+        self._init_connections()
+
+        src_cells = self.get_node_set(source_node_set)
+        valid_src_ids = set(src_cells.gids())
+        trg_cells = self.get_node_set(target_node_set)
+        valid_trg_ids = set(trg_cells.gids())
+
+        edges_pop_list = sonata_reader.load_edges(edges_path, edge_types_path, adaptor=self.get_edge_adaptor('sonata'))
+        for edges_pop in edges_pop_list:
+            edges_pop.initialize(self)
+
+            trg_population = edges_pop.target_nodes
+            src_population = edges_pop.source_nodes
+            if src_population not in src_cells.population_names() or trg_population not in trg_cells.population_names():
+                continue
+
+            for trg_nid, trg_cell in self._rank_node_ids[trg_population].items():
+                if trg_nid not in valid_trg_ids:
+                    continue
+
+                for edge in edges_pop.get_target(trg_nid):
+                    src_nid = edge.source_node_id
+                    if src_nid not in valid_src_ids:
+                        continue
+
+                    src_cell = self.get_disconnected_cell(src_population, src_nid, spike_trains)
+                    trg_cell.set_syn_connection(edge, src_cell, src_cell)
 
         self.io.barrier()
 
