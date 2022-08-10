@@ -1,9 +1,9 @@
 edge_type_id target_query source_query syn_weight dynamics_params distance_range delay target_sections model_template
 100 model_type=='biophysical'&ei=='i' ei=='i' 50.0 InhToInh.json "[0.0, 1e+20]" 2.0 "['somatic', 'basal']" static_synapse
-101 model_type=='point_process'&ei=='i' ei=='i' 50.0 instanteneousInh.json NULL 2.0 NULL static_synapse
+101 model_type=='point_process'&ei=='i' ei=='i' 50.0 instantaneousInh.json NULL 2.0 NULL static_synapse
 102 level_of_detail=='biophysical'&ei=='e' ei=='i' 50.0 InhToExc.json "[0.0, 50.0]" 2.0 "['somatic', 'basal', 'apical']" static_synapse
-103 level_of_detail=='intfire'&ei=='e' ei=='i' 50.0 instanteneousInh.json NULL 2.0 NULL static_synapse
+103 level_of_detail=='intfire'&ei=='e' ei=='i' 50.0 instantaneousInh.json NULL 2.0 NULL static_synapse
 104 pop_name=='PV1' ei=='e' 30.0 ExcToInh.json "[0.0, 1e+20]" 2.0 "['somatic', 'basal']" static_synapse
-105 pop_name=='LIF_inh' ei=='e' 50.0 instanteneousExc.json NULL 2.0 NULL static_synapse
+105 pop_name=='LIF_inh' ei=='e' 50.0 instantaneousExc.json NULL 2.0 NULL static_synapse
 106 pop_name=='Scnn1a' ei=='e' 50.0 ExcToExc.json "[30.0, 150.0]" 2.0 "['basal', 'apical']" static_synapse
-107 pop_name=='LIF_exc' ei=='e' 50.0 instanteneousExc.json NULL 2.0 NULL static_synapse
+107 pop_name=='LIF_exc' ei=='e' 50.0 instantaneousExc.json NULL 2.0 NULL static_synapse

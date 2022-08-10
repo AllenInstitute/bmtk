@@ -208,7 +208,7 @@ def build_internal_network():
     cm = internal.add_edges(
         source={'ei': 'e'}, target={'model_type': 'point_neuron'},
         connection_rule=n_connections,
-        dynamics_params='instanteneousExc.json',
+        dynamics_params='instantaneousExc.json',
         delay=2.0
     )
     cm.add_properties('syn_weight', rule=0.0019, dtypes=np.float)
@@ -216,7 +216,7 @@ def build_internal_network():
     cm = internal.add_edges(
         source={'ei': 'i'}, target={'model_type': 'point_neuron'},
         connection_rule=n_connections,
-        dynamics_params='instanteneousInh.json',
+        dynamics_params='instantaneousInh.json',
         delay=2.0
     )
     cm.add_properties('syn_weight', rule=0.0019, dtypes=np.float)
@@ -275,7 +275,7 @@ def build_external_network(internal):
         target=internal.nodes(model_type='point_neuron'), source=external.nodes(),
         connection_rule=connect_external,
         iterator='one_to_all',
-        dynamics_params='instanteneousExc.json',
+        dynamics_params='instantaneousExc.json',
         delay=2.0
     )
     cm.add_properties('syn_weight', rule=0.045, dtypes=np.float)
