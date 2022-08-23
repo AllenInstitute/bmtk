@@ -126,7 +126,7 @@ class EcpMod(SimulatorMod):
             cell = sim.net.get_cell_gid(gid)
             #cell = sim.net.get_local_cell(gid)
             # cell = sim.net.cells[gid]
-            self._rel.calc_transfer_resistance(gid, cell.get_seg_coords())
+            self._rel.calc_transfer_resistance(gid, cell.seg_coords)
 
         self._rel_nsites = self._rel.nsites
         sim.h.cvode.use_fast_imem(1)  # make i_membrane_ a range variable
@@ -263,8 +263,8 @@ class RecXElectrode(object):
         """Precompute mapping from segment to electrode locations"""
         sigma = 0.3  # mS/mm
 
-        r05 = (seg_coords['p0'] + seg_coords['p1']) / 2
-        dl = seg_coords['p1'] - seg_coords['p0']
+        r05 = (seg_coords.p0 + seg_coords.p1) / 2
+        dl = seg_coords.p1 - seg_coords.p0
 
         nseg = r05.shape[1]
 

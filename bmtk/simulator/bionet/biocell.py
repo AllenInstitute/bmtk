@@ -24,6 +24,7 @@ import numpy as np
 from bmtk.simulator.bionet import utils, nrn
 from bmtk.simulator.bionet.cell import Cell
 from bmtk.simulator.bionet.io_tools import io
+from bmtk.simulator.bionet.morphology import Morphology, get_or_build_from_cache
 import six
 
 from neuron import h
@@ -76,15 +77,15 @@ class BioCell(Cell):
         # Set up netcon object that can be used to detect and communicate cell spikes.
         self.set_spike_detector(bionetwork.spike_threshold)
 
-        self._morph = None
-        self._seg_coords = {}
+        # self._morph = None
+        # self._seg_coords = {}
 
         # Determine number of segments and store a list of all sections.
-        self._nseg = 0
-        self.set_nseg(bionetwork.dL)
+        # self._nseg = 0
+        # self.set_nseg(bionetwork.dL)
         self._secs = []
         self._secs_by_id = []
-        self.set_sec_array()
+        # self.set_sec_array()
 
         self._save_conn = False  # bionetwork.save_connection
         self._synapses = []
@@ -106,55 +107,83 @@ class BioCell(Cell):
 
         self.__extracellular_mech = False
 
-    def set_spike_detector(self, spike_threshold):
-        nc = h.NetCon(self.hobj.soma[0](0.5)._ref_v, None, sec=self.hobj.soma[0])  # attach spike detector to cell
-        nc.threshold = spike_threshold     
-        pc.cell(self.gid, nc)  # associate gid with spike detector
+        self._morphology = None
+        self.build_morphology()
 
-    def set_nseg(self, dL):
-        """Define number of segments in a cell"""
-        self._nseg = 0
-        for sec in self.hobj.all:
-            sec.nseg = 1 + 2 * int(sec.L/(2*dL))
-            self._nseg += sec.nseg # get the total number of segments in the cell
+    def build_morphology(self):
+        morph_base = get_or_build_from_cache(self.hobj, morphology_file=self.morphology_file)
 
-    def calc_seg_coords(self, morph_seg_coords):
-        """Update the segment coordinates (after rotations) for individual cells"""
+        if self._network.dL is not None:
+            morph_base.set_segment_dl(self._network.dL)
+
+        phi_x = self._node.rotation_angle_xaxis
         phi_y = self._node.rotation_angle_yaxis
         phi_z = self._node.rotation_angle_zaxis
-        phi_x = self._node.rotation_angle_xaxis
-
-        # Rotate cell
-        # TODO: Rotations should follow as described in sonata (https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md).
-        #  Need someone with graphics experience to check they are being done correctly (I'm not sure atm).
-        RotX = utils.rotation_matrix([1, 0, 0], phi_x)
-        RotY = utils.rotation_matrix([0, 1, 0], phi_y)  # rotate segments around yaxis normal to pia
-        RotZ = utils.rotation_matrix([0, 0, 1], phi_z)  # rotate segments around zaxis to get a proper orientation
-        RotXYZ = np.dot(RotX, RotY.dot(RotZ))
-
-        # rotated coordinates around z axis first then shift relative to the soma
-        self._seg_coords['p0'] = self._pos_soma + np.dot(RotXYZ, morph_seg_coords['p0'])
-        self._seg_coords['p1'] = self._pos_soma + np.dot(RotXYZ, morph_seg_coords['p1'])
-        self._seg_coords['p05'] = self._pos_soma + np.dot(RotXYZ, morph_seg_coords['p05'])
-
-    def get_seg_coords(self):
-        return self._seg_coords
+        self._morphology = morph_base.move_and_rotate(
+            soma_coords=self.soma_position.flatten(),
+            rotation_angles=[phi_x, phi_y, phi_z],
+            inplace=False
+        )
+        self.set_sec_array()
 
     @property
     def morphology_file(self):
-        # TODO: Get from self._node.morphology_file
+        """Value that's stored in SONATA morphology column"""
         return self._node.morphology_file
 
     @property
     def morphology(self):
-        return self._morph
+        """The actual Morphology object instanstiation"""
+        return self._morphology
 
-    @morphology.setter
-    def morphology(self, morphology_obj):
-        self.set_morphology(morphology_obj)
+    @property
+    def seg_coords(self):
+        """Coordinates for segments/sections of the morphology, need to make public for ecp, xstim, and other
+        functionality that needs to compute the soma/dendritic coordinates of each cell"""
+        return self.morphology.seg_coords
 
-    def set_morphology(self, morphology_obj):
-        self._morph = morphology_obj
+    def set_spike_detector(self, spike_threshold):
+        nc = h.NetCon(self.hobj.soma[0](0.5)._ref_v, None, sec=self.hobj.soma[0])  # attach spike detector to cell
+        nc.threshold = spike_threshold
+        pc.cell(self.gid, nc)  # associate gid with spike detector
+
+    # def set_nseg(self, dL):
+    #     """Define number of segments in a cell"""
+    #     self._nseg = 0
+    #     for sec in self.hobj.all:
+    #         sec.nseg = 1 + 2 * int(sec.L/(2*dL))
+    #         self._nseg += sec.nseg # get the total number of segments in the cell
+
+    # def calc_seg_coords(self, morph_seg_coords):
+    #     """Update the segment coordinates (after rotations) for individual cells"""
+    #     phi_y = self._node.rotation_angle_yaxis
+    #     phi_z = self._node.rotation_angle_zaxis
+    #     phi_x = self._node.rotation_angle_xaxis
+    #
+    #     # Rotate cell
+    #     # TODO: Rotations should follow as described in sonata (https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md).
+    #     #  Need someone with graphics experience to check they are being done correctly (I'm not sure atm).
+    #     RotX = utils.rotation_matrix([1, 0, 0], phi_x)
+    #     RotY = utils.rotation_matrix([0, 1, 0], phi_y)  # rotate segments around yaxis normal to pia
+    #     RotZ = utils.rotation_matrix([0, 0, 1], phi_z)  # rotate segments around zaxis to get a proper orientation
+    #     RotXYZ = np.dot(RotX, RotY.dot(RotZ))
+    #
+    #     # rotated coordinates around z axis first then shift relative to the soma
+    #     self._seg_coords['p0'] = self._pos_soma + np.dot(RotXYZ, morph_seg_coords['p0'])
+    #     self._seg_coords['p1'] = self._pos_soma + np.dot(RotXYZ, morph_seg_coords['p1'])
+    #     self._seg_coords['p05'] = self._pos_soma + np.dot(RotXYZ, morph_seg_coords['p05'])
+
+    # def get_seg_coords(self):
+    #     return self._seg_coords
+
+
+
+    # @morphology.setter
+    # def morphology(self, morphology_obj):
+    #     self.set_morphology(morphology_obj)
+    #
+    # def set_morphology(self, morphology_obj):
+    #     self._morph = morphology_obj
 
     def get_sections(self):
         return self._secs_by_id
@@ -177,6 +206,7 @@ class BioCell(Cell):
 
     def set_sec_array(self):
         """Arrange sections in an array to be access by index"""
+        # TODO: This should be accessabile in Morphology object
         secs = []  # build ref to sections
         self._secs_by_id = []
         for sec in self.hobj.all:
@@ -247,13 +277,13 @@ class BioCell(Cell):
         if edge_prop.nsyns < 1:
             return 1
 
-        tar_seg_ix, tar_seg_prob = self._morph.get_target_segments(edge_prop)
+        tar_seg_ix, tar_seg_prob = self.morphology.get_target_segments(edge_prop)
         nsyns = 1
 
         # choose nsyn elements from seg_ix with probability proportional to segment area
         seg_ix = self.prng.choice(tar_seg_ix, nsyns, p=tar_seg_prob)[0]
         sec = self._secs[seg_ix]  # section where synapases connect
-        x = self._morph.seg_prop['x'][seg_ix]  # distance along the section where synapse connects, i.e., seg_x
+        x = self.morphology.seg_props.x[seg_ix]  # distance along the section where synapse connects, i.e., seg_x
 
         if edge_prop.nsyns > 1:
             print("Warning: The number of synapses passed in was greater than 1, but only one gap junction will be made.")
@@ -312,7 +342,11 @@ class BioCell(Cell):
         return 1
 
     def _set_connections(self, edge_prop, src_node, syn_weight, stim=None):
-        tar_seg_ix, tar_seg_prob = self._morph.get_target_segments(edge_prop)
+        tar_seg_ix, tar_seg_prob = self.morphology.find_sections(
+            section_names=edge_prop.target_sections,
+            distance_range=edge_prop.target_distance,
+            cache=True
+        )
         nsyns = edge_prop.nsyns
 
         if len(tar_seg_ix) == 0:
@@ -320,9 +354,11 @@ class BioCell(Cell):
             io.log_warning(msg, all_ranks=True, display_once=True)
             return 0
 
+        # print(self.node_id, self.morphology_file, len(self._secs), self.morphology.nseg)
+
         segs_ix = self.prng.choice(tar_seg_ix, nsyns, p=tar_seg_prob)
         secs = self._secs[segs_ix]  # sections where synapases connect
-        xs = self._morph.seg_prop['x'][segs_ix]  # distance along the section where synapse connects, i.e., seg_x
+        xs = self.morphology.seg_props.x[segs_ix]  # distance along the section where synapse connects, i.e., seg_x
 
         # TODO: this should be done just once
         synapses = [edge_prop.load_synapses(x, sec) for x, sec in zip(xs, secs)]
@@ -379,17 +415,17 @@ class BioCell(Cell):
             self.__extracellular_mech = True
 
     def setup_ecp(self):
-        self.im_ptr = h.PtrVector(self._nseg)  # pointer vector
+        self.im_ptr = h.PtrVector(self.morphology.nseg)  # pointer vector
         # used for gathering an array of  i_membrane values from the pointer vector
         self.im_ptr.ptr_update_callback(self.set_im_ptr)
-        self.imVec = h.Vector(self._nseg)
+        self.imVec = h.Vector(self.morphology.nseg)
 
         self.__set_extracell_mechanism()
         #for sec in self.hobj.all:
         #    sec.insert('extracellular')
 
     def setup_xstim(self, set_nrn_mechanism=True):
-        self.ptr2e_extracellular = h.PtrVector(self._nseg)
+        self.ptr2e_extracellular = h.PtrVector(self.morphology.nseg)
         self.ptr2e_extracellular.ptr_update_callback(self.set_ptr2e_extracellular)
 
         # Set the e_extracellular mechanism for all sections on this hoc object
@@ -460,14 +496,19 @@ class BioCellSpontSyn(BioCell):
         return True
 
     def _set_connections(self, edge_prop, src_node, syn_weight, stim=None):
-        tar_seg_ix, tar_seg_prob = self._morph.get_target_segments(edge_prop)
+        tar_seg_ix, tar_seg_prob = self.morphology.find_sections(
+            section_names=edge_prop.target_sections,
+            distance_range=edge_prop.target_distance,
+            cache=True
+        )
+        # tar_seg_ix, tar_seg_prob = self.morphology.get_target_segments(edge_prop)
         src_gid = src_node.node_id
         nsyns = edge_prop.nsyns
 
         # choose nsyn elements from seg_ix with probability proportional to segment area
         segs_ix = self.prng.choice(tar_seg_ix, nsyns, p=tar_seg_prob)
         secs = self._secs[segs_ix]  # sections where synapases connect
-        xs = self._morph.seg_prop['x'][segs_ix]  # distance along the section where synapse connects, i.e., seg_x
+        xs = self.morphology.seg_props.x[segs_ix]  # distance along the section where synapse connects, i.e., seg_x
 
         synapses = [edge_prop.load_synapses(x, sec) for x, sec in zip(xs, secs)]
 
