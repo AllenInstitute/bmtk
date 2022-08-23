@@ -9,7 +9,7 @@ from bmtk.simulator.bionet.nrn import load_neuron_modules
 from bmtk.simulator.bionet.morphology import Morphology, Morphology as MorphologyOLD
 
 
-SegmentCoords = namedtuple('EdgeType', ['p0', 'p1', 'p05'])
+EdgeType = namedtuple('EdgeType', ['target_sections', 'target_distance'])
 
 
 def load_hobj():
@@ -180,14 +180,6 @@ def test_multicell():
     assert(np.allclose(seg_coords2['p1'][:, -1], [-9.87490156483996, -48.26429035737874, 304.1419885944318], atol=1.0e-2))
 
 
-def test_cut_axon():
-    pass
-
-
-def test_rotmove():
-    pass
-
-
 def test_get_target_segments():
     hobj = load_hobj()
 
@@ -226,6 +218,35 @@ def test_get_target_segments():
     seg_coords['p0'] = pos_soma + np.dot(RotXYZ, seg_coords['p0'])
     seg_coords['p1'] = pos_soma + np.dot(RotXYZ, seg_coords['p1'])
     seg_coords['p05'] = pos_soma + np.dot(RotXYZ, seg_coords['p05'])
+
+    # # TODO: Make sure it's able to work with arrays and lists.
+    # secs, _ = morph.get_target_segments(edge_type=EdgeType(target_sections=['dend', 'apic', 'soma', 'axon'], target_distance=[0.0, 1.0e20]))
+    # assert(len(secs) == morph.nseg)
+
+    edge_type = EdgeType(target_sections=('dend', 'apic', 'soma', 'axon'), target_distance=(0.0, 1.0e20))
+    secs, _ = morph.get_target_segments(edge_type=edge_type)
+    assert(len(secs) == morph.nseg)
+
+    # Check to see if it's cached
+    secs, _ = morph.get_target_segments(edge_type=edge_type)
+    assert(len(secs) == morph.nseg)
+
+    secs, sec_probs = morph.get_target_segments(EdgeType(target_sections=('dend', 'apic'), target_distance=(150.0, 200.0)))
+    assert(np.isclose(np.sum(sec_probs), 1.0, atol=1.0e-3))
+    for sec in secs:
+        assert(morph.seg_prop['type'][sec] in [3, 4])
+        assert(10.0 <= morph.seg_prop['dist1'][sec] and morph.seg_prop['dist0'][sec] <= 200.0)
+
+    secs, sec_probs = morph.get_target_segments(EdgeType(target_sections=('axon'), target_distance=(0.0, 10.0e20)))
+    for sec in secs:
+        assert (morph.seg_prop['type'][sec] == 2)
+
+    # secs, sec_probs = morph.get_target_segments(EdgeType(target_sections=('soma'), distance_range=(300.0, 500.0]))
+    # assert(len(secs) == 0)
+    # assert(len(sec_probs) == 0)
+    #
+    # secs, sec_probs = morph.get_target_segments(EdgeType(target_sections=['soma'], distance_range=(0.0, 100.0)))
+    # assert(len(secs) == 1 and sec_probs[0] == 1.0)
 
 
 def test_find_sections():
@@ -270,6 +291,9 @@ def test_find_sections():
     secs, _ = morph.find_sections(target_sections=['dend', 'apic', 'soma', 'axon'], distance_range=[0.0, 1.0e20])
     assert(len(secs) == morph.nseg)
 
+    secs, _ = morph.find_sections(target_sections=('dend', 'apic', 'soma', 'axon'), distance_range=(0.0, 1.0e20))
+    assert(len(secs) == morph.nseg)
+
     secs, sec_probs = morph.find_sections(target_sections=['dend', 'apic'], distance_range=[150.0, 200.0])
     assert(np.isclose(np.sum(sec_probs), 1.0, atol=1.0e-3))
     for sec in secs:
@@ -292,4 +316,5 @@ if __name__ == '__main__':
     # test_base()
     # test_full()
     # test_multicell()
-    test_find_sections()
+    # test_find_sections()
+    test_get_target_segments()
