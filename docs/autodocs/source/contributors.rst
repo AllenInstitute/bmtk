@@ -23,6 +23,8 @@ Ram Iyer `@ramakrishnaniyer <http://github.com/ramakrishnaniyer>`__
 
 Jung Hoon Lee
 
+Xiao-Ping Liu `@xpliu16 <http://github.com/xpliu16>`__
+
 Stefan Mihalas
 
 Catalin Mitelut
