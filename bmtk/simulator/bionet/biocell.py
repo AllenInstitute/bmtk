@@ -195,14 +195,14 @@ class BioCell(Cell):
     def get_section(self, sec_id):
         return self._secs[sec_id]
 
-    def store_segments(self):
-        self._segments = []
-        for sec in self._secs_by_id:
-            for seg in sec:
-                self._segments.append(seg)
-
-    def get_segments(self):
-        return self._segments
+    # def store_segments(self):
+    #     self._segments = []
+    #     for sec in self._secs_by_id:
+    #         for seg in sec:
+    #             self._segments.append(seg)
+    #
+    # def get_segments(self):
+    #     return self._segments
 
     def set_sec_array(self):
         """Arrange sections in an array to be access by index"""
@@ -353,8 +353,6 @@ class BioCell(Cell):
             msg = 'Could not find target synaptic location for edge-type {}, Please check target_section and/or distance_range properties'.format(edge_prop.edge_type_id)
             io.log_warning(msg, all_ranks=True, display_once=True)
             return 0
-
-        # print(self.node_id, self.morphology_file, len(self._secs), self.morphology.nseg)
 
         segs_ix = self.prng.choice(tar_seg_ix, nsyns, p=tar_seg_prob)
         secs = self._secs[segs_ix]  # sections where synapases connect

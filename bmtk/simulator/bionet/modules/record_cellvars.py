@@ -22,6 +22,7 @@
 #
 import os
 import h5py
+import numpy as np
 from neuron import h
 
 from bmtk.simulator.bionet.modules.sim_module import SimulatorMod
@@ -51,6 +52,16 @@ def first_element(lst):
 
 transforms_table = {
     'first_element': first_element,
+}
+
+
+swc_type_maps = {
+    'undefined': 0,
+    'soma': 1, 'somatic': 1,
+    'axon': 2, 'axonal': 2,
+    'dend': 3, 'basal': 3, 'basal dendrite': 3, '(basal) dendrite': 3,
+    'apic': 4, 'apical': 4, 'apical denrite': 4,
+    'custom': 5, 'other': 5
 }
 
 
@@ -86,13 +97,18 @@ class MembraneReport(SimulatorMod):
         self._file_name = file_name if os.path.isabs(file_name) else os.path.join(tmp_dir, file_name)
         self._all_gids = cells
         self._local_gids = []
-        self._sections = sections
-
         self._var_recorder = None
         self._gid_list = gids  # list of all gids that will have their variables saved
         self._data_block = {}  # table of variable data indexed by [gid][variable]
         self._block_step = 0  # time step within a given block
         self._gid_map = None
+
+        self._sections = sections if isinstance(sections, (list, tuple)) else [sections]
+        self._sections = [s.lower() for s in self._sections]
+        if len(self._sections) == 0 or 'all' in self._sections:
+            self._section_types = {v for v in swc_type_maps.values()}
+        else:
+            self._section_types = {v for k, v in swc_type_maps.items() if k in self._sections}
 
     def _get_gids(self, sim):
         # get list of gids to save. Will only work for biophysical cells saved on the current MPI rank
@@ -113,22 +129,36 @@ class MembraneReport(SimulatorMod):
         self._get_gids(sim)
         #self._save_sim_data(sim)
 
-        # TODO: get section by name and/or list of section ids
         # Build segment/section list
         for gid in self._local_gids:
             pop_id = self._gid_map.get_pool_id(gid)
             sec_list = []
             seg_list = []
-            cell = sim.net.get_cell_gid(gid)
-            cell.store_segments()
-            for sec_id, sec in enumerate(cell.get_sections()):
-                for seg in sec:
-                    # TODO: Make sure the seg has the recorded variable(s)
-                    sec_list.append(sec_id)
-                    seg_list.append(seg.x)
+            swc_ids_beg = []
+            swc_ids_end = []
+            seg_types = []
 
-            self._var_recorder.add_cell(node_id=pop_id.node_id, population=pop_id.population, element_ids=sec_list,
-                                        element_pos=seg_list)
+            cell = sim.net.get_cell_gid(gid)
+            morph = cell.morphology
+            segs = morph.seg_props
+            for sec_id, x0, x, x1, stype in zip(segs.sec_id, segs.x0, segs.x, segs.x, segs.type):
+                if stype in self._section_types:
+                    swc_id_beg, _ = morph.get_swc_id(sec_id, x0)
+                    swc_id_end, _ = morph.get_swc_id(sec_id, x1)
+                    sec_list.append(sec_id)
+                    seg_list.append(x)
+
+                    # TODO: Have option to turn on/off saving SWC data
+                    swc_ids_beg.append(swc_id_beg)
+                    swc_ids_end.append(swc_id_end)
+                    seg_types.append(stype)
+
+            self._var_recorder.add_cell(
+                node_id=pop_id.node_id, population=pop_id.population,
+                element_ids=sec_list, element_pos=seg_list,
+                swc_ids_beg=swc_ids_beg, swc_ids_end=swc_ids_end,
+                seg_types=seg_types
+            )
 
         self._var_recorder.initialize()
 
@@ -137,13 +167,14 @@ class MembraneReport(SimulatorMod):
         for gid in self._local_gids:
             pop_id = self._gid_map.get_pool_id(gid)
             cell = sim.net.get_cell_gid(gid)
+            segs = cell.morphology.segments
+            stypes = cell.morphology.seg_props.type
             for var_name in self._variables:
-                seg_vals = [getattr(seg, var_name) for seg in cell.get_segments()]
+                seg_vals = [getattr(seg, var_name) for seg, stype in zip(segs, stypes) if stype in self._section_types]
                 self._var_recorder.record_cell(pop_id.node_id, population=pop_id.population, vals=seg_vals, tstep=tstep)
 
             for var_name, fnc in self._transforms.items():
-                seg_vals = [fnc(getattr(seg, var_name)) for seg in cell.get_segments()]
-                # self._var_recorder.record_cell(gid, var_name, seg_vals, tstep)
+                seg_vals = [fnc(getattr(seg, var_name)) for seg, stype in zip(segs, stypes) if stype in self._section_types]
                 self._var_recorder.record_cell(pop_id.node_id, population=pop_id.population, val=seg_vals, tstep=tstep)
 
         self._block_step += 1

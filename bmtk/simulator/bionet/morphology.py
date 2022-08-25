@@ -30,8 +30,9 @@ from neuron import h
 
 pc = h.ParallelContext()  # object to access MPI methods
 
-
-SegmentProps = namedtuple('SegmentProps', ['type', 'area', 'x', 'dist', 'length', 'dist0', 'dist1', 'sec_id'])
+#
+SegmentObjs = namedtuple('SegmentObjs', ['segment', 'x0', 'x1'])
+SegmentProps = namedtuple('SegmentProps', ['type', 'area', 'x', 'x0', 'x1', 'dist', 'length', 'dist0', 'dist1', 'sec_id'])
 SegmentCoords = namedtuple('SegmentCoords', ['p0', 'p1', 'p05', 'soma_pos'])
 
 
@@ -71,6 +72,7 @@ class Morphology(object):
 
         self._prng = np.random.RandomState(self.rng_seed)
         self._sections = None
+        self._segments = None
         # self._n_sections = None
         # self._soma_pos = None
         self._seg_props = None
@@ -87,7 +89,7 @@ class Morphology(object):
 
 
     def _copy(self):
-        new_morph = Morphology(hobj=self.hobj, rng_seed=self.rng_seed)
+        new_morph = Morphology(hobj=self.hobj, rng_seed=self.rng_seed, swc_path=self.swc_path)
         # if self._axon_fixed:
         #     new_swc.fix_axon()
         #
@@ -113,6 +115,47 @@ class Morphology(object):
         return r3dsoma
 
 
+    # @property
+    # def segments(self):
+    #     ix = 0
+    #     if self._segments is None:
+    #         seg_objs = []
+    #         seg_x0s = np.zeros(self.nseg)
+    #         seg_x1s = np.zeros(self.nseg)
+    #         for sec in self.sections:
+    #             x_range = 1.0/(sec.nseg*2)
+    #             for seg in sec:
+    #                 seg_objs.append(seg)
+    #                 seg_x0s[ix] = seg.x - x_range
+    #                 seg_x1s[ix] = seg.x + x_range
+    #                 ix += 1
+    #
+    #         self._segments = SegmentObjs(
+    #             segment=seg_objs,
+    #             x0=seg_x0s,
+    #             x1=seg_x1s,
+    #         )
+    #         # SegmentObjs = namedtuple('SegmentObjs', ['segment', 'x0', 'x1'])
+    #
+    #     return self._segments
+
+    # @property
+    # def segment_xs(self):
+    #     for seg in self.segments:
+    #         print(type(seg))
+    #         print(seg.x)
+    #         print(dir(seg))
+
+    @property
+    def segments(self):
+        if self._segments is None:
+            self._segments = []
+            for sec in self.hobj.all:
+                for seg in sec:
+                    self._segments.append(seg)
+
+        return self._segments
+
     @property
     def sections(self):
         if self._sections is None:
@@ -132,6 +175,8 @@ class Morphology(object):
             seg_type = []
             seg_area = []
             seg_x = []
+            seg_x0 = []
+            seg_x1 = []
             seg_dist = []
             seg_length = []
             seg_sec_id = []
@@ -143,10 +188,13 @@ class Morphology(object):
                 fullsecname = sec.name()
                 sec_type = fullsecname.split(".")[1][:4]  # get sec name type without the cell name
                 sec_type_swc = self.sec_type_swc[sec_type]  # convert to swc code
+                x_range = 1.0/(sec.nseg*2) # used to calculate [x0, x1]
 
                 for seg in sec:
                     seg_area.append(h.area(seg.x))
                     seg_x.append(seg.x)
+                    seg_x0.append(seg.x - x_range)
+                    seg_x1.append(seg.x + x_range)
                     seg_length.append(sec.L / sec.nseg)
                     seg_type.append(sec_type_swc)  # record section type in a list
                     # seg_dist.append(h.distance(seg.x))  # distance to the center of the segment
@@ -161,6 +209,8 @@ class Morphology(object):
                 type=np.array(seg_type),
                 area=np.array(seg_area),
                 x=np.array(seg_x),
+                x0=np.array(seg_x0),
+                x1=np.array(seg_x1),
                 dist=dist_arr,
                 length=length_arr,
                 dist0=dist0_arr,
@@ -220,6 +270,9 @@ class Morphology(object):
                 p05[0, ix:ix + nseg] = np.interp(l05, l3d, p3d[0, :])
                 p05[1, ix:ix + nseg] = np.interp(l05, l3d, p3d[1, :])
                 p05[2, ix:ix + nseg] = np.interp(l05, l3d, p3d[2, :])
+
+                # x0[ix:ix + nseg] = l0
+                # x1[ix:ix + nseg] = l1
 
                 ix += nseg
 
@@ -438,6 +491,7 @@ class Morphology(object):
     def get_swc_id(self, sec_id, sec_x):
         # use sec type and nameindex to find all rows in the swc that correspond to sec_id
         sec = self.sections[sec_id]
+        # print(sec)
         sec_nameindex = self._get_sec_nameindex(sec)
         sec_type = self._get_sec_type(sec)
         filtered_swc = self.swc_map[(self.swc_map['type'] == sec_type) & (self.swc_map['nameindex'] == sec_nameindex)]
@@ -446,7 +500,9 @@ class Morphology(object):
         # use sec_x, a value between [0, 1], to estimate which swc_id/line to choose.
         # Note: At the moment it assumes each line in the swc is the same distance apart, making estimating the sec_x
         #  location easy by the number it appears in the squence
-        if len(swc_ids) == 1:
+        if len(swc_ids) == 0:
+            return -1, 0.0
+        elif len(swc_ids) == 1:
             return swc_ids[0], sec_x
         else:
             swc_place = np.max((0.0, sec_x*len(swc_ids) - 1.0))
