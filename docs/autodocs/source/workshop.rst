@@ -1,12 +1,14 @@
 Annual Modeling Software Workshop
 =================================
 
-.. image:: _static/images/biophysical_network.png
-   :scale: 30%
+.. image:: _static/images/modelingworkshopbanner.jpg
+   :scale: 100%
    :align: left
 
 |
-| The Allen Institute Modeling Software Workshop provides a hands-on opportunity to learn how to use open-source modeling tools developed in part at the Allen Institute MindScope Program. 
+| The Allen Institute Modeling Software Workshop provides a hands-on opportunity to learn how to use open-source modeling tools 
+| developed in part at the Allen Institute MindScope Program. 
+|
 | Topics covered include:
 - Construction of heterogeneous models of brain circuits at a variety of resolutions
 - Simple control and modification of simulation conditions 
