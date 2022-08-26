@@ -24,7 +24,7 @@ import numpy as np
 from bmtk.simulator.bionet import utils, nrn
 from bmtk.simulator.bionet.cell import Cell
 from bmtk.simulator.bionet.io_tools import io
-from bmtk.simulator.bionet.morphology import Morphology, get_or_build_from_cache
+from bmtk.simulator.bionet.morphology import Morphology
 import six
 
 from neuron import h
@@ -111,7 +111,7 @@ class BioCell(Cell):
         self.build_morphology()
 
     def build_morphology(self):
-        morph_base = get_or_build_from_cache(self.hobj, morphology_file=self.morphology_file)
+        morph_base = Morphology.load(hobj=self.hobj, morphology_file=self.morphology_file, cache_seg_props=True)
 
         if self._network.dL is not None:
             morph_base.set_segment_dl(self._network.dL)

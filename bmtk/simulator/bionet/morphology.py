@@ -1,4 +1,4 @@
-# Copyright 2017. Allen Institute. All rights reserved
+# Copyright 2022. Allen Institute. All rights reserved
 #
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 # following conditions are met:
@@ -27,13 +27,21 @@ import numpy as np
 import pandas as pd
 from neuron import h
 
+from bmtk.simulator.bionet.io_tools import io
+
 
 pc = h.ParallelContext()  # object to access MPI methods
 
-#
-SegmentObjs = namedtuple('SegmentObjs', ['segment', 'x0', 'x1'])
 SegmentProps = namedtuple('SegmentProps', ['type', 'area', 'x', 'x0', 'x1', 'dist', 'length', 'dist0', 'dist1', 'sec_id'])
 SegmentCoords = namedtuple('SegmentCoords', ['p0', 'p1', 'p05', 'soma_pos'])
+
+
+# For a lot of different cells created from the same morphology and model_processing function, the core segment
+# properties will be the same (even if coordinates, synapses, hobjs, etc. are different). In such cases we want
+# to calculate and store seg_props only once for all equivelent cells. We can do this by caching the seg_props
+# helper function pointer, then all equivelent morphologies (as defined by __hash__ function) use the same
+# SegmentProps object
+morphology_cache = {}
 
 
 def rotation_matrix(axis, theta):
@@ -63,18 +71,13 @@ class Morphology(object):
     }
 
     def __init__(self, hobj, rng_seed=None, swc_path=None):
-        # nrn.load_neuron_modules(None, None)
-
-
-        self.hobj = hobj # h.Biophys1(swc_path)
+        self.hobj = hobj  # h.Biophys1(swc_path)
         self.rng_seed = rng_seed
         self.swc_path = swc_path
 
         self._prng = np.random.RandomState(self.rng_seed)
         self._sections = None
         self._segments = None
-        # self._n_sections = None
-        # self._soma_pos = None
         self._seg_props = None
         self._seg_coords = None
         self._nseg = None
@@ -83,19 +86,9 @@ class Morphology(object):
         # Used by find_sections() and other methods when building edges/synapses. Should make it faster to look-up
         # cooresponding segments for a large number of syns that target the same area of a cell
         self._trg_segs_cache = {}
-        # self._axon_fixed = False
-        # self._axon_deleted = False
-
-
 
     def _copy(self):
-        new_morph = Morphology(hobj=self.hobj, rng_seed=self.rng_seed, swc_path=self.swc_path)
-        # if self._axon_fixed:
-        #     new_swc.fix_axon()
-        #
-        # if self._axon_deleted:
-        #     new_swc.delete_axon()
-
+        new_morph = Morphology(hobj=self.hobj, swc_path=self.swc_path)
         return new_morph
 
     def _soma_position_orig(self):
@@ -113,38 +106,6 @@ class Morphology(object):
 
         r3dsoma /= n3dsoma
         return r3dsoma
-
-
-    # @property
-    # def segments(self):
-    #     ix = 0
-    #     if self._segments is None:
-    #         seg_objs = []
-    #         seg_x0s = np.zeros(self.nseg)
-    #         seg_x1s = np.zeros(self.nseg)
-    #         for sec in self.sections:
-    #             x_range = 1.0/(sec.nseg*2)
-    #             for seg in sec:
-    #                 seg_objs.append(seg)
-    #                 seg_x0s[ix] = seg.x - x_range
-    #                 seg_x1s[ix] = seg.x + x_range
-    #                 ix += 1
-    #
-    #         self._segments = SegmentObjs(
-    #             segment=seg_objs,
-    #             x0=seg_x0s,
-    #             x1=seg_x1s,
-    #         )
-    #         # SegmentObjs = namedtuple('SegmentObjs', ['segment', 'x0', 'x1'])
-    #
-    #     return self._segments
-
-    # @property
-    # def segment_xs(self):
-    #     for seg in self.segments:
-    #         print(type(seg))
-    #         print(seg.x)
-    #         print(dir(seg))
 
     @property
     def segments(self):
@@ -169,8 +130,10 @@ class Morphology(object):
     def n_sections(self):
         return len(self.sections)
 
-    @property
-    def seg_props(self):
+    def _seg_props_loader(self):
+        """Helper function for seg_props() property, should never be called directly. Using helper function so that
+        in morphology_cache we can have different objects can reference the same seg_props.
+        """
         if self._seg_props is None:
             seg_type = []
             seg_area = []
@@ -188,7 +151,7 @@ class Morphology(object):
                 fullsecname = sec.name()
                 sec_type = fullsecname.split(".")[1][:4]  # get sec name type without the cell name
                 sec_type_swc = self.sec_type_swc[sec_type]  # convert to swc code
-                x_range = 1.0/(sec.nseg*2) # used to calculate [x0, x1]
+                x_range = 1.0 / (sec.nseg * 2)  # used to calculate [x0, x1]
 
                 for seg in sec:
                     seg_area.append(h.area(seg.x))
@@ -203,8 +166,8 @@ class Morphology(object):
 
             length_arr = np.array(seg_length)
             dist_arr = np.array(seg_dist)
-            dist0_arr = dist_arr - length_arr/2.0
-            dist1_arr = dist_arr + length_arr/2.0
+            dist0_arr = dist_arr - length_arr / 2.0
+            dist1_arr = dist_arr + length_arr / 2.0
             self._seg_props = SegmentProps(
                 type=np.array(seg_type),
                 area=np.array(seg_area),
@@ -217,8 +180,14 @@ class Morphology(object):
                 dist1=dist1_arr,
                 sec_id=np.array(seg_sec_id)
             )
-
         return self._seg_props
+
+    @property
+    def seg_props(self):
+        # if self._seg_props is None:
+        #     self._seg_props_loader()
+
+        return self._seg_props_loader()
 
     @property
     def seg_coords(self):
@@ -332,44 +301,6 @@ class Morphology(object):
     def get_section(self, section_idx):
         return self.sections[section_idx]
 
-    # def fix_axon(self):
-    #     """Removes and refixes axon"""
-    #     axon_diams = [self.hobj.axon[0].diam, self.hobj.axon[0].diam]
-    #     for sec in self.hobj.all:
-    #         section_name = sec.name().split(".")[1][:4]
-    #         if section_name == 'axon':
-    #             axon_diams[1] = sec.diam
-    #
-    #     for sec in self.hobj.axon:
-    #         h.delete_section(sec=sec)
-    #
-    #     h.execute('create axon[2]', self.hobj)
-    #     for index, sec in enumerate(self.hobj.axon):
-    #         sec.L = 30
-    #         sec.diam = 1
-    #
-    #         self.hobj.axonal.append(sec=sec)
-    #         self.hobj.all.append(sec=sec)  # need to remove this comment
-    #
-    #     self.hobj.axon[0].connect(self.hobj.soma[0], 1.0, 0)
-    #     self.hobj.axon[1].connect(self.hobj.axon[0], 1.0, 0)
-    #
-    #     h.define_shape()
-    #
-    #     self._sections = None
-    #     self._n_sections = None
-    #     self._axon_fixed = True
-
-    # def delete_axon(self):
-    #     for sec in self.hobj.axon:
-    #         h.delete_section(sec=sec)
-    #
-    #     h.define_shape()
-    #
-    #     self._sections = None
-    #     self._n_sections = None
-    #     self._axon_deleted = True
-
     def set_segment_dl(self, dl):
         """Define number of segments in a cell"""
         self._nseg = 0
@@ -419,7 +350,7 @@ class Morphology(object):
         # and then dividing by the segment length
         frac_overlap = np.maximum(0, (np.minimum(seg_d1, dmax) - np.maximum(seg_d0, dmin))) / seg_length
         ix_drange = np.where(frac_overlap > 0)  # find indexes with non-zero overlap
-        ix_labels = np.array([], dtype=np.int)
+        ix_labels = np.array([], dtype=int)
 
         for tar_sec_label in section_names:  # find indexes within sec_labels
             sec_type = self.sec_type_swc[tar_sec_label]  # get swc code for the section label
@@ -441,8 +372,6 @@ class Morphology(object):
         new_p1 = old_seg_coords.p1.copy()
         new_p05 = old_seg_coords.p05.copy()
         new_soma_pos = self.soma_position.copy()
-        # print(self.seg_coords.p05[:, 0])
-        # print(new_soma_pos)
 
         if rotation_angles is not None:
             assert(len(rotation_angles) == 3)
@@ -491,14 +420,13 @@ class Morphology(object):
     def get_swc_id(self, sec_id, sec_x):
         # use sec type and nameindex to find all rows in the swc that correspond to sec_id
         sec = self.sections[sec_id]
-        # print(sec)
         sec_nameindex = self._get_sec_nameindex(sec)
         sec_type = self._get_sec_type(sec)
         filtered_swc = self.swc_map[(self.swc_map['type'] == sec_type) & (self.swc_map['nameindex'] == sec_nameindex)]
         swc_ids = filtered_swc['id'].values
 
         # use sec_x, a value between [0, 1], to estimate which swc_id/line to choose.
-        # Note: At the moment it assumes each line in the swc is the same distance apart, making estimating the sec_x
+        # NOTE: At the moment it assumes each line in the swc is the same distance apart, making estimating the sec_x
         #  location easy by the number it appears in the squence
         if len(swc_ids) == 0:
             return -1, 0.0
@@ -523,238 +451,45 @@ class Morphology(object):
         nameindex_str = re.search(r'\[(\d+)\]', sec_type_name).group(1)
         return int(nameindex_str)
 
-
-'''
-class MorphologyOLD(object):
-    """Methods for processing morphological data"""
-    def __init__(self, hobj):
-        """reuse hoc object from one of the cells which share the same morphology/model"""
-        self.hobj = hobj
-        self.sec_type_swc = {'soma': 1, 'somatic': 1,  # convert section name and section list names
-                             'axon': 2, 'axonal': 2,  # into a consistent swc notation
-                             'dend': 3, 'basal': 3,
-                             'apic': 4, 'apical': 4}
-        self.nseg = self.get_nseg()
-        self._segments = {}
-
-    def get_nseg(self):
-        nseg = 0
-        for sec in self.hobj.all:
-            nseg += sec.nseg  # get the total # of segments in the cell
-        return nseg
-
-    def get_soma_pos(self):
-        n3dsoma = 0
-        r3dsoma = np.zeros(3)
-        for sec in self.hobj.soma:
-            n3d = int(h.n3d(sec=sec))  # get number of n3d points in each section
-            r3d = np.zeros((3, n3d))  # to hold locations of 3D morphology for the current section
-            n3dsoma += n3d
-
-            for i in range(n3d):
-                r3dsoma[0] += h.x3d(i, sec=sec)
-                r3dsoma[1] += h.y3d(i, sec=sec)
-                r3dsoma[2] += h.z3d(i, sec=sec)
-
-        r3dsoma /= n3dsoma
-        return r3dsoma
-
-    def calc_seg_coords(self):
-        """Calculate segment coordinates from 3d point coordinates"""
-        ix = 0  # segment index
-
-        p3dsoma = self.get_soma_pos()
-        self.psoma = p3dsoma
-        
-        p0 = np.zeros((3, self.nseg))  # hold the coordinates of segment starting points
-        p1 = np.zeros((3, self.nseg))  # hold the coordinates of segment end points
-        p05 = np.zeros((3, self.nseg))
-        d0 = np.zeros(self.nseg)
-        d1 = np.zeros(self.nseg)
-
-        for sec in self.hobj.all:
-            n3d = int(h.n3d(sec=sec))  # get number of n3d points in each section
-            p3d = np.zeros((3, n3d))  # to hold locations of 3D morphology for the current section
-            l3d = np.zeros(n3d)  # to hold locations of 3D morphology for the current section
-            diam3d = np.zeros(n3d)  # to diameters
-
-            for i in range(n3d):
-                p3d[0, i] = h.x3d(i, sec=sec) - p3dsoma[0]
-                p3d[1, i] = h.y3d(i, sec=sec) - p3dsoma[1]  # shift coordinates such to place soma at the origin.
-                p3d[2, i] = h.z3d(i, sec=sec) - p3dsoma[2]
-                diam3d[i] = h.diam3d(i, sec=sec)
-                l3d[i] = h.arc3d(i, sec=sec)
-
-            l3d /= sec.L                  # normalize
-            nseg = sec.nseg
-            
-            l0 = np.zeros(nseg)     # keep range of segment starting point 
-            l1 = np.zeros(nseg)     # keep range of segment ending point
-            l05 = np.zeros(nseg)
-            
-            for iseg, seg in enumerate(sec):
-                l0[iseg] = seg.x - 0.5*1/nseg   # x (normalized distance along the section) for the beginning of the segment
-                l1[iseg] = seg.x + 0.5*1/nseg   # x for the end of the segment
-                l05[iseg] = seg.x
-
-            p0[0, ix:ix+nseg] = np.interp(l0, l3d, p3d[0, :])
-            p0[1, ix:ix+nseg] = np.interp(l0, l3d, p3d[1, :])
-            p0[2, ix:ix+nseg] = np.interp(l0, l3d, p3d[2, :])
-            d0[ix:ix+nseg] = np.interp(l0, l3d, diam3d[:])
-
-            p1[0, ix:ix+nseg] = np.interp(l1, l3d, p3d[0, :])
-            p1[1, ix:ix+nseg] = np.interp(l1, l3d, p3d[1, :])
-            p1[2, ix:ix+nseg] = np.interp(l1, l3d, p3d[2, :])
-            d1[ix:ix+nseg] = np.interp(l1, l3d, diam3d[:])
-
-            p05[0,ix:ix+nseg] = np.interp(l05, l3d, p3d[0,:])
-            p05[1,ix:ix+nseg] = np.interp(l05, l3d, p3d[1,:])
-            p05[2,ix:ix+nseg] = np.interp(l05, l3d, p3d[2,:])
-
-            ix += nseg
-        self.seg_coords = {}
-
-        self.seg_coords['p0'] = p0
-        self.seg_coords['p1'] = p1
-        self.seg_coords['p05'] = p05
-
-        self.seg_coords['d0'] = d0
-        self.seg_coords['d1'] = d1
-
-        return self.seg_coords
-
-    def set_seg_props(self):
-        """Set segment properties which are invariant for all cell using this morphology"""
-        seg_type = []
-        seg_area = []
-        seg_x = []
-        seg_dist = []
-        seg_length = []
-
-        h.distance(sec=self.hobj.soma[0])   # measure distance relative to the soma
-        
-        for sec in self.hobj.all:
-            fullsecname = sec.name()
-            sec_type = fullsecname.split(".")[1][:4] # get sec name type without the cell name
-            sec_type_swc = self.sec_type_swc[sec_type]  # convert to swc code
-
-            for seg in sec:
-
-                seg_area.append(h.area(seg.x))
-                seg_x.append(seg.x)
-                seg_length.append(sec.L/sec.nseg)
-                seg_type.append(sec_type_swc)           # record section type in a list
-                # seg_dist.append(h.distance(seg.x))  # distance to the center of the segment
-                seg_dist.append(h.distance(seg))
-
-        self.seg_prop = {}
-        self.seg_prop['type'] = np.array(seg_type)
-        self.seg_prop['area'] = np.array(seg_area)
-        self.seg_prop['x'] = np.array(seg_x)
-        self.seg_prop['dist'] = np.array(seg_dist)
-        self.seg_prop['length'] = np.array(seg_length)
-        self.seg_prop['dist0'] = self.seg_prop['dist'] - self.seg_prop['length']/2
-        self.seg_prop['dist1'] = self.seg_prop['dist'] + self.seg_prop['length']/2
-
-    def get_target_segments(self, edge_type):
-        # Determine the target segments and their probabilities of connections for each new edge-type. Save the
-        # information for each additional time a given edge-type is used on this morphology
-        # TODO: Don't rely on edge-type-table, just use the edge?
-        if edge_type in self._segments:
-            return self._segments[edge_type]
-
+    def __eq__(self, other):
+        if self.swc_path is None or other.swc_path is None:
+            return False
         else:
-            tar_seg_ix, tar_seg_prob = self.find_sections(edge_type.target_sections, edge_type.target_distance)
-            self._segments[edge_type] = (tar_seg_ix, tar_seg_prob)
-            return tar_seg_ix, tar_seg_prob
+            return hash(self) == hash(other)
 
+    def __hash__(self):
+        """Used for comparing two Morphology objects and for storing as dict keys in seg_props_cache.
+
+        We assume two Morphologies are the same if they have the same morphology file path + same # of segments. This
+        is not a good way of determining if two Morphologies are equal and in actuality we would need to compare
+        seg_props on an segment-by-segment basis. However that would be comp. expensive for large networks and instead
+        do a quick spot test."""
+        comp_vals = (self.swc_path if self.swc_path else np.random.randint, self.nseg)
+        return hash(comp_vals)
+
+    @classmethod
+    def load(cls, hobj=None, morphology_file=None, rng_seed=None, cache_seg_props=True):
+        """Factory method, perfered way to create a Morphology object
+
+        :param hobj:
+        :param morphology_file:
+        :param rng_seed:
+        :param cache_seg_props:
+        :return:
         """
-        tar_sec_labels = edge_type.target_sections
-        drange = edge_type.target_distance
-        dmin, dmax = drange[0], drange[1]
+        if hobj is None and morphology_file is None:
+            io.log_exception('Unable to create Morphology, no valid HOC object or morphology file specified')
 
-        seg_d0 = self.seg_prop['dist0']  # use a more compact variables
-        seg_d1 = self.seg_prop['dist1']
-        seg_length = self.seg_prop['length']
-        seg_area = self.seg_prop['area']
-        seg_type = self.seg_prop['type']
+        elif morphology_file is not None and hobj is None:
+            # If the HOC object hasn't already been created try creating it from the morphology
+            hobj = h.Biophys1(morphology_file)
 
-        # Find the fractional overlap between the segment and the distance range:
-        # this is done by finding the overlap between [d0,d1] and [dmin,dmax]
-        # np.minimum(seg_d1,dmax) find the smaller of the two end locations
-        # np.maximum(seg_d0,dmin) find the larger of the two start locations
-        # np.maximum(0,overlap) is used to return zero when segments do not overlap
-        # and then dividing by the segment length
-        frac_overlap = np.maximum(0, (np.minimum(seg_d1, dmax) - np.maximum(seg_d0, dmin))) / seg_length
-        ix_drange = np.where(frac_overlap > 0)  # find indexes with non-zero overlap
-        ix_labels = np.array([], dtype=np.int)
+        morph = cls(hobj=hobj, swc_path=morphology_file, rng_seed=rng_seed)
 
-        for tar_sec_label in tar_sec_labels:  # find indexes within sec_labels
-            sec_type = self.sec_type_swc[tar_sec_label]  # get swc code for the section label
-            ix_label = np.where(seg_type == sec_type)
-            ix_labels = np.append(ix_labels, ix_label)  # target segment indexes
+        if cache_seg_props and morphology_file is not None:
+            if morph in morphology_cache:
+                morph._seg_props_loader = morphology_cache[morph]._seg_props_loader
+            else:
+                morphology_cache[morph] = morph
 
-        tar_seg_ix = np.intersect1d(ix_drange, ix_labels)  # find intersection between indexes for range and labels
-        tar_seg_length = seg_length[tar_seg_ix] * frac_overlap[tar_seg_ix]  # weighted length of targeted segments
-        tar_seg_prob = tar_seg_length / np.sum(tar_seg_length)  # probability of targeting segments
-
-        self._segments[edge_type] = (tar_seg_ix, tar_seg_prob)
-        return tar_seg_ix, tar_seg_prob
-        """
-
-    def find_sections(self, target_sections, distance_range):
-        dmin, dmax = distance_range[0], distance_range[1]
-
-        seg_d0 = self.seg_prop['dist0']  # use a more compact variables
-        seg_d1 = self.seg_prop['dist1']
-        seg_length = self.seg_prop['length']
-        seg_area = self.seg_prop['area']
-        seg_type = self.seg_prop['type']
-
-        # Find the fractional overlap between the segment and the distance range:
-        # this is done by finding the overlap between [d0,d1] and [dmin,dmax]
-        # np.minimum(seg_d1,dmax) find the smaller of the two end locations
-        # np.maximum(seg_d0,dmin) find the larger of the two start locations
-        # np.maximum(0,overlap) is used to return zero when segments do not overlap
-        # and then dividing by the segment length
-        frac_overlap = np.maximum(0, (np.minimum(seg_d1, dmax) - np.maximum(seg_d0, dmin))) / seg_length
-        ix_drange = np.where(frac_overlap > 0)  # find indexes with non-zero overlap
-        ix_labels = np.array([], dtype=int)
-
-        for tar_sec_label in target_sections:  # find indexes within sec_labels
-            sec_type = self.sec_type_swc[tar_sec_label]  # get swc code for the section label
-            ix_label = np.where(seg_type == sec_type)
-            ix_labels = np.append(ix_labels, ix_label)  # target segment indexes
-
-        tar_seg_ix = np.intersect1d(ix_drange, ix_labels)  # find intersection between indexes for range and labels
-        tar_seg_length = seg_length[tar_seg_ix] * frac_overlap[tar_seg_ix]  # weighted length of targeted segments
-        tar_seg_prob = tar_seg_length / np.sum(tar_seg_length)  # probability of targeting segments
-        return tar_seg_ix, tar_seg_prob
-'''
-
-morphology_cache = {}
-
-def get_or_build_from_cache(hobj, morphology_file=None):
-    # TODO: Add == operator to Morphology so it can compare a morphology to another Morphology object or even a
-    #       hobject file
-    morph = Morphology(hobj=hobj, swc_path=morphology_file)
-
-    if morphology_file is not None:
-        if morphology_file in morphology_cache:
-            morph_from = morphology_cache[morphology_file]
-            morph._seg_props = morph_from.seg_props
-        else:
-            morphology_cache[morphology_file] = morph
-
-    # if morphology_file is None:
-    #      Morphology(hobj=hobj)
-    # elif morphology_file in morphology_cache:
-    #     return morphology_cache[morphology_file]
-    # else:
-    #     morph = Morphology(hobj=hobj, swc_path=morphology_file)
-
-    # if dL is not None:
-    #     morph.set_segment_dl(dL)
-
-    morphology_cache[morphology_file] = morph
-    return morph
+        return morph
