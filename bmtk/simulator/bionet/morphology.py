@@ -32,8 +32,161 @@ from bmtk.simulator.bionet.io_tools import io
 
 pc = h.ParallelContext()  # object to access MPI methods
 
-SegmentProps = namedtuple('SegmentProps', ['type', 'area', 'x', 'x0', 'x1', 'dist', 'length', 'dist0', 'dist1', 'sec_id'])
-SegmentCoords = namedtuple('SegmentCoords', ['p0', 'p1', 'p05', 'soma_pos'])
+
+class _LazySegmentProps(object):
+    """A Struct for storing coordinate invariant properties of each segment of a cell."""
+    def __init__(self, hobj):
+        self._hobj = hobj
+        self.sec_id = None
+        self.type = None
+        self.area = None
+        self.x = None
+        self.x0 = None
+        self.x1 = None
+        self.dist = None
+        self.length = None
+        self.dist0 = None
+        self.dist1 = None
+
+    def get(self):
+        if self.sec_id is None:
+            seg_type = []
+            seg_area = []
+            seg_x = []
+            seg_x0 = []
+            seg_x1 = []
+            seg_dist = []
+            seg_length = []
+            seg_sec_id = []
+
+            h.distance(sec=self._hobj.soma[0])  # measure distance relative to the soma
+
+            for sec_id, sec in enumerate(self._hobj.all):
+                fullsecname = sec.name()
+                sec_type = fullsecname.split(".")[1][:4]  # get sec name type without the cell name
+                sec_type_swc = Morphology.sec_type_swc[sec_type]  # convert to swc code
+                x_range = 1.0 / (sec.nseg * 2)  # used to calculate [x0, x1]
+
+                for seg in sec:
+                    seg_area.append(h.area(seg.x))
+                    seg_x.append(seg.x)
+                    seg_x0.append(seg.x - x_range)
+                    seg_x1.append(seg.x + x_range)
+                    seg_length.append(sec.L / sec.nseg)
+                    seg_type.append(sec_type_swc)  # record section type in a list
+                    # seg_dist.append(h.distance(seg.x))  # distance to the center of the segment
+                    seg_dist.append(h.distance(seg))
+                    seg_sec_id.append(sec_id)
+
+            length_arr = np.array(seg_length)
+            dist_arr = np.array(seg_dist)
+            dist0_arr = dist_arr - length_arr / 2.0
+            dist1_arr = dist_arr + length_arr / 2.0
+
+            self.type = np.array(seg_type)
+            self.area = np.array(seg_area)
+            self.x = np.array(seg_x)
+            self.x0 = np.array(seg_x0)
+            self.x1 = np.array(seg_x1)
+            self.dist = dist_arr
+            self.length = length_arr
+            self.dist0 = dist0_arr
+            self.dist1 = dist1_arr
+            self.sec_id = np.array(seg_sec_id)
+
+        return self
+
+
+class _LazySegmentCoords(object):
+    """A Struct for storing properties of each segment of a cell that vary by soma position and rotation."""
+    def __init__(self, hobj):
+        self._hobj = hobj
+        self.p0 = None
+        self.p1 = None
+        self.p05 = None
+        self.soma_pos = None
+
+    def get(self):
+        if self.p0 is None:
+            # Iterates through each segment (one section may contain one or more segments). We use NEURON's
+            # segment.x to get the mid-point and lenght of each segment we we can use to find and store the beginning
+            # (p0) and end (p1) of each segment. We also shift so the middle of the soma is at the origin.
+            nseg = np.sum([s.nseg for s in self._hobj.all])
+
+            n3dsoma = 0
+            soma_pos = np.zeros(3)
+            for sec in self._hobj.soma:
+                n3d = int(h.n3d(sec=sec))  # get number of n3d points in each section
+                n3dsoma += n3d
+                for i in range(n3d):
+                    soma_pos[0] += h.x3d(i, sec=sec)
+                    soma_pos[1] += h.y3d(i, sec=sec)
+                    soma_pos[2] += h.z3d(i, sec=sec)
+
+            soma_pos /= n3dsoma
+
+            ix = 0  # segment index
+            self.p0 = np.zeros((3, nseg))  # hold the coordinates of segment starting points
+            self.p1 = np.zeros((3, nseg))  # hold the coordinates of segment end points
+            self.p05 = np.zeros((3, nseg))
+            for sec in self._hobj.all:
+                n3d = int(h.n3d(sec=sec))  # get number of n3d points in each section
+                p3d = np.zeros((3, n3d))  # to hold locations of 3D morphology for the current section
+                l3d = np.zeros(n3d)  # to hold locations of 3D morphology for the current section
+                # diam3d = np.zeros(n3d)  # to diameters, at the moment we don't need to keep track of diameter
+
+                for i in range(n3d):
+                    p3d[0, i] = h.x3d(i, sec=sec) - soma_pos[0]  # shift coordinates such to place soma at the origin.
+                    p3d[1, i] = h.y3d(i, sec=sec) - soma_pos[1]
+                    p3d[2, i] = h.z3d(i, sec=sec) - soma_pos[2]
+                    # diam3d[i] = h.diam3d(i, sec=sec)
+                    l3d[i] = h.arc3d(i, sec=sec)
+
+                l3d /= sec.L  # normalize
+                nseg = sec.nseg
+
+                l0 = np.zeros(nseg)  # keep range of segment starting point
+                l1 = np.zeros(nseg)  # keep range of segment ending point
+                l05 = np.zeros(nseg)
+
+                for iseg, seg in enumerate(sec):
+                    l0[iseg] = seg.x - 0.5 * 1 / nseg  # x (normalized distance along the section) for the beginning of the segment
+                    l1[iseg] = seg.x + 0.5 * 1 / nseg  # x for the end of the segment
+                    l05[iseg] = seg.x
+
+                self.p0[0, ix:ix + nseg] = np.interp(l0, l3d, p3d[0, :])
+                self.p0[1, ix:ix + nseg] = np.interp(l0, l3d, p3d[1, :])
+                self.p0[2, ix:ix + nseg] = np.interp(l0, l3d, p3d[2, :])
+
+                self.p1[0, ix:ix + nseg] = np.interp(l1, l3d, p3d[0, :])
+                self.p1[1, ix:ix + nseg] = np.interp(l1, l3d, p3d[1, :])
+                self.p1[2, ix:ix + nseg] = np.interp(l1, l3d, p3d[2, :])
+
+                self.p05[0, ix:ix + nseg] = np.interp(l05, l3d, p3d[0, :])
+                self.p05[1, ix:ix + nseg] = np.interp(l05, l3d, p3d[1, :])
+                self.p05[2, ix:ix + nseg] = np.interp(l05, l3d, p3d[2, :])
+
+                # x0[ix:ix + nseg] = l0
+                # x1[ix:ix + nseg] = l1
+
+                ix += nseg
+
+            # Also calculate the middle of the shifted soma, NOTE: in theory this should be (0, 0, 0), but due to
+            # percision the actual soma center might be a little off.
+            n3dsoma = 0
+            r3dsoma = np.zeros(3)
+            for sec in self._hobj.soma:
+                n3d = int(h.n3d(sec=sec))  # get number of n3d points in each section
+                n3dsoma += n3d
+                for i in range(n3d):
+                    r3dsoma[0] += h.x3d(i, sec=sec) - soma_pos[0]
+                    r3dsoma[1] += h.y3d(i, sec=sec) - soma_pos[1]
+                    r3dsoma[2] += h.z3d(i, sec=sec) - soma_pos[2]
+
+            r3dsoma /= n3dsoma
+            self.soma_pos = r3dsoma
+
+        return self
 
 
 # For a lot of different cells created from the same morphology and model_processing function, the core segment
@@ -78,8 +231,8 @@ class Morphology(object):
         self._prng = np.random.RandomState(self.rng_seed)
         self._sections = None
         self._segments = None
-        self._seg_props = None
-        self._seg_coords = None
+        self._seg_props = _LazySegmentProps(self.hobj)  # None
+        self._seg_coords = _LazySegmentCoords(self.hobj)  # None
         self._nseg = None
         self._swc_map = None
 
@@ -130,137 +283,15 @@ class Morphology(object):
     def n_sections(self):
         return len(self.sections)
 
-    def _seg_props_loader(self):
-        """Helper function for seg_props() property, should never be called directly. Using helper function so that
-        in morphology_cache we can have different objects can reference the same seg_props.
-        """
-        if self._seg_props is None:
-            seg_type = []
-            seg_area = []
-            seg_x = []
-            seg_x0 = []
-            seg_x1 = []
-            seg_dist = []
-            seg_length = []
-            seg_sec_id = []
-
-            h.distance(sec=self.hobj.soma[0])  # measure distance relative to the soma
-
-            # for sec in self.hobj.all:
-            for sec_id, sec in enumerate(self.sections):
-                fullsecname = sec.name()
-                sec_type = fullsecname.split(".")[1][:4]  # get sec name type without the cell name
-                sec_type_swc = self.sec_type_swc[sec_type]  # convert to swc code
-                x_range = 1.0 / (sec.nseg * 2)  # used to calculate [x0, x1]
-
-                for seg in sec:
-                    seg_area.append(h.area(seg.x))
-                    seg_x.append(seg.x)
-                    seg_x0.append(seg.x - x_range)
-                    seg_x1.append(seg.x + x_range)
-                    seg_length.append(sec.L / sec.nseg)
-                    seg_type.append(sec_type_swc)  # record section type in a list
-                    # seg_dist.append(h.distance(seg.x))  # distance to the center of the segment
-                    seg_dist.append(h.distance(seg))
-                    seg_sec_id.append(sec_id)
-
-            length_arr = np.array(seg_length)
-            dist_arr = np.array(seg_dist)
-            dist0_arr = dist_arr - length_arr / 2.0
-            dist1_arr = dist_arr + length_arr / 2.0
-            self._seg_props = SegmentProps(
-                type=np.array(seg_type),
-                area=np.array(seg_area),
-                x=np.array(seg_x),
-                x0=np.array(seg_x0),
-                x1=np.array(seg_x1),
-                dist=dist_arr,
-                length=length_arr,
-                dist0=dist0_arr,
-                dist1=dist1_arr,
-                sec_id=np.array(seg_sec_id)
-            )
-        return self._seg_props
-
     @property
     def seg_props(self):
-        # if self._seg_props is None:
-        #     self._seg_props_loader()
-
-        return self._seg_props_loader()
+        return self._seg_props.get()
 
     @property
     def seg_coords(self):
         """Get the coordinates of all segments of the cells. Each segment is defined by three values, the beginning
         of the segment (seg_coords.p0), the middle of the segment(seg_coords.p05), and the end (seg_coords.p1)."""
-        if self._seg_coords is None:
-            p3dsoma = self._soma_position_orig()
-
-            # Iterates through each segment (one section may contain one or more segments). We use NEURON's
-            # segment.x to get the mid-point and lenght of each segment we we can use to find and store the beginning
-            # (p0) and end (p1) of each segment. We also shift so the middle of the soma is at the origin.
-            ix = 0  # segment index
-            p0 = np.zeros((3, self.nseg))  # hold the coordinates of segment starting points
-            p1 = np.zeros((3, self.nseg))  # hold the coordinates of segment end points
-            p05 = np.zeros((3, self.nseg))
-            for sec in self.sections:
-                n3d = int(h.n3d(sec=sec))  # get number of n3d points in each section
-                p3d = np.zeros((3, n3d))  # to hold locations of 3D morphology for the current section
-                l3d = np.zeros(n3d)  # to hold locations of 3D morphology for the current section
-                # diam3d = np.zeros(n3d)  # to diameters, at the moment we don't need to keep track of diameter
-
-                for i in range(n3d):
-                    p3d[0, i] = h.x3d(i, sec=sec) - p3dsoma[0]  # shift coordinates such to place soma at the origin.
-                    p3d[1, i] = h.y3d(i, sec=sec) - p3dsoma[1]
-                    p3d[2, i] = h.z3d(i, sec=sec) - p3dsoma[2]
-                    # diam3d[i] = h.diam3d(i, sec=sec)
-                    l3d[i] = h.arc3d(i, sec=sec)
-
-                l3d /= sec.L  # normalize
-                nseg = sec.nseg
-
-                l0 = np.zeros(nseg)  # keep range of segment starting point
-                l1 = np.zeros(nseg)  # keep range of segment ending point
-                l05 = np.zeros(nseg)
-
-                for iseg, seg in enumerate(sec):
-                    l0[iseg] = seg.x - 0.5 * 1 / nseg  # x (normalized distance along the section) for the beginning of the segment
-                    l1[iseg] = seg.x + 0.5 * 1 / nseg  # x for the end of the segment
-                    l05[iseg] = seg.x
-
-                p0[0, ix:ix + nseg] = np.interp(l0, l3d, p3d[0, :])
-                p0[1, ix:ix + nseg] = np.interp(l0, l3d, p3d[1, :])
-                p0[2, ix:ix + nseg] = np.interp(l0, l3d, p3d[2, :])
-
-                p1[0, ix:ix + nseg] = np.interp(l1, l3d, p3d[0, :])
-                p1[1, ix:ix + nseg] = np.interp(l1, l3d, p3d[1, :])
-                p1[2, ix:ix + nseg] = np.interp(l1, l3d, p3d[2, :])
-
-                p05[0, ix:ix + nseg] = np.interp(l05, l3d, p3d[0, :])
-                p05[1, ix:ix + nseg] = np.interp(l05, l3d, p3d[1, :])
-                p05[2, ix:ix + nseg] = np.interp(l05, l3d, p3d[2, :])
-
-                # x0[ix:ix + nseg] = l0
-                # x1[ix:ix + nseg] = l1
-
-                ix += nseg
-
-            # Also calculate the middle of the shifted soma, NOTE: in theory this should be (0, 0, 0), but due to
-            # percision the actual soma center might be a little off.
-            n3dsoma = 0
-            r3dsoma = np.zeros(3)
-            for sec in self.hobj.soma:
-                n3d = int(h.n3d(sec=sec))  # get number of n3d points in each section
-                n3dsoma += n3d
-                for i in range(n3d):
-                    r3dsoma[0] += h.x3d(i, sec=sec) - p3dsoma[0]
-                    r3dsoma[1] += h.y3d(i, sec=sec) - p3dsoma[1]
-                    r3dsoma[2] += h.z3d(i, sec=sec) - p3dsoma[2]
-
-            r3dsoma /= n3dsoma
-            self._seg_coords = SegmentCoords(p0=p0, p1=p1, p05=p05, soma_pos=r3dsoma)
-
-        return self._seg_coords
+        return self._seg_coords.get()
 
     @property
     def nseg(self):
@@ -315,6 +346,8 @@ class Morphology(object):
         :param section_names: 'soma', 'dend', 'apic', 'axon'
         :param distance_range: [float, float]: distance range of sections from the soma, in um.
         :param n_sections: int: maximum number of sections to select
+        :param cache: caches the segments + probs so that next time the same section_names/distance_range values are
+            called it will return the same values without recalculating. default True.
         :return: [int], [float]: A list of all section_ids and a list of all segment_x values (as defined by NEURON)
             that meet the given critera.
         """
@@ -328,6 +361,8 @@ class Morphology(object):
 
         :param section_names: A list of sections to target, 'soma', 'dend', 'apic', 'axon'
         :param distance_range: [float, float]: distance range of sections from the soma, in um.
+        :param cache: caches the segments + probs so that next time the same section_names/distance_range values are
+            called it will return the same values without recalculating. default True.
         :return: [float], [float]: A list of all section_ids and a list of all segment_x values (as defined by NEURON)
             that meet the given critera.
         """
@@ -401,7 +436,12 @@ class Morphology(object):
             new_p05 += displacement
             new_soma_pos = soma_coords
 
-        new_seg_coords = SegmentCoords(p0=new_p0, p1=new_p1, p05=new_p05, soma_pos=new_soma_pos)
+        # new_seg_coords = SegmentCoords(p0=new_p0, p1=new_p1, p05=new_p05, soma_pos=new_soma_pos)
+        new_seg_coords = _LazySegmentCoords(self.hobj)
+        new_seg_coords.p0 = new_p0
+        new_seg_coords.p05 = new_p05
+        new_seg_coords.p1 = new_p1
+        new_seg_coords.soma_pos = new_soma_pos
 
         if inplace:
             self._seg_coords = new_seg_coords
@@ -488,8 +528,9 @@ class Morphology(object):
 
         if cache_seg_props and morphology_file is not None:
             if morph in morphology_cache:
-                morph._seg_props_loader = morphology_cache[morph]._seg_props_loader
+                morph._seg_props = morphology_cache[morph][0]
+                morph._seg_coords = morphology_cache[morph][1]
             else:
-                morphology_cache[morph] = morph
+                morphology_cache[morph] = (morph._seg_props, morph._seg_coords)
 
         return morph

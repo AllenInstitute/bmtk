@@ -77,15 +77,9 @@ class BioCell(Cell):
         # Set up netcon object that can be used to detect and communicate cell spikes.
         self.set_spike_detector(bionetwork.spike_threshold)
 
-        # self._morph = None
-        # self._seg_coords = {}
-
         # Determine number of segments and store a list of all sections.
-        # self._nseg = 0
-        # self.set_nseg(bionetwork.dL)
         self._secs = []
         self._secs_by_id = []
-        # self.set_sec_array()
 
         self._save_conn = False  # bionetwork.save_connection
         self._synapses = []
@@ -108,6 +102,7 @@ class BioCell(Cell):
         self.__extracellular_mech = False
 
         self._morphology = None
+        self._seg_coords = None
         self.build_morphology()
 
     def build_morphology(self):
@@ -116,14 +111,9 @@ class BioCell(Cell):
         if self._network.dL is not None:
             morph_base.set_segment_dl(self._network.dL)
 
-        phi_x = self._node.rotation_angle_xaxis
-        phi_y = self._node.rotation_angle_yaxis
-        phi_z = self._node.rotation_angle_zaxis
-        self._morphology = morph_base.move_and_rotate(
-            soma_coords=self.soma_position.flatten(),
-            rotation_angles=[phi_x, phi_y, phi_z],
-            inplace=False
-        )
+        # NOTE: most simulations will not require the cells to be shifted and rotated (only modules like ecp, xstim,
+        #  etc require it). Only performe a move_and_rotate() function on cell if or when cell.seg_coords is called.
+        self._morphology = morph_base
         self.set_sec_array()
 
     @property
@@ -140,6 +130,17 @@ class BioCell(Cell):
     def seg_coords(self):
         """Coordinates for segments/sections of the morphology, need to make public for ecp, xstim, and other
         functionality that needs to compute the soma/dendritic coordinates of each cell"""
+        if self._seg_coords is None:
+            # Before returning the coordinates make sure to translate and rotate the cell
+            phi_x = self._node.rotation_angle_xaxis
+            phi_y = self._node.rotation_angle_yaxis
+            phi_z = self._node.rotation_angle_zaxis
+            self._morphology.move_and_rotate(
+                soma_coords=self.soma_position.flatten(),
+                rotation_angles=[phi_x, phi_y, phi_z],
+                inplace=True
+            )
+
         return self.morphology.seg_coords
 
     def set_spike_detector(self, spike_threshold):
@@ -147,62 +148,14 @@ class BioCell(Cell):
         nc.threshold = spike_threshold
         pc.cell(self.gid, nc)  # associate gid with spike detector
 
-    # def set_nseg(self, dL):
-    #     """Define number of segments in a cell"""
-    #     self._nseg = 0
-    #     for sec in self.hobj.all:
-    #         sec.nseg = 1 + 2 * int(sec.L/(2*dL))
-    #         self._nseg += sec.nseg # get the total number of segments in the cell
-
-    # def calc_seg_coords(self, morph_seg_coords):
-    #     """Update the segment coordinates (after rotations) for individual cells"""
-    #     phi_y = self._node.rotation_angle_yaxis
-    #     phi_z = self._node.rotation_angle_zaxis
-    #     phi_x = self._node.rotation_angle_xaxis
-    #
-    #     # Rotate cell
-    #     # TODO: Rotations should follow as described in sonata (https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md).
-    #     #  Need someone with graphics experience to check they are being done correctly (I'm not sure atm).
-    #     RotX = utils.rotation_matrix([1, 0, 0], phi_x)
-    #     RotY = utils.rotation_matrix([0, 1, 0], phi_y)  # rotate segments around yaxis normal to pia
-    #     RotZ = utils.rotation_matrix([0, 0, 1], phi_z)  # rotate segments around zaxis to get a proper orientation
-    #     RotXYZ = np.dot(RotX, RotY.dot(RotZ))
-    #
-    #     # rotated coordinates around z axis first then shift relative to the soma
-    #     self._seg_coords['p0'] = self._pos_soma + np.dot(RotXYZ, morph_seg_coords['p0'])
-    #     self._seg_coords['p1'] = self._pos_soma + np.dot(RotXYZ, morph_seg_coords['p1'])
-    #     self._seg_coords['p05'] = self._pos_soma + np.dot(RotXYZ, morph_seg_coords['p05'])
-
-    # def get_seg_coords(self):
-    #     return self._seg_coords
-
-
-
-    # @morphology.setter
-    # def morphology(self, morphology_obj):
-    #     self.set_morphology(morphology_obj)
-    #
-    # def set_morphology(self, morphology_obj):
-    #     self._morph = morphology_obj
-
     def get_sections(self):
         return self._secs_by_id
-        #return self._secs
 
     def get_sections_id(self):
         return self._secs_by_id
 
     def get_section(self, sec_id):
         return self._secs[sec_id]
-
-    # def store_segments(self):
-    #     self._segments = []
-    #     for sec in self._secs_by_id:
-    #         for seg in sec:
-    #             self._segments.append(seg)
-    #
-    # def get_segments(self):
-    #     return self._segments
 
     def set_sec_array(self):
         """Arrange sections in an array to be access by index"""
@@ -248,16 +201,16 @@ class BioCell(Cell):
         sec_id = edge_prop.afferent_section_id
         section = self._secs_by_id[sec_id]
 
-        #Sets up the section to be connected to the gap junction.
+        # Sets up the section to be connected to the gap junction.
         pc.source_var(section(0.5)._ref_v, gj_ids[1], sec=section)
 
-        #Creates gap junction.
+        # Creates gap junction.
         try:
             gap_junc = h.Gap(0.5, sec=section)
         except:
             raise Exception("You need the gap.mod file to create gap junctions.")
 
-        #Attaches the source section to the gap junction.
+        # Attaches the source section to the gap junction.
         pc.target_var(gap_junc, gap_junc._ref_vgap, gj_ids[0])
 
         gap_junc.g = syn_weight
@@ -277,7 +230,12 @@ class BioCell(Cell):
         if edge_prop.nsyns < 1:
             return 1
 
-        tar_seg_ix, tar_seg_prob = self.morphology.get_target_segments(edge_prop)
+        tar_seg_ix, tar_seg_prob = self.morphology.find_sections(
+            section_names=edge_prop.target_sections,
+            distance_range=edge_prop.target_distance,
+            cache=True
+        )
+
         nsyns = 1
 
         # choose nsyn elements from seg_ix with probability proportional to segment area
@@ -288,16 +246,16 @@ class BioCell(Cell):
         if edge_prop.nsyns > 1:
             print("Warning: The number of synapses passed in was greater than 1, but only one gap junction will be made.")
 
-        #Sets up the section to be connected to the gap junction.
+        # Sets up the section to be connected to the gap junction.
         pc.source_var(sec(0.5)._ref_v, gj_ids[1], sec=sec)
 
-        #Creates gap junction.
+        # Creates gap junction.
         try:
             gap_junc = h.Gap(0.5, sec=sec)
         except:
             raise Exception("You need the gap.mod file to create gap junctions.")
 
-        #Attaches the source section to the gap junction.
+        # Attaches the source section to the gap junction.
         pc.target_var(gap_junc, gap_junc._ref_vgap, gj_ids[0])
 
         gap_junc.g = syn_weight
@@ -307,9 +265,9 @@ class BioCell(Cell):
         self._gap_juncs.append(gap_junc)
         self._edge_type_ids.append(edge_prop.edge_type_id)
 
-        if self._save_conn:
-            self._save_connection(src_gid=src_node.gid, src_net=src_node.network, sec_x=x, seg_ix=sec_ix,
-                                  edge_type_id=edge_prop.edge_type_id)
+        # if self._save_conn:
+        #     self._save_connection(src_gid=src_node.gid, src_net=src_node.network, sec_x=x, seg_ix=sec_ix,
+        #                           edge_type_id=edge_prop.edge_type_id)
 
     def _set_connection_preselected(self, edge_prop, src_node, syn_weight, stim=None):
         # TODO: synapses should be loaded by edge_prop.load_synapse
@@ -419,8 +377,8 @@ class BioCell(Cell):
         self.imVec = h.Vector(self.morphology.nseg)
 
         self.__set_extracell_mechanism()
-        #for sec in self.hobj.all:
-        #    sec.insert('extracellular')
+        # for sec in self.hobj.all:
+        #     sec.insert('extracellular')
 
     def setup_xstim(self, set_nrn_mechanism=True):
         self.ptr2e_extracellular = h.PtrVector(self.morphology.nseg)
@@ -429,8 +387,8 @@ class BioCell(Cell):
         # Set the e_extracellular mechanism for all sections on this hoc object
         if set_nrn_mechanism:
             self.__set_extracell_mechanism()
-            #for sec in self.hobj.all:
-            #    sec.insert('extracellular')
+            # for sec in self.hobj.all:
+            #     sec.insert('extracellular')
 
     def set_im_ptr(self):
         """Set PtrVector to point to the _ref_i_membrane_ parameter"""

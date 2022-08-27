@@ -1,20 +1,31 @@
+import os
 import pytest
 import numpy as np
 from collections import namedtuple
-from .conftest import *
 from neuron import h
+
+try:
+    from conftest import *
+except ModuleNotFoundError as mnfe:
+    from .conftest import *
 
 from bmtk.simulator.bionet.nrn import load_neuron_modules
 from bmtk.simulator.bionet.morphology import Morphology
 
 
-RORB_SWC_PATH = 'components/morphology/rorb_480169178_morphology.swc'
+RORB_SWC_PATH = os.path.join(MORPH_DIR, 'rorb_480169178_morphology.swc')
+
+try:
+    load_neuron_modules(mechanisms_dir='components/mechanisms', templates_dir='.')
+    has_mechanism = True
+except AttributeError as ae:
+    has_mechanism = False
 
 
 def load_hobj():
-    load_neuron_modules(mechanisms_dir='components/mechanisms', templates_dir='.')
+    # load_neuron_modules(mechanisms_dir='components/mechanisms', templates_dir='.')
     # load_templates(os.path.join(bionet_dir, 'default_templates'))
-    hobj = h.Biophys1('components/morphology/rorb_480169178_morphology.swc')
+    hobj = h.Biophys1(RORB_SWC_PATH)
     return hobj
 
 
@@ -35,6 +46,8 @@ def fix_axon_peri(hobj):
     h.define_shape()
 
 
+@pytest.mark.skipif(not has_mechanism, reason='Mechanisms has not been compiled, run nrnivmodl mechanisms.')
+@pytest.mark.skipif(not nrn_installed, reason='NEURON is not installed')
 def test_base():
     hobj = load_hobj()
     morph = Morphology(hobj)
@@ -62,6 +75,8 @@ def test_base():
     assert(np.allclose(morph.seg_coords.p1[:, 86], [-51.45, 0.73, -6.35], atol=1.0e-2))
 
 
+@pytest.mark.skipif(not has_mechanism, reason='Mechanisms has not been compiled, run nrnivmodl mechanisms.')
+@pytest.mark.skipif(not nrn_installed, reason='NEURON is not installed')
 def test_seg_props_cache():
     # Check ability to cache segment props
     hobj = load_hobj()
@@ -77,7 +92,6 @@ def test_seg_props_cache():
     morph4 = Morphology.load(hobj, morphology_file=RORB_SWC_PATH, cache_seg_props=True)
 
     # morph1 and morph2 have different hobj but should share the same SegmentProps
-    assert(morph1._seg_props is None and morph2._seg_props is None)
     sp1 = morph1.seg_props
     assert(id(sp1) == id(morph1.seg_props) == id(morph2.seg_props))
     assert(id(morph1.segments[0]) != id(morph2.segments[0]))
@@ -89,6 +103,8 @@ def test_seg_props_cache():
     assert (id(morph1) != id(morph4))
 
 
+@pytest.mark.skipif(not has_mechanism, reason='Mechanisms has not been compiled, run nrnivmodl mechanisms.')
+@pytest.mark.skipif(not nrn_installed, reason='NEURON is not installed')
 def test_full():
     hobj = load_hobj()
     fix_axon_peri(hobj)
@@ -122,6 +138,8 @@ def test_full():
     assert(np.allclose(morph.seg_coords.p1[:, -1], [86.01, -141.49, 41.01], atol=1.0e-2))
 
 
+@pytest.mark.skipif(not has_mechanism, reason='Mechanisms has not been compiled, run nrnivmodl mechanisms.')
+@pytest.mark.skipif(not nrn_installed, reason='NEURON is not installed')
 def test_multicell():
     hobj = load_hobj()
     fix_axon_peri(hobj)
@@ -175,6 +193,8 @@ def test_multicell():
                        atol=1.0e-2))
 
 
+@pytest.mark.skipif(not has_mechanism, reason='Mechanisms has not been compiled, run nrnivmodl mechanisms.')
+@pytest.mark.skipif(not nrn_installed, reason='NEURON is not installed')
 def test_find_sections():
     hobj = load_hobj()
     fix_axon_peri(hobj)
@@ -210,6 +230,8 @@ def test_find_sections():
     assert(len(secs) == 1 and sec_probs[0] == 1.0)
 
 
+@pytest.mark.skipif(not has_mechanism, reason='Mechanisms has not been compiled, run nrnivmodl mechanisms.')
+@pytest.mark.skipif(not nrn_installed, reason='NEURON is not installed')
 @pytest.mark.skip(reason='no longer using get_target_segments() method in new Morphology')
 def test_get_target_segments():
     hobj = load_hobj()
@@ -239,11 +261,13 @@ def test_get_target_segments():
         assert(10.0 <= morph.seg_prop['dist1'][sec] and morph.seg_prop['dist0'][sec] <= 200.0)
 
 
+@pytest.mark.skipif(not has_mechanism, reason='Mechanisms has not been compiled, run nrnivmodl mechanisms.')
+@pytest.mark.skipif(not nrn_installed, reason='NEURON is not installed')
 def test_get_swc_id():
     hobj = load_hobj()
     fix_axon_peri(hobj)
 
-    morph = Morphology(hobj, swc_path='components/morphology/rorb_480169178_morphology.swc')
+    morph = Morphology(hobj, swc_path=RORB_SWC_PATH)
     morph.set_segment_dl(20.0)
 
     # check soma has swc id == 1
@@ -273,10 +297,12 @@ def test_get_swc_id():
             assert(morph.swc_map[morph.swc_map['id'] == swc_id]['type'].values[0] == sec_type)
 
 
+@pytest.mark.skipif(not has_mechanism, reason='Mechanisms has not been compiled, run nrnivmodl mechanisms.')
+@pytest.mark.skipif(not nrn_installed, reason='NEURON is not installed')
 def test_remove_secs():
     # if you don't cut off the axon the second segment should be the axon
     hobj = load_hobj()
-    morph = Morphology(hobj, swc_path='components/morphology/rorb_480169178_morphology.swc')
+    morph = Morphology(hobj, swc_path=RORB_SWC_PATH)
     assert(len(morph.segments) == 87)
     assert(len(morph.sections) == 87)
     assert(len(morph.seg_props.sec_id) == 87)
@@ -295,7 +321,7 @@ def test_remove_secs():
     hobj = load_hobj()
     for sec in hobj.axon:
         h.delete_section(sec=sec)
-    morph = Morphology(hobj, swc_path='components/morphology/rorb_480169178_morphology.swc')
+    morph = Morphology(hobj, swc_path=RORB_SWC_PATH)
 
     assert(len(morph.seg_props.sec_id) == 86)
     assert(len(morph.segments) == 86)
@@ -314,7 +340,7 @@ def test_remove_secs():
         if 'apic' in sec.name() or 'dend' in sec.name():
             h.delete_section(sec=sec)
 
-    morph = Morphology(hobj, swc_path='components/morphology/rorb_480169178_morphology.swc')
+    morph = Morphology(hobj, swc_path=RORB_SWC_PATH)
     assert(len(morph.segments) == 2)
     assert(len(morph.sections) == 2)
     assert(len(morph.seg_props.sec_id) == 2)
@@ -324,12 +350,97 @@ def test_remove_secs():
             assert(morph.swc_map[morph.swc_map['id'] == swc_id]['type'].values[0] in [1, 2])
 
 
+@pytest.mark.skipif(not has_mechanism, reason='Mechanisms has not been compiled, run nrnivmodl mechanisms.')
+@pytest.mark.skipif(not nrn_installed, reason='NEURON is not installed')
+def test_move_and_rotate():
+    hobj = load_hobj()
+    # fix_axon_peri(hobj)
+
+    morph1 = Morphology(hobj)
+
+    morph2 = morph1.move_and_rotate(
+        soma_coords=[100.0, -100.0, 0.0],
+        rotation_angles=[90.0, 180.0, 0.0],
+        inplace=False
+    )
+
+    # Make sure inplace=False updating morph1 doesn't affect morph2
+    assert(np.allclose(morph1.seg_coords.p0[:, 0], [-5.82, 0.0, 0.0], atol=1.0e-2))
+    assert(np.allclose(morph1.seg_coords.p05[:, 0], [0.0, 0.0, 0.0], atol=1.0e-2))
+    assert(np.allclose(morph1.seg_coords.p1[:, 0], [5.82, 0.0, 0.0], atol=1.0e-2))
+    assert(np.allclose(morph1.seg_coords.p0[:, 86], [-22.21, -18.18, -1.89], atol=1.0e-2))
+    assert(np.allclose(morph1.seg_coords.p05[:, 86], [-38.98, -12.29, -4.19], atol=1.0e-2))
+    assert(np.allclose(morph1.seg_coords.p1[:, 86], [-51.45, 0.73, -6.35], atol=1.0e-2))
+
+    assert(np.allclose(morph2.seg_coords.p0[:, 0], [103.48, -95.83, 2.08], atol=1.0e-2))
+    assert(np.allclose(morph2.seg_coords.p05[:, 0], [100.0, -100.0, 0.0], atol=1.0e-2))
+    assert(np.allclose(morph2.seg_coords.p1[:, 0], [96.51, -104.16, -2.08], atol=1.0e-2))
+    assert(np.allclose(morph2.seg_coords.p0[:, -1], [114.81, -76.95,  -8.79], atol=1.0e-2))
+    assert(np.allclose(morph2.seg_coords.p05[:, -1], [126.68, -68.81, 1.87], atol=1.0e-2))
+    assert(np.allclose(morph2.seg_coords.p1[:, -1], [135.88, -66.87, 17.42], atol=1.0e-2))
+
+    # Make sure inplace=True updating morph1 doesn't affect morph2
+    morph1.move_and_rotate(
+        soma_coords=[10.0, 10.0, 10.0],
+        rotation_angles=[0.0, 0.0, 0.0],
+        inplace=True
+    )
+    assert(np.allclose(morph1.seg_coords.p0[:, 0], [4.17966715, 10.0, 10.0], atol=1.0e-2))
+    assert(np.allclose(morph1.seg_coords.p05[:, 0], [10.0, 10.0, 10.0], atol=1.0e-2))
+    assert(np.allclose(morph1.seg_coords.p1[:, 0], [15.82, 10.0, 10.0], atol=1.0e-2))
+
+    assert(np.allclose(morph2.seg_coords.p0[:, 0], [103.48, -95.83, 2.08], atol=1.0e-2))
+    assert(np.allclose(morph2.seg_coords.p05[:, 0], [100.0, -100.0, 0.0], atol=1.0e-2))
+    assert(np.allclose(morph2.seg_coords.p1[:, 0], [96.51, -104.16, -2.08], atol=1.0e-2))
+    assert(np.allclose(morph2.seg_coords.p0[:, -1], [114.81, -76.95,  -8.79], atol=1.0e-2))
+    assert(np.allclose(morph2.seg_coords.p05[:, -1], [126.68, -68.81, 1.87], atol=1.0e-2))
+    assert(np.allclose(morph2.seg_coords.p1[:, -1], [135.88, -66.87, 17.42], atol=1.0e-2))
+
+
+@pytest.mark.skipif(not has_mechanism, reason='Mechanisms has not been compiled, run nrnivmodl mechanisms.')
+@pytest.mark.skipif(not nrn_installed, reason='NEURON is not installed')
+def test_move_and_rotate_cached():
+    hobj = load_hobj()
+    morph1 = Morphology.load(hobj, morphology_file=RORB_SWC_PATH, cache_seg_props=True)
+    morph2 = Morphology.load(hobj, morphology_file=RORB_SWC_PATH, cache_seg_props=True)
+
+    # initially morph1 and morph2 share the same SegmentCoords object, make sure after a move_and_rotate is done
+    # the two morphology has different coordinates
+    assert(morph1.seg_coords == morph2.seg_coords)
+
+    morph2.move_and_rotate(
+        soma_coords=[10.0, 10.0, 10.0],
+        rotation_angles=[100.0, 100.0, 100.0],
+        inplace=True
+    )
+    assert(morph1.seg_coords != morph2.seg_coords)
+    assert(np.allclose(morph1.seg_coords.p05[:, 0], [0.0, 0.0, 0.0], atol=1.0e-2))
+    assert(np.allclose(morph2.seg_coords.p05[:, 0], [10.0, 10.0, 10.0], atol=1.0e-2))
+
+
+def check_lazy_loading():
+    hobj = load_hobj()
+    morph1 = Morphology.load(hobj, morphology_file=RORB_SWC_PATH, cache_seg_props=True)
+
+    hobj = load_hobj()
+    morph2 = Morphology.load(hobj, morphology_file=RORB_SWC_PATH, cache_seg_props=False)
+    print(len(morph2.seg_props.x))
+
+    print(len(morph1.seg_props.x))
+    print(id(morph1.seg_props) == id(morph2.seg_props))
+
+    # morph1.seg_props
+
+
 if __name__ == '__main__':
     # test_base()
-    test_seg_props_cache()
+    # test_seg_props_cache()
     # test_full()
     # test_multicell()
     # test_find_sections()
     # test_get_target_segments()
     # test_get_swc_id()
     # test_remove_secs()
+    # check_lazy_loading()
+    # test_move_and_rotate()
+    test_move_and_rotate_cached()
