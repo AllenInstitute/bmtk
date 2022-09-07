@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.6]
 
     steps:
       - uses: actions/checkout@v2
@@ -37,6 +37,7 @@ jobs:
           files: bmtk/tests/simulator/bionet/components/mechanisms
 
       - name: Setup NEURON
+        if: steps.has_mechanisms_dir.outputs.files_exists == 'true'
         run: |
           cd bmtk/tests/simulator/bionet/components/mechanisms
           nrnivmodl modfiles
