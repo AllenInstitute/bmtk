@@ -42,7 +42,7 @@ class XStimMod(SimulatorMod):
             # cell = sim.net.get_local_cell(gid)
             cell = sim.net.get_cell_gid(gid)
             cell.setup_xstim(self._set_nrn_mechanisms)
-            self._electrode.set_transfer_resistance(gid, cell.get_seg_coords())
+            self._electrode.set_transfer_resistance(gid, cell.seg_coords)
 
         def set_pointers():
             for gid in self._local_gids:
@@ -139,7 +139,7 @@ class StimXElectrode(object):
 
     def set_transfer_resistance(self, gid, seg_coords):
         rho = 300.0  # ohm cm
-        r05 = seg_coords['p05']
+        r05 = seg_coords.p05
         nseg = r05.shape[1]
         cell_map = np.zeros((self.elnsites, nseg))
         for el in six.moves.range(self.elnsites):

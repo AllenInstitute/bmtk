@@ -61,8 +61,8 @@ class BioNetwork(SimNetwork):
             'virtual': VirtualCell
         }
 
-        self._morphologies_cache = {}
-        self._morphology_lookup = {}
+        # self._morphologies_cache = {}
+        # self._morphology_lookup = {}
 
         self._rank_node_gids = {}
         self._rank_node_ids = {}
@@ -198,56 +198,56 @@ class BioNetwork(SimNetwork):
 
             self._rank_node_ids[node_pop.name] = node_ids_map
 
-        self.make_morphologies()
-        self.set_seg_props()  # set segment properties by creating Morphologies
-        self.calc_seg_coords()  # use for computing the ECP
+        # self.make_morphologies()
+        # self.set_seg_props()  # set segment properties by creating Morphologies
+        # self.calc_seg_coords()  # use for computing the ECP
         self._cells_built = True
         self.io.barrier()
 
-    def set_seg_props(self):
-        """Set morphological properties for biophysically (morphologically) detailed cells"""
-        for _, morphology in self._morphologies_cache.items():
-            morphology.set_seg_props()
+    # def set_seg_props(self):
+    #     """Set morphological properties for biophysically (morphologically) detailed cells"""
+    #     for _, morphology in self._morphologies_cache.items():
+    #         morphology.set_seg_props()
 
-    def calc_seg_coords(self):
-        """Needed for the ECP calculations"""
-        # TODO: Is there any reason this function can't be moved to make_morphologies()
-        for morphology_file, morphology in self._morphologies_cache.items():
-            morph_seg_coords = morphology.calc_seg_coords()   # needed for ECP calculations
+    # def calc_seg_coords(self):
+    #     """Needed for the ECP calculations"""
+    #     # TODO: Is there any reason this function can't be moved to make_morphologies()
+    #     for morphology_file, morphology in self._morphologies_cache.items():
+    #         morph_seg_coords = morphology.calc_seg_coords()   # needed for ECP calculations
+    #
+    #         for gid in self._morphology_lookup[morphology_file]:
+    #             self.get_cell_gid(gid).calc_seg_coords(morph_seg_coords)
 
-            for gid in self._morphology_lookup[morphology_file]:
-                self.get_cell_gid(gid).calc_seg_coords(morph_seg_coords)
-
-    def make_morphologies(self):
-        """Creating a Morphology object for each biophysical model"""
-        # TODO: Let Morphology take care of the cache
-        # TODO: Let other types have morphologies
-        # TODO: Get all available morphologies from TypesTable or group
-        for gid, cell in self._rank_node_gids.items():
-            if not isinstance(cell, BioCell):
-                continue
-
-            morphology_file = cell.morphology_file
-            if morphology_file in self._morphologies_cache:
-                # create a single morphology object for each model_group which share that morphology
-                morph = self._morphologies_cache[morphology_file]
-
-                # associate morphology with a cell
-                cell.set_morphology(morph)
-                self._morphology_lookup[morphology_file].append(cell.gid)
-
-            else:
-                hobj = cell.hobj  # get hoc object (hobj) from the first cell with a new morphologys
-                morph = Morphology(hobj)
-
-                # associate morphology with a cell
-                cell.set_morphology(morph)
-
-                # create a single morphology object for each model_group which share that morphology
-                self._morphologies_cache[morphology_file] = morph
-                self._morphology_lookup[morphology_file] = [cell.gid]
-
-        self.io.barrier()
+    # def make_morphologies(self):
+    #     """Creating a Morphology object for each biophysical model"""
+    #     # TODO: Let Morphology take care of the cache
+    #     # TODO: Let other types have morphologies
+    #     # TODO: Get all available morphologies from TypesTable or group
+    #     for gid, cell in self._rank_node_gids.items():
+    #         if not isinstance(cell, BioCell):
+    #             continue
+    #
+    #         morphology_file = cell.morphology_file
+    #         if morphology_file in self._morphologies_cache:
+    #             # create a single morphology object for each model_group which share that morphology
+    #             morph = self._morphologies_cache[morphology_file]
+    #
+    #             # associate morphology with a cell
+    #             cell.set_morphology(morph)
+    #             self._morphology_lookup[morphology_file].append(cell.gid)
+    #
+    #         else:
+    #             hobj = cell.hobj  # get hoc object (hobj) from the first cell with a new morphologys
+    #             morph = Morphology(hobj)
+    #
+    #             # associate morphology with a cell
+    #             cell.set_morphology(morph)
+    #
+    #             # create a single morphology object for each model_group which share that morphology
+    #             self._morphologies_cache[morphology_file] = morph
+    #             self._morphology_lookup[morphology_file] = [cell.gid]
+    #
+    #     self.io.barrier()
 
     def _init_connections(self):
         if not self._connections_initialized:
