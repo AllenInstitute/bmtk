@@ -1,0 +1,63 @@
+name: Unit Tests
+on:
+  pull_request:
+    branches:
+      - develop
+      - release/**
+    paths:
+      - bmtk/**
+      - .github/workflows/**
+
+jobs:
+  run-tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [3.6, 3.7, 3.8]
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      
+      - name: Install Requirements
+        run: |
+          pip install -r test_requirements.txt
+          pip install neuron==8.0.0
+          pip install .
+
+      - name: Setup NEURON
+        run: |
+          cd bmtk/tests/simulator/bionet/components/mechanisms
+          nrnivmodl modfiles
+
+      - name: Run Tests
+        run: |
+          pytest --cov=bmtk --cov-report=html bmtk/tests
+          
+  linter:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [3.8]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Requirements
+        run: |
+          pip install -r test_requirements.txt
+
+      - name: Run Python Linter
+        run: |
+          flake8 bmtk --exit-zero --statistics --count
