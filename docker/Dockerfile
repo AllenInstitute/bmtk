@@ -70,7 +70,7 @@ RUN cd ${BUILD_DIR}; \
 
 
 ### Install AllenSDK (Not used by bmtk, but used by some notebooks to fetch cell-types files)
-# RUN pip install allensdk
+RUN pip install allensdk
 
 
 ### Install the bmtk
@@ -86,6 +86,10 @@ RUN cd ${BUILD_DIR}/bmtk; \
     cp -R examples ${HOME_DIR}; \
     cp -R docs/tutorial ${HOME_DIR}
 
+
+# Add the tutorial for the 2022 workshop
+RUN cd ${HOME_DIR}/tutorial; \
+    git clone https://github.com/AllenInstitute/bmtk_workshop_2022.git
 
 #### Setup components directories for tutorials, including compiling neuron modfiles
 #RUN cd ${HOME_DIR}/tutorial; \

@@ -116,7 +116,7 @@ net.add_edges(source={'ei': 'e'}, target={'pop_name': 'LIF_exc'},
               weight_function='gaussianLL',
               weight_sigma=50.0,
               delay=2.0,
-              dynamics_params='instanteneousExc.json',
+              dynamics_params='instantaneousExc.json',
               model_template='exp2syn')
 
 
@@ -138,7 +138,7 @@ net.add_edges(source={'ei': 'i'}, target={'ei': 'i', 'model_type': 'point_proces
               syn_weight=0.00225,
               weight_function='wmax',
               delay=2.0,
-              dynamics_params='instanteneousInh.json',
+              dynamics_params='instantaneousInh.json',
               model_template='exp2syn')
 
 ### Generating I-to-E connections
@@ -159,7 +159,7 @@ net.add_edges(source={'ei': 'i'}, target={'ei': 'e', 'model_type': 'point_proces
               syn_weight=0.009,
               weight_function='wmax',
               delay=2.0,
-              dynamics_params='instanteneousInh.json',
+              dynamics_params='instantaneousInh.json',
               model_template='exp2syn')
 
 ### Generating E-to-I connections
@@ -181,7 +181,7 @@ net.add_edges(source={'ei': 'e'}, target={'pop_name': 'LIF_inh'},
               syn_weight=0.0043,
               weight_function='wmax',
               delay=2.0,
-              dynamics_params='instanteneousExc.json',
+              dynamics_params='instantaneousExc.json',
               model_template='exp2syn')
 
 net.build()

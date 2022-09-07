@@ -1,7 +1,5 @@
 Registration
 ==================
 
-
-.. raw:: html
-
-	<script src="https://www.cognitoforms.com/f/seamless.js" data-key="iDwp7FWRaU-CitlUWI0uLw" data-form="1"></script>
+**Users are encouraged to register** `here <https://secure2.convio.net/allins/site/SPageServer/?pagename=modeling_tools>`_ 
+**to receive updates and other communications, but registration is not required to use the package.** 

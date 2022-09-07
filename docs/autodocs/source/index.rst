@@ -19,8 +19,9 @@ Welcome to the Brain Modeling Toolkit
    tutorials
    Example Networks <examples>
    Github Profile <https://github.com/AllenInstitute/bmtk.git>
+   workshop
+   registration
    contributors
-   Register <registration>
    Source Documentation <bmtk/bmtk>
    
 

@@ -50,7 +50,7 @@ lgn.add_edges(source=lgn.nodes(),  target=net.nodes(pop_name='LIF_exc'),
               syn_weight= 0.045,
               weight_function='wmax',
               delay=2.0,
-              dynamics_params='instanteneousExc.json',
+              dynamics_params='instantaneousExc.json',
               model_template='exp2syn')
 
 lgn.add_edges(source=lgn.nodes(),  target=net.nodes(pop_name='LIF_inh'),
@@ -60,7 +60,7 @@ lgn.add_edges(source=lgn.nodes(),  target=net.nodes(pop_name='LIF_inh'),
               syn_weight=0.02,
               weight_function='wmax',
               delay=2.0,
-              dynamics_params='instanteneousExc.json',
+              dynamics_params='instantaneousExc.json',
               model_template='exp2syn')
 
 
