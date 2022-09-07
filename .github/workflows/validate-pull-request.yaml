@@ -30,6 +30,12 @@ jobs:
           pip install neuron==8.0.0
           pip install .
 
+      - name: Check NRN mechanisms directory exists
+        id: has_mechanisms_dir
+        uses: andstor/file-existence-action@v1
+        with:
+          files: bmtk/tests/simulator/bionet/components/mechanisms
+
       - name: Setup NEURON
         run: |
           cd bmtk/tests/simulator/bionet/components/mechanisms
