@@ -1,11 +1,24 @@
 import pytest
 import numpy as np
 from .conftest import *
+from neuron import h
+
+
+# try:
+#     h.load_file('stdrun.hoc')
+# except Exception as e:
+#     pass
+
+class NRNPythonObj(object):
+    def post_fadvance(self):
+        pass
 
 try:
-    h.load_file('stdrun.hoc')
-except Exception as e:
-    pass
+    load_neuron_modules(mechanisms_dir='components/mechanisms', templates_dir='.')
+    h.pysim = NRNPythonObj()
+    has_mechanism = True
+except AttributeError as ae:
+    has_mechanism = False
 
 
 class MockNode(object):
@@ -34,6 +47,7 @@ class MockSpikes(object):
 def test_spiketrain(spike_times):
     from bmtk.simulator.bionet.virtualcell import VirtualCell
 
+    h.load_file('stdrun.hoc')
     vc = VirtualCell(node=MockNode(), population='test_pop', spike_train_dataset=MockSpikes(spike_times))
 
     # Create simple cell (soma) attach synapse using spike times from virtual cell and run, making sure
@@ -63,6 +77,6 @@ def test_spiketrains_negative(spike_times):
 
 
 if __name__ == '__main__':
-    # test_spiketrain([0.001, 1.0, 5.0, 10.0])
-    test_spiketrains_negative()
+    test_spiketrain([0.001, 1.0, 5.0, 10.0])
+    # test_spiketrains_negative()
     # test_spiketrain()
