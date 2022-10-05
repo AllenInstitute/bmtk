@@ -13,6 +13,21 @@ The synpatic weights are then updated using a primative gradient method.
 After the N simulations have been completed, the MSE of the actual vs target firing-rates are calculated and the updated
 weights are saved to **updated_weights/** directory.
 
+## Compiling NEURON mechanisms
+The components for the BioNet examples are located in /examples/bio_components. If the NEURON mechanisms have not already been compiled, the following should compile the NEURON mechanisms and place them in another folder in /mechanisms.
+
+```bash
+$ cd ../bio_components/mechanisms
+$ nrnivmodl modfiles 
+$ cd -
+```
+Failure to compile the mechanisms results in an error such as:
+```
+**Warning**:  NEURON mechanisms not found in ./../bio_components/mechanisms.
+              [...]
+              ValueError: argument not a density mechanism name
+```
+
 ## Running:
 To run a simulation, install bmtk and run the following:
 ```

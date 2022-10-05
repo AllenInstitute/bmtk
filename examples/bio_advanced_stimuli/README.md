@@ -12,7 +12,7 @@ also find network files representing virtual input (virt*). You can rebuild the 
 $ python build_network.py
 ```
 ## Compiling NEURON mechanisms
-The components for the BioNet examples are located in /examples/bio_components. Running the following should compile the NEURON mechanisms and place them in another folder in /mechanisms.
+The components for the BioNet examples are located in /examples/bio_components. If the NEURON mechanisms have not already been compiled, the following should compile the NEURON mechanisms and place them in another folder in /mechanisms.
 
 ```bash
 $ cd ../bio_components/mechanisms

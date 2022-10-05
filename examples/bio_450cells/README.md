@@ -12,6 +12,20 @@ This example is different from the other bio_450cell example in that:
  * Includes LFP recordings.  NOTE: this will significantly increase the time to complete the simulation and will
  write a large ecp results file in the output.
 
+## Compiling NEURON mechanisms
+The components for the BioNet examples are located in /examples/bio_components. Running the following should compile the NEURON mechanisms and place them in another folder alongside /modfiles.
+
+```bash
+$ cd ../bio_components/mechanisms
+$ nrnivmodl modfiles 
+$ cd -
+```
+Failure to compile the mechanisms results in an error such as:
+
+    **Warning**: NEURON mechanisms not found in ./../bio_components/mechanisms.
+    			 [...]
+    			 ValueError: argument not a density mechanism name
+
 
 ## Running:
 To run a simulation, install bmtk and run the following:
