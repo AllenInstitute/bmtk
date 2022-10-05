@@ -3,7 +3,7 @@ from bmtk.builder.networks import NetworkBuilder
 
 cortex = NetworkBuilder('mcortex')
 cortex.add_nodes(cell_name='Scnn1a_473845048',
-                 potental='exc',
+                 potential='exc',
                  model_type='biophysical',
                  model_template='ctdb:Biophys1.hoc',
                  model_processing='aibs_perisomatic',
@@ -18,7 +18,7 @@ thalamus = NetworkBuilder('mthalamus')
 thalamus.add_nodes(N=10,
                    pop_name='tON',
                    potential='exc',
-                   level_of_detail='filter')
+                   model_type='virtual')
 
 thalamus.add_edges(source={'pop_name': 'tON'}, target=cortex.nodes(),
                    connection_rule=5,

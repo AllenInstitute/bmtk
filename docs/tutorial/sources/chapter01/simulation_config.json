@@ -34,15 +34,17 @@
     "overwrite_output_dir": true
   }, 
   "reports": {
-    "membrane_report": {
-      "file_name": "cell_vars.h5", 
-      "cells": "all", 
-      "sections": "soma", 
-      "module": "membrane_report", 
-      "variable_name": [
-        "cai", 
-        "v"
-      ]
+    "v_report": {
+      "variable_name": "v",
+      "cells": "all",
+      "module": "membrane_report",
+      "sections": "soma"
+    },
+    "cai_report": {
+      "variable_name": "cai",
+      "cells": "all",
+      "module": "membrane_report",
+      "sections": "soma"
     }
   }, 
   "network": "./circuit_config.json"

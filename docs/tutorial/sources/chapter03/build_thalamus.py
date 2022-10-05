@@ -16,7 +16,7 @@ thalamus = NetworkBuilder('mthalamus')
 thalamus.add_nodes(N=100,
                    pop_name='tON',
                    potential='exc',
-                   level_of_detail='filter')
+                   model_type='virtual')
 
 cortex = NetworkBuilder('mcortex')
 cortex.import_nodes(nodes_file_name='network/mcortex_nodes.h5', node_types_file_name='network/mcortex_node_types.csv')

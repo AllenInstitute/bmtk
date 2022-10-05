@@ -16,13 +16,12 @@
     "v_init": -80.0
   }, 
   "inputs": {
-    "tc_spikes": {
+    "mthalamus_spikes": {
       "input_type": "spikes",
-      "module": "csv",
-      "input_file": "${BASE_DIR}/thalamus_spikes.csv",
+      "module": "sonata",
+      "input_file": "$BASE_DIR/inputs/mthalamus_spikes.h5",
       "node_set": "mthalamus"
     }
-
   }, 
   "output": {
     "spikes_file_csv": "spikes.csv", 
@@ -32,14 +31,17 @@
     "overwrite_output_dir": true
   }, 
   "reports": {
-    "membrane_report": {
-      "cells": "all", 
-      "sections": "soma", 
-      "module": "membrane_report", 
-      "variable_name": [
-        "v", 
-        "cai"
-      ]
+    "v_report": {
+      "variable_name": "v",
+      "cells": "all",
+      "module": "membrane_report",
+      "sections": "soma"
+    },
+    "cai_report": {
+      "variable_name": "cai",
+      "cells": "all",
+      "module": "membrane_report",
+      "sections": "soma"
     }
   }, 
   "network": "./circuit_config.json"
