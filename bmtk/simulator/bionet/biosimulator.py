@@ -421,57 +421,61 @@ class BioSimulator(Simulator):
                 node_set = network.get_node_set(sim_input.node_set)
                 network.add_spike_trains(spikes, node_set)
 
-            elif sim_input.module == "FileIClamp":
-                sim.attach_file_current_clamp(sim_input.params["input_file"])
-
             elif sim_input.module == 'IClamp':
-                # TODO: Parse from csv file
-                node_set = network.get_node_set(sim_input.node_set)
-                try:
-                    len(sim_input.params['amp'])
-                except:
-                    sim_input.params['amp']=[float(sim_input.params['amp'])]
-                if len(sim_input.params['amp'])>1:
-                    sim_input.params['amp']=[float(i) for i in sim_input.params['amp']]
+                sim.add_mod(mods.IClampMod(input_type=sim_input.input_type, **sim_input.params))
 
-                try: 
-                    len(sim_input.params['delay'])
-                except:
-                    sim_input.params['delay']=[float(sim_input.params['delay'])]
-                if len(sim_input.params['delay'])>1:
-                    sim_input.params['delay']=[float(i) for i in sim_input.params['delay']]
-                
-                try: 
-                    len(sim_input.params['duration'])
-                except:
-                    sim_input.params['duration']=[float(sim_input.params['duration'])]
-                if len(sim_input.params['duration'])>1:
-                    sim_input.params['duration']=[float(i) for i in sim_input.params['duration']]
-                    
-                amplitude = sim_input.params['amp']
-                delay = sim_input.params['delay']
-                duration = sim_input.params['duration']
+            # elif sim_input.module == "FileIClamp":
+            #     sim.attach_file_current_clamp(sim_input.params["input_file"])
+            #
+            # elif sim_input.module == 'IClamp':
+            #     # TODO: Parse from csv file
+            #     node_set = network.get_node_set(sim_input.node_set)
+            #     try:
+            #         len(sim_input.params['amp'])
+            #     except:
+            #         sim_input.params['amp']=[float(sim_input.params['amp'])]
+            #     if len(sim_input.params['amp'])>1:
+            #         sim_input.params['amp']=[float(i) for i in sim_input.params['amp']]
+            #
+            #     try:
+            #         len(sim_input.params['delay'])
+            #     except:
+            #         sim_input.params['delay']=[float(sim_input.params['delay'])]
+            #     if len(sim_input.params['delay'])>1:
+            #         sim_input.params['delay']=[float(i) for i in sim_input.params['delay']]
+            #
+            #     try:
+            #         len(sim_input.params['duration'])
+            #     except:
+            #         sim_input.params['duration']=[float(sim_input.params['duration'])]
+            #     if len(sim_input.params['duration'])>1:
+            #         sim_input.params['duration']=[float(i) for i in sim_input.params['duration']]
+            #
+            #     amplitude = sim_input.params['amp']
+            #     delay = sim_input.params['delay']
+            #     duration = sim_input.params['duration']
+            #
+            #     # specificed for location to place iclamp hobj.<section_name>[<section_index>](<section_dist>). The
+            #     # default is hobj.soma[0](0.5), the center of the soma
+            #     section_name = sim_input.params.get('section_name', 'soma')
+            #     section_index = sim_input.params.get('section_index', 0)
+            #     section_dist = sim_input.params.get('section_dist', 0.5)
+            #
+            #     # section_name = section_name if isinstance(section_name, (list, tuple)) else [section_name]
+            #     # section_index = section_index if isinstance(section_index, (list, tuple)) else [section_index]
+            #     # section_dist = section_dist if isinstance(section_dist, (list, tuple)) else [section_dist]
+            #
+            #     try:
+            #         sim_input.params['gids']
+            #     except:
+            #         sim_input.params['gids'] = None
+            #     if sim_input.params['gids'] is not None:
+            #         gids = sim_input.params['gids']
+            #     else:
+            #         gids = list(node_set.gids())
+            #
+            #     sim.attach_current_clamp(amplitude, delay, duration, gids, section_name, section_index, section_dist)
 
-                # specificed for location to place iclamp hobj.<section_name>[<section_index>](<section_dist>). The
-                # default is hobj.soma[0](0.5), the center of the soma
-                section_name = sim_input.params.get('section_name', 'soma')
-                section_index = sim_input.params.get('section_index', 0)
-                section_dist = sim_input.params.get('section_dist', 0.5)
-
-                # section_name = section_name if isinstance(section_name, (list, tuple)) else [section_name]
-                # section_index = section_index if isinstance(section_index, (list, tuple)) else [section_index]
-                # section_dist = section_dist if isinstance(section_dist, (list, tuple)) else [section_dist]
-
-                try:
-                    sim_input.params['gids']
-                except:
-                    sim_input.params['gids'] = None
-                if sim_input.params['gids'] is not None:
-                    gids = sim_input.params['gids']
-                else:
-                    gids = list(node_set.gids())
-
-                sim.attach_current_clamp(amplitude, delay, duration, gids, section_name, section_index, section_dist)
 
             elif sim_input.module == "SEClamp":
                 node_set = network.get_node_set(sim_input.node_set)
