@@ -7,6 +7,20 @@ an external network of virtual nodes/spike-trains.
 
 Uses BioNet simulator and will require NEURON to run.
 
+## Compiling NEURON mechanisms
+The components for the BioNet examples are located in /examples/bio_components. If the NEURON mechanisms have not already been compiled, the following should compile the NEURON mechanisms and place them in another folder in /mechanisms.
+
+```bash
+$ cd ../bio_components/mechanisms
+$ nrnivmodl modfiles 
+$ cd -
+```
+Failure to compile the mechanisms results in an error such as:
+```
+**Warning**:  NEURON mechanisms not found in ./../bio_components/mechanisms.
+              [...]
+              ValueError: argument not a density mechanism name
+```
 
 ## Running:
 To run a simulation, install bmtk and run the following:
