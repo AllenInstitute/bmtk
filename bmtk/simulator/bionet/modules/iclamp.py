@@ -1,10 +1,9 @@
 import numpy as np
 import pandas as pd
 import h5py
-import six
 from neuron import h
 
-from bmtk.simulator.core.modules import iclamp
+from bmtk.simulator.bionet.modules.sim_module import SimulatorMod
 from bmtk.simulator.bionet.io_tools import io
 
 
@@ -19,14 +18,6 @@ class AmpsReader(object):
 
         if not len(self._amps) == len(self._delays) == len(self._durations):
             io.log_exception('{}: current clamp parameters amp, delay, duration must be same length when using list.')
-
-    @property
-    def amps(self):
-        return self._amps
-
-    @property
-    def start(self):
-        return np.min(self._delays)
 
     def create_clamps(self, hobj):
         clamps = []
@@ -50,8 +41,8 @@ class CSVAmpReader(object):
         try:
             self._csv_path = args['file']
             self._sep = args.get('separator', ' ')
-            self._ts_col = args.get('timestamps_col', 'timestamps')
-            self._amps_col = args.get('amplitudes_col', 'amps')
+            self._ts_col = args.get('timestamps_column', 'timestamps')
+            self._amps_col = args.get('amplitudes_column', 'amps')
         except KeyError as ke:
             io.log_exception('{}: missing current-clamp parameter {}.'.format(IClampMod.__name__, ke))
 
@@ -100,15 +91,15 @@ class CSVAmpReader(object):
                 # Simplist case initial onset time occurs at first dt after start of simulation, add a 0.0 current
                 # clamp at the very beginning of the simulation.
                 self._amps_vals = np.concatenate(([0.0], self._amps_vals))
-                self._ts_vals = np.concatenate([0.0], self._ts_vals)
+                self._ts_vals = np.concatenate(([0.0], self._ts_vals))
                 self._istart = 0.0
 
             else:
-                wrn_msg = '{}: initial onset of stimulus at {} does not occur at a {} timestep. Attempting to update' \
+                warn_msg = '{}: initial onset of stimulus at {} does not occur at a {} timestep. Attempting to update' \
                           'timesteps and amp values'.format(IClampMod.__name__, self._istart, self._idt)
-                io.log_warning(wrn_msg)
+                io.log_warning(warn_msg)
 
-                gcd = np.gcd(np.int(self._idt), np.int(self._istart))
+                gcd = np.gcd(int(self._idt), int(self._istart))
                 amps = np.repeat(self._amps_vals, int(self._idt)/gcd)
                 zero_curr = np.zeros(int(self._istart/gcd))
                 self._amps_vals = np.concatenate((zero_curr, amps))
@@ -116,138 +107,36 @@ class CSVAmpReader(object):
                 self._idt = gcd
                 self._istart = 0.0
 
+        # Try to determine IClamp stop time (eg max duration)
+        if self._amps_vals[-1] != 0:
+            self._istop = self._ts_vals[-1] + self._idt
+            warn_msg = '{}: Stimulus of {} does not end with a 0.0, attempting to set turn off at time {}.'.format(
+                IClampMod.__name__, self._csv_path, self._istop)
+            io.log_warning(warn_msg)
+        else:
+            self._istop = self._ts_vals[-1]
+
     @property
     def amps(self):
         return self._amps_vals
 
     @property
-    def timestamps(self):
-        return self._delays
-
-    @property
-    def start(self):
-        return np.min(self._delays)
-
-    @property
-    def stop(self):
-        return np.max([delay + dur for delay, dur in zip(self._delays, self._durations)])
+    def dt(self):
+        return self._idt
 
     def create_clamps(self, hobj):
-        """
-        clamp = h.IClamp(hobj)
-        clamp.delay = 0.0 # self._istart
-        clamp.dur = self._istop
-
-        vect_stim = h.Vector(self._amps_vals)
-        vect_stim.play(clamp._ref_amp, self._idt)
-        """
-
-        # ts = np.array([0.0, 500.0, 1000.0, 1500.0, 2000.0])
-        # amps = np.array([0.0, -0.2, 0.0, 0.2, 0.0])
-
-        # ts = np.array([500.0, 1000.0, 1500.0, 2000.0])
-        # amps = np.array([-0.2, 0.0, 0.2, 0.0])
-
-        # ts = np.array([700.0, 1200.0, 1700.0, 2200.0])
-        # amps = np.array([-0.2, 0.0, 0.2, 0.0])
-
-        # ts = np.array([300.0, 800.0, 1300.0, 1800.0])
-        # amps = np.array([-0.2, 0.0, 0.2, 0.0])
-
-        # ts = np.array([700.0, 1700.0, 2200.0, 2900.0])
-        # amps = np.array([-0.2, 0.0, 0.2, 0.0])
-
-        # ts = np.array([200.0, 1200.0, 1700.0, 2700.0])
-        # amps = np.array([-0.2, 0.0, 0.2, 0.0])
-
-        # ts = np.array([600.0, 800.0, 1000.0, 1200.0])
-        # amps = np.array([.1, .2, 0.3, 0.0])
-
-        # dt = np.diff(ts)[0]
-        # istart = ts[0]
-        #
-        # if istart > 0.0:
-        #     if istart - dt == 0.0:
-        #         amps = np.concatenate(([0.0], amps))
-        #         istart = 0.0
-        #
-        #     else:
-        #         print('HERE')
-        #         gcd = np.gcd(np.int(dt), np.int(istart))
-        #         print(gcd)
-        #         amps = np.repeat(amps, int(dt)/gcd)
-        #         zero_curr = np.zeros(int(istart/gcd))
-        #         amps = np.concatenate((zero_curr, amps))
-        #         print(gcd, amps)
-        #         dt = gcd
-        #         istart = 0.0
-        #         # exit()
-
-        # istop =
-
-        # onset = ts[0]
-        # print(dt, onset)
-        # print(np.int(dt), np.int(onset))
-        #
-        # gcd = np.gcd(np.int(dt), np.int(onset))
-        # amps = np.repeat(amps, int(onset/gcd))
-        # dt = gcd
-        #
-        # print(np.repeat(amps, int(onset/gcd)))
-        # print(np.arange(onset, ts[-1], step=gcd))
-        # # print(np.gcd((int(ts), int(onset))))
-        # # exit()
-
-
         clamp = h.IClamp(hobj)
         clamp.delay = self._istart
-        clamp.dur = 4000.0  # self._istop
+        clamp.dur = self._istop
 
         vect_stim = h.Vector(self._amps_vals)
         vect_stim.play(clamp._ref_amp, self._idt)
 
         return [(vect_stim, clamp)]
 
-        # for amp, delay, dur in zip(self._amps, self._delays, self._durations):
-        #     clamp = h.IClamp(hobj)
-        #     clamp.amp = amp
-        #     clamp.delay = delay
-        #     clamp.dur = dur
-        #     clamps.append(clamp)
-        #
-        # return clamps
-
-#     'input_type': 'current_clamp',
-#     'module': 'IClamp',
-#     'node_set': 'biophys_cells',
-#     'amp': [0.1, 0.2, 0.3],
-#     'delay': [100.0, 200.0, 300.0],
-#     'duration': [50.0, 50.0, 50.0]
-# }
-#
-# iclamp_csv = {
-#     'input_type': 'csv',
-#     'module': 'IClamp',
-#     'node_set': 'biophys_cells',
-#     'file': 'clamp_amplitdues.csv',
-#     'separator': ' ',
-#     'timestamps_col': 'timestamps',
-#     'amplitudes_col': 'amps'
-# }
-#
-# iclamp_nwb = {
-#     'input_type': 'nwb',
-#     'module': 'IClamp',
-#     'node_set': 'biophys_cells',
-#     'file': '487667203_ephys.nwb',
-#     'sweep_id': 8,
-#     'delay': 0.0
-# }
-
 
 class NWBReader(object):
     def __init__(self, **args):
-        import matplotlib.pyplot as plt
 
         try:
             self._nwb_path = args['file']
@@ -265,22 +154,23 @@ class NWBReader(object):
             self._sweep_id = self._sweep_id
 
         with h5py.File(self._nwb_path, 'r') as h5:
+            if self._sweep_id not in h5['/epochs']:
+                io.log_exception('{}: {} missing sweep group {}.'.format(
+                    IClampMod.__name__, self._nwb_path, self._sweep_id)
+                )
+
             sweep_grp = h5['epochs/{}/stimulus/timeseries'.format(self._sweep_id)]
             self._idt = 1.0/sweep_grp['starting_time'].attrs['rate']
-
-            self._amps_vals = sweep_grp['data'][int(17/self._idt):int(20/self._idt)]*1.0e9
+            self._amps_vals = sweep_grp['data'][()]*1.0e9
             self._istart = 0.0
 
             nsamples = len(self._amps_vals)
-            stop_time = nsamples*self._idt
-            ts = np.arange(0.0, stop_time, step=self._idt)
-            plt.plot(ts, self._amps_vals)
-            # plt.show()
+            self._istop = nsamples*self._idt*1000.0
 
     def create_clamps(self, hobj):
         clamp = h.IClamp(hobj)
         clamp.delay = self._istart
-        clamp.dur = 4000.0  # self._istop
+        clamp.dur = self._istop
 
         vect_stim = h.Vector(self._amps_vals)
         vect_stim.play(clamp._ref_amp, self._idt)
@@ -288,7 +178,7 @@ class NWBReader(object):
         return [(vect_stim, clamp)]
 
 
-class IClampMod(iclamp.IClampMod):
+class IClampMod(SimulatorMod):
     input2reader_map = {
         'current_clamp': AmpsReader,
         'csv': CSVAmpReader,
