@@ -1,6 +1,8 @@
 # The Brain Modeling Toolkit
 
 A software development package for building, simulating, and analyzing large-scale networks of different levels of resolution.
+.
+Please fill out our brief user survey: [here](https://docs.google.com/forms/d/e/1FAIpQLSfwZQhvHF0JH9BLrKXfAtyagy9_d-Y0x5VRX85aDY2-p9-u1g/viewform).
 
 Registering allows us to communicate with BMTK users and is encouraged, but not required: [registration link](https://secure2.convio.net/allins/site/SPageServer/?pagename=modeling_tools).
 
