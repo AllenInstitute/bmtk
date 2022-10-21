@@ -2,6 +2,8 @@
 
 A software development package for building, simulating, and analyzing large-scale networks of different levels of resolution.
 
+Please give feedback via our brief [user survey](https://docs.google.com/forms/d/e/1FAIpQLSfwZQhvHF0JH9BLrKXfAtyagy9_d-Y0x5VRX85aDY2-p9-u1g/viewform), which will inform future development, fixes, and documentation.
+
 Registering allows us to communicate with BMTK users and is encouraged, but not required: [registration link](https://secure2.convio.net/allins/site/SPageServer/?pagename=modeling_tools).
 
 See the paper about BMTK: [link](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1008386).
