@@ -167,7 +167,7 @@ class PointNetwork(SimNetwork):
             for edge in edge_pop.get_edges():
                 nest_srcs = self.gid_map.get_nestids(edge_pop.source_nodes, edge.source_node_ids)
                 nest_trgs = self.gid_map.get_nestids(edge_pop.target_nodes, edge.target_node_ids)
-                if isinstance(edge.nest_params['weight'], int):
+                if isinstance(edge.nest_params['weight'], (int, float)):
                     edge.nest_params['weight'] = np.full(shape=len(nest_srcs),
                                                          fill_value=edge.nest_params['weight'])
                 self._nest_connect(nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=edge.nest_params)
@@ -221,7 +221,7 @@ class PointNetwork(SimNetwork):
                 for edge in edge_pop.get_edges():
                     nest_trgs = self.gid_map.get_nestids(edge_pop.target_nodes, edge.target_node_ids)
                     nest_srcs = virt_gid_map.get_nestids(edge_pop.source_nodes, edge.source_node_ids)
-                    if isinstance(edge.nest_params['weight'], int):
+                    if isinstance(edge.nest_params['weight'], (int, float)):
                         edge.nest_params['weight'] = np.full(shape=len(nest_srcs),
                                                              fill_value=edge.nest_params['weight'])
                     self._nest_connect(nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=edge.nest_params)
