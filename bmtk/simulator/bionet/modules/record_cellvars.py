@@ -141,7 +141,7 @@ class MembraneReport(SimulatorMod):
             cell = sim.net.get_cell_gid(gid)
             morph = cell.morphology
             segs = morph.seg_props
-            for sec_id, x0, x, x1, stype in zip(segs.sec_id, segs.x0, segs.x, segs.x, segs.type):
+            for sec_id, x0, x, x1, stype in zip(segs.sec_id, segs.x0, segs.x, segs.x1, segs.type):
                 if stype in self._section_types:
                     swc_id_beg, _ = morph.get_swc_id(sec_id, x0)
                     swc_id_end, _ = morph.get_swc_id(sec_id, x1)
