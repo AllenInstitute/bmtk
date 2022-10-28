@@ -57,11 +57,11 @@ class _CompartmentPopulationReaderVer01(CompartmentReaderABC):
 
     def units(self, population=None):
         return get_attribute_h5(self.data_ds, 'units', None)
-        #return self.data_ds.attrs.get('units', None)
+        # return self.data_ds.attrs.get('units', None)
 
     def variable(self, population=None):
         return get_attribute_h5(self.data_ds, 'variable', None)
-        #return self.data_ds.attrs.get('variable', None)
+        # return self.data_ds.attrs.get('variable', None)
 
     def tstart(self, population=None):
         return self._t_start
@@ -97,8 +97,8 @@ class _CompartmentPopulationReaderVer01(CompartmentReaderABC):
         if node_id is None:
             return self._mapping['element_ids'][()]
         else:
-            #indx_beg, indx_end = self._get_index(node_id)
-            #return self._mapping['element_ids'][self._get_index(node_id)]#[indx_beg:indx_end]
+            # indx_beg, indx_end = self._get_index(node_id)
+            # return self._mapping['element_ids'][self._get_index(node_id)]#[indx_beg:indx_end]
             return self._mapping['element_ids'][self._get_index(node_id)]
 
     def n_elements(self, node_id=None, population=None):
@@ -130,7 +130,7 @@ class _CompartmentPopulationReaderVer01(CompartmentReaderABC):
                 raise Exception('Invalid time_window, expecting tuple [being, end].')
 
             window_beg = max(int((time_window[0] - self.tstart()) / self.dt()), 0)
-            window_end = min(int((time_window[1] - self.tstart()) / self.dt()), self._n_steps / self.dt())
+            window_end = min(int((time_window[1] - self.tstart()) / self.dt()), self._n_steps)
             time_slice = slice(window_beg, window_end)
 
         filtered_data = np.array(self._data_grp[time_slice, gid_slice])
@@ -166,8 +166,8 @@ class _CompartmentPopulationReaderVer00(_CompartmentPopulationReaderVer01):
         if node_id is None:
             return self._mapping['element_id'][()]
         else:
-            #indx_beg, indx_end = self._get_index(node_id)
-            #return self._mapping['element_id'][self._get_index(node_id)]#[indx_beg:indx_end]
+            # indx_beg, indx_end = self._get_index(node_id)
+            # return self._mapping['element_id'][self._get_index(node_id)]#[indx_beg:indx_end]
             return self._mapping['element_id'][self._get_index(node_id)]  # [indx_beg:indx_end]
 
 
