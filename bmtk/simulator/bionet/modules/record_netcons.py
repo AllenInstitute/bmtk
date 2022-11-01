@@ -27,7 +27,7 @@ N_HOSTS = int(pc.nhost())
 class NetconReport(SimulatorMod):
     def __init__(self, tmp_dir, file_name, variable_name, cells, sections='all', syn_type='Exp2Syn', buffer_data=True,
                  transform={}):
-        """Module used for saving NEURON cell properities at each given step of the simulation.
+        """Module used for saving NEURON cell properties at each given step of the simulation.
 
         :param tmp_dir:
         :param file_name: name of h5 file to save variable.
