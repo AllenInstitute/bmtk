@@ -642,9 +642,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <section id="module-bmtk.builder.auxi.node_params">
 <span id="bmtk-builder-auxi-node-params-module"></span><h2>bmtk.builder.auxi.node_params module<a class="headerlink" href="#module-bmtk.builder.auxi.node_params" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
+<dt class="sig sig-object py" id="bmtk.builder.auxi.node_params.plot_positions">
+<span class="sig-prename descclassname"><span class="pre">bmtk.builder.auxi.node_params.</span></span><span class="sig-name descname"><span class="pre">plot_positions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/auxi/node_params.html#plot_positions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.auxi.node_params.plot_positions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="bmtk.builder.auxi.node_params.positions_columinar">
-<span class="sig-prename descclassname"><span class="pre">bmtk.builder.auxi.node_params.</span></span><span class="sig-name descname"><span class="pre">positions_columinar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">50.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distribution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'uniform'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/auxi/node_params.html#positions_columinar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.auxi.node_params.positions_columinar" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a set of random x,y,z coordinates within a given sphere. Height is given as the y (index 1) coordates</p>
+<span class="sig-prename descclassname"><span class="pre">bmtk.builder.auxi.node_params.</span></span><span class="sig-name descname"><span class="pre">positions_columinar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">50.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/auxi/node_params.html#positions_columinar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.auxi.node_params.positions_columinar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a set of random x,y,z coordinates within a given cylinder or cylindrical ring.
+Height is given as the y (index 1) coordinates.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -653,7 +659,27 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li><p><strong>height</strong> – maximum length of sphere (y coord)</p></li>
 <li><p><strong>min_radius</strong> – minimum horizontal radius on x-z plane</p></li>
 <li><p><strong>max_radius</strong> – maximum horizontal radius on x-z plane</p></li>
-<li><p><strong>distribution</strong> – Not yet implementd</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A (N, 3) matrix</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bmtk.builder.auxi.node_params.positions_columnar">
+<span class="sig-prename descclassname"><span class="pre">bmtk.builder.auxi.node_params.</span></span><span class="sig-name descname"><span class="pre">positions_columnar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">50.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bmtk.builder.auxi.node_params.positions_columnar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a set of random x,y,z coordinates within a given cylinder or cylindrical ring.
+Height is given as the y (index 1) coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>N</strong> – Number of points to return</p></li>
+<li><p><strong>center</strong> – center of sphere</p></li>
+<li><p><strong>height</strong> – maximum length of sphere (y coord)</p></li>
+<li><p><strong>min_radius</strong> – minimum horizontal radius on x-z plane</p></li>
+<li><p><strong>max_radius</strong> – maximum horizontal radius on x-z plane</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -664,7 +690,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <dl class="py function">
 <dt class="sig sig-object py" id="bmtk.builder.auxi.node_params.positions_cuboid">
-<span class="sig-prename descclassname"><span class="pre">bmtk.builder.auxi.node_params.</span></span><span class="sig-name descname"><span class="pre">positions_cuboid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xside_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yside_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/auxi/node_params.html#positions_cuboid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.auxi.node_params.positions_cuboid" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">bmtk.builder.auxi.node_params.</span></span><span class="sig-name descname"><span class="pre">positions_cuboid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">0.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xside_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yside_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/auxi/node_params.html#positions_cuboid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.auxi.node_params.positions_cuboid" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function distributes the cells in a 3D cuboid (x,y,z sides may have different lengths). The method used
 assures cells cannot be placed too close to one another (must be &gt; min_dist apart)
 WARNING: If cell density is high and there is more than 1 population of cells, there is a high chance cells will be
@@ -673,6 +699,49 @@ placed on top of one another. You can use positions_list() to avoid this…</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>A (N, 3) matrix</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bmtk.builder.auxi.node_params.positions_density_matrix">
+<span class="sig-prename descclassname"><span class="pre">bmtk.builder.auxi.node_params.</span></span><span class="sig-name descname"><span class="pre">positions_density_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([[1,</span> <span class="pre">0,</span> <span class="pre">0],</span> <span class="pre">[0,</span> <span class="pre">1,</span> <span class="pre">0],</span> <span class="pre">[0,</span> <span class="pre">0,</span> <span class="pre">1]])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">CCF_orientation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/auxi/node_params.html#positions_density_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.auxi.node_params.positions_density_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function places random x,y,z coordinates according to a supplied 3D array of densities (cells/mm^3).
+The optional position_scale parameter defines a transformation matrix A to physical space such that:
+[x_phys, y_phys, z_phys] = A * [x_mat, y_mat, z_mat]</p>
+<p>Note: position_scale and output coordinates are in units of microns, while density is specified in mm^3.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mat</strong> – A 3-dimensional matrix of densities (cells/mm^3)</p></li>
+<li><p><strong>position_scale</strong> – A (3, 3) matrix (microns)</p></li>
+<li><p><strong>plot</strong> – Generates a plot of the cell locations when set to True</p></li>
+<li><p><strong>CCF_orientation</strong> – if True, plot will be oriented for Allen atlas common coordinate framework
+See <a class="reference external" href="https://help.brain-map.org/display/mouseconnectivity/API#API-DownloadAtlas3-DReferenceModels">https://help.brain-map.org/display/mouseconnectivity/API#API-DownloadAtlas3-DReferenceModels</a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A (N, 3) matrix (microns)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bmtk.builder.auxi.node_params.positions_ellipsoid">
+<span class="sig-prename descclassname"><span class="pre">bmtk.builder.auxi.node_params.</span></span><span class="sig-name descname"><span class="pre">positions_ellipsoid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">50.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/auxi/node_params.html#positions_ellipsoid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.auxi.node_params.positions_ellipsoid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a set of random x,y,z coordinates within an ellipsoid. Height is given as the y (index 1) coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>N</strong> – Number of points to return</p></li>
+<li><p><strong>center</strong> – center of ellipsoid</p></li>
+<li><p><strong>height</strong> – height of ellipsoid (y-coordinate)</p></li>
+<li><p><strong>x_length</strong> – length of ellipsoid in x</p></li>
+<li><p><strong>z_length</strong> – length of ellipsoid in z</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A (N, 3) matrix</p>
 </dd>
 </dl>
 </dd></dl>
@@ -691,6 +760,50 @@ one another.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bmtk.builder.auxi.node_params.positions_nrrd">
+<span class="sig-prename descclassname"><span class="pre">bmtk.builder.auxi.node_params.</span></span><span class="sig-name descname"><span class="pre">positions_nrrd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nrrd_filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_dens_per_mm3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_bilateral</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/auxi/node_params.html#positions_nrrd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.auxi.node_params.positions_nrrd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates random cell positions based on a <a href="#id1"><span class="problematic" id="id2">*</span></a>.nrrd file. Matrix values are interpreted as cell densities
+for each voxel. The maximum density is scaled to max_dens_per_mm3 (cells/mm^3).
+If the <a href="#id3"><span class="problematic" id="id4">*</span></a>.nrrd file is a structural mask, cells will be placed uniformly at max_dens_per_mm3 within the
+structure geometry.
+By default, only one hemisphere is shown, but this can be disabled by setting bilateral=True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nrrd_filename</strong> – path to <a href="#id5"><span class="problematic" id="id6">*</span></a>.nrrd file</p></li>
+<li><p><strong>max_dens_per_mm3</strong> – desired density at maximum value of nrrd array (cells/mm^3)</p></li>
+<li><p><strong>split_bilateral</strong> – return only unilateral structure by removing half of the array along the given axis.
+If no splitting is desired, pass in None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A (N, 3) matrix (microns)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bmtk.builder.auxi.node_params.positions_rect_prism">
+<span class="sig-prename descclassname"><span class="pre">bmtk.builder.auxi.node_params.</span></span><span class="sig-name descname"><span class="pre">positions_rect_prism</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.0,</span> <span class="pre">50.0,</span> <span class="pre">0.0]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/builder/auxi/node_params.html#positions_rect_prism"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.builder.auxi.node_params.positions_rect_prism" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a set of random x,y,z coordinates within a rectangular prism.
+Height is given as the y (index 1) coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>N</strong> – Number of points to return</p></li>
+<li><p><strong>center</strong> – center of rectangular prism</p></li>
+<li><p><strong>height</strong> – height of prism (y-coordinate)</p></li>
+<li><p><strong>x_length</strong> – length of prism in x</p></li>
+<li><p><strong>z_length</strong> – length of prism in z</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A (N, 3) matrix</p>
 </dd>
 </dl>
 </dd></dl>
@@ -725,7 +838,7 @@ one another.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../analyzer.html">Analyzing the Results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Main Tutorials</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
@@ -734,6 +847,12 @@ one another.</p>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ad_tutorials.html">Additional Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_cell_placement.html">Cell placement: Using BMTK functions for distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks</a></li>

@@ -415,7 +415,7 @@ You can combine "replay" inputs with virtual inputs, current and voltage clamps.
           "input_type": "replay_spikes",
           "module": "replay",
           ...
-        },
+        }
       }
     }
 

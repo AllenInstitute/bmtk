@@ -682,8 +682,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="s1">&#39;virtual&#39;</span><span class="p">:</span> <span class="n">VirtualCell</span>
         <span class="p">}</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_morphologies_cache</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_morphology_lookup</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># self._morphologies_cache = {}</span>
+        <span class="c1"># self._morphology_lookup = {}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_rank_node_gids</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rank_node_ids</span> <span class="o">=</span> <span class="p">{}</span>
@@ -819,56 +819,56 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_rank_node_ids</span><span class="p">[</span><span class="n">node_pop</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">node_ids_map</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">make_morphologies</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_seg_props</span><span class="p">()</span>  <span class="c1"># set segment properties by creating Morphologies</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">calc_seg_coords</span><span class="p">()</span>  <span class="c1"># use for computing the ECP</span>
+        <span class="c1"># self.make_morphologies()</span>
+        <span class="c1"># self.set_seg_props()  # set segment properties by creating Morphologies</span>
+        <span class="c1"># self.calc_seg_coords()  # use for computing the ECP</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cells_built</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="BioNetwork.set_seg_props"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.bionetwork.BioNetwork.set_seg_props">[docs]</a>    <span class="k">def</span> <span class="nf">set_seg_props</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Set morphological properties for biophysically (morphologically) detailed cells&quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">morphology</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morphologies_cache</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">morphology</span><span class="o">.</span><span class="n">set_seg_props</span><span class="p">()</span></div>
+    <span class="c1"># def set_seg_props(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;Set morphological properties for biophysically (morphologically) detailed cells&quot;&quot;&quot;</span>
+    <span class="c1">#     for _, morphology in self._morphologies_cache.items():</span>
+    <span class="c1">#         morphology.set_seg_props()</span>
 
-<div class="viewcode-block" id="BioNetwork.calc_seg_coords"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.bionetwork.BioNetwork.calc_seg_coords">[docs]</a>    <span class="k">def</span> <span class="nf">calc_seg_coords</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Needed for the ECP calculations&quot;&quot;&quot;</span>
-        <span class="c1"># TODO: Is there any reason this function can&#39;t be moved to make_morphologies()</span>
-        <span class="k">for</span> <span class="n">morphology_file</span><span class="p">,</span> <span class="n">morphology</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morphologies_cache</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">morph_seg_coords</span> <span class="o">=</span> <span class="n">morphology</span><span class="o">.</span><span class="n">calc_seg_coords</span><span class="p">()</span>   <span class="c1"># needed for ECP calculations</span>
+    <span class="c1"># def calc_seg_coords(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;Needed for the ECP calculations&quot;&quot;&quot;</span>
+    <span class="c1">#     # TODO: Is there any reason this function can&#39;t be moved to make_morphologies()</span>
+    <span class="c1">#     for morphology_file, morphology in self._morphologies_cache.items():</span>
+    <span class="c1">#         morph_seg_coords = morphology.calc_seg_coords()   # needed for ECP calculations</span>
+    <span class="c1">#</span>
+    <span class="c1">#         for gid in self._morphology_lookup[morphology_file]:</span>
+    <span class="c1">#             self.get_cell_gid(gid).calc_seg_coords(morph_seg_coords)</span>
 
-            <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morphology_lookup</span><span class="p">[</span><span class="n">morphology_file</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">get_cell_gid</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span><span class="o">.</span><span class="n">calc_seg_coords</span><span class="p">(</span><span class="n">morph_seg_coords</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="BioNetwork.make_morphologies"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.bionetwork.BioNetwork.make_morphologies">[docs]</a>    <span class="k">def</span> <span class="nf">make_morphologies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Creating a Morphology object for each biophysical model&quot;&quot;&quot;</span>
-        <span class="c1"># TODO: Let Morphology take care of the cache</span>
-        <span class="c1"># TODO: Let other types have morphologies</span>
-        <span class="c1"># TODO: Get all available morphologies from TypesTable or group</span>
-        <span class="k">for</span> <span class="n">gid</span><span class="p">,</span> <span class="n">cell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank_node_gids</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">BioCell</span><span class="p">):</span>
-                <span class="k">continue</span>
-
-            <span class="n">morphology_file</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">morphology_file</span>
-            <span class="k">if</span> <span class="n">morphology_file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morphologies_cache</span><span class="p">:</span>
-                <span class="c1"># create a single morphology object for each model_group which share that morphology</span>
-                <span class="n">morph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_morphologies_cache</span><span class="p">[</span><span class="n">morphology_file</span><span class="p">]</span>
-
-                <span class="c1"># associate morphology with a cell</span>
-                <span class="n">cell</span><span class="o">.</span><span class="n">set_morphology</span><span class="p">(</span><span class="n">morph</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_morphology_lookup</span><span class="p">[</span><span class="n">morphology_file</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">gid</span><span class="p">)</span>
-
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">hobj</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">hobj</span>  <span class="c1"># get hoc object (hobj) from the first cell with a new morphologys</span>
-                <span class="n">morph</span> <span class="o">=</span> <span class="n">Morphology</span><span class="p">(</span><span class="n">hobj</span><span class="p">)</span>
-
-                <span class="c1"># associate morphology with a cell</span>
-                <span class="n">cell</span><span class="o">.</span><span class="n">set_morphology</span><span class="p">(</span><span class="n">morph</span><span class="p">)</span>
-
-                <span class="c1"># create a single morphology object for each model_group which share that morphology</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_morphologies_cache</span><span class="p">[</span><span class="n">morphology_file</span><span class="p">]</span> <span class="o">=</span> <span class="n">morph</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_morphology_lookup</span><span class="p">[</span><span class="n">morphology_file</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">cell</span><span class="o">.</span><span class="n">gid</span><span class="p">]</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span></div>
+    <span class="c1"># def make_morphologies(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;Creating a Morphology object for each biophysical model&quot;&quot;&quot;</span>
+    <span class="c1">#     # TODO: Let Morphology take care of the cache</span>
+    <span class="c1">#     # TODO: Let other types have morphologies</span>
+    <span class="c1">#     # TODO: Get all available morphologies from TypesTable or group</span>
+    <span class="c1">#     for gid, cell in self._rank_node_gids.items():</span>
+    <span class="c1">#         if not isinstance(cell, BioCell):</span>
+    <span class="c1">#             continue</span>
+    <span class="c1">#</span>
+    <span class="c1">#         morphology_file = cell.morphology_file</span>
+    <span class="c1">#         if morphology_file in self._morphologies_cache:</span>
+    <span class="c1">#             # create a single morphology object for each model_group which share that morphology</span>
+    <span class="c1">#             morph = self._morphologies_cache[morphology_file]</span>
+    <span class="c1">#</span>
+    <span class="c1">#             # associate morphology with a cell</span>
+    <span class="c1">#             cell.set_morphology(morph)</span>
+    <span class="c1">#             self._morphology_lookup[morphology_file].append(cell.gid)</span>
+    <span class="c1">#</span>
+    <span class="c1">#         else:</span>
+    <span class="c1">#             hobj = cell.hobj  # get hoc object (hobj) from the first cell with a new morphologys</span>
+    <span class="c1">#             morph = Morphology(hobj)</span>
+    <span class="c1">#</span>
+    <span class="c1">#             # associate morphology with a cell</span>
+    <span class="c1">#             cell.set_morphology(morph)</span>
+    <span class="c1">#</span>
+    <span class="c1">#             # create a single morphology object for each model_group which share that morphology</span>
+    <span class="c1">#             self._morphologies_cache[morphology_file] = morph</span>
+    <span class="c1">#             self._morphology_lookup[morphology_file] = [cell.gid]</span>
+    <span class="c1">#</span>
+    <span class="c1">#     self.io.barrier()</span>
 
     <span class="k">def</span> <span class="nf">_init_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connections_initialized</span><span class="p">:</span>
@@ -1027,7 +1027,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../analyzer.html">Analyzing the Results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Main Tutorials</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
@@ -1036,6 +1036,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../ad_tutorials.html">Additional Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_cell_placement.html">Cell placement: Using BMTK functions for distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples.html">Example Networks</a></li>

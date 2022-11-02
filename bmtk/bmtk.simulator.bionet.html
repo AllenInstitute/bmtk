@@ -663,10 +663,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dd><p>Bases: <a class="reference internal" href="#bmtk.simulator.bionet.cell.Cell" title="bmtk.simulator.bionet.cell.Cell"><code class="xref py py-class docutils literal notranslate"><span class="pre">bmtk.simulator.bionet.cell.Cell</span></code></a></p>
 <p>Implemntation of a morphologically and biophysically detailed type cell.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="bmtk.simulator.bionet.biocell.BioCell.calc_seg_coords">
-<span class="sig-name descname"><span class="pre">calc_seg_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">morph_seg_coords</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/biocell.html#BioCell.calc_seg_coords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.biocell.BioCell.calc_seg_coords" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the segment coordinates (after rotations) for individual cells</p>
-</dd></dl>
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.biocell.BioCell.build_morphology">
+<span class="sig-name descname"><span class="pre">build_morphology</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/biocell.html#BioCell.build_morphology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.biocell.BioCell.build_morphology" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.bionet.biocell.BioCell.connections">
@@ -700,16 +699,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="bmtk.simulator.bionet.biocell.BioCell.get_seg_coords">
-<span class="sig-name descname"><span class="pre">get_seg_coords</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/biocell.html#BioCell.get_seg_coords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.biocell.BioCell.get_seg_coords" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bmtk.simulator.bionet.biocell.BioCell.get_segments">
-<span class="sig-name descname"><span class="pre">get_segments</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/biocell.html#BioCell.get_segments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.biocell.BioCell.get_segments" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.bionet.biocell.BioCell.init_connections">
 <span class="sig-name descname"><span class="pre">init_connections</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/biocell.html#BioCell.init_connections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.biocell.BioCell.init_connections" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -717,17 +706,26 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.bionet.biocell.BioCell.morphology">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">morphology</span></span><a class="headerlink" href="#bmtk.simulator.bionet.biocell.BioCell.morphology" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>The actual Morphology object instanstiation</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="bmtk.simulator.bionet.biocell.BioCell.morphology_file">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">morphology_file</span></span><a class="headerlink" href="#bmtk.simulator.bionet.biocell.BioCell.morphology_file" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Value that’s stored in SONATA morphology column</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.bionet.biocell.BioCell.print_synapses">
 <span class="sig-name descname"><span class="pre">print_synapses</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/biocell.html#BioCell.print_synapses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.biocell.BioCell.print_synapses" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.biocell.BioCell.seg_coords">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">seg_coords</span></span><a class="headerlink" href="#bmtk.simulator.bionet.biocell.BioCell.seg_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coordinates for segments/sections of the morphology, need to make public for ecp, xstim, and other
+functionality that needs to compute the soma/dendritic coordinates of each cell</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.bionet.biocell.BioCell.set_e_extracellular">
@@ -738,17 +736,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dt class="sig sig-object py" id="bmtk.simulator.bionet.biocell.BioCell.set_im_ptr">
 <span class="sig-name descname"><span class="pre">set_im_ptr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/biocell.html#BioCell.set_im_ptr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.biocell.BioCell.set_im_ptr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set PtrVector to point to the _ref_i_membrane_ parameter</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bmtk.simulator.bionet.biocell.BioCell.set_morphology">
-<span class="sig-name descname"><span class="pre">set_morphology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">morphology_obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/biocell.html#BioCell.set_morphology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.biocell.BioCell.set_morphology" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bmtk.simulator.bionet.biocell.BioCell.set_nseg">
-<span class="sig-name descname"><span class="pre">set_nseg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dL</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/biocell.html#BioCell.set_nseg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.biocell.BioCell.set_nseg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Define number of segments in a cell</p>
 </dd></dl>
 
 <dl class="py method">
@@ -780,11 +767,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.bionet.biocell.BioCell.setup_xstim">
 <span class="sig-name descname"><span class="pre">setup_xstim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">set_nrn_mechanism</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/biocell.html#BioCell.setup_xstim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.biocell.BioCell.setup_xstim" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bmtk.simulator.bionet.biocell.BioCell.store_segments">
-<span class="sig-name descname"><span class="pre">store_segments</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/biocell.html#BioCell.store_segments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.biocell.BioCell.store_segments" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -855,12 +837,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="bmtk.simulator.bionet.bionetwork.BioNetwork.calc_seg_coords">
-<span class="sig-name descname"><span class="pre">calc_seg_coords</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/bionetwork.html#BioNetwork.calc_seg_coords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.calc_seg_coords" title="Permalink to this definition">¶</a></dt>
-<dd><p>Needed for the ECP calculations</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.bionet.bionetwork.BioNetwork.cell_type_maps">
 <span class="sig-name descname"><span class="pre">cell_type_maps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/bionetwork.html#BioNetwork.cell_type_maps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.cell_type_maps" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -921,12 +897,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">local_gids</span></span><a class="headerlink" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.local_gids" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="bmtk.simulator.bionet.bionetwork.BioNetwork.make_morphologies">
-<span class="sig-name descname"><span class="pre">make_morphologies</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/bionetwork.html#BioNetwork.make_morphologies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.make_morphologies" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creating a Morphology object for each biophysical model</p>
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="bmtk.simulator.bionet.bionetwork.BioNetwork.model_type_col">
 <span class="sig-name descname"><span class="pre">model_type_col</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'model_type'</span></em><a class="headerlink" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.model_type_col" title="Permalink to this definition">¶</a></dt>
@@ -936,12 +906,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dt class="sig sig-object py" id="bmtk.simulator.bionet.bionetwork.BioNetwork.py_function_caches">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">py_function_caches</span></span><a class="headerlink" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.py_function_caches" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bmtk.simulator.bionet.bionetwork.BioNetwork.set_seg_props">
-<span class="sig-name descname"><span class="pre">set_seg_props</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/bionetwork.html#BioNetwork.set_seg_props"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.bionetwork.BioNetwork.set_seg_props" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set morphological properties for biophysically (morphologically) detailed cells</p>
-</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.bionet.bionetwork.BioNetwork.set_spont_syn_activity">
@@ -1266,41 +1230,149 @@ positions, synapses, and other parameters depending on the desired cell class.</
 <span id="bmtk-simulator-bionet-morphology-module"></span><h2>bmtk.simulator.bionet.morphology module<a class="headerlink" href="#module-bmtk.simulator.bionet.morphology" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="bmtk.simulator.bionet.morphology.Morphology">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.bionet.morphology.</span></span><span class="sig-name descname"><span class="pre">Morphology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hobj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/morphology.html#Morphology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">bmtk.simulator.bionet.morphology.</span></span><span class="sig-name descname"><span class="pre">Morphology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">swc_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/morphology.html#Morphology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Methods for processing morphological data</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="bmtk.simulator.bionet.morphology.Morphology.calc_seg_coords">
-<span class="sig-name descname"><span class="pre">calc_seg_coords</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/morphology.html#Morphology.calc_seg_coords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology.calc_seg_coords" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate segment coordinates from 3d point coordinates</p>
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.morphology.Morphology.choose_sections">
+<span class="sig-name descname"><span class="pre">choose_sections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">section_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_sections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/morphology.html#Morphology.choose_sections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology.choose_sections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Similar to find_sections, but will only N=n_section number of sections_ids/x values randomly selected (may
+return less if there aren’t as many sections</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>section_names</strong> – ‘soma’, ‘dend’, ‘apic’, ‘axon’</p></li>
+<li><p><strong>distance_range</strong> – [float, float]: distance range of sections from the soma, in um.</p></li>
+<li><p><strong>n_sections</strong> – int: maximum number of sections to select</p></li>
+<li><p><strong>cache</strong> – caches the segments + probs so that next time the same section_names/distance_range values are
+called it will return the same values without recalculating. default True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[int], [float]: A list of all section_ids and a list of all segment_x values (as defined by NEURON)
+that meet the given critera.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="bmtk.simulator.bionet.morphology.Morphology.find_sections">
-<span class="sig-name descname"><span class="pre">find_sections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_sections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance_range</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/morphology.html#Morphology.find_sections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology.find_sections" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bmtk.simulator.bionet.morphology.Morphology.get_nseg">
-<span class="sig-name descname"><span class="pre">get_nseg</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/morphology.html#Morphology.get_nseg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology.get_nseg" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bmtk.simulator.bionet.morphology.Morphology.get_soma_pos">
-<span class="sig-name descname"><span class="pre">get_soma_pos</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/morphology.html#Morphology.get_soma_pos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology.get_soma_pos" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bmtk.simulator.bionet.morphology.Morphology.get_target_segments">
-<span class="sig-name descname"><span class="pre">get_target_segments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/morphology.html#Morphology.get_target_segments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology.get_target_segments" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="bmtk.simulator.bionet.morphology.Morphology.set_seg_props">
-<span class="sig-name descname"><span class="pre">set_seg_props</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/morphology.html#Morphology.set_seg_props"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology.set_seg_props" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set segment properties which are invariant for all cell using this morphology</p>
+<span class="sig-name descname"><span class="pre">find_sections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">section_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/morphology.html#Morphology.find_sections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology.find_sections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a list of sections ids and section x’s given a section name/type (eg axon, soma, apic, dend) and
+the distance from the soma.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>section_names</strong> – A list of sections to target, ‘soma’, ‘dend’, ‘apic’, ‘axon’</p></li>
+<li><p><strong>distance_range</strong> – [float, float]: distance range of sections from the soma, in um.</p></li>
+<li><p><strong>cache</strong> – caches the segments + probs so that next time the same section_names/distance_range values are
+called it will return the same values without recalculating. default True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[float], [float]: A list of all section_ids and a list of all segment_x values (as defined by NEURON)
+that meet the given critera.</p>
+</dd>
+</dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.morphology.Morphology.get_coords">
+<span class="sig-name descname"><span class="pre">get_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sec_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sec_x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/morphology.html#Morphology.get_coords"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology.get_coords" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.morphology.Morphology.get_section">
+<span class="sig-name descname"><span class="pre">get_section</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">section_idx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/morphology.html#Morphology.get_section"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology.get_section" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.morphology.Morphology.get_swc_id">
+<span class="sig-name descname"><span class="pre">get_swc_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sec_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sec_x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/morphology.html#Morphology.get_swc_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology.get_swc_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.morphology.Morphology.load">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hobj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">morphology_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rng_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_seg_props</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/morphology.html#Morphology.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Factory method, perfered way to create a Morphology object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hobj</strong> – </p></li>
+<li><p><strong>morphology_file</strong> – </p></li>
+<li><p><strong>rng_seed</strong> – </p></li>
+<li><p><strong>cache_seg_props</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.morphology.Morphology.move_and_rotate">
+<span class="sig-name descname"><span class="pre">move_and_rotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">soma_coords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotation_angles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/morphology.html#Morphology.move_and_rotate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology.move_and_rotate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.morphology.Morphology.n_sections">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_sections</span></span><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology.n_sections" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.morphology.Morphology.nseg">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nseg</span></span><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology.nseg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.morphology.Morphology.sec_type_swc">
+<span class="sig-name descname"><span class="pre">sec_type_swc</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'apic':</span> <span class="pre">4,</span> <span class="pre">'apical':</span> <span class="pre">4,</span> <span class="pre">'axon':</span> <span class="pre">2,</span> <span class="pre">'axonal':</span> <span class="pre">2,</span> <span class="pre">'basal':</span> <span class="pre">3,</span> <span class="pre">'dend':</span> <span class="pre">3,</span> <span class="pre">'soma':</span> <span class="pre">1,</span> <span class="pre">'somatic':</span> <span class="pre">1}</span></em><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology.sec_type_swc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.morphology.Morphology.sections">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sections</span></span><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology.sections" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.morphology.Morphology.seg_coords">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">seg_coords</span></span><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology.seg_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the coordinates of all segments of the cells. Each segment is defined by three values, the beginning
+of the segment (seg_coords.p0), the middle of the segment(seg_coords.p05), and the end (seg_coords.p1).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.morphology.Morphology.seg_props">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">seg_props</span></span><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology.seg_props" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.morphology.Morphology.segments">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">segments</span></span><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology.segments" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.morphology.Morphology.set_segment_dl">
+<span class="sig-name descname"><span class="pre">set_segment_dl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dl</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/morphology.html#Morphology.set_segment_dl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology.set_segment_dl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define number of segments in a cell</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.morphology.Morphology.soma_position">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">soma_position</span></span><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology.soma_position" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.morphology.Morphology.swc_map">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">swc_map</span></span><a class="headerlink" href="#bmtk.simulator.bionet.morphology.Morphology.swc_map" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="bmtk.simulator.bionet.morphology.rotation_matrix">
+<span class="sig-prename descclassname"><span class="pre">bmtk.simulator.bionet.morphology.</span></span><span class="sig-name descname"><span class="pre">rotation_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/bmtk/simulator/bionet/morphology.html#rotation_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bmtk.simulator.bionet.morphology.rotation_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the rotation matrix associated with counterclockwise rotation about the given axis by theta radians.</p>
 </dd></dl>
 
 </section>
@@ -1810,7 +1882,7 @@ positions, synapses, and other parameters depending on the desired cell class.</
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../analyzer.html">Analyzing the Results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Main Tutorials</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
@@ -1819,6 +1891,12 @@ positions, synapses, and other parameters depending on the desired cell class.</
 <li class="toctree-l2"><a class="reference internal" href="../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ad_tutorials.html">Additional Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_cell_placement.html">Cell placement: Using BMTK functions for distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Networks</a></li>

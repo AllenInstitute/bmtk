@@ -663,7 +663,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="c1"># cell = sim.net.get_local_cell(gid)</span>
             <span class="n">cell</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">get_cell_gid</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span>
             <span class="n">cell</span><span class="o">.</span><span class="n">setup_xstim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_nrn_mechanisms</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_electrode</span><span class="o">.</span><span class="n">set_transfer_resistance</span><span class="p">(</span><span class="n">gid</span><span class="p">,</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_seg_coords</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_electrode</span><span class="o">.</span><span class="n">set_transfer_resistance</span><span class="p">(</span><span class="n">gid</span><span class="p">,</span> <span class="n">cell</span><span class="o">.</span><span class="n">seg_coords</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">set_pointers</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_gids</span><span class="p">:</span>
@@ -760,7 +760,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="StimXElectrode.set_transfer_resistance"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.xstim.StimXElectrode.set_transfer_resistance">[docs]</a>    <span class="k">def</span> <span class="nf">set_transfer_resistance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gid</span><span class="p">,</span> <span class="n">seg_coords</span><span class="p">):</span>
         <span class="n">rho</span> <span class="o">=</span> <span class="mf">300.0</span>  <span class="c1"># ohm cm</span>
-        <span class="n">r05</span> <span class="o">=</span> <span class="n">seg_coords</span><span class="p">[</span><span class="s1">&#39;p05&#39;</span><span class="p">]</span>
+        <span class="n">r05</span> <span class="o">=</span> <span class="n">seg_coords</span><span class="o">.</span><span class="n">p05</span>
         <span class="n">nseg</span> <span class="o">=</span> <span class="n">r05</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">cell_map</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">elnsites</span><span class="p">,</span> <span class="n">nseg</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">six</span><span class="o">.</span><span class="n">moves</span><span class="o">.</span><span class="n">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elnsites</span><span class="p">):</span>
@@ -808,7 +808,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../analyzer.html">Analyzing the Results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials.html">Main Tutorials</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
@@ -817,6 +817,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../ad_tutorials.html">Additional Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_cell_placement.html">Cell placement: Using BMTK functions for distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../examples.html">Example Networks</a></li>

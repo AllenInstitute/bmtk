@@ -802,7 +802,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="c1"># file if it doesn&#39;t exist</span>
         <span class="n">model_grp_tracker</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">h5name</span><span class="p">,</span> <span class="n">h5obj</span> <span class="ow">in</span> <span class="n">in_edges_grp</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">h5obj</span><span class="p">,</span> <span class="n">h5py</span><span class="o">.</span><span class="n">Group</span><span class="p">)</span> <span class="ow">and</span> <span class="n">h5obj</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;indices&#39;</span><span class="p">,</span> <span class="s1">&#39;indicies&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">h5obj</span><span class="p">,</span> <span class="n">h5py</span><span class="o">.</span><span class="n">Group</span><span class="p">)</span> <span class="ow">and</span> <span class="n">h5name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;indices&#39;</span><span class="p">,</span> <span class="s1">&#39;indicies&#39;</span><span class="p">]:</span>
                 <span class="n">model_grp_tracker</span><span class="p">[</span><span class="n">h5name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;c_indx&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;cols&#39;</span><span class="p">:</span> <span class="p">[]}</span>
                 <span class="k">for</span> <span class="n">col_name</span><span class="p">,</span> <span class="n">col_ds</span> <span class="ow">in</span> <span class="n">h5obj</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="n">model_grp_tracker</span><span class="p">[</span><span class="n">h5name</span><span class="p">][</span><span class="s1">&#39;cols&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col_name</span><span class="p">)</span>
@@ -1013,7 +1013,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
         <span class="c1"># For each unique id that is being sorted on, keep a list of how many times the id shows up in the current</span>
         <span class="c1"># tmp chunk file</span>
-        <span class="n">id_counts</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="s1">&#39;edge_type_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+        <span class="n">id_counts</span> <span class="o">=</span> <span class="n">combined_df</span><span class="p">[</span><span class="n">progress</span><span class="o">.</span><span class="n">sort_key</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
         <span class="n">id_counts</span> <span class="o">=</span> <span class="n">id_counts</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">RangeIndex</span><span class="p">(</span><span class="n">max_id</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">new_chunk_h5</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;id_counts&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">id_counts</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
 
@@ -1126,7 +1126,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <div class="viewcode-block" id="external_merge_sort"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.edges_sorter.html#bmtk.builder.edges_sorter.merge_sorter.external_merge_sort">[docs]</a><span class="k">def</span> <span class="nf">external_merge_sort</span><span class="p">(</span><span class="n">input_edges_path</span><span class="p">,</span> <span class="n">output_edges_path</span><span class="p">,</span> <span class="n">edges_population</span><span class="p">,</span> <span class="n">sort_by</span><span class="p">,</span> <span class="n">sort_model_properties</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                        <span class="n">n_chunks</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">max_itrs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="s1">&#39;.sort_cache&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                        <span class="n">n_chunks</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">max_itrs</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="s1">&#39;.sort_cache&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Does an external merge sort on an input edges hdf5 file, saves value in new file. Usefull for large network</span>
 <span class="sd">    files where we are not able to load into memory.</span>
 
@@ -1179,26 +1179,31 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
     <span class="n">output_root_grp</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
     <span class="n">output_root_grp</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-    <span class="k">if</span> <span class="n">progress</span><span class="o">.</span><span class="n">completed</span> <span class="ow">and</span> <span class="n">sort_model_properties</span><span class="p">:</span>
-        <span class="c1"># copy over model group, and reorder so edge_group_ids/edge_group_index is ordered</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Sorting model group columns&#39;</span><span class="p">)</span>
-        <span class="n">chunk_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">n_edges</span> <span class="o">/</span> <span class="n">n_chunks</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">)</span>
-        <span class="n">_order_model_groups</span><span class="p">(</span>
-            <span class="n">input_edges_path</span><span class="o">=</span><span class="n">input_edges_path</span><span class="p">,</span>
-            <span class="n">output_edges_path</span><span class="o">=</span><span class="n">output_edges_path</span><span class="p">,</span>
-            <span class="n">edges_population</span><span class="o">=</span><span class="n">progress</span><span class="o">.</span><span class="n">root_name</span><span class="p">,</span>
-            <span class="n">chunk_size</span><span class="o">=</span><span class="n">chunk_size</span>
-        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">progress</span><span class="o">.</span><span class="n">completed</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">sort_model_properties</span><span class="p">:</span>
+            <span class="c1"># copy over model group, and reorder so edge_group_ids/edge_group_index is ordered</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Sorting model group columns&#39;</span><span class="p">)</span>
+            <span class="n">chunk_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">n_edges</span> <span class="o">/</span> <span class="n">n_chunks</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">)</span>
+            <span class="n">_order_model_groups</span><span class="p">(</span>
+                <span class="n">input_edges_path</span><span class="o">=</span><span class="n">input_edges_path</span><span class="p">,</span>
+                <span class="n">output_edges_path</span><span class="o">=</span><span class="n">output_edges_path</span><span class="p">,</span>
+                <span class="n">edges_population</span><span class="o">=</span><span class="n">progress</span><span class="o">.</span><span class="n">root_name</span><span class="p">,</span>
+                <span class="n">chunk_size</span><span class="o">=</span><span class="n">chunk_size</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Copy over model group columns without sorting</span>
+            <span class="n">out_h5</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">output_edges_path</span><span class="p">,</span> <span class="s1">&#39;r+&#39;</span><span class="p">)</span>
+            <span class="n">root_grp</span> <span class="o">=</span> <span class="n">out_h5</span><span class="p">[</span><span class="n">progress</span><span class="o">.</span><span class="n">root_name</span><span class="p">]</span>
+
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">input_edges_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">in_h5</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">h5obj</span> <span class="ow">in</span> <span class="n">in_h5</span><span class="p">[</span><span class="n">progress</span><span class="o">.</span><span class="n">root_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">h5obj</span><span class="p">,</span> <span class="n">h5py</span><span class="o">.</span><span class="n">Group</span><span class="p">)</span> <span class="ow">and</span> <span class="n">h5obj</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">root_grp</span> <span class="ow">and</span> <span class="n">h5obj</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;indices&#39;</span><span class="p">,</span> <span class="s1">&#39;indicies&#39;</span><span class="p">]:</span>
+                        <span class="n">root_grp</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">h5obj</span><span class="p">,</span> <span class="n">h5obj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># Copy over model group columns without sorting</span>
-        <span class="n">out_h5</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">output_edges_path</span><span class="p">,</span> <span class="s1">&#39;r+&#39;</span><span class="p">)</span>
-        <span class="n">root_grp</span> <span class="o">=</span> <span class="n">out_h5</span><span class="p">[</span><span class="n">progress</span><span class="o">.</span><span class="n">root_name</span><span class="p">]</span>
-
-        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">input_edges_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">in_h5</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">h5obj</span> <span class="ow">in</span> <span class="n">in_h5</span><span class="p">[</span><span class="n">progress</span><span class="o">.</span><span class="n">root_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">h5obj</span><span class="p">,</span> <span class="n">h5py</span><span class="o">.</span><span class="n">Group</span><span class="p">)</span> <span class="ow">and</span> <span class="n">h5obj</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">root_grp</span> <span class="ow">and</span> <span class="n">h5obj</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;indices&#39;</span><span class="p">,</span> <span class="s1">&#39;indicies&#39;</span><span class="p">]:</span>
-                    <span class="n">root_grp</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">h5obj</span><span class="p">,</span> <span class="n">h5obj</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s1">&#39;Merger Sort reached max iterations (</span><span class="si">{}</span><span class="s1">), did not complete resorting. Rerun to finish.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">max_itrs</span><span class="p">)</span>
+        <span class="p">)</span>
+    
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Cleaning up cache directory&#39;</span><span class="p">)</span>
     <span class="n">_clean</span><span class="p">(</span><span class="n">progress</span><span class="p">)</span>
 
@@ -1232,7 +1237,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../analyzer.html">Analyzing the Results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Main Tutorials</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
@@ -1241,6 +1246,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../ad_tutorials.html">Additional Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_cell_placement.html">Cell placement: Using BMTK functions for distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples.html">Example Networks</a></li>

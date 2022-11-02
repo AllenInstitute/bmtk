@@ -643,6 +643,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1">#</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">neuron</span> <span class="kn">import</span> <span class="n">h</span>
 
 <span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.modules.sim_module</span> <span class="kn">import</span> <span class="n">SimulatorMod</span>
@@ -672,6 +673,16 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <span class="n">transforms_table</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;first_element&#39;</span><span class="p">:</span> <span class="n">first_element</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="n">swc_type_maps</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;undefined&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s1">&#39;soma&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;somatic&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s1">&#39;axon&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;axonal&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s1">&#39;dend&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;basal&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;basal dendrite&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;(basal) dendrite&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="s1">&#39;apic&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;apical denrite&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="s1">&#39;custom&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;other&#39;</span><span class="p">:</span> <span class="mi">5</span>
 <span class="p">}</span>
 
 
@@ -707,13 +718,18 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_file_name</span> <span class="o">=</span> <span class="n">file_name</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span> <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_all_gids</span> <span class="o">=</span> <span class="n">cells</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_local_gids</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span> <span class="o">=</span> <span class="n">sections</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gid_list</span> <span class="o">=</span> <span class="n">gids</span>  <span class="c1"># list of all gids that will have their variables saved</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># table of variable data indexed by [gid][variable]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_block_step</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># time step within a given block</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span> <span class="o">=</span> <span class="n">sections</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sections</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">))</span> <span class="k">else</span> <span class="p">[</span><span class="n">sections</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sections</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="s1">&#39;all&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_section_types</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">swc_type_maps</span><span class="o">.</span><span class="n">values</span><span class="p">()}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_section_types</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">swc_type_maps</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span><span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">_get_gids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
         <span class="c1"># get list of gids to save. Will only work for biophysical cells saved on the current MPI rank</span>
@@ -734,22 +750,36 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_get_gids</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
         <span class="c1">#self._save_sim_data(sim)</span>
 
-        <span class="c1"># TODO: get section by name and/or list of section ids</span>
         <span class="c1"># Build segment/section list</span>
         <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_gids</span><span class="p">:</span>
             <span class="n">pop_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span><span class="o">.</span><span class="n">get_pool_id</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span>
             <span class="n">sec_list</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">seg_list</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">cell</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">get_cell_gid</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span>
-            <span class="n">cell</span><span class="o">.</span><span class="n">store_segments</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">sec_id</span><span class="p">,</span> <span class="n">sec</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cell</span><span class="o">.</span><span class="n">get_sections</span><span class="p">()):</span>
-                <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">sec</span><span class="p">:</span>
-                    <span class="c1"># TODO: Make sure the seg has the recorded variable(s)</span>
-                    <span class="n">sec_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec_id</span><span class="p">)</span>
-                    <span class="n">seg_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">swc_ids_beg</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">swc_ids_end</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">seg_types</span> <span class="o">=</span> <span class="p">[]</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">add_cell</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">pop_id</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">pop_id</span><span class="o">.</span><span class="n">population</span><span class="p">,</span> <span class="n">element_ids</span><span class="o">=</span><span class="n">sec_list</span><span class="p">,</span>
-                                        <span class="n">element_pos</span><span class="o">=</span><span class="n">seg_list</span><span class="p">)</span>
+            <span class="n">cell</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">get_cell_gid</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span>
+            <span class="n">morph</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">morphology</span>
+            <span class="n">segs</span> <span class="o">=</span> <span class="n">morph</span><span class="o">.</span><span class="n">seg_props</span>
+            <span class="k">for</span> <span class="n">sec_id</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">stype</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">segs</span><span class="o">.</span><span class="n">sec_id</span><span class="p">,</span> <span class="n">segs</span><span class="o">.</span><span class="n">x0</span><span class="p">,</span> <span class="n">segs</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">segs</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">segs</span><span class="o">.</span><span class="n">type</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">stype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_section_types</span><span class="p">:</span>
+                    <span class="n">swc_id_beg</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">morph</span><span class="o">.</span><span class="n">get_swc_id</span><span class="p">(</span><span class="n">sec_id</span><span class="p">,</span> <span class="n">x0</span><span class="p">)</span>
+                    <span class="n">swc_id_end</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">morph</span><span class="o">.</span><span class="n">get_swc_id</span><span class="p">(</span><span class="n">sec_id</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span>
+                    <span class="n">sec_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec_id</span><span class="p">)</span>
+                    <span class="n">seg_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+                    <span class="c1"># TODO: Have option to turn on/off saving SWC data</span>
+                    <span class="n">swc_ids_beg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">swc_id_beg</span><span class="p">)</span>
+                    <span class="n">swc_ids_end</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">swc_id_end</span><span class="p">)</span>
+                    <span class="n">seg_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stype</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">add_cell</span><span class="p">(</span>
+                <span class="n">node_id</span><span class="o">=</span><span class="n">pop_id</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">pop_id</span><span class="o">.</span><span class="n">population</span><span class="p">,</span>
+                <span class="n">element_ids</span><span class="o">=</span><span class="n">sec_list</span><span class="p">,</span> <span class="n">element_pos</span><span class="o">=</span><span class="n">seg_list</span><span class="p">,</span>
+                <span class="n">swc_ids_beg</span><span class="o">=</span><span class="n">swc_ids_beg</span><span class="p">,</span> <span class="n">swc_ids_end</span><span class="o">=</span><span class="n">swc_ids_end</span><span class="p">,</span>
+                <span class="n">seg_types</span><span class="o">=</span><span class="n">seg_types</span>
+            <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span></div>
 
@@ -758,13 +788,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">for</span> <span class="n">gid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_gids</span><span class="p">:</span>
             <span class="n">pop_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span><span class="o">.</span><span class="n">get_pool_id</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span>
             <span class="n">cell</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">get_cell_gid</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span>
+            <span class="n">segs</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">morphology</span><span class="o">.</span><span class="n">segments</span>
+            <span class="n">stypes</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">morphology</span><span class="o">.</span><span class="n">seg_props</span><span class="o">.</span><span class="n">type</span>
             <span class="k">for</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span><span class="p">:</span>
-                <span class="n">seg_vals</span> <span class="o">=</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span> <span class="n">var_name</span><span class="p">)</span> <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_segments</span><span class="p">()]</span>
+                <span class="n">seg_vals</span> <span class="o">=</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span> <span class="n">var_name</span><span class="p">)</span> <span class="k">for</span> <span class="n">seg</span><span class="p">,</span> <span class="n">stype</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">segs</span><span class="p">,</span> <span class="n">stypes</span><span class="p">)</span> <span class="k">if</span> <span class="n">stype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_section_types</span><span class="p">]</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">record_cell</span><span class="p">(</span><span class="n">pop_id</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">pop_id</span><span class="o">.</span><span class="n">population</span><span class="p">,</span> <span class="n">vals</span><span class="o">=</span><span class="n">seg_vals</span><span class="p">,</span> <span class="n">tstep</span><span class="o">=</span><span class="n">tstep</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">fnc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transforms</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">seg_vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">fnc</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span> <span class="n">var_name</span><span class="p">))</span> <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_segments</span><span class="p">()]</span>
-                <span class="c1"># self._var_recorder.record_cell(gid, var_name, seg_vals, tstep)</span>
+                <span class="n">seg_vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">fnc</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span> <span class="n">var_name</span><span class="p">))</span> <span class="k">for</span> <span class="n">seg</span><span class="p">,</span> <span class="n">stype</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">segs</span><span class="p">,</span> <span class="n">stypes</span><span class="p">)</span> <span class="k">if</span> <span class="n">stype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_section_types</span><span class="p">]</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">record_cell</span><span class="p">(</span><span class="n">pop_id</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">pop_id</span><span class="o">.</span><span class="n">population</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="n">seg_vals</span><span class="p">,</span> <span class="n">tstep</span><span class="o">=</span><span class="n">tstep</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_block_step</span> <span class="o">+=</span> <span class="mi">1</span></div>
@@ -839,7 +870,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../analyzer.html">Analyzing the Results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials.html">Main Tutorials</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
@@ -848,6 +879,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../ad_tutorials.html">Additional Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_cell_placement.html">Cell placement: Using BMTK functions for distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../examples.html">Example Networks</a></li>

@@ -619,7 +619,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <h1>Source code for bmtk.simulator.bionet.morphology</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Copyright 2017. Allen Institute. All rights reserved</span>
+<span></span><span class="c1"># Copyright 2022. Allen Institute. All rights reserved</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without modification, are permitted provided that the</span>
 <span class="c1"># following conditions are met:</span>
@@ -641,37 +641,236 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="c1"># WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</span>
 <span class="c1"># OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">neuron</span> <span class="kn">import</span> <span class="n">h</span>
+
+<span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.io_tools</span> <span class="kn">import</span> <span class="n">io</span>
 
 
 <span class="n">pc</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">ParallelContext</span><span class="p">()</span>  <span class="c1"># object to access MPI methods</span>
 
 
-<div class="viewcode-block" id="Morphology"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology">[docs]</a><span class="k">class</span> <span class="nc">Morphology</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Methods for processing morphological data&quot;&quot;&quot;</span>
+<span class="k">class</span> <span class="nc">_LazySegmentProps</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A Struct for storing coordinate invariant properties of each segment of a cell.&quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hobj</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;reuse hoc object from one of the cells which share the same morphology/model&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span> <span class="o">=</span> <span class="n">hobj</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sec_type_swc</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;soma&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;somatic&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># convert section name and section list names</span>
-                             <span class="s1">&#39;axon&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;axonal&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>  <span class="c1"># into a consistent swc notation</span>
-                             <span class="s1">&#39;dend&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;basal&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
-                             <span class="s1">&#39;apic&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">nseg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nseg</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_segments</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hobj</span> <span class="o">=</span> <span class="n">hobj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sec_id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">area</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x0</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x1</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dist</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dist0</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dist1</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="Morphology.get_nseg"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.get_nseg">[docs]</a>    <span class="k">def</span> <span class="nf">get_nseg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">nseg</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
-            <span class="n">nseg</span> <span class="o">+=</span> <span class="n">sec</span><span class="o">.</span><span class="n">nseg</span>  <span class="c1"># get the total # of segments in the cell</span>
-        <span class="k">return</span> <span class="n">nseg</span></div>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sec_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">seg_type</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">seg_area</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">seg_x</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">seg_x0</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">seg_x1</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">seg_dist</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">seg_length</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">seg_sec_id</span> <span class="o">=</span> <span class="p">[]</span>
 
-<div class="viewcode-block" id="Morphology.get_soma_pos"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.get_soma_pos">[docs]</a>    <span class="k">def</span> <span class="nf">get_soma_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">h</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">sec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_hobj</span><span class="o">.</span><span class="n">soma</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># measure distance relative to the soma</span>
+
+            <span class="k">for</span> <span class="n">sec_id</span><span class="p">,</span> <span class="n">sec</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hobj</span><span class="o">.</span><span class="n">all</span><span class="p">):</span>
+                <span class="n">fullsecname</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
+                <span class="n">sec_type</span> <span class="o">=</span> <span class="n">fullsecname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span>  <span class="c1"># get sec name type without the cell name</span>
+                <span class="n">sec_type_swc</span> <span class="o">=</span> <span class="n">Morphology</span><span class="o">.</span><span class="n">sec_type_swc</span><span class="p">[</span><span class="n">sec_type</span><span class="p">]</span>  <span class="c1"># convert to swc code</span>
+                <span class="n">x_range</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">nseg</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># used to calculate [x0, x1]</span>
+
+                <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">sec</span><span class="p">:</span>
+                    <span class="n">seg_area</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">area</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
+                    <span class="n">seg_x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+                    <span class="n">seg_x0</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">x_range</span><span class="p">)</span>
+                    <span class="n">seg_x1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">x_range</span><span class="p">)</span>
+                    <span class="n">seg_length</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">L</span> <span class="o">/</span> <span class="n">sec</span><span class="o">.</span><span class="n">nseg</span><span class="p">)</span>
+                    <span class="n">seg_type</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec_type_swc</span><span class="p">)</span>  <span class="c1"># record section type in a list</span>
+                    <span class="c1"># seg_dist.append(h.distance(seg.x))  # distance to the center of the segment</span>
+                    <span class="n">seg_dist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">seg</span><span class="p">))</span>
+                    <span class="n">seg_sec_id</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec_id</span><span class="p">)</span>
+
+            <span class="n">length_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">seg_length</span><span class="p">)</span>
+            <span class="n">dist_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">seg_dist</span><span class="p">)</span>
+            <span class="n">dist0_arr</span> <span class="o">=</span> <span class="n">dist_arr</span> <span class="o">-</span> <span class="n">length_arr</span> <span class="o">/</span> <span class="mf">2.0</span>
+            <span class="n">dist1_arr</span> <span class="o">=</span> <span class="n">dist_arr</span> <span class="o">+</span> <span class="n">length_arr</span> <span class="o">/</span> <span class="mf">2.0</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">seg_type</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">area</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">seg_area</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">seg_x</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">seg_x0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">seg_x1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dist</span> <span class="o">=</span> <span class="n">dist_arr</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="n">length_arr</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dist0</span> <span class="o">=</span> <span class="n">dist0_arr</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dist1</span> <span class="o">=</span> <span class="n">dist1_arr</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sec_id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">seg_sec_id</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span>
+
+
+<span class="k">class</span> <span class="nc">_LazySegmentCoords</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A Struct for storing properties of each segment of a cell that vary by soma position and rotation.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hobj</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hobj</span> <span class="o">=</span> <span class="n">hobj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p0</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p1</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p05</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">soma_pos</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">p0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Iterates through each segment (one section may contain one or more segments). We use NEURON&#39;s</span>
+            <span class="c1"># segment.x to get the mid-point and lenght of each segment we we can use to find and store the beginning</span>
+            <span class="c1"># (p0) and end (p1) of each segment. We also shift so the middle of the soma is at the origin.</span>
+            <span class="n">nseg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">([</span><span class="n">s</span><span class="o">.</span><span class="n">nseg</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hobj</span><span class="o">.</span><span class="n">all</span><span class="p">])</span>
+
+            <span class="n">n3dsoma</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">soma_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hobj</span><span class="o">.</span><span class="n">soma</span><span class="p">:</span>
+                <span class="n">n3d</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">n3d</span><span class="p">(</span><span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">))</span>  <span class="c1"># get number of n3d points in each section</span>
+                <span class="n">n3dsoma</span> <span class="o">+=</span> <span class="n">n3d</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n3d</span><span class="p">):</span>
+                    <span class="n">soma_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">h</span><span class="o">.</span><span class="n">x3d</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
+                    <span class="n">soma_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">h</span><span class="o">.</span><span class="n">y3d</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
+                    <span class="n">soma_pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">h</span><span class="o">.</span><span class="n">z3d</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
+
+            <span class="n">soma_pos</span> <span class="o">/=</span> <span class="n">n3dsoma</span>
+
+            <span class="n">ix</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># segment index</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">p0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="n">nseg</span><span class="p">))</span>  <span class="c1"># hold the coordinates of segment starting points</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">p1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="n">nseg</span><span class="p">))</span>  <span class="c1"># hold the coordinates of segment end points</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">p05</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="n">nseg</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
+                <span class="n">n3d</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">n3d</span><span class="p">(</span><span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">))</span>  <span class="c1"># get number of n3d points in each section</span>
+                <span class="n">p3d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="n">n3d</span><span class="p">))</span>  <span class="c1"># to hold locations of 3D morphology for the current section</span>
+                <span class="n">l3d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n3d</span><span class="p">)</span>  <span class="c1"># to hold locations of 3D morphology for the current section</span>
+                <span class="c1"># diam3d = np.zeros(n3d)  # to diameters, at the moment we don&#39;t need to keep track of diameter</span>
+
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n3d</span><span class="p">):</span>
+                    <span class="n">p3d</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">x3d</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span> <span class="o">-</span> <span class="n">soma_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># shift coordinates such to place soma at the origin.</span>
+                    <span class="n">p3d</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">y3d</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span> <span class="o">-</span> <span class="n">soma_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">p3d</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">z3d</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span> <span class="o">-</span> <span class="n">soma_pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                    <span class="c1"># diam3d[i] = h.diam3d(i, sec=sec)</span>
+                    <span class="n">l3d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">arc3d</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
+
+                <span class="n">l3d</span> <span class="o">/=</span> <span class="n">sec</span><span class="o">.</span><span class="n">L</span>  <span class="c1"># normalize</span>
+                <span class="n">nseg</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">nseg</span>
+
+                <span class="n">l0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nseg</span><span class="p">)</span>  <span class="c1"># keep range of segment starting point</span>
+                <span class="n">l1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nseg</span><span class="p">)</span>  <span class="c1"># keep range of segment ending point</span>
+                <span class="n">l05</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nseg</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">iseg</span><span class="p">,</span> <span class="n">seg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sec</span><span class="p">):</span>
+                    <span class="n">l0</span><span class="p">[</span><span class="n">iseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">nseg</span>  <span class="c1"># x (normalized distance along the section) for the beginning of the segment</span>
+                    <span class="n">l1</span><span class="p">[</span><span class="n">iseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">nseg</span>  <span class="c1"># x for the end of the segment</span>
+                    <span class="n">l05</span><span class="p">[</span><span class="n">iseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">x</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">p0</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">ix</span><span class="p">:</span><span class="n">ix</span> <span class="o">+</span> <span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l0</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">p0</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">ix</span><span class="p">:</span><span class="n">ix</span> <span class="o">+</span> <span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l0</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">p0</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="n">ix</span><span class="p">:</span><span class="n">ix</span> <span class="o">+</span> <span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l0</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:])</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">p1</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">ix</span><span class="p">:</span><span class="n">ix</span> <span class="o">+</span> <span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">p1</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">ix</span><span class="p">:</span><span class="n">ix</span> <span class="o">+</span> <span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">p1</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="n">ix</span><span class="p">:</span><span class="n">ix</span> <span class="o">+</span> <span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:])</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">p05</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">ix</span><span class="p">:</span><span class="n">ix</span> <span class="o">+</span> <span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l05</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">p05</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">ix</span><span class="p">:</span><span class="n">ix</span> <span class="o">+</span> <span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l05</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">p05</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="n">ix</span><span class="p">:</span><span class="n">ix</span> <span class="o">+</span> <span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l05</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:])</span>
+
+                <span class="c1"># x0[ix:ix + nseg] = l0</span>
+                <span class="c1"># x1[ix:ix + nseg] = l1</span>
+
+                <span class="n">ix</span> <span class="o">+=</span> <span class="n">nseg</span>
+
+            <span class="c1"># Also calculate the middle of the shifted soma, NOTE: in theory this should be (0, 0, 0), but due to</span>
+            <span class="c1"># percision the actual soma center might be a little off.</span>
+            <span class="n">n3dsoma</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">r3dsoma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hobj</span><span class="o">.</span><span class="n">soma</span><span class="p">:</span>
+                <span class="n">n3d</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">n3d</span><span class="p">(</span><span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">))</span>  <span class="c1"># get number of n3d points in each section</span>
+                <span class="n">n3dsoma</span> <span class="o">+=</span> <span class="n">n3d</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n3d</span><span class="p">):</span>
+                    <span class="n">r3dsoma</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">h</span><span class="o">.</span><span class="n">x3d</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span> <span class="o">-</span> <span class="n">soma_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">r3dsoma</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">h</span><span class="o">.</span><span class="n">y3d</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span> <span class="o">-</span> <span class="n">soma_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">r3dsoma</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">h</span><span class="o">.</span><span class="n">z3d</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span> <span class="o">-</span> <span class="n">soma_pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+            <span class="n">r3dsoma</span> <span class="o">/=</span> <span class="n">n3dsoma</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">soma_pos</span> <span class="o">=</span> <span class="n">r3dsoma</span>
+
+        <span class="k">return</span> <span class="bp">self</span>
+
+
+<span class="c1"># For a lot of different cells created from the same morphology and model_processing function, the core segment</span>
+<span class="c1"># properties will be the same (even if coordinates, synapses, hobjs, etc. are different). In such cases we want</span>
+<span class="c1"># to calculate and store seg_props only once for all equivelent cells. We can do this by caching the seg_props</span>
+<span class="c1"># helper function pointer, then all equivelent morphologies (as defined by __hash__ function) use the same</span>
+<span class="c1"># SegmentProps object</span>
+<span class="n">morphology_cache</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<div class="viewcode-block" id="rotation_matrix"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.rotation_matrix">[docs]</a><span class="k">def</span> <span class="nf">rotation_matrix</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">theta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the rotation matrix associated with counterclockwise rotation about the given axis by theta radians.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    <span class="n">axis</span> <span class="o">=</span> <span class="n">axis</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">axis</span><span class="p">))</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="o">/</span><span class="mf">2.0</span><span class="p">)</span>
+    <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="n">axis</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="o">/</span><span class="mf">2.0</span><span class="p">)</span>
+    <span class="n">aa</span><span class="p">,</span> <span class="n">bb</span><span class="p">,</span> <span class="n">cc</span><span class="p">,</span> <span class="n">dd</span> <span class="o">=</span> <span class="n">a</span><span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">*</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="o">*</span><span class="n">d</span>
+    <span class="n">bc</span><span class="p">,</span> <span class="n">ad</span><span class="p">,</span> <span class="n">ac</span><span class="p">,</span> <span class="n">ab</span><span class="p">,</span> <span class="n">bd</span><span class="p">,</span> <span class="n">cd</span> <span class="o">=</span> <span class="n">b</span><span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="n">a</span><span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="n">a</span><span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="n">a</span><span class="o">*</span><span class="n">b</span><span class="p">,</span> <span class="n">b</span><span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="n">c</span><span class="o">*</span><span class="n">d</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="p">[</span><span class="n">aa</span><span class="o">+</span><span class="n">bb</span><span class="o">-</span><span class="n">cc</span><span class="o">-</span><span class="n">dd</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">bc</span><span class="o">+</span><span class="n">ad</span><span class="p">),</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">bd</span><span class="o">-</span><span class="n">ac</span><span class="p">)],</span>
+        <span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">bc</span><span class="o">-</span><span class="n">ad</span><span class="p">),</span> <span class="n">aa</span><span class="o">+</span><span class="n">cc</span><span class="o">-</span><span class="n">bb</span><span class="o">-</span><span class="n">dd</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">cd</span><span class="o">+</span><span class="n">ab</span><span class="p">)],</span>
+        <span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">bd</span><span class="o">+</span><span class="n">ac</span><span class="p">),</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">cd</span><span class="o">-</span><span class="n">ab</span><span class="p">),</span> <span class="n">aa</span><span class="o">+</span><span class="n">dd</span><span class="o">-</span><span class="n">bb</span><span class="o">-</span><span class="n">cc</span><span class="p">]</span>
+    <span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="Morphology"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology">[docs]</a><span class="k">class</span> <span class="nc">Morphology</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">sec_type_swc</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;soma&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;somatic&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s1">&#39;axon&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;axonal&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="s1">&#39;dend&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;basal&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="s1">&#39;apic&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;apical&#39;</span><span class="p">:</span> <span class="mi">4</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hobj</span><span class="p">,</span> <span class="n">rng_seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">swc_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span> <span class="o">=</span> <span class="n">hobj</span>  <span class="c1"># h.Biophys1(swc_path)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rng_seed</span> <span class="o">=</span> <span class="n">rng_seed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">swc_path</span> <span class="o">=</span> <span class="n">swc_path</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">RandomState</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rng_seed</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_segments</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_seg_props</span> <span class="o">=</span> <span class="n">_LazySegmentProps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="p">)</span>  <span class="c1"># None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_seg_coords</span> <span class="o">=</span> <span class="n">_LazySegmentCoords</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="p">)</span>  <span class="c1"># None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nseg</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_swc_map</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Used by find_sections() and other methods when building edges/synapses. Should make it faster to look-up</span>
+        <span class="c1"># cooresponding segments for a large number of syns that target the same area of a cell</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trg_segs_cache</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">new_morph</span> <span class="o">=</span> <span class="n">Morphology</span><span class="p">(</span><span class="n">hobj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="p">,</span> <span class="n">swc_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">swc_path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_morph</span>
+
+    <span class="k">def</span> <span class="nf">_soma_position_orig</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">n3dsoma</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">r3dsoma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">soma</span><span class="p">:</span>
             <span class="n">n3d</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">n3d</span><span class="p">(</span><span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">))</span>  <span class="c1"># get number of n3d points in each section</span>
-            <span class="n">r3d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="n">n3d</span><span class="p">))</span>  <span class="c1"># to hold locations of 3D morphology for the current section</span>
+            <span class="c1"># r3d = np.zeros((3, n3d))  # to hold locations of 3D morphology for the current section</span>
             <span class="n">n3dsoma</span> <span class="o">+=</span> <span class="n">n3d</span>
 
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n3d</span><span class="p">):</span>
@@ -680,159 +879,124 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="n">r3dsoma</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">h</span><span class="o">.</span><span class="n">z3d</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
 
         <span class="n">r3dsoma</span> <span class="o">/=</span> <span class="n">n3dsoma</span>
-        <span class="k">return</span> <span class="n">r3dsoma</span></div>
+        <span class="k">return</span> <span class="n">r3dsoma</span>
 
-<div class="viewcode-block" id="Morphology.calc_seg_coords"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.calc_seg_coords">[docs]</a>    <span class="k">def</span> <span class="nf">calc_seg_coords</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Calculate segment coordinates from 3d point coordinates&quot;&quot;&quot;</span>
-        <span class="n">ix</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># segment index</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">segments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_segments</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_segments</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">sec</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg</span><span class="p">)</span>
 
-        <span class="n">p3dsoma</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_soma_pos</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">psoma</span> <span class="o">=</span> <span class="n">p3dsoma</span>
-        
-        <span class="n">p0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nseg</span><span class="p">))</span>  <span class="c1"># hold the coordinates of segment starting points</span>
-        <span class="n">p1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nseg</span><span class="p">))</span>  <span class="c1"># hold the coordinates of segment end points</span>
-        <span class="n">p05</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nseg</span><span class="p">))</span>
-        <span class="n">d0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nseg</span><span class="p">)</span>
-        <span class="n">d1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nseg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_segments</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">seg_props</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seg_props</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">seg_coords</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the coordinates of all segments of the cells. Each segment is defined by three values, the beginning</span>
+<span class="sd">        of the segment (seg_coords.p0), the middle of the segment(seg_coords.p05), and the end (seg_coords.p1).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seg_coords</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">nseg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nseg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">nseg</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
+                <span class="n">nseg</span> <span class="o">+=</span> <span class="n">sec</span><span class="o">.</span><span class="n">nseg</span>  <span class="c1"># get the total # of segments in the cell</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_nseg</span> <span class="o">=</span> <span class="n">nseg</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nseg</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">soma_position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_coords</span><span class="o">.</span><span class="n">soma_pos</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">swc_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_swc_map</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">swc_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">swc_path</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;pid&#39;</span><span class="p">],</span> <span class="n">comment</span><span class="o">=</span><span class="s1">&#39;#&#39;</span><span class="p">)</span>
+            <span class="n">swc_df</span> <span class="o">=</span> <span class="n">swc_df</span><span class="p">[[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">]]</span>
+
+            <span class="n">name_indices</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">ln</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">swc_df</span><span class="p">)):</span>
+                <span class="c1"># in read_swc.hoc all non-bifurcating section of rows are assigned a global section-id. But for each</span>
+                <span class="c1"># type (soma, dend, etc), there is also a nameindex id which is unique within the type, used to assign</span>
+                <span class="c1"># sections to their name. So lines with sec_id=10 may have nameindex=3 (Biophys1[0].dend[3])</span>
+                <span class="n">sec_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">nl</span><span class="o">.</span><span class="n">point2sec</span><span class="p">[</span><span class="n">ln</span><span class="p">])</span>
+                <span class="c1"># swc_id = int(self.hobj.nl.pt2id(ln))</span>
+                <span class="c1"># swc_type = int(self.hobj.nl.type[ln])</span>
+                <span class="n">name_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">nl</span><span class="o">.</span><span class="n">sections</span><span class="o">.</span><span class="n">object</span><span class="p">(</span><span class="n">sec_id</span><span class="p">)</span><span class="o">.</span><span class="n">nameindex</span><span class="p">)</span>
+                <span class="n">name_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name_index</span><span class="p">)</span>
+
+            <span class="n">swc_df</span><span class="p">[</span><span class="s1">&#39;nameindex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name_indices</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_swc_map</span> <span class="o">=</span> <span class="n">swc_df</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_swc_map</span>
+
+<div class="viewcode-block" id="Morphology.get_section"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.get_section">[docs]</a>    <span class="k">def</span> <span class="nf">get_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section_idx</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">[</span><span class="n">section_idx</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Morphology.set_segment_dl"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.set_segment_dl">[docs]</a>    <span class="k">def</span> <span class="nf">set_segment_dl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dl</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Define number of segments in a cell&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nseg</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
-            <span class="n">n3d</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">n3d</span><span class="p">(</span><span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">))</span>  <span class="c1"># get number of n3d points in each section</span>
-            <span class="n">p3d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="n">n3d</span><span class="p">))</span>  <span class="c1"># to hold locations of 3D morphology for the current section</span>
-            <span class="n">l3d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n3d</span><span class="p">)</span>  <span class="c1"># to hold locations of 3D morphology for the current section</span>
-            <span class="n">diam3d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n3d</span><span class="p">)</span>  <span class="c1"># to diameters</span>
+            <span class="n">sec</span><span class="o">.</span><span class="n">nseg</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">L</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">dl</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_nseg</span> <span class="o">+=</span> <span class="n">sec</span><span class="o">.</span><span class="n">nseg</span>  <span class="c1"># get the total number of segments in the cell</span></div>
 
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n3d</span><span class="p">):</span>
-                <span class="n">p3d</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">x3d</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span> <span class="o">-</span> <span class="n">p3dsoma</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">p3d</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">y3d</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span> <span class="o">-</span> <span class="n">p3dsoma</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># shift coordinates such to place soma at the origin.</span>
-                <span class="n">p3d</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">z3d</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span> <span class="o">-</span> <span class="n">p3dsoma</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-                <span class="n">diam3d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">diam3d</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
-                <span class="n">l3d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">arc3d</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">sec</span><span class="o">=</span><span class="n">sec</span><span class="p">)</span>
+<div class="viewcode-block" id="Morphology.choose_sections"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.choose_sections">[docs]</a>    <span class="k">def</span> <span class="nf">choose_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section_names</span><span class="p">,</span> <span class="n">distance_range</span><span class="p">,</span> <span class="n">n_sections</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Similar to find_sections, but will only N=n_section number of sections_ids/x values randomly selected (may</span>
+<span class="sd">        return less if there aren&#39;t as many sections</span>
 
-            <span class="n">l3d</span> <span class="o">/=</span> <span class="n">sec</span><span class="o">.</span><span class="n">L</span>                  <span class="c1"># normalize</span>
-            <span class="n">nseg</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">nseg</span>
-            
-            <span class="n">l0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nseg</span><span class="p">)</span>     <span class="c1"># keep range of segment starting point </span>
-            <span class="n">l1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nseg</span><span class="p">)</span>     <span class="c1"># keep range of segment ending point</span>
-            <span class="n">l05</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nseg</span><span class="p">)</span>
-            
-            <span class="k">for</span> <span class="n">iseg</span><span class="p">,</span> <span class="n">seg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sec</span><span class="p">):</span>
-                <span class="n">l0</span><span class="p">[</span><span class="n">iseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="mf">0.5</span><span class="o">*</span><span class="mi">1</span><span class="o">/</span><span class="n">nseg</span>   <span class="c1"># x (normalized distance along the section) for the beginning of the segment</span>
-                <span class="n">l1</span><span class="p">[</span><span class="n">iseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="mi">1</span><span class="o">/</span><span class="n">nseg</span>   <span class="c1"># x for the end of the segment</span>
-                <span class="n">l05</span><span class="p">[</span><span class="n">iseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">x</span>
+<span class="sd">        :param section_names: &#39;soma&#39;, &#39;dend&#39;, &#39;apic&#39;, &#39;axon&#39;</span>
+<span class="sd">        :param distance_range: [float, float]: distance range of sections from the soma, in um.</span>
+<span class="sd">        :param n_sections: int: maximum number of sections to select</span>
+<span class="sd">        :param cache: caches the segments + probs so that next time the same section_names/distance_range values are</span>
+<span class="sd">            called it will return the same values without recalculating. default True.</span>
+<span class="sd">        :return: [int], [float]: A list of all section_ids and a list of all segment_x values (as defined by NEURON)</span>
+<span class="sd">            that meet the given critera.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">secs</span><span class="p">,</span> <span class="n">probs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_sections</span><span class="p">(</span><span class="n">section_names</span><span class="p">,</span> <span class="n">distance_range</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">)</span>
+        <span class="n">secs_ix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">secs</span><span class="p">,</span> <span class="n">n_sections</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">probs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">secs_ix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_props</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">secs_ix</span><span class="p">]</span></div>
 
-            <span class="n">p0</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l0</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])</span>
-            <span class="n">p0</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l0</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:])</span>
-            <span class="n">p0</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l0</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:])</span>
-            <span class="n">d0</span><span class="p">[</span><span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l0</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">diam3d</span><span class="p">[:])</span>
+<div class="viewcode-block" id="Morphology.find_sections"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.find_sections">[docs]</a>    <span class="k">def</span> <span class="nf">find_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section_names</span><span class="p">,</span> <span class="n">distance_range</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieves a list of sections ids and section x&#39;s given a section name/type (eg axon, soma, apic, dend) and</span>
+<span class="sd">        the distance from the soma.</span>
 
-            <span class="n">p1</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])</span>
-            <span class="n">p1</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:])</span>
-            <span class="n">p1</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:])</span>
-            <span class="n">d1</span><span class="p">[</span><span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">diam3d</span><span class="p">[:])</span>
+<span class="sd">        :param section_names: A list of sections to target, &#39;soma&#39;, &#39;dend&#39;, &#39;apic&#39;, &#39;axon&#39;</span>
+<span class="sd">        :param distance_range: [float, float]: distance range of sections from the soma, in um.</span>
+<span class="sd">        :param cache: caches the segments + probs so that next time the same section_names/distance_range values are</span>
+<span class="sd">            called it will return the same values without recalculating. default True.</span>
+<span class="sd">        :return: [float], [float]: A list of all section_ids and a list of all segment_x values (as defined by NEURON)</span>
+<span class="sd">            that meet the given critera.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cache_key</span> <span class="o">=</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">section_names</span><span class="p">),</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">distance_range</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">cache</span> <span class="ow">and</span> <span class="n">cache_key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trg_segs_cache</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trg_segs_cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span>
 
-            <span class="n">p05</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l05</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])</span>
-            <span class="n">p05</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l05</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">1</span><span class="p">,:])</span>
-            <span class="n">p05</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="n">ix</span><span class="p">:</span><span class="n">ix</span><span class="o">+</span><span class="n">nseg</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">l05</span><span class="p">,</span> <span class="n">l3d</span><span class="p">,</span> <span class="n">p3d</span><span class="p">[</span><span class="mi">2</span><span class="p">,:])</span>
-
-            <span class="n">ix</span> <span class="o">+=</span> <span class="n">nseg</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">seg_coords</span> <span class="o">=</span> <span class="p">{}</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">seg_coords</span><span class="p">[</span><span class="s1">&#39;p0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">seg_coords</span><span class="p">[</span><span class="s1">&#39;p1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">seg_coords</span><span class="p">[</span><span class="s1">&#39;p05&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p05</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">seg_coords</span><span class="p">[</span><span class="s1">&#39;d0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">seg_coords</span><span class="p">[</span><span class="s1">&#39;d1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">d1</span>
-
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_coords</span></div>
-
-<div class="viewcode-block" id="Morphology.set_seg_props"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.set_seg_props">[docs]</a>    <span class="k">def</span> <span class="nf">set_seg_props</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Set segment properties which are invariant for all cell using this morphology&quot;&quot;&quot;</span>
-        <span class="n">seg_type</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">seg_area</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">seg_x</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">seg_dist</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">seg_length</span> <span class="o">=</span> <span class="p">[]</span>
-
-        <span class="n">h</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">sec</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">soma</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>   <span class="c1"># measure distance relative to the soma</span>
-        
-        <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
-            <span class="n">fullsecname</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
-            <span class="n">sec_type</span> <span class="o">=</span> <span class="n">fullsecname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">4</span><span class="p">]</span> <span class="c1"># get sec name type without the cell name</span>
-            <span class="n">sec_type_swc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sec_type_swc</span><span class="p">[</span><span class="n">sec_type</span><span class="p">]</span>  <span class="c1"># convert to swc code</span>
-
-            <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">sec</span><span class="p">:</span>
-
-                <span class="n">seg_area</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">area</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">x</span><span class="p">))</span>
-                <span class="n">seg_x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
-                <span class="n">seg_length</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">L</span><span class="o">/</span><span class="n">sec</span><span class="o">.</span><span class="n">nseg</span><span class="p">)</span>
-                <span class="n">seg_type</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec_type_swc</span><span class="p">)</span>           <span class="c1"># record section type in a list</span>
-                <span class="c1"># seg_dist.append(h.distance(seg.x))  # distance to the center of the segment</span>
-                <span class="n">seg_dist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">seg</span><span class="p">))</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">seg_type</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;area&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">seg_area</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">seg_x</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;dist&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">seg_dist</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;length&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">seg_length</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;dist0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;dist&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;length&#39;</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;dist1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;dist&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;length&#39;</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span></div>
-
-<div class="viewcode-block" id="Morphology.get_target_segments"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.get_target_segments">[docs]</a>    <span class="k">def</span> <span class="nf">get_target_segments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge_type</span><span class="p">):</span>
-        <span class="c1"># Determine the target segments and their probabilities of connections for each new edge-type. Save the</span>
-        <span class="c1"># information for each additional time a given edge-type is used on this morphology</span>
-        <span class="c1"># TODO: Don&#39;t rely on edge-type-table, just use the edge?</span>
-        <span class="k">if</span> <span class="n">edge_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_segments</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_segments</span><span class="p">[</span><span class="n">edge_type</span><span class="p">]</span>
-
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">tar_seg_ix</span><span class="p">,</span> <span class="n">tar_seg_prob</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_sections</span><span class="p">(</span><span class="n">edge_type</span><span class="o">.</span><span class="n">target_sections</span><span class="p">,</span> <span class="n">edge_type</span><span class="o">.</span><span class="n">target_distance</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_segments</span><span class="p">[</span><span class="n">edge_type</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">tar_seg_ix</span><span class="p">,</span> <span class="n">tar_seg_prob</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">tar_seg_ix</span><span class="p">,</span> <span class="n">tar_seg_prob</span>
-
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        tar_sec_labels = edge_type.target_sections</span>
-<span class="sd">        drange = edge_type.target_distance</span>
-<span class="sd">        dmin, dmax = drange[0], drange[1]</span>
-
-<span class="sd">        seg_d0 = self.seg_prop[&#39;dist0&#39;]  # use a more compact variables</span>
-<span class="sd">        seg_d1 = self.seg_prop[&#39;dist1&#39;]</span>
-<span class="sd">        seg_length = self.seg_prop[&#39;length&#39;]</span>
-<span class="sd">        seg_area = self.seg_prop[&#39;area&#39;]</span>
-<span class="sd">        seg_type = self.seg_prop[&#39;type&#39;]</span>
-
-<span class="sd">        # Find the fractional overlap between the segment and the distance range:</span>
-<span class="sd">        # this is done by finding the overlap between [d0,d1] and [dmin,dmax]</span>
-<span class="sd">        # np.minimum(seg_d1,dmax) find the smaller of the two end locations</span>
-<span class="sd">        # np.maximum(seg_d0,dmin) find the larger of the two start locations</span>
-<span class="sd">        # np.maximum(0,overlap) is used to return zero when segments do not overlap</span>
-<span class="sd">        # and then dividing by the segment length</span>
-<span class="sd">        frac_overlap = np.maximum(0, (np.minimum(seg_d1, dmax) - np.maximum(seg_d0, dmin))) / seg_length</span>
-<span class="sd">        ix_drange = np.where(frac_overlap &gt; 0)  # find indexes with non-zero overlap</span>
-<span class="sd">        ix_labels = np.array([], dtype=np.int)</span>
-
-<span class="sd">        for tar_sec_label in tar_sec_labels:  # find indexes within sec_labels</span>
-<span class="sd">            sec_type = self.sec_type_swc[tar_sec_label]  # get swc code for the section label</span>
-<span class="sd">            ix_label = np.where(seg_type == sec_type)</span>
-<span class="sd">            ix_labels = np.append(ix_labels, ix_label)  # target segment indexes</span>
-
-<span class="sd">        tar_seg_ix = np.intersect1d(ix_drange, ix_labels)  # find intersection between indexes for range and labels</span>
-<span class="sd">        tar_seg_length = seg_length[tar_seg_ix] * frac_overlap[tar_seg_ix]  # weighted length of targeted segments</span>
-<span class="sd">        tar_seg_prob = tar_seg_length / np.sum(tar_seg_length)  # probability of targeting segments</span>
-
-<span class="sd">        self._segments[edge_type] = (tar_seg_ix, tar_seg_prob)</span>
-<span class="sd">        return tar_seg_ix, tar_seg_prob</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
-
-<div class="viewcode-block" id="Morphology.find_sections"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.find_sections">[docs]</a>    <span class="k">def</span> <span class="nf">find_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_sections</span><span class="p">,</span> <span class="n">distance_range</span><span class="p">):</span>
         <span class="n">dmin</span><span class="p">,</span> <span class="n">dmax</span> <span class="o">=</span> <span class="n">distance_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">distance_range</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
-        <span class="n">seg_d0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;dist0&#39;</span><span class="p">]</span>  <span class="c1"># use a more compact variables</span>
-        <span class="n">seg_d1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;dist1&#39;</span><span class="p">]</span>
-        <span class="n">seg_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;length&#39;</span><span class="p">]</span>
-        <span class="n">seg_area</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;area&#39;</span><span class="p">]</span>
-        <span class="n">seg_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_prop</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+        <span class="n">seg_d0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_props</span><span class="o">.</span><span class="n">dist0</span>
+        <span class="n">seg_d1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_props</span><span class="o">.</span><span class="n">dist1</span>
+        <span class="n">seg_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_props</span><span class="o">.</span><span class="n">length</span>
+        <span class="n">seg_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_props</span><span class="o">.</span><span class="n">type</span>
 
         <span class="c1"># Find the fractional overlap between the segment and the distance range:</span>
         <span class="c1"># this is done by finding the overlap between [d0,d1] and [dmin,dmax]</span>
@@ -842,9 +1006,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="c1"># and then dividing by the segment length</span>
         <span class="n">frac_overlap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">seg_d1</span><span class="p">,</span> <span class="n">dmax</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">seg_d0</span><span class="p">,</span> <span class="n">dmin</span><span class="p">)))</span> <span class="o">/</span> <span class="n">seg_length</span>
         <span class="n">ix_drange</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">frac_overlap</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># find indexes with non-zero overlap</span>
-        <span class="n">ix_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+        <span class="n">ix_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">tar_sec_label</span> <span class="ow">in</span> <span class="n">target_sections</span><span class="p">:</span>  <span class="c1"># find indexes within sec_labels</span>
+        <span class="k">for</span> <span class="n">tar_sec_label</span> <span class="ow">in</span> <span class="n">section_names</span><span class="p">:</span>  <span class="c1"># find indexes within sec_labels</span>
             <span class="n">sec_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sec_type_swc</span><span class="p">[</span><span class="n">tar_sec_label</span><span class="p">]</span>  <span class="c1"># get swc code for the section label</span>
             <span class="n">ix_label</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">seg_type</span> <span class="o">==</span> <span class="n">sec_type</span><span class="p">)</span>
             <span class="n">ix_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ix_labels</span><span class="p">,</span> <span class="n">ix_label</span><span class="p">)</span>  <span class="c1"># target segment indexes</span>
@@ -852,7 +1016,145 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">tar_seg_ix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">ix_drange</span><span class="p">,</span> <span class="n">ix_labels</span><span class="p">)</span>  <span class="c1"># find intersection between indexes for range and labels</span>
         <span class="n">tar_seg_length</span> <span class="o">=</span> <span class="n">seg_length</span><span class="p">[</span><span class="n">tar_seg_ix</span><span class="p">]</span> <span class="o">*</span> <span class="n">frac_overlap</span><span class="p">[</span><span class="n">tar_seg_ix</span><span class="p">]</span>  <span class="c1"># weighted length of targeted segments</span>
         <span class="n">tar_seg_prob</span> <span class="o">=</span> <span class="n">tar_seg_length</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">tar_seg_length</span><span class="p">)</span>  <span class="c1"># probability of targeting segments</span>
-        <span class="k">return</span> <span class="n">tar_seg_ix</span><span class="p">,</span> <span class="n">tar_seg_prob</span></div></div>
+
+        <span class="k">if</span> <span class="n">cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_trg_segs_cache</span><span class="p">[</span><span class="n">cache_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">tar_seg_ix</span><span class="p">,</span> <span class="n">tar_seg_prob</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">tar_seg_ix</span><span class="p">,</span> <span class="n">tar_seg_prob</span></div>
+
+<div class="viewcode-block" id="Morphology.move_and_rotate"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.move_and_rotate">[docs]</a>    <span class="k">def</span> <span class="nf">move_and_rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">soma_coords</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rotation_angles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">old_seg_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_coords</span>
+        <span class="n">new_p0</span> <span class="o">=</span> <span class="n">old_seg_coords</span><span class="o">.</span><span class="n">p0</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">new_p1</span> <span class="o">=</span> <span class="n">old_seg_coords</span><span class="o">.</span><span class="n">p1</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">new_p05</span> <span class="o">=</span> <span class="n">old_seg_coords</span><span class="o">.</span><span class="n">p05</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">new_soma_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">soma_position</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">rotation_angles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rotation_angles</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="c1"># try to calc the euler rotation matrix around an arbitary point was causing problems, instead move coords</span>
+            <span class="c1"># so the the soma center (p05[0]) is at the origin</span>
+            <span class="n">soma_pos_mat</span> <span class="o">=</span> <span class="n">new_soma_pos</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">new_p0</span> <span class="o">=</span> <span class="n">new_p0</span> <span class="o">-</span> <span class="n">soma_pos_mat</span>
+            <span class="n">new_p1</span> <span class="o">=</span> <span class="n">new_p1</span> <span class="o">-</span> <span class="n">soma_pos_mat</span>
+            <span class="n">new_p05</span> <span class="o">=</span> <span class="n">new_p05</span> <span class="o">-</span> <span class="n">soma_pos_mat</span>
+
+            <span class="n">rotx_mat</span> <span class="o">=</span> <span class="n">rotation_matrix</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">rotation_angles</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">roty_mat</span> <span class="o">=</span> <span class="n">rotation_matrix</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">rotation_angles</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">rotz_mat</span> <span class="o">=</span> <span class="n">rotation_matrix</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">rotation_angles</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="n">rotxyz_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">rotx_mat</span><span class="p">,</span> <span class="n">roty_mat</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">rotz_mat</span><span class="p">))</span>
+
+            <span class="n">new_p0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">rotxyz_mat</span><span class="p">,</span> <span class="n">new_p0</span><span class="p">)</span> <span class="o">+</span> <span class="n">soma_pos_mat</span>
+            <span class="n">new_p1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">rotxyz_mat</span><span class="p">,</span> <span class="n">new_p1</span><span class="p">)</span> <span class="o">+</span> <span class="n">soma_pos_mat</span>
+            <span class="n">new_p05</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">rotxyz_mat</span><span class="p">,</span> <span class="n">new_p05</span><span class="p">)</span> <span class="o">+</span> <span class="n">soma_pos_mat</span>
+
+        <span class="k">if</span> <span class="n">soma_coords</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">soma_coords</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="n">soma_coords</span> <span class="o">=</span> <span class="n">soma_coords</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">soma_coords</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">soma_coords</span><span class="p">)</span>
+            <span class="n">displacement</span> <span class="o">=</span> <span class="n">soma_coords</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">soma_position</span>
+            <span class="n">displacement</span> <span class="o">=</span> <span class="n">displacement</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>  <span class="c1"># Req to allow adding vector to matrix</span>
+            <span class="n">new_p0</span> <span class="o">+=</span> <span class="n">displacement</span>
+            <span class="n">new_p1</span> <span class="o">+=</span> <span class="n">displacement</span>
+            <span class="n">new_p05</span> <span class="o">+=</span> <span class="n">displacement</span>
+            <span class="n">new_soma_pos</span> <span class="o">=</span> <span class="n">soma_coords</span>
+
+        <span class="c1"># new_seg_coords = SegmentCoords(p0=new_p0, p1=new_p1, p05=new_p05, soma_pos=new_soma_pos)</span>
+        <span class="n">new_seg_coords</span> <span class="o">=</span> <span class="n">_LazySegmentCoords</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="p">)</span>
+        <span class="n">new_seg_coords</span><span class="o">.</span><span class="n">p0</span> <span class="o">=</span> <span class="n">new_p0</span>
+        <span class="n">new_seg_coords</span><span class="o">.</span><span class="n">p05</span> <span class="o">=</span> <span class="n">new_p05</span>
+        <span class="n">new_seg_coords</span><span class="o">.</span><span class="n">p1</span> <span class="o">=</span> <span class="n">new_p1</span>
+        <span class="n">new_seg_coords</span><span class="o">.</span><span class="n">soma_pos</span> <span class="o">=</span> <span class="n">new_soma_pos</span>
+
+        <span class="k">if</span> <span class="n">inplace</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_seg_coords</span> <span class="o">=</span> <span class="n">new_seg_coords</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_morph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_copy</span><span class="p">()</span>
+            <span class="n">new_morph</span><span class="o">.</span><span class="n">_seg_props</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_props</span>
+            <span class="n">new_morph</span><span class="o">.</span><span class="n">_seg_coords</span> <span class="o">=</span> <span class="n">new_seg_coords</span>
+            <span class="n">new_morph</span><span class="o">.</span><span class="n">_soma_pos</span> <span class="o">=</span> <span class="n">new_soma_pos</span>
+            <span class="k">return</span> <span class="n">new_morph</span></div>
+
+<div class="viewcode-block" id="Morphology.get_coords"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.get_coords">[docs]</a>    <span class="k">def</span> <span class="nf">get_coords</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sec_id</span><span class="p">,</span> <span class="n">sec_x</span><span class="p">):</span>
+        <span class="n">segs_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seg_props</span><span class="o">.</span><span class="n">sec_id</span> <span class="o">==</span> <span class="n">sec_id</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_coords</span><span class="o">.</span><span class="n">p05</span><span class="p">[:,</span> <span class="n">segs_indices</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Morphology.get_swc_id"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.get_swc_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_swc_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sec_id</span><span class="p">,</span> <span class="n">sec_x</span><span class="p">):</span>
+        <span class="c1"># use sec type and nameindex to find all rows in the swc that correspond to sec_id</span>
+        <span class="n">sec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">[</span><span class="n">sec_id</span><span class="p">]</span>
+        <span class="n">sec_nameindex</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sec_nameindex</span><span class="p">(</span><span class="n">sec</span><span class="p">)</span>
+        <span class="n">sec_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sec_type</span><span class="p">(</span><span class="n">sec</span><span class="p">)</span>
+        <span class="n">filtered_swc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">swc_map</span><span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">swc_map</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">sec_type</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">swc_map</span><span class="p">[</span><span class="s1">&#39;nameindex&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">sec_nameindex</span><span class="p">)]</span>
+        <span class="n">swc_ids</span> <span class="o">=</span> <span class="n">filtered_swc</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="c1"># use sec_x, a value between [0, 1], to estimate which swc_id/line to choose.</span>
+        <span class="c1"># NOTE: At the moment it assumes each line in the swc is the same distance apart, making estimating the sec_x</span>
+        <span class="c1">#  location easy by the number it appears in the squence</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">swc_ids</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.0</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">swc_ids</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">swc_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sec_x</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">swc_place</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">((</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">sec_x</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">swc_ids</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">))</span>
+            <span class="n">swc_indx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">swc_place</span><span class="p">))</span>
+            <span class="n">swc_id</span> <span class="o">=</span> <span class="n">swc_ids</span><span class="p">[</span><span class="n">swc_indx</span><span class="p">]</span>
+            <span class="n">swc_dist</span> <span class="o">=</span> <span class="n">swc_indx</span> <span class="o">-</span> <span class="n">swc_place</span>
+            <span class="k">return</span> <span class="n">swc_id</span><span class="p">,</span> <span class="n">swc_dist</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_sec_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sec</span><span class="p">):</span>
+        <span class="n">sec_name</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">hname</span><span class="p">()</span>
+        <span class="n">sec_type_str</span> <span class="o">=</span> <span class="n">sec_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;[&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">type_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sec_type_swc</span><span class="p">[</span><span class="n">sec_type_str</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">type_str</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_sec_nameindex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sec</span><span class="p">):</span>
+        <span class="n">sec_name</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">hname</span><span class="p">()</span>
+        <span class="n">sec_type_name</span> <span class="o">=</span> <span class="n">sec_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">nameindex_str</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\[(\d+)\]&#39;</span><span class="p">,</span> <span class="n">sec_type_name</span><span class="p">)</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">nameindex_str</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">swc_path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">other</span><span class="o">.</span><span class="n">swc_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="nb">hash</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Used for comparing two Morphology objects and for storing as dict keys in seg_props_cache.</span>
+
+<span class="sd">        We assume two Morphologies are the same if they have the same morphology file path + same # of segments. This</span>
+<span class="sd">        is not a good way of determining if two Morphologies are equal and in actuality we would need to compare</span>
+<span class="sd">        seg_props on an segment-by-segment basis. However that would be comp. expensive for large networks and instead</span>
+<span class="sd">        do a quick spot test.&quot;&quot;&quot;</span>
+        <span class="n">comp_vals</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">swc_path</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">swc_path</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nseg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="n">comp_vals</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Morphology.load"><a class="viewcode-back" href="../../../../bmtk/bmtk.simulator.bionet.html#bmtk.simulator.bionet.morphology.Morphology.load">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">hobj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">morphology_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rng_seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cache_seg_props</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Factory method, perfered way to create a Morphology object</span>
+
+<span class="sd">        :param hobj:</span>
+<span class="sd">        :param morphology_file:</span>
+<span class="sd">        :param rng_seed:</span>
+<span class="sd">        :param cache_seg_props:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">hobj</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">morphology_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">io</span><span class="o">.</span><span class="n">log_exception</span><span class="p">(</span><span class="s1">&#39;Unable to create Morphology, no valid HOC object or morphology file specified&#39;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">morphology_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">hobj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># If the HOC object hasn&#39;t already been created try creating it from the morphology</span>
+            <span class="n">hobj</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">Biophys1</span><span class="p">(</span><span class="n">morphology_file</span><span class="p">)</span>
+
+        <span class="n">morph</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">hobj</span><span class="o">=</span><span class="n">hobj</span><span class="p">,</span> <span class="n">swc_path</span><span class="o">=</span><span class="n">morphology_file</span><span class="p">,</span> <span class="n">rng_seed</span><span class="o">=</span><span class="n">rng_seed</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">cache_seg_props</span> <span class="ow">and</span> <span class="n">morphology_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">morph</span> <span class="ow">in</span> <span class="n">morphology_cache</span><span class="p">:</span>
+                <span class="n">morph</span><span class="o">.</span><span class="n">_seg_props</span> <span class="o">=</span> <span class="n">morphology_cache</span><span class="p">[</span><span class="n">morph</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">morph</span><span class="o">.</span><span class="n">_seg_coords</span> <span class="o">=</span> <span class="n">morphology_cache</span><span class="p">[</span><span class="n">morph</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">morphology_cache</span><span class="p">[</span><span class="n">morph</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">morph</span><span class="o">.</span><span class="n">_seg_props</span><span class="p">,</span> <span class="n">morph</span><span class="o">.</span><span class="n">_seg_coords</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">morph</span></div></div>
 </pre></div>
 
             <div class="clearer"></div>
@@ -873,7 +1175,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../analyzer.html">Analyzing the Results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Main Tutorials</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
@@ -882,6 +1184,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../ad_tutorials.html">Additional Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_cell_placement.html">Cell placement: Using BMTK functions for distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../examples.html">Example Networks</a></li>

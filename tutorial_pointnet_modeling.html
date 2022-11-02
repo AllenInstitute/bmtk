@@ -19,7 +19,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Tutorial 6: Population Level Modeling (with PopNet)" href="tutorial_population_modeling.html" />
-    <link rel="prev" title="Tutorial 4: Muti-population recurrent network (with BioNet)" href="tutorial_multi_pop.html" /> 
+    <link rel="prev" title="Tutorial 4: Multi-population recurrent network (with BioNet)" href="tutorial_multi_pop.html" /> 
   </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
 <style>
@@ -1014,13 +1014,12 @@ div.rendered_html tbody tr:hover {
     <tr style="text-align: right;">
       <th></th>
       <th>node_type_id</th>
+      <th>model_type</th>
+      <th>model_template</th>
       <th>ei</th>
-      <th>morphology_file</th>
-      <th>model_processing</th>
       <th>pop_name</th>
       <th>location</th>
-      <th>model_template</th>
-      <th>model_type</th>
+      <th>model_processing</th>
       <th>dynamics_params</th>
     </tr>
   </thead>
@@ -1028,49 +1027,45 @@ div.rendered_html tbody tr:hover {
     <tr>
       <th>0</th>
       <td>100</td>
-      <td>e</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>Scnn1a</td>
-      <td>L4</td>
-      <td>nest:iaf_psc_alpha</td>
       <td>point_process</td>
+      <td>nest:iaf_psc_alpha</td>
+      <td>e</td>
+      <td>Scnn1a</td>
+      <td>VisL4</td>
+      <td>NaN</td>
       <td>472363762_point.json</td>
     </tr>
     <tr>
       <th>1</th>
       <td>101</td>
-      <td>i</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>PV</td>
-      <td>L4</td>
-      <td>nest:iaf_psc_alpha</td>
       <td>point_process</td>
+      <td>nest:iaf_psc_alpha</td>
+      <td>i</td>
+      <td>PV</td>
+      <td>VisL4</td>
+      <td>NaN</td>
       <td>472912177_point.json</td>
     </tr>
     <tr>
       <th>2</th>
       <td>102</td>
+      <td>point_process</td>
+      <td>nest:iaf_psc_alpha</td>
       <td>e</td>
-      <td>NaN</td>
-      <td>NaN</td>
       <td>LIF_exc</td>
       <td>VisL4</td>
-      <td>nest:iaf_psc_alpha</td>
-      <td>point_process</td>
+      <td>NaN</td>
       <td>IntFire1_exc_point.json</td>
     </tr>
     <tr>
       <th>3</th>
       <td>103</td>
+      <td>point_process</td>
+      <td>nest:iaf_psc_alpha</td>
       <td>i</td>
-      <td>NaN</td>
-      <td>NaN</td>
       <td>LIF_inh</td>
       <td>VisL4</td>
-      <td>nest:iaf_psc_alpha</td>
-      <td>point_process</td>
+      <td>NaN</td>
       <td>IntFire1_inh_point.json</td>
     </tr>
   </tbody>
@@ -1116,13 +1111,11 @@ div.rendered_html tbody tr:hover {
       <th>target_query</th>
       <th>source_query</th>
       <th>syn_weight</th>
-      <th>dynamics_params</th>
-      <th>distance_range</th>
-      <th>delay</th>
-      <th>target_sections</th>
-      <th>weight_function</th>
       <th>model_template</th>
+      <th>delay</th>
       <th>weight_sigma</th>
+      <th>weight_function</th>
+      <th>dynamics_params</th>
     </tr>
   </thead>
   <tbody>
@@ -1131,112 +1124,96 @@ div.rendered_html tbody tr:hover {
       <td>100</td>
       <td>pop_name=='Scnn1a'</td>
       <td>ei=='e'</td>
-      <td>50.00000</td>
-      <td>ExcToExc.json</td>
-      <td>NaN</td>
       <td>2</td>
-      <td>NaN</td>
-      <td>gaussianLL</td>
       <td>static_synapse</td>
+      <td>2</td>
       <td>50.0</td>
+      <td>wmax</td>
+      <td>ExcToExc.json</td>
     </tr>
     <tr>
       <th>1</th>
       <td>101</td>
       <td>pop_name=='LIF_exc'</td>
       <td>ei=='e'</td>
-      <td>50.00000</td>
-      <td>instantaneousExc.json</td>
-      <td>NaN</td>
       <td>2</td>
-      <td>NaN</td>
-      <td>gaussianLL</td>
       <td>static_synapse</td>
+      <td>2</td>
       <td>50.0</td>
+      <td>wmax</td>
+      <td>instantaneousExc.json</td>
     </tr>
     <tr>
       <th>2</th>
       <td>102</td>
-      <td>model_type=='biophysical'&amp;ei=='i'</td>
+      <td>ei=='i'&amp;model_type=='point_process'</td>
       <td>ei=='i'</td>
-      <td>50.00000</td>
-      <td>InhToInh.json</td>
-      <td>NaN</td>
+      <td>2</td>
+      <td>static_synapse</td>
       <td>2</td>
       <td>NaN</td>
       <td>wmax</td>
-      <td>static_synapse</td>
-      <td>NaN</td>
+      <td>InhToInh.json</td>
     </tr>
     <tr>
       <th>3</th>
       <td>103</td>
-      <td>model_type=='point_process'&amp;ei=='i'</td>
+      <td>ei=='i'&amp;model_type=='point_process'</td>
       <td>ei=='i'</td>
-      <td>50.00000</td>
-      <td>instantaneousInh.json</td>
-      <td>NaN</td>
+      <td>2</td>
+      <td>static_synapse</td>
       <td>2</td>
       <td>NaN</td>
       <td>wmax</td>
-      <td>static_synapse</td>
-      <td>NaN</td>
+      <td>instantaneousInh.json</td>
     </tr>
     <tr>
       <th>4</th>
       <td>104</td>
-      <td>model_type=='biophysical'&amp;ei=='e'</td>
+      <td>ei=='e'&amp;model_type=='point_process'</td>
       <td>ei=='i'</td>
-      <td>50.00000</td>
-      <td>InhToExc.json</td>
-      <td>NaN</td>
+      <td>2</td>
+      <td>static_synapse</td>
       <td>2</td>
       <td>NaN</td>
       <td>wmax</td>
-      <td>static_synapse</td>
-      <td>NaN</td>
+      <td>InhToExc.json</td>
     </tr>
     <tr>
       <th>5</th>
       <td>105</td>
-      <td>model_type=='point_process'&amp;ei=='e'</td>
+      <td>ei=='e'&amp;model_type=='point_process'</td>
       <td>ei=='i'</td>
-      <td>30.00000</td>
-      <td>instantaneousInh.json</td>
-      <td>NaN</td>
+      <td>2</td>
+      <td>static_synapse</td>
       <td>2</td>
       <td>NaN</td>
       <td>wmax</td>
-      <td>static_synapse</td>
-      <td>NaN</td>
+      <td>instantaneousInh.json</td>
     </tr>
     <tr>
       <th>6</th>
       <td>106</td>
       <td>pop_name=='PV'</td>
       <td>ei=='e'</td>
-      <td>0.00035</td>
-      <td>ExcToInh.json</td>
-      <td>NaN</td>
+      <td>2</td>
+      <td>static_synapse</td>
       <td>2</td>
       <td>NaN</td>
       <td>wmax</td>
-      <td>static_synapse</td>
-      <td>NaN</td>
+      <td>ExcToInh.json</td>
     </tr>
     <tr>
       <th>7</th>
       <td>107</td>
       <td>pop_name=='LIF_inh'</td>
       <td>ei=='e'</td>
-      <td>50.00000</td>
-      <td>instantaneousExc.json</td>
-      <td>NaN</td>
+      <td>2</td>
+      <td>static_synapse</td>
       <td>2</td>
       <td>NaN</td>
       <td>wmax</td>
-      <td>static_synapse</td>
-      <td>NaN</td>
+      <td>instantaneousExc.json</td>
     </tr>
   </tbody>
 </table>
@@ -1378,7 +1355,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;bmtk.builder.connection_map.ConnectionMap at 0x7f74a01c5610&gt;
+&lt;bmtk.builder.connection_map.ConnectionMap at 0x7fa91747ee80&gt;
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -1467,7 +1444,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;bmtk.builder.connection_map.ConnectionMap at 0x7f74a00ff760&gt;
+&lt;bmtk.builder.connection_map.ConnectionMap at 0x7fa9173cfd30&gt;
 </pre></div></div>
 </div>
 <p>Finally we build and save our lgn network.</p>
@@ -1497,7 +1474,7 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <p>or</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
@@ -1513,26 +1490,16 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch05/config.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
-WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch05/config.circuit.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
-WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch05/config.simulation.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
-</pre></div></div>
-</div>
 <p>The network files are written to <strong>circuit_config.json</strong> and the simulation parameters are set in <strong>simulation_config</strong>, which are both linked to the main <strong>config.json</strong> file. The simulation time is set to run for 3000.0 ms (tstop). In general, all the parameters needed to setup and start a simulation are found in the config files, and adjusting network/simulation conditions can be done by editing these json files in a text editor.</p>
 <section id="lgn-input">
 <h4>lgn input<a class="headerlink" href="#lgn-input" title="Permalink to this headline">¶</a></h4>
-<p>We need to provide our LGN external network cells with spike-trains so they can activate our recurrent network. Previously we showed how to do this by generating csv files. We can also use NWB files, which are a common format for saving electrophysiological data in neuroscience.</p>
-<p>We can use any NWB file generated experimentally or computationally, but for this example we will use a preexsting one. First download the file:</p>
+<p>We need to provide our LGN external network cells with spike-trains so they can activate our recurrent network. Previously we showed how to do this by generating csv files. We can also use SONATA spike files.</p>
+<p>First download the file:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> sim_ch05
-$ wget https://github.com/AllenInstitute/bmtk/raw/develop/docs/examples/spikes_inputs/lgn_spikes.h5
+$ wget https://github.com/AllenInstitute/bmtk/raw/develop/examples/spikes_inputs/lgn_spikes.h5
 </pre></div>
 </div>
-<p>Then we must edit the simulation_config.json file to tell the simulator to find the nwb file and which network to associate it with.</p>
+<p>Then we must edit the simulation_config.json file to tell the simulator to find the file and which network to associate it with.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
@@ -1560,7 +1527,7 @@ $ wget https://github.com/AllenInstitute/bmtk/raw/develop/docs/examples/spikes_i
 </div>
 <p>Or we can run it directly</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1579,24 +1546,7 @@ $ wget https://github.com/AllenInstitute/bmtk/raw/develop/docs/examples/spikes_i
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[INFO] [2022.8.9 17:16:12 /home/ping/bmtk_proj/nest-simulator-2.20.1/nestkernel/rng_manager.cpp:217 @ Network::create_rngs_] : Creating default RNGs
-[INFO] [2022.8.9 17:16:12 /home/ping/bmtk_proj/nest-simulator-2.20.1/nestkernel/rng_manager.cpp:260 @ Network::create_grng_] : Creating new default global RNG
-
-              -- N E S T --
-  Copyright (C) 2004 The NEST Initiative
-
- Version: nest-2.20.1
- Built: Jan  1 2022 23:06:15
-
- This program is provided AS IS and comes with
- NO WARRANTY. See the file LICENSE for details.
-
- Problems or suggestions?
-   Visit https://www.nest-simulator.org
-
- Type &#39;nest.help()&#39; to find out more about NEST.
-
-2022-08-09 17:16:13,134 [INFO] Created log file
+2022-10-25 08:57:58,631 [INFO] Created log file
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1612,7 +1562,7 @@ INFO:NestIOUtils:Created log file
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:16:13,151 [INFO] Batch processing nodes for V1/0.
+2022-10-25 08:57:58,651 [INFO] Batch processing nodes for V1/0.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1628,7 +1578,7 @@ INFO:NestIOUtils:Batch processing nodes for V1/0.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:16:13,163 [INFO] Batch processing nodes for LGN/0.
+2022-10-25 08:57:58,660 [INFO] Batch processing nodes for LGN/0.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1644,7 +1594,7 @@ INFO:NestIOUtils:Batch processing nodes for LGN/0.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:16:13,194 [INFO] Setting up output directory
+2022-10-25 08:57:58,693 [INFO] Setting up output directory
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1660,7 +1610,7 @@ INFO:NestIOUtils:Setting up output directory
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:16:13,197 [INFO] Building cells.
+2022-10-25 08:57:58,694 [INFO] Building cells.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1676,7 +1626,7 @@ INFO:NestIOUtils:Building cells.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:16:13,220 [INFO] Building recurrent connections
+2022-10-25 08:57:58,710 [INFO] Building recurrent connections
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1692,7 +1642,7 @@ INFO:NestIOUtils:Building recurrent connections
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:16:13,289 [INFO] Build virtual cell stimulations for LGN_spikes
+2022-10-25 08:57:58,776 [INFO] Build virtual cell stimulations for LGN_spikes
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1708,7 +1658,7 @@ INFO:NestIOUtils:Build virtual cell stimulations for LGN_spikes
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:16:14,277 [INFO] Network created.
+2022-10-25 08:57:59,970 [INFO] Network created.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1724,7 +1674,7 @@ INFO:NestIOUtils:Network created.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:16:14,305 [INFO] Starting Simulation
+2022-10-25 08:58:00,001 [INFO] Starting Simulation
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1740,7 +1690,7 @@ INFO:NestIOUtils:Starting Simulation
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:16:17,385 [INFO] Simulation finished, finalizing results.
+2022-10-25 08:58:03,008 [INFO] Simulation finished, finalizing results.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1756,7 +1706,7 @@ INFO:NestIOUtils:Simulation finished, finalizing results.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:16:17,640 [INFO] Done.
+2022-10-25 08:58:03,284 [INFO] Done.
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1772,7 +1722,7 @@ INFO:NestIOUtils:Done.
 <h2>4. Analyzing results<a class="headerlink" href="#4.-Analyzing-results" title="Permalink to this headline">¶</a></h2>
 <p>Results of the simulation, as specified in the config, are saved into the output directory. Using the analyzer functions, we can do things like plot the raster plot</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1791,7 +1741,7 @@ INFO:NestIOUtils:Done.
 </div>
 <p>Or we can plot the rates of the different populations</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1830,7 +1780,7 @@ INFO:NestIOUtils:Done.
 </div>
 <p>This will tell bmtk to record the “V_m” variable for selected cells with ids 0, 80, 100 - and save the results in a file <em>output/membrane_potential.h5</em>. After re-running the simulation the file will be generated, <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#frame-oriented-node-element-recordings">according to the SONATA format</a>, which we can read using hdf5 or bmtk like below:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -1851,7 +1801,7 @@ INFO:NestIOUtils:Done.
 <section id="Perturbation-simulations">
 <h3>Perturbation simulations<a class="headerlink" href="#Perturbation-simulations" title="Permalink to this headline">¶</a></h3>
 <p>A common use case is to mimick a network where the firing rate of select cells are being depressed or stimulated using current clamps or optogenetic methods. The best way to do this is by applying a current clamp in a similar manner used in <a class="reference external" href="http://localhost:32000/notebooks/Workspace/bmtk/docs/tutorial/01_single_cell_clamped.ipynb">bionet</a>.</p>
-<p>The point_120cells network in the bmtk examples consists of 120 recurrently connected excitatory and inhibitory cells with randomized inputs. Normally the results without any type of perturbations will look as follows: <img alt="1e23acde863a4d4699b60e7a149e9a41" src="_images/raster_120cells_orig.png" /></p>
+<p>The point_120cells network in the bmtk examples consists of 120 recurrently connected excitatory and inhibitory cells with randomized inputs. Normally the results without any type of perturbations will look as follows: <img alt="30213ab18c0745f699e02999de8bb24d" src="_images/raster_120cells_orig.png" /></p>
 <p>To artifically excite some of the cells we can open the config.json file and add the following section to the “inputs”:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="nt">&quot;exc_perturbation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
@@ -1894,7 +1844,7 @@ INFO:NestIOUtils:Done.
 <span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
-<p>After we rerun the simulation: <img alt="0c49e488e521486aa11df2ef317005e2" src="_images/raster_120cells_perturbed.png" /></p>
+<p>After we rerun the simulation: <img alt="b638f017c4a34b869b8d3f961909b702" src="_images/raster_120cells_perturbed.png" /></p>
 </section>
 </section>
 </section>
@@ -1918,7 +1868,7 @@ INFO:NestIOUtils:Done.
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="analyzer.html">Analyzing the Results</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Main Tutorials</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
@@ -1927,6 +1877,12 @@ INFO:NestIOUtils:Done.
 <li class="toctree-l2 current"><a class="current reference internal" href="#">PointNet: Point-neuron modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ad_tutorials.html">Additional Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_cell_placement.html">Cell placement: Using BMTK functions for distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Example Networks</a></li>

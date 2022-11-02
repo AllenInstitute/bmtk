@@ -622,11 +622,24 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span></span><span class="kn">import</span> <span class="nn">pytest</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">.conftest</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">neuron</span> <span class="kn">import</span> <span class="n">h</span>
+
+
+<span class="c1"># try:</span>
+<span class="c1">#     h.load_file(&#39;stdrun.hoc&#39;)</span>
+<span class="c1"># except Exception as e:</span>
+<span class="c1">#     pass</span>
+
+<div class="viewcode-block" id="NRNPythonObj"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.bionet.html#bmtk.tests.simulator.bionet.test_virtualcell.NRNPythonObj">[docs]</a><span class="k">class</span> <span class="nc">NRNPythonObj</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="NRNPythonObj.post_fadvance"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.bionet.html#bmtk.tests.simulator.bionet.test_virtualcell.NRNPythonObj.post_fadvance">[docs]</a>    <span class="k">def</span> <span class="nf">post_fadvance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div></div>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="n">h</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="s1">&#39;stdrun.hoc&#39;</span><span class="p">)</span>
-<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="k">pass</span>
+    <span class="n">load_neuron_modules</span><span class="p">(</span><span class="n">mechanisms_dir</span><span class="o">=</span><span class="s1">&#39;components/mechanisms&#39;</span><span class="p">,</span> <span class="n">templates_dir</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">pysim</span> <span class="o">=</span> <span class="n">NRNPythonObj</span><span class="p">()</span>
+    <span class="n">has_mechanism</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">ae</span><span class="p">:</span>
+    <span class="n">has_mechanism</span> <span class="o">=</span> <span class="kc">False</span>
 
 
 <div class="viewcode-block" id="MockNode"><a class="viewcode-back" href="../../../../../bmtk/bmtk.tests.simulator.bionet.html#bmtk.tests.simulator.bionet.test_virtualcell.MockNode">[docs]</a><span class="k">class</span> <span class="nc">MockNode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -655,6 +668,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="k">def</span> <span class="nf">test_spiketrain</span><span class="p">(</span><span class="n">spike_times</span><span class="p">):</span>
     <span class="kn">from</span> <span class="nn">bmtk.simulator.bionet.virtualcell</span> <span class="kn">import</span> <span class="n">VirtualCell</span>
 
+    <span class="n">h</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="s1">&#39;stdrun.hoc&#39;</span><span class="p">)</span>
     <span class="n">vc</span> <span class="o">=</span> <span class="n">VirtualCell</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="n">MockNode</span><span class="p">(),</span> <span class="n">population</span><span class="o">=</span><span class="s1">&#39;test_pop&#39;</span><span class="p">,</span> <span class="n">spike_train_dataset</span><span class="o">=</span><span class="n">MockSpikes</span><span class="p">(</span><span class="n">spike_times</span><span class="p">))</span>
 
     <span class="c1"># Create simple cell (soma) attach synapse using spike times from virtual cell and run, making sure</span>
@@ -684,8 +698,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="c1"># test_spiketrain([0.001, 1.0, 5.0, 10.0])</span>
-    <span class="n">test_spiketrains_negative</span><span class="p">()</span>
+    <span class="n">test_spiketrain</span><span class="p">([</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">])</span>
+    <span class="c1"># test_spiketrains_negative()</span>
     <span class="c1"># test_spiketrain()</span>
 </pre></div>
 
@@ -707,7 +721,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../analyzer.html">Analyzing the Results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials.html">Main Tutorials</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
@@ -716,6 +730,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../ad_tutorials.html">Additional Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_cell_placement.html">Cell placement: Using BMTK functions for distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../examples.html">Example Networks</a></li>

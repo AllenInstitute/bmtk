@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Tutorial 4: Muti-population recurrent network (with BioNet) &#8212; Brain Modeling Toolkit 1.0.6 documentation</title>
+    <title>Tutorial 4: Multi-population recurrent network (with BioNet) &#8212; Brain Modeling Toolkit 1.0.6 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -871,8 +871,8 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<section id="Tutorial-4:-Muti-population-recurrent-network-(with-BioNet)">
-<h1>Tutorial 4: Muti-population recurrent network (with BioNet)<a class="headerlink" href="#Tutorial-4:-Muti-population-recurrent-network-(with-BioNet)" title="Permalink to this headline">¶</a></h1>
+<section id="Tutorial-4:-Multi-population-recurrent-network-(with-BioNet)">
+<h1>Tutorial 4: Multi-population recurrent network (with BioNet)<a class="headerlink" href="#Tutorial-4:-Multi-population-recurrent-network-(with-BioNet)" title="Permalink to this headline">¶</a></h1>
 <p>Here we will create a heterogenous yet relatively small network consisting of hundreds of cells recurrently connected. All cells will belong to one of four “cell-types”. Two of these cell types will be biophysically detailed cells, i.e. containing a full morphology and somatic and dendritic channels and receptors. The other two will be point-neuron models, which lack a full morphology or channels but still act to provide inhibitory and excitory dynamics.</p>
 <p>As input to drive the simulation, we will also create an external network of “virtual cells” that synapse directly onto our internal cells and provide spike trains stimulus</p>
 <p><strong>Note</strong> - scripts and files for running this tutorial can be found in the directory <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/sources/chapter04">sources/chapter04/</a></p>
@@ -988,7 +988,7 @@ properties for creating connections and running simulations.</p>
 
     <span class="c1"># next create weights by orientation tuning [ aligned, misaligned ] --&gt; [ 1, 0 ], Check that the orientation</span>
     <span class="c1"># tuning property exists for both cells; otherwise, ignore the orientation tuning.</span>
-    <span class="k">if</span> <span class="s1">&#39;tuning_angel&#39;</span> <span class="ow">in</span> <span class="n">source</span> <span class="ow">and</span> <span class="s1">&#39;tuning_angle&#39;</span> <span class="ow">in</span> <span class="n">target</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s1">&#39;tuning_angle&#39;</span> <span class="ow">in</span> <span class="n">source</span> <span class="ow">and</span> <span class="s1">&#39;tuning_angle&#39;</span> <span class="ow">in</span> <span class="n">target</span><span class="p">:</span>
 
         <span class="c1"># 0-180 is the same as 180-360, so just modulo by 180</span>
         <span class="n">delta_tuning</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">fmod</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s1">&#39;tuning_angle&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">target</span><span class="p">[</span><span class="s1">&#39;tuning_angle&#39;</span><span class="p">]),</span> <span class="mf">180.0</span><span class="p">)</span>
@@ -1060,7 +1060,7 @@ other than source and target, we could just not set connection_params).</p>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;bmtk.builder.connection_map.ConnectionMap at 0x7fae6c5070a0&gt;
+&lt;bmtk.builder.connection_map.ConnectionMap at 0x7f56031b5130&gt;
 </pre></div></div>
 </div>
 <p>Similarly we create the other types of connections. But since either the source, target, or both cells will not have the tuning_angle parameter, we don’t want to use dist_tuning_connector. Instead we can use the built-in distance_connector function which just creates connections determined by distance.</p>
@@ -1154,7 +1154,7 @@ other than source and target, we could just not set connection_params).</p>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;bmtk.builder.connection_map.ConnectionMap at 0x7fae6c5331c0&gt;
+&lt;bmtk.builder.connection_map.ConnectionMap at 0x7f5602eec400&gt;
 </pre></div></div>
 </div>
 <p>Finally we build the network (this may take a bit of time since it’s essentially iterating over all 400x400 possible connection combinations), and save the nodes and edges.</p>
@@ -1320,11 +1320,11 @@ sources and the target.</p>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
 WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch04/config.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
-WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch04/config.circuit.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
-WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch04/config.simulation.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
+WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch04/circuit_config.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
+WARNING:root:Configuration file /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch04/simulation_config.json already exists, skipping. Please delete existing file, use a different name, or use overwrite_config=True.
 </pre></div></div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
@@ -1334,6 +1334,89 @@ Mod files: &#34;modfiles/CaDynamics.mod&#34; &#34;modfiles/Ca_HVA.mod&#34; &#34;
 
 COBJS=&#39;&#39;
  -&gt; <span class="ansi-green-fg">Compiling</span> mod_func.cpp
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/CaDynamics.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Ca_HVA.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Ca_LVA.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Ih.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Im.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Im_v2.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Kd.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/K_P.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/K_T.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Kv2like.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Kv3_1.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/Nap.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/NaTa.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/NaTs.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/NaV.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/SK.mod
+ -&gt; <span class="ansi-green-fg">NMODL</span> ../modfiles/vecevent.mod
+ -&gt; <span class="ansi-green-fg">Compiling</span> CaDynamics.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Ca_HVA.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Ca_LVA.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Ih.c
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Translating Ca_HVA.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch04/components/mechanisms/x86_64/Ca_HVA.c
+Translating CaDynamics.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch04/components/mechanisms/x86_64/CaDynamics.c
+Translating Ca_LVA.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch04/components/mechanisms/x86_64/Ca_LVA.c
+Thread Safe
+Thread Safe
+Thread Safe
+Translating Im.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch04/components/mechanisms/x86_64/Im.c
+Translating Ih.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch04/components/mechanisms/x86_64/Ih.c
+Translating Im_v2.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch04/components/mechanisms/x86_64/Im_v2.c
+Thread Safe
+Thread Safe
+Thread Safe
+Translating Kd.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch04/components/mechanisms/x86_64/Kd.c
+Translating K_P.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch04/components/mechanisms/x86_64/K_P.c
+Translating K_T.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch04/components/mechanisms/x86_64/K_T.c
+Thread Safe
+Thread Safe
+Thread Safe
+Translating Kv2like.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch04/components/mechanisms/x86_64/Kv2like.c
+Translating Kv3_1.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch04/components/mechanisms/x86_64/Kv3_1.c
+Thread Safe
+Thread Safe
+Translating Nap.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch04/components/mechanisms/x86_64/Nap.c
+Translating NaTa.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch04/components/mechanisms/x86_64/NaTa.c
+Translating NaTs.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch04/components/mechanisms/x86_64/NaTs.c
+Thread Safe
+Thread Safe
+Thread Safe
+Translating NaV.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch04/components/mechanisms/x86_64/NaV.c
+Translating SK.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch04/components/mechanisms/x86_64/SK.c
+Translating vecevent.mod into /home/ping/bmtk_change/bmtk/docs/tutorial/sim_ch04/components/mechanisms/x86_64/vecevent.c
+Notice: VERBATIM blocks are not thread safe
+Thread Safe
+NEURON&#39;s CVode method ignores conservation
+Notice: LINEAR is not thread safe.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ -&gt; <span class="ansi-green-fg">Compiling</span> Im.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Im_v2.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Kd.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> K_P.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> K_T.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Kv2like.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Kv3_1.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> Nap.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> NaTa.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> NaTs.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> NaV.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> SK.c
+ -&gt; <span class="ansi-green-fg">Compiling</span> vecevent.c
  =&gt; <span class="ansi-green-fg">LINKING</span> shared library ./libnrnmech.so
 Successfully created x86_64/special
 </pre></div></div>
@@ -1353,10 +1436,10 @@ Successfully created x86_64/special
 <h3>lgn input<a class="headerlink" href="#lgn-input" title="Permalink to this headline">¶</a></h3>
 <p>We need to provide our LGN external network cells with spike-trains so they can activate our recurrent network. Previously we showed how to do this by generating csv files. We can also use NWB files, which are a common format for saving electrophysiological data in neuroscience.</p>
 <p>We can use any NWB file generated experimentally or computationally, but for this example we will use a preexsting one. First download the file:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ wget https://github.com/AllenInstitute/bmtk/blob/develop/docs/examples/spikes_inputs/lgn_spikes.h5?raw<span class="o">=</span><span class="nb">true</span> -O lgn_spikes.h5
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ wget https://github.com/AllenInstitute/bmtk/blob/develop/examples/spikes_inputs/lgn_spikes.h5?raw<span class="o">=</span><span class="nb">true</span> -O lgn_spikes.h5
 </pre></div>
 </div>
-<p>or copy from <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/spikes_inputs/lgn_spikes.nwb">here</a>.</p>
+<p>or copy from <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples/spikes_inputs/lgn_spikes.nwb">here</a>.</p>
 <p>Then we must edit the <strong>simulation_config.json</strong> file to tell the simulator to find the nwb file and which network to associate it with.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
@@ -1421,7 +1504,7 @@ Successfully created x86_64/special
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:05:39,670 [INFO] Created log file
+2022-11-01 16:23:09,716 [INFO] Created log file
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1438,7 +1521,7 @@ INFO:NEURONIOUtils:Created log file
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 numprocs=1
-2022-08-09 17:05:39,766 [INFO] Building cells.
+2022-11-01 16:23:09,800 [INFO] Building cells.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1454,7 +1537,7 @@ INFO:NEURONIOUtils:Building cells.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:05:47,219 [INFO] Building recurrent connections
+2022-11-01 16:23:17,484 [INFO] Building recurrent connections
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1470,7 +1553,7 @@ INFO:NEURONIOUtils:Building recurrent connections
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:05:59,589 [INFO] Building virtual cell stimulations for LGN_spikes
+2022-11-01 16:23:36,637 [INFO] Building virtual cell stimulations for LGN_spikes
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1486,7 +1569,7 @@ INFO:NEURONIOUtils:Building virtual cell stimulations for LGN_spikes
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:06:01,472 [INFO] Running simulation for 3000.000 ms with the time step 0.100 ms
+2022-11-01 16:23:38,276 [INFO] Running simulation for 3000.000 ms with the time step 0.100 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1502,7 +1585,7 @@ INFO:NEURONIOUtils:Running simulation for 3000.000 ms with the time step 0.100 m
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:06:01,473 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
+2022-11-01 16:23:38,277 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1518,7 +1601,7 @@ INFO:NEURONIOUtils:Starting timestep: 0 at t_sim: 0.000 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:06:01,475 [INFO] Block save every 5000 steps
+2022-11-01 16:23:38,278 [INFO] Block save every 5000 steps
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1534,7 +1617,7 @@ INFO:NEURONIOUtils:Block save every 5000 steps
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:06:31,484 [INFO]     step:5000 t_sim:500.00 ms
+2022-11-01 16:24:19,186 [INFO]     step:5000 t_sim:500.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1550,7 +1633,7 @@ INFO:NEURONIOUtils:    step:5000 t_sim:500.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:07:00,322 [INFO]     step:10000 t_sim:1000.00 ms
+2022-11-01 16:25:02,737 [INFO]     step:10000 t_sim:1000.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1566,7 +1649,7 @@ INFO:NEURONIOUtils:    step:10000 t_sim:1000.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:07:32,126 [INFO]     step:15000 t_sim:1500.00 ms
+2022-11-01 16:25:44,100 [INFO]     step:15000 t_sim:1500.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1582,7 +1665,7 @@ INFO:NEURONIOUtils:    step:15000 t_sim:1500.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:08:00,612 [INFO]     step:20000 t_sim:2000.00 ms
+2022-11-01 16:26:30,819 [INFO]     step:20000 t_sim:2000.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1598,7 +1681,7 @@ INFO:NEURONIOUtils:    step:20000 t_sim:2000.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:08:30,891 [INFO]     step:25000 t_sim:2500.00 ms
+2022-11-01 16:27:13,897 [INFO]     step:25000 t_sim:2500.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1614,7 +1697,7 @@ INFO:NEURONIOUtils:    step:25000 t_sim:2500.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:09:00,671 [INFO]     step:30000 t_sim:3000.00 ms
+2022-11-01 16:27:56,117 [INFO]     step:30000 t_sim:3000.00 ms
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -1630,7 +1713,7 @@ INFO:NEURONIOUtils:    step:30000 t_sim:3000.00 ms
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-2022-08-09 17:09:00,724 [INFO] Simulation completed in 2.0 minutes, 59.25 seconds
+2022-11-01 16:27:56,176 [INFO] Simulation completed in 4.0 minutes, 17.9 seconds
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -1638,7 +1721,7 @@ INFO:NEURONIOUtils:    step:30000 t_sim:3000.00 ms
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-INFO:NEURONIOUtils:Simulation completed in 2.0 minutes, 59.25 seconds
+INFO:NEURONIOUtils:Simulation completed in 4.0 minutes, 17.9 seconds
 </pre></div></div>
 </div>
 </section>
@@ -1746,7 +1829,7 @@ INFO:NEURONIOUtils:Simulation completed in 2.0 minutes, 59.25 seconds
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="analyzer.html">Analyzing the Results</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="tutorials.html">Main Tutorials</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
@@ -1755,6 +1838,12 @@ INFO:NEURONIOUtils:Simulation completed in 2.0 minutes, 59.25 seconds
 <li class="toctree-l2"><a class="reference internal" href="tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ad_tutorials.html">Additional Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_cell_placement.html">Cell placement: Using BMTK functions for distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Example Networks</a></li>

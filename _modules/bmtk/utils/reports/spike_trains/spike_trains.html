@@ -764,6 +764,10 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">        :param abs_ref: Absolute refractory period (s)</span>
 <span class="sd">        :param tau_ref: Relative refractory period time constant for exponential recovery (s)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">tau_ref</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Refractory period time constant (sec) cannot be negative.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">abs_ref</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Absolute refractory period (sec) cannot be negative.&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node_ids</span><span class="p">,</span> <span class="n">string_types</span><span class="p">):</span>
             <span class="c1"># if user passes in path to nodes.h5 file count number of nodes</span>
             <span class="n">node_ids</span> <span class="o">=</span> <span class="n">get_node_ids</span><span class="p">(</span><span class="n">node_ids</span><span class="p">,</span> <span class="n">population</span><span class="p">)</span>
@@ -773,11 +777,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">firing_rate</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_build_fixed_fr</span><span class="p">(</span><span class="n">node_ids</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">firing_rate</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">abs_ref</span><span class="p">,</span> <span class="n">tau_ref</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">firing_rate</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_build_inhomogeneous_fr</span><span class="p">(</span><span class="n">node_ids</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">firing_rate</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">abs_ref</span><span class="p">,</span> <span class="n">tau_ref</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">tau_ref</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Refractory period time constant (sec) cannot be negative.&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">abs_ref</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Absolute refractory period (sec) cannot be negative.&#39;</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_build_inhomogeneous_fr</span><span class="p">(</span><span class="n">node_ids</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">firing_rate</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">abs_ref</span><span class="p">,</span> <span class="n">tau_ref</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PoissonSpikeGenerator.time_range"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains.PoissonSpikeGenerator.time_range">[docs]</a>    <span class="k">def</span> <span class="nf">time_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">(</span><span class="n">populations</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">with_population_col</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -796,6 +796,15 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">if</span> <span class="n">fr</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Firing rates must not be negative.&#39;</span><span class="p">)</span>
 
+        <span class="c1"># If there are refractory properties, correct starting firing rate and check firing limit</span>
+        <span class="k">if</span> <span class="n">abs_ref</span><span class="o">!=</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">tau_ref</span><span class="o">!=</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">max_fr_lim</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">fr_corr</span><span class="p">(</span><span class="n">abs_ref</span><span class="p">,</span> <span class="n">tau_ref</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fr</span> <span class="o">&gt;</span> <span class="n">max_fr_lim</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cannot achieve firing rate above </span><span class="si">{</span><span class="n">max_fr_lim</span><span class="si">}</span><span class="s1"> with these absolute&#39;</span>
+                                 <span class="sa">f</span><span class="s1">&#39; and relative refractory properties. Also consider using&#39;</span>
+                                 <span class="sa">f</span><span class="s1">&#39; the GammaSpikeGenerator instead.&#39;</span><span class="p">)</span>
+            <span class="n">fr</span> <span class="o">=</span> <span class="n">p</span><span class="p">(</span><span class="n">fr</span><span class="p">)</span>
+
         <span class="c1">#rs2 = np.random.RandomState(0)</span>
         <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">node_id</span> <span class="ow">in</span> <span class="n">node_ids</span><span class="p">:</span>
@@ -807,7 +816,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="k">if</span> <span class="n">c_time</span> <span class="o">&gt;</span> <span class="n">tstop</span><span class="p">:</span>
                     <span class="k">break</span>
                 <span class="k">if</span> <span class="n">tau_ref</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">w</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">c_time</span><span class="o">-</span><span class="n">preceding_time</span><span class="o">-</span><span class="n">abs_ref</span><span class="p">)</span><span class="o">/</span><span class="n">tau_ref</span><span class="p">)</span>
+                    <span class="n">w</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">interval</span><span class="o">-</span><span class="n">abs_ref</span><span class="p">)</span><span class="o">/</span><span class="n">tau_ref</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">w</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># To avoid divide by zero warning</span>
                 <span class="k">if</span> <span class="n">abs_ref</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
@@ -816,12 +825,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="k">if</span> <span class="p">(</span><span class="n">w</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">w</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">add_spike</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="n">c_time</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">output_conversion</span><span class="p">)</span>
                     <span class="n">count</span> <span class="o">=</span> <span class="n">count</span><span class="o">+</span><span class="mi">1</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">abs_ref</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">tau_ref</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="n">fr_actual</span> <span class="o">=</span> <span class="n">count</span><span class="o">/</span><span class="p">(</span><span class="n">tstop</span><span class="o">-</span><span class="n">tstart</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">node_ids</span><span class="p">)</span>
-            <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;When using refractory periods, the actual firing rate (</span><span class="si">{</span><span class="n">fr_actual</span><span class="si">}</span><span class="s1"> spk/s) may be less than &#39;</span>
-                   <span class="sa">f</span><span class="s1">&#39;the desired firing rate (</span><span class="si">{</span><span class="n">fr</span><span class="si">}</span><span class="s1"> spk/s), particularly for high rates, and saturates at 1/abs_ref. &#39;</span>
-                   <span class="s1">&#39;See also GammaSpikeGenerator for more exact firing rates with refractory periods.&#39;</span><span class="p">)</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_build_inhomogeneous_fr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_ids</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">fr</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">abs_ref</span><span class="p">,</span> <span class="n">tau_ref</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">fr</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -830,6 +833,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;If using a time series for firing rate, times must be an array of equal length&#39;</span><span class="p">)</span>
 
         <span class="n">max_fr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">fr</span><span class="p">)</span>
+
+        <span class="n">max_fr_lim</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">fr_corr</span><span class="p">(</span><span class="n">abs_ref</span><span class="p">,</span> <span class="n">tau_ref</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">max_fr</span> <span class="o">&gt;</span> <span class="n">max_fr_lim</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Cannot achieve firing rate above </span><span class="si">{</span><span class="n">max_fr_lim</span><span class="si">}</span><span class="s1"> with these absolute and relative refractory properties&#39;</span><span class="p">)</span>
+
+        <span class="n">fr</span> <span class="o">=</span> <span class="n">p</span><span class="p">(</span><span class="n">fr</span><span class="p">)</span>
 
         <span class="n">times</span> <span class="o">=</span> <span class="n">times</span>
         <span class="n">tstart</span> <span class="o">=</span> <span class="n">times</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -846,7 +855,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="k">if</span> <span class="n">c_time</span> <span class="o">&gt;</span> <span class="n">tstop</span><span class="p">:</span>
                     <span class="k">break</span>
                 <span class="k">if</span> <span class="n">tau_ref</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">w</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">c_time</span><span class="o">-</span><span class="n">preceding_time</span><span class="o">-</span><span class="n">abs_ref</span><span class="p">)</span><span class="o">/</span><span class="n">tau_ref</span><span class="p">)</span>
+                    <span class="n">w</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">interval</span><span class="o">-</span><span class="n">abs_ref</span><span class="p">)</span><span class="o">/</span><span class="n">tau_ref</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">w</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># To avoid divide by zero warning</span>
                 <span class="k">if</span> <span class="n">abs_ref</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
@@ -860,12 +869,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                                        <span class="n">fr</span><span class="p">[</span><span class="n">time_indx</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">fr</span><span class="p">[</span><span class="n">time_indx</span><span class="p">])</span>
 
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">fr_i</span><span class="o">/</span><span class="n">max_fr</span><span class="o">*</span><span class="n">w</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">():</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">add_spike</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="n">c_time</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">output_conversion</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_spike</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">population</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="n">c_time</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">output_conversion</span><span class="p">)</span></div>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">abs_ref</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">tau_ref</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;When using refractory periods, the actual firing rates may be less than &#39;</span>
-                   <span class="s1">&#39;the desired firing rates, particularly for high rates, and saturates at 1/abs_ref.&#39;</span><span class="p">)</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="GammaSpikeGenerator"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains.GammaSpikeGenerator">[docs]</a><span class="k">class</span> <span class="nc">GammaSpikeGenerator</span><span class="p">(</span><span class="n">SpikeGenerator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; A Class for generating spike-trains based on a gamma-distributed renewal process.</span>
@@ -925,6 +930,27 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="k">def</span> <span class="nf">_interpolate_fr</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="n">fr0</span><span class="p">,</span> <span class="n">fr1</span><span class="p">):</span>
     <span class="c1"># Used to interpolate the firing rate at time t from a discrete list of firing rates</span>
     <span class="k">return</span> <span class="n">fr0</span> <span class="o">+</span> <span class="p">(</span><span class="n">fr1</span> <span class="o">-</span> <span class="n">fr0</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">t1</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span>
+
+<div class="viewcode-block" id="fr_corr"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.spike_trains.html#bmtk.utils.reports.spike_trains.spike_trains.fr_corr">[docs]</a><span class="k">def</span> <span class="nf">fr_corr</span><span class="p">(</span><span class="n">abs_ref</span><span class="p">,</span> <span class="n">tau_ref</span><span class="p">):</span>
+    <span class="c1"># Firing rate correction for lost spikes</span>
+    <span class="k">if</span> <span class="n">tau_ref</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">fr_before</span><span class="p">,</span> <span class="n">abs_ref</span><span class="o">=</span><span class="n">abs_ref</span><span class="p">,</span> <span class="n">tau_ref</span><span class="o">=</span><span class="n">tau_ref</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">fr_before</span> <span class="o">*</span> <span class="n">abs_ref</span><span class="p">)</span> <span class="o">-</span> \
+                    <span class="n">fr_before</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">abs_ref</span> <span class="o">/</span> <span class="n">tau_ref</span><span class="p">)</span> <span class="o">*</span> <span class="n">tau_ref</span> <span class="o">/</span>
+                    <span class="p">(</span><span class="n">fr_before</span> <span class="o">*</span> <span class="n">tau_ref</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> \
+                    <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">fr_before</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">tau_ref</span><span class="p">)</span> <span class="o">*</span> <span class="n">abs_ref</span><span class="p">)))</span> <span class="o">*</span> <span class="n">fr_before</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">fr_before</span><span class="p">,</span> <span class="n">abs_ref</span><span class="o">=</span><span class="n">abs_ref</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">fr_before</span> <span class="o">*</span> <span class="n">abs_ref</span><span class="p">)</span> <span class="o">*</span> <span class="n">fr_before</span>
+
+    <span class="n">fr_befores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+    <span class="n">fr_afters</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">fr_befores</span><span class="p">)</span>
+    <span class="n">max_fr_lim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">fr_afters</span><span class="p">)</span>
+    <span class="n">max_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">fr_afters</span><span class="p">)</span>
+
+    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">fr_afters</span><span class="p">[:</span><span class="n">max_ind</span><span class="p">],</span> <span class="n">fr_befores</span><span class="p">[:</span><span class="n">max_ind</span><span class="p">],</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">poly1d</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">max_fr_lim</span><span class="p">,</span> <span class="n">p</span></div>
 </pre></div>
 
             <div class="clearer"></div>
@@ -945,7 +971,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../analyzer.html">Analyzing the Results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials.html">Tutorials</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../tutorials.html">Main Tutorials</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
@@ -954,6 +980,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../ad_tutorials.html">Additional Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_cell_placement.html">Cell placement: Using BMTK functions for distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../examples.html">Example Networks</a></li>
