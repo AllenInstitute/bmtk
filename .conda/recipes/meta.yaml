@@ -1,0 +1,40 @@
+{% set name = "bmtk" %}
+{% set data = load_setup_py_data(setup_file='../../setup.py', from_recipe_dir=True) %}
+{% set version = data.get('version') %}
+
+package:
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  git_url: https://github.com/AllenInstitute/bmtk.git
+  git_rev: "v{{ version }}"
+
+requirements:
+  build:
+    - python {{ python }}
+    - setuptools
+
+  run:
+    - python {{ python }}
+    - six
+    - numpy
+    - pandas
+    - matplotlib
+    - jsonschema
+    - h5py
+    - lxml
+    - sympy
+    - scikit-image
+
+test:
+  requires:
+    - pytest
+  imports:
+    - bmtk
+    - pytest
+
+about:
+  home: https://github.com/AllenInstitute/bmtk
+  license: BSD
+  license_file: LICENSE.txt
