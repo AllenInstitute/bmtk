@@ -76,7 +76,7 @@ def test_positions_density_matrix():
     
 def test_positions_nrrd():
     np.random.seed(1)
-    nrrd_filename = '../../../../docs/tutorial/sources/nrrd/structure_721.nrrd'
+    nrrd_filename = 'docs/tutorial/sources/nrrd/structure_721.nrrd'
     points = positions_nrrd(nrrd_filename, 2000)
     assert(points.shape==(2014, 3))
     
