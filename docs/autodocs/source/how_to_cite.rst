@@ -2,8 +2,9 @@ How to Cite
 ===========
 
 The following are general citation guidelines for referencing our tools. Please consult the particular journal's formatting requirements for the appropriate formatting.
- 
+
 |
+
 **How to cite BMTK:**
 
 [1] Dai, K., Gratiy, S. L., Billeh, Y. N., Xu, R., Cai, B., Cain, N., Rimehaug, A. E., Stasik, A. J., Einevoll, G. T., Mihalas, S., Koch, C., & Arkhipov, A. (2020). Brain Modeling ToolKit: An open source software suite for multiscale modeling of brain circuits. PLoS Computational Biology, 16(11), e1008386. https://doi.org/10.1371/journal.pcbi.1008386 
@@ -18,6 +19,7 @@ The BioNet module of BMTK was described in an earlier paper. If using BioNet, pl
 
 |
 |
+
 **How to cite SONATA:**
 
 [1] Dai, K., Hernando, J., Billeh, Y. N., Gratiy, S. L., Planas, J., Davison, A. P., Dura-Bernal, S., Gleeson, P., Devresse, A., Dichter, B. K., Gevaert, M., King, J. G., Geit, W. A. H. V., Povolotsky, A. V., Muller, E., Courcol, J.-D., & Arkhipov, A. (2020). The SONATA data format for efficient description of large-scale network models. PLOS Computational Biology, 16(2), e1007696. https://doi.org/10.1371/journal.pcbi.1007696 

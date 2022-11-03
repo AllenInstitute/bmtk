@@ -27,7 +27,7 @@ N_HOSTS = int(pc.nhost())
 class NetconReport(SimulatorMod):
     def __init__(self, tmp_dir, file_name, variable_name, cells, sections='all', syn_type='Exp2Syn', buffer_data=True,
                  transform={}, **kwargs):
-        """Module used for saving NEURON cell properities at each given step of the simulation.
+        """Module used for saving NEURON cell properties at each given step of the simulation.
 
         :param tmp_dir:
         :param file_name: name of h5 file to save variable.
@@ -100,7 +100,7 @@ class NetconReport(SimulatorMod):
             return val.is_integer()
 
     def _set_valid_steps(self, sim):
-        # For dt, start_time and stop_time; if not explicity set by the users then default back to the "run" values
+        # For dt, start_time and stop_time; if not explicitly set by the users then default back to the "run" values
         # in the config. If user is setting their own values, make sure they are valid/within the simulation range,
         # and make sure they are all multiples of dt.
         if self._dt is None:
