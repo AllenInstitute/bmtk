@@ -47,6 +47,7 @@ class PointSimulator(Simulator):
 
         self._cells_built = False
         self._internal_connections_built = False
+        self._rebuild_nestml = True
 
         self._graph = graph
         self._external_cells = {}  # dict-of-dict of external pointnet cells with keys [network_name][cell_id]
@@ -228,6 +229,11 @@ class PointSimulator(Simulator):
         if run_dict.get('allow_offgrid_spikes', False):
             network.set_spike_generator_params(allow_offgrid_spikes=True)
 
+        if 'rebuild_nestml' in config:
+            network._rebuild_nestml = config['rebuild_nestml']
+
+        graph.initialize_nestml(network._rebuild_nestml)
+
         # Create the output-directory, or delete existing files if it already exists
         graph.io.log_info('Setting up output directory')
         if not os.path.exists(config['output']['output_dir']):
@@ -276,7 +282,7 @@ class PointSimulator(Simulator):
                 mod = mods.SpikesMod(**report.params)
 
             elif isinstance(report, reports.MembraneReport):
-                # For convience and for compliance with SONATA format. "membrane_report" and "multimeter_report is the
+                # For convenience and for compliance with SONATA format. "membrane_report" and "multimeter_report is the
                 # same in pointnet.
                 mod = mods.MultimeterMod(**report.params)
 

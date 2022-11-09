@@ -10,16 +10,16 @@ lif_models = {
         'ei': 'e',
         'pop_name': 'LIF_exc',
         'model_type': 'point_neuron',
-        'model_template': 'nest:iaf_psc_delta',
-        'dynamics_params': 'iaf_psc_delta_exc.json'
+        'model_template': 'nestml:iaf_psc_alpha',
+        'dynamics_params': 'iaf_psc_delta_exc.json',
     },
     'LIF_inh': {
         'N': 40,
         'ei': 'i',
         'pop_name': 'LIF_inh',
         'model_type': 'point_neuron',
-        'model_template': 'nest:iaf_psc_delta',
-        'dynamics_params': 'iaf_psc_delta_inh.json'
+        'model_template': 'nestml:iaf_psc_delta',
+        'dynamics_params': 'iaf_psc_delta_inh.json',
     }
 }
 
@@ -60,7 +60,7 @@ def build_cortex_network():
         source={'ei': 'e'},
         connection_rule=random_connections,
         connection_params={'p': 0.1},
-        syn_weight=2.0,
+        syn_weight=2.0,  # 2.0
         delay=1.5,
         dynamics_params='ExcToInh.json',
         model_template='static_synapse'
@@ -87,13 +87,23 @@ def build_thalamus_network(cortex):
     thalamus.add_nodes(**input_network_model['input_network'])
 
     thalamus.add_edges(
-        target=cortex.nodes(),
+        target=cortex.nodes(ei='e'),
         connection_rule=random_connections,
         connection_params={'p': 0.1},
-        syn_weight=4.2,
+        syn_weight=220.0, 
         delay=1.5,
         dynamics_params='ExcToExc.json',
-        model_template='static_synapse'
+        model_template='nestml:static_synapse'
+    )
+
+    thalamus.add_edges(
+        target=cortex.nodes(ei='i'),
+        connection_rule=random_connections,
+        connection_params={'p': 0.1},
+        syn_weight=5.0,
+        delay=1.5,
+        dynamics_params='ExcToExc.json',
+        model_template='nestml:static_synapse'
     )
     thalamus.build()
     thalamus.save(output_dir='network')

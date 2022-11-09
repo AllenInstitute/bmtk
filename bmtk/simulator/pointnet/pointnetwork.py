@@ -76,7 +76,6 @@ class PointNetwork(SimNetwork):
         self._params_cache = {}
 
         self._virtual_ids_map = {}
-
         self._batch_nodes = True
 
         # self._nest_id_map = {}
@@ -89,6 +88,8 @@ class PointNetwork(SimNetwork):
 
         self._gid_map = GidPool()
         self._virtual_gids = GidPool()
+
+        self._nestml_models = []
 
     @property
     def py_function_caches(self):
@@ -168,6 +169,9 @@ class PointNetwork(SimNetwork):
             for edge in edge_pop.get_edges():
                 nest_srcs = self.gid_map.get_nestids(edge_pop.source_nodes, edge.source_node_ids)
                 nest_trgs = self.gid_map.get_nestids(edge_pop.target_nodes, edge.target_node_ids)
+                if np.isscalar(edge.nest_params['weight']):
+                    edge.nest_params['weight'] = np.full(shape=len(nest_srcs),
+                                                         fill_value=edge.nest_params['weight'])
                 self._nest_connect(nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=edge.nest_params)
 
     def find_edges(self, source_nodes=None, target_nodes=None):
@@ -219,6 +223,9 @@ class PointNetwork(SimNetwork):
                 for edge in edge_pop.get_edges():
                     nest_trgs = self.gid_map.get_nestids(edge_pop.target_nodes, edge.target_node_ids)
                     nest_srcs = virt_gid_map.get_nestids(edge_pop.source_nodes, edge.source_node_ids)
+                    if np.isscalar(edge.nest_params['weight']):
+                        edge.nest_params['weight'] = np.full(shape=len(nest_srcs),
+                                                             fill_value=edge.nest_params['weight'])
                     self._nest_connect(nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=edge.nest_params)
 
     def _nest_connect(self, nest_srcs, nest_trgs, conn_spec='one_to_one', syn_spec=None):
@@ -230,7 +237,7 @@ class PointNetwork(SimNetwork):
             # An occuring issue is when dt > delay, add some extra messaging in log to help users fix problem.
             res_kernel = nest.GetKernelStatus().get('resolution', 'NaN')
             delay_edges = syn_spec.get('delay', 'NaN')
-            msg = 'synaptic "delay" value in edges ({}) is not compatable with simulator resolution/"dt" ({})'.format(
+            msg = 'synaptic "delay" value in edges ({}) is not compatible with simulator resolution/"dt" ({})'.format(
                 delay_edges, res_kernel
             )
             self.io.log_error('{}{}'.format(bde.errorname, bde.errormessage))
@@ -241,3 +248,25 @@ class PointNetwork(SimNetwork):
             # Record exception to log file.
             self.io.log_error(str(e))
             raise
+
+    def add_nestml_models(self, modelname):
+        if modelname not in self._nestml_models:
+            self._nestml_models.append(modelname)
+
+    def initialize_nestml(self, rebuild_nestml=True):
+        from pynestml.frontend.pynestml_frontend import generate_nest_target
+        models_dir = os.path.commonpath([self.get_component('point_neuron_models_dir'), self.get_component('synaptic_models_dir')])
+        nestml_model_name_suffix = '_nestml'
+
+        if self._nestml_models:
+            if rebuild_nestml or not (os.path.exists(os.path.join(models_dir, 'nestml_target'))):
+                if not rebuild_nestml:
+                    self.io.log_info('Cannot find nestml target, must rebuild')
+                generate_nest_target(input_path=self._nestml_models,
+                                     logging_level='ERROR',
+                                     suffix=nestml_model_name_suffix,
+                                     target_path=os.path.join(models_dir, 'nestml_target'))
+                self.io.log_info('Generating NESTML models: ', self._nestml_models)
+                # a module by the same name can only be loaded once; do this at the very end of the function
+            nest.Install('nestmlmodule')
+
