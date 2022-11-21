@@ -3,8 +3,8 @@ from .swc_reader import get_swc
 
 
 def rand_syn_locations(src, trg, sections=('soma', 'apical', 'basal'), distance_range=(0.0, 1.0e20),
-                       morphology_dir='./components/morphologies', return_coords=False):
-    trg_swc = get_swc(trg, morphology_dir=morphology_dir, use_cache=True, dL=20.0)
+                       morphology_dir='./components/morphologies', return_coords=False, dL=None):
+    trg_swc = get_swc(trg, morphology_dir=morphology_dir, use_cache=True, dL=dL)
 
     sec_ids, seg_xs = trg_swc.choose_sections(sections, distance_range, n_sections=1)
     sec_id, seg_x = sec_ids[0], seg_xs[0]
