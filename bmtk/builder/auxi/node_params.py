@@ -24,7 +24,8 @@ import numpy as np
 import math
 import nrrd
 import matplotlib.pyplot as plt
-
+from collections import defaultdict
+from sklearn.neighbors import KDTree
 
 def positions_columinar(N=1, center=[0.0, 50.0, 0.0], height=100.0, min_radius=0.0, max_radius=1.0, plot=False):
     """Returns a set of random x,y,z coordinates within a given cylinder or cylindrical ring.
@@ -171,7 +172,8 @@ def positions_list(positions=np.array([(0, 0, 0), (0, 0, 1)])):
 
     return np.column_stack((x, y, z))
 
-def positions_density_matrix(mat, position_scale=np.array([[1,0,0],[0,1,0],[0,0,1]]), plot=False, CCF_orientation=False):
+def positions_density_matrix(mat, position_scale=np.array([[1,0,0],[0,1,0],[0,0,1]]), origin=np.array([0,0,0]),
+                             plot=False, CCF_orientation=False, dmin=0.0, method='prog', verbose=False):
     """This function places random x,y,z coordinates according to a supplied 3D array of densities (cells/mm^3).
     The optional position_scale parameter defines a transformation matrix A to physical space such that:
     [x_phys, y_phys, z_phys] = A * [x_mat, y_mat, z_mat]
@@ -183,33 +185,56 @@ def positions_density_matrix(mat, position_scale=np.array([[1,0,0],[0,1,0],[0,0,
     :param plot: Generates a plot of the cell locations when set to True
     :param CCF_orientation: if True, plot will be oriented for Allen atlas common coordinate framework
            See https://help.brain-map.org/display/mouseconnectivity/API#API-DownloadAtlas3-DReferenceModels
+    :param dmin: Minimum distance allowed between cell centers - using this function can severely slow down cell
+           placement, especially as we approach the maximal possible density for this minimum distance
+    :param verbose: If set to true, prints every 100 units placed for monitoring progress
 
     :return: A (N, 3) matrix (microns)
     """
-    vol_per_voxel = position_scale.astype(float).dot([1, 1, 1]).prod() / (1000) ** 3
-    mat = mat.astype(float) * vol_per_voxel
 
-    # Draw Poisson distributed number of cells per voxel based on density
-    num = np.random.poisson(lam=mat)
+    if (dmin<0):
+        raise ValueError('Minimum distance between cell centers (dmin) must not be negative')
 
-    ncells_tot = np.sum(num)
+    if method == 'prog':
+        # Use batch progressive sampling
+        positions = positions_dmin_prog(mat, position_scale=position_scale, dmin=dmin, verbose=verbose)
+    elif method == 'lattice':
+        # Use lattice jittering
+        # Calc bounding box - TRANSFORM FIRST, THEN GET MIN/MAX
 
-    # Assign random positions to the number of cells in each voxel
-    rand_array = np.random.uniform(size=(3, ncells_tot))
-    x = np.empty(ncells_tot, dtype=float)
-    y = np.empty(ncells_tot, dtype=float)
-    z = np.empty(ncells_tot, dtype=float)
+        positions = positions_dmin_lattice(mat, position_scale=position_scale, dmin=dmin)
+    else:
+        #raise    '\'method' can be either 'prog' for progressive sampling or 'lattice' for lattice jittering
+        pass
 
-    i = 0
-    inds = np.nonzero(num)
-    for j in range(len(inds[0])):
-        for k in range(num[inds[0][j], inds[1][j], inds[2][j]]):
-            pt = position_scale.dot([float(inds[0][j]) + rand_array[0, i],
-                                float(inds[1][j]) + rand_array[1, i],
-                                float(inds[2][j]) + rand_array[2, i]])
+    # Remove cells to achieve non-uniform density, if applicable
 
-            x[i], y[i], z[i] = pt
-            i += 1
+    temp = set(mat.flat)
+    temp.discard(0)
+
+    print('positions:', positions.shape)
+    inds = np.matmul(np.linalg.inv(position_scale),(positions.T)).T
+    inds = np.floor(inds).astype(int)
+    indx = inds[:,0]
+    indy = inds[:,1]
+    indz = inds[:,2]
+    max_dens = np.max(mat)
+
+    if len(temp) > 1:
+        rand_keep = np.random.uniform(size=positions.shape[0])
+
+        for j in range(len(rand_keep)):
+            vox_dens = mat[indx[j], indy[j], indz[j]]
+            if rand_keep[j] >= vox_dens / max_dens:
+                positions[j,:] = [np.nan, np.nan, np.nan]
+        positions = positions[~np.isnan(positions[:,0]),:]
+
+    # Shift re: origin
+    positions += origin
+
+    x = positions[:,0]
+    y = positions[:,1]
+    z = positions[:,2]
 
     if plot:
         fig, ax = plt.subplots(figsize=(11, 11),  subplot_kw={'projection':'3d'})
@@ -221,9 +246,299 @@ def positions_density_matrix(mat, position_scale=np.array([[1,0,0],[0,1,0],[0,0,
             plot_positions(x, y, z, ax, labels=['X','Y','Z'])
             ax.view_init(elev=10., azim=0)
 
-    return np.column_stack((x, y, z))
+    return positions
 
-def positions_nrrd (nrrd_filename, max_dens_per_mm3, split_bilateral=None, plot=False):
+def positions_dmin_prog(mat, position_scale=np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]]),
+                              dmin=0.0, verbose = False):
+    """This function places random x,y,z coordinates with a minimal distance according to a supplied 3D array of
+    densities (cells/mm^3) using progressive sampling.
+    The optional position_scale parameter defines a transformation matrix A to physical space such that:
+    [x_phys, y_phys, z_phys] = A * [x_mat, y_mat, z_mat]
+
+    Note: position_scale and output coordinates are in units of microns, while density is specified in mm^3.
+
+    :param mat: A 3-dimensional matrix of densities (cells/mm^3)
+    :param position_scale: A (3, 3) matrix (microns)
+    :param plot: Generates a plot of the cell locations when set to True
+    :param CCF_orientation: if True, plot will be oriented for Allen atlas common coordinate framework
+           See https://help.brain-map.org/display/mouseconnectivity/API#API-DownloadAtlas3-DReferenceModels
+    :param dmin: Minimum distance allowed between cell centers (microns) - using this function can severely slow down cell
+           placement, especially as we approach the maximal possible density for this minimum distance
+
+    :return: A (N, 3) matrix (microns)
+    """
+
+    # Can later put this inside check function?
+    if (dmin < 0):
+        raise ValueError('Minimum distance between cell centers (dmin) must not be negative')
+
+    V_sphere = 4 / 3 * np.pi * (dmin/1000/2) ** 3
+    # Number of spheres at FCC/HCP packing: 0.74*V/V_sphere
+    # Random close packing: 0.64*V/V_sphere
+    dens_lim = 0.63 / V_sphere   # in points per mm^3
+    print('Density limit:{:.1f}'.format(dens_lim))
+    print('Max density requested:{:.1f}'.format(np.max(mat)))
+
+    vol_per_voxel = position_scale.astype(float).dot([1, 1, 1]).prod() / (1000) ** 3
+    mat = mat.astype(float) * vol_per_voxel
+
+    max_dens = np.max(mat)
+    n_vox_nz = np.nonzero(mat)[0].shape[0]
+
+    # First distribute uniformly in non zero voxels at max_dens
+    inds = np.nonzero(mat)
+    ndraws_tot = int(max_dens * n_vox_nz)
+    ndraws = ndraws_tot
+    positions = np.array([]).reshape(0,3)
+    shift = False
+    iter = 0
+    max_iter = 10
+
+    while positions.shape[0] < ndraws_tot:
+        position_len = positions.shape[0]
+        if iter>max_iter:
+            print('Cannot achieve requested density')
+            break
+        positions_new = []
+        if shift:
+            tree = KDTree(positions, leaf_size=2)
+            dists, d_inds = tree.query(positions, k=2)
+            # Find indices with top largest distances
+            n = position_len // 10
+            temp = np.argpartition(-dists[:, 1], n)
+            top_inds = temp[:n]
+            b = [x for i, x in enumerate(dists[:, 1]) if i not in top_inds]
+            v_neigh = (positions[top_inds, :] - positions[d_inds[top_inds, 1], :]).T
+            # Nudge largest distance points closer to dmin
+            positions_new.append(positions[top_inds, :] - \
+                               (v_neigh * (dists[top_inds, 1] - dmin) / dists[top_inds, 1] * 0.5).T)
+            positions[top_inds, :] = [np.nan, np.nan, np.nan]
+            positions = positions[~np.isnan(positions[:, 0]), :]
+            shift = False
+
+        rand_pos_new = np.random.uniform(size=(3,ndraws))   # Or for simple geometries, draw over max_dims
+        rand_nz_vox_new = np.random.choice(range(inds[0].shape[0]), ndraws)
+
+        positions_new.append(position_scale.dot([inds[0][rand_nz_vox_new].astype(float) + rand_pos_new[0,:],
+                             inds[1][rand_nz_vox_new].astype(float) + rand_pos_new[1,:],
+                             inds[2][rand_nz_vox_new].astype(float) + rand_pos_new[2,:]]))
+        positions_new[-1] = positions_new[-1].T
+        #position_len = positions.shape[0]
+
+        # Check against existing tree
+        # Find nearest neighbor
+        if positions.shape[0] > 0:
+            tree = KDTree(positions, leaf_size=2)
+            dists, d_inds = tree.query(positions_new[-1], k=1)
+
+            for j in range(positions_new[-1].shape[0]):
+                if (len(dists[j])>0) and (np.min(dists[j]) < dmin):
+                    positions_new[-1][j, :] = [np.nan, np.nan, np.nan]
+
+        notna = ~np.isnan(positions_new[-1][:, 0])
+        positions_new[-1] = positions_new[-1][notna, :]
+
+        positions_new = np.vstack(positions_new)
+
+        # Check new points that are retained against each other
+        if positions_new.shape[0] > 1:
+            tree = KDTree(positions_new, leaf_size=2)
+            dists, d_inds = tree.query(positions_new, k=2)
+            # Overremoves by checking against removed cells, but tracking removed cells is not faster
+            for j in range(positions_new.shape[0]):
+                if dists[j][1] < dmin:
+                    positions_new[j, :] = [np.nan, np.nan, np.nan]
+        elif positions_new.shape[0] < ndraws_tot / 2000:
+            shift = True
+            iter+=1
+            print('iter:', iter)
+            continue
+        iter = 0    # Track consecutive runs of non-progress
+        positions = np.concatenate((positions, positions_new), axis=0)  # Add new positions
+        notna = ~np.isnan(positions[:,0])
+        positions = positions[notna,:]     # Existing positions, remove NaN rows
+
+        print(f'{positions.shape[0]}/{ndraws_tot} cells placed')
+
+        ndraws = ndraws_tot
+    positions = positions[:ndraws,:]
+    print(f'{positions.shape[0]} cells')
+    #x = positions[:,0]
+    #y = positions[:,1]
+    #z = positions[:,2]
+    # If mat values are not uniform, prune points according to density
+
+    return positions
+
+def positions_dmin_lattice(mat, position_scale=np.array([0,0,0]), dmin=0.0):
+    '''Packing with a minimum distance, starting from a hexagonal close packing lattice
+    :param x_box, y_box, z_box: size of each dimension of lattice box to be generated (microns)
+    :param N: number of points to be placed
+
+    '''
+
+    ind_nz = np.nonzero(mat)
+    minx = np.min(ind_nz[0])
+    miny = np.min(ind_nz[1])
+    minz = np.min(ind_nz[2])
+    maxx = np.max(ind_nz[0])
+    maxy = np.max(ind_nz[1])
+    maxz = np.max(ind_nz[2])
+
+    corners = [v.flatten() for v in (np.meshgrid([minx, maxx], [miny, maxy], [minz, maxz]))]
+    corners = np.vstack(corners)
+    corners_t = (position_scale.astype(float).dot(corners))
+
+    minx = np.min(corners_t[0])
+    miny = np.min(corners_t[1])
+    minz = np.min(corners_t[2])
+    maxx = np.max(corners_t[0])
+    maxy = np.max(corners_t[1])
+    maxz = np.max(corners_t[2])
+
+    # max_dims
+    # Calc additional origin
+    origin2 = [minx, miny, minz]
+    x_box = maxx - minx
+    y_box = maxy - miny
+    z_box = maxz - minz
+
+    # Calc box N
+    N = math.floor(x_box * y_box * z_box * np.max(mat) / (1000 ** 3))
+    vol_box = x_box * y_box * z_box
+    r = (vol_box * 0.74 / N * 3 / 4 / np.pi) ** (1. / 3)
+
+    x_n = np.ceil(x_box / (2 * r)).astype('int')
+    y_n = np.ceil(y_box / (r) / np.sqrt(3)).astype('int')
+    z_n = np.ceil(z_box / (2 * r) / np.sqrt(6) * 3).astype('int')
+
+    x, y, z = hcp(x_n, y_n, z_n, r)
+
+    # Randomly remove units in excess of N
+    # Set to NaN rather than drop to keep lattice in register
+
+    x_vec = x.flatten()
+    y_vec = y.flatten()
+    z_vec = z.flatten()
+    todrop = np.random.choice(range(len(x_vec)), len(x_vec) - N, replace=False)
+    x_vec[todrop] = np.nan
+    y_vec[todrop] = np.nan
+    z_vec[todrop] = np.nan
+
+    positions = np.vstack((x_vec, y_vec, z_vec))
+    # Remove unneeded units by mat or geometry function
+    position_scale_inv = np.linalg.inv(position_scale)
+    inds = np.matmul(position_scale_inv, (positions+np.reshape(origin2, (-1, 1)))).T
+    inds = np.floor(inds)
+    mask = ~np.isnan(inds)
+    mat_vals = np.full(inds.shape[0], fill_value=np.nan)
+    mat_vals[mask[:,0]] = mat[inds[mask[:, 0],0].astype(int),inds[mask[:, 0],1].astype(int),inds[mask[:, 0],2].astype(int)]
+    mat_vals = mat_vals==0
+    mask = ~np.isnan(mat_vals)
+    positions = positions.T
+    positions [mat_vals[mask],:] = [np.nan, np.nan, np.nan]
+    #print(positions.shape)
+    #print('mat ind shape:', mat[inds].shape)
+    #print(np.nonzero(mat[inds] != 0)[0].shape)
+    #positions[mat_vals,:] = [np.nan, np.nan, np.nan]
+
+    x_vec = positions[:,0]
+    y_vec = positions[:,1]
+    z_vec = positions[:,2]
+
+    x = x_vec.reshape((x_n, y_n, z_n))
+    y = y_vec.reshape((x_n, y_n, z_n))
+    z = z_vec.reshape((x_n, y_n, z_n))
+
+    # Then you gotta use positions
+
+    # Jitter by up to 2*r-dmin and check if okay,if not, redraw jitter
+    jitr_max = 2 * r - dmin
+
+    for i in range(x.shape[0]):
+        for j in range(x.shape[1]):
+            for k in range(x.shape[2]):
+                # Don't need it to be uniformly distributed - the outer points are less likely to qualify
+                if np.isnan(x[i, j, k]):
+                    # Eliminated unit, skip
+                    continue
+                pt_old = [x[i, j, k], y[i, j, k], z[i, j, k]]
+                x[i, j, k] = float('inf')
+                y[i, j, k] = float('inf')
+                z[i, j, k] = float('inf')
+
+                keep = False
+
+                q = 2  # Depends on jitr_max
+                indsi = np.arange(max(i - q, 0), min(i + q, x.shape[0]))
+                indsj = np.arange(max(j - q, 0), min(j + q, x.shape[1]))
+                indsk = np.arange(max(k - q, 0), min(k + q, x.shape[2]))
+
+                near_inds = np.meshgrid(indsi, indsj, indsk)
+
+                while not keep:
+                    jitx = np.random.uniform(-jitr_max, jitr_max)
+                    jity = np.random.uniform(-jitr_max, jitr_max)
+                    jitz = np.random.uniform(-jitr_max, jitr_max)
+
+                    x_new = pt_old[0] + jitx
+                    y_new = pt_old[1] + jity
+                    z_new = pt_old[2] + jitz
+                    '''
+                    if (x_new > x_box) or (x_new < 0):
+                        continue
+                    if (y_new > y_box) or (y_new < 0):
+                        continue
+                    if (z_new > z_box) or (z_new < 0):
+                        continue
+                    '''
+                    dists = np.sqrt((x_new - x[near_inds[0], near_inds[1], near_inds[2]]) ** 2 +
+                                    (y_new - y[near_inds[0], near_inds[1], near_inds[2]]) ** 2 +
+                                    (z_new - z[near_inds[0], near_inds[1], near_inds[2]]) ** 2)
+                    d = np.nanmin(np.append(dists.flatten(), float('inf')))
+                    keep = d > dmin
+
+                # Replace existing
+                x[i, j, k] = x_new
+                y[i, j, k] = y_new
+                z[i, j, k] = z_new
+
+    # Trim any points that have been jittered out of permitted region
+    x, y, z = x.flatten(), y.flatten(), z.flatten()
+    '''
+    positions = np.vstack((x, y, z))
+    inds = np.matmul(position_scale_inv, (positions + np.reshape(origin2, (-1, 1)))).T
+    inds = np.floor(inds)
+    inds = inds[~np.isnan(inds[:, 0]), :]
+    inds = inds.astype(int)
+    inds = (inds[:, 0], inds[:, 1], inds[:, 2])
+    # print(inds.shape)
+    positions = positions.T
+    print(positions.shape)
+    print(mat[inds].shape)
+    positions[np.where(mat[inds] == 0), :] = [np.nan, np.nan, np.nan]
+
+    positions = positions[~np.isnan(positions[:,0]), :]
+    '''
+    x = x[~np.isnan(x)]
+    y = y[~np.isnan(y)]
+    z = z[~np.isnan(z)]
+    print(np.count_nonzero((np.isnan(x))))
+
+    # Shift re: origin
+    x += origin2[0]
+    y += origin2[1]
+    z += origin2[2]
+    '''
+    # Offset by minimums
+    positions+=origin2
+    '''
+    print(np.count_nonzero((np.isnan(x))))
+
+    return np.vstack((x,y,z)).T
+
+
+def positions_nrrd (nrrd_filename, max_dens_per_mm3, split_bilateral=None, dmin = 0.0, plot=False, method='prog', verbose=False):
     '''Generates random cell positions based on a *.nrrd file. Matrix values are interpreted as cell densities
     for each voxel. The maximum density is scaled to max_dens_per_mm3 (cells/mm^3).
     If the *.nrrd file is a structural mask, cells will be placed uniformly at max_dens_per_mm3 within the
@@ -239,6 +554,7 @@ def positions_nrrd (nrrd_filename, max_dens_per_mm3, split_bilateral=None, plot=
 
     readdata, header = nrrd.read(nrrd_filename)
     space_dir = header['space directions']
+    origin = header['space origin']
 
     readdata_scaled = readdata / np.max(readdata) * max_dens_per_mm3
 
@@ -252,7 +568,13 @@ def positions_nrrd (nrrd_filename, max_dens_per_mm3, split_bilateral=None, plot=
         else:
             error("split_bilateral must take values of 'x', 'y', or 'z', or 'None' if no processing is desired")
 
-    positions = positions_density_matrix(readdata_scaled, position_scale=space_dir, plot=plot, CCF_orientation=True)
+    # For testing non-uniform density
+    #t = np.arange(0, readdata_scaled.shape[2], 1)
+    #s = 1+np.sin(2*np.pi*0.1*t)
+    #readdata_scaled = readdata_scaled * s
+
+    positions = positions_density_matrix(readdata_scaled, position_scale=space_dir, origin = origin, plot=plot,
+                                         CCF_orientation=True, dmin=dmin, method=method, verbose=verbose)
 
     return positions
 
@@ -267,3 +589,17 @@ def plot_positions(x,y,z,ax,labels):
     ax.set_xlabel(labels[0])
     ax.set_ylabel(labels[1])
     ax.set_zlabel(labels[2])
+def hcp(x_n, y_n, z_n, r):
+    # Hexagonal close packing lattice generation
+    i = np.arange(x_n)
+    j = np.arange(y_n)
+    k = np.arange(z_n)
+
+    get_x = lambda i, j, k, r: 2 * r * i + r * ((j + k) % 2)
+    x = get_x(i[:, None, None], j[None, :, None], k[None, None, :], r)
+    get_y = lambda i, j, k, r: r * np.sqrt(3) * (j + 1 / 3 * (k % 2)) + 0 * i
+    y = get_y(i[:, None, None], j[None, :, None], k[None, None, :], r)
+    get_z = lambda i, j, k, r: 2 * r * np.sqrt(6) / 3 * k + 0 * i + 0 * j
+    z = get_z(i[:, None, None], j[None, :, None], k[None, None, :], r)
+
+    return x, y, z
