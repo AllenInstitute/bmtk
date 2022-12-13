@@ -197,6 +197,9 @@ def positions_density_matrix(mat, position_scale=np.array([[1,0,0],[0,1,0],[0,0,
 
     if method == 'prog':
         # Use batch progressive sampling
+        #positions_density_matrix2_old(mat, position_scale=position_scale,
+        #                              origin=origin,
+        #                              plot=False, CCF_orientation=False, dmin=dmin, verbose=verbose)
         positions = positions_dmin_prog(mat, position_scale=position_scale, dmin=dmin, verbose=verbose)
     elif method == 'lattice':
         # Use lattice jittering
@@ -286,57 +289,85 @@ def positions_dmin_prog(mat, position_scale=np.array([[1, 0, 0], [0, 1, 0], [0, 
     n_vox_nz = np.nonzero(mat)[0].shape[0]
 
     # First distribute uniformly in non zero voxels at max_dens
-    inds = np.nonzero(mat)
+    ind_nz = np.nonzero(mat)
     ndraws_tot = int(max_dens * n_vox_nz)
     ndraws = ndraws_tot
     positions = np.array([]).reshape(0,3)
     shift = False
     iter = 0
-    max_iter = 10
+    max_iter = 1
+    past_iters = np.full(3, np.nan)
+    pi_ind = 0
+    favor_new = False
+    #n_confl = 0
+    #conf_ch = []
 
     while positions.shape[0] < ndraws_tot:
         position_len = positions.shape[0]
-        if iter>max_iter:
-            print('Cannot achieve requested density')
-            break
         positions_new = []
-        if shift:
-            tree = KDTree(positions, leaf_size=2)
-            dists, d_inds = tree.query(positions, k=2)
-            # Find indices with top largest distances
-            n = position_len // 10
-            temp = np.argpartition(-dists[:, 1], n)
-            top_inds = temp[:n]
-            b = [x for i, x in enumerate(dists[:, 1]) if i not in top_inds]
-            v_neigh = (positions[top_inds, :] - positions[d_inds[top_inds, 1], :]).T
-            # Nudge largest distance points closer to dmin
-            positions_new.append(positions[top_inds, :] - \
-                               (v_neigh * (dists[top_inds, 1] - dmin) / dists[top_inds, 1] * 0.5).T)
-            positions[top_inds, :] = [np.nan, np.nan, np.nan]
-            positions = positions[~np.isnan(positions[:, 0]), :]
-            shift = False
+        #dists = []
+        #d_inds = []
 
-        rand_pos_new = np.random.uniform(size=(3,ndraws))   # Or for simple geometries, draw over max_dims
-        rand_nz_vox_new = np.random.choice(range(inds[0].shape[0]), ndraws)
+        itercount = 0
+        n_pass = 0
+        while (itercount < max_iter) and (n_pass < int(ndraws_tot / 5000)):
+            rand_pos_new = np.random.uniform(size=(3,ndraws))   # Or for simple geometries, draw over max_dims
+            rand_nz_vox_new = np.random.choice(range(ind_nz[0].shape[0]), ndraws)
 
-        positions_new.append(position_scale.dot([inds[0][rand_nz_vox_new].astype(float) + rand_pos_new[0,:],
-                             inds[1][rand_nz_vox_new].astype(float) + rand_pos_new[1,:],
-                             inds[2][rand_nz_vox_new].astype(float) + rand_pos_new[2,:]]))
-        positions_new[-1] = positions_new[-1].T
-        #position_len = positions.shape[0]
+            positions_new.append(position_scale.dot([ind_nz[0][rand_nz_vox_new].astype(float) + rand_pos_new[0,:],
+                             ind_nz[1][rand_nz_vox_new].astype(float) + rand_pos_new[1,:],
+                             ind_nz[2][rand_nz_vox_new].astype(float) + rand_pos_new[2,:]]))
+            positions_new[-1] = positions_new[-1].T
+            #position_len = positions.shape[0]
 
-        # Check against existing tree
-        # Find nearest neighbor
-        if positions.shape[0] > 0:
-            tree = KDTree(positions, leaf_size=2)
-            dists, d_inds = tree.query(positions_new[-1], k=1)
+            # Check against existing tree
+            # Find nearest neighbor
 
-            for j in range(positions_new[-1].shape[0]):
-                if (len(dists[j])>0) and (np.min(dists[j]) < dmin):
-                    positions_new[-1][j, :] = [np.nan, np.nan, np.nan]
+            # If after max iter you were not able to find more than the min number of cells (10) - iter is how many rounds to find 10, favor new points, shift.
 
-        notna = ~np.isnan(positions_new[-1][:, 0])
-        positions_new[-1] = positions_new[-1][notna, :]
+            if positions.shape[0] > 0:
+                tree = KDTree(positions, leaf_size=2)
+                dists, d_inds = tree.query(positions_new[-1], k=1)
+                conf_inds = np.squeeze(dists < dmin)
+                positions_new[-1][conf_inds,:] = [np.nan, np.nan, np.nan]
+                notna = ~np.isnan(positions_new[-1][:, 0])
+                positions_new[-1] = positions_new[-1][notna, :]
+
+            itercount += 1
+            n_pass += positions_new[-1].shape[0]
+            #if n_pass > ndraws_tot / 2000:
+            #    break
+        if pi_ind >= len(past_iters):
+            # Get mean number of iterations for past 3 points and use to set new maxiter
+            max_iter = 1.5 * np.max(past_iters)
+            #print(max_iter)
+            pi_ind = 0
+        past_iters[pi_ind] = itercount
+        pi_ind += 1
+
+        if n_pass < int(ndraws_tot / 2000):
+            # Replace some of existing points
+            # Draw a small fraction of the total number of points
+            #rand_pos_new = np.random.uniform(size=(3, int(0.01*ndraws_tot)))  # Or for simple geometries, draw over max_dims
+            #rand_nz_vox_new = np.random.choice(range(ind_nz[0].shape[0]), int(0.01*ndraws_tot))
+            rand_pos_new = np.random.uniform(size=(3, ndraws))  # Or for simple geometries, draw over max_dims
+            rand_nz_vox_new = np.random.choice(range(ind_nz[0].shape[0]), ndraws)
+
+            positions_new.append(position_scale.dot([ind_nz[0][rand_nz_vox_new].astype(float) + rand_pos_new[0, :],
+                                                     ind_nz[1][rand_nz_vox_new].astype(float) + rand_pos_new[1, :],
+                                                     ind_nz[2][rand_nz_vox_new].astype(float) + rand_pos_new[2, :]]))
+            positions_new[-1] = positions_new[-1].T
+            # Remove fraction of existing points in conflict with new points
+            inds2 = tree.query_radius(positions_new[-1], r=dmin)
+            lens = np.array([len(a) for a in inds2])
+            k = np.min([math.ceil(0.005*ndraws_tot), np.count_nonzero(lens <= 1)])
+            noconf = np.nonzero(lens == 0)[0]
+            swap = np.argpartition(lens, k)[:k]   # k indices with smallest number of conflicts
+            #swap = np.setdiff1d(swap, noconf)
+            inds3 = np.unique(np.hstack(inds2[swap]))
+            positions[inds3, :] = [np.nan, np.nan, np.nan]
+            positions = positions[~np.isnan(positions[:, 0]),:]
+            positions_new[-1] = positions_new[-1][np.concatenate((swap, noconf)),:]
 
         positions_new = np.vstack(positions_new)
 
@@ -345,28 +376,23 @@ def positions_dmin_prog(mat, position_scale=np.array([[1, 0, 0], [0, 1, 0], [0, 
             tree = KDTree(positions_new, leaf_size=2)
             dists, d_inds = tree.query(positions_new, k=2)
             # Overremoves by checking against removed cells, but tracking removed cells is not faster
-            for j in range(positions_new.shape[0]):
-                if dists[j][1] < dmin:
-                    positions_new[j, :] = [np.nan, np.nan, np.nan]
-        elif positions_new.shape[0] < ndraws_tot / 2000:
-            shift = True
-            iter+=1
-            print('iter:', iter)
-            continue
-        iter = 0    # Track consecutive runs of non-progress
-        positions = np.concatenate((positions, positions_new), axis=0)  # Add new positions
-        notna = ~np.isnan(positions[:,0])
-        positions = positions[notna,:]     # Existing positions, remove NaN rows
+            conf_inds = np.squeeze(dists[:,1] < dmin)
+            positions_new[conf_inds, :] = [np.nan, np.nan, np.nan]
+            notna = ~np.isnan(positions_new[:, 0])
+            positions_new = positions_new[notna, :]
 
+        #if positions_new.shape[0]) < ndraws_tot / 2000:
+        if max_iter>20:
+            shift = True
+        positions = np.concatenate((positions, positions_new), axis=0)  # Add new positions
+        #notna = ~np.isnan(positions[:,0])
+        #positions = positions[notna,:]     # Existing positions, remove NaN rows
+        #print(f'{positions_new.shape[0]}/ {n_pass} points accepted')
         print(f'{positions.shape[0]}/{ndraws_tot} cells placed')
 
         ndraws = ndraws_tot
     positions = positions[:ndraws,:]
     print(f'{positions.shape[0]} cells')
-    #x = positions[:,0]
-    #y = positions[:,1]
-    #z = positions[:,2]
-    # If mat values are not uniform, prune points according to density
 
     return positions
 
@@ -385,28 +411,31 @@ def positions_dmin_lattice(mat, position_scale=np.array([0,0,0]), dmin=0.0):
     maxy = np.max(ind_nz[1])
     maxz = np.max(ind_nz[2])
 
-    corners = [v.flatten() for v in (np.meshgrid([minx, maxx], [miny, maxy], [minz, maxz]))]
+    corners = [v.flatten() for v in (np.meshgrid([minx, maxx+1], [miny, maxy+1], [minz, maxz+1]))]
     corners = np.vstack(corners)
     corners_t = (position_scale.astype(float).dot(corners))
 
-    minx = np.min(corners_t[0])
-    miny = np.min(corners_t[1])
-    minz = np.min(corners_t[2])
-    maxx = np.max(corners_t[0])
-    maxy = np.max(corners_t[1])
-    maxz = np.max(corners_t[2])
+    minx2 = np.min(corners_t[0])
+    print(minx.shape)
+    miny2 = np.min(corners_t[1])
+    minz2 = np.min(corners_t[2])
+    maxx2 = np.max(corners_t[0])
+    maxy2 = np.max(corners_t[1])
+    maxz2 = np.max(corners_t[2])
 
     # max_dims
     # Calc additional origin
-    origin2 = [minx, miny, minz]
-    x_box = maxx - minx
-    y_box = maxy - miny
-    z_box = maxz - minz
+    origin2 = [minx2, miny2, minz2]
+    x_box = maxx2 - minx2
+    y_box = maxy2 - miny2
+    z_box = maxz2 - minz2
 
     # Calc box N
-    N = math.floor(x_box * y_box * z_box * np.max(mat) / (1000 ** 3))
+    N_box = math.floor(x_box * y_box * z_box * np.max(mat) / (1000 ** 3))              # N for lattice box
+    N = math.floor(N_box * len(ind_nz[0])/((maxx-minx+1)*(maxy-miny+1)*(maxz-minz+1)))     # Final desired N
+    print(N)
     vol_box = x_box * y_box * z_box
-    r = (vol_box * 0.74 / N * 3 / 4 / np.pi) ** (1. / 3)
+    r = (vol_box * 0.74 / N_box * 3 / 4 / np.pi) ** (1. / 3)
 
     x_n = np.ceil(x_box / (2 * r)).astype('int')
     y_n = np.ceil(y_box / (r) / np.sqrt(3)).astype('int')
@@ -420,7 +449,7 @@ def positions_dmin_lattice(mat, position_scale=np.array([0,0,0]), dmin=0.0):
     x_vec = x.flatten()
     y_vec = y.flatten()
     z_vec = z.flatten()
-    todrop = np.random.choice(range(len(x_vec)), len(x_vec) - N, replace=False)
+    todrop = np.random.choice(range(len(x_vec)), len(x_vec) - N_box, replace=False)
     x_vec[todrop] = np.nan
     y_vec[todrop] = np.nan
     z_vec[todrop] = np.nan
@@ -437,10 +466,6 @@ def positions_dmin_lattice(mat, position_scale=np.array([0,0,0]), dmin=0.0):
     mask = ~np.isnan(mat_vals)
     positions = positions.T
     positions [mat_vals[mask],:] = [np.nan, np.nan, np.nan]
-    #print(positions.shape)
-    #print('mat ind shape:', mat[inds].shape)
-    #print(np.nonzero(mat[inds] != 0)[0].shape)
-    #positions[mat_vals,:] = [np.nan, np.nan, np.nan]
 
     x_vec = positions[:,0]
     y_vec = positions[:,1]
@@ -449,8 +474,6 @@ def positions_dmin_lattice(mat, position_scale=np.array([0,0,0]), dmin=0.0):
     x = x_vec.reshape((x_n, y_n, z_n))
     y = y_vec.reshape((x_n, y_n, z_n))
     z = z_vec.reshape((x_n, y_n, z_n))
-
-    # Then you gotta use positions
 
     # Jitter by up to 2*r-dmin and check if okay,if not, redraw jitter
     jitr_max = 2 * r - dmin
@@ -484,14 +507,7 @@ def positions_dmin_lattice(mat, position_scale=np.array([0,0,0]), dmin=0.0):
                     x_new = pt_old[0] + jitx
                     y_new = pt_old[1] + jity
                     z_new = pt_old[2] + jitz
-                    '''
-                    if (x_new > x_box) or (x_new < 0):
-                        continue
-                    if (y_new > y_box) or (y_new < 0):
-                        continue
-                    if (z_new > z_box) or (z_new < 0):
-                        continue
-                    '''
+
                     dists = np.sqrt((x_new - x[near_inds[0], near_inds[1], near_inds[2]]) ** 2 +
                                     (y_new - y[near_inds[0], near_inds[1], near_inds[2]]) ** 2 +
                                     (z_new - z[near_inds[0], near_inds[1], near_inds[2]]) ** 2)
@@ -505,37 +521,60 @@ def positions_dmin_lattice(mat, position_scale=np.array([0,0,0]), dmin=0.0):
 
     # Trim any points that have been jittered out of permitted region
     x, y, z = x.flatten(), y.flatten(), z.flatten()
-    '''
-    positions = np.vstack((x, y, z))
-    inds = np.matmul(position_scale_inv, (positions + np.reshape(origin2, (-1, 1)))).T
-    inds = np.floor(inds)
-    inds = inds[~np.isnan(inds[:, 0]), :]
-    inds = inds.astype(int)
-    inds = (inds[:, 0], inds[:, 1], inds[:, 2])
-    # print(inds.shape)
-    positions = positions.T
-    print(positions.shape)
-    print(mat[inds].shape)
-    positions[np.where(mat[inds] == 0), :] = [np.nan, np.nan, np.nan]
-
-    positions = positions[~np.isnan(positions[:,0]), :]
-    '''
     x = x[~np.isnan(x)]
     y = y[~np.isnan(y)]
     z = z[~np.isnan(z)]
-    print(np.count_nonzero((np.isnan(x))))
+
+    before_trim_len = x.shape[0]
+    inside = (x <= x_box) & (x >= 0) & (y <= y_box) & (y >= 0) & (z <= z_box) & (z >= 0)
+    x = x[inside]
+    y = y[inside]
+    z = z[inside]
+    needed = before_trim_len-x.shape[0]
+
+    positions = np.vstack((x, y, z)).T
+
+    if positions.shape[0] > N:
+        # Trim excess N, points are ordered, so pick randomly
+        todrop = np.random.choice(range(len(x_vec)), positions.shape[0]-N, replace=False)
+        positions[todrop,:] = np.nan
+
+    while positions.shape[0] < N:
+        tree = KDTree(positions, leaf_size=2)
+
+        rand_pos_new = np.random.uniform(size=(3, before_trim_len))
+        rand_nz_vox_new = np.random.choice(range(ind_nz[0].shape[0]), before_trim_len)
+
+        positions_new = position_scale.dot([(ind_nz[0]-minx)[rand_nz_vox_new].astype(float) + rand_pos_new[0, :],
+                                            (ind_nz[1]-miny)[rand_nz_vox_new].astype(float) + rand_pos_new[1, :],
+                                            (ind_nz[2]-minz)[rand_nz_vox_new].astype(float) + rand_pos_new[2, :]])
+        positions_new = positions_new.T
+        dists, d_inds = tree.query(positions_new, k=1)
+        conf_inds = np.squeeze(dists < dmin)
+        positions_new[conf_inds, :] = [np.nan, np.nan, np.nan]
+        positions_new = positions_new[~np.isnan(positions_new[:, 0]), :]
+        if positions_new.shape[0] > 1:
+            tree = KDTree(positions_new, leaf_size=2)
+            dists, d_inds = tree.query(positions_new, k=2)
+            conf_inds = np.squeeze(dists[:,1] < dmin)
+            positions_new[conf_inds, :] = [np.nan, np.nan, np.nan]
+            notna = ~np.isnan(positions_new[:, 0])
+            positions_new = positions_new[notna, :]
+        positions = np.concatenate((positions, positions_new), axis=0)  # Add new positions
+
+    positions = positions[:N, :]
+    # If N rather than density, replace any missing
+
+    x = x[~np.isnan(x)]
+    y = y[~np.isnan(y)]
+    z = z[~np.isnan(z)]
 
     # Shift re: origin
     x += origin2[0]
     y += origin2[1]
     z += origin2[2]
-    '''
-    # Offset by minimums
-    positions+=origin2
-    '''
-    print(np.count_nonzero((np.isnan(x))))
 
-    return np.vstack((x,y,z)).T
+    return positions
 
 
 def positions_nrrd (nrrd_filename, max_dens_per_mm3, split_bilateral=None, dmin = 0.0, plot=False, method='prog', verbose=False):
