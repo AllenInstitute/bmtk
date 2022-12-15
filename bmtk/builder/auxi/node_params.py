@@ -27,6 +27,78 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 from sklearn.neighbors import KDTree
 
+
+class CellLocations(object):
+    # Added class to facilitate checking of new locations against already placed locations in other populations for
+    # the purpose of ensuring a minimum distance.
+    # Only a unique minimum distance is allowed per network (populations sharing the same physical space) and must be
+    # set before adding placements
+    # Original functions outside of class are retained for compatibility with continued usage of non-class approach
+    # for simpler situations.
+    def __init__(self, name, dmin=np.nan):
+        # Currently only allowing a unique dmin
+        self._name = name
+        self._dmin = dmin
+        self._CCF_orientation = False
+        #self._all_positions = [np.array([]).reshape(0, 3)]
+        self._all_positions =[]
+        self._all_pop_names = []
+    @property
+    def dmin(self):
+        return self._dmin
+    @property
+    def CCF_orientation(self):
+        return self._CCF_orientation
+    @dmin.setter
+    def dmin(self, value):
+        self._dmin = value
+    @CCF_orientation.setter
+    def CCF_orientation(self, value):
+        self._CCF_orientation = value
+
+    def add_positions_nrrd(self, nrrd_filename, max_dens_per_mm3, pop_names, partitions=[1], split_bilateral=None,
+                          method='prog', verbose = False):
+        if np.isnan(self._dmin):
+            raise ValueError('The minimum distance property `dmin` must be set before placing cells'
+                             'Use `dmin=0.0` if no minimum distance is needed.')
+        if sum(partitions)!=1:
+            raise ValueError('The elements of `partitions` must add up to 1.')
+
+        if self._all_positions:
+            existing_positions = np.vstack(self._all_positions)
+        else:
+            existing_positions = np.array([]).reshape(0, 3)
+        positions = positions_nrrd(nrrd_filename, max_dens_per_mm3, split_bilateral, self._dmin,
+                                   CCF_orientation=self._CCF_orientation, plot=False,
+                                   method=method, existing_positions=existing_positions, verbose=verbose)
+        # list of position arrays
+        positions_pop = partition_locations(positions, partitions)
+
+        for p, pop_name in enumerate(pop_names):
+            self._all_positions.append(positions_pop[p])
+            self._all_pop_names.append(pop_name)
+
+    def plot_locs (self):
+        fig, ax = plt.subplots(figsize=(15,15), subplot_kw={'projection':'3d'})
+        plt.style.use('seaborn-bright')
+        if self._CCF_orientation:
+            ax.invert_zaxis()
+        for p, pop_name in enumerate(self._all_pop_names):
+            # x,y,z axis orientations depending on function and orientation parameters
+            x = self._all_positions[p][:,0]
+            y = self._all_positions[p][:,1]
+            z = self._all_positions[p][:,2]
+
+            if self._CCF_orientation:
+                plot_positions(x, z, y, ax, labels=['X', 'Z', 'Y'], pop_name=pop_name)
+                ax.view_init(elev=10., azim=0)
+            else:
+                plot_positions(x, y, z, ax, labels=['X','Y','Z'], pop_name=pop_name)
+                ax.view_init(elev=10., azim=0)
+        plt.legend(loc="upper right", markerscale=3, prop={'size': 15})
+        plt.show()
+
+
 def positions_columinar(N=1, center=[0.0, 50.0, 0.0], height=100.0, min_radius=0.0, max_radius=1.0, plot=False):
     """Returns a set of random x,y,z coordinates within a given cylinder or cylindrical ring.
     Height is given as the y (index 1) coordinates.
@@ -125,7 +197,7 @@ def positions_cuboid(N=1, center=[0.0, 0.0, 0.0], height=100.0, xside_length=100
 
     :return: A (N, 3) matrix
     """
-    
+
     # Create the possible x,y,z coordinates
     x_grid = np.arange(center[0], xside_length+min_dist, min_dist)
     y_grid = np.arange(center[1], yside_length+min_dist, min_dist)
@@ -165,7 +237,7 @@ def positions_list(positions=np.array([(0, 0, 0), (0, 0, 1)])):
     :param positions:
     :return:
     """
-    
+
     x = positions[:, 0]
     y = positions[:, 1]
     z = positions[:, 2]
@@ -173,7 +245,8 @@ def positions_list(positions=np.array([(0, 0, 0), (0, 0, 1)])):
     return np.column_stack((x, y, z))
 
 def positions_density_matrix(mat, position_scale=np.array([[1,0,0],[0,1,0],[0,0,1]]), origin=np.array([0,0,0]),
-                             plot=False, CCF_orientation=False, dmin=0.0, method='prog', verbose=False):
+                             plot=False, CCF_orientation=False, dmin=0.0, method='prog',
+                             existing_positions=np.array([]).reshape(0, 3), verbose=False):
     """This function places random x,y,z coordinates according to a supplied 3D array of densities (cells/mm^3).
     The optional position_scale parameter defines a transformation matrix A to physical space such that:
     [x_phys, y_phys, z_phys] = A * [x_mat, y_mat, z_mat]
@@ -200,11 +273,13 @@ def positions_density_matrix(mat, position_scale=np.array([[1,0,0],[0,1,0],[0,0,
         #positions_density_matrix2_old(mat, position_scale=position_scale,
         #                              origin=origin,
         #                              plot=False, CCF_orientation=False, dmin=dmin, verbose=verbose)
-        positions = positions_dmin_prog(mat, position_scale=position_scale, dmin=dmin, verbose=verbose)
+        positions = positions_dmin_prog(mat, position_scale=position_scale, dmin=dmin,
+                                        existing_positions=existing_positions, verbose=verbose)
     elif method == 'lattice':
         # Use lattice jittering
-        # Calc bounding box - TRANSFORM FIRST, THEN GET MIN/MAX
-
+        if existing_positions.shape[0]>0:
+            raise RuntimeError("The 'lattice' method cannot be used with already placed points. "
+                               "Use the partition inputs to place multiple populations of cells into the same space.")
         positions = positions_dmin_lattice(mat, position_scale=position_scale, dmin=dmin)
     else:
         #raise    '\'method' can be either 'prog' for progressive sampling or 'lattice' for lattice jittering
@@ -252,7 +327,7 @@ def positions_density_matrix(mat, position_scale=np.array([[1,0,0],[0,1,0],[0,0,
     return positions
 
 def positions_dmin_prog(mat, position_scale=np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]]),
-                              dmin=0.0, verbose = False):
+                              dmin=0.0, existing_positions=np.array([]).reshape(0, 3), verbose = False):
     """This function places random x,y,z coordinates with a minimal distance according to a supplied 3D array of
     densities (cells/mm^3) using progressive sampling.
     The optional position_scale parameter defines a transformation matrix A to physical space such that:
@@ -281,6 +356,8 @@ def positions_dmin_prog(mat, position_scale=np.array([[1, 0, 0], [0, 1, 0], [0, 
     dens_lim = 0.63 / V_sphere   # in points per mm^3
     print('Density limit:{:.1f}'.format(dens_lim))
     print('Max density requested:{:.1f}'.format(np.max(mat)))
+    if np.max(mat) > dens_lim:
+        raise ValueError('Requested density is incompatible with minimum distance: either reduce the density or dmin.')
 
     vol_per_voxel = position_scale.astype(float).dot([1, 1, 1]).prod() / (1000) ** 3
     mat = mat.astype(float) * vol_per_voxel
@@ -292,21 +369,14 @@ def positions_dmin_prog(mat, position_scale=np.array([[1, 0, 0], [0, 1, 0], [0, 
     ind_nz = np.nonzero(mat)
     ndraws_tot = int(max_dens * n_vox_nz)
     ndraws = ndraws_tot
-    positions = np.array([]).reshape(0,3)
-    shift = False
-    iter = 0
+    positions = np.array([]).reshape(0, 3)
+    len_existing = existing_positions.shape[0]
     max_iter = 1
     past_iters = np.full(3, np.nan)
     pi_ind = 0
-    favor_new = False
-    #n_confl = 0
-    #conf_ch = []
 
     while positions.shape[0] < ndraws_tot:
-        position_len = positions.shape[0]
         positions_new = []
-        #dists = []
-        #d_inds = []
 
         itercount = 0
         n_pass = 0
@@ -318,15 +388,12 @@ def positions_dmin_prog(mat, position_scale=np.array([[1, 0, 0], [0, 1, 0], [0, 
                              ind_nz[1][rand_nz_vox_new].astype(float) + rand_pos_new[1,:],
                              ind_nz[2][rand_nz_vox_new].astype(float) + rand_pos_new[2,:]]))
             positions_new[-1] = positions_new[-1].T
-            #position_len = positions.shape[0]
 
             # Check against existing tree
             # Find nearest neighbor
-
-            # If after max iter you were not able to find more than the min number of cells (10) - iter is how many rounds to find 10, favor new points, shift.
-
-            if positions.shape[0] > 0:
-                tree = KDTree(positions, leaf_size=2)
+            positions_all = np.vstack((existing_positions, positions))
+            if positions_all.shape[0] > 0:
+                tree = KDTree(positions_all, leaf_size=2)
                 dists, d_inds = tree.query(positions_new[-1], k=1)
                 conf_inds = np.squeeze(dists < dmin)
                 positions_new[-1][conf_inds,:] = [np.nan, np.nan, np.nan]
@@ -335,12 +402,10 @@ def positions_dmin_prog(mat, position_scale=np.array([[1, 0, 0], [0, 1, 0], [0, 
 
             itercount += 1
             n_pass += positions_new[-1].shape[0]
-            #if n_pass > ndraws_tot / 2000:
-            #    break
+
         if pi_ind >= len(past_iters):
             # Get mean number of iterations for past 3 points and use to set new maxiter
             max_iter = 1.5 * np.max(past_iters)
-            #print(max_iter)
             pi_ind = 0
         past_iters[pi_ind] = itercount
         pi_ind += 1
@@ -348,8 +413,6 @@ def positions_dmin_prog(mat, position_scale=np.array([[1, 0, 0], [0, 1, 0], [0, 
         if n_pass < int(ndraws_tot / 2000):
             # Replace some of existing points
             # Draw a small fraction of the total number of points
-            #rand_pos_new = np.random.uniform(size=(3, int(0.01*ndraws_tot)))  # Or for simple geometries, draw over max_dims
-            #rand_nz_vox_new = np.random.choice(range(ind_nz[0].shape[0]), int(0.01*ndraws_tot))
             rand_pos_new = np.random.uniform(size=(3, ndraws))  # Or for simple geometries, draw over max_dims
             rand_nz_vox_new = np.random.choice(range(ind_nz[0].shape[0]), ndraws)
 
@@ -357,14 +420,14 @@ def positions_dmin_prog(mat, position_scale=np.array([[1, 0, 0], [0, 1, 0], [0, 
                                                      ind_nz[1][rand_nz_vox_new].astype(float) + rand_pos_new[1, :],
                                                      ind_nz[2][rand_nz_vox_new].astype(float) + rand_pos_new[2, :]]))
             positions_new[-1] = positions_new[-1].T
-            # Remove fraction of existing points in conflict with new points
+            # Remove fraction of points in conflict with new points (exclude pre-existing points from other populations)
             inds2 = tree.query_radius(positions_new[-1], r=dmin)
-            lens = np.array([len(a) for a in inds2])
-            k = np.min([math.ceil(0.005*ndraws_tot), np.count_nonzero(lens <= 1)])
+            lens = np.array([np.nan if np.any(a<len_existing) else len(a) for a in inds2])
+            k = np.min([math.ceil(0.005*positions_all.shape[0]), np.count_nonzero(lens <= 1)])
             noconf = np.nonzero(lens == 0)[0]
-            swap = np.argpartition(lens, k)[:k]   # k indices with smallest number of conflicts
-            #swap = np.setdiff1d(swap, noconf)
+            swap = np.argpartition(lens, k)[:k]   # k indices with smallest number of conflicts, nan's sorted to largest
             inds3 = np.unique(np.hstack(inds2[swap]))
+            inds3 = inds3[inds3>=len_existing]-len_existing
             positions[inds3, :] = [np.nan, np.nan, np.nan]
             positions = positions[~np.isnan(positions[:, 0]),:]
             positions_new[-1] = positions_new[-1][np.concatenate((swap, noconf)),:]
@@ -381,18 +444,13 @@ def positions_dmin_prog(mat, position_scale=np.array([[1, 0, 0], [0, 1, 0], [0, 
             notna = ~np.isnan(positions_new[:, 0])
             positions_new = positions_new[notna, :]
 
-        #if positions_new.shape[0]) < ndraws_tot / 2000:
-        if max_iter>20:
-            shift = True
         positions = np.concatenate((positions, positions_new), axis=0)  # Add new positions
-        #notna = ~np.isnan(positions[:,0])
-        #positions = positions[notna,:]     # Existing positions, remove NaN rows
-        #print(f'{positions_new.shape[0]}/ {n_pass} points accepted')
         print(f'{positions.shape[0]}/{ndraws_tot} cells placed')
 
         ndraws = ndraws_tot
     positions = positions[:ndraws,:]
-    print(f'{positions.shape[0]} cells')
+    if verbose:
+        print(f'{positions.shape[0]} cells')
 
     return positions
 
@@ -416,7 +474,6 @@ def positions_dmin_lattice(mat, position_scale=np.array([0,0,0]), dmin=0.0):
     corners_t = (position_scale.astype(float).dot(corners))
 
     minx2 = np.min(corners_t[0])
-    print(minx.shape)
     miny2 = np.min(corners_t[1])
     minz2 = np.min(corners_t[2])
     maxx2 = np.max(corners_t[0])
@@ -433,7 +490,6 @@ def positions_dmin_lattice(mat, position_scale=np.array([0,0,0]), dmin=0.0):
     # Calc box N
     N_box = math.floor(x_box * y_box * z_box * np.max(mat) / (1000 ** 3))              # N for lattice box
     N = math.floor(N_box * len(ind_nz[0])/((maxx-minx+1)*(maxy-miny+1)*(maxz-minz+1)))     # Final desired N
-    print(N)
     vol_box = x_box * y_box * z_box
     r = (vol_box * 0.74 / N_box * 3 / 4 / np.pi) ** (1. / 3)
 
@@ -577,7 +633,8 @@ def positions_dmin_lattice(mat, position_scale=np.array([0,0,0]), dmin=0.0):
     return positions
 
 
-def positions_nrrd (nrrd_filename, max_dens_per_mm3, split_bilateral=None, dmin = 0.0, plot=False, method='prog', verbose=False):
+def positions_nrrd (nrrd_filename, max_dens_per_mm3, split_bilateral=None, dmin = 0.0, CCF_orientation=True, plot=False, method='prog',
+                    existing_positions=np.array([]).reshape(0, 3), verbose=False):
     '''Generates random cell positions based on a *.nrrd file. Matrix values are interpreted as cell densities
     for each voxel. The maximum density is scaled to max_dens_per_mm3 (cells/mm^3).
     If the *.nrrd file is a structural mask, cells will be placed uniformly at max_dens_per_mm3 within the
@@ -613,17 +670,18 @@ def positions_nrrd (nrrd_filename, max_dens_per_mm3, split_bilateral=None, dmin 
     #readdata_scaled = readdata_scaled * s
 
     positions = positions_density_matrix(readdata_scaled, position_scale=space_dir, origin = origin, plot=plot,
-                                         CCF_orientation=True, dmin=dmin, method=method, verbose=verbose)
+                                         CCF_orientation=CCF_orientation, dmin=dmin, method=method,
+                                         existing_positions=existing_positions, verbose=verbose)
 
     return positions
 
 def xiter_random(N=1, min_x=0.0, max_x=1.0):
     return np.random.uniform(low=min_x, high=max_x, size=(N,))
 
-def plot_positions(x,y,z,ax,labels):
+def plot_positions(x,y,z,ax,labels,pop_name=None):
     # Do plot a verification for each of these helper functions
 
-    ax.scatter(x,y,z, marker='.', s=3)
+    ax.scatter(x,y,z, marker='.', s=3, label=pop_name)
 
     ax.set_xlabel(labels[0])
     ax.set_ylabel(labels[1])
@@ -642,3 +700,13 @@ def hcp(x_n, y_n, z_n, r):
     z = get_z(i[:, None, None], j[None, :, None], k[None, None, :], r)
 
     return x, y, z
+
+def partition_locations(positions, partitions):
+    # Assign positions to subpopulations based on probabilities
+    pop_positions = []
+    pop_assigned = np.random.choice(range(len(partitions)), positions.shape[0], p=partitions)
+
+    for i in range(len(partitions)):
+        pop_positions.append(positions[pop_assigned==i,:])
+
+    return pop_positions
