@@ -1,17 +1,18 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>BioNet &#8212; Brain Modeling Toolkit 1.0.6 documentation</title>
+    <title>BioNet &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -622,7 +623,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
           <div class="body" role="main">
             
   <section id="bionet">
-<h1>BioNet<a class="headerlink" href="#bionet" title="Permalink to this headline">¶</a></h1>
+<h1>BioNet<a class="headerlink" href="#bionet" title="Permalink to this heading">¶</a></h1>
 <figure class="align-default">
 <a class="reference internal image-reference" href="_images/bmtk_architecture_bionet_highlight.jpg"><img alt="_images/bmtk_architecture_bionet_highlight.jpg" src="_images/bmtk_architecture_bionet_highlight.jpg" style="width: 433.6px; height: 167.20000000000002px;" /></a>
 </figure>
@@ -636,11 +637,11 @@ as custom hoc and NeuroML2 cell and synapse models.</p></li>
 <li><p>Can simulate extracellular field recordings.</p></li>
 </ul>
 <section id="inputs">
-<h2>Inputs<a class="headerlink" href="#inputs" title="Permalink to this headline">¶</a></h2>
+<h2>Inputs<a class="headerlink" href="#inputs" title="Permalink to this heading">¶</a></h2>
 <p>Inputs can be specified in the “inputs” sections of the <a class="reference external" href="./simulators.html#configuration-files">simulation config</a>,
 following the rules specified in the <a class="reference external" href="https://github.com/AllenInstitute/sonata">SONATA Data format</a>.</p>
 <section id="spike-trains">
-<h3>Spike-Trains<a class="headerlink" href="#spike-trains" title="Permalink to this headline">¶</a></h3>
+<h3>Spike-Trains<a class="headerlink" href="#spike-trains" title="Permalink to this heading">¶</a></h3>
 <p>The modeler may wish to have certain cells in the circuit generate a pre-arranged series of spikes to drive the network.
 These cells must have <code class="docutils literal notranslate"><span class="pre">model_type</span></code> value <code class="docutils literal notranslate"><span class="pre">virtual</span></code> and are not actual cell objects (you can’t record from them). You
 may use either a <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#spike-file">SONATA spike file</a>,
@@ -663,7 +664,7 @@ shows some examples of how to generate <a class="reference external" href="./ana
 </ul>
 </section>
 <section id="current-clamp">
-<h3>Current Clamp<a class="headerlink" href="#current-clamp" title="Permalink to this headline">¶</a></h3>
+<h3>Current Clamp<a class="headerlink" href="#current-clamp" title="Permalink to this heading">¶</a></h3>
 <p>May use one step current clamp-on multiple nodes, or have one node receive multiple current injections. Currently ;)
 only support injections at the soma.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
@@ -687,10 +688,10 @@ only support injections at the soma.</p>
 </ul>
 </section>
 <section id="voltage-clamp">
-<h3>Voltage Clamp<a class="headerlink" href="#voltage-clamp" title="Permalink to this headline">¶</a></h3>
+<h3>Voltage Clamp<a class="headerlink" href="#voltage-clamp" title="Permalink to this heading">¶</a></h3>
 </section>
 <section id="extracellular-stimulation">
-<h3>Extracellular Stimulation<a class="headerlink" href="#extracellular-stimulation" title="Permalink to this headline">¶</a></h3>
+<h3>Extracellular Stimulation<a class="headerlink" href="#extracellular-stimulation" title="Permalink to this heading">¶</a></h3>
 <p>Allows for a set of external electrodes to provide a continuous stimulation in the neuropil. Requires a space-separated CSV file with one row for each electrode:</p>
 <div class="highlight-text notranslate" id="xstim-electrode-csv"><div class="highlight"><pre><span></span>ip pos_x pos_y pos_z rotation_x rotation_y rotation_z
 0 6.1803398874989481 0.0 19.021130325903069 0.0 0.0 0.0
@@ -703,6 +704,7 @@ only support injections at the soma.</p>
 <span class="w">        </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;xstim&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">        </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">        </span><span class="nt">&quot;positions_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;./inputs/xstim_electrode.csv&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;resistance&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">300.0</span><span class="p">,</span><span class="w"></span>
 <span class="w">        </span><span class="nt">&quot;waveform&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">            </span><span class="nt">&quot;shape&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sin&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">            </span><span class="nt">&quot;del&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span><span class="w"></span>
@@ -718,23 +720,24 @@ only support injections at the soma.</p>
 <li><p>module:  Always xstim</p></li>
 <li><p><a class="reference external" href="./simulators.html#node-sets">node_set</a>: used to filter which cells will receive the inputs</p></li>
 <li><p>positions_file: onset of current injection in ms</p></li>
+<li><p>resistance: extracelluar resistance between electrode and cells in Ohms / cm^3 (default: 300.0)</p></li>
 <li><p>waveform: form on the input, requires arguments “shape”, “amp” (in pA), “del” (delay in ms) and “dur” (duration in ms). Shape may either be “dc” or “sin” (with optional arguments “freq”, “phase” and “offset”)</p></li>
 </ul>
 </section>
 <section id="spontaneous-firing">
-<h3>Spontaneous Firing<a class="headerlink" href="#spontaneous-firing" title="Permalink to this headline">¶</a></h3>
+<h3>Spontaneous Firing<a class="headerlink" href="#spontaneous-firing" title="Permalink to this heading">¶</a></h3>
 </section>
 </section>
 <section id="outputs">
-<h2>Outputs<a class="headerlink" href="#outputs" title="Permalink to this headline">¶</a></h2>
+<h2>Outputs<a class="headerlink" href="#outputs" title="Permalink to this heading">¶</a></h2>
 <section id="spikes">
-<h3>Spikes<a class="headerlink" href="#spikes" title="Permalink to this headline">¶</a></h3>
+<h3>Spikes<a class="headerlink" href="#spikes" title="Permalink to this heading">¶</a></h3>
 <p>By default, all non-virtual cells in the circuit will have all their spikes at the soma recorded. The “spike_threadhold”
 the parameter in the “run” block of the simulation config is used to determine what counts as a spike for a conductance model
 cell.</p>
 </section>
 <section id="membrane-and-intracellular-variables">
-<h3>Membrane and Intracellular Variables<a class="headerlink" href="#membrane-and-intracellular-variables" title="Permalink to this headline">¶</a></h3>
+<h3>Membrane and Intracellular Variables<a class="headerlink" href="#membrane-and-intracellular-variables" title="Permalink to this heading">¶</a></h3>
 <p>Used to record the time trace of specific cell variables, usually the membrane potential (v). For multi-compartmental
 cells the report can record from any segment that contains mechanics for the desired variable. See
 <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#simulation-output---reports">SONATA docs</a>
@@ -770,7 +773,7 @@ will be used, eg “calcium_concentration.h5” and “membrane_potential.h5”<
 </div>
 </section>
 <section id="extracellular-potential">
-<h3>Extracellular Potential<a class="headerlink" href="#extracellular-potential" title="Permalink to this headline">¶</a></h3>
+<h3>Extracellular Potential<a class="headerlink" href="#extracellular-potential" title="Permalink to this heading">¶</a></h3>
 <p>Will simulate recording from an extracellular electrode placed in the neuropil. See
 <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#extracellular-report">SONATA documentation</a>.
 Requires a space-separated CSV file to specify the location of each recording channel:</p>
@@ -805,7 +808,7 @@ cells’ ECP.</p></li>
 </ul>
 </section>
 <section id="synaptic-variables">
-<h3>Synaptic Variables<a class="headerlink" href="#synaptic-variables" title="Permalink to this headline">¶</a></h3>
+<h3>Synaptic Variables<a class="headerlink" href="#synaptic-variables" title="Permalink to this heading">¶</a></h3>
 <p>Similar to recording from membrane potential, by setting <code class="docutils literal notranslate"><span class="pre">module</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">netcon_report</span></code> you can record the
 variables from a synapse. The output is similar to a
 <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#frame-oriented-node-element-recordings">SONATA membrane report</a>,
@@ -824,9 +827,9 @@ but instead of each column being a segment of a neuron, each column represents a
 </section>
 </section>
 <section id="advanced-options">
-<h2>Advanced Options<a class="headerlink" href="#advanced-options" title="Permalink to this headline">¶</a></h2>
+<h2>Advanced Options<a class="headerlink" href="#advanced-options" title="Permalink to this heading">¶</a></h2>
 <section id="specifying-synapse-locations">
-<h3>Specifying Synapse locations<a class="headerlink" href="#specifying-synapse-locations" title="Permalink to this headline">¶</a></h3>
+<h3>Specifying Synapse locations<a class="headerlink" href="#specifying-synapse-locations" title="Permalink to this heading">¶</a></h3>
 <p>In SONATA the location of each synapse is determined by the
 <a class="reference external" href="https://github.com/AllenInstitute/sonata/blob/master/docs/SONATA_DEVELOPER_GUIDE.md#edges---required-attributes">“afferent_section_id” and “afferent_section_pos” attributes</a>,
 which requires modelers to know how NEURON parses the morphology of each cell. If these parameters are specified in the edges file
@@ -845,7 +848,7 @@ that the modeler doesn’t need to know the full details of the target_morpholog
 our experience for large-networks usually don’t change the dynamics.</p>
 </section>
 <section id="replaying-recurrent-activity-without-inputs">
-<h3>Replaying recurrent activity without inputs<a class="headerlink" href="#replaying-recurrent-activity-without-inputs" title="Permalink to this headline">¶</a></h3>
+<h3>Replaying recurrent activity without inputs<a class="headerlink" href="#replaying-recurrent-activity-without-inputs" title="Permalink to this heading">¶</a></h3>
 <p>Most of the times when we are running a simulation of a recurrently-connected network, the network is being stimulated
 by some non-recurrent source; like a voltage clamp, current clamp, extraceullar pulse, or being syanptically driven
 by a pre-recorded spike-trains (eg, virtual cells). Thus the firing-times/voltage potentials of our network cells are
@@ -1064,7 +1067,7 @@ folder for examples of running replayed simulations.</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
