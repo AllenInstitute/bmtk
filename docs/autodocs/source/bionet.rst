@@ -96,6 +96,7 @@ And in the configuration file
             "module": "xstim",
             "node_set": "all",
             "positions_file": "./inputs/xstim_electrode.csv",
+            "resistance": 300.0,
             "waveform": {
                 "shape": "sin",
                 "del": 1000.0,
@@ -109,6 +110,7 @@ And in the configuration file
 * module:  Always xstim
 * `node_set <./simulators.html#node-sets>`_: used to filter which cells will receive the inputs
 * positions_file: onset of current injection in ms
+* resistance: extracelluar resistance between electrode and cells in Ohms / cm^3 (default: 300.0)
 * waveform: form on the input, requires arguments “shape”, “amp” (in pA), “del” (delay in ms) and “dur” (duration in ms). Shape may either be “dc” or “sin” (with optional arguments “freq”, “phase” and “offset”)
 
 
