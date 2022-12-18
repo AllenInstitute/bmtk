@@ -12,7 +12,7 @@
 # 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote
 # products derived from this software without specific prior written permission.
 #
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANwhile (itercount < max_iter) and (n_pass < np.ceil(ndraws_tot / 5000)):Y EXPRESS OR IMPLIED WARRANTIES,
 # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 # DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
 # SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
@@ -35,11 +35,11 @@ class CellLocations(object):
     # set before adding placements
     # Original functions outside of class are retained for compatibility with continued usage of non-class approach
     # for simpler situations.
-    def __init__(self, name, dmin=np.nan):
+    def __init__(self, name, dmin=0.00):
         # Currently only allowing a unique dmin
         self._name = name
         self._dmin = dmin
-        self._CCF_orientation = False
+        self._CCF_orientation = True
         #self._all_positions = [np.array([]).reshape(0, 3)]
         self._all_positions =[]
         self._all_pop_names = []
@@ -58,11 +58,6 @@ class CellLocations(object):
 
     def add_positions_nrrd(self, nrrd_filename, max_dens_per_mm3, pop_names, partitions=[1], split_bilateral=None,
                           method='prog', verbose = False):
-        if np.isnan(self._dmin):
-            raise ValueError('The minimum distance property `dmin` must be set before placing cells'
-                             'Use `dmin=0.0` if no minimum distance is needed.')
-        if sum(partitions)!=1:
-            raise ValueError('The elements of `partitions` must add up to 1.')
 
         if self._all_positions:
             existing_positions = np.vstack(self._all_positions)
@@ -73,16 +68,144 @@ class CellLocations(object):
                                    method=method, existing_positions=existing_positions, verbose=verbose)
         # list of position arrays
         positions_pop = partition_locations(positions, partitions)
-
+        if isinstance(pop_names, str):
+            pop_names = [pop_names]
         for p, pop_name in enumerate(pop_names):
             self._all_positions.append(positions_pop[p])
             self._all_pop_names.append(pop_name)
 
+    def add_positions_columnar(self, pop_names, partitions=[1], N=1, center=[0.0, 50.0, 0.0], height = 100.0,
+                               min_radius = 0.0, max_radius = 1.0, method='prog', verbose=False):
+        if sum(partitions)!=1:
+            raise ValueError('The elements of `partitions` must add up to 1.')
+
+        if self._all_positions:
+            existing_positions = np.vstack(self._all_positions)
+        else:
+            existing_positions = np.array([]).reshape(0, 3)
+        vol = np.pi * (max_radius ** 2 - min_radius ** 2) * height / 1000**3
+
+        if method == 'prog':
+            def sampling_func(ndraws):
+                positions = positions_columinar(N=ndraws, center=center, height=height, min_radius=min_radius,
+                                                max_radius=max_radius)
+                return positions
+            positions = positions_dmin_prog(N=N, vol_tot=vol, sampling_func=sampling_func,
+                            dmin=self._dmin, existing_positions=existing_positions, verbose=verbose)
+        elif method == 'lattice':
+            box_dims = np.array([2*max_radius, height, 2*max_radius])
+            position_scale = np.eye(3)*box_dims
+            mat = np.array([[[N/vol]]])
+            def filter_func(x, y, z):
+                inside = (np.sqrt((x-box_dims[0]/2)**2 + (z-box_dims[2]/2)**2) <= max_radius) & \
+                         (np.sqrt((x-box_dims[0]/2)**2 + (z-box_dims[2]/2)**2) >= min_radius) & \
+                         (np.abs(y-box_dims[1]/2) < height/2)
+                return inside
+
+            positions = positions_dmin_lattice(mat, position_scale=position_scale, N=N, vol_tot=vol, dmin=self._dmin,
+                                               existing_positions=existing_positions, filter_func=filter_func,
+                                               verbose=verbose)
+            positions = positions - box_dims/2 + center
+        positions_pop = partition_locations(positions, partitions)
+        if isinstance(pop_names, str):
+            pop_names = [pop_names]
+        for p, pop_name in enumerate(pop_names):
+            self._all_positions.append(positions_pop[p])
+            self._all_pop_names.append(pop_name)
+
+    def add_positions_rect_prism(self, pop_names, partitions=[1], N=1, center=[0.0, 50.0, 0.0], height=20.0,
+                               x_length=100.0, z_length=100.0, method='prog', verbose=False):
+        if sum(partitions) != 1:
+            raise ValueError('The elements of `partitions` must add up to 1.')
+
+        if self._all_positions:
+            existing_positions = np.vstack(self._all_positions)
+        else:
+            existing_positions = np.array([]).reshape(0, 3)
+        vol = x_length * z_length * height / 1000**3
+
+        if method == 'prog':
+            def sampling_func(ndraws):
+                positions = positions_rect_prism(N=ndraws, center=center, height=height, x_length=x_length,
+                                                 z_length=z_length)
+                return positions
+            positions = positions_dmin_prog(N=N, vol_tot=vol, sampling_func=sampling_func,
+                                            dmin=self._dmin, existing_positions=existing_positions,
+                                            verbose=verbose)
+        elif method == 'lattice':
+            box_dims = np.array([x_length, height, z_length])
+            position_scale = np.eye(3) * box_dims
+            mat = np.array([[[N / vol]]])
+
+            positions = positions_dmin_lattice(mat, position_scale=position_scale, N=N, vol_tot=vol, dmin=self._dmin,
+                                               existing_positions=existing_positions)
+            positions = positions - box_dims / 2 + center
+        positions_pop = partition_locations(positions, partitions)
+        if isinstance(pop_names, str):
+            pop_names = [pop_names]
+        for p, pop_name in enumerate(pop_names):
+            self._all_positions.append(positions_pop[p])
+            self._all_pop_names.append(pop_name)
+
+    def add_positions_ellipsoid(self, pop_names, partitions=[1], N=1, center=[0.0, 50.0, 0.0], height=50.0,
+                               x_length=100.0, z_length=200.0, method='prog', verbose=False):
+        if sum(partitions) != 1:
+            raise ValueError('The elements of `partitions` must add up to 1.')
+
+        if self._all_positions:
+            existing_positions = np.vstack(self._all_positions)
+        else:
+            existing_positions = np.array([]).reshape(0, 3)
+        vol = 4 / 3 * np.pi * (x_length/2) * (z_length/2) * (height/2) / 1000**3
+
+        if method == 'prog':
+            def sampling_func(ndraws):
+                positions = positions_ellipsoid(N=ndraws, center=center, height=height, x_length=x_length,
+                                                z_length=z_length)
+                return positions
+            positions = positions_dmin_prog(N=N, vol_tot=vol, sampling_func=sampling_func,
+                                            dmin=self._dmin, existing_positions=existing_positions, verbose=verbose)
+        elif method == 'lattice':
+            box_dims = np.array([x_length, height, z_length])
+            position_scale = np.eye(3) * box_dims
+            mat = np.array([[[N / vol]]])
+
+            def filter_func(x, y, z):
+                inside = ((x - box_dims[0] / 2) ** 2 / (x_length/2) ** 2
+                          + (y - box_dims[1] / 2) ** 2 / (height/2) ** 2
+                          + (z - box_dims[2] / 2) ** 2 / (z_length/2) ** 2) <= 1
+                return inside
+            positions = positions_dmin_lattice(mat, position_scale=position_scale, N=N, vol_tot=vol, dmin=self._dmin,
+                                               existing_positions=existing_positions, filter_func=filter_func)
+            positions = positions - box_dims / 2 + center
+        '''   
+        elif method == 'lattice':
+            box_dims = np.array([2*max_radius, height, 2*max_radius])
+            position_scale = np.eye(3)*box_dims
+            mat = np.array([[[N/(np.prod(box_dims)/1000**3)]]])
+            def filter_func(x, y, z):
+                inside = (np.sqrt((x-box_dims[0]/2)**2 + (z-box_dims[2]/2)**2) <= max_radius) & \
+                         (np.sqrt((x-box_dims[0]/2)**2 + (z-box_dims[2]/2)**2) >= min_radius) & \
+                         (np.abs(y-box_dims[1]/2) < height/2)
+                return inside
+
+            positions = positions_dmin_lattice(mat, position_scale=position_scale, dmin=self._dmin,
+                                               existing_positions=existing_positions, filter_func=filter_func)
+            positions = positions - box_dims/2 + center
+        '''
+        positions_pop = partition_locations(positions, partitions)
+        if isinstance(pop_names, str):
+            pop_names = [pop_names]
+        for p, pop_name in enumerate(pop_names):
+            self._all_positions.append(positions_pop[p])
+            self._all_pop_names.append(pop_name)
+
+
     def plot_locs (self):
-        fig, ax = plt.subplots(figsize=(15,15), subplot_kw={'projection':'3d'})
+        fig, ax = plt.subplots(1,2,figsize=(20,15), subplot_kw={'projection':'3d'})
         plt.style.use('seaborn-bright')
         if self._CCF_orientation:
-            ax.invert_zaxis()
+            ax[0].invert_zaxis()
         for p, pop_name in enumerate(self._all_pop_names):
             # x,y,z axis orientations depending on function and orientation parameters
             x = self._all_positions[p][:,0]
@@ -90,12 +213,24 @@ class CellLocations(object):
             z = self._all_positions[p][:,2]
 
             if self._CCF_orientation:
-                plot_positions(x, z, y, ax, labels=['X', 'Z', 'Y'], pop_name=pop_name)
-                ax.view_init(elev=10., azim=0)
+                plot_positions(x, z, y, ax[0], labels=['X', 'Z', 'Y'], pop_name=pop_name)
+                ax[0].set_title('Side view')
+                ax[0].view_init(elev=10., azim=0)
+                plot_positions(x, z, y, ax[1], labels=['X', 'Z', 'Y'], pop_name=pop_name)
+                ax[1].set_title('Bird\'s eye view')
+                ax[1].view_init(elev=90., azim=0)
+                ax[1].legend(loc="upper right", markerscale=3, prop={'size': 15})
             else:
-                plot_positions(x, y, z, ax, labels=['X','Y','Z'], pop_name=pop_name)
+                plot_positions(x, y, z, ax[0], labels=['X','Y','Z'], pop_name=pop_name)
                 ax.view_init(elev=10., azim=0)
-        plt.legend(loc="upper right", markerscale=3, prop={'size': 15})
+                ax[0].set_title('Side view')
+                ax[0].view_init(elev=10., azim=0)
+                plot_positions(x, y, z, ax[1], labels=['X', 'Y', 'Z'], pop_name=pop_name)
+                ax[1].set_title('Bird\'s eye view')
+                ax[1].view_init(elev=90., azim=0)
+                ax[1].legend(loc="upper right", markerscale=3, prop={'size': 15})
+
+        plt.tight_layout()
         plt.show()
 
 
@@ -142,9 +277,9 @@ def positions_rect_prism(N=1, center=[0.0, 50.0, 0.0], height=20.0, x_length=100
     :return: A (N, 3) matrix
     """
 
-    x = center[0] + x_length * (2*(np.random.random([N])) - 1)
-    z = center[2] + z_length * (2*(np.random.random([N])) - 1)
-    y = center[1] + height * (2*(np.random.random([N])) - 1)
+    x = center[0] + x_length * (np.random.random([N]) - 0.5)
+    z = center[2] + z_length * (np.random.random([N]) - 0.5)
+    y = center[1] + height * (np.random.random([N]) - 0.5)
     if plot:
         fig, ax = plt.subplots(1,2,figsize=(9,12), subplot_kw={'projection':'3d'})
         plot_positions(x, z, y, ax[0], labels=['X','Z','Y'])
@@ -169,9 +304,9 @@ def positions_ellipsoid (N=1, center=[0.0, 50.0, 0.0], height=50, x_length=100.0
     """
     # Generate prism bounding the ellipsoid
     positions = positions_rect_prism (3*N, center, height, x_length, z_length, plot=False)
-    val = ((positions[:,0]-center[0])**2/x_length**2)\
-          +((positions[:,1]-center[1])**2/height**2)\
-          +((positions[:,2]-center[2])**2/z_length**2)
+    val = ((positions[:,0]-center[0])**2/(x_length/2)**2)\
+          +((positions[:,1]-center[1])**2/(height/2)**2)\
+          +((positions[:,2]-center[2])**2/(z_length/2)**2)
     positions = np.squeeze(positions [np.where(val<1),:])
     positions = positions [:N,:]
 
@@ -265,25 +400,32 @@ def positions_density_matrix(mat, position_scale=np.array([[1,0,0],[0,1,0],[0,0,
     :return: A (N, 3) matrix (microns)
     """
 
-    if (dmin<0):
-        raise ValueError('Minimum distance between cell centers (dmin) must not be negative')
-
+    ind_nz = np.nonzero(mat)
     if method == 'prog':
         # Use batch progressive sampling
-        #positions_density_matrix2_old(mat, position_scale=position_scale,
-        #                              origin=origin,
-        #                              plot=False, CCF_orientation=False, dmin=dmin, verbose=verbose)
-        positions = positions_dmin_prog(mat, position_scale=position_scale, dmin=dmin,
+        def sampling_func(ndraws):
+            rand_pos_new = np.random.uniform(size=(3, ndraws))  # Or for simple geometries, draw over max_dims
+            rand_nz_vox_new = np.random.choice(range(ind_nz[0].shape[0]), ndraws)
+
+            positions = position_scale.dot([ind_nz[0][rand_nz_vox_new].astype(float) + rand_pos_new[0, :],
+                                                 ind_nz[1][rand_nz_vox_new].astype(float) + rand_pos_new[1, :],
+                                                 ind_nz[2][rand_nz_vox_new].astype(float) + rand_pos_new[2, :]])
+            positions = positions.T
+
+            return positions
+
+        positions = positions_dmin_prog(mat, position_scale=position_scale, sampling_func=sampling_func, dmin=dmin,
                                         existing_positions=existing_positions, verbose=verbose)
     elif method == 'lattice':
         # Use lattice jittering
-        if existing_positions.shape[0]>0:
-            raise RuntimeError("The 'lattice' method cannot be used with already placed points. "
-                               "Use the partition inputs to place multiple populations of cells into the same space.")
-        positions = positions_dmin_lattice(mat, position_scale=position_scale, dmin=dmin)
+        vol_per_voxel = np.abs(np.linalg.det(position_scale.astype(float))) / (1000) ** 3
+        vol = vol_per_voxel * len(ind_nz[0])
+        N = math.floor(np.max(mat)*vol)  # Final desired N
+        positions = positions_dmin_lattice(mat, position_scale=position_scale, N=N, vol_tot=vol, dmin=dmin,
+                                           existing_positions=existing_positions, verbose=verbose)
     else:
-        #raise    '\'method' can be either 'prog' for progressive sampling or 'lattice' for lattice jittering
-        pass
+        raise ValueError("The 'method' argument can be either 'prog' for progressive sampling "
+                         "or 'lattice' for lattice jittering")
 
     # Remove cells to achieve non-uniform density, if applicable
 
@@ -326,8 +468,8 @@ def positions_density_matrix(mat, position_scale=np.array([[1,0,0],[0,1,0],[0,0,
 
     return positions
 
-def positions_dmin_prog(mat, position_scale=np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]]),
-                              dmin=0.0, existing_positions=np.array([]).reshape(0, 3), verbose = False):
+def positions_dmin_prog(mat=None, position_scale=np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]]), N=None, vol_tot=None, sampling_func=None,
+                              dmin=0.0, existing_positions=np.array([]).reshape(0, 3), verbose=False):
     """This function places random x,y,z coordinates with a minimal distance according to a supplied 3D array of
     densities (cells/mm^3) using progressive sampling.
     The optional position_scale parameter defines a transformation matrix A to physical space such that:
@@ -350,24 +492,30 @@ def positions_dmin_prog(mat, position_scale=np.array([[1, 0, 0], [0, 1, 0], [0, 
     if (dmin < 0):
         raise ValueError('Minimum distance between cell centers (dmin) must not be negative')
 
-    V_sphere = 4 / 3 * np.pi * (dmin/1000/2) ** 3
+    if isinstance(mat, np.ndarray):    # Density matrix
+        max_dens=np.max(mat)
+        vol_per_voxel = np.abs(np.linalg.det(position_scale.astype(float))) / (1000) ** 3
+        mat = mat.astype(float) * vol_per_voxel
+        max_dens_n = np.max(mat)
+        n_vox_nz = np.nonzero(mat)[0].shape[0]
+        ndraws_tot = int(max_dens_n * n_vox_nz)
+        vol_tot = vol_per_voxel * n_vox_nz
+    elif N is not None:     # Desired total N
+        ndraws_tot = N
+        max_dens = N/(vol_tot)
+    else:
+        raise Exception('Must specify either a cell density matrix (mat) or a total number of cells (N)')
+
     # Number of spheres at FCC/HCP packing: 0.74*V/V_sphere
     # Random close packing: 0.64*V/V_sphere
+    V_sphere = 4 / 3 * np.pi * (dmin/1000/2) ** 3
     dens_lim = 0.63 / V_sphere   # in points per mm^3
-    print('Density limit:{:.1f}'.format(dens_lim))
-    print('Max density requested:{:.1f}'.format(np.max(mat)))
-    if np.max(mat) > dens_lim:
+    print('Density limit:{:.3f}'.format(dens_lim))
+    print('Max density requested:{:.3f}'.format(max_dens))
+    if max_dens > dens_lim:
         raise ValueError('Requested density is incompatible with minimum distance: either reduce the density or dmin.')
 
-    vol_per_voxel = position_scale.astype(float).dot([1, 1, 1]).prod() / (1000) ** 3
-    mat = mat.astype(float) * vol_per_voxel
-
-    max_dens = np.max(mat)
-    n_vox_nz = np.nonzero(mat)[0].shape[0]
-
     # First distribute uniformly in non zero voxels at max_dens
-    ind_nz = np.nonzero(mat)
-    ndraws_tot = int(max_dens * n_vox_nz)
     ndraws = ndraws_tot
     positions = np.array([]).reshape(0, 3)
     len_existing = existing_positions.shape[0]
@@ -377,18 +525,11 @@ def positions_dmin_prog(mat, position_scale=np.array([[1, 0, 0], [0, 1, 0], [0, 
 
     while positions.shape[0] < ndraws_tot:
         positions_new = []
-
         itercount = 0
         n_pass = 0
-        while (itercount < max_iter) and (n_pass < int(ndraws_tot / 5000)):
-            rand_pos_new = np.random.uniform(size=(3,ndraws))   # Or for simple geometries, draw over max_dims
-            rand_nz_vox_new = np.random.choice(range(ind_nz[0].shape[0]), ndraws)
-
-            positions_new.append(position_scale.dot([ind_nz[0][rand_nz_vox_new].astype(float) + rand_pos_new[0,:],
-                             ind_nz[1][rand_nz_vox_new].astype(float) + rand_pos_new[1,:],
-                             ind_nz[2][rand_nz_vox_new].astype(float) + rand_pos_new[2,:]]))
-            positions_new[-1] = positions_new[-1].T
-
+        thresh = np.ceil(vol_tot*0.0001 / V_sphere)
+        while (itercount < max_iter) and (n_pass < thresh):
+            positions_new.append(sampling_func(ndraws))
             # Check against existing tree
             # Find nearest neighbor
             positions_all = np.vstack((existing_positions, positions))
@@ -413,13 +554,9 @@ def positions_dmin_prog(mat, position_scale=np.array([[1, 0, 0], [0, 1, 0], [0, 
         if n_pass < int(ndraws_tot / 2000):
             # Replace some of existing points
             # Draw a small fraction of the total number of points
-            rand_pos_new = np.random.uniform(size=(3, ndraws))  # Or for simple geometries, draw over max_dims
-            rand_nz_vox_new = np.random.choice(range(ind_nz[0].shape[0]), ndraws)
 
-            positions_new.append(position_scale.dot([ind_nz[0][rand_nz_vox_new].astype(float) + rand_pos_new[0, :],
-                                                     ind_nz[1][rand_nz_vox_new].astype(float) + rand_pos_new[1, :],
-                                                     ind_nz[2][rand_nz_vox_new].astype(float) + rand_pos_new[2, :]]))
-            positions_new[-1] = positions_new[-1].T
+            positions_new.append(sampling_func(ndraws))
+
             # Remove fraction of points in conflict with new points (exclude pre-existing points from other populations)
             inds2 = tree.query_radius(positions_new[-1], r=dmin)
             lens = np.array([np.nan if np.any(a<len_existing) else len(a) for a in inds2])
@@ -445,21 +582,38 @@ def positions_dmin_prog(mat, position_scale=np.array([[1, 0, 0], [0, 1, 0], [0, 
             positions_new = positions_new[notna, :]
 
         positions = np.concatenate((positions, positions_new), axis=0)  # Add new positions
-        print(f'{positions.shape[0]}/{ndraws_tot} cells placed')
+        if verbose:
+            print(f'{positions.shape[0]}/{ndraws_tot} cells placed')
 
         ndraws = ndraws_tot
     positions = positions[:ndraws,:]
+
     if verbose:
         print(f'{positions.shape[0]} cells')
 
     return positions
 
-def positions_dmin_lattice(mat, position_scale=np.array([0,0,0]), dmin=0.0):
+def positions_dmin_lattice(mat, position_scale=np.array([0,0,0]), N=1, vol_tot=None, dmin=0.0,
+                           existing_positions=np.array([]).reshape(0, 3), filter_func=None, verbose=False):
     '''Packing with a minimum distance, starting from a hexagonal close packing lattice
     :param x_box, y_box, z_box: size of each dimension of lattice box to be generated (microns)
     :param N: number of points to be placed
 
     '''
+    if (dmin < 0):
+        raise ValueError('Minimum distance between cell centers (dmin) must not be negative')
+    if existing_positions.shape[0] > 0:
+        raise RuntimeError("The 'lattice' method cannot be used with already placed points. "
+                           "Use the partition inputs to place multiple populations of cells into the same space, "
+                           "or use the 'prog' method.")
+
+    max_dens=N/(vol_tot)
+    V_sphere = 4 / 3 * np.pi * (dmin / 1000 / 2) ** 3
+    dens_lim = 0.74 / V_sphere  # in points per mm^3
+    print('Density limit:{:.3f}'.format(dens_lim))
+    print('Max density requested:{:.3f}'.format(max_dens))
+    if max_dens > dens_lim:
+        raise ValueError('Requested density is incompatible with minimum distance: either reduce the density or dmin.')
 
     ind_nz = np.nonzero(mat)
     minx = np.min(ind_nz[0])
@@ -489,13 +643,13 @@ def positions_dmin_lattice(mat, position_scale=np.array([0,0,0]), dmin=0.0):
 
     # Calc box N
     N_box = math.floor(x_box * y_box * z_box * np.max(mat) / (1000 ** 3))              # N for lattice box
-    N = math.floor(N_box * len(ind_nz[0])/((maxx-minx+1)*(maxy-miny+1)*(maxz-minz+1)))     # Final desired N
+
     vol_box = x_box * y_box * z_box
     r = (vol_box * 0.74 / N_box * 3 / 4 / np.pi) ** (1. / 3)
 
-    x_n = np.ceil(x_box / (2 * r)).astype('int')
-    y_n = np.ceil(y_box / (r) / np.sqrt(3)).astype('int')
-    z_n = np.ceil(z_box / (2 * r) / np.sqrt(6) * 3).astype('int')
+    x_n = int((x_box-r) / (2 * r)) + 1
+    y_n = int(y_box / (r) / np.sqrt(3) - 1/3) + 1
+    z_n = int(z_box / (2 * r) / np.sqrt(6) * 3) + 1
 
     x, y, z = hcp(x_n, y_n, z_n, r)
 
@@ -505,7 +659,8 @@ def positions_dmin_lattice(mat, position_scale=np.array([0,0,0]), dmin=0.0):
     x_vec = x.flatten()
     y_vec = y.flatten()
     z_vec = z.flatten()
-    todrop = np.random.choice(range(len(x_vec)), len(x_vec) - N_box, replace=False)
+
+    todrop = np.random.choice(range(len(x_vec)), np.max([0,len(x_vec) - N_box]), replace=False)
     x_vec[todrop] = np.nan
     y_vec[todrop] = np.nan
     z_vec[todrop] = np.nan
@@ -548,7 +703,7 @@ def positions_dmin_lattice(mat, position_scale=np.array([0,0,0]), dmin=0.0):
 
                 keep = False
 
-                q = 2  # Depends on jitr_max
+                q = 2
                 indsi = np.arange(max(i - q, 0), min(i + q, x.shape[0]))
                 indsj = np.arange(max(j - q, 0), min(j + q, x.shape[1]))
                 indsk = np.arange(max(k - q, 0), min(k + q, x.shape[2]))
@@ -575,18 +730,20 @@ def positions_dmin_lattice(mat, position_scale=np.array([0,0,0]), dmin=0.0):
                 y[i, j, k] = y_new
                 z[i, j, k] = z_new
 
-    # Trim any points that have been jittered out of permitted region
     x, y, z = x.flatten(), y.flatten(), z.flatten()
     x = x[~np.isnan(x)]
     y = y[~np.isnan(y)]
     z = z[~np.isnan(z)]
 
     before_trim_len = x.shape[0]
-    inside = (x <= x_box) & (x >= 0) & (y <= y_box) & (y >= 0) & (z <= z_box) & (z >= 0)
+    if filter_func is None:
+        # Trim any points that have been jittered out of permitted region
+        inside = (x <= x_box) & (x >= 0) & (y <= y_box) & (y >= 0) & (z <= z_box) & (z >= 0)
+    else:
+        inside = filter_func(x, y, z)
     x = x[inside]
     y = y[inside]
     z = z[inside]
-    needed = before_trim_len-x.shape[0]
 
     positions = np.vstack((x, y, z)).T
 
@@ -596,6 +753,8 @@ def positions_dmin_lattice(mat, position_scale=np.array([0,0,0]), dmin=0.0):
         positions[todrop,:] = np.nan
 
     while positions.shape[0] < N:
+        if verbose==True:
+            print(f'{positions.shape[0]}/{N} cells placed')
         tree = KDTree(positions, leaf_size=2)
 
         rand_pos_new = np.random.uniform(size=(3, before_trim_len))
@@ -616,6 +775,9 @@ def positions_dmin_lattice(mat, position_scale=np.array([0,0,0]), dmin=0.0):
             positions_new[conf_inds, :] = [np.nan, np.nan, np.nan]
             notna = ~np.isnan(positions_new[:, 0])
             positions_new = positions_new[notna, :]
+            if filter_func is not None:
+                inside = filter_func(positions_new[:,0], positions_new[:,1], positions_new[:,2])
+                positions_new = positions_new[inside]
         positions = np.concatenate((positions, positions_new), axis=0)  # Add new positions
 
     positions = positions[:N, :]
@@ -681,7 +843,7 @@ def xiter_random(N=1, min_x=0.0, max_x=1.0):
 def plot_positions(x,y,z,ax,labels,pop_name=None):
     # Do plot a verification for each of these helper functions
 
-    ax.scatter(x,y,z, marker='.', s=3, label=pop_name)
+    ax.scatter(x,y,z, marker='.', s=5, label=pop_name)
 
     ax.set_xlabel(labels[0])
     ax.set_ylabel(labels[1])
