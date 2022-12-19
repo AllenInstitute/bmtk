@@ -26,6 +26,9 @@ import nrrd
 import matplotlib.pyplot as plt
 from collections import defaultdict
 from sklearn.neighbors import KDTree
+from types import SimpleNamespace
+
+
 
 
 class CellLocations(object):
@@ -49,6 +52,13 @@ class CellLocations(object):
     @property
     def CCF_orientation(self):
         return self._CCF_orientation
+
+    '''
+    @property
+    def pop_positions(self,pop_name):
+        
+        return
+    '''
     @dmin.setter
     def dmin(self, value):
         self._dmin = value
@@ -68,11 +78,7 @@ class CellLocations(object):
                                    method=method, existing_positions=existing_positions, verbose=verbose)
         # list of position arrays
         positions_pop = partition_locations(positions, partitions)
-        if isinstance(pop_names, str):
-            pop_names = [pop_names]
-        for p, pop_name in enumerate(pop_names):
-            self._all_positions.append(positions_pop[p])
-            self._all_pop_names.append(pop_name)
+        self.add_positions(pop_names, positions_pop)
 
     def add_positions_columnar(self, pop_names, partitions=[1], N=1, center=[0.0, 50.0, 0.0], height = 100.0,
                                min_radius = 0.0, max_radius = 1.0, method='prog', verbose=False):
@@ -107,11 +113,8 @@ class CellLocations(object):
                                                verbose=verbose)
             positions = positions - box_dims/2 + center
         positions_pop = partition_locations(positions, partitions)
-        if isinstance(pop_names, str):
-            pop_names = [pop_names]
-        for p, pop_name in enumerate(pop_names):
-            self._all_positions.append(positions_pop[p])
-            self._all_pop_names.append(pop_name)
+        self.add_positions(pop_names, positions_pop)
+
 
     def add_positions_rect_prism(self, pop_names, partitions=[1], N=1, center=[0.0, 50.0, 0.0], height=20.0,
                                x_length=100.0, z_length=100.0, method='prog', verbose=False):
@@ -141,11 +144,7 @@ class CellLocations(object):
                                                existing_positions=existing_positions)
             positions = positions - box_dims / 2 + center
         positions_pop = partition_locations(positions, partitions)
-        if isinstance(pop_names, str):
-            pop_names = [pop_names]
-        for p, pop_name in enumerate(pop_names):
-            self._all_positions.append(positions_pop[p])
-            self._all_pop_names.append(pop_name)
+        self.add_positions(pop_names, positions_pop)
 
     def add_positions_ellipsoid(self, pop_names, partitions=[1], N=1, center=[0.0, 50.0, 0.0], height=50.0,
                                x_length=100.0, z_length=200.0, method='prog', verbose=False):
@@ -194,11 +193,7 @@ class CellLocations(object):
             positions = positions - box_dims/2 + center
         '''
         positions_pop = partition_locations(positions, partitions)
-        if isinstance(pop_names, str):
-            pop_names = [pop_names]
-        for p, pop_name in enumerate(pop_names):
-            self._all_positions.append(positions_pop[p])
-            self._all_pop_names.append(pop_name)
+        self.add_positions(pop_names, positions_pop)
 
 
     def plot_locs (self):
@@ -232,6 +227,17 @@ class CellLocations(object):
 
         plt.tight_layout()
         plt.show()
+
+    def add_positions(self, pop_names, positions_pop):
+        if isinstance(pop_names, str):
+            pop_names = [pop_names]
+        for p, pop_name in enumerate(pop_names):
+            self._all_positions.append(positions_pop[p])
+            self._all_pop_names.append(pop_name)
+            myvars = vars(self)
+            myvars[pop_name] = SimpleNamespace()
+            myvars[pop_name].positions = self._all_positions[p]
+            myvars[pop_name].N = self._all_positions[p].shape[0]
 
 
 def positions_columinar(N=1, center=[0.0, 50.0, 0.0], height=100.0, min_radius=0.0, max_radius=1.0, plot=False):
@@ -506,14 +512,18 @@ def positions_dmin_prog(mat=None, position_scale=np.array([[1, 0, 0], [0, 1, 0],
     else:
         raise Exception('Must specify either a cell density matrix (mat) or a total number of cells (N)')
 
-    # Number of spheres at FCC/HCP packing: 0.74*V/V_sphere
-    # Random close packing: 0.64*V/V_sphere
-    V_sphere = 4 / 3 * np.pi * (dmin/1000/2) ** 3
-    dens_lim = 0.63 / V_sphere   # in points per mm^3
-    print('Density limit:{:.3f}'.format(dens_lim))
-    print('Max density requested:{:.3f}'.format(max_dens))
-    if max_dens > dens_lim:
-        raise ValueError('Requested density is incompatible with minimum distance: either reduce the density or dmin.')
+    if dmin != 0:
+        # Number of spheres at FCC/HCP packing: 0.74*V/V_sphere
+        # Random close packing: 0.64*V/V_sphere
+        V_sphere = 4 / 3 * np.pi * (dmin/1000/2) ** 3
+        dens_lim = 0.63 / V_sphere   # in points per mm^3
+        print('Density limit:{:.3f}'.format(dens_lim))
+        print('Max density requested:{:.3f}'.format(max_dens))
+        if max_dens > dens_lim:
+            raise ValueError('Requested density is incompatible with minimum distance: either reduce the density or dmin.')
+        thresh = np.ceil(vol_tot * 0.0001 / V_sphere)
+    else:
+        thresh = 1
 
     # First distribute uniformly in non zero voxels at max_dens
     ndraws = ndraws_tot
@@ -527,19 +537,19 @@ def positions_dmin_prog(mat=None, position_scale=np.array([[1, 0, 0], [0, 1, 0],
         positions_new = []
         itercount = 0
         n_pass = 0
-        thresh = np.ceil(vol_tot*0.0001 / V_sphere)
         while (itercount < max_iter) and (n_pass < thresh):
             positions_new.append(sampling_func(ndraws))
-            # Check against existing tree
-            # Find nearest neighbor
-            positions_all = np.vstack((existing_positions, positions))
-            if positions_all.shape[0] > 0:
-                tree = KDTree(positions_all, leaf_size=2)
-                dists, d_inds = tree.query(positions_new[-1], k=1)
-                conf_inds = np.squeeze(dists < dmin)
-                positions_new[-1][conf_inds,:] = [np.nan, np.nan, np.nan]
-                notna = ~np.isnan(positions_new[-1][:, 0])
-                positions_new[-1] = positions_new[-1][notna, :]
+            if dmin>0:
+                # Check against existing tree
+                # Find nearest neighbor
+                positions_all = np.vstack((existing_positions, positions))
+                if positions_all.shape[0] > 0:
+                    tree = KDTree(positions_all, leaf_size=2)
+                    dists, d_inds = tree.query(positions_new[-1], k=1)
+                    conf_inds = np.squeeze(dists < dmin)
+                    positions_new[-1][conf_inds,:] = [np.nan, np.nan, np.nan]
+                    notna = ~np.isnan(positions_new[-1][:, 0])
+                    positions_new[-1] = positions_new[-1][notna, :]
 
             itercount += 1
             n_pass += positions_new[-1].shape[0]
@@ -572,7 +582,7 @@ def positions_dmin_prog(mat=None, position_scale=np.array([[1, 0, 0], [0, 1, 0],
         positions_new = np.vstack(positions_new)
 
         # Check new points that are retained against each other
-        if positions_new.shape[0] > 1:
+        if (dmin > 0) and positions_new.shape[0] > 1:
             tree = KDTree(positions_new, leaf_size=2)
             dists, d_inds = tree.query(positions_new, k=2)
             # Overremoves by checking against removed cells, but tracking removed cells is not faster
@@ -872,3 +882,5 @@ def partition_locations(positions, partitions):
         pop_positions.append(positions[pop_assigned==i,:])
 
     return pop_positions
+
+
