@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>bmtk.utils.reports.compartment.compartment_reader &#8212; Brain Modeling Toolkit 1.0.6 documentation</title>
+    <title>bmtk.utils.reports.compartment.compartment_reader &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/aibs_sphinx.css" />
     <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
@@ -678,11 +678,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
     <span class="k">def</span> <span class="nf">units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">get_attribute_h5</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_ds</span><span class="p">,</span> <span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="c1">#return self.data_ds.attrs.get(&#39;units&#39;, None)</span>
+        <span class="c1"># return self.data_ds.attrs.get(&#39;units&#39;, None)</span>
 
     <span class="k">def</span> <span class="nf">variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">get_attribute_h5</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_ds</span><span class="p">,</span> <span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="c1">#return self.data_ds.attrs.get(&#39;variable&#39;, None)</span>
+        <span class="c1"># return self.data_ds.attrs.get(&#39;variable&#39;, None)</span>
 
     <span class="k">def</span> <span class="nf">tstart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t_start</span>
@@ -718,8 +718,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">if</span> <span class="n">node_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapping</span><span class="p">[</span><span class="s1">&#39;element_ids&#39;</span><span class="p">][()]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1">#indx_beg, indx_end = self._get_index(node_id)</span>
-            <span class="c1">#return self._mapping[&#39;element_ids&#39;][self._get_index(node_id)]#[indx_beg:indx_end]</span>
+            <span class="c1"># indx_beg, indx_end = self._get_index(node_id)</span>
+            <span class="c1"># return self._mapping[&#39;element_ids&#39;][self._get_index(node_id)]#[indx_beg:indx_end]</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapping</span><span class="p">[</span><span class="s1">&#39;element_ids&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_index</span><span class="p">(</span><span class="n">node_id</span><span class="p">)]</span>
 
     <span class="k">def</span> <span class="nf">n_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -751,7 +751,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Invalid time_window, expecting tuple [being, end].&#39;</span><span class="p">)</span>
 
             <span class="n">window_beg</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="n">time_window</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">tstart</span><span class="p">())</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">()),</span> <span class="mi">0</span><span class="p">)</span>
-            <span class="n">window_end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="n">time_window</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">tstart</span><span class="p">())</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">()),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_steps</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">())</span>
+            <span class="n">window_end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="n">time_window</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">tstart</span><span class="p">())</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">()),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_steps</span><span class="p">)</span>
             <span class="n">time_slice</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">window_beg</span><span class="p">,</span> <span class="n">window_end</span><span class="p">)</span>
 
         <span class="n">filtered_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_grp</span><span class="p">[</span><span class="n">time_slice</span><span class="p">,</span> <span class="n">gid_slice</span><span class="p">])</span>
@@ -787,8 +787,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">if</span> <span class="n">node_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapping</span><span class="p">[</span><span class="s1">&#39;element_id&#39;</span><span class="p">][()]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1">#indx_beg, indx_end = self._get_index(node_id)</span>
-            <span class="c1">#return self._mapping[&#39;element_id&#39;][self._get_index(node_id)]#[indx_beg:indx_end]</span>
+            <span class="c1"># indx_beg, indx_end = self._get_index(node_id)</span>
+            <span class="c1"># return self._mapping[&#39;element_id&#39;][self._get_index(node_id)]#[indx_beg:indx_end]</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapping</span><span class="p">[</span><span class="s1">&#39;element_id&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_index</span><span class="p">(</span><span class="n">node_id</span><span class="p">)]</span>  <span class="c1"># [indx_beg:indx_end]</span>
 
 
@@ -928,7 +928,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../ad_tutorials.html">Additional Tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_cell_placement.html">Cell placement: Using BMTK functions for distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
 </ul>

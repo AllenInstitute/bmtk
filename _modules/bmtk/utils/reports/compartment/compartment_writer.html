@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>bmtk.utils.reports.compartment.compartment_writer &#8212; Brain Modeling Toolkit 1.0.6 documentation</title>
+    <title>bmtk.utils.reports.compartment.compartment_writer &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/aibs_sphinx.css" />
     <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
@@ -655,7 +655,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="c1"># If buffering data, buffer_block will be an in-memory array and will write to data_block during when</span>
             <span class="c1"># filled. If not buffering buffer_block is an hdf5 dataset and data_block is ignored</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data_block</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">buffer_block</span> <span class="o">=</span> <span class="kc">None</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer_block</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">block_window</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">10e20</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">population</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">tstop</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">buffer_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -686,7 +687,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_size</span> <span class="o">=</span> <span class="n">buffer_size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_data</span> <span class="o">=</span> <span class="n">buffer_size</span> <span class="o">&gt;</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DataTable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_variable</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_last_save_indx</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># for buffering, used to keep track of last timestep data was saved to disk</span>
+        <span class="c1"># self._last_save_indx = 0  # for buffering, used to keep track of last timestep data was saved to disk</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_block_size</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_total_steps</span> <span class="o">=</span> <span class="mi">0</span>
@@ -809,6 +810,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="n">var_grp</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_seg_offset_beg</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">_seg_offset_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_total_steps</span> <span class="o">=</span> <span class="n">n_steps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_total_steps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_size</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_block_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_size</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_data</span><span class="p">:</span>
@@ -817,7 +819,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">for</span> <span class="n">gid</span><span class="p">,</span> <span class="n">gid_offset</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">gid_offset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seg_offset_beg</span><span class="p">,</span> <span class="n">gid_offset</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seg_offset_beg</span><span class="p">)</span>
 
-        
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_data</span><span class="p">:</span>
             <span class="c1"># Set up in-memory block to buffer recorded variables before writing to the dataset</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">buffer_block</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_segments_local</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
@@ -830,10 +831,16 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">data_block</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units</span>
 
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">block_window</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_block_size</span><span class="p">)</span>
+
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Since we are not buffering data, we just write directly to the on-disk dataset</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">buffer_block</span> <span class="o">=</span> <span class="n">base_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_steps</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_segments_all</span><span class="p">),</span>
-                                                               <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">buffer_block</span> <span class="o">=</span> <span class="n">base_grp</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span>
+                <span class="s1">&#39;data&#39;</span><span class="p">,</span>
+                <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_steps</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_segments_all</span><span class="p">),</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+                <span class="n">chunks</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variable</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">buffer_block</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;variable&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variable</span>
 
@@ -841,6 +848,11 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
                 <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">buffer_block</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_units</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_initialized</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+    <span class="k">def</span> <span class="nf">_reset_buffer_window</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tstep</span><span class="p">):</span>
+        <span class="n">blk_beg</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tstep</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer_size</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer_size</span>
+        <span class="n">blk_end</span> <span class="o">=</span> <span class="n">blk_beg</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">block_window</span> <span class="o">=</span> <span class="p">(</span><span class="n">blk_beg</span><span class="p">,</span> <span class="n">blk_end</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PopulationWriterv01.record_cell"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.record_cell">[docs]</a>    <span class="k">def</span> <span class="nf">record_cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">tstep</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Record cell parameters.</span>
@@ -853,8 +865,19 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
         <span class="n">gid_beg</span><span class="p">,</span> <span class="n">gid_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span>
         <span class="n">buffer_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">buffer_block</span>
-        <span class="n">update_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">tstep</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_save_indx</span><span class="p">)</span>
-        <span class="n">buffer_block</span><span class="p">[</span><span class="n">update_index</span><span class="p">,</span> <span class="n">gid_beg</span><span class="p">:</span><span class="n">gid_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">vals</span></div>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_data</span><span class="p">:</span>
+            <span class="n">buffer_block</span><span class="p">[</span><span class="n">tstep</span><span class="p">,</span> <span class="n">gid_beg</span><span class="p">:</span><span class="n">gid_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">vals</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">block_window</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">tstep</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">block_window</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">update_index</span> <span class="o">=</span> <span class="n">tstep</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">block_window</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">buffer_block</span><span class="p">[</span><span class="n">update_index</span><span class="p">,</span> <span class="n">gid_beg</span><span class="p">:</span><span class="n">gid_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">vals</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reset_buffer_window</span><span class="p">(</span><span class="n">tstep</span><span class="p">)</span>
+            <span class="n">update_index</span> <span class="o">=</span> <span class="n">tstep</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">block_window</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">buffer_block</span><span class="p">[</span><span class="n">update_index</span><span class="p">,</span> <span class="n">gid_beg</span><span class="p">:</span><span class="n">gid_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">vals</span></div>
 
 <div class="viewcode-block" id="PopulationWriterv01.record_cell_block"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.record_cell_block">[docs]</a>    <span class="k">def</span> <span class="nf">record_cell_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">,</span> <span class="n">vals</span><span class="p">,</span> <span class="n">beg_step</span><span class="p">,</span> <span class="n">end_step</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Save cell parameters one block at a time</span>
@@ -868,23 +891,24 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="n">buffer_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">buffer_block</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="n">vals</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">buffer_block</span><span class="p">[:,</span> <span class="n">gid_beg</span><span class="p">]</span> <span class="o">=</span> <span class="n">vals</span>
-            <span class="c1">#buffer_block[beg_step:end_step, gid_beg:gid_end] = vals</span>
+            <span class="c1"># buffer_block[beg_step:end_step, gid_beg:gid_end] = vals</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">buffer_block</span><span class="p">[:,</span> <span class="n">gid_beg</span><span class="p">:</span><span class="n">gid_end</span><span class="p">]</span> <span class="o">=</span> <span class="n">vals</span></div>
 
 <div class="viewcode-block" id="PopulationWriterv01.flush"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.flush">[docs]</a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Move data from memory to dataset&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_data</span><span class="p">:</span>
-            <span class="n">blk_beg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_save_indx</span>
-            <span class="n">blk_end</span> <span class="o">=</span> <span class="n">blk_beg</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_block_size</span>
+            <span class="c1"># blk_beg = self._last_save_indx</span>
+            <span class="c1"># blk_end = blk_beg + self._buffer_block_size</span>
+            <span class="n">blk_beg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">block_window</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">blk_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">block_window</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">blk_end</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_steps</span><span class="p">:</span>
                 <span class="c1"># Need to handle the case that simulation doesn&#39;t end on a block step</span>
                 <span class="n">blk_end</span> <span class="o">=</span> <span class="n">blk_beg</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_steps</span> <span class="o">-</span> <span class="n">blk_beg</span>
 
             <span class="n">block_size</span> <span class="o">=</span> <span class="n">blk_end</span> <span class="o">-</span> <span class="n">blk_beg</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_last_save_indx</span> <span class="o">+=</span> <span class="n">block_size</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">data_block</span><span class="p">[</span><span class="n">blk_beg</span><span class="p">:</span><span class="n">blk_end</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">buffer_block</span><span class="p">[:</span><span class="n">block_size</span><span class="p">,</span> <span class="p">:]</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">data_block</span><span class="p">[</span><span class="n">blk_beg</span><span class="p">:</span><span class="n">blk_end</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span><span class="o">.</span><span class="n">buffer_block</span><span class="p">[:</span><span class="n">block_size</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reset_buffer_window</span><span class="p">(</span><span class="n">blk_end</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PopulationWriterv01.close"><a class="viewcode-back" href="../../../../../bmtk/bmtk.utils.reports.compartment.html#bmtk.utils.reports.compartment.compartment_writer.PopulationWriterv01.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Let the parent take care of this</span>
@@ -920,7 +944,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_final_fpath</span> <span class="o">=</span> <span class="n">file_path</span>  <span class="c1"># name of file being writen too.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache_dir</span> <span class="o">=</span> <span class="n">cache_dir</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">file_path</span><span class="p">))</span>  <span class="c1"># used for mulitple ranks</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_base_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>  <span class="c1"># make sure file names don&#39;t clash if there are multiple reports</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_interm_fpath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_iterm_fpath</span><span class="p">()</span> <span class="c1"># In certain cases (parallelized simulation) split the final file by rank.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_interm_fpath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_iterm_fpath</span><span class="p">()</span>  <span class="c1"># In certain cases (parallelized simulation) split the final file by rank.</span>
 
     <span class="k">def</span> <span class="nf">_get_iterm_fpath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mpi_size</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -1164,7 +1188,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../ad_tutorials.html">Additional Tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_cell_placement.html">Cell placement: Using BMTK functions for distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
 </ul>

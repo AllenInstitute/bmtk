@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Tools for generating cell placements &#8212; Brain Modeling Toolkit 1.0.6 documentation</title>
+    <title>Tools for generating cell placements &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -873,7 +873,7 @@ div.rendered_html tbody tr:hover {
 </style>
 <section id="Tools-for-generating-cell-placements">
 <h1>Tools for generating cell placements<a class="headerlink" href="#Tools-for-generating-cell-placements" title="Permalink to this headline">¶</a></h1>
-<p>Although users are always welcomed to place their neuronal somata according to their own custom generated positions, BMTK provides several tools to facilitate this placement, including simple geometries and placement based on geometries or densities from *.nrrd files.</p>
+<p>Although users are always welcomed to place their neuronal somata according to their own custom generated positions, BMTK provides several tools to facilitate this placement, including simple geometries and placement based on geometries or densities from *.nrrd files. Units can be placed with a minimum distance between them (please see second part of this tutorial).</p>
 <section id="Generate-a-cylindrical-column-of-cell-positions">
 <h2>Generate a cylindrical column of cell positions<a class="headerlink" href="#Generate-a-cylindrical-column-of-cell-positions" title="Permalink to this headline">¶</a></h2>
 <p>This function places random locations uniformly within a cylinder or cylindrical ring. Note that ‘y’ is the vertical axis.</p>
@@ -972,18 +972,26 @@ cells randomly according to that density raster.</p>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.node_params</span> <span class="kn">import</span> <span class="n">positions_nrrd</span>
-<span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;./sources/nrrd/structure_721.nrrd&#39;</span>
+<span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;structure_721.nrrd&#39;</span>
 <span class="n">max_dens</span> <span class="o">=</span> <span class="mi">100000</span>       <span class="c1"># Cells per mm^3</span>
 
 <span class="n">positions</span> <span class="o">=</span> <span class="n">positions_nrrd</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">max_dens</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+positions: (102437, 3)
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/tutorial_cell_placement_10_0.png" src="_images/tutorial_cell_placement_10_0.png" />
+<img alt="_images/tutorial_cell_placement_10_1.png" src="_images/tutorial_cell_placement_10_1.png" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -995,20 +1003,288 @@ cells randomly according to that density raster.</p>
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+positions: (51218, 3)
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="_images/tutorial_cell_placement_11_0.png" src="_images/tutorial_cell_placement_11_0.png" />
+<img alt="_images/tutorial_cell_placement_11_1.png" src="_images/tutorial_cell_placement_11_1.png" />
 </div>
 </div>
 <p>You can also directly use a 3-dimensional density matrix with the function <code class="docutils literal notranslate"><span class="pre">positions_density_matrix</span></code> to generate cell placements.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</section>
+<section id="Cell-Placements-with-minimum-distance-between-units">
+<h2>Cell Placements with minimum distance between units<a class="headerlink" href="#Cell-Placements-with-minimum-distance-between-units" title="Permalink to this headline">¶</a></h2>
+<p>The same built-in placement options above are available now with a minimum distance enforced between cells. With the use of the cell placement object, multiple populations can be placed at the same time, but must use the same minimum distance, which is enforced between and within populations.</p>
+<p>For a given minimum distance, there is a maximum density above which it will be physically impossible to pack the units. The functions will inform users of the packing limit for random close packing or hexagonal close packing. The default method is progressive sampling (‘prog’), which iteratively replaces units that violate the minimum distance until the final density is achieved. As this can be slow to run when the requested density is near the packing limit, you may set <code class="docutils literal notranslate"><span class="pre">verbose</span></code> to True to
+monitor the progress. You may find that in such cases just slightly decreasing the dmin value significantly speeds up the run.</p>
+<p>The alternative jittered lattice method (‘lattice’) may be faster at very high density and may allow you to slightly exceed the random close packing limit, but produces an unrealistic geometric regularity in order to achieve those densities.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.builder.auxi.node_params</span> <span class="kn">import</span> <span class="n">CellLocations</span>
+
+<span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;structure_721.nrrd&#39;</span>
+
+<span class="n">max_dens</span> <span class="o">=</span> <span class="mi">100000</span>
+
+<span class="n">v1</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;V1&#39;</span><span class="p">)</span>
+<span class="n">v1</span><span class="o">.</span><span class="n">dmin</span> <span class="o">=</span> <span class="mf">18.0</span>
+<span class="n">v1</span><span class="o">.</span><span class="n">CCF_orientation</span><span class="o">=</span><span class="kc">True</span>   <span class="c1"># Use Allen Common Coordinate Framework orientation with y-axis as vertical</span>
+
+<span class="n">v1</span><span class="o">.</span><span class="n">add_positions_nrrd</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">max_dens</span><span class="p">,</span> <span class="n">pop_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Pyr&#39;</span><span class="p">],</span> <span class="n">split_bilateral</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;prog&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">v1</span><span class="o">.</span><span class="n">plot_locs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Density limit:206311.963
+Max density requested:100000.000
+5831/51218 cells placed
+11889/51218 cells placed
+17707/51218 cells placed
+23336/51218 cells placed
+28333/51218 cells placed
+32617/51218 cells placed
+36274/51218 cells placed
+39107/51218 cells placed
+41490/51218 cells placed
+43441/51218 cells placed
+45003/51218 cells placed
+46353/51218 cells placed
+47479/51218 cells placed
+48439/51218 cells placed
+49225/51218 cells placed
+49887/51218 cells placed
+50545/51218 cells placed
+51106/51218 cells placed
+51616/51218 cells placed
+51218 cells
+positions: (51218, 3)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/tutorial_cell_placement_14_1.png" src="_images/tutorial_cell_placement_14_1.png" />
+</div>
+</div>
+<p>It is preferable to use partitioning (with the <code class="docutils literal notranslate"><span class="pre">pop_names</span></code> and <code class="docutils literal notranslate"><span class="pre">partitions</span></code> keywords) to place units by the same general rule into the same spatial structure. In the example below, the first call to <code class="docutils literal notranslate"><span class="pre">add_positions_nrrd()</span></code> assigns 85% of returned cells to Pyr and 15% to PV. However, you can also add placements iteratively (second call to <code class="docutils literal notranslate"><span class="pre">add_positions_nrrd()</span></code>).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">v1</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;V1&#39;</span><span class="p">)</span>
+<span class="n">v1</span><span class="o">.</span><span class="n">dmin</span> <span class="o">=</span> <span class="mf">18.0</span>
+<span class="n">v1</span><span class="o">.</span><span class="n">CCF_orientation</span><span class="o">=</span><span class="kc">True</span>   <span class="c1"># Use Allen Common Coordinate Framework orientation with y-axis as vertical</span>
+
+<span class="n">v1</span><span class="o">.</span><span class="n">add_positions_nrrd</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">max_dens</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">pop_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Pyr&#39;</span><span class="p">,</span><span class="s1">&#39;PV&#39;</span><span class="p">],</span> <span class="n">partitions</span><span class="o">=</span><span class="p">[</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">],</span> <span class="n">split_bilateral</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">,</span>
+                      <span class="n">method</span><span class="o">=</span><span class="s1">&#39;prog&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">v1</span><span class="o">.</span><span class="n">add_positions_nrrd</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">max_dens</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">pop_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Pyr2&#39;</span><span class="p">],</span> <span class="n">split_bilateral</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;prog&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">v1</span><span class="o">.</span><span class="n">plot_locs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Density limit:206311.963
+Max density requested:50000.000
+positions: (25609, 3)
+Density limit:206311.963
+Max density requested:50000.000
+positions: (25609, 3)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/tutorial_cell_placement_16_1.png" src="_images/tutorial_cell_placement_16_1.png" />
+</div>
+</div>
+<p>Again, you can slightly exceed the above packing limit or speed up placement at densities close to the packing limit by using a jittered lattice method. However, be aware that the resulting placements will have an artifactual regularity.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">v1</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;V1&#39;</span><span class="p">)</span>
+<span class="n">v1</span><span class="o">.</span><span class="n">dmin</span> <span class="o">=</span> <span class="mf">20.0</span>
+<span class="n">v1</span><span class="o">.</span><span class="n">CCF_orientation</span><span class="o">=</span><span class="kc">True</span>   <span class="c1"># Use Allen Common Coordinate Framework orientation with y-axis as vertical</span>
+
+<span class="n">v1</span><span class="o">.</span><span class="n">add_positions_nrrd</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">max_dens</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">pop_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Pyr&#39;</span><span class="p">,</span><span class="s1">&#39;PV&#39;</span><span class="p">],</span> <span class="n">partitions</span><span class="o">=</span><span class="p">[</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">],</span> <span class="n">split_bilateral</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">,</span>
+                      <span class="n">method</span><span class="o">=</span><span class="s1">&#39;lattice&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">v1</span><span class="o">.</span><span class="n">plot_locs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Density limit:176661.987
+Max density requested:49999.268
+positions: (25609, 3)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/tutorial_cell_placement_18_1.png" src="_images/tutorial_cell_placement_18_1.png" />
+</div>
+</div>
+<p>Here are some more examples with simple geometries, not necessarily all realistic!</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">N</span><span class="o">=</span><span class="mi">4000</span>
+
+<span class="n">v1</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;V1&#39;</span><span class="p">)</span>
+<span class="n">v1</span><span class="o">.</span><span class="n">dmin</span> <span class="o">=</span> <span class="mf">18.0</span>
+
+<span class="n">v1</span><span class="o">.</span><span class="n">add_positions_columnar</span><span class="p">([</span><span class="s1">&#39;Pyr&#39;</span><span class="p">,</span><span class="s1">&#39;PV&#39;</span><span class="p">],</span> <span class="n">partitions</span><span class="o">=</span><span class="p">[</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">],</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">height</span> <span class="o">=</span> <span class="mf">300.0</span><span class="p">,</span>
+                               <span class="n">min_radius</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">,</span> <span class="n">max_radius</span> <span class="o">=</span> <span class="mf">200.0</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;prog&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">v1</span><span class="o">.</span><span class="n">plot_locs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Density limit:206311.963
+Max density requested:113176.848
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/tutorial_cell_placement_20_1.png" src="_images/tutorial_cell_placement_20_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">N</span><span class="o">=</span><span class="mi">2500</span>
+
+<span class="n">v1</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;V1&#39;</span><span class="p">)</span>
+<span class="n">v1</span><span class="o">.</span><span class="n">dmin</span> <span class="o">=</span> <span class="mf">18.0</span>
+
+<span class="n">v1</span><span class="o">.</span><span class="n">add_positions_rect_prism</span><span class="p">([</span><span class="s1">&#39;Pyr&#39;</span><span class="p">,</span><span class="s1">&#39;PV&#39;</span><span class="p">],</span> <span class="n">partitions</span><span class="o">=</span><span class="p">[</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">],</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">height</span> <span class="o">=</span> <span class="mf">300.0</span><span class="p">,</span>
+                               <span class="n">x_length</span> <span class="o">=</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">z_length</span> <span class="o">=</span> <span class="mf">400.0</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;prog&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">v1</span><span class="o">.</span><span class="n">add_positions_columnar</span><span class="p">(</span><span class="s1">&#39;Pyr2&#39;</span><span class="p">,</span> <span class="n">partitions</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">],</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">height</span> <span class="o">=</span> <span class="mf">300.0</span><span class="p">,</span>
+                               <span class="n">min_radius</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">,</span> <span class="n">max_radius</span> <span class="o">=</span> <span class="mf">200.0</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;prog&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">v1</span><span class="o">.</span><span class="n">plot_locs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Density limit:206311.963
+Max density requested:69444.444
+Density limit:206311.963
+Max density requested:70735.530
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/tutorial_cell_placement_21_1.png" src="_images/tutorial_cell_placement_21_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">N</span><span class="o">=</span><span class="mi">3000</span>
+
+<span class="n">v1</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;V1&#39;</span><span class="p">)</span>
+<span class="n">v1</span><span class="o">.</span><span class="n">dmin</span> <span class="o">=</span> <span class="mf">18.0</span>
+
+<span class="n">v1</span><span class="o">.</span><span class="n">add_positions_ellipsoid</span><span class="p">([</span><span class="s1">&#39;Pyr&#39;</span><span class="p">,</span><span class="s1">&#39;PV&#39;</span><span class="p">],</span> <span class="n">partitions</span><span class="o">=</span><span class="p">[</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">],</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">height</span> <span class="o">=</span> <span class="mf">300.0</span><span class="p">,</span>
+                               <span class="n">x_length</span> <span class="o">=</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">z_length</span> <span class="o">=</span> <span class="mf">500.0</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;prog&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">v1</span><span class="o">.</span><span class="n">plot_locs</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Density limit:206311.963
+Max density requested:127323.954
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/tutorial_cell_placement_22_1.png" src="_images/tutorial_cell_placement_22_1.png" />
+</div>
+</div>
+<p>Once we are satisfied with the placement, we can pass them to <code class="docutils literal notranslate"><span class="pre">add_nodes()</span></code> as follows (based on the ellipsoid example directly above):</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">bmtk.builder.networks</span> <span class="kn">import</span> <span class="n">NetworkBuilder</span>
+
+<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;V1&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="n">v1</span><span class="o">.</span><span class="n">Pyr</span><span class="o">.</span><span class="n">N</span><span class="p">,</span>
+              <span class="n">positions</span><span class="o">=</span><span class="n">v1</span><span class="o">.</span><span class="n">Pyr</span><span class="o">.</span><span class="n">positions</span><span class="p">,</span>
+              <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;Pyr&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">&#39;VisL4&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span>  <span class="c1"># optional parameters</span>
+              <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point_process&#39;</span><span class="p">,</span>  <span class="c1"># Tells the simulator to use point-based neurons</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;nest:iaf_psc_alpha&#39;</span><span class="p">,</span>  <span class="c1"># tells the simulator to use NEST iaf_psc_alpha models</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;472363762_point.json&#39;</span>  <span class="c1"># File containing iaf_psc_alpha model parameters</span>
+             <span class="p">)</span>
+
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="n">v1</span><span class="o">.</span><span class="n">PV</span><span class="o">.</span><span class="n">N</span><span class="p">,</span>
+              <span class="n">positions</span><span class="o">=</span><span class="n">v1</span><span class="o">.</span><span class="n">PV</span><span class="o">.</span><span class="n">positions</span><span class="p">,</span>
+              <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;PV&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">&#39;VisL4&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">,</span>  <span class="c1"># optional parameters</span>
+              <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point_process&#39;</span><span class="p">,</span>  <span class="c1"># Tells the simulator to use point-based neurons</span>
+              <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;nest:iaf_psc_alpha&#39;</span><span class="p">,</span>  <span class="c1"># tells the simulator to use NEST iaf_psc_alpha models</span>
+              <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;472912177_point.json&#39;</span>  <span class="c1"># File containing iaf_psc_alpha model parameters</span>
+             <span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1046,7 +1322,7 @@ cells randomly according to that density raster.</p>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="ad_tutorials.html">Additional Tutorials</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Cell placement: Using BMTK functions for distributing units</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Cell placement: Functions for spatially distributing units</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
 </ul>

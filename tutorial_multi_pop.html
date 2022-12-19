@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Tutorial 4: Multi-population recurrent network (with BioNet) &#8212; Brain Modeling Toolkit 1.0.6 documentation</title>
+    <title>Tutorial 4: Multi-population recurrent network (with BioNet) &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -879,8 +879,8 @@ div.rendered_html tbody tr:hover {
 <p>requirements: * bmtk * NEURON 7.4+</p>
 <section id="1.-Building-the-network">
 <h2>1. Building the network<a class="headerlink" href="#1.-Building-the-network" title="Permalink to this headline">¶</a></h2>
-<section id="cells">
-<h3>cells<a class="headerlink" href="#cells" title="Permalink to this headline">¶</a></h3>
+<section id="Cells">
+<h3>Cells<a class="headerlink" href="#Cells" title="Permalink to this headline">¶</a></h3>
 <p>This network will loosely resemble the mouse V1 cortical column. Along the center of the column will be a population of 50 biophysically detailed neurons: 40 excitatory Scnn1a cells and 10 inhibitory PV cells.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -957,8 +957,8 @@ properties for creating connections and running simulations.</p>
 </div>
 </div>
 </section>
-<section id="connections">
-<h3>connections<a class="headerlink" href="#connections" title="Permalink to this headline">¶</a></h3>
+<section id="Connections">
+<h3>Connections<a class="headerlink" href="#Connections" title="Permalink to this headline">¶</a></h3>
 <p>Now we want to create connections between the cells. Depending on the model type, and whether or not the presynpatic “source” cell is excitory or inhibitory, we will have different synpatic model and parameters. Using the source and target filter parameters, we can create different connection types.</p>
 <p>To determine excitory-to-excitory connection matrix we want to use distance and tuning_angle property. To do this we create a customized function “dist_tuning_connector”</p>
 <div class="nbinput nblast docutils container">
@@ -1279,8 +1279,8 @@ sources and the target.</p>
 </section>
 <section id="2.-Setting-up-BioNet">
 <h2>2. Setting up BioNet<a class="headerlink" href="#2.-Setting-up-BioNet" title="Permalink to this headline">¶</a></h2>
-<section id="file-structure.">
-<h3>file structure.<a class="headerlink" href="#file-structure." title="Permalink to this headline">¶</a></h3>
+<section id="File-structure">
+<h3>File structure<a class="headerlink" href="#File-structure" title="Permalink to this headline">¶</a></h3>
 <p>Before running a simulation, we will need to create the runtime environment, including parameter files, run-script and configuration files. You can copy the files from an existing simuatlion, execute the following command:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m bmtk.utils.sim_setup  <span class="se">\</span>
    --report-vars v                <span class="se">\</span>
@@ -1432,15 +1432,15 @@ Successfully created x86_64/special
 <li><p><strong>components/synaptic_models/</strong> - Parameter files used to create different types of synapses.</p></li>
 </ul>
 </section>
-<section id="lgn-input">
-<h3>lgn input<a class="headerlink" href="#lgn-input" title="Permalink to this headline">¶</a></h3>
+<section id="LGN-Input">
+<h3>LGN Input<a class="headerlink" href="#LGN-Input" title="Permalink to this headline">¶</a></h3>
 <p>We need to provide our LGN external network cells with spike-trains so they can activate our recurrent network. Previously we showed how to do this by generating csv files. We can also use NWB files, which are a common format for saving electrophysiological data in neuroscience.</p>
-<p>We can use any NWB file generated experimentally or computationally, but for this example we will use a preexsting one. First download the file:</p>
+<p>We can use any NWB file generated experimentally or computationally, but for this example we will use a preexisting one. First download the file:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ wget https://github.com/AllenInstitute/bmtk/blob/develop/examples/spikes_inputs/lgn_spikes.h5?raw<span class="o">=</span><span class="nb">true</span> -O lgn_spikes.h5
 </pre></div>
 </div>
 <p>or copy from <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/examples/spikes_inputs/lgn_spikes.nwb">here</a>.</p>
-<p>Then we must edit the <strong>simulation_config.json</strong> file to tell the simulator to find the nwb file and which network to associate it with.</p>
+<p>Then we must edit the <strong>simulation_config.json</strong> file to tell the simulator where to find the spike file and which network to associate it with.</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="nt">&quot;LGN_spikes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
@@ -1841,7 +1841,7 @@ INFO:NEURONIOUtils:Simulation completed in 4.0 minutes, 17.9 seconds
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="ad_tutorials.html">Additional Tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tutorial_cell_placement.html">Cell placement: Using BMTK functions for distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
 </ul>

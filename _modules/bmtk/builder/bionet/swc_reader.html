@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>bmtk.builder.bionet.swc_reader &#8212; Brain Modeling Toolkit 1.0.6 documentation</title>
+    <title>bmtk.builder.bionet.swc_reader &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/aibs_sphinx.css" />
     <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
@@ -680,11 +680,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
     <span class="k">def</span> <span class="nf">_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">new_swc</span> <span class="o">=</span> <span class="n">SWCReader</span><span class="p">(</span><span class="n">swc_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">swc_path</span><span class="p">,</span> <span class="n">rng_seed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rng_seed</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axon_fixed</span><span class="p">:</span>
             <span class="n">new_swc</span><span class="o">.</span><span class="n">fix_axon</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axon_deleted</span><span class="p">:</span>
             <span class="n">new_swc</span><span class="o">.</span><span class="n">delete_axon</span><span class="p">()</span>
+
+
 
         <span class="k">return</span> <span class="n">new_swc</span>
 
@@ -911,6 +914,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="SWCReader.set_segment_dl"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.set_segment_dl">[docs]</a>    <span class="k">def</span> <span class="nf">set_segment_dl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dl</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Define number of segments in a cell&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_seg_coords</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Unable to segment the morphology after coordinates have already been calculated&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nseg</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">hobj</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
             <span class="n">sec</span><span class="o">.</span><span class="n">nseg</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">L</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">dl</span><span class="p">))</span>
@@ -928,7 +933,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">secs</span><span class="p">,</span> <span class="n">probs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">find_sections</span><span class="p">(</span><span class="n">section_names</span><span class="p">,</span> <span class="n">distance_range</span><span class="p">)</span>
         <span class="n">secs_ix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">secs</span><span class="p">,</span> <span class="n">n_sections</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">probs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">secs_ix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_props</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">secs_ix</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_props</span><span class="o">.</span><span class="n">sec_id</span><span class="p">[</span><span class="n">secs_ix</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_props</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">secs_ix</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="SWCReader.find_sections"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.find_sections">[docs]</a>    <span class="k">def</span> <span class="nf">find_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section_names</span><span class="p">,</span> <span class="n">distance_range</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Retrieves a list of sections ids and section x&#39;s given a section name/type (eg axon, soma, apic, dend) and</span>
@@ -952,6 +957,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="c1"># np.maximum(seg_d0,dmin) find the larger of the two start locations</span>
         <span class="c1"># np.maximum(0,overlap) is used to return zero when segments do not overlap</span>
         <span class="c1"># and then dividing by the segment length</span>
+
         <span class="n">frac_overlap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">seg_d1</span><span class="p">,</span> <span class="n">dmax</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">seg_d0</span><span class="p">,</span> <span class="n">dmin</span><span class="p">)))</span> <span class="o">/</span> <span class="n">seg_length</span>
         <span class="n">ix_drange</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">frac_overlap</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># find indexes with non-zero overlap</span>
         <span class="n">ix_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
@@ -1008,6 +1014,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             <span class="k">return</span> <span class="bp">self</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">new_swc_reader</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_copy</span><span class="p">()</span>
+            <span class="n">new_swc_reader</span><span class="o">.</span><span class="n">_seg_props</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_props</span>
+            <span class="n">new_swc_reader</span><span class="o">.</span><span class="n">_swc_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">swc_map</span>
+            <span class="n">new_swc_reader</span><span class="o">.</span><span class="n">_nseg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nseg</span>
             <span class="n">new_swc_reader</span><span class="o">.</span><span class="n">_seg_coords</span> <span class="o">=</span> <span class="n">new_seg_coords</span>
             <span class="n">new_swc_reader</span><span class="o">.</span><span class="n">_soma_pos</span> <span class="o">=</span> <span class="n">new_soma_pos</span>
 
@@ -1015,7 +1024,9 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="SWCReader.get_coords"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.get_coords">[docs]</a>    <span class="k">def</span> <span class="nf">get_coords</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sec_id</span><span class="p">,</span> <span class="n">sec_x</span><span class="p">):</span>
         <span class="n">segs_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seg_props</span><span class="o">.</span><span class="n">sec_id</span> <span class="o">==</span> <span class="n">sec_id</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_coords</span><span class="o">.</span><span class="n">p05</span><span class="p">[:,</span> <span class="n">segs_indices</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span></div>
+        <span class="n">dev</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">sec_x</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_props</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">segs_indices</span><span class="p">])</span>     <span class="c1"># Find segment closest to x position</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg_coords</span><span class="o">.</span><span class="n">p05</span><span class="p">[:,</span> <span class="n">segs_indices</span><span class="p">][:,</span> <span class="n">idx</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="SWCReader.get_swc_id"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.SWCReader.get_swc_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_swc_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sec_id</span><span class="p">,</span> <span class="n">sec_x</span><span class="p">):</span>
         <span class="c1"># use sec type and nameindex to find all rows in the swc that correspond to sec_id</span>
@@ -1053,7 +1064,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <span class="n">swc_cache</span> <span class="o">=</span> <span class="p">{}</span>
 
 
-<div class="viewcode-block" id="get_swc"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.get_swc">[docs]</a><span class="k">def</span> <span class="nf">get_swc</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">morphology_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="get_swc"><a class="viewcode-back" href="../../../../bmtk/bmtk.builder.bionet.html#bmtk.builder.bionet.swc_reader.get_swc">[docs]</a><span class="k">def</span> <span class="nf">get_swc</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">morphology_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dL</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">cell_pop</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;population&#39;</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">)</span>
     <span class="n">cell_node_id</span> <span class="o">=</span> <span class="n">cell</span><span class="p">[</span><span class="s1">&#39;node_id&#39;</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">use_cache</span> <span class="ow">and</span> <span class="n">cell_pop</span> <span class="ow">in</span> <span class="n">swc_cache</span> <span class="ow">and</span> <span class="n">cell_node_id</span> <span class="ow">in</span> <span class="n">swc_cache</span><span class="p">[</span><span class="n">cell_pop</span><span class="p">]:</span>
@@ -1070,6 +1081,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;File </span><span class="si">{}</span><span class="s1"> does not exists.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">swc_path</span><span class="p">))</span>
 
     <span class="n">swc</span> <span class="o">=</span> <span class="n">SWCReader</span><span class="p">(</span><span class="n">swc_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dL</span><span class="p">:</span>
+        <span class="n">swc</span><span class="o">.</span><span class="n">set_segment_dl</span><span class="p">(</span><span class="n">dL</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">cell</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;model_processing&#39;</span><span class="p">,</span> <span class="s1">&#39;NULL&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;aibs_perisomatic&#39;</span><span class="p">:</span>
         <span class="n">swc</span><span class="o">.</span><span class="n">fix_axon</span><span class="p">()</span>
@@ -1129,7 +1142,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../ad_tutorials.html">Additional Tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_cell_placement.html">Cell placement: Using BMTK functions for distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
 </ul>

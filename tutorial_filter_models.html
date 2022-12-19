@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Chapter 7: Modeling the visual field (with FilterNet) &#8212; Brain Modeling Toolkit 1.0.6 documentation</title>
+    <title>Chapter 7: Modeling the visual field (with FilterNet) &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -1192,8 +1192,8 @@ maximum constrast, must be between 0 and 1.0 (default: 1.0)</p>
 <p>These are cells that respond by either increasing or decreasing firing rates to brightness changes in their receptive fields. They are also the basis for more advanced cell types. When building a network you can set a cell or set of cells with <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:tON'</span></code> or <code class="docutils literal notranslate"><span class="pre">model_template='lgnmodel:tOFF'</span></code> during the call to <code class="docutils literal notranslate"><span class="pre">add_nodes(...)</span></code>. There are also a number of special types
 (<code class="docutils literal notranslate"><span class="pre">tON_TF8,</span> <span class="pre">sON_TF1,</span> <span class="pre">sON_TF2,</span> <span class="pre">sON_TF4,</span> <span class="pre">sON_TF8,</span> <span class="pre">sON_TF15,</span> <span class="pre">tOFF_TF1,</span> <span class="pre">tOFF_TF2,</span> <span class="pre">tOFF_TF4,</span> <span class="pre">tOFF_TF8,</span> <span class="pre">tOFF_TF15,</span> <span class="pre">sOFF_TF1,</span> <span class="pre">sOFF_TF2,</span> <span class="pre">sOFF_TF4,</span> <span class="pre">sOFF_TF8,</span> <span class="pre">sOFF_TF15</span></code>) which have properties that have been pre-calculated using electrophysiological recordings from the mouse LGN (Durant et. al 2016, Billeh et. al 2019).</p>
 <p>A combination of a Gaussian spatial filter and double cosine temporal filter are used to filter the receptive field.</p>
-<div class="row"><div class="col-md-4"><p><img alt="12865f39d1a84f91a5958fd965a4bd68" class="no-scaled-link" src="_images/filternet_spat_filter.png" style="width: 1000px; height: 1000px;" /></p>
-</div><div class="col-md-4"><p><img alt="a580b7e5c27148ecaebaf2e9fd2c5f48" class="no-scaled-link" src="_images/filternet_temp_filter.png" style="width: 300px; height: 300px;" /></p>
+<div class="row"><div class="col-md-4"><p><img alt="1e6efe8f759143448b0f1db811a3d157" class="no-scaled-link" src="_images/filternet_spat_filter.png" style="width: 1000px; height: 1000px;" /></p>
+</div><div class="col-md-4"><p><img alt="5252b308020f4a57aea51be8b280d32b" class="no-scaled-link" src="_images/filternet_temp_filter.png" style="width: 300px; height: 300px;" /></p>
 </div></div></section>
 <section id="parameters">
 <h3>parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h3>
@@ -1268,7 +1268,7 @@ bumps</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="ad_tutorials.html">Additional Tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tutorial_cell_placement.html">Cell placement: Using BMTK functions for distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
 </ul>

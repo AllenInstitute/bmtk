@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>bmtk.simulator.bionet.modules.record_netcons &#8212; Brain Modeling Toolkit 1.0.6 documentation</title>
+    <title>bmtk.simulator.bionet.modules.record_netcons &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/aibs_sphinx.css" />
     <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
@@ -647,7 +647,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="NetconReport"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_netcons.NetconReport">[docs]</a><span class="k">class</span> <span class="nc">NetconReport</span><span class="p">(</span><span class="n">SimulatorMod</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tmp_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">,</span> <span class="n">variable_name</span><span class="p">,</span> <span class="n">cells</span><span class="p">,</span> <span class="n">sections</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">syn_type</span><span class="o">=</span><span class="s1">&#39;Exp2Syn&#39;</span><span class="p">,</span> <span class="n">buffer_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                 <span class="n">transform</span><span class="o">=</span><span class="p">{}):</span>
+                 <span class="n">transform</span><span class="o">=</span><span class="p">{},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Module used for saving NEURON cell properties at each given step of the simulation.</span>
 
 <span class="sd">        :param tmp_dir:</span>
@@ -669,8 +669,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span> <span class="o">=</span> <span class="n">sections</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="c1">#self._var_recorder = MembraneRecorder(self._file_name, self._tmp_dir, self._all_variables,</span>
-        <span class="c1">#                                      buffer_data=buffer_data, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)</span>
+        <span class="c1"># self._var_recorder = MembraneRecorder(self._file_name, self._tmp_dir, self._all_variables,</span>
+        <span class="c1">#                                       buffer_data=buffer_data, mpi_rank=MPI_RANK, mpi_size=N_HOSTS)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_virt_lookup</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gid_lookup</span> <span class="o">=</span> <span class="p">{}</span>
@@ -679,9 +679,20 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="bp">self</span><span class="o">.</span><span class="n">_gid_list</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of all gids that will have their variables saved</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data_block</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># table of variable data indexed by [gid][variable]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_block_step</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># time step within a given block</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_curr_step</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_object_lookup</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_syn_type</span> <span class="o">=</span> <span class="n">syn_type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># In the use-case that users passes in &quot;dt&quot;, &quot;start_time&quot;, or &quot;stop_time&quot; parameters manually. Otherwise</span>
+        <span class="c1"># set to None and get values from corresponding simulation values in initialize() method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dt&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;start_time&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_end_time</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;end_time&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dt_step</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_step</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_end_step</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">_get_gids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
         <span class="n">selected_gids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">get_node_set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_all_gids</span><span class="p">)</span><span class="o">.</span><span class="n">gids</span><span class="p">())</span>
@@ -702,14 +713,73 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>
 
+    <span class="k">def</span> <span class="nf">_is_multiple</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dividend</span><span class="p">,</span> <span class="n">divisor</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1.0e-4</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">dividend</span><span class="p">,</span> <span class="n">divisor</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">dividend</span><span class="o">/</span><span class="n">divisor</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">val</span><span class="o">.</span><span class="n">is_integer</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_set_valid_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+        <span class="c1"># For dt, start_time and stop_time; if not explicitly set by the users then default back to the &quot;run&quot; values</span>
+        <span class="c1"># in the config. If user is setting their own values, make sure they are valid/within the simulation range,</span>
+        <span class="c1"># and make sure they are all multiples of dt.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">dt</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> <span class="o">&lt;</span> <span class="n">sim</span><span class="o">.</span><span class="n">dt</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;report dt cannot be less than simulation dt (</span><span class="si">{}</span><span class="s1"> &lt; </span><span class="si">{}</span><span class="s1">).&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">dt</span>
+            <span class="p">))</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_multiple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dt</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">dt</span><span class="p">):</span>
+            <span class="c1"># Users can only sample at a rate that in a whole-number multiple of the simulation dt</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;report dt must be a integer multiple of simulation dt (</span><span class="si">{}</span><span class="s1"> != </span><span class="si">{}</span><span class="s1">*m).&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">dt</span>
+            <span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">tstart</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span> <span class="o">&lt;</span> <span class="n">sim</span><span class="o">.</span><span class="n">tstart</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;start_time cannot be less than simulation tstart.&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_multiple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span><span class="p">):</span>
+            <span class="c1"># Make sure the start-time occurs at a self._dt multiple</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;report start_time (</span><span class="si">{}</span><span class="s1">) must be a integer multiple of dt (</span><span class="si">{}</span><span class="s1">).&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span>
+            <span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_end_time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_end_time</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">tstop</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_end_time</span> <span class="o">&gt;</span> <span class="n">sim</span><span class="o">.</span><span class="n">tstop</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;end_time value cannot be greater than simulation tstop (</span><span class="si">{}</span><span class="s1"> &gt; </span><span class="si">{}</span><span class="s1">).&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_end_time</span><span class="p">,</span> <span class="n">sim</span><span class="o">.</span><span class="n">tstop</span>
+            <span class="p">))</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_multiple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_end_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span><span class="p">):</span>
+            <span class="c1"># Make sure the start-time occurs at a dt multiple</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;report end_time (</span><span class="si">{}</span><span class="s1">) must be a integer multiple of dt (</span><span class="si">{}</span><span class="s1">).&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_end_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span>
+            <span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dt_step</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dt</span><span class="o">/</span><span class="n">sim</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_step</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span><span class="o">/</span><span class="n">sim</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_end_step</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_end_time</span><span class="o">/</span><span class="n">sim</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_record_on_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tstep</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_step</span> <span class="o">&lt;=</span> <span class="n">tstep</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_end_step</span> <span class="ow">and</span> <span class="n">tstep</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt_step</span> <span class="o">==</span> <span class="mi">0</span>
+
 <div class="viewcode-block" id="NetconReport.initialize"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_netcons.NetconReport.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span> <span class="o">=</span> <span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">gid_pool</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_get_gids</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span> <span class="o">=</span> <span class="n">MembraneRecorder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file_name</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_variables</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-                                              <span class="n">buffer_size</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">nsteps_block</span><span class="p">,</span> <span class="n">tstart</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">tstop</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">tstop</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
-                                              <span class="n">n_steps</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">n_steps</span><span class="p">)</span>
-        <span class="c1">#self._save_sim_data(sim)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_valid_steps</span><span class="p">(</span><span class="n">sim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span> <span class="o">=</span> <span class="n">MembraneRecorder</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_file_name</span><span class="p">,</span>
+            <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span>
+            <span class="n">variable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_variables</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">buffer_size</span><span class="o">=</span><span class="n">sim</span><span class="o">.</span><span class="n">nsteps_block</span><span class="p">,</span>
+            <span class="n">tstart</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_start_time</span><span class="p">,</span>
+            <span class="n">tstop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_end_time</span><span class="p">,</span>
+            <span class="n">dt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_dt</span><span class="p">,</span>
+            <span class="c1"># n_steps=sim.n_steps</span>
+        <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">node_pop</span> <span class="ow">in</span> <span class="n">sim</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">node_populations</span><span class="p">:</span>
             <span class="n">pop_name</span> <span class="o">=</span> <span class="n">node_pop</span><span class="o">.</span><span class="n">name</span>
@@ -744,8 +814,14 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
             <span class="k">if</span> <span class="n">syn_objects</span><span class="p">:</span>
                 <span class="c1"># self._var_recorder.add_cell(gid, sec_list, seg_list, src_ids=src_list, trg_ids=[gid]*len(src_list))</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">add_cell</span><span class="p">(</span><span class="n">node_id</span><span class="o">=</span><span class="n">pop_id</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">pop_id</span><span class="o">.</span><span class="n">population</span><span class="p">,</span> <span class="n">element_ids</span><span class="o">=</span><span class="n">sec_list</span><span class="p">,</span>
-                                            <span class="n">element_pos</span><span class="o">=</span><span class="n">seg_list</span><span class="p">,</span> <span class="n">src_ids</span><span class="o">=</span><span class="n">src_list</span><span class="p">,</span> <span class="n">trg_ids</span><span class="o">=</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">src_list</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">add_cell</span><span class="p">(</span>
+                    <span class="n">node_id</span><span class="o">=</span><span class="n">pop_id</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span>
+                    <span class="n">population</span><span class="o">=</span><span class="n">pop_id</span><span class="o">.</span><span class="n">population</span><span class="p">,</span>
+                    <span class="n">element_ids</span><span class="o">=</span><span class="n">sec_list</span><span class="p">,</span>
+                    <span class="n">element_pos</span><span class="o">=</span><span class="n">seg_list</span><span class="p">,</span>
+                    <span class="n">src_ids</span><span class="o">=</span><span class="n">src_list</span><span class="p">,</span>
+                    <span class="n">trg_ids</span><span class="o">=</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">src_list</span><span class="p">)</span>
+                <span class="p">)</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">_object_lookup</span><span class="p">[</span><span class="n">gid</span><span class="p">]</span> <span class="o">=</span> <span class="n">syn_objects</span>
 
@@ -754,15 +830,23 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <div class="viewcode-block" id="NetconReport.step"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_netcons.NetconReport.step">[docs]</a>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">tstep</span><span class="p">):</span>
         <span class="c1"># save all necessary cells/variables at the current time-step into memory</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_record_on_step</span><span class="p">(</span><span class="n">tstep</span><span class="p">):</span>
+            <span class="k">return</span>
+
         <span class="k">for</span> <span class="n">gid</span><span class="p">,</span> <span class="n">netcon_objs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_object_lookup</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">pop_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gid_map</span><span class="o">.</span><span class="n">get_pool_id</span><span class="p">(</span><span class="n">gid</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">var_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span><span class="p">:</span>
                 <span class="n">syn_values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">getattr</span><span class="p">(</span><span class="n">syn</span><span class="p">,</span> <span class="n">var_name</span><span class="p">)</span> <span class="k">for</span> <span class="n">syn</span> <span class="ow">in</span> <span class="n">netcon_objs</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">syn_values</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">record_cell</span><span class="p">(</span><span class="n">pop_id</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="n">pop_id</span><span class="o">.</span><span class="n">population</span><span class="p">,</span> <span class="n">vals</span><span class="o">=</span><span class="n">syn_values</span><span class="p">,</span>
-                                                   <span class="n">tstep</span><span class="o">=</span><span class="n">tstep</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">record_cell</span><span class="p">(</span>
+                        <span class="n">pop_id</span><span class="o">.</span><span class="n">node_id</span><span class="p">,</span>
+                        <span class="n">population</span><span class="o">=</span><span class="n">pop_id</span><span class="o">.</span><span class="n">population</span><span class="p">,</span>
+                        <span class="n">vals</span><span class="o">=</span><span class="n">syn_values</span><span class="p">,</span>
+                        <span class="n">tstep</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_curr_step</span>
+                    <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_block_step</span> <span class="o">+=</span> <span class="mi">1</span></div>
+        <span class="c1"># self._block_step += 1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_curr_step</span> <span class="o">+=</span> <span class="mi">1</span></div>
 
 <div class="viewcode-block" id="NetconReport.block"><a class="viewcode-back" href="../../../../../bmtk/bmtk.simulator.bionet.modules.html#bmtk.simulator.bionet.modules.record_netcons.NetconReport.block">[docs]</a>    <span class="k">def</span> <span class="nf">block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">block_interval</span><span class="p">):</span>
         <span class="c1"># write variables in memory to file</span>
@@ -772,9 +856,6 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
         <span class="c1"># TODO: Build in mpi signaling into var_recorder</span>
         <span class="n">pc</span><span class="o">.</span><span class="n">barrier</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_var_recorder</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
-
-        <span class="c1">#pc.barrier()</span>
-        <span class="c1">#self._var_recorder.merge()</span>
 </pre></div>
 
             <div class="clearer"></div>
@@ -807,7 +888,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../../ad_tutorials.html">Additional Tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_cell_placement.html">Cell placement: Using BMTK functions for distributing units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_cell_placement.html">Cell placement: Functions for spatially distributing units</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_dynamic_synapses.html">Accessing synapse models in NEST to model dynamic synapses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../../../tutorial_spike_trains_refractory.html">Creating spike trains with refractory periods</a></li>
 </ul>
