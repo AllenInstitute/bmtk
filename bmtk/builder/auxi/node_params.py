@@ -214,7 +214,7 @@ class CellLocations(object):
                 plot_positions(x, z, y, ax[1], labels=['X', 'Z', 'Y'], pop_name=pop_name)
                 ax[1].set_title('Bird\'s eye view')
                 ax[1].view_init(elev=90., azim=0)
-                ax[1].legend(loc="upper right", markerscale=3, prop={'size': 15})
+                ax[1].legend(loc="upper right", markerscale=2, prop={'size': 15})
             else:
                 plot_positions(x, y, z, ax[0], labels=['X','Y','Z'], pop_name=pop_name)
                 ax.view_init(elev=10., azim=0)
@@ -223,7 +223,7 @@ class CellLocations(object):
                 plot_positions(x, y, z, ax[1], labels=['X', 'Y', 'Z'], pop_name=pop_name)
                 ax[1].set_title('Bird\'s eye view')
                 ax[1].view_init(elev=90., azim=0)
-                ax[1].legend(loc="upper right", markerscale=3, prop={'size': 15})
+                ax[1].legend(loc="upper right", markerscale=2, prop={'size': 15})
 
         plt.tight_layout()
         plt.show()
