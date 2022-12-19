@@ -69,7 +69,7 @@ def test_positions_density_matrix():
     
     points = positions_density_matrix(mat, position_scale)
     
-    assert(points.shape == (28,3))
+    assert(points.shape == (34,3))
     assert(np.max(abs(points[:,0]))<25*3)
     assert(np.max(abs(points[:,1]))<25*3)
     assert(np.max(abs(points[:,2]))<25*3)
@@ -78,10 +78,10 @@ def test_positions_nrrd():
     np.random.seed(1)
     nrrd_filename = 'docs/tutorial/sources/nrrd/structure_721.nrrd'
     points = positions_nrrd(nrrd_filename, 2000)
-    assert(points.shape==(2014, 3))
+    assert(points.shape==(2048, 3))
     
     points = positions_nrrd(nrrd_filename, 2000, split_bilateral='z')
-    assert(points.shape==(1033, 3))
+    assert(points.shape==(1024, 3))
     
 
 if __name__ == '__main__':
