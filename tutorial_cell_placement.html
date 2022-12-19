@@ -896,7 +896,7 @@ div.rendered_html tbody tr:hover {
 <img alt="_images/tutorial_cell_placement_2_0.png" src="_images/tutorial_cell_placement_2_0.png" />
 </div>
 </div>
-<p>We can also use this function to create a cylindrical ring of locations. For instance, in the V1 model, this method was used to introduce a surround of less computationally intensive unit types around the core of biophysically detailed units.</p>
+<p>We can also use this function to create a cylindrical ring of locations. For instance, in the Allen V1 model, this method was used to introduce a surround of less computationally intensive unit types around the core of biophysically detailed units.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
@@ -1037,13 +1037,13 @@ monitor the progress. You may find that in such cases just slightly decreasing t
 
 <span class="n">max_dens</span> <span class="o">=</span> <span class="mi">100000</span>
 
-<span class="n">v1</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;V1&#39;</span><span class="p">)</span>
-<span class="n">v1</span><span class="o">.</span><span class="n">dmin</span> <span class="o">=</span> <span class="mf">18.0</span>
-<span class="n">v1</span><span class="o">.</span><span class="n">CCF_orientation</span><span class="o">=</span><span class="kc">True</span>   <span class="c1"># Use Allen Common Coordinate Framework orientation with y-axis as vertical</span>
+<span class="n">ctx</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;cortex&#39;</span><span class="p">)</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">dmin</span> <span class="o">=</span> <span class="mf">18.0</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">CCF_orientation</span><span class="o">=</span><span class="kc">True</span>   <span class="c1"># Use Allen Common Coordinate Framework orientation with y-axis as vertical</span>
 
-<span class="n">v1</span><span class="o">.</span><span class="n">add_positions_nrrd</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">max_dens</span><span class="p">,</span> <span class="n">pop_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Pyr&#39;</span><span class="p">],</span> <span class="n">split_bilateral</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;prog&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">add_positions_nrrd</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">max_dens</span><span class="p">,</span> <span class="n">pop_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Pyr&#39;</span><span class="p">],</span> <span class="n">split_bilateral</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;prog&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="n">v1</span><span class="o">.</span><span class="n">plot_locs</span><span class="p">()</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">plot_locs</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1054,25 +1054,25 @@ monitor the progress. You may find that in such cases just slightly decreasing t
 <div class="highlight"><pre>
 Density limit:206311.963
 Max density requested:100000.000
-5831/51218 cells placed
-11889/51218 cells placed
-17707/51218 cells placed
-23336/51218 cells placed
-28333/51218 cells placed
-32617/51218 cells placed
-36274/51218 cells placed
-39107/51218 cells placed
-41490/51218 cells placed
-43441/51218 cells placed
-45003/51218 cells placed
-46353/51218 cells placed
-47479/51218 cells placed
-48439/51218 cells placed
-49225/51218 cells placed
-49887/51218 cells placed
-50545/51218 cells placed
-51106/51218 cells placed
-51616/51218 cells placed
+5786/51218 cells placed
+11837/51218 cells placed
+17823/51218 cells placed
+23500/51218 cells placed
+28438/51218 cells placed
+32752/51218 cells placed
+36213/51218 cells placed
+39168/51218 cells placed
+41516/51218 cells placed
+43591/51218 cells placed
+45160/51218 cells placed
+46412/51218 cells placed
+47466/51218 cells placed
+48349/51218 cells placed
+49117/51218 cells placed
+49806/51218 cells placed
+50433/51218 cells placed
+50989/51218 cells placed
+51473/51218 cells placed
 51218 cells
 positions: (51218, 3)
 </pre></div></div>
@@ -1090,16 +1090,16 @@ positions: (51218, 3)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">v1</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;V1&#39;</span><span class="p">)</span>
-<span class="n">v1</span><span class="o">.</span><span class="n">dmin</span> <span class="o">=</span> <span class="mf">18.0</span>
-<span class="n">v1</span><span class="o">.</span><span class="n">CCF_orientation</span><span class="o">=</span><span class="kc">True</span>   <span class="c1"># Use Allen Common Coordinate Framework orientation with y-axis as vertical</span>
+<span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;cortex&#39;</span><span class="p">)</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">dmin</span> <span class="o">=</span> <span class="mf">18.0</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">CCF_orientation</span><span class="o">=</span><span class="kc">True</span>   <span class="c1"># Use Allen Common Coordinate Framework orientation with y-axis as vertical</span>
 
-<span class="n">v1</span><span class="o">.</span><span class="n">add_positions_nrrd</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">max_dens</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">pop_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Pyr&#39;</span><span class="p">,</span><span class="s1">&#39;PV&#39;</span><span class="p">],</span> <span class="n">partitions</span><span class="o">=</span><span class="p">[</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">],</span> <span class="n">split_bilateral</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">,</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">add_positions_nrrd</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">max_dens</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">pop_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Pyr&#39;</span><span class="p">,</span><span class="s1">&#39;PV&#39;</span><span class="p">],</span> <span class="n">partitions</span><span class="o">=</span><span class="p">[</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">],</span> <span class="n">split_bilateral</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">,</span>
                       <span class="n">method</span><span class="o">=</span><span class="s1">&#39;prog&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<span class="n">v1</span><span class="o">.</span><span class="n">add_positions_nrrd</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">max_dens</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">pop_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Pyr2&#39;</span><span class="p">],</span> <span class="n">split_bilateral</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;prog&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">add_positions_nrrd</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">max_dens</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">pop_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Pyr2&#39;</span><span class="p">],</span> <span class="n">split_bilateral</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;prog&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<span class="n">v1</span><span class="o">.</span><span class="n">plot_locs</span><span class="p">()</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">plot_locs</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1129,14 +1129,14 @@ positions: (25609, 3)
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">v1</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;V1&#39;</span><span class="p">)</span>
-<span class="n">v1</span><span class="o">.</span><span class="n">dmin</span> <span class="o">=</span> <span class="mf">20.0</span>
-<span class="n">v1</span><span class="o">.</span><span class="n">CCF_orientation</span><span class="o">=</span><span class="kc">True</span>   <span class="c1"># Use Allen Common Coordinate Framework orientation with y-axis as vertical</span>
+<span></span><span class="n">ctx</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;cortex&#39;</span><span class="p">)</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">dmin</span> <span class="o">=</span> <span class="mf">20.0</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">CCF_orientation</span><span class="o">=</span><span class="kc">True</span>   <span class="c1"># Use Allen Common Coordinate Framework orientation with y-axis as vertical</span>
 
-<span class="n">v1</span><span class="o">.</span><span class="n">add_positions_nrrd</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">max_dens</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">pop_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Pyr&#39;</span><span class="p">,</span><span class="s1">&#39;PV&#39;</span><span class="p">],</span> <span class="n">partitions</span><span class="o">=</span><span class="p">[</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">],</span> <span class="n">split_bilateral</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">,</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">add_positions_nrrd</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">max_dens</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">pop_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Pyr&#39;</span><span class="p">,</span><span class="s1">&#39;PV&#39;</span><span class="p">],</span> <span class="n">partitions</span><span class="o">=</span><span class="p">[</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">],</span> <span class="n">split_bilateral</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">,</span>
                       <span class="n">method</span><span class="o">=</span><span class="s1">&#39;lattice&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<span class="n">v1</span><span class="o">.</span><span class="n">plot_locs</span><span class="p">()</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">plot_locs</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1165,13 +1165,13 @@ positions: (25609, 3)
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">N</span><span class="o">=</span><span class="mi">4000</span>
 
-<span class="n">v1</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;V1&#39;</span><span class="p">)</span>
-<span class="n">v1</span><span class="o">.</span><span class="n">dmin</span> <span class="o">=</span> <span class="mf">18.0</span>
+<span class="n">ctx</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;ctx&#39;</span><span class="p">)</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">dmin</span> <span class="o">=</span> <span class="mf">18.0</span>
 
-<span class="n">v1</span><span class="o">.</span><span class="n">add_positions_columnar</span><span class="p">([</span><span class="s1">&#39;Pyr&#39;</span><span class="p">,</span><span class="s1">&#39;PV&#39;</span><span class="p">],</span> <span class="n">partitions</span><span class="o">=</span><span class="p">[</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">],</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">height</span> <span class="o">=</span> <span class="mf">300.0</span><span class="p">,</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">add_positions_columnar</span><span class="p">([</span><span class="s1">&#39;Pyr&#39;</span><span class="p">,</span><span class="s1">&#39;PV&#39;</span><span class="p">],</span> <span class="n">partitions</span><span class="o">=</span><span class="p">[</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">],</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">height</span> <span class="o">=</span> <span class="mf">300.0</span><span class="p">,</span>
                                <span class="n">min_radius</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">,</span> <span class="n">max_radius</span> <span class="o">=</span> <span class="mf">200.0</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;prog&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<span class="n">v1</span><span class="o">.</span><span class="n">plot_locs</span><span class="p">()</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">plot_locs</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1198,16 +1198,16 @@ Max density requested:113176.848
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">N</span><span class="o">=</span><span class="mi">2500</span>
 
-<span class="n">v1</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;V1&#39;</span><span class="p">)</span>
-<span class="n">v1</span><span class="o">.</span><span class="n">dmin</span> <span class="o">=</span> <span class="mf">18.0</span>
+<span class="n">ctx</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;cortex&#39;</span><span class="p">)</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">dmin</span> <span class="o">=</span> <span class="mf">18.0</span>
 
-<span class="n">v1</span><span class="o">.</span><span class="n">add_positions_rect_prism</span><span class="p">([</span><span class="s1">&#39;Pyr&#39;</span><span class="p">,</span><span class="s1">&#39;PV&#39;</span><span class="p">],</span> <span class="n">partitions</span><span class="o">=</span><span class="p">[</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">],</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">height</span> <span class="o">=</span> <span class="mf">300.0</span><span class="p">,</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">add_positions_rect_prism</span><span class="p">([</span><span class="s1">&#39;Pyr&#39;</span><span class="p">,</span><span class="s1">&#39;PV&#39;</span><span class="p">],</span> <span class="n">partitions</span><span class="o">=</span><span class="p">[</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">],</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">height</span> <span class="o">=</span> <span class="mf">300.0</span><span class="p">,</span>
                                <span class="n">x_length</span> <span class="o">=</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">z_length</span> <span class="o">=</span> <span class="mf">400.0</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;prog&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<span class="n">v1</span><span class="o">.</span><span class="n">add_positions_columnar</span><span class="p">(</span><span class="s1">&#39;Pyr2&#39;</span><span class="p">,</span> <span class="n">partitions</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">],</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">height</span> <span class="o">=</span> <span class="mf">300.0</span><span class="p">,</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">add_positions_columnar</span><span class="p">(</span><span class="s1">&#39;Pyr2&#39;</span><span class="p">,</span> <span class="n">partitions</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">],</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">height</span> <span class="o">=</span> <span class="mf">300.0</span><span class="p">,</span>
                                <span class="n">min_radius</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">,</span> <span class="n">max_radius</span> <span class="o">=</span> <span class="mf">200.0</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;prog&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<span class="n">v1</span><span class="o">.</span><span class="n">plot_locs</span><span class="p">()</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">plot_locs</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1236,12 +1236,12 @@ Max density requested:70735.530
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">N</span><span class="o">=</span><span class="mi">3000</span>
 
-<span class="n">v1</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;V1&#39;</span><span class="p">)</span>
-<span class="n">v1</span><span class="o">.</span><span class="n">dmin</span> <span class="o">=</span> <span class="mf">18.0</span>
+<span class="n">ctx</span> <span class="o">=</span> <span class="n">CellLocations</span><span class="p">(</span><span class="s1">&#39;cortex&#39;</span><span class="p">)</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">dmin</span> <span class="o">=</span> <span class="mf">18.0</span>
 
-<span class="n">v1</span><span class="o">.</span><span class="n">add_positions_ellipsoid</span><span class="p">([</span><span class="s1">&#39;Pyr&#39;</span><span class="p">,</span><span class="s1">&#39;PV&#39;</span><span class="p">],</span> <span class="n">partitions</span><span class="o">=</span><span class="p">[</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">],</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">height</span> <span class="o">=</span> <span class="mf">300.0</span><span class="p">,</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">add_positions_ellipsoid</span><span class="p">([</span><span class="s1">&#39;Pyr&#39;</span><span class="p">,</span><span class="s1">&#39;PV&#39;</span><span class="p">],</span> <span class="n">partitions</span><span class="o">=</span><span class="p">[</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">],</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">150.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">height</span> <span class="o">=</span> <span class="mf">300.0</span><span class="p">,</span>
                                <span class="n">x_length</span> <span class="o">=</span> <span class="mf">300.0</span><span class="p">,</span> <span class="n">z_length</span> <span class="o">=</span> <span class="mf">500.0</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;prog&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">v1</span><span class="o">.</span><span class="n">plot_locs</span><span class="p">()</span>
+<span class="n">ctx</span><span class="o">.</span><span class="n">plot_locs</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1269,17 +1269,17 @@ Max density requested:127323.954
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">bmtk.builder.networks</span> <span class="kn">import</span> <span class="n">NetworkBuilder</span>
 
-<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;V1&#39;</span><span class="p">)</span>
-<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="n">v1</span><span class="o">.</span><span class="n">Pyr</span><span class="o">.</span><span class="n">N</span><span class="p">,</span>
-              <span class="n">positions</span><span class="o">=</span><span class="n">v1</span><span class="o">.</span><span class="n">Pyr</span><span class="o">.</span><span class="n">positions</span><span class="p">,</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">NetworkBuilder</span><span class="p">(</span><span class="s1">&#39;cortex&#39;</span><span class="p">)</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">Pyr</span><span class="o">.</span><span class="n">N</span><span class="p">,</span>
+              <span class="n">positions</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">Pyr</span><span class="o">.</span><span class="n">positions</span><span class="p">,</span>
               <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;Pyr&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">&#39;VisL4&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;e&#39;</span><span class="p">,</span>  <span class="c1"># optional parameters</span>
               <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point_process&#39;</span><span class="p">,</span>  <span class="c1"># Tells the simulator to use point-based neurons</span>
               <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;nest:iaf_psc_alpha&#39;</span><span class="p">,</span>  <span class="c1"># tells the simulator to use NEST iaf_psc_alpha models</span>
               <span class="n">dynamics_params</span><span class="o">=</span><span class="s1">&#39;472363762_point.json&#39;</span>  <span class="c1"># File containing iaf_psc_alpha model parameters</span>
              <span class="p">)</span>
 
-<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="n">v1</span><span class="o">.</span><span class="n">PV</span><span class="o">.</span><span class="n">N</span><span class="p">,</span>
-              <span class="n">positions</span><span class="o">=</span><span class="n">v1</span><span class="o">.</span><span class="n">PV</span><span class="o">.</span><span class="n">positions</span><span class="p">,</span>
+<span class="n">net</span><span class="o">.</span><span class="n">add_nodes</span><span class="p">(</span><span class="n">N</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">PV</span><span class="o">.</span><span class="n">N</span><span class="p">,</span>
+              <span class="n">positions</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">PV</span><span class="o">.</span><span class="n">positions</span><span class="p">,</span>
               <span class="n">pop_name</span><span class="o">=</span><span class="s1">&#39;PV&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">&#39;VisL4&#39;</span><span class="p">,</span> <span class="n">ei</span><span class="o">=</span><span class="s1">&#39;i&#39;</span><span class="p">,</span>  <span class="c1"># optional parameters</span>
               <span class="n">model_type</span><span class="o">=</span><span class="s1">&#39;point_process&#39;</span><span class="p">,</span>  <span class="c1"># Tells the simulator to use point-based neurons</span>
               <span class="n">model_template</span><span class="o">=</span><span class="s1">&#39;nest:iaf_psc_alpha&#39;</span><span class="p">,</span>  <span class="c1"># tells the simulator to use NEST iaf_psc_alpha models</span>
