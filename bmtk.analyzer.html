@@ -4,29 +4,22 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>bmtk.analyzer package &#8212; Brain Modeling Toolkit 0.0.5 documentation</title>
+    <title>bmtk.analyzer package &#8212; Brain Modeling Toolkit 0.0.6 documentation</title>
     <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.0.5',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "tex2jax_ignore|mathjax_ignore|document", "processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="bmtk.analyzer.visualization package" href="bmtk.analyzer.visualization.html" />
-    <link rel="prev" title="bmtk package" href="bmtk.html" /> 
-  </head>
-  <body>
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
 <script type="text/javascript" src="_static/external_assets/javascript/portal.js"></script>
 <style>
 
@@ -631,25 +624,91 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
             
   <div class="section" id="bmtk-analyzer-package">
 <h1>bmtk.analyzer package<a class="headerlink" href="#bmtk-analyzer-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="bmtk.analyzer.visualization.html">bmtk.analyzer.visualization package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.visualization.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.visualization.html#module-bmtk.analyzer.visualization.rasters">bmtk.analyzer.visualization.rasters module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.visualization.html#module-bmtk.analyzer.visualization.spikes">bmtk.analyzer.visualization.spikes module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.visualization.html#module-bmtk.analyzer.visualization.widgets">bmtk.analyzer.visualization.widgets module</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.analyzer.visualization.html#module-bmtk.analyzer.visualization">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-bmtk.analyzer.cell_vars">
+<span id="bmtk-analyzer-cell-vars-module"></span><h2>bmtk.analyzer.cell_vars module<a class="headerlink" href="#module-bmtk.analyzer.cell_vars" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-bmtk.analyzer.compartment">
+<span id="bmtk-analyzer-compartment-module"></span><h2>bmtk.analyzer.compartment module<a class="headerlink" href="#module-bmtk.analyzer.compartment" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="bmtk.analyzer.compartment.plot_traces">
+<code class="descclassname">bmtk.analyzer.compartment.</code><code class="descname">plot_traces</code><span class="sig-paren">(</span><em>config_file=None</em>, <em>report_name=None</em>, <em>population=None</em>, <em>report_path=None</em>, <em>group_by=None</em>, <em>group_excludes=None</em>, <em>nodes_file=None</em>, <em>node_types_file=None</em>, <em>node_ids=None</em>, <em>sections='origin'</em>, <em>average=False</em>, <em>times=None</em>, <em>title=None</em>, <em>show_legend=None</em>, <em>show=True</em>, <em>save_as=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/analyzer/compartment.html#plot_traces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.compartment.plot_traces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot compartment variables (eg Membrane Voltage, Calcium conc.) traces from the output of simulation. Will
+attempt to look in the SONATA simulation configuration json “reports” sections for any matching “membrane_report”
+outputs with a matching report_name:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">,</span> <span class="n">report_name</span><span class="o">=</span><span class="s1">&#39;membrane_potential&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If the path the the report is different (or missing) than what’s in the SONATA config then use the “report_path”
+option instead:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_traces</span><span class="p">(</span><span class="n">report_path</span><span class="o">=</span><span class="s1">&#39;/my/path/to/membrane_potential.h5&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To display the traces of only a select number of nodes you can filter using the node_ids options:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The average option will find the mean value of all the traces to display:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">,</span> <span class="n">node_ids</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">average</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You may also group together different subsets of nodes and display multiple averages based on certain attributes
+of the network, which can be done using the group_by key. The group_exlcudes option will exclude certain groups.
+For example if you want to plot the averaged membrane potential across each cortical “layer”, exclude L1:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_traces</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">,</span> <span class="n">report</span><span class="o">=</span><span class="s1">&#39;membrane_potential&#39;</span><span class="p">,</span> <span class="n">group_by</span><span class="o">=</span><span class="s1">&#39;layer&#39;</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="s1">&#39;L1&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>config_file</strong> – path to SONATA simulation configuration.</li>
+<li><strong>report_name</strong> – name of the membrane_report “report” which will be plotted. If only one compartment report
+in the simulation config then function will find it automatically.</li>
+<li><strong>population</strong> – string. If the report more than one population of nodes, use this to determine which nodes to
+plot. If only one population exists and population=None then the function will find it by default.</li>
+<li><strong>report_path</strong> – Path to SONATA compartment report file. Do not use with “config_file” and “report_name” options.</li>
+<li><strong>group_by</strong> – Attribute of the “nodes” file used to group and average subsets of nodes.</li>
+<li><strong>group_excludes</strong> – list of strings or None. When using the “group_by”, allows users to exclude certain groupings
+based on the attribute value.</li>
+<li><strong>nodes_file</strong> – path to nodes hdf5 file containing “population”. By default this will be resolved using the
+config.</li>
+<li><strong>node_types_file</strong> – path to node-types csv file containing “population”. By default this will be resolved using
+the config.</li>
+<li><strong>node_ids</strong> – int or list of integers. Individual node to display the variable.</li>
+<li><strong>sections</strong> – ‘origin’, ‘all’, or list of ids, Compartments/elements to display, By default will only show values
+at the soma.</li>
+<li><strong>average</strong> – If true will display average of “node_ids”. Default: False</li>
+<li><strong>times</strong> – (float, float), start and stop times of simulation. By default will get values from simulation
+configs “run” section.</li>
+<li><strong>title</strong> – str, adds a title to the plot. If None (default) then name will be automatically generated using the
+report_name.</li>
+<li><strong>show_legend</strong> – Set True or False to determine if legend should be displayed on the plot. The default (None)
+function itself will guess if legend should be shown.</li>
+<li><strong>show</strong> – bool to display or not display plot. default True.</li>
+<li><strong>save_as</strong> – None or str: file-name/path to save the plot as a png/jpeg/etc. If None or empty string will not
+save plot.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">matplotlib figure.Figure object</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.analyzer.ecp">
+<span id="bmtk-analyzer-ecp-module"></span><h2>bmtk.analyzer.ecp module<a class="headerlink" href="#module-bmtk.analyzer.ecp" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="bmtk.analyzer.ecp.plot_ecp">
+<code class="descclassname">bmtk.analyzer.ecp.</code><code class="descname">plot_ecp</code><span class="sig-paren">(</span><em>config_file=None</em>, <em>report_name=None</em>, <em>ecp_path=None</em>, <em>title=None</em>, <em>show=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/analyzer/ecp.html#plot_ecp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.ecp.plot_ecp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 <div class="section" id="module-bmtk.analyzer.firing_rates">
 <span id="bmtk-analyzer-firing-rates-module"></span><h2>bmtk.analyzer.firing_rates module<a class="headerlink" href="#module-bmtk.analyzer.firing_rates" title="Permalink to this headline">¶</a></h2>
@@ -662,6 +721,254 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 <dt id="bmtk.analyzer.firing_rates.firing_rates_equal">
 <code class="descclassname">bmtk.analyzer.firing_rates.</code><code class="descname">firing_rates_equal</code><span class="sig-paren">(</span><em>rates_file1</em>, <em>rates_file2</em>, <em>err=0.0001</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/analyzer/firing_rates.html#firing_rates_equal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.firing_rates.firing_rates_equal" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.analyzer.firing_rates.plot_rates_popnet">
+<code class="descclassname">bmtk.analyzer.firing_rates.</code><code class="descname">plot_rates_popnet</code><span class="sig-paren">(</span><em>cell_models_file</em>, <em>rates_file</em>, <em>model_keys=None</em>, <em>save_as=None</em>, <em>show_plot=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/analyzer/firing_rates.html#plot_rates_popnet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.firing_rates.plot_rates_popnet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initial method for plotting popnet output</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cell_models_file</strong> – </li>
+<li><strong>rates_file</strong> – </li>
+<li><strong>model_keys</strong> – </li>
+<li><strong>save_as</strong> – </li>
+<li><strong>show_plot</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.analyzer.io_tools">
+<span id="bmtk-analyzer-io-tools-module"></span><h2>bmtk.analyzer.io_tools module<a class="headerlink" href="#module-bmtk.analyzer.io_tools" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="bmtk.analyzer.io_tools.load_config">
+<code class="descclassname">bmtk.analyzer.io_tools.</code><code class="descname">load_config</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/analyzer/io_tools.html#load_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.io_tools.load_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-bmtk.analyzer.spike_trains">
+<span id="bmtk-analyzer-spike-trains-module"></span><h2>bmtk.analyzer.spike_trains module<a class="headerlink" href="#module-bmtk.analyzer.spike_trains" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="bmtk.analyzer.spike_trains.plot_raster">
+<code class="descclassname">bmtk.analyzer.spike_trains.</code><code class="descname">plot_raster</code><span class="sig-paren">(</span><em>config_file=None</em>, <em>population=None</em>, <em>with_histogram=True</em>, <em>times=None</em>, <em>title=None</em>, <em>show=True</em>, <em>save_as=None</em>, <em>group_by=None</em>, <em>group_excludes=None</em>, <em>spikes_file=None</em>, <em>nodes_file=None</em>, <em>node_types_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/analyzer/spike_trains.html#plot_raster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.plot_raster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a raster plot (plus optional histogram) from the results of the simulation.</p>
+<p>Will using the SONATA simulation configs “output” section to locate where the spike-trains file was created and
+display them:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If the path the the report is different (or missing) than what’s in the SONATA config then use the “spikes_file”
+option instead:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_raster</span><span class="p">(</span><span class="n">spikes_file</span><span class="o">=</span><span class="s1">&#39;/my/path/to/membrane_potential.h5&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You may also group together different subsets of nodes using specific attributes of the network using the “group_by”
+option, and the “group_excludes” option to exclude specific subsets. For example to color and label different
+subsets of nodes based on their cortical “layer”, but exlcude plotting the L1 nodes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_raster</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">,</span> <span class="n">groupy_by</span><span class="o">=</span><span class="s1">&#39;layer&#39;</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="s1">&#39;L1&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>config_file</strong> – path to SONATA simulation configuration.</li>
+<li><strong>population</strong> – name of the membrane_report “report” which will be plotted. If only one compartment report
+in the simulation config then function will find it automatically.</li>
+<li><strong>with_histogram</strong> – If True the a histogram will be shown as a small subplot below the scatter plot. Default
+True.</li>
+<li><strong>times</strong> – (float, float), start and stop times of simulation. By default will get values from simulation
+configs “run” section.</li>
+<li><strong>title</strong> – str, adds a title to the plot. If None (default) then name will be automatically generated using the
+report_name.</li>
+<li><strong>show</strong> – bool to display or not display plot. default True.</li>
+<li><strong>save_as</strong> – None or str: file-name/path to save the plot as a png/jpeg/etc. If None or empty string will not
+save plot.</li>
+<li><strong>group_by</strong> – Attribute of the “nodes” file used to group and average subsets of nodes.</li>
+<li><strong>group_excludes</strong> – list of strings or None. When using the “group_by”, allows users to exclude certain groupings
+based on the attribute value.</li>
+<li><strong>spikes_file</strong> – Path to SONATA spikes file. Do not use with “config_file” options.</li>
+<li><strong>nodes_file</strong> – path to nodes hdf5 file containing “population”. By default this will be resolved using the
+config.</li>
+<li><strong>node_types_file</strong> – path to node-types csv file containing “population”. By default this will be resolved using
+the config.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">matplotlib figure.Figure object</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.analyzer.spike_trains.plot_rates">
+<code class="descclassname">bmtk.analyzer.spike_trains.</code><code class="descname">plot_rates</code><span class="sig-paren">(</span><em>config_file=None</em>, <em>population=None</em>, <em>smoothing=False</em>, <em>smoothing_params=None</em>, <em>times=None</em>, <em>title=None</em>, <em>show=True</em>, <em>save_as=None</em>, <em>group_by=None</em>, <em>group_excludes=None</em>, <em>spikes_file=None</em>, <em>nodes_file=None</em>, <em>node_types_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/analyzer/spike_trains.html#plot_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.plot_rates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate and plot the rates of each node recorded during the simulation - averaged across the entirety of the
+simulation.</p>
+<p>Will using the SONATA simulation configs “output” section to locate where the spike-trains file was created and
+display them:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_rates</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If the path the the report is different (or missing) than what’s in the SONATA config then use the “spikes_file”
+option instead:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_rates</span><span class="p">(</span><span class="n">spikes_file</span><span class="o">=</span><span class="s1">&#39;/my/path/to/membrane_potential.h5&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You may also group together different subsets of nodes using specific attributes of the network using the “group_by”
+option, and the “group_excludes” option to exclude specific subsets. For example to color and label different
+subsets of nodes based on their cortical “layer”, but exlcude plotting the L1 nodes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_rates</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">,</span> <span class="n">groupy_by</span><span class="o">=</span><span class="s1">&#39;layer&#39;</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="s1">&#39;L1&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>config_file</strong> – path to SONATA simulation configuration.</li>
+<li><strong>population</strong> – name of the membrane_report “report” which will be plotted. If only one compartment report
+in the simulation config then function will find it automatically.</li>
+<li><strong>smoothing</strong> – Bool or function. Used to smooth the data. By default (False) no smoothing will be done. If True
+will using a moving average smoothing function. Or use a function pointer.</li>
+<li><strong>smoothing_params</strong> – dict, parameters when using a function pointer smoothing value.</li>
+<li><strong>times</strong> – (float, float), start and stop times of simulation. By default will get values from simulation
+configs “run” section.</li>
+<li><strong>title</strong> – str, adds a title to the plot. If None (default) then name will be automatically generated using the
+report_name.</li>
+<li><strong>show</strong> – bool to display or not display plot. default True.</li>
+<li><strong>save_as</strong> – None or str: file-name/path to save the plot as a png/jpeg/etc. If None or empty string will not
+save plot.</li>
+<li><strong>group_by</strong> – Attribute of the “nodes” file used to group and average subsets of nodes.</li>
+<li><strong>group_excludes</strong> – list of strings or None. When using the “group_by”, allows users to exclude certain groupings
+based on the attribute value.</li>
+<li><strong>spikes_file</strong> – Path to SONATA spikes file. Do not use with “config_file” options.</li>
+<li><strong>nodes_file</strong> – Path to nodes hdf5 file containing “population”. By default this will be resolved using the
+config.</li>
+<li><strong>node_types_file</strong> – Path to node-types csv file containing “population”. By default this will be resolved using
+the config.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">matplotlib figure.Figure object</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.analyzer.spike_trains.plot_rates_boxplot">
+<code class="descclassname">bmtk.analyzer.spike_trains.</code><code class="descname">plot_rates_boxplot</code><span class="sig-paren">(</span><em>config_file=None</em>, <em>population=None</em>, <em>times=None</em>, <em>title=None</em>, <em>show=True</em>, <em>save_as=None</em>, <em>group_by=None</em>, <em>group_excludes=None</em>, <em>spikes_file=None</em>, <em>nodes_file=None</em>, <em>node_types_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/analyzer/spike_trains.html#plot_rates_boxplot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.plot_rates_boxplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a box plot of the firing rates taken from nodes recorded during the simulation.</p>
+<p>Will using the SONATA simulation configs “output” section to locate where the spike-trains file was created and
+display them:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_rates_boxplot</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If the path the the report is different (or missing) than what’s in the SONATA config then use the “spikes_file”
+option instead:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_rates_boxplot</span><span class="p">(</span><span class="n">spikes_file</span><span class="o">=</span><span class="s1">&#39;/my/path/to/membrane_potential.h5&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You may also group together different subsets of nodes using specific attributes of the network using the “group_by”
+option, and the “group_excludes” option to exclude specific subsets. For example to color and label different
+subsets of nodes based on their cortical “layer”, but exlcude plotting the L1 nodes:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plot_rates_boxplot</span><span class="p">(</span><span class="n">config_file</span><span class="o">=</span><span class="s1">&#39;config.json&#39;</span><span class="p">,</span> <span class="n">groupy_by</span><span class="o">=</span><span class="s1">&#39;layer&#39;</span><span class="p">,</span> <span class="n">group_excludes</span><span class="o">=</span><span class="s1">&#39;L1&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>config_file</strong> – path to SONATA simulation configuration.</li>
+<li><strong>population</strong> – name of the membrane_report “report” which will be plotted. If only one compartment report
+in the simulation config then function will find it automatically.</li>
+<li><strong>times</strong> – (float, float), start and stop times of simulation. By default will get values from simulation
+configs “run” section.</li>
+<li><strong>title</strong> – str, adds a title to the plot. If None (default) then name will be automatically generated using the
+report_name.</li>
+<li><strong>show</strong> – bool to display or not display plot. default True.</li>
+<li><strong>save_as</strong> – None or str: file-name/path to save the plot as a png/jpeg/etc. If None or empty string will not
+save plot.</li>
+<li><strong>group_by</strong> – Attribute of the “nodes” file used to group and average subsets of nodes.</li>
+<li><strong>group_excludes</strong> – list of strings or None. When using the “group_by”, allows users to exclude certain groupings
+based on the attribute value.</li>
+<li><strong>spikes_file</strong> – Path to SONATA spikes file. Do not use with “config_file” options.</li>
+<li><strong>nodes_file</strong> – Path to nodes hdf5 file containing “population”. By default this will be resolved using the
+config.</li>
+<li><strong>node_types_file</strong> – Path to node-types csv file containing “population”. By default this will be resolved using
+the config.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">matplotlib figure.Figure object</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.analyzer.spike_trains.spike_statistics">
+<code class="descclassname">bmtk.analyzer.spike_trains.</code><code class="descname">spike_statistics</code><span class="sig-paren">(</span><em>spikes_file</em>, <em>simulation=None</em>, <em>population=None</em>, <em>simulation_time=None</em>, <em>group_by=None</em>, <em>network=None</em>, <em>config_file=None</em>, <em>**filterparams</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/analyzer/spike_trains.html#spike_statistics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.spike_statistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get spike statistics (firing_rate, counts, inter-spike interval) of the nodes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>spikes_file</strong> – Path to SONATA spikes file. Do not use with “config_file” options.</li>
+<li><strong>simulation</strong> – </li>
+<li><strong>population</strong> – </li>
+<li><strong>simulation_time</strong> – </li>
+<li><strong>groupby</strong> – </li>
+<li><strong>network</strong> – </li>
+<li><strong>config_file</strong> – </li>
+<li><strong>filterparams</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">pandas dataframe</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="bmtk.analyzer.spike_trains.to_dataframe">
+<code class="descclassname">bmtk.analyzer.spike_trains.</code><code class="descname">to_dataframe</code><span class="sig-paren">(</span><em>config_file</em>, <em>spikes_file=None</em>, <em>population=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/analyzer/spike_trains.html#to_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spike_trains.to_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>config_file</strong> – </li>
+<li><strong>spikes_file</strong> – </li>
+<li><strong>population</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 </div>
 <div class="section" id="module-bmtk.analyzer.spikes_analyzer">
@@ -803,8 +1110,26 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 </dd></dl>
 
 </div>
+<div class="section" id="module-bmtk.analyzer.utils">
+<span id="bmtk-analyzer-utils-module"></span><h2>bmtk.analyzer.utils module<a class="headerlink" href="#module-bmtk.analyzer.utils" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="bmtk.analyzer.utils.listify">
+<code class="descclassname">bmtk.analyzer.utils.</code><code class="descname">listify</code><span class="sig-paren">(</span><em>files</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/analyzer/utils.html#listify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.utils.listify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
 <div class="section" id="module-bmtk.analyzer">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-bmtk.analyzer" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="bmtk.analyzer.node_types_table">
+<code class="descclassname">bmtk.analyzer.</code><code class="descname">node_types_table</code><span class="sig-paren">(</span><em>node_types_file</em>, <em>population</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/analyzer.html#node_types_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.node_types_table" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="bmtk.analyzer.nodes_table">
+<code class="descclassname">bmtk.analyzer.</code><code class="descname">nodes_table</code><span class="sig-paren">(</span><em>nodes_file</em>, <em>population</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/analyzer.html#nodes_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.nodes_table" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="function">
 <dt id="bmtk.analyzer.plot_calcium">
 <code class="descclassname">bmtk.analyzer.</code><code class="descname">plot_calcium</code><span class="sig-paren">(</span><em>cell_vars_h5=None</em>, <em>config_file=None</em>, <em>gids=None</em>, <em>show_plot=True</em>, <em>save=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/analyzer.html#plot_calcium"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.plot_calcium" title="Permalink to this definition">¶</a></dt>
@@ -812,7 +1137,7 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <dl class="function">
 <dt id="bmtk.analyzer.plot_calcium_hdf5">
-<code class="descclassname">bmtk.analyzer.</code><code class="descname">plot_calcium_hdf5</code><span class="sig-paren">(</span><em>cell_vars_h5</em>, <em>title='Ca2+ influx'</em>, <em>show_plot=True</em>, <em>save_as=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/analyzer.html#plot_calcium_hdf5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.plot_calcium_hdf5" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bmtk.analyzer.</code><code class="descname">plot_calcium_hdf5</code><span class="sig-paren">(</span><em>cell_vars_h5</em>, <em>gids</em>, <em>title='Ca2+ influx'</em>, <em>show_plot=True</em>, <em>save_as=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/analyzer.html#plot_calcium_hdf5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.plot_calcium_hdf5" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -822,12 +1147,12 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 <dl class="function">
 <dt id="bmtk.analyzer.plot_potential_hdf5">
-<code class="descclassname">bmtk.analyzer.</code><code class="descname">plot_potential_hdf5</code><span class="sig-paren">(</span><em>cell_vars_h5</em>, <em>title='membrane potential'</em>, <em>show_plot=True</em>, <em>save_as=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/analyzer.html#plot_potential_hdf5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.plot_potential_hdf5" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bmtk.analyzer.</code><code class="descname">plot_potential_hdf5</code><span class="sig-paren">(</span><em>cell_vars_h5</em>, <em>gids</em>, <em>title='membrane potential'</em>, <em>show_plot=True</em>, <em>save_as=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/analyzer.html#plot_potential_hdf5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.plot_potential_hdf5" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="bmtk.analyzer.spikes_table">
-<code class="descclassname">bmtk.analyzer.</code><code class="descname">spikes_table</code><span class="sig-paren">(</span><em>config_file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/analyzer.html#spikes_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spikes_table" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bmtk.analyzer.</code><code class="descname">spikes_table</code><span class="sig-paren">(</span><em>config_file</em>, <em>spikes_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bmtk/analyzer.html#spikes_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#bmtk.analyzer.spikes_table" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -840,31 +1165,51 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
 <h3><a href="index.html">Contents</a></h3>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="builder.html">The Builder</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="builder.html">Building Networks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="simulators.html">Simulation Engines</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="bionet.html">BioNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pointnet.html">PointNet</a></li>
 <li class="toctree-l2"><a class="reference internal" href="popnet.html">PopNet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filternet.html">FilterNet</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="reference internal" href="bmtk.html">Source Documentation</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">bmtk.analyzer package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.builder.html">bmtk.builder package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.simulator.html">bmtk.simulator package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="bmtk.utils.html">bmtk.utils package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analyzer.html">Analyzing the Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_NetworkBuilder_Intro.html">Builder: Using the Network Builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_clamped.html">BioNet: Single cell with current injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_cell_syn.html">BioNet: Single with with synaptic input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_single_pop.html">BioNet: Multiple Nodes with single cell-type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_multi_pop.html">BioNet: Heterogeneous network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_pointnet_modeling.html">PointNet: Point-neuron modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_population_modeling.html">PopNet: Population-based firing rate models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial_filter_models.html">FilterNet: Full-field flashing movie</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Example Networks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/AllenInstitute/bmtk.git">Github Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bmtk/bmtk.html">Source Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.analyzer.html">bmtk.analyzer package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.builder.html">bmtk.builder package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.simulator.html">bmtk.simulator package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.tests.html">bmtk.tests package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bmtk/bmtk.utils.html">bmtk.utils package</a></li>
 </ul>
 </li>
 </ul>
 
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -874,10 +1219,8 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 
 
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, Allen Institute for Brain Science.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
-<script type="text/javascript" src="/external_assets/javascript/portalFooter.js"></script>
+<script type="text/javascript" src="_static/external_assets/javascript/portalFooter.js"></script>
 
   </body>
 </html>

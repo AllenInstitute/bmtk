@@ -4,18 +4,18 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generating spike trains with a refractory period &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Example Networks and Simulations" href="examples.html" />
@@ -628,35 +628,21 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 /* CSS for nbsphinx extension */
 
 /* remove conflicting styling from Sphinx themes */
-div.nbinput.container div.prompt *,
-div.nboutput.container div.prompt *,
-div.nbinput.container div.input_area pre,
-div.nboutput.container div.output_area pre,
-div.nbinput.container div.input_area .highlight,
-div.nboutput.container div.output_area .highlight {
+div.nbinput.container,
+div.nbinput.container div.prompt,
+div.nbinput.container div.input_area,
+div.nbinput.container div[class*=highlight],
+div.nbinput.container div[class*=highlight] pre,
+div.nboutput.container,
+div.nboutput.container div.prompt,
+div.nboutput.container div.output_area,
+div.nboutput.container div[class*=highlight],
+div.nboutput.container div[class*=highlight] pre {
+    background: none;
     border: none;
-    padding: 0;
+    padding: 0 0;
     margin: 0;
     box-shadow: none;
-}
-
-div.nbinput.container > div[class*=highlight],
-div.nboutput.container > div[class*=highlight] {
-    margin: 0;
-}
-
-div.nbinput.container div.prompt *,
-div.nboutput.container div.prompt * {
-    background: none;
-}
-
-div.nboutput.container div.output_area .highlight,
-div.nboutput.container div.output_area pre {
-    background: unset;
-}
-
-div.nboutput.container div.output_area div.highlight {
-    color: unset;  /* override Pygments text color */
 }
 
 /* avoid gaps between output lines */
@@ -757,7 +743,7 @@ div.nboutput.container div.output_area {
 div.nbinput.container div.input_area {
     border: 1px solid #e0e0e0;
     border-radius: 2px;
-    /*background: #f5f5f5;*/
+    background: #f5f5f5;
 }
 
 /* override MathJax center alignment in output cells */
@@ -823,7 +809,6 @@ div.nboutput.container div.output_area.rendered_html,
 div.nboutput.container div.output_area > div.output_javascript,
 div.nboutput.container div.output_area:not(.rendered_html) > img{
     padding: 5px;
-    margin: 0;
 }
 
 /* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
@@ -871,11 +856,11 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<section id="Generating-spike-trains-with-a-refractory-period">
+<div class="section" id="Generating-spike-trains-with-a-refractory-period">
 <h1>Generating spike trains with a refractory period<a class="headerlink" href="#Generating-spike-trains-with-a-refractory-period" title="Permalink to this headline">¶</a></h1>
 <p>BMTK’s built-in SpikeGenerator options offer a convenient way to generate spike trains that you can send to virtual nodes in your network. You have already seen in some of the tutorials how to generate a simple Poisson spike train. This tutorial demonstrates some variants that generate more realistic spike trains by incorporating a refractory period. The first part uses a method starting from a Poisson process but removing spikes occurring during the refractory period. The second part uses the
 GammaSpikeGenerator to directly generate spike trains with refractory properties.</p>
-<section id="Poisson-Spike-Generator">
+<div class="section" id="Poisson-Spike-Generator">
 <h2>Poisson Spike Generator<a class="headerlink" href="#Poisson-Spike-Generator" title="Permalink to this headline">¶</a></h2>
 <p>Let’s start by creating Poisson spike trains with a firing rate of 20 Hz for 50 model cells and examine the distribution of interspike intervals.</p>
 <div class="nbinput docutils container">
@@ -1116,8 +1101,8 @@ Actual Firing Rate (Hz): 22.226666666666667
 <img alt="_images/tutorial_spike_trains_refractory_9_2.png" src="_images/tutorial_spike_trains_refractory_9_2.png" />
 </div>
 </div>
-</section>
-<section id="Gamma-Spike-Generator">
+</div>
+<div class="section" id="Gamma-Spike-Generator">
 <h2>Gamma Spike Generator<a class="headerlink" href="#Gamma-Spike-Generator" title="Permalink to this headline">¶</a></h2>
 <p>An alternative way to simulates a relative refractory period is to use a Gamma renewal process rather than a Poisson process.</p>
 <p>The refractory properties are controlled by the shape parameter <code class="docutils literal notranslate"><span class="pre">a</span></code>. To give an intuitive sense of the effect of the shape parameter, the distributions for a range of <code class="docutils literal notranslate"><span class="pre">a</span></code> values is plotted below. Larger values of <code class="docutils literal notranslate"><span class="pre">a</span></code> correspond to slower recovery.</p>
@@ -1209,8 +1194,8 @@ Actual Firing Rate (Hz): 22.226666666666667
 <img alt="_images/tutorial_spike_trains_refractory_13_1.png" src="_images/tutorial_spike_trains_refractory_13_1.png" />
 </div>
 </div>
-</section>
-<section id="Application-to-Coefficient-of-Variation">
+</div>
+<div class="section" id="Application-to-Coefficient-of-Variation">
 <h2>Application to Coefficient of Variation<a class="headerlink" href="#Application-to-Coefficient-of-Variation" title="Permalink to this headline">¶</a></h2>
 <p>One way that we can see the effect of the refractory period is on the regularity of the spiking pattern, which is often measured using the coefficient of variation (CV) of the ISI’s.</p>
 <p>A perfect Poisson process should have a CV of 1, regardless of the firing rate. Indeed that is what we see, plus some noisiness.</p>
@@ -1293,8 +1278,8 @@ Actual Firing Rate (Hz): 22.226666666666667
 <img alt="_images/tutorial_spike_trains_refractory_17_1.png" src="_images/tutorial_spike_trains_refractory_17_1.png" />
 </div>
 </div>
-</section>
-</section>
+</div>
+</div>
 
 
             <div class="clearer"></div>
@@ -1352,7 +1337,7 @@ Actual Firing Rate (Hz): 22.226666666666667
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>

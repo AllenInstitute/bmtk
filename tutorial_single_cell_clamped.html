@@ -4,18 +4,18 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tutorial 1: Single cell simulation with current injection (with BioNet) &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Tutorial 2: Single cell simulation with external feedfoward input (with BioNet)" href="tutorial_single_cell_syn.html" />
@@ -628,35 +628,21 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 /* CSS for nbsphinx extension */
 
 /* remove conflicting styling from Sphinx themes */
-div.nbinput.container div.prompt *,
-div.nboutput.container div.prompt *,
-div.nbinput.container div.input_area pre,
-div.nboutput.container div.output_area pre,
-div.nbinput.container div.input_area .highlight,
-div.nboutput.container div.output_area .highlight {
+div.nbinput.container,
+div.nbinput.container div.prompt,
+div.nbinput.container div.input_area,
+div.nbinput.container div[class*=highlight],
+div.nbinput.container div[class*=highlight] pre,
+div.nboutput.container,
+div.nboutput.container div.prompt,
+div.nboutput.container div.output_area,
+div.nboutput.container div[class*=highlight],
+div.nboutput.container div[class*=highlight] pre {
+    background: none;
     border: none;
-    padding: 0;
+    padding: 0 0;
     margin: 0;
     box-shadow: none;
-}
-
-div.nbinput.container > div[class*=highlight],
-div.nboutput.container > div[class*=highlight] {
-    margin: 0;
-}
-
-div.nbinput.container div.prompt *,
-div.nboutput.container div.prompt * {
-    background: none;
-}
-
-div.nboutput.container div.output_area .highlight,
-div.nboutput.container div.output_area pre {
-    background: unset;
-}
-
-div.nboutput.container div.output_area div.highlight {
-    color: unset;  /* override Pygments text color */
 }
 
 /* avoid gaps between output lines */
@@ -757,7 +743,7 @@ div.nboutput.container div.output_area {
 div.nbinput.container div.input_area {
     border: 1px solid #e0e0e0;
     border-radius: 2px;
-    /*background: #f5f5f5;*/
+    background: #f5f5f5;
 }
 
 /* override MathJax center alignment in output cells */
@@ -823,7 +809,6 @@ div.nboutput.container div.output_area.rendered_html,
 div.nboutput.container div.output_area > div.output_javascript,
 div.nboutput.container div.output_area:not(.rendered_html) > img{
     padding: 5px;
-    margin: 0;
 }
 
 /* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
@@ -871,12 +856,12 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<section id="Tutorial-1:-Single-cell-simulation-with-current-injection-(with-BioNet)">
+<div class="section" id="Tutorial-1:-Single-cell-simulation-with-current-injection-(with-BioNet)">
 <h1>Tutorial 1: Single cell simulation with current injection (with BioNet)<a class="headerlink" href="#Tutorial-1:-Single-cell-simulation-with-current-injection-(with-BioNet)" title="Permalink to this headline">¶</a></h1>
 <p>In this example we will build a network consisting of a single biophysically detailed cell. Then we will run a short simulation with a current injection at the soma of the cell, then look at the output of spikes, membrane potential and calcium flux.</p>
 <p><strong>Note</strong> - scripts and files for running this tutorial can be found in the directory <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/tutorial/sources/chapter01">sources/chapter01/</a></p>
 <p><strong>requirements:</strong> * Python 2.7, 3.6+ * bmtk * NEURON 7.4+</p>
-<section id="1.-Building-the-network">
+<div class="section" id="1.-Building-the-network">
 <h2>1. Building the network<a class="headerlink" href="#1.-Building-the-network" title="Permalink to this headline">¶</a></h2>
 <p>The first step is to use the bmtk Network Builder to create and save the network. First we instantiate a network with a name or our choosing (since throughout this tutorial we will use cell models from the mouse cortex, let’s call our network ‘mcortex’).</p>
 <p>Once we have initialized a network object, we can add a single node by calling the add_nodes method.</p>
@@ -902,7 +887,7 @@ div.rendered_html tbody tr:hover {
 </div>
 <p>Some of the parameters used to create the node are optional and only for our benefit. Others are necessary for when we will eventually run a simulation: * <em>cell_name</em> (optional) - Name/type of cell we will be modeling. * <em>potential</em> (optional) - Use to indicate that it is an excitatory type cell. * <em>model_type</em> - Used by the simulator to indicate that we are using a biophysical cell. * <em>model template</em> - NEURON .hoc file, NeuroML file, or other template used in the creation of cell/node
 object. * <em>model_processing</em> - A custom function used by the simulator to load the model into NEURON using Allen Cell Types files for perisomatic models. * <em>dynamics_params</em> - Model parameters. File will be downloaded from the Allen Cell Types Database. * <em>morphology</em> - Model morphology. File will be downloaded from the Allen Cell Types Database.</p>
-<section id="Building-and-saving">
+<div class="section" id="Building-and-saving">
 <h3>Building and saving<a class="headerlink" href="#Building-and-saving" title="Permalink to this headline">¶</a></h3>
 <p>The final thing to do is to build and save the network. If successful, we should see a combination of hdf5 and csv files in the ‘./network’ directory, these files are used describe the network, and can be saved, stored and run at a later date.</p>
 <p>First, it’s a good idea to remove any old files in the “network” folder so they don’t interfere with the current simulation.</p>
@@ -941,9 +926,9 @@ object. * <em>model_processing</em> - A custom function used by the simulator to
 {&#39;cell_name&#39;: &#39;Scnn1a_473845048&#39;, &#39;potential&#39;: &#39;exc&#39;, &#39;model_type&#39;: &#39;biophysical&#39;, &#39;model_template&#39;: &#39;ctdb:Biophys1.hoc&#39;, &#39;model_processing&#39;: &#39;aibs_perisomatic&#39;, &#39;dynamics_params&#39;: &#39;472363762_fit.json&#39;, &#39;morphology&#39;: &#39;Scnn1a_473845048_m.swc&#39;, &#39;node_type_id&#39;: 100, &#39;node_id&#39;: 0}
 </pre></div></div>
 </div>
-</section>
-</section>
-<section id="2.-Setting-up-the-simulator-environment">
+</div>
+</div>
+<div class="section" id="2.-Setting-up-the-simulator-environment">
 <h2>2. Setting up the simulator environment<a class="headerlink" href="#2.-Setting-up-the-simulator-environment" title="Permalink to this headline">¶</a></h2>
 <p>Now that the network has been built, we can use the BioNet simulator to setup and run it using NEURON. The easiest ways to do this is to copy and modify <a class="reference external" href="https://github.com/AllenInstitute/bmtk/tree/develop/docs/examples/bio_14cells">existing simulation setup</a>, or use the <code class="docutils literal notranslate"><span class="pre">bmtk.utils.sim_setup</span></code> script which can be called from the command-line</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m bmtk.utils.sim_setup  --report-vars v,cai           <span class="se">\</span>
@@ -1089,8 +1074,8 @@ Successfully created x86_64/special
 </div>
 <div class="admonition warning">
 <p class="admonition-title"><strong>Warning</strong>: You may see an error that it failed while trying to compile the NEURON mechanisms - especially if Jupyter is unable to find your NEURON environment path. If this happens you will need to manually compile the mechanisms:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd sim_ch01/components/mechanisms
-nrnivmodl modfiles
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">sim_ch01</span><span class="o">/</span><span class="n">components</span><span class="o">/</span><span class="n">mechanisms</span>
+<span class="n">nrnivmodl</span> <span class="n">modfiles</span>
 </pre></div>
 </div>
 </div>
@@ -1101,8 +1086,8 @@ nrnivmodl modfiles
 <li><p><strong>components/biophysical_neuron_models/Scnn1a_473845048_m.swc</strong> - The morphology file for our cell. Originally <a class="reference external" href="http://celltypes.brain-map.org/neuronal_model/download/482934212">downloaded from the Allen Cell Types Database</a></p></li>
 </ul>
 <p>Modifying these files with a text editor, or swapping out different parameter or morphologies, allows for changing the simulation without extra programming.</p>
-</section>
-<section id="3.-Running-the-simulation">
+</div>
+<div class="section" id="3.-Running-the-simulation">
 <h2>3. Running the simulation<a class="headerlink" href="#3.-Running-the-simulation" title="Permalink to this headline">¶</a></h2>
 <p>Once our config file is setup we can run a simulation either through the command line:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> sim_ch01
@@ -1305,8 +1290,8 @@ INFO:NEURONIOUtils:Simulation completed in 1.225 seconds
 </div>
 <div class="admonition warning">
 <p class="admonition-title"><strong>Warning</strong>: If you get the following error argument not a density mechanism name, you will need to compile the NEURON mechanisms</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd sim_ch01/components/mechanisms
-nrnivmodl modfiles
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">sim_ch01</span><span class="o">/</span><span class="n">components</span><span class="o">/</span><span class="n">mechanisms</span>
+<span class="n">nrnivmodl</span> <span class="n">modfiles</span>
 </pre></div>
 </div>
 </div>
@@ -1326,8 +1311,8 @@ nrnivmodl modfiles
 </pre></div>
 </div>
 <p>Sets up and runs the NEURON simulation. When finished, the outputs (e.g., spike times, membrane potential, and Ca2+ concentration) will be saved into the output directory as specified in the config.</p>
-</section>
-<section id="4.-Analyzing-the-run">
+</div>
+<div class="section" id="4.-Analyzing-the-run">
 <h2>4. Analyzing the run<a class="headerlink" href="#4.-Analyzing-the-run" title="Permalink to this headline">¶</a></h2>
 <p>The results of the simulation are placed into various files as specified in the “output” section of the config file. We can change this before run-time if required.</p>
 <p>All simulations will save the spike times of the network cells. These are saved in csv format (output/spikes.txt) or hdf5 format(output/spikes.h5). To get the table of spike times for our single-cell network we can run the following method from the analyzer (node_id 0 corresponds to our single cell).</p>
@@ -1510,22 +1495,22 @@ nrnivmodl modfiles
 <img alt="_images/tutorial_single_cell_clamped_16_1.png" src="_images/tutorial_single_cell_clamped_16_1.png" />
 </div>
 </div>
-</section>
-<section id="5.-Additional-Information">
+</div>
+<div class="section" id="5.-Additional-Information">
 <h2>5. Additional Information<a class="headerlink" href="#5.-Additional-Information" title="Permalink to this headline">¶</a></h2>
-<section id="Changing-run-time-parameters.">
+<div class="section" id="Changing-run-time-parameters.">
 <h3>Changing run-time parameters.<a class="headerlink" href="#Changing-run-time-parameters." title="Permalink to this headline">¶</a></h3>
 <p>By making changes to the config file, we can change the conditions and simulation parameters without having to rebuild the network, modify parameter files, or change our run_bionet script. In fact we can iteratively run multiple simulations without any extra coding, only a text editor to change the json file.</p>
 <p>The run section of the config.json contains most of the parameters unique to the simulation:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;run&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;dL&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;nsteps_block&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5000</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;spike_threshold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">-15</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;tstop&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2000.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;dt&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;run&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;dL&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="nt">&quot;nsteps_block&quot;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span>
+    <span class="nt">&quot;spike_threshold&quot;</span><span class="p">:</span> <span class="mi">-15</span><span class="p">,</span>
+    <span class="nt">&quot;tstop&quot;</span><span class="p">:</span> <span class="mf">2000.0</span><span class="p">,</span>
+    <span class="nt">&quot;dt&quot;</span><span class="p">:</span> <span class="mf">0.1</span>
+  <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -1535,64 +1520,64 @@ nrnivmodl modfiles
 <li><p><em>dL</em> - Length of segments in a section. The number of segments will be forced to an odd number so the actual length may vary.</p></li>
 </ul>
 <p>Through the conditions section we can adjust simulation temperature (C) and the initial membrane potential of the cells:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;conditions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;celsius&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">34.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;v_init&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">-80</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;conditions&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;celsius&quot;</span><span class="p">:</span> <span class="mf">34.0</span><span class="p">,</span>
+    <span class="nt">&quot;v_init&quot;</span><span class="p">:</span> <span class="mi">-80</span>
+  <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>And lastly, the input section lets us control stimulus onto the network. There are a number of different options which will be explained in the following tutorials. But even with a simple current injection we can adjust amplitude, delay and stimulation duration and measure the effect on the cell.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;current_clamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.120</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;current_clamp&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;amp&quot;</span><span class="p">:</span> <span class="mf">0.120</span><span class="p">,</span>
+      <span class="nt">&quot;delay&quot;</span><span class="p">:</span> <span class="mf">500.0</span><span class="p">,</span>
+      <span class="nt">&quot;duration&quot;</span><span class="p">:</span> <span class="mf">1000.0</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>We can even add multiple injections</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;inputs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">&quot;cclamp1&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.150</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">400.0</span><span class="w"></span>
-<span class="w">    </span><span class="p">},</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;inputs&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;cclamp1&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;amp&quot;</span><span class="p">:</span> <span class="mf">0.150</span><span class="p">,</span>
+      <span class="nt">&quot;delay&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+      <span class="nt">&quot;duration&quot;</span><span class="p">:</span> <span class="mf">400.0</span>
+    <span class="p">},</span>
 
-<span class="w">    </span><span class="nt">&quot;cclamp2&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.300</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">500.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">400.0</span><span class="w"></span>
-<span class="w">    </span><span class="p">},</span><span class="w"></span>
+    <span class="nt">&quot;cclamp2&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;amp&quot;</span><span class="p">:</span> <span class="mf">0.300</span><span class="p">,</span>
+      <span class="nt">&quot;delay&quot;</span><span class="p">:</span> <span class="mf">500.0</span><span class="p">,</span>
+      <span class="nt">&quot;duration&quot;</span><span class="p">:</span> <span class="mf">400.0</span>
+    <span class="p">},</span>
 
-<span class="w">    </span><span class="nt">&quot;cclamp3&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;input_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;IClamp&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;node_set&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;all&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;amp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.450</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;delay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">      </span><span class="nt">&quot;duration&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">400.0</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+    <span class="nt">&quot;cclamp3&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;input_type&quot;</span><span class="p">:</span> <span class="s2">&quot;current_clamp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;IClamp&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;node_set&quot;</span><span class="p">:</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;amp&quot;</span><span class="p">:</span> <span class="mf">0.450</span><span class="p">,</span>
+      <span class="nt">&quot;delay&quot;</span><span class="p">:</span> <span class="mf">1000.0</span><span class="p">,</span>
+      <span class="nt">&quot;duration&quot;</span><span class="p">:</span> <span class="mf">400.0</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-</section>
-<section id="Changing-cell-models">
+</div>
+<div class="section" id="Changing-cell-models">
 <h3>Changing cell models<a class="headerlink" href="#Changing-cell-models" title="Permalink to this headline">¶</a></h3>
 <p>When building the network we defined the cell model and morphology through the ‘dynamics_params’ and ‘morphology_file’ options. After building and saving the network, these values were saved in the node-types csv file.</p>
 <div class="nbinput docutils container">
@@ -1656,9 +1641,9 @@ nrnivmodl modfiles
 </div>
 <p>If we want to run the simulation on a different cell model, all we have to do is: 1. Download new parameters.json and morphology.swc into components/biophysical_neuron_models and components/morphologies 2. Open mcortex_node_types.csv in a text editor and update ‘morphology_file’ and ‘params_file’ accordingly.</p>
 <p>In our simple one-cell example, it is likely faster to just rebuild the network. However the advantage of the use of the node types becomes clear once we start dealing with a larger network. For example we may have a network of hundreds of thousands of individual cells with tens of thousands of Scnn1a type cells. The process of adjusting/changing the Scnn1a parameter in the csv then starting another simulation only takes seconds, whereas rebuilding the entire network may take hours.</p>
-</section>
-</section>
-</section>
+</div>
+</div>
+</div>
 
 
             <div class="clearer"></div>
@@ -1716,7 +1701,7 @@ nrnivmodl modfiles
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>

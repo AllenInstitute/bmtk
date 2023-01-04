@@ -4,18 +4,18 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Synaptic plasticity in Pointnet (STP, facilitation, depression, STDP, and others) &#8212; Brain Modeling Toolkit 1.0.7 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/aibs_sphinx.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" href="_static/aibs_sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Generating spike trains with a refractory period" href="tutorial_spike_trains_refractory.html" />
@@ -628,35 +628,21 @@ jQuery('#portal_tab_menu').bind('touchstart', function() {
 /* CSS for nbsphinx extension */
 
 /* remove conflicting styling from Sphinx themes */
-div.nbinput.container div.prompt *,
-div.nboutput.container div.prompt *,
-div.nbinput.container div.input_area pre,
-div.nboutput.container div.output_area pre,
-div.nbinput.container div.input_area .highlight,
-div.nboutput.container div.output_area .highlight {
+div.nbinput.container,
+div.nbinput.container div.prompt,
+div.nbinput.container div.input_area,
+div.nbinput.container div[class*=highlight],
+div.nbinput.container div[class*=highlight] pre,
+div.nboutput.container,
+div.nboutput.container div.prompt,
+div.nboutput.container div.output_area,
+div.nboutput.container div[class*=highlight],
+div.nboutput.container div[class*=highlight] pre {
+    background: none;
     border: none;
-    padding: 0;
+    padding: 0 0;
     margin: 0;
     box-shadow: none;
-}
-
-div.nbinput.container > div[class*=highlight],
-div.nboutput.container > div[class*=highlight] {
-    margin: 0;
-}
-
-div.nbinput.container div.prompt *,
-div.nboutput.container div.prompt * {
-    background: none;
-}
-
-div.nboutput.container div.output_area .highlight,
-div.nboutput.container div.output_area pre {
-    background: unset;
-}
-
-div.nboutput.container div.output_area div.highlight {
-    color: unset;  /* override Pygments text color */
 }
 
 /* avoid gaps between output lines */
@@ -757,7 +743,7 @@ div.nboutput.container div.output_area {
 div.nbinput.container div.input_area {
     border: 1px solid #e0e0e0;
     border-radius: 2px;
-    /*background: #f5f5f5;*/
+    background: #f5f5f5;
 }
 
 /* override MathJax center alignment in output cells */
@@ -823,7 +809,6 @@ div.nboutput.container div.output_area.rendered_html,
 div.nboutput.container div.output_area > div.output_javascript,
 div.nboutput.container div.output_area:not(.rendered_html) > img{
     padding: 5px;
-    margin: 0;
 }
 
 /* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
@@ -871,7 +856,7 @@ div.rendered_html tbody tr:hover {
   background: rgba(66, 165, 245, 0.2);
 }
 </style>
-<section id="Synaptic-plasticity-in-Pointnet-(STP,-facilitation,-depression,-STDP,-and-others)">
+<div class="section" id="Synaptic-plasticity-in-Pointnet-(STP,-facilitation,-depression,-STDP,-and-others)">
 <h1>Synaptic plasticity in Pointnet (STP, facilitation, depression, STDP, and others)<a class="headerlink" href="#Synaptic-plasticity-in-Pointnet-(STP,-facilitation,-depression,-STDP,-and-others)" title="Permalink to this headline">¶</a></h1>
 <p>In the NEST simulator, the available postsynaptic current or conductance waveforms (alpha, exp, or delta) are typically integrated into the <em>neuron model</em>. The <em>synapse model</em> allows for more sophisticated and varied built-in models of synapses, such as dynamic synapses or gap junctions.</p>
 <p>A list of available synapse models is listed here: <a class="reference external" href="https://nest-simulator.readthedocs.io/en/v2.18.0/models/synapses.html">https://nest-simulator.readthedocs.io/en/v2.18.0/models/synapses.html</a></p>
@@ -917,15 +902,15 @@ div.rendered_html tbody tr:hover {
 </pre></div></div>
 </div>
 <p>First, we will create a two neuron network. The presynaptic neuron is a simple integrate-and-fire neuron. If we open the dynamics_params file <code class="docutils literal notranslate"><span class="pre">472363762_point_with_cc.json</span></code> within <em>/components/point_neuron_models</em>, we see that the parameter <strong>I_e</strong> has been set to 190.0, which injects a constant background current, triggering regular firing in the presynaptic neuron.</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;I_e&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">190.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;tau_m&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">44.9</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;C_m&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">239.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;t_ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">3.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;E_L&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">-78.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;V_th&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">-43.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">  </span><span class="nt">&quot;V_reset&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">-55.0</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;I_e&quot;</span><span class="p">:</span> <span class="mf">190.0</span><span class="p">,</span>
+  <span class="nt">&quot;tau_m&quot;</span><span class="p">:</span> <span class="mf">44.9</span><span class="p">,</span>
+  <span class="nt">&quot;C_m&quot;</span><span class="p">:</span> <span class="mf">239.0</span><span class="p">,</span>
+  <span class="nt">&quot;t_ref&quot;</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">,</span>
+  <span class="nt">&quot;E_L&quot;</span><span class="p">:</span> <span class="mf">-78.0</span><span class="p">,</span>
+  <span class="nt">&quot;V_th&quot;</span><span class="p">:</span> <span class="mf">-43.0</span><span class="p">,</span>
+  <span class="nt">&quot;V_reset&quot;</span><span class="p">:</span> <span class="mf">-55.0</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -1266,14 +1251,14 @@ INFO:NestIOUtils:Done.
 </div>
 </div>
 <p>We have created a new dynamics_params file <code class="docutils literal notranslate"><span class="pre">tsodyksFac_glif.json</span></code> based on the dynamic_params file for the static synapse and have added to it the following params for the tsodyks2 synapse:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;U&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;u&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;x&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;tau_rec&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">100.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;tau_fac&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">250.0</span><span class="p">,</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+        <span class="nt">&quot;U&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="nt">&quot;u&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="nt">&quot;x&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="nt">&quot;tau_rec&quot;</span><span class="p">:</span> <span class="mf">100.0</span><span class="p">,</span>
+        <span class="nt">&quot;tau_fac&quot;</span><span class="p">:</span> <span class="mf">1000.0</span><span class="p">,</span>
+        <span class="nt">&quot;weight&quot;</span><span class="p">:</span> <span class="mf">250.0</span><span class="p">,</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -1489,14 +1474,14 @@ INFO:NestIOUtils:Done.
 </div>
 </div>
 <p>This time, the IPSP’s get incrementally larger as they occur closely in succession, simulating synaptic facilitation. We can use the same model, just changing the parameters, to create a depressing synapse. We will add these parameter values to the dynamic_params:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;U&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.67</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;u&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.67</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;x&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;tau_rec&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">450.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;tau_fac&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="nt">&quot;weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">250.0</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+        <span class="nt">&quot;U&quot;</span><span class="p">:</span> <span class="mf">0.67</span><span class="p">,</span>
+        <span class="nt">&quot;u&quot;</span><span class="p">:</span> <span class="mf">0.67</span><span class="p">,</span>
+        <span class="nt">&quot;x&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="nt">&quot;tau_rec&quot;</span><span class="p">:</span> <span class="mf">450.0</span><span class="p">,</span>
+        <span class="nt">&quot;tau_fac&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="nt">&quot;weight&quot;</span><span class="p">:</span> <span class="mf">250.0</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -1784,7 +1769,7 @@ INFO:NestIOUtils:Done.
 </pre></div>
 </div>
 </div>
-</section>
+</div>
 
 
             <div class="clearer"></div>
@@ -1842,7 +1827,7 @@ INFO:NestIOUtils:Done.
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
