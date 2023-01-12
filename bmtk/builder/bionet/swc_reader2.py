@@ -59,7 +59,10 @@ class SWCReader(object):
 
     def _copy(self):
         new_swc = SWCReader(swc_path=self.swc_path, rng_seed=self.rng_seed)
-
+        if self.dL:
+            new_swc.set_segment_dl(self.dL)
+            new_swc.dL = self.dL
+        #new_swc = copy.deepcopy(self)   # CHANGED
         if self._axon_fixed:
             new_swc.fix_axon()
 
@@ -293,8 +296,6 @@ class SWCReader(object):
 
     def set_segment_dl(self, dl):
         """Define number of segments in a cell"""
-        if self._seg_coords is not None:
-            raise RuntimeError('Unable to segment the morphology after coordinates have already been calculated')
         self._nseg = 0
         for sec in self.hobj.all:
             sec.nseg = 1 + 2 * int(sec.L/(2*dl))
@@ -310,8 +311,12 @@ class SWCReader(object):
         :return: [int], [float]: A list of all section_ids and a list of all segment_x values (as defined by NEURON)
             that meet the given critera.
         """
+        segs, probs = self.find_sections(section_names, distance_range)
+        #segs_ix = self._prng.choice(segs, n_sections, p=probs)
+        #secs_ix = self.seg_props.sec_id[segs_ix]    # CHANGED
+        #return secs_ix, self.seg_props.x[segs_ix]
         secs, probs = self.find_sections(section_names, distance_range)
-        secs_ix = self._prng.choice(secs, n_sections, p=probs)
+        secs_ix = self._prng.choice(secs, n_sections, p=probs)     # list of chosen sections
         return self.seg_props.sec_id[secs_ix], self.seg_props.x[secs_ix]
 
     def find_sections(self, section_names, distance_range):
@@ -330,7 +335,7 @@ class SWCReader(object):
         seg_length = self.seg_props.length
         seg_type = self.seg_props.type
 
-        # Find the fractional overlap between the segment and the distance range:
+        # Find the fractional overlap between the section and the distance range:
         # this is done by finding the overlap between [d0,d1] and [dmin,dmax]
         # np.minimum(seg_d1,dmax) find the smaller of the two end locations
         # np.maximum(seg_d0,dmin) find the larger of the two start locations
@@ -338,7 +343,7 @@ class SWCReader(object):
         # and then dividing by the segment length
 
         frac_overlap = np.maximum(0, (np.minimum(seg_d1, dmax) - np.maximum(seg_d0, dmin))) / seg_length
-        ix_drange = np.where(frac_overlap > 0)  # find indexes with non-zero overlap
+        ix_drange = np.where(frac_overlap>0)
         ix_labels = np.array([], dtype=np.int)
 
         for tar_sec_label in section_names:  # find indexes within sec_labels
@@ -350,6 +355,51 @@ class SWCReader(object):
         tar_seg_length = seg_length[tar_seg_ix] * frac_overlap[tar_seg_ix]  # weighted length of targeted segments
         tar_seg_prob = tar_seg_length / np.sum(tar_seg_length)  # probability of targeting segments
         return tar_seg_ix, tar_seg_prob
+
+    def find_sections2(self, section_names, distance_range):
+        """Retrieves a list of sections ids and section x's given a section name/type (eg axon, soma, apic, dend) and
+        the distance from the soma.
+
+        :param section_names: 'soma', 'dend', 'apic', 'axon'
+        :param distance_range: [float, float]: distance range of sections from the soma, in um.
+        :return: [float], [float]: A list of all section_ids and a list of all segment_x values (as defined by NEURON)
+            that meet the given critera.
+        """
+        dmin, dmax = distance_range[0], distance_range[1]
+
+        seg_d0 = self.seg_props.dist0
+        seg_d1 = self.seg_props.dist1
+        sec_length = self.sec.L
+        seg_type = self.seg_props.type
+
+        # Find the fractional overlap between the section and the distance range:
+        # this is done by finding the overlap between [d0,d1] and [dmin,dmax]
+        # np.minimum(seg_d1,dmax) find the smaller of the two end locations
+        # np.maximum(seg_d0,dmin) find the larger of the two start locations
+        # np.maximum(0,overlap) is used to return zero when segments do not overlap
+        # and then dividing by the segment length
+
+        #frac_overlap = np.maximum(0, (np.minimum(seg_d1, dmax) - np.maximum(seg_d0, dmin))) / sec_length
+        for sec in self.sections:     # CHANGED
+            n3d = int(h.n3d(sec=sec))  # get number of n3d points in each section
+            l3d = np.zeros(n3d)
+            for i in range(n3d):
+                l3d[i] = h.arc3d(i, sec=sec)
+
+        frac_min = (dmin - seg_d0)/sec.L     # Fractional distance of minimum qualifying point, if > 1, sections does not qualify
+        frac_max = 1 - (seg_d1 - dmax)/sec.L   # Fractional distance of maximum qualifying point, if > 1, entire section qualifies
+        ix_drange = np.where((frac_max > 0) & (frac_min < 1))  # find indexes with non-zero overlap
+        ix_labels = np.array([], dtype=np.int)
+
+        for tar_sec_label in section_names:  # find indexes within sec_labels
+            sec_type = self.sec_type_swc[tar_sec_label]  # get swc code for the section label
+            ix_label = np.where(seg_type == sec_type)
+            ix_labels = np.append(ix_labels, ix_label)  # target segment indexes
+
+        tar_seg_ix = np.intersect1d(ix_drange, ix_labels)  # find intersection between indexes for range and labels
+        tar_seg_length = seg_length[tar_seg_ix] * frac_overlap[tar_seg_ix]  # weighted length of targeted segments
+        tar_seg_prob = tar_seg_length / np.sum(tar_seg_length)  # probability of targeting segments
+        return tar_seg_ix, tar_seg_prob, frac_min, frac_max
 
     def move_and_rotate(self, soma_coords=None, rotation_angles=None, inplace=False):
         old_seg_coords = self.seg_coords
@@ -393,11 +443,10 @@ class SWCReader(object):
             return self
         else:
             new_swc_reader = self._copy()
-            new_swc_reader._seg_props = self.seg_props
-            new_swc_reader._swc_map = self._swc_map
-            new_swc_reader._nseg = self.nseg
             new_swc_reader._seg_coords = new_seg_coords
+            #self._seg_coords = new_seg_coords
             new_swc_reader._soma_pos = new_soma_pos
+            #self._soma_pos = new_soma_pos
 
             return new_swc_reader
 
@@ -460,8 +509,9 @@ def get_swc(cell, morphology_dir=None, use_cache=False, dL=None):
         raise ValueError('File {} does not exists.'.format(swc_path))
 
     swc = SWCReader(swc_path)
-    if dL:
-        swc.set_segment_dl(dL)
+
+    swc.set_segment_dl(dL)
+    swc.dL = dL
 
     if cell.get('model_processing', 'NULL') == 'aibs_perisomatic':
         swc.fix_axon()
